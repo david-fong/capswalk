@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "removeComments": true,
+        "alwaysStrict": true,
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
