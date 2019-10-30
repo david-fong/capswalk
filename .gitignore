@@ -1,4 +1,13 @@
 
+# build
+build/
+
+# vim
+*.swp
+*.swo
+*.orig
+
+# vscode
 *.code-workspace
 
 
