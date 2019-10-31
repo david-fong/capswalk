@@ -1,36 +1,50 @@
 
 /**
- * norm accessors measure distance from the origin (0, 0).
+ * A position in 2-dimensional space. values may be non-integer values.
+ * Immutable. All [Pos] objects returned by operations are new objects.
+ * Norm accessors measure distance from the origin (0, 0).
  */
 class Pos {
     readonly x: number;
     readonly y: number;
 
-    constructor(x, y) {
+    public constructor(x, y) {
         this.x = x;
         this.y = y;
+    }
+
+
+
+    equals(other: Pos): boolean {
+        return this.x === other.x && this.y === other.y;
     }
 
     public round(): Pos {
         return new Pos(Math.round(this.x), Math.round(this.y));
     }
 
+    public toString(): string {
+        return `(${this.x},${this.y})`;
+    }
+
+
+
     /**
-     * also known as the "manhattan norm".
+     * Also known as the "manhattan norm".
      */
     public get oneNorm(): number {
         return Math.abs(this.x) + Math.abs(this.y);
     }
 
     /**
-     * diagonal distance in 2D / hypotenuse.
+     * Diagonal distance in 2D / hypotenuse.
      */
     public get twoNorm(): number {
         return Math.sqrt((this.x ** 2) + (this.y **2));
     }
 
     /**
-     * length of the longest dimension.
+     * Length of the longest dimension.
      */
     public get infNorm(): number {
         return Math.max(Math.abs(this.x), Math.abs(this.y));
@@ -42,6 +56,9 @@ class Pos {
         return new Pos(this.x + other.x, this.y + other.y);
     }
 
+    /**
+     * subtract [other] from [this].
+     */
     public sub(other: Pos): Pos {
         return new Pos(this.x - other.x, this.y - other.y);
     }
@@ -60,11 +77,11 @@ class Pos {
 
 
     /**
-     * creates a [Pos] with random, integer valued [x] and [y] coordinates
+     * Creates a [Pos] with random, integer valued [x] and [y] coordinates
      * within the specified upper limits and within the first quadrant.
      * 
-     * @param boundX exclusive bound on x-coordinate.
-     * @param boundY exclusive bound on y-coordinate. optional. defaults to [boundX].
+     * @param boundX An exclusive bound on x-coordinate.
+     * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to [boundX].
      */
     public static randomQ1(boundX: number, boundY: number = boundX): Pos {
         return new Pos(
