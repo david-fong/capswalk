@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Snakey v3</title>
+        <meta name='author'         content='David Fong' />
+        <meta name='description'    content='An original game based on the snake game.' />
+        <meta name='viewport'       content='width=device-width, initial-scale=1.0' />
+        <meta charset='UTF-8' />
+        <link rel='icon' href='favicon.ico' type='image/png'/>
+    </head>
+
+
+    <body style='margin:0px;'>
+        <div id='background'></div>
+
+    
+        <!-- Run Game Code: -->
+        <script>
+            // Disable scroll-down via spacebar:
+            window.addEventListener('keydown', (event) => {
+                if (event.keyCode == 32 && event.target == document.body) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+            // window.onbeforeunload = (event) => '';
+            
+            const GAME = new Game();
+        </script>
+    </body>
+</html>
