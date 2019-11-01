@@ -15,13 +15,20 @@ abstract class Player {
     protected   _isAlive:   boolean;
     protected   _score:     number;
     protected   _hostTile:  Tile;
-    protected   seqBuffer: string;
+    protected   seqBuffer:  string;
 
 
 
     public constructor(game: Game, idNumber: number) {
         this.game = game;
         this.idNumber = idNumber;
+    }
+
+    public reset(): void {
+        this._isAlive   = true;
+        this._score     = 0;
+        this._hostTile  = null;
+        this.seqBuffer  = '';
     }
 
 
@@ -38,7 +45,8 @@ abstract class Player {
     public processClientInput(event: KeyboardEvent) {
         if (false) {
             ;
-        } else {
+        } else if (this._isAlive) {
+            // process movement-type input if still alive.
             this.seqBufferAcceptKey(event.key);
         }
     }
@@ -48,53 +56,40 @@ abstract class Player {
      * @param key 
      */
     public seqBufferAcceptKey(key: string) {
-        let newSeqBuffer: LangSeq = this.seqBuffer + key;
+        
         const neighbourSeqs: Array<LangSeq> = this.getUNT().map(t => t.langSeq);
         if (neighbourSeqs.length === 0) {
             return;
         }
-
-        const matchletSeqs: Array<LangSeq> = neighbourSeqs.filter(seq => seq.startsWith(newSeqBuffer));
-        if (matchletSeqs.length <= 1) {
-            if (matchletSeqs.length === 1) {
-                // the client typed part or all of the
-                // sequence for a neighbouring [Tile].
-                if (matchletSeqs[0] === newSeqBuffer) {
-                    // they typed the whole thing (unless they are missing
+        
+        let newSeqBuffer: LangSeq;
+        for ( // loop through substring start offset of newSeqBuffer:
+            newSeqBuffer = this.seqBuffer + key;
+            newSeqBuffer.length > 0;
+            newSeqBuffer = newSeqBuffer.substring(1)
+        ) {
+            // look for the longest suffixing substring of [newSeqBuffer]
+            // that is a prefixing substring of any UNT's.
+            const matchletSeqs: Array<LangSeq> = neighbourSeqs
+                    .filter(seq => seq.startsWith(newSeqBuffer));
+            Object.freeze(matchletSeqs);
+            if (matchletSeqs.length > 0) {
+                if (matchletSeqs.length === 1 && matchletSeqs[0] === newSeqBuffer) {
+                    // client typed the whole thing (unless they are missing
                     // incoming updates from the server / [Game] manager).
                     this.seqBuffer = '';
                     this.game.processHumanMoveRequest(this, matchletSeqs[0]);
+                } else {
+                    // client typed part of the sequence for a neighbouring [Tile].
+                    this.seqBuffer = newSeqBuffer;
                 }
-
-            } else {
-                // the client's new [seqBuffer] didn't match anything.
-                this._hostTile.visualBell();
-                // look for the longest suffixing substring of [newSeqBuffer]
-                // that is a prefixing substring of any UNT's.
-                const matchletSeqs: Array<LangSeq> = this.getUNT()
-                        .map(t => t.langSeq)
-                        .sort((seqA, seqB) => seqB.length - seqA.length);
-                Object.freeze(matchletSeqs);
-                for ( // loop through substring start offset of newSeqBuffer:
-                    newSeqBuffer = newSeqBuffer.substring(1); // don't check full thing again
-                    newSeqBuffer.length > 0;
-                    newSeqBuffer = newSeqBuffer.substring(1)
-                ) {
-                    for (let i: number = 0; i < matchletSeqs.length; i++) {
-                        if (matchletSeqs[i].startsWith(newSeqBuffer)) {
-                            this.seqBuffer = newSeqBuffer;
-                            newSeqBuffer = '';
-                            break;
-                        }
-                    }
-                }
+                break;
             }
-
-        } else {
-            // there are multiple UNT's with possible
-            // [LangSeq]s starting with [newSeqBuffer].
-            console.assert(matchletSeqs.every(seq => seq.length > newSeqBuffer.length));
-            this.seqBuffer = newSeqBuffer;
+        }
+        if (newSeqBuffer.length === 0) {
+            // the client's new [seqBuffer] didn't match anything.
+            this.seqBuffer = '';
+            this._hostTile.visualBell();
         }
     }
 
@@ -102,6 +97,10 @@ abstract class Player {
 
     public get pos(): Pos {
         return this._hostTile.pos;
+    }
+
+    public get score(): number {
+        return this._score;
     }
 
     public getUNT(): Array<Tile> {
