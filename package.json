@@ -1,0 +1,17 @@
+{
+  "name": "snakey-nts",
+  "version": "0.0.0",
+  "description": "a typing game!",
+  "keywords": [
+    "typing",
+    "game"
+  ],
+  "author": "David Fong (https://github.com/david-fong)",
+  "repository": "github:david-fong/SnaKey-NTS",
+  "private": true,
+  "main": "src/server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.2.0"
+  }
+}
