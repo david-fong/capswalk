@@ -2,10 +2,12 @@
 /**
  * 
  */
-class Grid {
+abstract class Grid {
 
     public readonly height: number;
     public readonly width:  number;
+
+    public abstract createTile(x: number, y: number): Tile;
 
     /**
      * 
@@ -13,8 +15,9 @@ class Grid {
     private readonly grid: Array<Array<Tile>>;
 
     public constructor(height: number, width: number = height) {
-        console.assert(height > 0);
-        console.assert(width  > 0);
+        if ((height <= 0) || (width  <= 0)) {
+            throw new RangeError("Grid dimensions must be greater than zero.")
+        }
         this.height = height;
         this.width  = width;
 
@@ -22,14 +25,12 @@ class Grid {
         for (let row: number = 0; row < this.height; row++) {
             const newRow: Array<Tile> = [];
             for (let col: number = 0; col < this.width; col++) {
-                const newTile: Tile = new Tile(col, row);
+                const newTile: Tile = this.createTile(col, row);
                 newRow.push(newTile);
             }
             this.grid.push(newRow);
         }
     }
-
-
 
     /**
      * Calls `::reset` for each `Tile` in this `Grid`.
@@ -38,11 +39,18 @@ class Grid {
         this.grid.forEach(row => row.forEach(t => t.reset()));
     }
 
+
+
     /**
      * 
-     * @param pos 
+     * @param pos Must be within the bounds of this `Grid`.
      */
     public getTileAt(pos: Pos): Tile {
+        if (pos.x < 0 || pos.x >= this.width ||
+            pos.y < 0 || pos.y >= this.height
+        ) {
+            throw new RangeError("Argument pos is outside the bounds of this Grid.");
+        }
         return this.grid[pos.x][pos.y];
     }
     
