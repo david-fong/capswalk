@@ -23,7 +23,7 @@ class ClientGame extends Game {
      * @override `Game::processMoveExecute`
      * @throws `TypeError` Unconditionally.
      */
-    public processMoveRequest(player: Player, dest: Tile | Pos): void {
+    public processMoveRequest(playerId: number, dest: Tile | Pos): void {
         throw new TypeError("This operation unsupported for the ClientGame class.")
     }
 

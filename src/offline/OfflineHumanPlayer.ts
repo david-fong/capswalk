@@ -1,10 +1,12 @@
 
 /**
  * 
+ * 
+ * @extends HumanPlayer
  */
 class OfflineHumanPlayer extends HumanPlayer {
 
-    public constructor(game: Game, idNumber: number) {
+    public constructor(game: OfflineGame, idNumber: number) {
         super(game, idNumber);
     }
 
@@ -14,8 +16,11 @@ class OfflineHumanPlayer extends HumanPlayer {
      * Unlike the online situation, the Game Manager is run in the same
      * JavaScript engine as the Operator's player. We can make a direct
      * request to the Game Manager to process the movement request.
+     * 
+     * @implements `Player::makeMovementRequest`
      */
-    public makeMovementRequest(): void {
-        this.game.processMoveRequest(this);
+    public makeMovementRequest(dest: Pos): void {
+        this.game.processMoveRequest(this.idNumber, dest);
     }
+
 }

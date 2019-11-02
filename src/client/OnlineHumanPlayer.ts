@@ -1,18 +1,20 @@
 
 /**
  * 
+ * 
+ * @extends HumanPlayer
  */
 class OnlineHumanPlayer extends HumanPlayer {
 
-    public constructor(game: Game, idNumber: number) {
+    public constructor(game: ClientGame, idNumber: number) {
         super(game, idNumber);
     }
 
     /**
-     * @override
+     * @implements `Player::makeMovementRequest`
      */
-    public makeMovementRequest(): void {
-        // TODO
+    public makeMovementRequest(dest: Pos): void {
+        // TODO send request to server.
     }
 
 }

@@ -1,24 +1,33 @@
 
 /**
+ * Documentation will refer to the human controlling a `HumanPlayer`
+ * as its 'Operator'.
  * 
+ * @extends Player
  */
 abstract class HumanPlayer extends Player {
 
-    protected   seqBuffer:  string;
+    protected _seqBuffer: LangSeq;
 
     public constructor(game: Game, idNumber: number) {
         super(game, idNumber);
+        if (this.idNumber < 0) {
+            throw new Error
+        }
     }
 
+    /**
+     * @override
+     */
     public reset() {
         super.reset();
-        this.seqBuffer  = '';
+        this._seqBuffer = "";
     }
 
 
 
     /**
-     * Callback function invoked when the operator presses a key while
+     * Callback function invoked when the Operator presses a key while
      * the game's html element has focus. Because of how JavaScript
      * and also Node.js run in a single thread, this is an atomic
      * operation (implementation must not intermediately schedule any
@@ -38,46 +47,54 @@ abstract class HumanPlayer extends Player {
 
     /**
      * 
-     * @param key 
+     * @param key The pressed typable key as a string.
      */
     public seqBufferAcceptKey(key: string) {
         
-        const neighbourSeqs: Array<LangSeq> = this.getUNT().map(t => t.langSeq);
-        if (neighbourSeqs.length === 0) {
+        const unoccupiedNeighbouringTiles: Array<Tile> = this.getUNT();
+        if (unoccupiedNeighbouringTiles.length === 0) {
+            // Every neighbouring `Tile` is occupied!
+            // In this case, no movement is possible.
             return;
         }
         
         let newSeqBuffer: LangSeq;
         for ( // loop through substring start offset of newSeqBuffer:
-            newSeqBuffer = this.seqBuffer + key;
+            newSeqBuffer = this._seqBuffer + key;
             newSeqBuffer.length > 0;
             newSeqBuffer = newSeqBuffer.substring(1)
         ) {
             // look for the longest suffixing substring of [newSeqBuffer]
             // that is a prefixing substring of any UNT's.
-            const matchletSeqs: Array<LangSeq> = neighbourSeqs
-                    .filter(seq => seq.startsWith(newSeqBuffer));
-            Object.freeze(matchletSeqs);
-            if (matchletSeqs.length > 0) {
-                this.seqBuffer = newSeqBuffer;
-                if (matchletSeqs.length === 1 && matchletSeqs[0] === newSeqBuffer) {
+            const matchletTiles: Array<Tile> = unoccupiedNeighbouringTiles
+                    .filter(t => t.langSeq.startsWith(newSeqBuffer));
+            Object.freeze(matchletTiles);
+            if (matchletTiles.length > 0) {
+                this._seqBuffer = newSeqBuffer;
+                if (matchletTiles.length === 1 && matchletTiles[0].langSeq === newSeqBuffer) {
                     // Operator typed the [LangSeq] of a UNT (unless they are
                     // missing incoming updates from the server / [Game] manager).
-                    this.makeMovementRequest();
+                    this.makeMovementRequest(matchletTiles[0].pos);
                     // clear [seqBuffer]:
-                    this.seqBuffer = '';
+                    this._seqBuffer = "";
                 } else {
                     // Operator typed part of the sequence for a UNT.
-                    console.assert(matchletSeqs.every(seq => seq.length > newSeqBuffer.length));
+                    console.assert(matchletTiles.every(t => t.langSeq.length > newSeqBuffer.length));
                 }
                 break;
             }
         }
         if (newSeqBuffer.length === 0) {
             // Operator's new [seqBuffer] didn't match anything.
-            this.seqBuffer = '';
+            this._seqBuffer = "";
             this._hostTile.visualBell();
         }
+    }
+
+
+
+    public get seqBuffer(): LangSeq {
+        return this._seqBuffer;
     }
 
 }

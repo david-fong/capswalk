@@ -29,10 +29,25 @@ abstract class Player {
         this._hostTile  = null;
     }
 
+
+
     /**
+     * Send a descriptor of the movement request to the Game Manager.
      * 
+     * @param dest 
      */
-    public abstract makeMovementRequest(): void;
+    public abstract makeMovementRequest(dest: Pos): void;
+
+    public moveTo(dest: Tile): void {
+        // Move off of current host `Tile`:
+        this._hostTile.evictOccupant();
+
+        // Move to occupy the destination `Tile`:
+        this._hostTile = dest;
+        dest.occupantId = this.idNumber;
+
+        // TODO: is there more to do?
+    }
 
 
 

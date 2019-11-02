@@ -15,7 +15,7 @@
 abstract class Game extends Grid {
 
     protected lang: Lang;
-    private readonly allHumanPlayers: Array<Player>;
+    private readonly allHumanPlayers: Array<HumanPlayer>;
 
     public constructor(height: number, width: number) {
         super(height, width);
@@ -62,23 +62,21 @@ abstract class Game extends Grid {
 
     /**
      * Call for a `HumanPlayer` whose `seqBuffer` should be that of the
-     * `Tile` provided as `dest`. Reject the request if `dest` is occupied.
+     * `Tile` at `dest`. Reject the request if `dest` is occupied.
      * 
      * Should never be called by `ClientGame`.
      * 
      * @param player 
-     * @param dest 
+     * @param destPos 
      */
-    public processMoveRequest(player: Player, dest: Tile | Pos): void {
-        if (dest instanceof Pos) dest = this.getTileAt(dest);
+    public processMoveRequest(playerId: number, destPos: Pos): void {
+        const player: Player = this.getHumanPlayer(playerId);
+        const dest:   Tile   = this.getTileAt(destPos);
         if (dest.isOccupied()) {
             throw new Error("Only one player can occupy a tile at a time.")
         }
         if (player instanceof HumanPlayer) {
-            if (player.seqBuffer !== dest.langSeq) {
-                // player movement request is invalid.
-                return;
-            }
+            ;
         } else if (player instanceof ArtificialPlayer) {
             ;
         } else {
@@ -88,7 +86,7 @@ abstract class Game extends Grid {
         // If the request was rejected, we would have short-circuited.
         // We are all go. Do it.
         this.processMoveExecute(new PlayerMovementEvent(
-            player.idNumber,
+            playerId,
             dest.pos,
             this.shuffleLangCharSeqAt(dest),
         ));
@@ -107,8 +105,17 @@ abstract class Game extends Grid {
      */
     protected processMoveExecute(desc: PlayerMovementEvent): void {
         const dest: Tile = this.getTileAt(desc.destPos);
-        this.allHumanPlayers[desc.playerId].moveTo(dest);
+        this.getHumanPlayer(desc.playerId).moveTo(dest);
         dest.setLangCharSeq(desc.newCharSeqPair);
+    }
+
+
+
+    protected getHumanPlayer(playerId: number): HumanPlayer {
+        if (playerId < 0 || playerId >= this.allHumanPlayers.length) {
+            throw new RangeError(`No player with id ${playerId} exists.`);
+        }
+        return this.allHumanPlayers[playerId];
     }
 
 }
