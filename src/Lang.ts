@@ -11,6 +11,17 @@ type LangChar = string;
  */
 type LangSeq = string;
 
+/**
+ * A key-value pair containing a `LangChar` and its corresponding
+ * `LangSeq`.
+ */
+class LangCharSeqPair {
+    public constructor(
+        public readonly char: LangChar,
+        public readonly seq:  LangSeq,
+    ) {}
+}
+
 
 
 /**
@@ -22,11 +33,12 @@ type LangSeq = string;
  * In the use-case of this game, it is more helpful to think in the
  * reverse direction: As a map from typable-key-sequences to sets of
  * corresponding unique characters (no character is mapped by multiple
- * key-sequences).
+ * key-sequences). This game does not require support for retreiving
+ * the `LangSeq` corresponding to a `LangChar`.
  */
 abstract class Lang {
 
-    readonly name: string;
+    public readonly name: string;
 
     /**
      * A reverse map from `LangSeq`s to `LangChar`s. In order for this
@@ -37,35 +49,15 @@ abstract class Lang {
      * maximum possible number of `LangSeq`s in `::getNonConflictingChar`'s
      * `avoid` argument.
      */
-    readonly dict: LangSeqTreeNode;
+    private readonly dict: LangSeqTreeNode;
 
-    public constructor() {
+    protected constructor(name: string, forwardDict: object) {
         this.dict = new LangSeqTreeNode;
-        // TODO: read from file. JSON? plain text? typescript?
-        for (;;) {
-            this.addCharMapping(null, null);
+        // Write JSON data to my `dict`:
+        for (const langChar in forwardDict) {
+            this.dict.addCharMapping(langChar, forwardDict[langChar]);
         }
         this.dict.finalize();
-    }
-
-    /**
-     * 
-     * @param char 
-     * @param seq 
-     */
-    private addCharMapping(char: LangChar, seq: LangSeq): void {
-        let node: LangSeqTreeNode;
-        let seqScrub: number;
-        for (
-            node = this.dict, seqScrub = 0;
-            seqScrub < seq.length;
-            node = node.childNodes.get(seq[seqScrub++])
-        ) {
-            if (!(node.childNodes.has(seq[seqScrub]))) {
-                node.childNodes.set(seq[seqScrub], new LangSeqTreeNode());
-            }
-        }
-        node.characters.add(char);
     }
 
     /**
@@ -90,60 +82,9 @@ abstract class Lang {
      * @param avoid A collection of `LangSeq`s to avoid conflicts with
      *          when choosing a `LangChar` to return.
      */
-    public getNonConflictingChar(avoid: Array<LangSeq>): LangChar {
+    public getNonConflictingChar(avoid: Array<LangSeq>): LangCharSeqPair {
         // TODO
         return null;
     }
 
 }
-
-
-
-
-
-/**
- * Any `LangSeqTreeNode`s mapped in the `childNodes` field have either
- * a non-empty `characters` collection, or a non-empty `childNodes`
- * collection, or both. All leaf nodes have a non-empty `characters`
- * collection.
- */
-class LangSeqTreeNode {
-
-    readonly characters: Set<LangChar>;
-    readonly childNodes: Map<string, LangSeqTreeNode>;
-
-    constructor() {
-        this.characters = new Set();
-        this.childNodes = new Map();
-    }
-
-    public finalize(): void {
-        Object.freeze(this);
-        Object.freeze(this.characters);
-        Object.freeze(this.childNodes);
-        this.childNodes.forEach(child => child.finalize);
-    }
-
-    /**
-     * Returns a collection of all [LangChar]s corresponding to [seq].
-     * Throws an error if [seq] is not in the calling [Lang].
-     * 
-     * @param seq A sequence that must be in the calling [Lang].
-     */
-    public get(seq: LangSeq): Set<LangChar> {
-        console.assert(seq.length > 0);
-        let node: LangSeqTreeNode;
-        let seqScrub: number;
-        for (
-            node = this, seqScrub = 0;
-            seqScrub < seq.length;
-            node = node.childNodes.get(seq[seqScrub]), seqScrub++
-        ) {
-            if (!(node.childNodes.has(seq[seqScrub]))) {
-                throw new Error(`seq ${seq} is not in the calling language.`);
-            }
-        }
-        return node.characters;
-    }
-}
-
