@@ -17,4 +17,11 @@ class ServerGame extends Game {
         return new ServerTile(x, y);
     }
 
+    /**
+     * @implements `super.processPlayerMovement`
+     */
+    protected processPlayerMovement(desc: PlayerMovementEvent): void {
+        // TODO
+    }
+
 }
