@@ -8,6 +8,8 @@ class ClientGame extends Game {
 
     public constructor(height: number, width: number = height) {
         super(height, width);
+
+        // TODO: bind processMoveExecute to event notification.
     }
 
     /**
@@ -18,10 +20,11 @@ class ClientGame extends Game {
     }
 
     /**
-     * @implements `super.processPlayerMovement`
+     * @override `Game::processMoveExecute`
+     * @throws `TypeError` Unconditionally.
      */
-    protected processPlayerMovement(desc: PlayerMovementEvent): void {
-        // TODO
+    public processMoveRequest(player: Player, dest: Tile | Pos): void {
+        throw new TypeError("This operation unsupported for the ClientGame class.")
     }
 
 }

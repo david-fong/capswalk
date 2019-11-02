@@ -17,11 +17,4 @@ class OfflineGame extends Game {
         return new VisibleTile(x, y);
     }
 
-    /**
-     * @implements `super.processPlayerMovement`
-     */
-    protected processPlayerMovement(desc: PlayerMovementEvent): void {
-        // TODO
-    }
-
 }

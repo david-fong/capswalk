@@ -8,6 +8,8 @@ class ServerGame extends Game {
 
     public constructor(height: number, width: number = height) {
         super(height, width);
+
+        // TODO bind ::processMoveRequest to event notification from clients.
     }
 
     /**
@@ -18,10 +20,11 @@ class ServerGame extends Game {
     }
 
     /**
-     * @implements `super.processPlayerMovement`
+     * @implements `Game::processMoveExecute`
      */
-    protected processPlayerMovement(desc: PlayerMovementEvent): void {
-        // TODO
+    protected processMoveExecute(desc: PlayerMovementEvent): void {
+        super.processMoveExecute(desc);
+        // TODO: emit an event to all clients.
     }
 
 }

@@ -8,21 +8,22 @@
  * An overview of subclasses:
  * Both `ClientGame` and `OfflineGame` use `VisualTile`s, while
  * `ServerGame` uses `ServerTile`s. `ClientGame`'s record of the
- * state of the game comes completely from `ServerGame`. It does
- * not do any book-keeping. Ie. It has no concept of `Player`
- * objects other than the
+ * state of the game comes completely from `ServerGame`.
  * 
  * @extends Grid
  */
 abstract class Game extends Grid {
 
     protected lang: Lang;
+    private readonly allHumanPlayers: Array<Player>;
 
     public constructor(height: number, width: number) {
         super(height, width);
 
         // TODO: set default language:
         this.lang = null;
+
+        // TODO: setup allHumanPlayers?
     }
 
     /**
@@ -49,36 +50,48 @@ abstract class Game extends Grid {
 
 
     /**
+     * Does not modify `tile`. This must be done externally.
+     * 
      * @param tile The `Tile` to shuffle their `LangChar`-`LangSeq` pair for.
      */
-    protected shuffleLangCharSeqAt(tile: Tile): void {
-        const charSeqPair: LangCharSeqPair = this.lang.getNonConflictingChar(
+    private shuffleLangCharSeqAt(tile: Tile): LangCharSeqPair {
+        return this.lang.getNonConflictingChar(
             this.getUNT(tile.pos).map(t => t.langSeq)
         );
-        tile.setLangCharSeq(charSeqPair);
     }
 
     /**
      * Call for a `HumanPlayer` whose `seqBuffer` should be that of the
      * `Tile` provided as `dest`. Reject the request if `dest` is occupied.
      * 
+     * Should never be called by `ClientGame`.
+     * 
      * @param player 
      * @param dest 
      */
-    protected processMoveRequest(player: Player, dest: Tile): void {
+    public processMoveRequest(player: Player, dest: Tile | Pos): void {
+        if (dest instanceof Pos) dest = this.getTileAt(dest);
         if (dest.isOccupied()) {
-            // Only one `Player` can occupy a `Tile` at a time.
-            return;
+            throw new Error("Only one player can occupy a tile at a time.")
         }
         if (player instanceof HumanPlayer) {
-            if (player.seqBuffer === dest.langSeq) {
-                // TODO
+            if (player.seqBuffer !== dest.langSeq) {
+                // player movement request is invalid.
+                return;
             }
         } else if (player instanceof ArtificialPlayer) {
             ;
         } else {
             throw new TypeError("Unexpected argument type for 'player' argument.");
         }
+
+        // If the request was rejected, we would have short-circuited.
+        // We are all go. Do it.
+        this.processMoveExecute(new PlayerMovementEvent(
+            player.idNumber,
+            dest.pos,
+            this.shuffleLangCharSeqAt(dest),
+        ));
     }
 
     /**
@@ -87,11 +100,16 @@ abstract class Game extends Grid {
      * these implementations, this method is not scheduled for later since
      * it is the 'write' stage of that critical operation. Otherwise, if
      * I am a `ClientGame`, bind this as the callback function of an event
-     * notification from the server.
+     * notification from the server. If I am a `ServerGame`, also notify
+     * all clients of the movement event.
      * 
      * @param desc A descriptor for the player-movement event.
      */
-    protected abstract processPlayerMovement(desc: PlayerMovementEvent): void;
+    protected processMoveExecute(desc: PlayerMovementEvent): void {
+        const dest: Tile = this.getTileAt(desc.destPos);
+        this.allHumanPlayers[desc.playerId].moveTo(dest);
+        dest.setLangCharSeq(desc.newCharSeqPair);
+    }
 
 }
 
@@ -104,12 +122,10 @@ abstract class Game extends Grid {
  */
 class PlayerMovementEvent {
 
-    private constructor(
+    public constructor(
         public readonly playerId: number,
-        public readonly destPosX: number,
-        public readonly destPosY: number,
-        public readonly newLangChar: LangChar,
-        public readonly newLangSeq:  LangSeq,
+        public readonly destPos: Pos,
+        public readonly newCharSeqPair: LangCharSeqPair,
     ) {
         Object.freeze(this);
     }

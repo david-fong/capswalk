@@ -12,7 +12,7 @@ abstract class Grid {
     /**
      * 
      */
-    private readonly grid: Array<Array<Tile>>;
+    protected readonly grid: Array<Array<Tile>>;
 
     public constructor(height: number, width: number = height) {
         if ((height <= 0) || (width  <= 0)) {

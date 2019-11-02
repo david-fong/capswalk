@@ -8,6 +8,7 @@ build/
 *.orig
 
 # vscode
+.vscode/
 *.code-workspace
 
 
