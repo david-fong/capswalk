@@ -8,6 +8,9 @@
 
         "removeComments": true,
         "alwaysStrict": true,
+
+        "pretty": true,
+        "extendedDiagnostics": true,
     },
     "exclude": [
         "node_modules"
