@@ -37,29 +37,28 @@ class LangCharSeqPair {
  * key-sequences). This game does not require support for retreiving
  * the `LangSeq` corresponding to a `LangChar`.
  */
-abstract class Lang {
+class Lang {
 
+    /**
+     * The name of this language.
+     */
     public readonly name: string;
 
     /**
-     * A reverse map from `LangSeq`s to `LangChar`s. In order for this
-     * `Lang` to satisfy the constraints of the problem statement on
-     * `LangChar`-shuffling described in the spec for the method
-     * `::getNonConflictingChar`, it must be true that the number of
-     * leaf nodes in this tree-structure must be greater than the
-     * maximum possible number of `LangSeq`s in `::getNonConflictingChar`'s
-     * `avoid` argument.
+     * A reverse map from `LangSeq`s to `LangChar`s.
      */
     private readonly dict: LangSeqTreeNode;
 
-    protected constructor(name: string, forwardDict: object) {
-        this.dict = new LangSeqTreeNode(null);
+    protected constructor(name: string, forwardDict: Record<LangChar, LangSeq>) {
+        this.dict = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         // Write JSON data to my `dict`:
-        for (const langChar in forwardDict) {
-            this.dict.addCharMapping(langChar, forwardDict[langChar]);
-        }
-        this.dict.finalize();
     }
+
+    public reset(): void {
+        this.dict.reset();
+    }
+
+
 
     /**
      * Return a random `LangChar` in this `Lang` whose corresponding
@@ -71,14 +70,20 @@ abstract class Lang {
      * This method is called to shuffle the `LangChar` / `LangSeq` pair
      * at some `Tile` `A`. `avoid` should contain the `LangSeq`s from
      * all `Tile`s reachable by a human `Player` occupying a `Tile` `B`
-     * from which they can also reach `A`.
+     * from which they can also reach `A`
+     * 
+     * In order for this `Lang` to satisfy these constraints, it must
+     * be true that the number of leaf nodes in this tree-structure must
+     * `avoid` argument.
      * 
      * In this implementation, a human `Player` can only reach a `Tile`
      * whose `pos` has an `infNorm` of `1` from that of the `Tile` they
      * are currently occupying. That is, `avoid` contains `LangSeq`s
      * from all `Tile`s with an `infNorm` <= `2` from the `Tile` to
      * shuffle (not including itself). This means that here, the size of
-     * `avoid` is always bounded by `(2*2 + 1)^2 - 1 == 24`.
+     * `avoid` is always bounded by `(2*2 + 1)^2 - 1 == 24`. Using the
+     * English alphabet (26 typable-letters), this requirement is met
+     * by a hair.
      * 
      * @param avoid A collection of `LangSeq`s to avoid conflicts with
      *          when choosing a `LangChar` to return.
@@ -89,7 +94,7 @@ abstract class Lang {
         let node: LangSeqTreeNode = this.dict;
         const whitelist: Array<LangSeqTreeNode> = [];
 
-        // To word the spec closer to this implementation, we must find
+        // Wording the spec closer to this implementation: We must find
         // characters from nodes that are not descendants or ancestors
         // of nodes for sequences to avoid.
 
