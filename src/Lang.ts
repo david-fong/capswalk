@@ -28,7 +28,8 @@ class LangCharSeqPair {
  * A `Lang`(uage) is a map from a collection of unique characters to
  * corresponding key-sequences. the key-sequences may be non-unique.
  * (try searching up "Chinese riddle where each syllable is pronounced
- * 'shi'").
+ * 'shi'"). A character may have more than one corresponding sequence,
+ * representing alternate "spellings" (ways of typing it).
  * 
  * In the use-case of this game, it is more helpful to think in the
  * reverse direction: As a map from typable-key-sequences to sets of
@@ -52,7 +53,7 @@ abstract class Lang {
     private readonly dict: LangSeqTreeNode;
 
     protected constructor(name: string, forwardDict: object) {
-        this.dict = new LangSeqTreeNode;
+        this.dict = new LangSeqTreeNode(null);
         // Write JSON data to my `dict`:
         for (const langChar in forwardDict) {
             this.dict.addCharMapping(langChar, forwardDict[langChar]);
@@ -63,9 +64,9 @@ abstract class Lang {
     /**
      * Return a random `LangChar` in this `Lang` whose corresponding
      * `LangSeq` is not a prefix of any `LangSeq` in `avoid`, and vice
-     * versa. They may share a common prefix as long as they are longer
-     * in length than the shared prefix, and they are not equal to one
-     * another.
+     * versa. They may share a common prefix as long as they are both
+     * longer in length than the shared prefix, and they are not equal
+     * to one another.
      * 
      * This method is called to shuffle the `LangChar` / `LangSeq` pair
      * at some `Tile` `A`. `avoid` should contain the `LangSeq`s from
@@ -83,7 +84,19 @@ abstract class Lang {
      *          when choosing a `LangChar` to return.
      */
     public getNonConflictingChar(avoid: Array<LangSeq>): LangCharSeqPair {
-        // TODO
+        // first sort in ascending order of length:
+        avoid = avoid.sort((seqA, seqB) => seqA.length - seqB.length);
+        let node: LangSeqTreeNode = this.dict;
+        const whitelist: Array<LangSeqTreeNode> = [];
+
+        // To word the spec closer to this implementation, we must find
+        // characters from nodes that are not descendants or ancestors
+        // of nodes for sequences to avoid.
+
+        // Whitelist includes level-1 nodes (single keyboard-letter) that
+        // are not the first letter of any sequences to avoid.
+
+        node.incrementNumHits();
         return null;
     }
 
