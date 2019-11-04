@@ -47,16 +47,23 @@ class Lang {
     /**
      * A reverse map from `LangSeq`s to `LangChar`s.
      */
-    private readonly dict: LangSeqTreeNode;
+    private readonly treeMap: LangSeqTreeNode;
+
+    /**
+     * A list of leaf nodes in `treeMap` sorted in ascending order by
+     * hit-count.
+     */
+    private readonly leafNodes: Array<LangSeqTreeNode>;
 
     protected constructor(name: string, forwardDict: Record<LangChar, LangSeq>) {
-        this.dict = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         // Write JSON data to my `dict`:
+        this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
+        this.leafNodes = this.treeMap.getLeafNodes();
+        this.reset();
     }
 
     public reset(): void {
-        // reset hit-counters:
-        this.dict.reset();
+        this.treeMap.reset();
     }
 
 
@@ -91,18 +98,45 @@ class Lang {
      */
     public getNonConflictingChar(avoid: Array<LangSeq>): LangCharSeqPair {
         // first sort in ascending order of length:
-        avoid = avoid.sort((seqA, seqB) => seqA.length - seqB.length);
-        let node: LangSeqTreeNode = this.dict;
-        const whitelist: Array<LangSeqTreeNode> = [];
+        avoid.sort((seqA, seqB) => seqA.length - seqB.length);
+        const whitelistedSubRoots: Array<LangSeqTreeNode> = [];
 
         // Wording the spec closer to this implementation: We must find
         // characters from nodes that are not descendants or ancestors
-        // of nodes for sequences to avoid.
+        // of nodes for sequences to avoid. We can be sure that none of
+        // the ancestors or descendants of avoid-nodes are avoid-nodes.
 
-        // Whitelist includes level-1 nodes (single keyboard-letter) that
-        // are not the first letter of any sequences to avoid.
+        // Take the first leaf node (don't remove it!), and if none of
+        // its parents are avoid-nodes, then, from the set of nodes
+        // including the leaf node and all its parents (minus the root),
+        // choose the node with the least actual/personal hit-count.
+        let nodeToHit: LangSeqTreeNode = null;
+        for (const leaf of this.leafNodes) {
+            const upstreamNodes: Array<LangSeqTreeNode> = leaf.andNonRootParents();
+            if (upstreamNodes.some(node => avoid.some(avoidSeq => avoidSeq.startsWith(node.sequence)))) {
+                // Cannot use any of the upstream nodes because they
+                // contain an avoid-node (a node with a LangSeq to avoid).
+                continue;
+            } else {
+                // Find the node with the lowest personal hit-count:
+                upstreamNodes.sort((nodeA, nodeB) => {
+                    return nodeA.personalHitCount - nodeB.personalHitCount;
+                });
+                nodeToHit = upstreamNodes[0];
+            }
+        }
+        if (nodeToHit === null) {
+            throw new Error(`Invariants guaranteeing that a LangSeq can
+                always be shufled in were not met.`
+            );
+        }
 
-        node.incrementNumHits();
+        // TODO: change this to a method that returns a random character
+        // from `node` and implicitly increments its hit-count.
+        nodeToHit.incrementNumHits();
+        this.leafNodes.sort((leafA, leafB) => {
+            return leafA.tricklingHitCount - leafB.tricklingHitCount;
+        });
         return null;
     }
 
