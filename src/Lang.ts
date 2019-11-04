@@ -113,16 +113,31 @@ class Lang {
         let nodeToHit: LangSeqTreeNode = null;
         for (const leaf of this.leafNodes) {
             const upstreamNodes: Array<LangSeqTreeNode> = leaf.andNonRootParents();
-            if (upstreamNodes.some(node => avoid.some(avoidSeq => avoidSeq.startsWith(node.sequence)))) {
-                // Cannot use any of the upstream nodes because they
-                // contain an avoid-node (a node with a LangSeq to avoid).
-                continue;
-            } else {
+            for (let i = 0; i < upstreamNodes.length; i++) {
+                const conflictSeq: LangSeq = avoid.find(avoidSeq => {
+                    return avoidSeq.startsWith(upstreamNodes[i].sequence);
+                });
+                if (conflictSeq !== undefined) {
+                    if (conflictSeq === upstreamNodes[i].sequence) {
+                        // Cannot use anything on this upstream path because
+                        // an avoid-node is directly inside it.
+                        upstreamNodes.splice(0);
+                    } else {
+                        // Found a node on an upstream path of an avoid-node.
+                        // Doesn't stop us from using what we've found so far.
+                        upstreamNodes.splice(i);
+                    }
+                    break;
+                }
+            }
+            if (upstreamNodes.length > 0) {
                 // Find the node with the lowest personal hit-count:
                 upstreamNodes.sort((nodeA, nodeB) => {
                     return nodeA.personalHitCount - nodeB.personalHitCount;
                 });
                 nodeToHit = upstreamNodes[0];
+                // Found a non-conflicting node upstream of a leaf with a low hit-count!
+                break;
             }
         }
         if (nodeToHit === null) {
