@@ -55,6 +55,7 @@ class Lang {
     }
 
     public reset(): void {
+        // reset hit-counters:
         this.dict.reset();
     }
 
