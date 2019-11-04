@@ -9,7 +9,6 @@
 abstract class Tile {
 
     readonly pos: Pos;
-    public occupantId: number;
     public scoreValue: number;
 
     /**
@@ -24,12 +23,13 @@ abstract class Tile {
         if (!(this.pos.equals(this.pos.round()))) {
             throw new TypeError("Tile position coordinates must be integers.");
         }
+        this.reset();
     }
 
     public reset(): void {
-        this.occupantId = null;
+        this.evictOccupant();
         this.scoreValue = 0;
-        this.setLangCharSeq(null, null);
+        this.setLangCharSeq(new LangCharSeqPair(null, null));
     }
 
 
@@ -40,7 +40,7 @@ abstract class Tile {
      * any neighbouring `Tile`s.
      */
     public visualBell(): void {
-        // nothing.
+        // does nothing by default.
     }
 
 
@@ -49,7 +49,15 @@ abstract class Tile {
         return this.occupantId === null;
     }
 
-    public abstract setLangCharSeq(char: LangChar, seq: LangSeq): void;
+    public evictOccupant(): void {
+        this.occupantId = null;
+    }
+
+    public abstract get occupantId(): number;
+
+    public abstract set occupantId(occupantId: number);
+
+    public abstract setLangCharSeq(charSeqPair: LangCharSeqPair): void;
 
     public abstract get langChar(): LangChar;
 
