@@ -13,6 +13,14 @@ class ClientGame extends Game {
     }
 
     /**
+     * @override `Game::reset`
+     */
+    public reset(): void {
+        // Bypass my direct parent's reset implementation.
+        Grid.prototype.reset.call(this);
+    }
+
+    /**
      * @implements `Grid::createTile`
      */
     public createTile(x: number, y: number): VisibleTile {

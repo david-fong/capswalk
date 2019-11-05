@@ -16,6 +16,7 @@ abstract class Game extends Grid {
 
     protected lang: Lang;
     private readonly allHumanPlayers: Array<HumanPlayer>;
+    private readonly allArtifPlayers: Array<ArtificialPlayer>;
 
     public constructor(height: number, width: number) {
         super(height, width);
@@ -24,6 +25,8 @@ abstract class Game extends Grid {
         this.lang = null;
 
         // TODO: setup allHumanPlayers?
+        this.allHumanPlayers = [];
+        this.allArtifPlayers = [];
     }
 
     /**
@@ -36,21 +39,24 @@ abstract class Game extends Grid {
     public reset(): void {
         super.reset();
 
+        // Reset hit-counters in the current language:
+        this.lang.reset();
+
         // Shuffle everything:
         this.grid.forEach(row => row.forEach(t => {
             this.shuffleLangCharSeqAt(t)
         }, this), this);
 
         // TODO: reset and respawn players:
-
-        // TODO: send the state of the entire grid to all clients? no.
-        // that's only for the server implementation.
+        this.allHumanPlayers.forEach(player => player.reset());
+        this.allArtifPlayers.forEach(player => player.reset());
     }
 
 
 
     /**
-     * Does not modify `tile`. This must be done externally.
+     * Does not modify `tile`. This must be done externally. Gets called
+     * by `::processMoveRequest`.
      * 
      * @param tile The `Tile` to shuffle their `LangChar`-`LangSeq` pair for.
      */
@@ -70,6 +76,7 @@ abstract class Game extends Grid {
      * @param destPos 
      */
     public processMoveRequest(playerId: number, destPos: Pos): void {
+        // TODO: get from artificial list for negative ID's.
         const player: Player = this.getHumanPlayer(playerId);
         const dest:   Tile   = this.getTileAt(destPos);
         if (dest.isOccupied()) {
