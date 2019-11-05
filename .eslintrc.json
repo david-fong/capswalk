@@ -5,12 +5,37 @@
     },
     "plugins": ["@typescript-eslint"],
     "rules": {
-        "@typescript-eslint/semi": ["error", "always"],
-        "@typescript-eslint/semi-spacing": ["error", {"before": false, "after": true}],
-        "@typescript-eslint/space-before-function-paren": ["error", {
+        "getter-return": "error",
+        "no-invalid-regexp": ["error", { "allowConstructorFlags": ["u", "y"] }],
+        "no-unreachable": "error",
+        "eqeqeq": ["error", "smart"],
+        "no-eval": "error",
+        "no-invalid-this": "error",
+        "no-throw-literal": "error",
+        "no-useless-catch": "error",
+        "yoda": ["error", "never", { "exceptRange": true }],
+        "semi-spacing": ["error", {"before": false, "after": true}],
+        "space-before-function-paren": ["error", {
             "anonymous": "never",
             "named": "never",
             "asyncArrow": "always"
-        }]
-    }
+        }],
+        
+        "semi": "off",
+        "@typescript-eslint/semi": ["error", "always"],
+        "camelcase": "off",
+        "@typescript-eslint/camelcase": ["error", { "properties": "always" }],
+        "@typescript-eslint/class-name-casing": { "allowUnderscorePrefix": true },
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-misused-new": ["error"]
+    },
+    "overrides": [
+        {
+            // enable the rule specifically for TypeScript files
+            "files": ["*.ts", "*.tsx"],
+            "rules": {
+                "@typescript-eslint/explicit-function-return-type": ["error", { "allowExpressions": true }]
+            }
+        }
+    ]
 }
