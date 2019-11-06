@@ -11,9 +11,13 @@
 
         "pretty": true,
         "extendedDiagnostics": true,
+
+        "allowJs": true,
+        "checkJs": true,
     },
     "exclude": [
-        "node_modules",
+        "build/",
+        "node_modules/",
         "**/node_modules/*",
     ]
 }

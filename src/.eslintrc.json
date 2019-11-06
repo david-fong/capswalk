@@ -1,9 +1,19 @@
 {
+    "root": true,
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "project": "./tsconfig.json"
+        "project": "./tsconfig.json",
+        "sourceType": "module"
     },
-    "plugins": ["@typescript-eslint"],
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "env": {
+        "es6": true
+    },
+
+
+
     "rules": {
         "getter-return": "error",
         "no-invalid-regexp": ["error", { "allowConstructorFlags": ["u", "y"] }],
@@ -25,7 +35,7 @@
         "@typescript-eslint/semi": ["error", "always"],
         "camelcase": "off",
         "@typescript-eslint/camelcase": ["error", { "properties": "always" }],
-        "@typescript-eslint/class-name-casing": { "allowUnderscorePrefix": true },
+        "@typescript-eslint/class-name-casing": ["error", { "allowUnderscorePrefix": true }],
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/no-misused-new": ["error"]
     },

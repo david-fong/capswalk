@@ -9,6 +9,8 @@
   "author": "David Fong (https://github.com/david-fong)",
   "repository": "github:david-fong/SnaKey-NTS",
   "private": true,
+  "type": "module",
+  "//": "use ECMA modules by default",
   "main": "src/server.js",
   "dependencies": {
     "express": "^4.17.1",
