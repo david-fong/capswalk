@@ -10,8 +10,14 @@
   "repository": "github:david-fong/SnaKey-NTS",
   "private": true,
   "type": "module",
-  "//": "use ECMA modules by default",
-  "main": "src/server.js",
+  "//": [
+    "use ECMA modules by default",
+    "https://nodejs.org/api/esm.html#esm_enabling"
+  ],
+  "main": "build/src/index.js",
+  "scripts": {
+    "start": "node --experimental-modules build/src/server/index.js"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.2.0",

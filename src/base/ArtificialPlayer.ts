@@ -1,10 +1,12 @@
+import { Player } from "base/Player";
+import { Tile } from "base/Tile";
 
 /**
  * 
  * 
  * @extends Player
  */
-abstract class ArtificialPlayer extends Player {
+export abstract class ArtificialPlayer extends Player {
 
     protected scheduledMovementCallbackId: number;
 

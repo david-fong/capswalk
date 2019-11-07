@@ -1,5 +1,8 @@
+import { LangChar, LangSeq, LangCharSeqPair } from "src/Lang";
+import { Tile } from "src/base/Tile";
 
 /**
+ * Implicitly handles visuals with help from CSS.
  * 
  * Layers:
  * 0. Invisible cell layer (opaque on visual bell)
@@ -10,24 +13,48 @@
  * 
  * @extends Tile
  */
-class VisibleTile extends Tile {
+export class VisibleTile extends Tile {
 
     private _occupantId: number;
 
-    public  readonly tileTableCellElem: HTMLTableCellElement;
+    public  readonly tileCellElem:      HTMLTableCellElement;
     private readonly playerDivElem:     HTMLDivElement;
     private readonly langCharDivElem:   HTMLDivElement;
     private readonly langSeqDivElem:    HTMLDivElement;
 
     public constructor(x: number, y: number) {
         super(x, y);
+
+        const tCell: HTMLTableCellElement = new HTMLTableCellElement();
+        {
+            tCell.className = "tile";
+            {
+                const pDiv: HTMLDivElement = new HTMLDivElement();
+                pDiv.className = "tile__player";
+                tCell.appendChild(pDiv);
+                this.playerDivElem = pDiv;
+            } {
+                const cDiv: HTMLDivElement = new HTMLDivElement();
+                cDiv.className = "tile__char";
+                tCell.appendChild(cDiv);
+                this.langCharDivElem = cDiv;
+            } {
+                const sDiv: HTMLDivElement = new HTMLDivElement();
+                sDiv.className = "tile__seq";
+                tCell.appendChild(sDiv);
+                this.langSeqDivElem = sDiv;
+            }
+        }
+        this.tileCellElem = tCell;
     }
+
+
 
     /**
      * @override
      */
     public visualBell(): void {
-        ; // TODO
+        this.tileCellElem; // TODO
     }
 
 

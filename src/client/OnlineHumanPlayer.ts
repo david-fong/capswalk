@@ -1,10 +1,13 @@
+import { Pos } from "src/Pos";
+import { ClientGame } from "./ClientGame";
+import { HumanPlayer } from "src/base/HumanPlayer";
 
 /**
  * 
  * 
  * @extends HumanPlayer
  */
-class OnlineHumanPlayer extends HumanPlayer {
+export class OnlineHumanPlayer extends HumanPlayer {
 
     public constructor(game: ClientGame, idNumber: number) {
         super(game, idNumber);

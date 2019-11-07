@@ -1,3 +1,10 @@
+import { Lang, LangCharSeqPair } from "src/Lang";
+import { Pos } from "src/Pos";
+import { Tile } from "src/base/Tile";
+import { Grid } from "src/base/Grid";
+import { Player } from "src/base/Player";
+import { HumanPlayer } from "src/base/HumanPlayer";
+import { ArtificialPlayer } from "src/base/ArtificialPlayer";
 
 /**
  * 
@@ -12,9 +19,9 @@
  * 
  * @extends Grid
  */
-abstract class Game extends Grid {
+export abstract class Game extends Grid {
 
-    protected lang: Lang;
+    private lang: Lang;
     private readonly allHumanPlayers: Array<HumanPlayer>;
     private readonly allArtifPlayers: Array<ArtificialPlayer>;
 
@@ -32,7 +39,7 @@ abstract class Game extends Grid {
     /**
      * TODO: update this doc as behaviour is added.
      * 
-     * Reset players.
+     * Reset the grid and players.
      * 
      * @override `Grid::reset`
      */
@@ -44,7 +51,7 @@ abstract class Game extends Grid {
 
         // Shuffle everything:
         this.grid.forEach(row => row.forEach(t => {
-            this.shuffleLangCharSeqAt(t)
+            this.shuffleLangCharSeqAt(t);
         }, this), this);
 
         // TODO: reset and respawn players:
@@ -80,7 +87,7 @@ abstract class Game extends Grid {
         const player: Player = this.getHumanPlayer(playerId);
         const dest:   Tile   = this.getTileAt(destPos);
         if (dest.isOccupied()) {
-            throw new Error("Only one player can occupy a tile at a time.")
+            throw new Error("Only one player can occupy a tile at a time.");
         }
         if (player instanceof HumanPlayer) {
             ;
@@ -134,7 +141,7 @@ abstract class Game extends Grid {
 /**
  * 
  */
-class PlayerMovementEvent {
+export class PlayerMovementEvent {
 
     public constructor(
         public readonly playerId: number,

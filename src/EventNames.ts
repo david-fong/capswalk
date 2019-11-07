@@ -3,17 +3,17 @@
  * Global definitions of upstream event names.
  * Ie. events directed to the server.
  */
-class UpstreamEventNames {
+export class UpstreamEventNames {
 
     /**
      * Player movement.
      */
-    public static readonly PLAYER_MOVEMENT = "player movement";
+    public static readonly PLAYER_MOVEMENT = <const>"player movement";
 
     /**
      * Language change.
      */
-    public static readonly LANGUAGE_CHANGE = "language change";
+    public static readonly LANGUAGE_CHANGE = <const>"language change";
 
 }
 
@@ -25,16 +25,16 @@ class UpstreamEventNames {
  * Global definitions of downstream event names.
  * Ie. events directed to the client.
  */
-class DownstreamEventNames {
+export class DownstreamEventNames {
 
     /**
      * Player movement.
      */
-    public static readonly PLAYER_MOVEMENT = "player movement";
+    public static readonly PLAYER_MOVEMENT = <const>"player movement";
 
     /**
      * Language change.
      */
-    public static readonly LANGUAGE_CHANGE = "language change";
+    public static readonly LANGUAGE_CHANGE = <const>"language change";
 
 }

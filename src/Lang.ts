@@ -1,21 +1,23 @@
+import { LangSeqTreeNode } from "src/LangSeqTreeNode";
+import { Defs } from "src/Defs";
 
 /**
  * An atomic unit in a written language that constitutes a single
  * character.
  */
-type LangChar = string;
+export type LangChar = string;
 
 /**
  * Should be typable on a generic keyboard, and should not contain any
  * white-space-type characters.
  */
-type LangSeq = string;
+export type LangSeq = string;
 
 /**
  * A key-value pair containing a `LangChar` and its corresponding
  * `LangSeq`.
  */
-class LangCharSeqPair {
+export class LangCharSeqPair {
     public constructor(
         public readonly char: LangChar,
         public readonly seq:  LangSeq,
@@ -37,7 +39,7 @@ class LangCharSeqPair {
  * key-sequences). This game does not require support for retreiving
  * the `LangSeq` corresponding to a `LangChar`.
  */
-class Lang {
+export class Lang {
 
     /**
      * The name of this language.
@@ -45,20 +47,34 @@ class Lang {
     public readonly name: string;
 
     /**
-     * A reverse map from `LangSeq`s to `LangChar`s.
+     * A "reverse" map from `LangSeq`s to `LangChar`s.
      */
-    private readonly treeMap: LangSeqTreeNode;
+    protected readonly treeMap: LangSeqTreeNode;
 
     /**
      * A list of leaf nodes in `treeMap` sorted in ascending order by
-     * hit-count.
+     * hit-count. Entries should never be removed or added. They should
+     * always be sorted in ascending order of `tricklingHitCount`.
      */
-    private readonly leafNodes: Array<LangSeqTreeNode>;
+    protected readonly leafNodes: Array<LangSeqTreeNode>;
 
     protected constructor(name: string, forwardDict: Record<LangChar, LangSeq>) {
         // Write JSON data to my `dict`:
         this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes = this.treeMap.getLeafNodes();
+
+        // TODO: This is implementation specific. If the code is ever
+        // made to handle more complex connections (Ex. hexagon tiling
+        // or variable neighbours through graph structures), then this
+        // must change to account for that.
+        if (this.leafNodes.length < Defs.MAX_NUM_U2NTS) {
+            throw new Error(`The provided mappings composing the current
+                Lang-under-construction are not sufficient to ensure that
+                a shuffling operation will always be able to find a safe
+                candidate to use as a replacement. Please see the spec
+                for ${Lang.prototype.getNonConflictingChar.name}.`
+            );
+        }
         this.reset();
     }
 
@@ -96,11 +112,7 @@ class Lang {
      * @param avoid A collection of `LangSeq`s to avoid conflicts with
      *          when choosing a `LangChar` to return.
      */
-    public getNonConflictingChar(avoid: Array<LangSeq>): LangCharSeqPair {
-        // first sort in ascending order of length:
-        avoid.sort((seqA, seqB) => seqA.length - seqB.length);
-        const whitelistedSubRoots: Array<LangSeqTreeNode> = [];
-
+    public getNonConflictingChar(avoid: ReadonlyArray<LangSeq>): LangCharSeqPair {
         // Wording the spec closer to this implementation: We must find
         // characters from nodes that are not descendants or ancestors
         // of nodes for sequences to avoid. We can be sure that none of
@@ -131,28 +143,31 @@ class Lang {
                 }
             }
             if (upstreamNodes.length > 0) {
+                // Found a non-conflicting upstream node.
                 // Find the node with the lowest personal hit-count:
                 upstreamNodes.sort((nodeA, nodeB) => {
                     return nodeA.personalHitCount - nodeB.personalHitCount;
                 });
                 nodeToHit = upstreamNodes[0];
-                // Found a non-conflicting node upstream of a leaf with a low hit-count!
                 break;
             }
         }
         if (nodeToHit === null) {
+            // Should never reach here because there is a check in the
+            // constructor checking for this invariant.
             throw new Error(`Invariants guaranteeing that a LangSeq can
-                always be shufled in were not met.`
+                always be shufled-in were not met.`
             );
         }
 
         // TODO: change this to a method that returns a random character
         // from `node` and implicitly increments its hit-count.
+        const chosenPair: LangCharSeqPair = null;
         nodeToHit.incrementNumHits();
         this.leafNodes.sort((leafA, leafB) => {
             return leafA.tricklingHitCount - leafB.tricklingHitCount;
         });
-        return null;
+        return chosenPair;
     }
 
 }

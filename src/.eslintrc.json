@@ -7,6 +7,7 @@
     },
     "plugins": [
         "@typescript-eslint"
+        //"eslint-plugin-tsdoc"
     ],
     "env": {
         "es6": true
@@ -15,6 +16,7 @@
 
 
     "rules": {
+        // regular javascript linting:
         "getter-return": "error",
         "no-invalid-regexp": ["error", { "allowConstructorFlags": ["u", "y"] }],
         "no-unreachable": "error",
@@ -30,7 +32,11 @@
             "named": "never",
             "asyncArrow": "always"
         }],
-        
+
+        // typescript docs linting:
+        //"tsdoc/syntax": "error",
+
+        // typescript linting:
         "semi": "off",
         "@typescript-eslint/semi": ["error", "always"],
         "camelcase": "off",

@@ -1,3 +1,5 @@
+import { LangSeq, LangChar, LangCharSeqPair } from "src/Lang";
+import { Pos } from "src/Pos";
 
 /**
  * 
@@ -6,7 +8,7 @@
  * no knowledge of their context. Their internals are all managed by
  * their host `Game` object through method calls.
  */
-abstract class Tile {
+export abstract class Tile {
 
     readonly pos: Pos;
     public scoreValue: number;

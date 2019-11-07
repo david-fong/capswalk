@@ -1,21 +1,26 @@
 
 /**
  * A position in 2-dimensional space. values may be non-integer values.
- * Immutable. All [Pos] objects returned by operations are new objects.
+ * 
+ * Immutable. All `Pos` objects returned by operations are new objects.
+ * 
  * Norm accessors measure distance from the origin (0, 0).
  */
-class Pos {
-    readonly x: number;
-    readonly y: number;
+export class Pos {
 
-    public constructor(x, y) {
+    public static readonly ORIGIN: Pos = new Pos(0, 0);
+
+    public readonly x: number;
+    public readonly y: number;
+
+    public constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
     }
 
 
 
-    equals(other: Pos): boolean {
+    public equals(other: Pos): boolean {
         return this.x === other.x && this.y === other.y;
     }
 
@@ -57,7 +62,7 @@ class Pos {
     }
 
     /**
-     * subtract [other] from [this].
+     * subtract `other` from `this`.
      */
     public sub(other: Pos): Pos {
         return new Pos(this.x - other.x, this.y - other.y);
@@ -71,17 +76,17 @@ class Pos {
         return new Pos(
             Math.round(scalar * this.x),
             Math.round(scalar * this.y),
-        )
+        );
     }
 
 
 
     /**
-     * Creates a [Pos] with random, integer valued [x] and [y] coordinates
+     * Creates a `Pos` with random, integer valued `x` and `y` coordinates
      * within the specified upper limits and within the first quadrant.
      * 
      * @param boundX An exclusive bound on x-coordinate.
-     * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to [boundX].
+     * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to `boundX`.
      */
     public static randomQ1(boundX: number, boundY: number = boundX): Pos {
         return new Pos(
@@ -89,4 +94,5 @@ class Pos {
             Math.round(boundY * Math.random()),
         );
     }
+
 }

@@ -2,14 +2,18 @@
     "compilerOptions": {
         "target": "es5",
         "lib": ["es6", "dom", "es2019.array",],
-        "module": "commonjs",
+        "module": "ES6",
+
+        "baseUrl": "./",
         "rootDir": "./",
         "outDir": "./build/",
+        "sourceMap": true,
 
         "removeComments": true,
         "alwaysStrict": true,
 
         "pretty": true,
+        //"traceResolution": true,
         "extendedDiagnostics": true,
 
         "allowJs": true,

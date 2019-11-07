@@ -1,3 +1,7 @@
+import { LangSeq } from "Lang";
+import { Tile } from "src/base/Tile";
+import { Game } from "base/Game";
+import { Player } from "base/Player";
 
 /**
  * Documentation will refer to the human controlling a `HumanPlayer`
@@ -5,21 +9,23 @@
  * 
  * @extends Player
  */
-abstract class HumanPlayer extends Player {
+export abstract class HumanPlayer extends Player {
 
     protected _seqBuffer: LangSeq;
 
     public constructor(game: Game, idNumber: number) {
         super(game, idNumber);
         if (this.idNumber < 0) {
-            throw new Error
+            throw new Error(`Id number for a human-operated Player must be
+                non-negative. Was passed an idNumber equal to ${idNumber}.`
+            );
         }
     }
 
     /**
-     * @override
+     * @override `Player::reset`
      */
-    public reset() {
+    public reset(): void {
         super.reset();
         this._seqBuffer = "";
     }
@@ -36,7 +42,7 @@ abstract class HumanPlayer extends Player {
      * 
      * @param event The object describing the `KeyboardEvent`.
      */
-    public processClientInput(event: KeyboardEvent) {
+    public processClientInput(event: KeyboardEvent): void {
         if (false) {
             ;
         } else if (this._isAlive) {
@@ -49,7 +55,7 @@ abstract class HumanPlayer extends Player {
      * 
      * @param key The pressed typable key as a string.
      */
-    public seqBufferAcceptKey(key: string) {
+    public seqBufferAcceptKey(key: string): void {
         
         const unoccupiedNeighbouringTiles: Array<Tile> = this.getUNT();
         if (unoccupiedNeighbouringTiles.length === 0) {

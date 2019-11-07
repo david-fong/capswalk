@@ -1,18 +1,21 @@
-import { Server } from "http";
 import { Application } from "express";
+import { Server } from "http";
+import { Game, PlayerMovementEvent } from "src/base/Game";
+import { ServerTile } from "./ServerTile";
 
 /**
  * 
  * 
  * @extends Game
  */
-class ServerGame extends Game {
+export class ServerGame extends Game {
 
-    // TODO: should visibilities change?
     protected readonly port: number;
     protected readonly app:  Application;
     protected readonly http: Server;
     protected readonly io:   SocketIO.Server;
+
+    protected readonly hostPwd: string;
 
     public constructor(port: number, height: number, width: number = height) {
         super(height, width);
@@ -20,6 +23,8 @@ class ServerGame extends Game {
         this.app    = require("express")();
         this.http   = require("http").createServer(this.app);
         this.io     = require("socket.io")(this.http);
+
+        this.hostPwd = __dirname;
 
         // TODO bind ::processMoveRequest to event notification from clients.
 

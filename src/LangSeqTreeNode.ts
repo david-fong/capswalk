@@ -1,3 +1,4 @@
+import { LangSeq, LangChar } from "src/Lang";
 
 /**
  * No `LangSeqTreeNode`s mapped in the `children` field have an empty
@@ -14,10 +15,10 @@
  * 1. call `::finalize` on the root to create a flattened version of the tree
  * 1. call reset on the flattened tree's root
  */
-class LangSeqTreeNode {
+export class LangSeqTreeNode {
 
     public readonly sequence:   LangSeq;
-    public readonly characters: Array<LangChar>;
+    public readonly characters: ReadonlyArray<LangChar>;
     public readonly parent:     LangSeqTreeNode; // `null` for root node.
     public readonly children:   Array<LangSeqTreeNode>; // empty for leaf nodes.
     private _numHits: number;
@@ -35,7 +36,7 @@ class LangSeqTreeNode {
                 reverseDict.set(forwardDict[char], [char,]);
             }
         }
-        const reverseSortedDict: Array<[LangSeq, Array<LangChar>,]> = Array
+        const reverseSortedDict: ReadonlyArray<[LangSeq, Array<LangChar>,]> = Array
             .from(reverseDict)
           //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
             .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length);
@@ -54,7 +55,7 @@ class LangSeqTreeNode {
     private constructor(
         parent: LangSeqTreeNode,
         sequence: LangSeq,
-        characters: Array<LangChar>,
+        characters: ReadonlyArray<LangChar>,
     ) {
         this.sequence   = sequence;
         this.parent     = parent;
@@ -91,15 +92,15 @@ class LangSeqTreeNode {
      */
     private addCharMapping(seq: LangSeq, chars: Array<LangChar>): void {
         if (seq.length === 0) {
-            throw new Error("Mapping sequence must not be the empty string.")
+            throw new Error("Mapping sequence must not be the empty string.");
         } else if (chars.length === 0) {
-            throw new Error("Must not make mapping without written characters.")
+            throw new Error("Must not make mapping without written characters.");
         }
         let node: LangSeqTreeNode;
         let childNode: LangSeqTreeNode = this;
         while (childNode !== undefined) {
             node = childNode;
-            childNode = node.children.find(child => seq.startsWith(child.sequence))
+            childNode = node.children.find(child => seq.startsWith(child.sequence));
         }
         if (node.sequence === seq) {
             throw new Error(`Mappings for all written-characters with a common

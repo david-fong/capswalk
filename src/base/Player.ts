@@ -1,8 +1,11 @@
+import { Pos } from "src/Pos";
+import { Tile } from "src/base/Tile";
+import { Game } from "src/base/Game";
 
 /**
  * 
  */
-abstract class Player {
+export abstract class Player {
 
     readonly game: Game;
 

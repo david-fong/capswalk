@@ -1,10 +1,12 @@
+import { VisibleTile } from "./VisibleTile";
+import { Game } from "src/base/Game";
 
 /**
  * 
  * 
  * @extends Game
  */
-class OfflineGame extends Game {
+export class OfflineGame extends Game {
 
     public constructor(height: number, width: number = height) {
         super(height, width);
