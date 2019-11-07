@@ -4,9 +4,9 @@ import { Pos } from "src/Pos";
 /**
  * 
  * 
- * As an implementation choice, `Tile`s are dumb. That is, they have
+ * As an implementation choice, Tiles are dumb. That is, they have
  * no knowledge of their context. Their internals are all managed by
- * their host `Game` object through method calls.
+ * their host {@link Game} object through method calls.
  */
 export abstract class Tile {
 
@@ -15,8 +15,8 @@ export abstract class Tile {
 
     /**
      * 
-     * @param x The horizontal coordinate of this `Tile` in its host `Grid`.
-     * @param y The   vertical coordinate of this `Tile` in its host `Grid`.
+     * @param x - The horizontal coordinate of this Tile in its host {@link Grid}.
+     * @param y - The   vertical coordinate of this Tile in its host {@link Grid}.
      * 
      * @throws `TypeError` if `x` or `y` are not integer values.
      */
@@ -37,9 +37,9 @@ export abstract class Tile {
 
 
     /**
-     * Called, for example, when a `Player` on this `Tile` provides
-     * input that did not work to complete their `seqBuffer` against
-     * any neighbouring `Tile`s.
+     * Called, for example, when a {@link Player} on this Tile provides
+     * input that did not work to complete their {@link Player#seqBuffer}
+     * against any neighbouring Tiles.
      */
     public visualBell(): void {
         // does nothing by default.

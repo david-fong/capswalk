@@ -18,7 +18,7 @@ export class ClientGame extends Game {
     }
 
     /**
-     * @override `Game::reset`
+     * @override {@link Game#reset}
      */
     public reset(): void {
         // Bypass my direct parent's reset implementation.
@@ -26,18 +26,18 @@ export class ClientGame extends Game {
     }
 
     /**
-     * @implements `Grid::createTile`
+     * @override {@link Grid#createTile}
      */
     public createTile(x: number, y: number): VisibleTile {
         return new VisibleTile(x, y);
     }
 
     /**
-     * @override `Game::processMoveExecute`
+     * @override {@link Game#processMoveExecute}
      * @throws `TypeError` Unconditionally.
      */
     public processMoveRequest(playerId: number, dest: Tile | Pos): never {
-        throw new TypeError("This operation unsupported for the ClientGame class.")
+        throw new TypeError("This operation unsupported for the ClientGame class.");
     }
 
 }

@@ -14,7 +14,7 @@ export class OnlineHumanPlayer extends HumanPlayer {
     }
 
     /**
-     * @implements `Player::makeMovementRequest`
+     * @override {@link Player#makeMovementRequest}
      */
     public makeMovementRequest(dest: Pos): void {
         // TODO send request to server.

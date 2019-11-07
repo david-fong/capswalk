@@ -1,7 +1,8 @@
-import { Application } from "express";
-import { Server } from "http";
+import * as app from "express";
+import * as http from "http";
+import * as io from "socket.io";
 import { Game, PlayerMovementEvent } from "src/base/Game";
-import { ServerTile } from "./ServerTile";
+import { ServerTile } from "src/server/ServerTile";
 
 /**
  * 
@@ -11,8 +12,8 @@ import { ServerTile } from "./ServerTile";
 export class ServerGame extends Game {
 
     protected readonly port: number;
-    protected readonly app:  Application;
-    protected readonly http: Server;
+    protected readonly app:  app.Application;
+    protected readonly http: http.Server;
     protected readonly io:   SocketIO.Server;
 
     protected readonly hostPwd: string;
@@ -48,18 +49,19 @@ export class ServerGame extends Game {
     }
 
     /**
-     * @implements `Grid::createTile`
+     * @override {@link Grid#createTile}
      */
     public createTile(x: number, y: number): ServerTile {
         return new ServerTile(x, y);
     }
 
     /**
-     * @implements `Game::processMoveExecute`
+     * @override {@link Game#processMoveExecute}
      */
     protected processMoveExecute(desc: PlayerMovementEvent): void {
         super.processMoveExecute(desc);
         // TODO: emit an event to all clients.
+        //this.io.emit;
     }
 
 }

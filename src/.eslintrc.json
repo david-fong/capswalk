@@ -6,15 +6,17 @@
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint"
-        //"eslint-plugin-tsdoc"
+        "@typescript-eslint",
+        "jsdoc"
     ],
     "env": {
         "es6": true
     },
 
 
-
+    "extends": [
+        "plugin:jsdoc/recommended"
+    ],
     "rules": {
         // regular javascript linting:
         "getter-return": "error",
@@ -32,9 +34,13 @@
             "named": "never",
             "asyncArrow": "always"
         }],
-
-        // typescript docs linting:
-        //"tsdoc/syntax": "error",
+        "comma-dangle": ["error", {
+            "arrays": "always",
+            "objects": "always-multiline",
+            "imports": "always-multiline",
+            "exports": "always-multiline",
+            "functions": "only-multiline"
+        }],
 
         // typescript linting:
         "semi": "off",
@@ -50,8 +56,21 @@
             // enable the rule specifically for TypeScript files
             "files": ["*.ts", "*.tsx"],
             "rules": {
+                "jsdoc/require-param-type": 0,
+                "jsdoc/require-returns-type": 0,
                 "@typescript-eslint/explicit-function-return-type": ["error", { "allowExpressions": true }]
             }
         }
-    ]
+    ],
+    "settings": {
+        "jsdoc": {
+            "mode": "typescript",
+            "tagNamePreference": {
+                "augments": {
+                  "message": "@extends is to be used over @augments as it is more evocative of classes than @augments",
+                  "replacement": "extends"
+                }
+            }
+        }
+    }
 }

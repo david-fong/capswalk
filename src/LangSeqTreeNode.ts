@@ -8,12 +8,6 @@ import { LangSeq, LangChar } from "src/Lang";
  * 
  * All non-root nodes have a `sequence` that is prefixed by their parent's
  * `sequence`, and a non-empty `characters` collection.
- * 
- * Implementation note: to create an instance:
- * 1. create a root node
- * 1. add mappings from `LangChar`s to `LangSeq`s to the root
- * 1. call `::finalize` on the root to create a flattened version of the tree
- * 1. call reset on the flattened tree's root
  */
 export class LangSeqTreeNode {
 
@@ -24,7 +18,8 @@ export class LangSeqTreeNode {
     private _numHits: number;
 
     /**
-     * 
+     * @param forwardDict - 
+     * @returns The root node of a new tree map.
      */
     static CREATE_TREE_MAP(forwardDict: Record<LangChar, LangSeq>): LangSeqTreeNode {
         // Reverse the map:
@@ -48,7 +43,8 @@ export class LangSeqTreeNode {
             rootNode.addCharMapping(...mapping);
         }
         rootNode.finalize();
-        rootNode.reset();
+        // reset will be called automatically by `Lang`.
+        //rootNode.reset();
         return rootNode;
     }
 
@@ -103,9 +99,9 @@ export class LangSeqTreeNode {
             childNode = node.children.find(child => seq.startsWith(child.sequence));
         }
         if (node.sequence === seq) {
-            throw new Error(`Mappings for all written-characters with a common
-                corresponding typable-sequence should be registered together,
-                but an existing mapping for the sequence \"${seq}\" was found.`
+            throw new Error(`Mappings for all written-characters with a common`
+                + `corresponding typable-sequence should be registered together,`
+                + `but an existing mapping for the sequence \"${seq}\" was found.`
             );
         }
         node.children.push(new LangSeqTreeNode(node, seq, chars));

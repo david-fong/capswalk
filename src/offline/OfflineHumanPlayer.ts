@@ -1,5 +1,5 @@
 import { Pos } from "src/Pos";
-import { OfflineGame } from "./OfflineGame";
+import { OfflineGame } from "src/offline/OfflineGame";
 import { HumanPlayer } from "src/base/HumanPlayer";
 
 /**
@@ -20,7 +20,7 @@ export class OfflineHumanPlayer extends HumanPlayer {
      * JavaScript engine as the Operator's player. We can make a direct
      * request to the Game Manager to process the movement request.
      * 
-     * @implements `Player::makeMovementRequest`
+     * @override {@link Player#makeMovementRequest}
      */
     public makeMovementRequest(dest: Pos): void {
         this.game.processMoveRequest(this.idNumber, dest);

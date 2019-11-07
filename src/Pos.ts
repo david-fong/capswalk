@@ -1,6 +1,6 @@
 
 /**
- * A position in 2-dimensional space. values may be non-integer values.
+ * A position in 2-dimensional space. Values may be non-integer values.
  * 
  * Immutable. All `Pos` objects returned by operations are new objects.
  * 
@@ -82,7 +82,7 @@ export class Pos {
 
 
     /**
-     * Creates a `Pos` with random, integer valued `x` and `y` coordinates
+     * @returns A `Pos` with random, integer valued `x` and `y` coordinates
      * within the specified upper limits and within the first quadrant.
      * 
      * @param boundX An exclusive bound on x-coordinate.

@@ -1,5 +1,5 @@
-import { Player } from "base/Player";
-import { Tile } from "base/Tile";
+import { Player } from "src/base/Player";
+import { Tile } from "src/base/Tile";
 
 /**
  * 

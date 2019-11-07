@@ -7,12 +7,15 @@ import { Game } from "src/base/Game";
  */
 export abstract class Player {
 
+    /**
+     * The game object that this player belongs to.
+     */
     readonly game: Game;
 
     /**
-     * An integer value unique to this `Player` in this `game`. If
-     * this `Player` is human-controlled, this value is non-negative,
-     * and otherwise, it is negative.
+     * An integer value unique to this {@link Player} in this {@link Game}.
+     * If this {@link Player} is human-controlled, this value is non-
+     * negative, and otherwise, it is negative.
      */
     readonly     idNumber:  number;
     protected   _isAlive:   boolean;
@@ -37,11 +40,16 @@ export abstract class Player {
     /**
      * Send a descriptor of the movement request to the Game Manager.
      * 
-     * @param dest 
+     * @param dest - 
+     * 
+     * @throws `Error` if `dest` is occupied by another {@link Player}.
      */
     public abstract makeMovementRequest(dest: Pos): void;
 
     public moveTo(dest: Tile): void {
+        if (dest.isOccupied()) {
+            throw new Error("Only one player can occupy a tile at a time.");
+        }
         // Move off of current host `Tile`:
         this._hostTile.evictOccupant();
 

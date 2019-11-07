@@ -8,7 +8,7 @@ import { Defs } from "src/Defs";
 export type LangChar = string;
 
 /**
- * Should be typable on a generic keyboard, and should not contain any
+ * Should be typable on a QWERTY keyboard, and should not contain any
  * white-space-type characters.
  */
 export type LangSeq = string;
@@ -68,11 +68,11 @@ export class Lang {
         // or variable neighbours through graph structures), then this
         // must change to account for that.
         if (this.leafNodes.length < Defs.MAX_NUM_U2NTS) {
-            throw new Error(`The provided mappings composing the current
-                Lang-under-construction are not sufficient to ensure that
-                a shuffling operation will always be able to find a safe
-                candidate to use as a replacement. Please see the spec
-                for ${Lang.prototype.getNonConflictingChar.name}.`
+            throw new Error(`The provided mappings composing the current`
+                + `Lang-under-construction are not sufficient to ensure that`
+                + `a shuffling operation will always be able to find a safe`
+                + `candidate to use as a replacement. Please see the spec`
+                + `for ${Lang.prototype.getNonConflictingChar.name}.`
             );
         }
         this.reset();
@@ -85,29 +85,29 @@ export class Lang {
 
 
     /**
-     * Return a random `LangChar` in this `Lang` whose corresponding
+     * @returns a random `LangChar` in this Lang whose corresponding
      * `LangSeq` is not a prefix of any `LangSeq` in `avoid`, and vice
      * versa. They may share a common prefix as long as they are both
      * longer in length than the shared prefix, and they are not equal
      * to one another.
      * 
      * This method is called to shuffle the `LangChar` / `LangSeq` pair
-     * at some `Tile` `A`. `avoid` should contain the `LangSeq`s from
-     * all `Tile`s reachable by a human `Player` occupying a `Tile` `B`
-     * from which they can also reach `A`
+     * at some {@link Tile} `A`. `avoid` should contain the `LangSeq`s
+     * from all {@link Tile}s reachable by a human {@link Player} occupying
+     * a {@link Tile} `B` from which they can also reach `A`
      * 
-     * In order for this `Lang` to satisfy these constraints, it must
+     * In order for this Lang to satisfy these constraints, it must
      * be true that the number of leaf nodes in this tree-structure must
      * `avoid` argument.
      * 
-     * In this implementation, a human `Player` can only reach a `Tile`
-     * whose `pos` has an `infNorm` of `1` from that of the `Tile` they
-     * are currently occupying. That is, `avoid` contains `LangSeq`s
-     * from all `Tile`s with an `infNorm` <= `2` from the `Tile` to
-     * shuffle (not including itself). This means that here, the size of
-     * `avoid` is always bounded by `(2*2 + 1)^2 - 1 == 24`. Using the
-     * English alphabet (26 typable-letters), this requirement is met
-     * by a hair.
+     * In this implementation, a human {@link Player} can only reach a
+     * {@link Tile} whose {@link Tile#pos} has an `infNorm` of `1` from
+     * that of the {@link Tile} they are currently occupying. That is,
+     * `avoid` contains `LangSeq`s from all {@link Tile}s with an `infNorm`
+     * <= `2` from the {@link Tile} to shuffle (not including itself).
+     * This means that here, the size of `avoid` is always bounded by
+     * `(2*2 + 1)^2 - 1 == 24`. Using the English alphabet (26 typable-
+     * letters), this requirement is met by a hair.
      * 
      * @param avoid A collection of `LangSeq`s to avoid conflicts with
      *          when choosing a `LangChar` to return.
@@ -155,8 +155,8 @@ export class Lang {
         if (nodeToHit === null) {
             // Should never reach here because there is a check in the
             // constructor checking for this invariant.
-            throw new Error(`Invariants guaranteeing that a LangSeq can
-                always be shufled-in were not met.`
+            throw new Error(`Invariants guaranteeing that a LangSeq can`
+                + `always be shufled-in were not met.`
             );
         }
 

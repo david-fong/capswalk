@@ -1,11 +1,11 @@
-import { LangSeq } from "Lang";
+import { LangSeq, Lang } from "src/Lang";
 import { Tile } from "src/base/Tile";
 import { Game } from "base/Game";
 import { Player } from "base/Player";
 
 /**
- * Documentation will refer to the human controlling a `HumanPlayer`
- * as its 'Operator'.
+ * Documentation will refer to the human controlling a {@link HumanPlayer}
+ * as its "Operator".
  * 
  * @extends Player
  */
@@ -16,14 +16,14 @@ export abstract class HumanPlayer extends Player {
     public constructor(game: Game, idNumber: number) {
         super(game, idNumber);
         if (this.idNumber < 0) {
-            throw new Error(`Id number for a human-operated Player must be
-                non-negative. Was passed an idNumber equal to ${idNumber}.`
+            throw new Error(`Id number for a human-operated Player must be`
+                + `non-negative. Was passed an idNumber equal to ${idNumber}.`
             );
         }
     }
 
     /**
-     * @override `Player::reset`
+     * @override {@link Player#reset}
      */
     public reset(): void {
         super.reset();
@@ -40,7 +40,7 @@ export abstract class HumanPlayer extends Player {
      * other task-relevant callbacks until all critical operations are
      * complete).
      * 
-     * @param event The object describing the `KeyboardEvent`.
+     * @param event - The object describing the `KeyboardEvent`.
      */
     public processClientInput(event: KeyboardEvent): void {
         if (false) {
@@ -53,7 +53,7 @@ export abstract class HumanPlayer extends Player {
 
     /**
      * 
-     * @param key The pressed typable key as a string.
+     * @param key - The pressed typable key as a string.
      */
     public seqBufferAcceptKey(key: string): void {
         
@@ -72,6 +72,8 @@ export abstract class HumanPlayer extends Player {
         ) {
             // look for the longest suffixing substring of [newSeqBuffer]
             // that is a prefixing substring of any UNT's.
+            // TODO: change this to make it always be the prefix of a seq
+            // in their game's lang- not just of UNT's.
             const matchletTiles: Array<Tile> = unoccupiedNeighbouringTiles
                     .filter(t => t.langSeq.startsWith(newSeqBuffer));
             Object.freeze(matchletTiles);
@@ -101,6 +103,10 @@ export abstract class HumanPlayer extends Player {
 
     public get seqBuffer(): LangSeq {
         return this._seqBuffer;
+    }
+
+    public get lang(): Lang {
+        return this.game.lang;
     }
 
 }

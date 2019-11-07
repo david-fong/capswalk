@@ -9,19 +9,28 @@ import { ArtificialPlayer } from "src/base/ArtificialPlayer";
 /**
  * 
  * 
- * This class performs the majority of management over `Tile` and
- * `Player` objects.
+ * This class performs the majority of management over {@link Tile}
+ * and {@link Player} objects. As a design choice, players can only join
+ * a game before it starts, and actions such as changing the language or
+ * difficulty require a restart. These actions that require a restart will
+ * all be exposed to operators through a pre-game page. Other such actions
+ * include: changing teams.
  * 
  * An overview of subclasses:
- * Both `ClientGame` and `OfflineGame` use `VisualTile`s, while
- * `ServerGame` uses `ServerTile`s. `ClientGame`'s record of the
- * state of the game comes completely from `ServerGame`.
+ * Both {@link ClientGame} and {@link OfflineGame} use {@link VisualTile}s
+ * while {@link ServerGame} uses {@link ServerTile}s. {@link ClientGame}'s
+ * record of the state of the game comes completely from {@link ServerGame}.
+ * 
+ * There are overlaps between what each implementation needs to do:
+ * - Offline and Server games maintain and control the master-game-state.
+ * - Offline and Client games display the game-state to an operator via browser.
+ * - Client  and Server games use network operations to communicate.
  * 
  * @extends Grid
  */
 export abstract class Game extends Grid {
 
-    private lang: Lang;
+    public lang: Lang;
     private readonly allHumanPlayers: Array<HumanPlayer>;
     private readonly allArtifPlayers: Array<ArtificialPlayer>;
 
@@ -41,7 +50,7 @@ export abstract class Game extends Grid {
      * 
      * Reset the grid and players.
      * 
-     * @override `Grid::reset`
+     * @override {@link Grid#reset}
      */
     public reset(): void {
         super.reset();
@@ -62,10 +71,13 @@ export abstract class Game extends Grid {
 
 
     /**
-     * Does not modify `tile`. This must be done externally. Gets called
-     * by `::processMoveRequest`.
+     * Helper for {@link Game#processMoveRequest}. Does not modify `tile`,
+     * which must be done externally.
      * 
-     * @param tile The `Tile` to shuffle their `LangChar`-`LangSeq` pair for.
+     * @param tile - The {@link Tile} to shuffle their {@link LangChar}-
+     *          {@link LangSeq} pair for.
+     * @returns A {@link LangCharSeqPair} that can be used as a replacement
+     *          for that currently being used by `tile`.
      */
     private shuffleLangCharSeqAt(tile: Tile): LangCharSeqPair {
         return this.lang.getNonConflictingChar(
@@ -74,27 +86,28 @@ export abstract class Game extends Grid {
     }
 
     /**
-     * Call for a `HumanPlayer` whose `seqBuffer` should be that of the
-     * `Tile` at `dest`. Reject the request if `dest` is occupied.
+     * Call for a {@link HumanPlayer} whose {@link HumanPlayer#seqBuffer}
+     *  should be that of the {@link Tile} at `dest`. Reject the request
+     * by short-ciruiting if `dest` is occupied.
      * 
-     * Should never be called by `ClientGame`.
+     * Should never be called by {@link ClientGame}.
      * 
-     * @param player 
-     * @param destPos 
+     * @param playerId - 
+     * @param destPos - 
      */
     public processMoveRequest(playerId: number, destPos: Pos): void {
         // TODO: get from artificial list for negative ID's.
         const player: Player = this.getHumanPlayer(playerId);
         const dest:   Tile   = this.getTileAt(destPos);
         if (dest.isOccupied()) {
-            throw new Error("Only one player can occupy a tile at a time.");
+            return;
         }
         if (player instanceof HumanPlayer) {
             ;
         } else if (player instanceof ArtificialPlayer) {
             ;
         } else {
-            throw new TypeError("Unexpected argument type for 'player' argument.");
+            throw new TypeError("Unexpected argument type for \"player\" argument.");
         }
 
         // If the request was rejected, we would have short-circuited.
@@ -107,15 +120,17 @@ export abstract class Game extends Grid {
     }
 
     /**
-     * Update the `grid`. Call either at the end of `::processMoveRequest`
-     * if I am a `ServerGame` or `OfflineGame`. It is essential that for
-     * these implementations, this method is not scheduled for later since
-     * it is the 'write' stage of that critical operation. Otherwise, if
-     * I am a `ClientGame`, bind this as the callback function of an event
-     * notification from the server. If I am a `ServerGame`, also notify
+     * Update the {@link Game#grid}. Call either at the end of
+     * {@link Game#processMoveRequest} if I am a {@link ServerGame} or
+     * {@link OfflineGame}, or as an event callback if I am a
+     * {@link ClientGame}.
+     * 
+     * It is essential that for these implementations, this method is
+     * not scheduled for later since it is the "write" stage of that
+     * critical operation. If I am a {@link ServerGame}, also notify
      * all clients of the movement event.
      * 
-     * @param desc A descriptor for the player-movement event.
+     * @param desc - A descriptor for the player-movement event.
      */
     protected processMoveExecute(desc: PlayerMovementEvent): void {
         const dest: Tile = this.getTileAt(desc.destPos);
@@ -126,7 +141,7 @@ export abstract class Game extends Grid {
 
 
     protected getHumanPlayer(playerId: number): HumanPlayer {
-        if (playerId < 0 || playerId >= this.allHumanPlayers.length) {
+        if (this.allHumanPlayers[playerId] === undefined) {
             throw new RangeError(`No player with id ${playerId} exists.`);
         }
         return this.allHumanPlayers[playerId];

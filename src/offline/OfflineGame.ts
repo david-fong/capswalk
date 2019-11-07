@@ -1,4 +1,4 @@
-import { VisibleTile } from "./VisibleTile";
+import { VisibleTile } from "src/offline/VisibleTile";
 import { Game } from "src/base/Game";
 
 /**
@@ -13,7 +13,7 @@ export class OfflineGame extends Game {
     }
 
     /**
-     * @implements `Grid::createTile`
+     * @override {@link Grid#createTile}
      */
     public createTile(x: number, y: number): VisibleTile {
         return new VisibleTile(x, y);
