@@ -70,7 +70,7 @@ export abstract class Grid {
     }
 
     /**
-     * Calls {@link Tile#reset} for each {@link Tile} in this Grid.
+     * Calls {@link Tile#reset} for each {@link Tile} in this `Grid`.
      */
     public reset(): void {
         this.grid.forEach(row => row.forEach(tile => tile.reset()));
@@ -79,10 +79,10 @@ export abstract class Grid {
 
 
     /**
-     * @returns The {@link Tile} at the position in this Grid specified
+     * @returns The {@link Tile} at the position in this `Grid` specified
      * by `pos`.
      * 
-     * @param pos - Must be within the bounds of this Grid.
+     * @param pos - Must be within the bounds of this `Grid`.
      */
     public getTileAt(pos: Pos): Tile {
         if (pos.x < 0 || pos.x >= this.width ||

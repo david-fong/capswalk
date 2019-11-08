@@ -23,7 +23,7 @@ import { ArtificialPlayer } from "src/base/ArtificialPlayer";
  * 
  * There are overlaps between what each implementation needs to do:
  * - Offline and Server games maintain and control the master-game-state.
- * - Offline and Client games display the game-state to an operator via browser.
+ * - Offline and Client games display the game-state to an operator via browser and HTML.
  * - Client  and Server games use network operations to communicate.
  * 
  * @extends Grid
@@ -59,8 +59,8 @@ export abstract class Game extends Grid {
         this.lang.reset();
 
         // Shuffle everything:
-        this.grid.forEach(row => row.forEach(t => {
-            this.shuffleLangCharSeqAt(t);
+        this.grid.forEach(row => row.forEach(tile => {
+            this.shuffleLangCharSeqAt(tile);
         }, this), this);
 
         // TODO: reset and respawn players:

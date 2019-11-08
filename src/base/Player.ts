@@ -13,9 +13,9 @@ export abstract class Player {
     readonly game: Game;
 
     /**
-     * An integer value unique to this {@link Player} in this {@link Game}.
-     * If this {@link Player} is human-controlled, this value is non-
-     * negative, and otherwise, it is negative.
+     * An integer value unique to this `Player` in this {@link Game}.
+     * If this `Player` is human-controlled, this value is non-negative,
+     * and otherwise, it is negative.
      */
     readonly     idNumber:  number;
     protected   _isAlive:   boolean;
@@ -42,7 +42,7 @@ export abstract class Player {
      * 
      * @param dest - 
      * 
-     * @throws `Error` if `dest` is occupied by another {@link Player}.
+     * @throws `Error` if `dest` is occupied by another `Player`.
      */
     public abstract makeMovementRequest(dest: Pos): void;
 
