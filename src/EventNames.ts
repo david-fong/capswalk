@@ -1,31 +1,25 @@
 
 /**
- * Global definitions of upstream event names.
- * Ie. events directed to the server.
+ * 
  */
-export class UpstreamEventNames {
-
-    /**
-     * Player movement.
-     */
-    public static readonly PLAYER_MOVEMENT = <const>"player movement";
-
-    /**
-     * Language change.
-     */
-    public static readonly LANGUAGE_CHANGE = <const>"language change";
-
+export enum SocketIoNamespaces {
+    ROOT = "/",
 }
 
 
 
-
-
 /**
- * Global definitions of downstream event names.
- * Ie. events directed to the client.
+ * Global definitions of event names. Mostly used in both directions.
+ * TODO: change these to enums
  */
-export class DownstreamEventNames {
+export class EventNames {
+
+    public static readonly ASSIGN_PLAYER_ID = <const>"assign player id";
+
+    /**
+     * Dump game state
+     */
+    public static readonly DUMP_GAME_STATE = <const>"dump game state";
 
     /**
      * Player movement.
