@@ -1,20 +1,16 @@
 
 /**
- * 
- */
-export enum SocketIoNamespaces {
-    ROOT = "/",
-}
-
-
-
-/**
  * Global definitions of event names. Mostly used in both directions.
  * TODO: change these to enums
  */
 export class EventNames {
 
-    public static readonly ASSIGN_PLAYER_ID = <const>"assign player id";
+    /**
+     * Create a game session from the gamehosts namespace.
+     * Client initiates with no arguments.
+     * Server responds with namespace of new {@link GroupSession}.
+     */
+    public static readonly CREATE_SESSION = <const>"create session";
 
     /**
      * Dump game state
@@ -23,6 +19,9 @@ export class EventNames {
 
     /**
      * Player movement.
+     * Client initiates with `id` and `dest` through player method.
+     * Server validates request, and if accepted, broadcasts to all
+     *      clients with {@link PlayerMovementDesc}.
      */
     public static readonly PLAYER_MOVEMENT = <const>"player movement";
 
