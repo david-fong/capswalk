@@ -1,9 +1,7 @@
-import * as io      from "socket.io";
-
-import { Pos } from "src/base/Tile";
 import { Game, PlayerMovementEvent, GameStateDump } from "src/base/Game";
 import { ServerTile } from "src/server/ServerTile";
-import { EventNames, SocketIoNamespaces } from "src/EventNames";
+import { EventNames } from "src/EventNames";
+import { GroupSession } from "src/server/GroupSession";
 
 /**
  * 
@@ -12,7 +10,9 @@ import { EventNames, SocketIoNamespaces } from "src/EventNames";
  */
 export class ServerGame extends Game {
 
-    public constructor(height: number, width: number = height) {
+    protected readonly session: GroupSession;
+
+    public constructor(session: GroupSession, height: number, width: number = height) {
         super(height, width);
 
         this.reset();
@@ -39,10 +39,11 @@ export class ServerGame extends Game {
     protected processMoveExecute(desc: PlayerMovementEvent): void {
         super.processMoveExecute(desc);
 
+        // TODO: set fields of desc describing the charseqpair that got
+        // shuffled-in, and whether a 
+
         // Emit an event-notification to all clients.
-        this.namespace.emit(EventNames.PLAYER_MOVEMENT, {
-            // TODO
-        });
+        this.session.namespace.emit(EventNames.PLAYER_MOVEMENT, desc);
     }
 
 

@@ -1,8 +1,10 @@
-import { Pos } from "src/Pos";
-import { Tile } from "src/base/Tile";
+import * as io  from "socket.io";
+
+import { BarePos, Tile } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { Grid } from "src/base/Grid";
-import { Game } from "src/base/Game";
+import { Game, PlayerMovementEvent } from "src/base/Game";
+import { EventNames } from "src/EventNames";
 
 /**
  * 
@@ -11,8 +13,17 @@ import { Game } from "src/base/Game";
  */
 export class ClientGame extends Game {
 
-    public constructor(height: number, width: number = height) {
+    public readonly socket: io.Socket;
+
+    public constructor(sessionNamespace: string, height: number, width: number = height) {
         super(height, width);
+
+        const serverUrl: string = null; // TODO
+        this.socket = io.connect(`${serverUrl}${sessionNamespace}`);
+
+        this.socket.on(EventNames.PLAYER_MOVEMENT, (desc: PlayerMovementEvent): void => {
+            this.processMoveExecute(desc);
+        });
 
         // TODO: bind processMoveExecute to event notification.
     }
@@ -33,10 +44,13 @@ export class ClientGame extends Game {
     }
 
     /**
-     * @override {@link Game#processMoveExecute}
+     * Normally calls {@link Game#processMoveExecute}. However, here,
+     * this should be done as a callback to an event created by the server.
+     * 
+     * @override {@link Game#processMoveRequest}
      * @throws `TypeError` Unconditionally.
      */
-    public processMoveRequest(playerId: number, dest: Tile | Pos): never {
+    public processMoveRequest(playerId: number, dest: Tile | BarePos): never {
         throw new TypeError("This operation unsupported for the ClientGame class.");
     }
 
