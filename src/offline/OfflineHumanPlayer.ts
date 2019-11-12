@@ -1,4 +1,4 @@
-import { Pos } from "src/Pos";
+import { Pos } from "src/base/Tile";
 import { OfflineGame } from "src/offline/OfflineGame";
 import { HumanPlayer } from "src/base/HumanPlayer";
 

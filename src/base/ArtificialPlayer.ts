@@ -1,5 +1,4 @@
-import { Pos } from "src/Pos";
-import { Tile } from "src/base/Tile";
+import { Pos, Tile } from "src/base/Tile";
 import { Player } from "src/base/Player";
 
 /**

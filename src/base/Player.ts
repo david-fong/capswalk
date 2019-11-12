@@ -1,5 +1,4 @@
-import { Pos } from "src/Pos";
-import { Tile } from "src/base/Tile";
+import { Pos, Tile } from "src/base/Tile";
 import { Game } from "src/base/Game";
 
 /**
@@ -10,7 +9,7 @@ export abstract class Player {
     /**
      * The game object that this player belongs to.
      */
-    readonly game: Game;
+    public readonly game: Game;
 
     /**
      * An integer value unique to this `Player` in this {@link Game}.
