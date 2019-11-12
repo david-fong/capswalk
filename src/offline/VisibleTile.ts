@@ -1,6 +1,21 @@
 import { LangChar, LangSeq, LangCharSeqPair } from "src/Lang";
 import { Tile } from "src/base/Tile";
 
+
+/**
+ * Must be matched exactly in the CSS.
+ */
+class ClassHooks {
+    public static readonly TILE: string         = <const>"tile";
+    public static readonly PLAYER: string       = <const>"tile__player";
+    public static readonly LANG_CHAR: string    = <const>"tile__char";
+    public static readonly LANG_SEQ: string     = <const>"tile__seq";
+}
+
+class DataSetHooks {
+    public static readonly SCORE_VALUE: string  = <const>"scoreValue";
+}
+
 /**
  * Implicitly handles visuals with help from CSS.
  * 
@@ -11,11 +26,17 @@ import { Tile } from "src/base/Tile";
  * 3. Language Written Character
  * 4. Language Typable Sequence
  * 
+ * Dataset:
+ * Top-level layer has property "scoreValue"
+ * 
  * @extends Tile
  */
 export class VisibleTile extends Tile {
 
-    private _occupantId: number;
+    // TODO: do we need to make the accessible outside?
+    //public static readonly CLASS_HOOKS: object = ClassHooks;
+
+    private _occupantId: number | null;
 
     public  readonly tileCellElem:      HTMLTableCellElement;
     private readonly playerDivElem:     HTMLDivElement;
@@ -27,20 +48,20 @@ export class VisibleTile extends Tile {
 
         const tCell: HTMLTableCellElement = new HTMLTableCellElement();
         {
-            tCell.className = "tile";
+            tCell.className = ClassHooks.TILE;
             {
                 const pDiv: HTMLDivElement = new HTMLDivElement();
-                pDiv.className = "tile__player";
+                pDiv.className = ClassHooks.PLAYER;
                 tCell.appendChild(pDiv);
                 this.playerDivElem = pDiv;
             } {
                 const cDiv: HTMLDivElement = new HTMLDivElement();
-                cDiv.className = "tile__char";
+                cDiv.className = ClassHooks.LANG_CHAR;
                 tCell.appendChild(cDiv);
                 this.langCharDivElem = cDiv;
             } {
                 const sDiv: HTMLDivElement = new HTMLDivElement();
-                sDiv.className = "tile__seq";
+                sDiv.className = ClassHooks.LANG_SEQ;
                 tCell.appendChild(sDiv);
                 this.langSeqDivElem = sDiv;
             }
@@ -59,11 +80,11 @@ export class VisibleTile extends Tile {
 
 
 
-    public get occupantId(): number {
+    public get occupantId(): number | null {
         return this._occupantId;
     }
 
-    public set occupantId(occupantId: number) {
+    public set occupantId(occupantId: number | null) {
         // TODO: set some dataset thing to make player face layer visible.
         if (occupantId === null) {
             ;
@@ -71,6 +92,14 @@ export class VisibleTile extends Tile {
             ;
         }
         this._occupantId = occupantId;
+    }
+
+    public get scoreValue(): number {
+        return Number.parseInt(this.tileCellElem.dataset[DataSetHooks.SCORE_VALUE]);
+    }
+
+    public set scoreValue(score: number) {
+        this.tileCellElem.dataset[DataSetHooks.SCORE_VALUE] = score.toString();
     }
 
     public setLangCharSeq(charSeqPair: LangCharSeqPair): void {

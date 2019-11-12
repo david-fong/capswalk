@@ -1,5 +1,6 @@
 import { LangSeq, LangChar, LangCharSeqPair } from "src/Lang";
-import { Pos } from "src/Pos";
+import { Pos, BarePos } from "src/Pos";
+export { Pos, BarePos } from "src/Pos";
 
 /**
  * 
@@ -11,7 +12,6 @@ import { Pos } from "src/Pos";
 export abstract class Tile {
 
     readonly pos: Pos;
-    public scoreValue: number;
 
     /**
      * 
@@ -55,9 +55,13 @@ export abstract class Tile {
         this.occupantId = null;
     }
 
-    public abstract get occupantId(): number;
+    public abstract get occupantId(): number | null;
 
-    public abstract set occupantId(occupantId: number);
+    public abstract set occupantId(occupantId: number | null);
+
+    public abstract get scoreValue(): number;
+
+    public abstract set scoreValue(score: number);
 
     public abstract setLangCharSeq(charSeqPair: LangCharSeqPair): void;
 
