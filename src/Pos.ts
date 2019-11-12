@@ -1,4 +1,10 @@
 
+export type BarePos = {
+    x: number;
+    y: number;
+};
+
+
 /**
  * A position in 2-dimensional space. Values may be non-integer values.
  * 
@@ -16,6 +22,13 @@ export class Pos {
     public constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
+    }
+
+    public asBarePos(): BarePos {
+        return {
+            x: this.x,
+            y: this.y,
+        };
     }
 
 

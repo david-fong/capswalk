@@ -1,5 +1,5 @@
-import { Pos } from "src/Pos";
-import { Tile } from "src/base/Tile";
+import { HtmlHooks } from "src/Defs";
+import { Pos, Tile, BarePos } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
 
 /**
@@ -27,6 +27,8 @@ export abstract class Grid {
     protected readonly domGrid: HTMLTableElement | null;
 
     public abstract createTile(x: number, y: number): Tile;
+
+
 
     public constructor(height: number, width: number = height) {
         if ((height <= 0) || (width  <= 0)) {
@@ -62,6 +64,7 @@ export abstract class Grid {
                     }
                 }
             }
+            document.getElementById(HtmlHooks.GRID);
         } else {
             this.domGrid = null;
         }
@@ -84,7 +87,7 @@ export abstract class Grid {
      * 
      * @param pos - Must be within the bounds of this `Grid`.
      */
-    public getTileAt(pos: Pos): Tile {
+    public getTileAt(pos: BarePos): Tile {
         if (pos.x < 0 || pos.x >= this.width ||
             pos.y < 0 || pos.y >= this.height
         ) {
@@ -103,7 +106,7 @@ export abstract class Grid {
      * @param pos - The center / origin position-locator to search around.
      * @param radius - An inclusive bound on the {@link Pos#infNorm} filter.
      */
-    public getUNT(pos: Pos, radius: number = 1): Array<Tile> {
+    public getUNT(pos: BarePos, radius: number = 1): Array<Tile> {
         return this.grid.slice(
                 // filter for included rows:
                 Math.max(0, pos.y - radius),

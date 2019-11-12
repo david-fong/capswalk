@@ -1,6 +1,5 @@
 import { Lang, LangCharSeqPair } from "src/Lang";
-import { Pos } from "src/Pos";
-import { Tile } from "src/base/Tile";
+import { Pos, BarePos, Tile } from "src/base/Tile";
 import { Grid } from "src/base/Grid";
 import { Player } from "src/base/Player";
 import { HumanPlayer } from "src/base/HumanPlayer";
@@ -87,15 +86,16 @@ export abstract class Game extends Grid {
 
     /**
      * Call for a {@link HumanPlayer} whose {@link HumanPlayer#seqBuffer}
-     *  should be that of the {@link Tile} at `dest`. Reject the request
+     * should be that of the {@link Tile} at `dest`. Reject the request
      * by short-ciruiting if `dest` is occupied.
      * 
      * Should never be called by {@link ClientGame}.
      * 
      * @param playerId - 
      * @param destPos - 
+     * @returns A descriptor of changes to be made.
      */
-    public processMoveRequest(playerId: number, destPos: Pos): void {
+    public processMoveRequest(playerId: number, destPos: BarePos): PlayerMovementEvent {
         // TODO: get from artificial list for negative ID's.
         const player: Player = this.getHumanPlayer(playerId);
         const dest:   Tile   = this.getTileAt(destPos);
@@ -112,11 +112,13 @@ export abstract class Game extends Grid {
 
         // If the request was rejected, we would have short-circuited.
         // We are all go. Do it.
-        this.processMoveExecute(new PlayerMovementEvent(
+        const desc = new PlayerMovementEvent(
             playerId,
-            dest.pos,
+            dest.pos.asBarePos(),
             this.shuffleLangCharSeqAt(dest),
-        ));
+        );
+        this.processMoveExecute(desc);
+        return desc;
     }
 
     /**
@@ -154,16 +156,26 @@ export abstract class Game extends Grid {
 
 
 /**
- * 
+ * TODO: add fields for changes to player score and new targets.
+ * (or create a new descriptor-event pair for such information).
  */
 export class PlayerMovementEvent {
 
     public constructor(
         public readonly playerId: number,
-        public readonly destPos: Pos,
+        public readonly destPos: BarePos,
         public readonly newCharSeqPair: LangCharSeqPair,
     ) {
         Object.freeze(this);
     }
+}
 
+/**
+ * 
+ */
+export class GameStateDump {
+
+    public constructor(game: Game) {
+        ;
+    }
 }
