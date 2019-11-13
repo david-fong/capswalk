@@ -15,15 +15,20 @@ export class Defs {
      */
     public static readonly SERVER_PORT: number = <const>8080;
 
+    /**
+     * See {@link GroupSession.constructor}.
+     */
+    public static readonly GROUP_SESSION_INITIAL_TTL: number = <const>60;
+
 }
 
 
-export class HtmlHooks {
+export class HtmlIdHooks {
 
     public static readonly GRID: string = <const>"grid";
 
 }
 
-export class CssHooks {
+export class HtmlClassHooks {
 
 }

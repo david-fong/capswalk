@@ -8,7 +8,9 @@ export class EventNames {
     /**
      * Create a game session from the gamehosts namespace.
      * Client initiates with no arguments.
-     * Server responds with namespace of new {@link GroupSession}.
+     * Server responds with the name of the namespace of the new
+     *      {@link GroupSession}, and its initial TTL (see
+     *      {@link GroupSession.constructor}).
      */
     public static readonly CREATE_SESSION = <const>"create session";
 

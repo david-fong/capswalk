@@ -1,4 +1,4 @@
-import * as io  from "socket.io";
+import * as io from "socket.io-client";
 
 import { BarePos, Tile } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
@@ -13,7 +13,7 @@ import { EventNames } from "src/EventNames";
  */
 export class ClientGame extends Game {
 
-    public readonly socket: io.Socket;
+    public readonly socket: SocketIOClient.Socket;
 
     public constructor(sessionNamespace: string, height: number, width: number = height) {
         super(height, width);

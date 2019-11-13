@@ -1,4 +1,4 @@
-import { HtmlHooks } from "src/Defs";
+import { HtmlIdHooks } from "src/Defs";
 import { Pos, Tile, BarePos } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
 
@@ -64,7 +64,7 @@ export abstract class Grid {
                     }
                 }
             }
-            document.getElementById(HtmlHooks.GRID);
+            document.getElementById(HtmlIdHooks.GRID);
         } else {
             this.domGrid = null;
         }

@@ -13,7 +13,7 @@ import { EventNames } from "src/EventNames";
 export class OnlineHumanPlayer extends HumanPlayer {
 
     /**
-     * @override {@link Player#game};
+     * @override {@link Player#game}
      */
     public readonly game: ClientGame;
 
