@@ -10,6 +10,8 @@ import { PlayerMovementEvent } from "src/base/Game";
 export namespace Events {
 
     /**
+     * {@link Server}
+     * 
      * Create a game session from the gamehosts namespace.
      * Client initiates with no arguments.
      * Server responds with the name of the namespace of the new

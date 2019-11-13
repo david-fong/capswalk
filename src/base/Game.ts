@@ -95,9 +95,9 @@ export abstract class Game extends Grid {
      * 
      * @param playerId - 
      * @param destPos - 
-     * @returns A descriptor of changes to be made.
+     * @returns A descriptor of changes to be made, or `null` if the move is rejected.
      */
-    public processMoveRequest(playerId: number, destPos: BarePos): PlayerMovementEvent {
+    public processMoveRequest(playerId: number, destPos: BarePos): PlayerMovementEvent | null {
         // TODO: get from artificial list for negative ID's.
         const player: Player = this.getHumanPlayer(playerId);
         const dest:   Tile   = this.getTileAt(destPos);

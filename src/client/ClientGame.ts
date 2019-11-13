@@ -19,6 +19,11 @@ export class ClientGame extends Game {
 
         const serverUrl: string = null; // TODO
         this.socket = io.connect(`${serverUrl}${sessionNamespace}`);
+
+        this.socket.on(
+            Events.PlayerMovement.name,
+            this.processMoveExecute
+        );
     }
 
     /**

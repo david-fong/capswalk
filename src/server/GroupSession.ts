@@ -1,7 +1,6 @@
 import * as io from "socket.io";
 
 import { Events } from "src/Events";
-import { BarePos } from "src/Pos";
 import { GameStateDump } from "src/base/Game";
 import { ServerGame } from "src/server/ServerGame";
 export { ServerGame } from "src/server/ServerGame";
@@ -55,13 +54,16 @@ export class GroupSession {
         this.currentGame = null;
         this.sessionHost = undefined;
 
-        this.initialTtlTimeout = setTimeout(() => {
-            if (Object.entries(this.namespace.connected).length === 0) {
-                // If nobody connects to this session in the specified
-                // ammount of time, then close the session.
-                this.terminate();
-            }
-        }, (initialTtl * 1000)).unref();
+        this.initialTtlTimeout = setTimeout(
+            () => {
+                if (Object.entries(this.namespace.connected).length === 0) {
+                    // If nobody connects to this session in the specified
+                    // ammount of time, then close the session.
+                    this.terminate();
+                }
+            },
+            (initialTtl * 1000),
+        ).unref();
         this.deleteExternalRefs = deleteExternalRefs;
 
         // Call the connection-event handler:
@@ -96,7 +98,7 @@ export class GroupSession {
 
         socket.on(
             Events.PlayerMovement.name,
-            this.onPlayerMoveRequest,
+            this.currentGame.processMoveRequest,
         );
     }
 
@@ -133,23 +135,17 @@ export class GroupSession {
 
 
 
-    private onPlayerMoveRequest(
-        playerId: number,
-        destPos: BarePos,
-        ack: Events.PlayerMovement.Acknowlege
-    ): void {
-        // TODO: this makes is technically possible for a client to
-        // send a request that tells me to move someone other than them.
-        // If we want to be more picky, we should add checks for this.
-        ack(this.currentGame.processMoveRequest(playerId, destPos));
-    }
-
     /**
      * {@link Events}
      */
     private verifyCallbackFuncSignatures(): never {
-        this.onPlayerMoveRequest as Events.PlayerMovement.Initiate;
         throw new Error("We don't do that here.");
+    }
+
+
+
+    protected allocatePlayerId(): number {
+        return -1; // TODO
     }
 
 }

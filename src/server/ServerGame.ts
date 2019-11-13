@@ -1,6 +1,8 @@
-import { Game } from "src/base/Game";
+import { BarePos } from "src/Pos";
 import { ServerTile } from "src/server/ServerTile";
+import { Game, PlayerMovementEvent } from "src/base/Game";
 import { GroupSession } from "src/server/GroupSession";
+import { Events } from "src/Events";
 
 /**
  * 
@@ -30,8 +32,21 @@ export class ServerGame extends Game {
 
 
 
-    protected allocatePlayerId(): number {
-        return -1; // TODO
+    /**
+     * @override {@link Game#processMoveRequest}
+     * 
+     * @param playerId - 
+     * @param destPos - 
+     */
+    public processMoveRequest(playerId: number, destPos: BarePos): PlayerMovementEvent | null {
+        const desc: PlayerMovementEvent = super.processMoveRequest(playerId, destPos);
+        if (desc !== null) {
+            this.session.namespace.emit(
+                Events.PlayerMovement.name,
+                desc,
+            );
+        }
+        return desc;
     }
 
 }

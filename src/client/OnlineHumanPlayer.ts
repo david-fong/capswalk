@@ -29,22 +29,10 @@ export class OnlineHumanPlayer extends HumanPlayer {
      * @override {@link Player#makeMovementRequest}
      */
     public makeMovementRequest(dest: Pos): void {
-        this.emitPlayerMoveRequest(
-            this.idNumber,
-            dest.asBarePos(),
-            this.game.processMoveExecute,
-        );
-    }
-    private emitPlayerMoveRequest(
-        playerId: number,
-        destPos: BarePos,
-        ack: Events.PlayerMovement.Acknowlege
-    ): void {
         this.game.socket.emit(
             Events.PlayerMovement.name,
-            playerId,
-            destPos,
-            ack,
+            this.idNumber,
+            dest.asBarePos(),
         );
     }
 
@@ -52,7 +40,6 @@ export class OnlineHumanPlayer extends HumanPlayer {
      * {@link Events}
      */
     private verifyCallbackFuncSignatures(): never {
-        this.emitPlayerMoveRequest as Events.PlayerMovement.Initiate;
         throw new Error("We don't do that here.");
     }
 
