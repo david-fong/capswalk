@@ -1,9 +1,11 @@
 import { Lang, LangCharSeqPair } from "src/Lang";
-import { Pos, BarePos, Tile } from "src/base/Tile";
+import { BarePos, Tile } from "src/base/Tile";
 import { Grid } from "src/base/Grid";
 import { Player } from "src/base/Player";
 import { HumanPlayer } from "src/base/HumanPlayer";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
+
+export { Grid } from "src/base/Grid";
 
 /**
  * 

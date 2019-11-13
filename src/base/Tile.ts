@@ -1,5 +1,5 @@
 import { LangSeq, LangChar, LangCharSeqPair } from "src/Lang";
-import { Pos, BarePos } from "src/Pos";
+import { Pos } from "src/Pos";
 export { Pos, BarePos } from "src/Pos";
 
 /**

@@ -2,33 +2,33 @@
 /**
  * 
  */
-export class Defs {
+export namespace Defs {
 
     /**
      * The maximum possible number of unoccupied twice-neighbouring
      * `Tile`s for any given `Tile` by this square `Grid` style.
      */
-    public static readonly MAX_NUM_U2NTS: number = (((2*2) + 1) ** 2) - 1;
+    export const MAX_NUM_U2NTS = (((2*2) + 1) ** 2) - 1;
 
     /**
      * The port that the {@link Server} will listen on.
      */
-    public static readonly SERVER_PORT: number = <const>8080;
+    export const SERVER_PORT = 8080;
 
     /**
      * See {@link GroupSession.constructor}.
      */
-    public static readonly GROUP_SESSION_INITIAL_TTL: number = <const>60;
+    export const GROUP_SESSION_INITIAL_TTL = 60;
 
 }
 
 
-export class HtmlIdHooks {
+export namespace HtmlIdHooks {
 
-    public static readonly GRID: string = <const>"grid";
+    export const GRID = "grid";
 
 }
 
-export class HtmlClassHooks {
+export namespace HtmlClassHooks {
 
 }

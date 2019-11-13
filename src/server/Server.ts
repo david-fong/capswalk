@@ -3,16 +3,16 @@ import * as http    from "http";
 import * as io      from "socket.io";
 
 import { Defs } from "src/Defs";
-import { EventNames } from "src/EventNames";
+import { Events } from "src/Events";
 import { GroupSession } from "src/server/GroupSession";
 
 
 /**
  * 
  */
-class PublicNamespaces {
-    public static readonly GAME_HOSTS: string       = <const>"/gamehosts";
-    public static readonly GROUP_SESSIONS: string   = <const>"/groups"; // can address using regexp
+namespace PublicNamespaces {
+    export const GAME_HOSTS     = "/gamehosts";
+    export const GROUP_SESSIONS = "/groups"; // can address using regexp
 }
 
 
@@ -66,7 +66,7 @@ export class Server {
         console.log("A user has connected.");
 
         // This callback will only be called once.
-        socket.on(EventNames.CREATE_SESSION, (ack: Function): void => {
+        socket.on(Events.CreateSession.name, (ack: Function): void => {
             // Create a new group session:
             const namespace: io.Namespace = this.io.of(this.createUniqueSessionName());
             this.allGroupSessions.set(
@@ -83,7 +83,7 @@ export class Server {
             // Notify the host of the namespace created for the
             // requested group session so they can connect to it:
             socket.emit(
-                EventNames.CREATE_SESSION,
+                Events.CreateSession.name,
                 namespace.name,
                 Defs.GROUP_SESSION_INITIAL_TTL,
                 (): void => {

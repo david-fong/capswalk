@@ -1,5 +1,5 @@
 import { HtmlIdHooks } from "src/Defs";
-import { Pos, Tile, BarePos } from "src/base/Tile";
+import { Tile, BarePos } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
 
 /**

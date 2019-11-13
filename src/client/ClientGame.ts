@@ -2,8 +2,7 @@ import * as io from "socket.io-client";
 
 import { BarePos, Tile } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
-import { Grid } from "src/base/Grid";
-import { Game, PlayerMovementEvent } from "src/base/Game";
+import { Grid, Game, PlayerMovementEvent } from "src/base/Game";
 import { EventNames } from "src/EventNames";
 
 /**
@@ -21,7 +20,7 @@ export class ClientGame extends Game {
         const serverUrl: string = null; // TODO
         this.socket = io.connect(`${serverUrl}${sessionNamespace}`);
 
-        this.socket.on(EventNames.PLAYER_MOVEMENT, (desc: PlayerMovementEvent): void => {
+        this.socket.on(EventNames.PlayerMovement.name, (desc: PlayerMovementEvent): void => {
             this.processMoveExecute(desc);
         });
 

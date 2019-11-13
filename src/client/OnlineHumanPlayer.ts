@@ -1,9 +1,9 @@
 import * as io from "socket.io";
 
+import { Events } from "src/Events";
 import { Pos } from "src/base/Tile";
-import { ClientGame } from "./ClientGame";
+import { ClientGame } from "src/client/ClientGame";
 import { HumanPlayer } from "src/base/HumanPlayer";
-import { EventNames } from "src/EventNames";
 
 /**
  * 
@@ -29,7 +29,7 @@ export class OnlineHumanPlayer extends HumanPlayer {
      * @override {@link Player#makeMovementRequest}
      */
     public makeMovementRequest(dest: Pos): void {
-        this.game.socket.emit(EventNames.PLAYER_MOVEMENT, this.idNumber, dest.asBarePos());
+        this.game.socket.emit(Events.PlayerMovement.name, this.idNumber, dest.asBarePos());
     }
 
 }

@@ -1,6 +1,6 @@
-import io from "socket.io";
+import * as io from "socket.io";
 
-import { EventNames } from "src/EventNames";
+import { Events } from "src/Events";
 import { BarePos } from "src/Pos";
 import { GameStateDump } from "src/base/Game";
 import { ServerGame } from "src/server/ServerGame";
@@ -10,8 +10,8 @@ export { ServerGame } from "src/server/ServerGame";
 /**
  * 
  */
-class RoomNames {
-    public static readonly MAIN: string = <const>"main";
+namespace RoomNames {
+    export const MAIN = "main";
 }
 
 
@@ -32,7 +32,7 @@ export class GroupSession {
     protected currentGame: ServerGame | null;
     protected sessionHost: io.Socket;
 
-    private initialTtlTimeout: NodeJS.Timeout;
+    private readonly initialTtlTimeout: NodeJS.Timeout;
     private readonly deleteExternalRefs: VoidFunction;
 
 
@@ -61,7 +61,7 @@ export class GroupSession {
                 // ammount of time, then close the session.
                 this.terminate();
             }
-        }, initialTtl * 1000).unref();
+        }, (initialTtl * 1000)).unref();
         this.deleteExternalRefs = deleteExternalRefs;
 
         // Call the connection-event handler:
@@ -95,13 +95,8 @@ export class GroupSession {
         });
 
         socket.on(
-            EventNames.PLAYER_MOVEMENT,
-            (playerId: number, destPos: BarePos): void => {
-                // TODO: this makes is technically possible for a client to
-                // send a request that tells me to move someone other than them.
-                // If we want to be more picky, we should add checks for this.
-                this.currentGame.processMoveRequest(playerId, destPos);
-            },
+            Events.PlayerMovement.name,
+            this.onPlayerMovementRequest,
         );
     }
 
@@ -131,9 +126,30 @@ export class GroupSession {
 
         this.currentGame = newGame;
         this.namespace.emit(
-            EventNames.DUMP_GAME_STATE,
+            Events.DumpGameState.name,
             new GameStateDump(this.currentGame)
         );
+    }
+
+
+
+    private onPlayerMovementRequest(
+        playerId: number,
+        destPos: BarePos,
+        ack: Events.PlayerMovement.Acknowlege
+    ): void {
+        // TODO: this makes is technically possible for a client to
+        // send a request that tells me to move someone other than them.
+        // If we want to be more picky, we should add checks for this.
+        ack(this.currentGame.processMoveRequest(playerId, destPos));
+    }
+
+    /**
+     * Linting / transpiling tools will throw errors if there are type errors.
+     */
+    private verifyCallbackFuncSignatures(): never {
+        const playerMovement: Events.PlayerMovement.Handle = this.onPlayerMovementRequest;
+        throw new Error("We don't do that here.");
     }
 
 }
