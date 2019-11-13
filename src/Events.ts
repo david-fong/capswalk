@@ -2,7 +2,10 @@ import { BarePos } from "src/Pos";
 import { PlayerMovementEvent } from "src/base/Game";
 
 /**
- * Global definitions of event names.
+ * Global definitions of event names and callback function signatures.
+ * These will be enforced by non-callable verification functions that
+ * will be flagged by the typescript parser if implementations diverge
+ * from the difinitions here.
  */
 export namespace Events {
 
@@ -16,10 +19,7 @@ export namespace Events {
     export namespace CreateSession {
         export const name = "create session";
 
-        export interface Raise {
-            (ack: Acknowlege): void;
-        };
-        export interface Handle {
+        export interface Initiate {
             (ack: Acknowlege): void;
         };
         export interface Acknowlege {
@@ -33,10 +33,7 @@ export namespace Events {
     export namespace DumpGameState {
         export const name = "dump game state";
 
-        export interface Raise {
-            (ack: Acknowlege): void;
-        };
-        export interface Handle {
+        export interface Initiate {
             (ack: Acknowlege): void;
         };
         export interface Acknowlege {
@@ -53,10 +50,7 @@ export namespace Events {
     export namespace PlayerMovement {
         export const name = "player movement";
 
-        export interface Raise {
-            (playerId: number, destPos: BarePos, ack: Acknowlege): void;
-        };
-        export interface Handle {
+        export interface Initiate {
             (playerId: number, destPos: BarePos, ack: Acknowlege): void;
         };
         export interface Acknowlege {
@@ -70,10 +64,7 @@ export namespace Events {
     export namespace LanguageChange {
         export const name = "language change";
 
-        export interface Raise {
-            (ack: Acknowlege): void;
-        };
-        export interface Handle {
+        export interface Initiate {
             (ack: Acknowlege): void;
         };
         export interface Acknowlege {

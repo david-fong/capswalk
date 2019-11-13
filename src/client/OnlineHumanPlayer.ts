@@ -49,10 +49,10 @@ export class OnlineHumanPlayer extends HumanPlayer {
     }
 
     /**
-     * Linting / transpiling tools will throw errors if there are type errors.
+     * {@link Events}
      */
     private verifyCallbackFuncSignatures(): never {
-        const playerMovement: Events.PlayerMovement.Handle = this.emitPlayerMoveRequest;
+        this.emitPlayerMoveRequest as Events.PlayerMovement.Initiate;
         throw new Error("We don't do that here.");
     }
 

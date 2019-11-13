@@ -145,10 +145,10 @@ export class GroupSession {
     }
 
     /**
-     * Linting / transpiling tools will throw errors if there are type errors.
+     * {@link Events}
      */
     private verifyCallbackFuncSignatures(): never {
-        const playerMovement: Events.PlayerMovement.Handle = this.onPlayerMoveRequest;
+        this.onPlayerMoveRequest as Events.PlayerMovement.Initiate;
         throw new Error("We don't do that here.");
     }
 
