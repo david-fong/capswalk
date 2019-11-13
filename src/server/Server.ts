@@ -4,7 +4,7 @@ import * as io      from "socket.io";
 
 import { Defs } from "src/Defs";
 import { EventNames } from "src/EventNames";
-import { GroupSession } from "./GroupSession";
+import { GroupSession } from "src/server/GroupSession";
 
 
 /**
@@ -12,7 +12,7 @@ import { GroupSession } from "./GroupSession";
  */
 class PublicNamespaces {
     public static readonly GAME_HOSTS: string       = <const>"/gamehosts";
-    public static readonly GROUP_SESSIONS: string   = <const>"/groups";
+    public static readonly GROUP_SESSIONS: string   = <const>"/groups"; // can address using regexp
 }
 
 
@@ -30,6 +30,8 @@ export class Server {
     protected readonly app:  app.Application;
     protected readonly http: http.Server;
     protected readonly io:   io.Server;
+
+    protected allGroupSessions: Map<string, GroupSession>;
 
     /**
      * 
@@ -63,14 +65,32 @@ export class Server {
     protected onGameHostsConnection(socket: io.Socket): void {
         console.log("A user has connected.");
 
-        socket.on(EventNames.CREATE_SESSION, (): void => {
+        // This callback will only be called once.
+        socket.on(EventNames.CREATE_SESSION, (ack: Function): void => {
             // Create a new group session:
             const namespace: io.Namespace = this.io.of(this.createUniqueSessionName());
-            const newGroupSession: GroupSession = new GroupSession(namespace);
+            this.allGroupSessions.set(
+                namespace.name,
+                new GroupSession(
+                    namespace,
+                    Defs.GROUP_SESSION_INITIAL_TTL,
+                    (): void => {
+                        this.allGroupSessions.delete(namespace.name);
+                    }
+                )
+            );
 
             // Notify the host of the namespace created for the
             // requested group session so they can connect to it:
-            socket.emit(EventNames.CREATE_SESSION, namespace.name);
+            socket.emit(
+                EventNames.CREATE_SESSION,
+                namespace.name,
+                Defs.GROUP_SESSION_INITIAL_TTL,
+                (): void => {
+                    // On client ack, disconnect the client.
+                    socket.disconnect();
+                }
+            );
         });
 
         socket.on("disconnect", (...args: any[]): void => {
@@ -79,23 +99,13 @@ export class Server {
     }
 
     protected createUniqueSessionName(): string {
-        const sessionNum: string | number = -1; // TODO
-        return `${PublicNamespaces.GROUP_SESSIONS}/${sessionNum}`;
-    }
-
-    /**
-     * 
-     * @param namespace - 
-     */
-    private destroyNamespace(namespace: io.Namespace): void {
-        if (namespace.server !== this.io) {
-            throw new Error("Can only destroy namespaces under this server.");
+        const uniqueId: string | number = -1; // TODO
+        const sessionName: string = `${PublicNamespaces.GROUP_SESSIONS}/${uniqueId}`;
+        if (this.allGroupSessions.has(sessionName)) {
+            // should never reach here.
+            throw new Error("Another session already has this name.");
         }
-        Object.values(namespace.connected).forEach(socket => {
-            socket.disconnect();
-        });
-        namespace.removeAllListeners();
-        delete namespace.server.nsps[namespace.name];
+        return sessionName;
     }
 
 }

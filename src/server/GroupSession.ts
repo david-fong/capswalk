@@ -1,4 +1,4 @@
-import * as io from "socket.io";
+import io from "socket.io";
 
 import { EventNames } from "src/EventNames";
 import { BarePos } from "src/Pos";
@@ -29,15 +29,43 @@ export class GroupSession {
     //public static readonly ROOM_NAMES: object = RoomNames;
 
     public readonly namespace: io.Namespace;
-    protected currentGameInstance: ServerGame | null;
-    protected sessionHost: io.Socket; // TODO: "| null" ?
+    protected currentGame: ServerGame | null;
+    protected sessionHost: io.Socket;
+
+    private initialTtlTimeout: NodeJS.Timeout;
+    private readonly deleteExternalRefs: VoidFunction;
 
 
 
-    public constructor(namespace: io.Namespace) {
-        this.namespace = namespace;
-        this.currentGameInstance = null;
-        this.sessionHost = null;
+    /**
+     * 
+     * @param namespace - 
+     * @param initialTtl - If no sockets connect to this `GameSession`
+     *      in this many seconds, it will close and clean itself up.
+     * @param deleteExternalRefs - A function that- when called- deletes
+     *      all external references to this newly constructed object
+     *      such that it can be garbage collected.
+     */
+    public constructor(
+        namespace: io.Namespace,
+        initialTtl: number,
+        deleteExternalRefs: VoidFunction,
+    ) {
+        this.namespace   = namespace;
+        this.currentGame = null;
+        this.sessionHost = undefined;
+
+        this.initialTtlTimeout = setTimeout(() => {
+            if (Object.entries(this.namespace.connected).length === 0) {
+                // If nobody connects to this session in the specified
+                // ammount of time, then close the session.
+                this.terminate();
+            }
+        }, initialTtl * 1000).unref();
+        this.deleteExternalRefs = deleteExternalRefs;
+
+        // Call the connection-event handler:
+        this.namespace.on("connection", this.onConnection);
     }
 
     /**
@@ -48,24 +76,47 @@ export class GroupSession {
         console.log("A user has connected.");
         socket.join(RoomNames.MAIN);
 
-        if (this.sessionHost === null) {
+        if (Object.entries(this.namespace.connected).length === 0) {
+            // Nobody has connected yet.
+            // The first socket becomes the session host.
+            clearTimeout(this.initialTtlTimeout);
             this.sessionHost = socket;
         }
 
         socket.on("disconnect", (...args: any[]): void => {
             if (socket === this.sessionHost) {
-                this.sessionHost = null;
+                // If the host disconnects, end the session.
+                // TODO: this seems like a bad decision. What about just broadcasting
+                // that the host player has died, and choose another player to become
+                // the host?
+                this.terminate();
+                this.sessionHost = null; // TODO: change this. host should never be null.
             }
         });
 
         socket.on(
-                EventNames.PLAYER_MOVEMENT,
-                (playerId: number, destPos: BarePos): void => {
-            // TODO: this makes is technically possible for a client to
-            // send a request that tells me to move someone other than them.
-            // If we want to be more picky, we should add checks for this.
-            this.currentGameInstance.processMoveRequest(playerId, destPos);
+            EventNames.PLAYER_MOVEMENT,
+            (playerId: number, destPos: BarePos): void => {
+                // TODO: this makes is technically possible for a client to
+                // send a request that tells me to move someone other than them.
+                // If we want to be more picky, we should add checks for this.
+                this.currentGame.processMoveRequest(playerId, destPos);
+            },
+        );
+    }
+
+    /**
+     * 
+     */
+    protected terminate(): void {
+        // TODO: destroy the game?
+        const namespace: io.Namespace = this.namespace;
+        Object.values(namespace.connected).forEach(socket => {
+            socket.disconnect();
         });
+        namespace.removeAllListeners();
+        delete namespace.server.nsps[namespace.name];
+        (this.deleteExternalRefs)();
     }
 
 
@@ -78,8 +129,11 @@ export class GroupSession {
     private createGameInstance(height: number, width: number = height): void {
         const newGame: ServerGame = new ServerGame(this, height, width);
 
-        this.currentGameInstance = newGame;
-        this.namespace.emit(EventNames.DUMP_GAME_STATE, new GameStateDump(this.currentGameInstance));
+        this.currentGame = newGame;
+        this.namespace.emit(
+            EventNames.DUMP_GAME_STATE,
+            new GameStateDump(this.currentGame)
+        );
     }
 
 }
