@@ -96,7 +96,7 @@ export class GroupSession {
 
         socket.on(
             Events.PlayerMovement.name,
-            this.onPlayerMovementRequest,
+            this.onPlayerMoveRequest,
         );
     }
 
@@ -133,7 +133,7 @@ export class GroupSession {
 
 
 
-    private onPlayerMovementRequest(
+    private onPlayerMoveRequest(
         playerId: number,
         destPos: BarePos,
         ack: Events.PlayerMovement.Acknowlege
@@ -148,7 +148,7 @@ export class GroupSession {
      * Linting / transpiling tools will throw errors if there are type errors.
      */
     private verifyCallbackFuncSignatures(): never {
-        const playerMovement: Events.PlayerMovement.Handle = this.onPlayerMovementRequest;
+        const playerMovement: Events.PlayerMovement.Handle = this.onPlayerMoveRequest;
         throw new Error("We don't do that here.");
     }
 

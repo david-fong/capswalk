@@ -136,7 +136,7 @@ export abstract class Game extends Grid {
      * 
      * @param desc - A descriptor for the player-movement event.
      */
-    protected processMoveExecute(desc: PlayerMovementEvent): void {
+    public processMoveExecute(desc: PlayerMovementEvent): void {
         const dest: Tile = this.getTileAt(desc.destPos);
         this.getHumanPlayer(desc.playerId).moveTo(dest);
         dest.setLangCharSeq(desc.newCharSeqPair);

@@ -1,9 +1,10 @@
+import { BarePos } from "src/Pos";
+import { PlayerMovementEvent } from "src/base/Game";
 
 /**
- * Global definitions of event names. Mostly used in both directions.
- * TODO: change these to enums
+ * Global definitions of event names.
  */
-export class EventNames {
+export namespace Events {
 
     /**
      * Create a game session from the gamehosts namespace.
@@ -12,12 +13,36 @@ export class EventNames {
      *      {@link GroupSession}, and its initial TTL (see
      *      {@link GroupSession.constructor}).
      */
-    public static readonly CREATE_SESSION = <const>"create session";
+    export namespace CreateSession {
+        export const name = "create session";
+
+        export interface Raise {
+            (ack: Acknowlege): void;
+        };
+        export interface Handle {
+            (ack: Acknowlege): void;
+        };
+        export interface Acknowlege {
+            (): void;
+        };
+    }
 
     /**
      * Dump game state
      */
-    public static readonly DUMP_GAME_STATE = <const>"dump game state";
+    export namespace DumpGameState {
+        export const name = "dump game state";
+
+        export interface Raise {
+            (ack: Acknowlege): void;
+        };
+        export interface Handle {
+            (ack: Acknowlege): void;
+        };
+        export interface Acknowlege {
+            (): void;
+        };
+    };
 
     /**
      * Player movement.
@@ -25,11 +50,35 @@ export class EventNames {
      * Server validates request, and if accepted, broadcasts to all
      *      clients with {@link PlayerMovementDesc}.
      */
-    public static readonly PLAYER_MOVEMENT = <const>"player movement";
+    export namespace PlayerMovement {
+        export const name = "player movement";
+
+        export interface Raise {
+            (playerId: number, destPos: BarePos, ack: Acknowlege): void;
+        };
+        export interface Handle {
+            (playerId: number, destPos: BarePos, ack: Acknowlege): void;
+        };
+        export interface Acknowlege {
+            (desc: PlayerMovementEvent): void;
+        };
+    }
 
     /**
      * Language change.
      */
-    public static readonly LANGUAGE_CHANGE = <const>"language change";
+    export namespace LanguageChange {
+        export const name = "language change";
+
+        export interface Raise {
+            (ack: Acknowlege): void;
+        };
+        export interface Handle {
+            (ack: Acknowlege): void;
+        };
+        export interface Acknowlege {
+            (): void;
+        };
+    }
 
 }

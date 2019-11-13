@@ -3,7 +3,7 @@ import * as io from "socket.io-client";
 import { BarePos, Tile } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { Grid, Game, PlayerMovementEvent } from "src/base/Game";
-import { EventNames } from "src/EventNames";
+import { Events } from "src/Events";
 
 /**
  * 
@@ -19,12 +19,6 @@ export class ClientGame extends Game {
 
         const serverUrl: string = null; // TODO
         this.socket = io.connect(`${serverUrl}${sessionNamespace}`);
-
-        this.socket.on(EventNames.PlayerMovement.name, (desc: PlayerMovementEvent): void => {
-            this.processMoveExecute(desc);
-        });
-
-        // TODO: bind processMoveExecute to event notification.
     }
 
     /**
