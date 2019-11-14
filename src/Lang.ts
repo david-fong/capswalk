@@ -1,5 +1,5 @@
 import { Defs } from "src/Defs";
-import { LangSeqTreeNode } from "src/LangSeqTreeNode";
+import { LangSeqTreeNode, WeightedCspForwardMap } from "src/LangSeqTreeNode";
 
 /**
  * All `Lang` implementations should put their module file names
@@ -101,7 +101,14 @@ export abstract class Lang {
         return null;
     }
 
-    protected constructor(name: string, forwardDict: Record<LangChar, [LangSeq, number,]>) {
+    /**
+     * 
+     * @param name - 
+     * @param forwardDict - Note: weights are relative values handled
+     *      by {@link LangSeqTreeNode}. They do not all need to sum to
+     *      a specific value such as 100.
+     */
+    protected constructor(name: string, forwardDict: WeightedCspForwardMap) {
         // Write JSON data to my `dict`:
         this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes = this.treeMap.getLeafNodes();

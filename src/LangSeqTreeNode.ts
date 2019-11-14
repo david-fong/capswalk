@@ -1,6 +1,16 @@
-import { LangSeq, LangChar } from "src/Lang";
+import { LangChar, LangSeq } from "src/Lang";
 
-type WeightedLangChar = [LangChar, number];
+/**
+ * Shape that must be passed in to the static tree producer. The
+ * `Record` type enforces the invariant that {@link LangChar}s are
+ * unique in a {@link Lang}. "CSP" is short for {@link LangCharSeqPair}
+ */
+export type WeightedCspForwardMap = Record<LangChar, {seq: LangSeq, weight: number,}>;
+
+type WeightedLangChar = {
+    char: LangChar,
+    weight: number,
+};
 
 /**
  * No `LangSeqTreeNode`s mapped in the `children` field have an empty
@@ -10,11 +20,15 @@ type WeightedLangChar = [LangChar, number];
  * 
  * All non-root nodes have a `sequence` that is prefixed by their parent's
  * `sequence`, and a non-empty `characters` collection.
+ * 
+ * The enclosing {@link Lang} object has no concept of `LangChar` weights.
+ * All it has is the interfaces provided by the hit-count getter methods.
+ * TODO: make those getters accomodate char weights.
  */
 export class LangSeqTreeNode {
 
     public readonly sequence:   LangSeq;
-    public readonly characters: ReadonlyArray<LangChar>;
+    public readonly characters: ReadonlyArray<WeightedLangChar>;
 
     public readonly parent:     LangSeqTreeNode | null; // `null` for root node.
     public readonly children:   Array<LangSeqTreeNode>; // Empty for leaf nodes.
@@ -26,15 +40,19 @@ export class LangSeqTreeNode {
      * @param forwardDict - 
      * @returns The root node of a new tree map.
      */
-    public static CREATE_TREE_MAP(forwardDict: Record<LangChar, [LangSeq, number,]>): LangSeqTreeNode {
+    public static CREATE_TREE_MAP(forwardDict: WeightedCspForwardMap): LangSeqTreeNode {
         // Reverse the map:
         const reverseDict: Map<LangSeq, Array<WeightedLangChar>> = new Map();
         for (const char in forwardDict) {
             const seq: LangSeq = forwardDict[char][0];
+            const weightedChar: WeightedLangChar = {
+                char: char,
+                weight: forwardDict[char][1],
+            };
             if (reverseDict.has(seq)) {
-                reverseDict.get(seq).push([char, forwardDict[char][1],]);
+                reverseDict.get(seq).push(weightedChar);
             } else {
-                reverseDict.set(seq, [char, forwardDict[char][1],]);
+                reverseDict.set(seq, [weightedChar,]);
             }
         }
         // Add mappings in ascending order of sequence length:
@@ -57,7 +75,7 @@ export class LangSeqTreeNode {
     private constructor(
         parent: LangSeqTreeNode,
         sequence: LangSeq,
-        characters: ReadonlyArray<LangChar>,
+        characters: ReadonlyArray<WeightedLangChar>,
     ) {
         this.sequence   = sequence;
         this.parent     = parent;
