@@ -11,7 +11,7 @@ export { Pos, BarePos } from "src/Pos";
  */
 export abstract class Tile {
 
-    readonly pos: Pos;
+    public readonly pos: Pos;
 
     /**
      * 

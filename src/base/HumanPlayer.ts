@@ -56,14 +56,12 @@ export abstract class HumanPlayer extends Player {
      * @param key - The pressed typable key as a string.
      */
     public seqBufferAcceptKey(key: string): void {
-        
         const unoccupiedNeighbouringTiles: Array<Tile> = this.getUNT();
         if (unoccupiedNeighbouringTiles.length === 0) {
             // Every neighbouring `Tile` is occupied!
             // In this case, no movement is possible.
             return;
         }
-        
         let newSeqBuffer: LangSeq;
         for ( // loop through substring start offset of newSeqBuffer:
             newSeqBuffer = this._seqBuffer + key;

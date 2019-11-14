@@ -12,7 +12,7 @@ export type BarePos = {
  * 
  * Norm accessors measure distance from the origin (0, 0).
  */
-export class Pos {
+export class Pos implements BarePos {
 
     public static readonly ORIGIN: Pos = new Pos(0, 0);
 
@@ -22,6 +22,7 @@ export class Pos {
     public constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
+        Object.freeze(this);
     }
 
     public asBarePos(): BarePos {
@@ -33,7 +34,7 @@ export class Pos {
 
 
 
-    public equals(other: Pos): boolean {
+    public equals(other: BarePos): boolean {
         return this.x === other.x && this.y === other.y;
     }
 
@@ -49,6 +50,8 @@ export class Pos {
 
     /**
      * Also known as the "manhattan norm".
+     * 
+     * @returns The sum of the absolute values of each coordinate.
      */
     public get oneNorm(): number {
         return Math.abs(this.x) + Math.abs(this.y);
@@ -56,13 +59,15 @@ export class Pos {
 
     /**
      * Diagonal distance in 2D / hypotenuse.
+     * 
+     * @returns The square root of the square of each coordinate.
      */
     public get twoNorm(): number {
         return Math.sqrt((this.x ** 2) + (this.y **2));
     }
 
     /**
-     * Length of the longest dimension.
+     * @returns The length of the longest dimension.
      */
     public get infNorm(): number {
         return Math.max(Math.abs(this.x), Math.abs(this.y));
@@ -70,14 +75,15 @@ export class Pos {
 
 
 
-    public add(other: Pos): Pos {
+    public add(other: BarePos): Pos {
         return new Pos(this.x + other.x, this.y + other.y);
     }
 
     /**
-     * subtract `other` from `this`.
+     * @param other - 
+     * @returns The subtraction of `other` from `this`.
      */
-    public sub(other: Pos): Pos {
+    public sub(other: BarePos): Pos {
         return new Pos(this.x - other.x, this.y - other.y);
     }
 

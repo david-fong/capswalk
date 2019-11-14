@@ -16,10 +16,10 @@ export abstract class Player {
      * If this `Player` is human-controlled, this value is non-negative,
      * and otherwise, it is negative.
      */
-    readonly     idNumber:  number;
-    protected   _isAlive:   boolean;
-    protected   _score:     number;
-    protected   _hostTile:  Tile;
+    public readonly idNumber:   number;
+    protected       _isAlive:   boolean;
+    protected       _score:     number;
+    protected       _hostTile:  Tile;
 
 
 

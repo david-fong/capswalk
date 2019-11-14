@@ -21,7 +21,7 @@ export class LangSeqTreeNode {
      * @param forwardDict - 
      * @returns The root node of a new tree map.
      */
-    static CREATE_TREE_MAP(forwardDict: Record<LangChar, LangSeq>): LangSeqTreeNode {
+    public static CREATE_TREE_MAP(forwardDict: Record<LangChar, LangSeq>): LangSeqTreeNode {
         // Reverse the map:
         const reverseDict: Map<LangSeq, Array<LangChar>> = new Map();
         for (const char in forwardDict) {
@@ -136,6 +136,8 @@ export class LangSeqTreeNode {
 
     /**
      * Do not call this on a root node.
+     * 
+     * @returns How many hits were made on this node since the last reset.
      */
     public get personalHitCount(): number {
         return this._numHits - this.parent._numHits;
