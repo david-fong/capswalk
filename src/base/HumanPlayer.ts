@@ -11,6 +11,10 @@ import { Player } from "base/Player";
  */
 export abstract class HumanPlayer extends Player {
 
+    /**
+     * Invariant: always matches the prefix of the {@link LangSeq} of
+     * an unoccupied neighbouring {@link Tile}.
+     */
     protected _seqBuffer: LangSeq;
 
     public constructor(game: Game, idNumber: number) {
@@ -53,19 +57,22 @@ export abstract class HumanPlayer extends Player {
 
     /**
      * 
-     * @param key - The pressed typable key as a string.
+     * @param key - The pressed typable key as a string. Pass null to
+     *      trigger a refresh of the {@link HumanPlayer#_seqBuffer}
+     *      to maintain its invariant.
      */
-    public seqBufferAcceptKey(key: string): void {
+    public seqBufferAcceptKey(key: string | null): void {
         const unoccupiedNeighbouringTiles: Array<Tile> = this.getUNT();
         if (unoccupiedNeighbouringTiles.length === 0) {
             // Every neighbouring `Tile` is occupied!
             // In this case, no movement is possible.
             return;
         }
-        key = this.lang.remapKey(key);
-        if (key === null) {
-            return;
-        }
+        key = ((key !== null)
+            ? this.lang.remapKey(key)
+            : "" // Caller intends to refresh seqBuffer invariant.
+        ) as string;
+
         let newSeqBuffer: LangSeq;
         for ( // loop through substring start offset of newSeqBuffer:
             newSeqBuffer = this._seqBuffer + key;

@@ -10,8 +10,9 @@ import { LangSeqTreeNode } from "src/LangSeqTreeNode";
 export const LANG_MODULE_PATHS: ReadonlyArray<string> = [
     "English",
 ].map((filename) => {
+    // This test is somewhat arbitrary.
     if (!(/[A-Z][a-zA-Z]*/.test(filename))) {
-        throw new Error(`filename ${filename} does not PascalCase.`);
+        throw new Error(`filename ${filename} does not match PascalCase.`);
     }
     return `src/lang/${filename}`;
 });
@@ -26,9 +27,10 @@ export const LANG_MODULE_PATHS: ReadonlyArray<string> = [
 export type LangChar = string;
 
 /**
- * Should be typable on a QWERTY keyboard. Must match against the
- * regular expression {@link LANG_SEQ_REGEXP} (*after* transformations
- * made by a {@link LangKeyboardRemapper} are applied).
+ * A sequence of characters each matching {@link LANG_SEQ_REGEXP}
+ * that represent the intermediate interface between an Operator
+ * and a `LangChar`. The immediate interface is through the `Lang`
+ * implementation's {@link Lang#remapKey} method.
  */
 export type LangSeq = string;
 
@@ -41,7 +43,7 @@ export type LangSeq = string;
  * Characters that must never be unmarked as reserved (state reason):
  * (currently none. update as needed)
  */
-export const LANG_SEQ_REGEXP = new RegExp("a-zA-Z\-.]");
+export const LANG_SEQ_REGEXP = new RegExp("^[a-zA-Z\-.]+$");
 
 /**
  * A key-value pair containing a `LangChar` and its corresponding
@@ -99,7 +101,7 @@ export abstract class Lang {
         return null;
     }
 
-    protected constructor(name: string, forwardDict: Record<LangChar, LangSeq>) {
+    protected constructor(name: string, forwardDict: Record<LangChar, [LangSeq, number,]>) {
         // Write JSON data to my `dict`:
         this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes = this.treeMap.getLeafNodes();
@@ -135,10 +137,21 @@ export abstract class Lang {
      * remapping the alphabet by barrel-shifting it so that pressing "a"
      * produces "b", and "b" produces "c", and so on.
      * 
-     * @param input - 
-     * @returns `null` on failure.
+     * The output should either equal the input (in cases that the input
+     * is already relevant to the `Lang` at hand and is intended to be
+     * taken as-is (ex. typing "a" produces / corresponds to "a" in
+     * regular English), or in cases where the input is completely
+     * irrelevant before and after remapping), or be a translation to
+     * some character that is relevant to the `Lang` and hand, and that
+     * matches against {@link LANG_SEQ_REGEXP}. This behaviour is not
+     * checked or mandated, and will not result in errors in cases of
+     * deviation (see {@link HumanPlayer#seqBufferAcceptKey}), but is
+     * the only behaviour that makes any sense.
+     * 
+     * @param input - Never `null`.
+     * @returns Never `null`.
      */
-    public abstract remapKey(input: string): string | null;
+    public abstract remapKey(input: string): string;
 
     /**
      * @returns a random `LangChar` in this `Lang` whose corresponding

@@ -1,5 +1,7 @@
 import { LangSeq, LangChar } from "src/Lang";
 
+type WeightedLangChar = [LangChar, number];
+
 /**
  * No `LangSeqTreeNode`s mapped in the `children` field have an empty
  * `characters` collection (with the exception of the root node). The
@@ -24,19 +26,20 @@ export class LangSeqTreeNode {
      * @param forwardDict - 
      * @returns The root node of a new tree map.
      */
-    public static CREATE_TREE_MAP(forwardDict: Record<LangChar, LangSeq>): LangSeqTreeNode {
+    public static CREATE_TREE_MAP(forwardDict: Record<LangChar, [LangSeq, number,]>): LangSeqTreeNode {
         // Reverse the map:
-        const reverseDict: Map<LangSeq, Array<LangChar>> = new Map();
+        const reverseDict: Map<LangSeq, Array<WeightedLangChar>> = new Map();
         for (const char in forwardDict) {
-            if (reverseDict.has(forwardDict[char])) {
-                reverseDict.get(forwardDict[char]).push(char);
+            const seq: LangSeq = forwardDict[char][0];
+            if (reverseDict.has(seq)) {
+                reverseDict.get(seq).push([char, forwardDict[char][1],]);
             } else {
-                reverseDict.set(forwardDict[char], [char,]);
+                reverseDict.set(seq, [char, forwardDict[char][1],]);
             }
         }
         // Add mappings in ascending order of sequence length:
         // (this is so that no merging of branches needs to be done)
-        const reverseSortedDict: ReadonlyArray<[LangSeq, Array<LangChar>,]> = Array
+        const reverseSortedDict: ReadonlyArray<[LangSeq, Array<WeightedLangChar>,]> = Array
             .from(reverseDict)
           //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
             .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length);
@@ -89,7 +92,7 @@ export class LangSeqTreeNode {
      * @param seq The typable sequence corrensponding to entries of `chars`.
      * @param chars A collection of unique characters in a written language.
      */
-    private addCharMapping(seq: LangSeq, chars: Array<LangChar>): void {
+    private addCharMapping(seq: LangSeq, chars: Array<WeightedLangChar>): void {
         if (seq.length === 0) {
             throw new Error("Mapping sequence must not be the empty string.");
         } else if (chars.length === 0) {
