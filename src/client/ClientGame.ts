@@ -1,9 +1,10 @@
 import * as io from "socket.io-client";
 
+import { Events } from "src/Events";
 import { BarePos, Tile } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
-import { Grid, Game, PlayerMovementEvent } from "src/base/Game";
-import { Events } from "src/Events";
+import { Grid, Game } from "src/base/Game";
+import { NonPrivilegedSettings } from "src/settings/GameSettings";
 
 /**
  * 
@@ -11,6 +12,8 @@ import { Events } from "src/Events";
  * @extends Game
  */
 export class ClientGame extends Game {
+
+    protected settings: NonPrivilegedSettings;
 
     public readonly socket: SocketIOClient.Socket;
 

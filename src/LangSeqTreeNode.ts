@@ -13,8 +13,11 @@ export class LangSeqTreeNode {
 
     public readonly sequence:   LangSeq;
     public readonly characters: ReadonlyArray<LangChar>;
-    public readonly parent:     LangSeqTreeNode; // `null` for root node.
-    public readonly children:   Array<LangSeqTreeNode>; // empty for leaf nodes.
+
+    public readonly parent:     LangSeqTreeNode | null; // `null` for root node.
+    public readonly children:   Array<LangSeqTreeNode>; // Empty for leaf nodes.
+
+    public readonly totalWeight: number; // The sum of constituent weights.
     private _numHits: number;
 
     /**
@@ -31,13 +34,13 @@ export class LangSeqTreeNode {
                 reverseDict.set(forwardDict[char], [char,]);
             }
         }
+        // Add mappings in ascending order of sequence length:
+        // (this is so that no merging of branches needs to be done)
         const reverseSortedDict: ReadonlyArray<[LangSeq, Array<LangChar>,]> = Array
             .from(reverseDict)
           //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
             .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length);
 
-        // Add mappings in ascending order of sequence length:
-        // (this is so that no merging of branches needs to be done)
         const rootNode: LangSeqTreeNode = new LangSeqTreeNode(null, "", []);
         for (const mapping of reverseSortedDict) {
             rootNode.addCharMapping(...mapping);

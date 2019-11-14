@@ -62,6 +62,10 @@ export abstract class HumanPlayer extends Player {
             // In this case, no movement is possible.
             return;
         }
+        key = this.lang.remapKey(key);
+        if (key === null) {
+            return;
+        }
         let newSeqBuffer: LangSeq;
         for ( // loop through substring start offset of newSeqBuffer:
             newSeqBuffer = this._seqBuffer + key;

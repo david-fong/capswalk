@@ -1,17 +1,47 @@
-import { LangSeqTreeNode } from "src/LangSeqTreeNode";
 import { Defs } from "src/Defs";
+import { LangSeqTreeNode } from "src/LangSeqTreeNode";
+
+/**
+ * All `Lang` implementations should put their module file names
+ * here so that they can be dynamically loaded later.
+ * 
+ * TODO: use this in the privileged settings.
+ */
+export const LANG_MODULE_PATHS: ReadonlyArray<string> = [
+    "English",
+].map((filename) => {
+    if (!(/[A-Z][a-zA-Z]*/.test(filename))) {
+        throw new Error(`filename ${filename} does not PascalCase.`);
+    }
+    return `src/lang/${filename}`;
+});
+
+
 
 /**
  * An atomic unit in a written language that constitutes a single
- * character.
+ * character. It is completely unique in its language, and has a
+ * single corresponding sequence (string) typeable on a keyboard.
  */
 export type LangChar = string;
 
 /**
- * Should be typable on a QWERTY keyboard, and should not contain any
- * white-space-type characters.
+ * Should be typable on a QWERTY keyboard. Must match against the
+ * regular expression {@link LANG_SEQ_REGEXP} (*after* transformations
+ * made by a {@link LangKeyboardRemapper} are applied).
  */
 export type LangSeq = string;
+
+/**
+ * The choice of this pattern is not out of necessity, but following
+ * the mindset of spec designers when they mark something as reserved:
+ * For the language implementations I have in mind, I don't see the
+ * need to include characters other than these.
+ * 
+ * Characters that must never be unmarked as reserved (state reason):
+ * (currently none. update as needed)
+ */
+export const LANG_SEQ_REGEXP = new RegExp("a-zA-Z\-.]");
 
 /**
  * A key-value pair containing a `LangChar` and its corresponding
@@ -39,7 +69,7 @@ export class LangCharSeqPair {
  * key-sequences). This game does not require support for retreiving
  * the `LangSeq` corresponding to a `LangChar`.
  */
-export class Lang {
+export abstract class Lang {
 
     /**
      * The name of this language.
@@ -57,6 +87,17 @@ export class Lang {
      * always be sorted in ascending order of `tricklingHitCount`.
      */
     protected readonly leafNodes: Array<LangSeqTreeNode>;
+
+
+
+    /**
+     * Implementations should follow a singleton pattern.
+     * 
+     * @returns `null`. This is just here as a reminder of the interface.
+     */
+    public static getInstance(): Lang | null {
+        return null;
+    }
 
     protected constructor(name: string, forwardDict: Record<LangChar, LangSeq>) {
         // Write JSON data to my `dict`:
@@ -85,7 +126,22 @@ export class Lang {
 
 
     /**
-     * @returns a random `LangChar` in this Lang whose corresponding
+     * 
+     * This can be used, for example, for basic practical purposes like
+     * changing all letters to lowercase for the English language, or for
+     * more interesting things like mapping halves of the keyboard to a
+     * binary-like value like the dots and dashes in morse, or zeros and
+     * ones in binary. It could even be used for some crazy challenges like
+     * remapping the alphabet by barrel-shifting it so that pressing "a"
+     * produces "b", and "b" produces "c", and so on.
+     * 
+     * @param input - 
+     * @returns `null` on failure.
+     */
+    public abstract remapKey(input: string): string | null;
+
+    /**
+     * @returns a random `LangChar` in this `Lang` whose corresponding
      * `LangSeq` is not a prefix of any `LangSeq` in `avoid`, and vice
      * versa. They may share a common prefix as long as they are both
      * longer in length than the shared prefix, and they are not equal
@@ -96,7 +152,7 @@ export class Lang {
      * from all {@link Tile}s reachable by a human {@link Player} occupying
      * a {@link Tile} `B` from which they can also reach `A`
      * 
-     * In order for this Lang to satisfy these constraints, it must
+     * In order for this `Lang` to satisfy these constraints, it must
      * be true that the number of leaf nodes in this tree-structure must
      * `avoid` argument.
      * 
