@@ -1,5 +1,5 @@
 import { Defs } from "src/Defs";
-import { LangSeqTreeNode, WeightedCspForwardMap } from "src/LangSeqTreeNode";
+import { LangSeqTreeNode, WeightedCspForwardMap, BalancingScheme } from "src/LangSeqTreeNode";
 
 /**
  * All `Lang` implementations should put their module file names
@@ -160,6 +160,8 @@ export abstract class Lang {
      */
     public abstract remapKey(input: string): string;
 
+
+
     /**
      * @returns a random `LangChar` in this `Lang` whose corresponding
      * `LangSeq` is not a prefix of any `LangSeq` in `avoid`, and vice
@@ -186,9 +188,13 @@ export abstract class Lang {
      * letters), this requirement is met by a hair.
      * 
      * @param avoid A collection of `LangSeq`s to avoid conflicts with
-     *          when choosing a `LangChar` to return.
+     *      when choosing a `LangChar` to return.
+     * @param balancingScheme - 
      */
-    public getNonConflictingChar(avoid: ReadonlyArray<LangSeq>): LangCharSeqPair {
+    public getNonConflictingChar(
+        avoid: ReadonlyArray<LangSeq>,
+        balancingScheme: BalancingScheme,
+    ): LangCharSeqPair {
         // Wording the spec closer to this implementation: We must find
         // characters from nodes that are not descendants or ancestors
         // of nodes for sequences to avoid. We can be sure that none of
@@ -198,6 +204,10 @@ export abstract class Lang {
         // its parents are avoid-nodes, then, from the set of nodes
         // including the leaf node and all its parents (minus the root),
         // choose the node with the least actual/personal hit-count.
+
+        // Start by sorting according to the desired balancing scheme:
+        this.leafNodes.sort(LangSeqTreeNode.LEAF_CMP.get(balancingScheme));
+
         let nodeToHit: LangSeqTreeNode = null;
         for (const leaf of this.leafNodes) {
             const upstreamNodes: Array<LangSeqTreeNode> = leaf.andNonRootParents();
@@ -221,9 +231,7 @@ export abstract class Lang {
             if (upstreamNodes.length > 0) {
                 // Found a non-conflicting upstream node.
                 // Find the node with the lowest personal hit-count:
-                upstreamNodes.sort((nodeA, nodeB) => {
-                    return nodeA.personalHitCount - nodeB.personalHitCount;
-                });
+                upstreamNodes.sort(LangSeqTreeNode.PATH_CMP.get(balancingScheme));
                 nodeToHit = upstreamNodes[0];
                 break;
             }
@@ -235,15 +243,7 @@ export abstract class Lang {
                 + `always be shufled-in were not met.`
             );
         }
-
-        // TODO: change this to a method that returns a random character
-        // from `node` and implicitly increments its hit-count.
-        const chosenPair: LangCharSeqPair = null;
-        nodeToHit.incrementNumHits();
-        this.leafNodes.sort((leafA, leafB) => {
-            return leafA.tricklingHitCount - leafB.tricklingHitCount;
-        });
-        return chosenPair;
+        return nodeToHit.chooseOnePair(balancingScheme);
     }
 
 }

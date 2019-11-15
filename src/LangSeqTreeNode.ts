@@ -1,4 +1,15 @@
-import { LangChar, LangSeq } from "src/Lang";
+import { LangChar, LangSeq, LangCharSeqPair } from "src/Lang";
+
+
+
+/**
+ * Ways of choosing {@link LangCharSeqPair} to balance the frequency
+ * of the selection of a result based on the results of all previous
+ * selections.
+ */
+export enum BalancingScheme {
+    SEQ, CHAR, WEIGHT,
+}
 
 /**
  * Shape that must be passed in to the static tree producer. The
@@ -7,10 +18,7 @@ import { LangChar, LangSeq } from "src/Lang";
  */
 export type WeightedCspForwardMap = Record<LangChar, {seq: LangSeq, weight: number,}>;
 
-type WeightedLangChar = {
-    char: LangChar,
-    weight: number,
-};
+
 
 /**
  * No `LangSeqTreeNode`s mapped in the `children` field have an empty
@@ -28,15 +36,19 @@ type WeightedLangChar = {
 export class LangSeqTreeNode {
 
     public readonly sequence:   LangSeq;
-    public readonly characters: ReadonlyArray<WeightedLangChar>;
+    public readonly characters: ReadonlyArray<WeightedLangChar>; // Frozen.
 
     public readonly parent:     LangSeqTreeNode | null; // `null` for root node.
-    public readonly children:   Array<LangSeqTreeNode>; // Empty for leaf nodes.
+    public readonly children:   Array<LangSeqTreeNode>; // Empty for leaf nodes. Frozen.
 
-    public readonly totalWeight: number; // The sum of constituent weights.
-    private _numHits: number;
+    private hitCount: number;
+    private weightedHitCount: number;
+
+
 
     /**
+     * Does not call reset on the returned root node.
+     * 
      * @param forwardDict - 
      * @returns The root node of a new tree map.
      */
@@ -44,11 +56,10 @@ export class LangSeqTreeNode {
         // Reverse the map:
         const reverseDict: Map<LangSeq, Array<WeightedLangChar>> = new Map();
         for (const char in forwardDict) {
-            const seq: LangSeq = forwardDict[char][0];
-            const weightedChar: WeightedLangChar = {
-                char: char,
-                weight: forwardDict[char][1],
-            };
+            const seq: LangSeq = forwardDict[char].seq;
+            const weightedChar = new WeightedLangChar(
+                char, forwardDict[char].weight,
+            );
             if (reverseDict.has(seq)) {
                 reverseDict.get(seq).push(weightedChar);
             } else {
@@ -57,18 +68,16 @@ export class LangSeqTreeNode {
         }
         // Add mappings in ascending order of sequence length:
         // (this is so that no merging of branches needs to be done)
-        const reverseSortedDict: ReadonlyArray<[LangSeq, Array<WeightedLangChar>,]> = Array
-            .from(reverseDict)
-          //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
-            .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length);
-
         const rootNode: LangSeqTreeNode = new LangSeqTreeNode(null, "", []);
-        for (const mapping of reverseSortedDict) {
-            rootNode.addCharMapping(...mapping);
-        }
+        Array.from(reverseDict)
+          //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
+            .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
+            .forEach(mapping => {
+                rootNode.addCharMapping(...mapping);
+            }, this);
         rootNode.finalize();
         // reset will be called automatically by `Lang`.
-        //rootNode.reset();
+        // rootNode.reset();
         return rootNode;
     }
 
@@ -99,11 +108,11 @@ export class LangSeqTreeNode {
     }
 
     public reset(): void {
-        this._numHits = 0;
+        this.hitCount = 0;
+        this.weightedHitCount = 0;
+        this.characters.forEach(char => char.reset());
         this.children.forEach(child => child.reset());
     }
-
-
 
     /**
      * 
@@ -139,32 +148,49 @@ export class LangSeqTreeNode {
      * taking the viewpoint of leaf-nodes, so this implementation is
      * geared toward indicating hit-count through leaf-nodes, hence
      * the bubble-down of hit-count incrementation.
+     * 
+     * @param balancingScheme - 
+     * @returns A character / sequence pair from this node that has
+     *      been selected the least according to the specified scheme.
      */
-    public incrementNumHits(): void {
+    public chooseOnePair(balancingScheme: BalancingScheme): LangCharSeqPair {
         if (this.parent === null) {
             throw new Error("Should never hit on the root.");
         }
-        // TODO: calculate number based on LangChar instance weight?
-        const amount: number = 1;
-        this.recursiveIncrementNumHits(amount);
+        const weightedChar: WeightedLangChar = this.characters.slice(0)
+            .sort(WeightedLangChar.CMP.get(balancingScheme))
+            .shift();
+        const pair: LangCharSeqPair = new LangCharSeqPair(
+            weightedChar.char,
+            this.sequence,
+        );
+        weightedChar.hitCount += 1;
+        weightedChar.weightedHitCount += weightedChar.weightInv;
+        this.recursiveIncrementNumHits(weightedChar.weightInv);
+        return pair;
     }
-
-    private recursiveIncrementNumHits(amount: number): void {
-        this._numHits += amount;
-        this.children.forEach(child => child.recursiveIncrementNumHits(amount));
-    }
-
-    public get tricklingHitCount(): number {
-        return this._numHits;
+    private recursiveIncrementNumHits(weightInv: number): void {
+        this.hitCount += 1;
+        this.weightedHitCount += weightInv;
+        this.children.forEach(child => child.recursiveIncrementNumHits(weightInv));
     }
 
     /**
      * Do not call this on a root node.
-     * 
+     *
      * @returns How many hits were made on this node since the last reset.
      */
     public get personalHitCount(): number {
-        return this._numHits - this.parent._numHits;
+        return this.hitCount - this.parent.hitCount;
+    }
+
+    /**
+     * Do not call this on a root node.
+     *
+     * @returns How many hits were made on this node since the last reset.
+     */
+    public get personalWeightedHitCount(): number {
+        return this.weightedHitCount - this.parent.weightedHitCount;
     }
 
     public andNonRootParents(): Array<LangSeqTreeNode> {
@@ -191,4 +217,83 @@ export class LangSeqTreeNode {
         }
     }
 
+
+
+    private static LEAF_CMP_COUNT(
+        nodeA: LangSeqTreeNode,
+        nodeB: LangSeqTreeNode,
+    ): number {
+        return nodeA.hitCount - nodeB.hitCount;
+    };
+    private static LEAF_CMP_WEIGHT(
+        nodeA: LangSeqTreeNode,
+        nodeB: LangSeqTreeNode,
+    ): number {
+        return nodeA.weightedHitCount - nodeB.weightedHitCount;
+    };
+    public static readonly LEAF_CMP = new Map([
+        [BalancingScheme.SEQ,   LangSeqTreeNode.LEAF_CMP_COUNT,],
+        [BalancingScheme.CHAR,  LangSeqTreeNode.LEAF_CMP_COUNT,],
+        [BalancingScheme.WEIGHT,LangSeqTreeNode.LEAF_CMP_WEIGHT,],
+    ]);
+
+    private static PATH_CMP_COUNT(
+        nodeA: LangSeqTreeNode,
+        nodeB: LangSeqTreeNode,
+    ): number {
+        return nodeA.personalHitCount - nodeB.personalHitCount;
+    };
+    private static PATH_CMP_WEIGHT(
+        nodeA: LangSeqTreeNode,
+        nodeB: LangSeqTreeNode,
+    ): number {
+        return nodeA.personalWeightedHitCount - nodeB.personalWeightedHitCount;
+    };
+    public static readonly PATH_CMP = new Map([
+        [BalancingScheme.SEQ,   LangSeqTreeNode.PATH_CMP_COUNT,],
+        [BalancingScheme.CHAR,  LangSeqTreeNode.PATH_CMP_COUNT,],
+        [BalancingScheme.WEIGHT,LangSeqTreeNode.PATH_CMP_WEIGHT,],
+    ]);
+
 }
+
+
+
+class WeightedLangChar {
+
+    public readonly char: LangChar;
+    public readonly weightInv: number;
+    public hitCount: number;
+    public weightedHitCount: number;
+
+    public constructor(
+        char: LangChar,
+        weight: number,
+    ) {
+        this.char = char;
+        this.weightInv = 1 / weight;
+    }
+
+    public reset(): void {
+        this.hitCount = 0;
+        this.weightedHitCount = 0;
+    }
+
+    private static CMP_COUNT(
+        charA: WeightedLangChar,
+        charB: WeightedLangChar,
+    ): number {
+        return charA.hitCount - charB.hitCount;
+    };
+    private static CMP_WEIGHT(
+        charA: WeightedLangChar,
+        charB: WeightedLangChar,
+    ): number {
+        return charA.weightedHitCount - charB.weightedHitCount;
+    };
+    public static readonly CMP = new Map([
+        [BalancingScheme.SEQ,   WeightedLangChar.CMP_COUNT,],
+        [BalancingScheme.CHAR,  WeightedLangChar.CMP_COUNT,],
+        [BalancingScheme.WEIGHT,WeightedLangChar.CMP_WEIGHT,],
+    ]);
+};
