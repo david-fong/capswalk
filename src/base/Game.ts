@@ -45,7 +45,7 @@ export abstract class Game extends Grid {
 
 
     /**
-     * TODO: change the player arrays to be cosntructor arguments. Not
+     * TODO: change the player arrays to be constructor arguments. Not
      * sure about the aritifial players. But definitely the human ones.
      * 
      * Does not call reset.
@@ -122,15 +122,18 @@ export abstract class Game extends Grid {
      *      request is rejected.
      */
     public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
-        // TODO: check that the specified player exists.
+        if (this.getPlayerById(desc.playerId) === null) {
+            // specified player does not exist.
+            return null;
+        }
         const dest: Tile = this.getTileAt(desc.destPos);
-        if (dest.isOccupied() || dest.numTimesOccupied !== desc.destNumTimesOccupied) {
+        if (dest.isOccupied() /*|| dest.numTimesOccupied !== desc.destNumTimesOccupied*/) {
+            // we don't actually need to check the occupancy counter.
             return null;
         }
 
-        // If the request was rejected, we would have short-circuited.
         // We are all go. Do it.
-        desc.destNumTimesOccupied += 1,
+        desc.destNumTimesOccupied = dest.numTimesOccupied + 1,
         desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
         this.processMoveExecute(desc);
         return desc;
@@ -162,19 +165,20 @@ export abstract class Game extends Grid {
             // This update arrived out of order. We can ignore it.
             return;
         }
-
-        this.getHumanPlayer(desc.playerId).moveTo(dest);
+        // The order of these operations is not important.
+        this.getPlayerById(desc.playerId).moveTo(dest);
         dest.numTimesOccupied = desc.destNumTimesOccupied;
         dest.setLangCharSeq(desc.newCharSeqPair);
     }
 
 
 
-    protected getHumanPlayer(playerId: number): Player {
-        if (this.allHumanPlayers[playerId] === undefined) {
-            throw new RangeError(`No player with id ${playerId} exists.`);
-        }
-        return this.allHumanPlayers[playerId];
+    protected getPlayerById(playerId: number): Player | null {
+        const player: Player = ((playerId < 0)
+            ? this.allArtifPlayers[-playerId]
+            : this.allHumanPlayers[ playerId]
+        );
+        return (player) ? player : null;
     }
 
 }

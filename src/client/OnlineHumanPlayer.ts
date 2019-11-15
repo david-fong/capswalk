@@ -1,10 +1,16 @@
-import * as io from "socket.io";
-
 import { Events } from "src/Events";
-import { Pos, Tile } from "src/base/Tile";
+import { Tile } from "src/base/Tile";
 import { ClientGame } from "src/client/ClientGame";
 import { HumanPlayer } from "src/base/HumanPlayer";
 import { PlayerMovementEvent } from "src/base/Player";
+
+
+
+/**
+ * The choice of this is somewhat arbitrary. This should be enforced
+ * externally since player descriptors are passed to the constructor.
+ */
+export const USERNAME_REGEXP = new RegExp("[a-zA-Z](\s?[a-zA-Z0-9:-]+)*");
 
 /**
  * 
@@ -13,21 +19,33 @@ import { PlayerMovementEvent } from "src/base/Player";
  */
 export class OnlineHumanPlayer extends HumanPlayer {
 
+    public readonly username: string;
+
     /**
-     * @override {@link Player#game}
+     * @override
      */
     public readonly game: ClientGame;
 
 
 
-    public constructor(game: ClientGame, idNumber: number) {
+    public constructor(
+        username: string,
+        game: ClientGame,
+        idNumber: number,
+    ) {
         super(game, idNumber);
+        this.username = username;
+        if (!(USERNAME_REGEXP.test(username))) {
+            throw new RangeError(
+                `username \"${username}\" does not match the required regexp.`
+            );
+        }
     }
 
 
 
     /**
-     * @override {@link Player#makeMovementRequest}
+     * @override
      */
     public makeMovementRequest(dest: Tile): void {
         // ServerGame handles with processMoveRequest.
@@ -36,13 +54,6 @@ export class OnlineHumanPlayer extends HumanPlayer {
             Events.PlayerMovement.name,
             new PlayerMovementEvent(this.idNumber, dest),
         );
-    }
-
-    /**
-     * {@link Events}
-     */
-    private verifyCallbackFuncSignatures(): never {
-        throw new Error("We don't do that here.");
     }
 
 }

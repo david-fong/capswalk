@@ -47,25 +47,37 @@ export abstract class Player {
      * Request should call functions with a flow that either short-
      * circuits, or terminates with a call to {@link Player#moveTo}.
      * 
-     * This operation should never fail. If two `Player`s attempt to
-     * move to move to the same position, since javascript and Node
-     * are singlethreaded, one request will be handled first, the other
-     * will be handled second and "dropped" by the Game Manager. If
-     * Another player makes successful requests entering and leaving
-     * some position `A`, and then I make a request to move to A
-     * before receiving the changes made as an effect of the other
-     * player's movements, the Game Manager will drop my request, or
-     * else it could happen that I receive the thumbs-up for my action
-     * and make those changes before 
-     * 
      * @param dest - 
      * 
      * @throws `Error` if `dest` is occupied by another `Player`.
      */
     public abstract makeMovementRequest(dest: Tile): void;
 
+    /**
+     * This operation should never fail. If two `Player`s attempt to
+     * move to move to the same position, since javascript and Node
+     * are single-threaded, one request will be handled first, the other
+     * will be handled second and "dropped" by the Game Manager: this
+     * method will never get called for the dropped request.
+     * 
+     * If another player makes successful requests entering and leaving
+     * some position `A`, and then I make a request to move to A before
+     * receiving the changes made as an effect of the other player's
+     * movements, the Game Manager will still accept my request: it may
+     * happen that I receive the thumbs-up for my action and make those
+     * changes before the other player's moves' changes reach my local
+     * copy of the game, but this can be (and is) handled gracefully
+     * without any destructive or corruptive effects.
+     * 
+     * @param dest - 
+     */
     public moveTo(dest: Tile): void {
+        if (this._hostTile.occupantId !== this.idNumber) {
+            // should never happen.
+            throw new Error("Linkage between player and occupied tile disagrees.");
+        }
         if (dest.isOccupied()) {
+            // should never happen. enforced by caller.
             throw new Error("Only one player can occupy a tile at a time.");
         }
         // Move off of current host `Tile`:

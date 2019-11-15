@@ -1,8 +1,8 @@
 import { Events } from "src/Events";
 import { ServerTile } from "src/server/ServerTile";
 import { Game } from "src/base/Game";
-import { GroupSession } from "src/server/GroupSession";
 import { PlayerMovementEvent } from "src/base/Player";
+import { GroupSession } from "src/server/GroupSession";
 
 /**
  * 
@@ -16,9 +16,10 @@ export class ServerGame extends Game {
     public constructor(
         session: GroupSession,
         height: number,
-        width: number = height
+        width:  number = height,
     ) {
         super(height, width);
+        this.session = session;
 
         this.reset();
     }
@@ -28,24 +29,27 @@ export class ServerGame extends Game {
      */
     public reset(): void {
         super.reset();
+        // TODO: broadcast a gamestate dump to all clients
+        // and wait for each of their acks before starting to
+        // actually process their movement requests and making
+        // any artificial players start moving.
     }
 
     /**
-     * @override {@link Grid#createTile}
+     * @override
      */
     public createTile(x: number, y: number): ServerTile {
         return new ServerTile(x, y);
     }
 
-
-
     /**
-     * @override {@link Game#processMoveRequest}
+     * @override
      */
     public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
         desc = super.processMoveRequest(desc);
         if (desc !== null) {
-            // Request was accepted:
+            // Request was accepted.
+            // Pass on change descriptor to all clients:
             this.session.namespace.emit(
                 Events.PlayerMovement.name,
                 desc,
