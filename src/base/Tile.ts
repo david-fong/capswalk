@@ -14,6 +14,18 @@ export abstract class Tile {
     public readonly pos: Pos;
 
     /**
+     * The number of times this `Tile` was occupied since the last
+     * reset. This is used to ensure that in online sessions, each
+     * client has a synchronized copy of the game. The Game Manager
+     * will drop requests for movements made by players who made the
+     * request at a time when they had not yet received information
+     * related to the game-state in affected-zones of their request.
+     * 
+     * TODO: should there be another such counter for scoreValue updates?
+     */
+    public numTimesOccupied: number;
+
+    /**
      * 
      * @param x - The horizontal coordinate of this `Tile` in its host {@link Grid}.
      * @param y - The   vertical coordinate of this `Tile` in its host {@link Grid}.
@@ -30,6 +42,7 @@ export abstract class Tile {
 
     public reset(): void {
         this.evictOccupant();
+        this.numTimesOccupied = 1;
         this.scoreValue = 0;
         this.setLangCharSeq(new LangCharSeqPair(null, null));
     }

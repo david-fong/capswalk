@@ -1,8 +1,7 @@
 import { Lang, LangCharSeqPair } from "src/Lang";
-import { BarePos, Tile } from "src/base/Tile";
+import { Tile } from "src/base/Tile";
 import { Grid } from "src/base/Grid";
-import { Player } from "src/base/Player";
-import { HumanPlayer } from "src/base/HumanPlayer";
+import { Player, PlayerMovementEvent } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
 
 export { Grid } from "src/base/Grid";
@@ -32,9 +31,28 @@ export { Grid } from "src/base/Grid";
 export abstract class Game extends Grid {
 
     public lang: Lang;
-    private readonly allHumanPlayers: Array<HumanPlayer>;
+
+    /**
+     * Does not use the HumanPlayer type annotation. This is to
+     * indicate that a `Game` does not explicitly care about the
+     * unique properties of a {@link HumanPlayer} over a regular
+     * {@link Player}.
+     */
+    private readonly allHumanPlayers: Array<Player>;
+
     private readonly allArtifPlayers: Array<ArtificialPlayer>;
 
+
+
+    /**
+     * TODO: change the player arrays to be cosntructor arguments. Not
+     * sure about the aritifial players. But definitely the human ones.
+     * 
+     * Does not call reset.
+     * 
+     * @param height - 
+     * @param width - 
+     */
     public constructor(height: number, width: number) {
         super(height, width);
 
@@ -93,32 +111,27 @@ export abstract class Game extends Grid {
      * 
      * Should never be called by {@link ClientGame}.
      * 
-     * @param playerId - 
-     * @param destPos - 
-     * @returns A descriptor of changes to be made, or `null` if the move is rejected.
+     * Short-circuits if the player specified by the given id does not
+     * exist, or if the requester has not yet received updates for the
+     * destination they requested to move to.
+     * 
+     * @param desc - A descriptor of the request, with fields indicating
+     *      the requester's views of critical parts of the game-state
+     *      from their copy of the game-state at the time of the request.
+     * @returns A descriptor of changes to be made, or `null` if the
+     *      request is rejected.
      */
-    public processMoveRequest(playerId: number, destPos: BarePos): PlayerMovementEvent | null {
-        // TODO: get from artificial list for negative ID's.
-        const player: Player = this.getHumanPlayer(playerId);
-        const dest:   Tile   = this.getTileAt(destPos);
-        if (dest.isOccupied()) {
-            return;
-        }
-        if (player instanceof HumanPlayer) {
-            ;
-        } else if (player instanceof ArtificialPlayer) {
-            ;
-        } else {
-            throw new TypeError("Unexpected argument type for \"player\" argument.");
+    public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
+        // TODO: check that the specified player exists.
+        const dest: Tile = this.getTileAt(desc.destPos);
+        if (dest.isOccupied() || dest.numTimesOccupied !== desc.destNumTimesOccupied) {
+            return null;
         }
 
         // If the request was rejected, we would have short-circuited.
         // We are all go. Do it.
-        const desc = new PlayerMovementEvent(
-            playerId,
-            dest.pos.asBarePos(),
-            this.shuffleLangCharSeqAt(dest),
-        );
+        desc.destNumTimesOccupied += 1,
+        desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
         this.processMoveExecute(desc);
         return desc;
     }
@@ -134,17 +147,30 @@ export abstract class Game extends Grid {
      * critical operation. If I am a {@link ServerGame}, also notify
      * all clients of the movement event.
      * 
-     * @param desc - A descriptor for the player-movement event.
+     * Updates that are received after others that are more recent and
+     * concern the same {@link Tile} are ignored. This is okay since
+     * the only thing that matters about a {@link Tile} to the outside
+     * world is its last known state.
+     * 
+     * @param desc - A descriptor for all changes mandated by the
+     *      player-movement event.
      */
     public processMoveExecute(desc: PlayerMovementEvent): void {
         const dest: Tile = this.getTileAt(desc.destPos);
+        if (dest.numTimesOccupied > desc.destNumTimesOccupied) {
+            // We have received even more recent updates already.
+            // This update arrived out of order. We can ignore it.
+            return;
+        }
+
         this.getHumanPlayer(desc.playerId).moveTo(dest);
+        dest.numTimesOccupied = desc.destNumTimesOccupied;
         dest.setLangCharSeq(desc.newCharSeqPair);
     }
 
 
 
-    protected getHumanPlayer(playerId: number): HumanPlayer {
+    protected getHumanPlayer(playerId: number): Player {
         if (this.allHumanPlayers[playerId] === undefined) {
             throw new RangeError(`No player with id ${playerId} exists.`);
         }
@@ -154,23 +180,6 @@ export abstract class Game extends Grid {
 }
 
 
-
-
-
-/**
- * TODO: add fields for changes to player score and new targets.
- * (or create a new descriptor-event pair for such information).
- */
-export class PlayerMovementEvent {
-
-    public constructor(
-        public readonly playerId: number,
-        public readonly destPos: BarePos,
-        public readonly newCharSeqPair: LangCharSeqPair,
-    ) {
-        Object.freeze(this);
-    }
-}
 
 /**
  * 
