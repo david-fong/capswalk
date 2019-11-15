@@ -6,7 +6,7 @@ import { Sound } from "./Sound";
  * - Volume / Mute
  * - Color theme
  */
-export class GameNonPrivilegedSettings {
+export class NonPrivilegedSettings {
 
     public readonly sound: Sound;
 
@@ -16,9 +16,12 @@ export class GameNonPrivilegedSettings {
 
 /**
  * Included Settings:
+ * - Pause button
+ * - Restart button
+ * - Lang selection
  * - Spice button
  * - Difficulty
  */
-export class GamePrivilegedSettings {
+export class PrivilegedSettings {
 
 }

@@ -64,7 +64,7 @@ export abstract class Grid {
                     }
                 }
             }
-            document.getElementById(HtmlIdHooks.GRID);
+            document.getElementById(HtmlIdHooks.GRID).appendChild(this.domGrid);
         } else {
             this.domGrid = null;
         }
@@ -95,7 +95,7 @@ export abstract class Grid {
         }
         return this.grid[pos.x][pos.y];
     }
-    
+
     /**
      * @returns A collection of all "Unoccupied Neighbouring Tiles"
      * within `radius` of `pos` according to {@link Pos#infNorm}.

@@ -17,6 +17,15 @@ export class English extends Lang {
         return this.SINGLETON;
     }
 
+    /**
+     * Change uppercase input to lowercase for convenience.
+     * 
+     * @override
+     */
+    public remapKey(input: string): string {
+        return input.toLowerCase();
+    }
+
     // only used during the first construction.
     private static INITIALIZER: Record<string, number> = {
         // Values from https://wikipedia.org/wiki/Letter_frequency.
@@ -43,13 +52,6 @@ export class English extends Lang {
                 Object.create(null),
             ),
         );
-    }
-
-    /**
-     * @override
-     */
-    public remapKey(input: string): string {
-        return input.toLowerCase();
     }
 
 }

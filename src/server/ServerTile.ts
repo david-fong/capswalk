@@ -29,7 +29,7 @@ export class ServerTile extends Tile {
     }
 
     public set scoreValue(score: number) {
-        this.scoreValue = score;
+        this._scoreValue = score;
     }
 
     public setLangCharSeq(charSeqPair: LangCharSeqPair): void {
