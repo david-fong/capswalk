@@ -1,12 +1,24 @@
 import { Pos, Tile } from "src/base/Tile";
-import { Player } from "src/base/Player";
+import { Player, PlayerMovementEvent } from "src/base/Player";
+import { OfflineGame } from "src/offline/OfflineGame";
+import { ServerGame } from "src/server/ServerGame";
 
 /**
- * 
+ * TODO: this will be a little tricky to reuse code:
+ * Offline implementation needs to use browser versions of setTimeout
+ * and cancelTimeout, which have different cancelId types than the
+ * Node.js versions. See if this can be handled with Typescript's
+ * conditional types or with Generics. If things get any more
+ * complicated, look into using Typescript Mixins.
  * 
  * @extends Player
  */
 export abstract class ArtificialPlayer extends Player {
+
+    /**
+     * @override
+     */
+    public readonly game: OfflineGame | ServerGame;
 
     protected scheduledMovementCallbackId: number;
 
@@ -22,7 +34,7 @@ export abstract class ArtificialPlayer extends Player {
     public abstract computeNextMovementTimer(): number;
 
     /**
-     * @returns A TODO
+     * @returns TODO
      * Note that the current position of this `ArtificialPlayer` is
      * always an option when everything adjacent to it is occupied.
      * 
@@ -42,6 +54,17 @@ export abstract class ArtificialPlayer extends Player {
         // a non-45-degree-angled line toward `intendedDest`.
         // TODO
         return undefined;
+    }
+
+    /**
+     * Unlike {@link HumanPlayer}s, `ArtificialPlayer`s are managed
+     * directly by the Game Manager, so there is no need to make a
+     * request via socket.io.
+     * 
+     * @override
+     */
+    public makeMovementRequest(dest: Tile): void {
+        this.game.processMoveRequest(new PlayerMovementEvent(this.idNumber, dest));
     }
 
 }

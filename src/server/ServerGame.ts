@@ -1,8 +1,8 @@
-import { BarePos } from "src/Pos";
-import { ServerTile } from "src/server/ServerTile";
-import { Game, PlayerMovementEvent } from "src/base/Game";
-import { GroupSession } from "src/server/GroupSession";
 import { Events } from "src/Events";
+import { ServerTile } from "src/server/ServerTile";
+import { Game } from "src/base/Game";
+import { GroupSession } from "src/server/GroupSession";
+import { PlayerMovementEvent } from "src/base/Player";
 
 /**
  * 
@@ -13,12 +13,19 @@ export class ServerGame extends Game {
 
     protected readonly session: GroupSession;
 
-    public constructor(session: GroupSession, height: number, width: number = height) {
+    public constructor(
+        session: GroupSession,
+        height: number,
+        width: number = height
+    ) {
         super(height, width);
 
         this.reset();
     }
 
+    /**
+     * @override
+     */
     public reset(): void {
         super.reset();
     }
@@ -34,13 +41,11 @@ export class ServerGame extends Game {
 
     /**
      * @override {@link Game#processMoveRequest}
-     * 
-     * @param playerId - 
-     * @param destPos - 
      */
-    public processMoveRequest(playerId: number, destPos: BarePos): PlayerMovementEvent | null {
-        const desc: PlayerMovementEvent = super.processMoveRequest(playerId, destPos);
+    public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
+        desc = super.processMoveRequest(desc);
         if (desc !== null) {
+            // Request was accepted:
             this.session.namespace.emit(
                 Events.PlayerMovement.name,
                 desc,

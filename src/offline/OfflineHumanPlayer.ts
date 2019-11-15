@@ -1,6 +1,7 @@
-import { Pos } from "src/base/Tile";
+import { Tile } from "src/base/Tile";
 import { OfflineGame } from "src/offline/OfflineGame";
 import { HumanPlayer } from "src/base/HumanPlayer";
+import { PlayerMovementEvent } from "src/base/Player";
 
 /**
  * 
@@ -22,8 +23,8 @@ export class OfflineHumanPlayer extends HumanPlayer {
      * 
      * @override {@link Player#makeMovementRequest}
      */
-    public makeMovementRequest(dest: Pos): void {
-        this.game.processMoveRequest(this.idNumber, dest);
+    public makeMovementRequest(dest: Tile): void {
+        this.game.processMoveRequest(new PlayerMovementEvent(this.idNumber, dest));
     }
 
 }

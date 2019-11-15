@@ -72,6 +72,8 @@ export abstract class HumanPlayer extends Player {
             ? this.lang.remapKey(key)
             : "" // Caller intends to refresh seqBuffer invariant.
         ) as string;
+        // TODO: add check here for optimization purposes to short-circuit
+        // if key does not match the LANG_SEQ_REGEXP ?
 
         let newSeqBuffer: LangSeq;
         for ( // loop through substring start offset of newSeqBuffer:
@@ -91,12 +93,10 @@ export abstract class HumanPlayer extends Player {
                 if (matchletTiles.length === 1 && matchletTiles[0].langSeq === newSeqBuffer) {
                     // Operator typed the [LangSeq] of a UNT (unless they are
                     // missing incoming updates from the server / [Game] manager).
-                    this.makeMovementRequest(matchletTiles[0].pos);
-                    // clear [seqBuffer]:
-                    this._seqBuffer = "";
+                    this.makeMovementRequest(matchletTiles[0]);
                 } else {
                     // Operator typed part of the sequence for a UNT.
-                    console.assert(matchletTiles.every(t => t.langSeq.length > newSeqBuffer.length));
+                    console.assert(matchletTiles.every(tile => tile.langSeq.length > newSeqBuffer.length));
                 }
                 break;
             }
@@ -106,6 +106,15 @@ export abstract class HumanPlayer extends Player {
             this._seqBuffer = "";
             this._hostTile.visualBell();
         }
+    }
+
+    /**
+     * @override
+     */
+    public moveTo(dest: Tile): void {
+        super.moveTo(dest);
+        // clear [seqBuffer]:
+        this._seqBuffer = "";
     }
 
 

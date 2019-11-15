@@ -1,10 +1,10 @@
 import * as io from "socket.io-client";
 
 import { Events } from "src/Events";
-import { BarePos, Tile } from "src/base/Tile";
+import { NonPrivilegedSettings } from "src/settings/GameSettings";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { Grid, Game } from "src/base/Game";
-import { NonPrivilegedSettings } from "src/settings/GameSettings";
+import { PlayerMovementEvent } from "src/base/Player";
 
 /**
  * 
@@ -34,6 +34,10 @@ export class ClientGame extends Game {
      */
     public reset(): void {
         // Bypass my direct parent's reset implementation.
+
+        // TODO: do we even need the below call? We should be waiting
+        // for a GameStateDump from the ServerGame, and sending it an
+        // ack to say that we received it.
         Grid.prototype.reset.call(this);
     }
 
@@ -46,12 +50,13 @@ export class ClientGame extends Game {
 
     /**
      * Normally calls {@link Game#processMoveExecute}. However, here,
-     * this should be done as a callback to an event created by the server.
+     * this should be done as a callback to an event created by the
+     * server.
      * 
      * @override {@link Game#processMoveRequest}
      * @throws `TypeError` Unconditionally.
      */
-    public processMoveRequest(playerId: number, dest: Tile | BarePos): never {
+    public processMoveRequest(desc: PlayerMovementEvent): never {
         throw new TypeError("This operation unsupported for the ClientGame class.");
     }
 

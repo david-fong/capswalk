@@ -1,9 +1,10 @@
 import * as io from "socket.io";
 
 import { Events } from "src/Events";
-import { Pos, BarePos } from "src/base/Tile";
+import { Pos, Tile } from "src/base/Tile";
 import { ClientGame } from "src/client/ClientGame";
 import { HumanPlayer } from "src/base/HumanPlayer";
+import { PlayerMovementEvent } from "src/base/Player";
 
 /**
  * 
@@ -28,11 +29,12 @@ export class OnlineHumanPlayer extends HumanPlayer {
     /**
      * @override {@link Player#makeMovementRequest}
      */
-    public makeMovementRequest(dest: Pos): void {
+    public makeMovementRequest(dest: Tile): void {
+        // ServerGame handles with processMoveRequest.
+        // Arguments must follow that function signature.
         this.game.socket.emit(
             Events.PlayerMovement.name,
-            this.idNumber,
-            dest.asBarePos(),
+            new PlayerMovementEvent(this.idNumber, dest),
         );
     }
 
