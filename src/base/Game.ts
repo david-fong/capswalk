@@ -1,4 +1,5 @@
 import { Lang, LangCharSeqPair } from "src/Lang";
+import { BalancingScheme } from "src/LangSeqTreeNode";
 import { Tile } from "src/base/Tile";
 import { Grid } from "src/base/Grid";
 import { Player, PlayerMovementEvent } from "src/base/Player";
@@ -33,6 +34,11 @@ export abstract class Game extends Grid {
     public lang: Lang;
 
     /**
+     * TODO: set type annotation.
+     */
+    protected readonly settings: any;
+
+    /**
      * Does not use the HumanPlayer type annotation. This is to
      * indicate that a `Game` does not explicitly care about the
      * unique properties of a {@link HumanPlayer} over a regular
@@ -56,7 +62,7 @@ export abstract class Game extends Grid {
     public constructor(height: number, width: number) {
         super(height, width);
 
-        // TODO: set default language:
+        // TODO: set default language (must be done before call to reset):
         this.lang = null;
 
         // TODO: setup allHumanPlayers?
@@ -100,7 +106,8 @@ export abstract class Game extends Grid {
      */
     private shuffleLangCharSeqAt(tile: Tile): LangCharSeqPair {
         return this.lang.getNonConflictingChar(
-            this.getUNT(tile.pos).map(t => t.langSeq)
+            this.getUNT(tile.pos).map(tile => tile.langSeq),
+            this.langBalancingScheme,
         );
     }
 
@@ -179,6 +186,10 @@ export abstract class Game extends Grid {
             : this.allHumanPlayers[ playerId]
         );
         return (player) ? player : null;
+    }
+
+    protected get langBalancingScheme(): BalancingScheme {
+        return this.settings.langBalancingScheme.selectedValue;
     }
 
 }

@@ -1,21 +1,21 @@
-import { Sound } from "./Sound";
+import { SoundSettings } from "./Sound";
 
 
 /**
- * Included Settings:
+ * Non-Privileged (non-global) Settings:
  * - Volume / Mute
  * - Color theme
  */
 export class NonPrivilegedSettings {
 
-    public readonly sound: Sound;
+    public readonly sound: SoundSettings;
 
 }
 
 
 
 /**
- * Included Settings:
+ * Privileged (global) Settings:
  * - Pause button
  * - Restart button
  * - Lang selection
@@ -23,5 +23,13 @@ export class NonPrivilegedSettings {
  * - Difficulty
  */
 export class PrivilegedSettings {
+
+    public langBalancingScheme: GameSetting; // TODO: create class and use its type here.
+
+}
+
+export abstract class GameSetting {
+
+    abstract get selectedValue(): any;
 
 }

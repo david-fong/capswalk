@@ -219,41 +219,33 @@ export class LangSeqTreeNode {
 
 
 
-    private static LEAF_CMP_COUNT(
-        nodeA: LangSeqTreeNode,
-        nodeB: LangSeqTreeNode,
-    ): number {
-        return nodeA.hitCount - nodeB.hitCount;
-    };
-    private static LEAF_CMP_WEIGHT(
-        nodeA: LangSeqTreeNode,
-        nodeB: LangSeqTreeNode,
-    ): number {
-        return nodeA.weightedHitCount - nodeB.weightedHitCount;
-    };
-    public static readonly LEAF_CMP = new Map([
-        [BalancingScheme.SEQ,   LangSeqTreeNode.LEAF_CMP_COUNT,],
-        [BalancingScheme.CHAR,  LangSeqTreeNode.LEAF_CMP_COUNT,],
-        [BalancingScheme.WEIGHT,LangSeqTreeNode.LEAF_CMP_WEIGHT,],
-    ]);
+    /**
+     * @param a - 
+     * @param b - 
+     * @returns - 
+     */
+    public static readonly LEAF_CMP:
+        ReadonlyMap<BalancingScheme, {(a: LangSeqTreeNode, b: LangSeqTreeNode): number}>
+        = new Map([
+            [BalancingScheme.SEQ,   ((a, b) => a.hitCount - b.hitCount),],
+            [BalancingScheme.CHAR,  ((a, b) => a.hitCount - b.hitCount),],
+            [BalancingScheme.WEIGHT,((a, b) => a.weightedHitCount - b.weightedHitCount),],
+        ]
+    );
 
-    private static PATH_CMP_COUNT(
-        nodeA: LangSeqTreeNode,
-        nodeB: LangSeqTreeNode,
-    ): number {
-        return nodeA.personalHitCount - nodeB.personalHitCount;
-    };
-    private static PATH_CMP_WEIGHT(
-        nodeA: LangSeqTreeNode,
-        nodeB: LangSeqTreeNode,
-    ): number {
-        return nodeA.personalWeightedHitCount - nodeB.personalWeightedHitCount;
-    };
-    public static readonly PATH_CMP = new Map([
-        [BalancingScheme.SEQ,   LangSeqTreeNode.PATH_CMP_COUNT,],
-        [BalancingScheme.CHAR,  LangSeqTreeNode.PATH_CMP_COUNT,],
-        [BalancingScheme.WEIGHT,LangSeqTreeNode.PATH_CMP_WEIGHT,],
-    ]);
+    /**
+     * @param a - 
+     * @param b - 
+     * @returns - 
+     */
+    public static readonly PATH_CMP:
+        ReadonlyMap<BalancingScheme, {(a: LangSeqTreeNode, b: LangSeqTreeNode): number}>
+        = new Map([
+            [BalancingScheme.SEQ,   ((a, b) => a.personalHitCount - b.personalHitCount),],
+            [BalancingScheme.CHAR,  ((a, b) => a.personalHitCount - b.personalHitCount),], // TODO: use min character hitcount
+            [BalancingScheme.WEIGHT,((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount),],
+        ]
+    );
 
 }
 
@@ -279,21 +271,17 @@ class WeightedLangChar {
         this.weightedHitCount = 0;
     }
 
-    private static CMP_COUNT(
-        charA: WeightedLangChar,
-        charB: WeightedLangChar,
-    ): number {
-        return charA.hitCount - charB.hitCount;
-    };
-    private static CMP_WEIGHT(
-        charA: WeightedLangChar,
-        charB: WeightedLangChar,
-    ): number {
-        return charA.weightedHitCount - charB.weightedHitCount;
-    };
-    public static readonly CMP = new Map([
-        [BalancingScheme.SEQ,   WeightedLangChar.CMP_COUNT,],
-        [BalancingScheme.CHAR,  WeightedLangChar.CMP_COUNT,],
-        [BalancingScheme.WEIGHT,WeightedLangChar.CMP_WEIGHT,],
-    ]);
+    /**
+     * @param a - 
+     * @param b - 
+     * @returns - 
+     */
+    public static readonly CMP:
+        ReadonlyMap<BalancingScheme, (nodeA: WeightedLangChar, nodeB: WeightedLangChar) => number>
+        = new Map([
+            [BalancingScheme.SEQ,   (a, b) => a.hitCount - b.hitCount,], // design choice.
+            [BalancingScheme.CHAR,  (a, b) => a.hitCount - b.hitCount,],
+            [BalancingScheme.WEIGHT,(a, b) => a.weightedHitCount - b.weightedHitCount,],
+        ]
+    );
 };
