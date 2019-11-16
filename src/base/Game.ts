@@ -1,6 +1,6 @@
 import { Lang, LangCharSeqPair } from "src/Lang";
 import { BalancingScheme } from "src/LangSeqTreeNode";
-import { Tile } from "src/base/Tile";
+import { BarePos, Tile } from "src/base/Tile";
 import { Grid } from "src/base/Grid";
 import { Player, PlayerMovementEvent } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
@@ -34,11 +34,6 @@ export abstract class Game extends Grid {
     public lang: Lang;
 
     /**
-     * TODO: set type annotation.
-     */
-    protected readonly settings: any;
-
-    /**
      * Does not use the HumanPlayer type annotation. This is to
      * indicate that a `Game` does not explicitly care about the
      * unique properties of a {@link HumanPlayer} over a regular
@@ -56,11 +51,10 @@ export abstract class Game extends Grid {
      * 
      * Does not call reset.
      * 
-     * @param height - 
-     * @param width - 
+     * @override
      */
-    public constructor(height: number, width: number) {
-        super(height, width);
+    public constructor(dimensions: { height: number, width?: number, }) {
+        super(dimensions);
 
         // TODO: set default language (must be done before call to reset):
         this.lang = null;
@@ -81,23 +75,30 @@ export abstract class Game extends Grid {
         super.reset();
 
         // Reset hit-counters in the current language:
+        // This must be done before shuffling so that the previous
+        // history of shuffle-ins has no effects on the new pairs.
         this.lang.reset();
 
         // Shuffle everything:
         this.grid.forEach(row => row.forEach(tile => {
-            this.shuffleLangCharSeqAt(tile);
+            this.shuffleLangCharSeqAt(tile); // TODO: don't call this. call what it calls?
         }, this), this);
 
         // TODO: reset and respawn players:
         this.allHumanPlayers.forEach(player => player.reset());
         this.allArtifPlayers.forEach(player => player.reset());
+
+        // TODO: spawn targets:
+        // While not necessary, this should be done after players have
+        // spawned so targets do not spawn under players.
     }
 
 
 
     /**
-     * Helper for {@link Game#processMoveRequest}. Does not modify `tile`,
-     * which must be done externally.
+     * Helper for {@link Game#processMoveRequest}. Does execute usage
+     * of the returned values, which is expected to be done externally.
+     * However, this method will nullify the existing values at `tile`.
      * 
      * @param tile - The {@link Tile} to shuffle their {@link LangChar}-
      *          {@link LangSeq} pair for.
@@ -105,8 +106,13 @@ export abstract class Game extends Grid {
      *          for that currently being used by `tile`.
      */
     private shuffleLangCharSeqAt(tile: Tile): LangCharSeqPair {
+        // Clear values for the target tile so its current (to-be-
+        // previous) values don't get unnecessarily avoided.
+        tile.setLangCharSeq({ char: null, seq: null, });
         return this.lang.getNonConflictingChar(
-            this.getUNT(tile.pos).map(tile => tile.langSeq),
+            this.getNeighbouringTiles(tile.pos)
+                .map(tile => tile.langSeq)
+                .filter(seq => seq), // no falsy values.
             this.langBalancingScheme,
         );
     }
@@ -129,17 +135,21 @@ export abstract class Game extends Grid {
      *      request is rejected.
      */
     public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
-        if (this.getPlayerById(desc.playerId) === null) {
+        const player = this.getPlayerById(desc.playerId);
+        if (player === null) {
             // specified player does not exist.
             return null;
         }
-        const dest: Tile = this.getTileAt(desc.destPos);
+        const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         if (dest.isOccupied() /*|| dest.numTimesOccupied !== desc.destNumTimesOccupied*/) {
-            // we don't actually need to check the occupancy counter.
+            // TODO: we actually need to check the occupancy counter. See Player#moveTo.
+            // add docs explaining the reason / adversarial scenaio from Player#moveTo.
+            // explain why this may be _slightly_ unfavorable for performance / user experience.
             return null;
         }
 
         // We are all go. Do it.
+        desc.playerNewScore = player.score + dest.scoreValue;
         desc.destNumTimesOccupied = dest.numTimesOccupied + 1,
         desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
         this.processMoveExecute(desc);
@@ -166,7 +176,8 @@ export abstract class Game extends Grid {
      *      player-movement event.
      */
     public processMoveExecute(desc: PlayerMovementEvent): void {
-        const dest: Tile = this.getTileAt(desc.destPos);
+        const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
+        this.getPlayerById(desc.playerId).score = desc.playerNewScore;
         if (dest.numTimesOccupied > desc.destNumTimesOccupied) {
             // We have received even more recent updates already.
             // This update arrived out of order. We can ignore it.
@@ -180,10 +191,18 @@ export abstract class Game extends Grid {
 
 
 
+    public getBenchableTileAt(dest: BarePos, playerId: number): Tile {
+        return ((Player.BENCH_POS.equals(dest))
+            ? this.getPlayerById(playerId).benchTile
+            : this.getTileAt(dest)
+        );
+    }
+
+    // TODO: use new PlayerId type here:
     protected getPlayerById(playerId: number): Player | null {
         const player: Player = ((playerId < 0)
-            ? this.allArtifPlayers[-playerId]
-            : this.allHumanPlayers[ playerId]
+            ? this.allArtifPlayers[(-playerId) - 1]
+            : this.allHumanPlayers[( playerId)] // TODO: - 1
         );
         return (player) ? player : null;
     }
