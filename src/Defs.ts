@@ -25,6 +25,9 @@ export namespace Defs {
 
 export namespace HtmlIdHooks {
 
+    /**
+     * Should only have one child: the main game grid's display.
+     */
     export const GRID = "grid";
 
 }
