@@ -104,7 +104,7 @@ export abstract class HumanPlayer extends Player {
         if (newSeqBuffer.length === 0) {
             // Operator's new [seqBuffer] didn't match anything.
             this._seqBuffer = "";
-            this._hostTile.visualBell();
+            this.hostTile.visualBell();
         }
     }
 

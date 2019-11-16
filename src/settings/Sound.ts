@@ -2,7 +2,7 @@
 /**
  * 
  */
-export class Sound {
+export class SoundSettings {
 
     public constructor() {
 

@@ -35,7 +35,8 @@ export abstract class ArtificialPlayer extends Player {
 
     /**
      * @returns TODO
-     * Note that the current position of this `ArtificialPlayer` is
+     * 
+     * Note: the current position of this `ArtificialPlayer` is
      * always an option when everything adjacent to it is occupied.
      * 
      * @param intendedDest - 
@@ -44,11 +45,12 @@ export abstract class ArtificialPlayer extends Player {
         const unfavorableness: Function = (tile: Tile): number => {
             return intendedDest.sub(tile.pos).twoNorm;
         };
-        const options: ReadonlyArray<Tile> = this.getUNT()
-            .sort((tileA, TileB) => {
-                return unfavorableness(tileA.pos)
-                     - unfavorableness(TileB.pos);
-            });
+        const options: Array<Tile> = this.getUNT();
+        options.push(this.hostTile);
+        options.sort((tileA, TileB) => {
+            return unfavorableness(tileA.pos)
+                    - unfavorableness(TileB.pos);
+        });
         // choose one of the two most favorable using some randomness
         // weighted to make the long term path of movement to follow
         // a non-45-degree-angled line toward `intendedDest`.

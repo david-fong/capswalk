@@ -7,7 +7,7 @@ import { WeightedCspForwardMap } from "src/LangSeqTreeNode";
  */
 export class English extends Lang {
 
-    private static SINGLETON: English;
+    private static SINGLETON: English = undefined;
 
     public static getInstance(): English {
         if (this.SINGLETON === undefined) {
@@ -27,7 +27,7 @@ export class English extends Lang {
     }
 
     // only used during the first construction.
-    private static INITIALIZER: Record<string, number> = {
+    private static INITIALIZER = Object.freeze(<const>{
         // Values from https://wikipedia.org/wiki/Letter_frequency.
         a: 8.167, b: 1.492, c: 2.202, d: 4.253,
         e:12.702, f: 2.228, g: 2.015, h: 6.094,
@@ -36,7 +36,7 @@ export class English extends Lang {
         q: 0.095, r: 5.987, s: 6.327, t: 9.356,
         u: 2.758, v: 0.978, w: 2.560, x: 0.150,
         y: 1.994, z: 0.077,
-    };
+    });
 
     private constructor() {
         super(
@@ -44,9 +44,9 @@ export class English extends Lang {
             Object.entries(English.INITIALIZER).reduce<WeightedCspForwardMap>(
                 (accumulator, current) => {
                     const char: LangChar = current[0];
-                    const seq: LangSeq   = current[0];
+                    const seq:  LangSeq  = current[0];
                     const weight: number = current[1];
-                    accumulator[char] = {seq, weight};
+                    accumulator[char] = { seq, weight, };
                     return accumulator;
                 },
                 Object.create(null),

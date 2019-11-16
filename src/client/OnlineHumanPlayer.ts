@@ -13,7 +13,10 @@ import { PlayerMovementEvent } from "src/base/Player";
 export const USERNAME_REGEXP = new RegExp("[a-zA-Z](\s?[a-zA-Z0-9:-]+)*");
 
 /**
- * 
+ * TODO: should the player class still process operator input in the
+ * time after sending a movement request? If we make it ignore while
+ * waiting, we need to make the server ack saying whether the request
+ * was accepted or not.
  * 
  * @extends HumanPlayer
  */

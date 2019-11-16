@@ -160,10 +160,10 @@ export class LangSeqTreeNode {
         const weightedChar: WeightedLangChar = this.characters.slice(0)
             .sort(WeightedLangChar.CMP.get(balancingScheme))
             .shift();
-        const pair: LangCharSeqPair = new LangCharSeqPair(
-            weightedChar.char,
-            this.sequence,
-        );
+        const pair: LangCharSeqPair = {
+            char: weightedChar.char,
+            seq:  this.sequence,
+        };
         weightedChar.hitCount += 1;
         weightedChar.weightedHitCount += weightedChar.weightInv;
         this.recursiveIncrementNumHits(weightedChar.weightInv);

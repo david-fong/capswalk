@@ -49,12 +49,13 @@ export const LANG_SEQ_REGEXP = new RegExp("^[a-zA-Z\-.]+$");
  * A key-value pair containing a `LangChar` and its corresponding
  * `LangSeq`.
  */
-export class LangCharSeqPair {
-    public constructor(
-        public readonly char: LangChar,
-        public readonly seq:  LangSeq,
-    ) {}
-}
+export type LangCharSeqPair = {
+    readonly char: LangChar,
+    readonly seq:  LangSeq,
+} | {
+    readonly char: null,
+    readonly seq:  null,
+};
 
 
 
@@ -200,16 +201,15 @@ export abstract class Lang {
         // of nodes for sequences to avoid. We can be sure that none of
         // the ancestors or descendants of avoid-nodes are avoid-nodes.
 
-        // Take the first leaf node (don't remove it!), and if none of
-        // its parents are avoid-nodes, then, from the set of nodes
-        // including the leaf node and all its parents (minus the root),
-        // choose the node with the least actual/personal hit-count.
-
         // Start by sorting according to the desired balancing scheme:
         this.leafNodes.sort(LangSeqTreeNode.LEAF_CMP.get(balancingScheme));
 
         let nodeToHit: LangSeqTreeNode = null;
         for (const leaf of this.leafNodes) {
+            // Take the next leaf node (don't remove it!), and if none of
+            // its parents are avoid-nodes, then, from the set of nodes
+            // including the leaf node and all its parents (minus the root),
+            // choose the node with the least actual/personal hit-count.
             const upstreamNodes: Array<LangSeqTreeNode> = leaf.andNonRootParents();
             for (let i = 0; i < upstreamNodes.length; i++) {
                 const conflictSeq: LangSeq = avoid.find(avoidSeq => {
