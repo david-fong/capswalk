@@ -1,5 +1,5 @@
 import { LangSeq, LangChar, LangCharSeqPair } from "src/Lang";
-import { Pos } from "src/Pos";
+import { Pos, BarePos } from "src/Pos";
 export { Pos, BarePos } from "src/Pos";
 
 /**
@@ -27,13 +27,12 @@ export abstract class Tile {
 
     /**
      * 
-     * @param x - The horizontal coordinate of this `Tile` in its host {@link Grid}.
-     * @param y - The   vertical coordinate of this `Tile` in its host {@link Grid}.
+     * @param pos - 
      * 
      * @throws `TypeError` if `x` or `y` are not integer values.
      */
-    public constructor(x: number, y: number) {
-        this.pos = new Pos(x, y);
+    public constructor(pos: BarePos) {
+        this.pos = Pos.ofBarePos(pos);
         if (!(this.pos.equals(this.pos.round()))) {
             throw new TypeError("Tile position coordinates must be integers.");
         }
@@ -44,7 +43,7 @@ export abstract class Tile {
         this.evictOccupant();
         this.numTimesOccupied = 1;
         this.scoreValue = 0;
-        this.setLangCharSeq(new LangCharSeqPair(null, null));
+        this.setLangCharSeq({ char: null, seq: null, });
     }
 
 

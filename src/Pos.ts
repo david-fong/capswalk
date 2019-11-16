@@ -1,7 +1,7 @@
 
 export type BarePos = {
-    x: number;
-    y: number;
+    readonly x: number;
+    readonly y: number;
 };
 
 
@@ -30,6 +30,10 @@ export class Pos implements BarePos {
             x: this.x,
             y: this.y,
         };
+    }
+
+    public static ofBarePos(pos: BarePos): Pos {
+        return new Pos(pos.x, pos.y);
     }
 
 

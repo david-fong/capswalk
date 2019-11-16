@@ -1,4 +1,5 @@
 import { Events } from "src/Events";
+import { BarePos } from "src/Pos";
 import { ServerTile } from "src/server/ServerTile";
 import { Game } from "src/base/Game";
 import { PlayerMovementEvent } from "src/base/Player";
@@ -15,10 +16,9 @@ export class ServerGame extends Game {
 
     public constructor(
         session: GroupSession,
-        height: number,
-        width:  number = height,
+        dimensions: { height: number, width?: number, },
     ) {
-        super(height, width);
+        super(dimensions);
         this.session = session;
 
         this.reset();
@@ -38,8 +38,8 @@ export class ServerGame extends Game {
     /**
      * @override
      */
-    public createTile(x: number, y: number): ServerTile {
-        return new ServerTile(x, y);
+    public createTile(pos: BarePos): ServerTile {
+        return new ServerTile(pos);
     }
 
     /**

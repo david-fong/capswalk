@@ -1,9 +1,10 @@
 import * as io from "socket.io-client";
 
 import { Events } from "src/Events";
-import { NonPrivilegedSettings } from "src/settings/GameSettings";
+import { BarePos } from "src/Pos";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { Grid, Game } from "src/base/Game";
+import { LocalGameSettings } from "src/settings/GameSettings";
 import { PlayerMovementEvent } from "src/base/Player";
 
 /**
@@ -13,15 +14,17 @@ import { PlayerMovementEvent } from "src/base/Player";
  */
 export class ClientGame extends Game {
 
-    protected settings: NonPrivilegedSettings;
+    protected settings: LocalGameSettings;
 
     public readonly socket: SocketIOClient.Socket;
 
-    public constructor(sessionNamespace: string, height: number, width: number = height) {
-        super(height, width);
-
-        const serverUrl: string = null; // TODO
-        this.socket = io.connect(`${serverUrl}${sessionNamespace}`);
+    public constructor(
+        socket: SocketIOClient.Socket,
+        dimensions: { height: number, width?: number, },
+    ) {
+        super(dimensions);
+        this.settings = LocalGameSettings.getInstance();
+        this.socket = socket;
 
         this.socket.on(
             Events.PlayerMovement.name,
@@ -44,8 +47,8 @@ export class ClientGame extends Game {
     /**
      * @override {@link Grid#createTile}
      */
-    public createTile(x: number, y: number): VisibleTile {
-        return new VisibleTile(x, y);
+    public createTile(pos: BarePos): VisibleTile {
+        return new VisibleTile(pos);
     }
 
     /**

@@ -1,20 +1,22 @@
 import { LangChar, LangSeq, LangCharSeqPair } from "src/Lang";
-import { Tile } from "src/base/Tile";
+import { Tile, BarePos } from "src/base/Tile";
 
 
 /**
  * Must be matched exactly in the CSS.
  */
-class ClassHooks {
-    public static readonly TILE: string         = <const>"tile";
-    public static readonly PLAYER: string       = <const>"tile__player";
-    public static readonly LANG_CHAR: string    = <const>"tile__char";
-    public static readonly LANG_SEQ: string     = <const>"tile__seq";
-}
+export const TileClassHooks = Object.freeze(<const>{
+    TILE:       <const>"tile",
+    PLAYER:     <const>"tile__player",
+    LANG_CHAR:  <const>"tile__char",
+    LANG_SEQ:   <const>"tile__seq",
+});
 
-class DataSetHooks {
-    public static readonly SCORE_VALUE: string  = <const>"scoreValue";
-}
+export const TileDataSetHooks = Object.freeze(<const>{
+    SCORE_VALUE: <const>"scoreValue",
+});
+
+
 
 /**
  * Implicitly handles visuals with help from CSS.
@@ -34,7 +36,7 @@ class DataSetHooks {
 export class VisibleTile extends Tile {
 
     // TODO: do we need to make the accessible outside?
-    //public static readonly CLASS_HOOKS: object = ClassHooks;
+    // public static readonly CLASS_HOOKS: object = ClassHooks;
 
     private _occupantId: number | null;
 
@@ -43,25 +45,25 @@ export class VisibleTile extends Tile {
     private readonly langCharDivElem:   HTMLDivElement;
     private readonly langSeqDivElem:    HTMLDivElement;
 
-    public constructor(x: number, y: number) {
-        super(x, y);
+    public constructor(pos: BarePos) {
+        super(pos);
 
         const tCell: HTMLTableCellElement = new HTMLTableCellElement();
         {
-            tCell.className = ClassHooks.TILE;
+            tCell.className = TileClassHooks.TILE;
             {
                 const pDiv: HTMLDivElement = new HTMLDivElement();
-                pDiv.className = ClassHooks.PLAYER;
+                pDiv.className = TileClassHooks.PLAYER;
                 tCell.appendChild(pDiv);
                 this.playerDivElem = pDiv;
             } {
                 const cDiv: HTMLDivElement = new HTMLDivElement();
-                cDiv.className = ClassHooks.LANG_CHAR;
+                cDiv.className = TileClassHooks.LANG_CHAR;
                 tCell.appendChild(cDiv);
                 this.langCharDivElem = cDiv;
             } {
                 const sDiv: HTMLDivElement = new HTMLDivElement();
-                sDiv.className = ClassHooks.LANG_SEQ;
+                sDiv.className = TileClassHooks.LANG_SEQ;
                 tCell.appendChild(sDiv);
                 this.langSeqDivElem = sDiv;
             }
@@ -95,11 +97,11 @@ export class VisibleTile extends Tile {
     }
 
     public get scoreValue(): number {
-        return Number.parseInt(this.tileCellElem.dataset[DataSetHooks.SCORE_VALUE]);
+        return Number.parseInt(this.tileCellElem.dataset[TileDataSetHooks.SCORE_VALUE]);
     }
 
     public set scoreValue(score: number) {
-        this.tileCellElem.dataset[DataSetHooks.SCORE_VALUE] = score.toString();
+        this.tileCellElem.dataset[TileDataSetHooks.SCORE_VALUE] = score.toString();
     }
 
     public setLangCharSeq(charSeqPair: LangCharSeqPair): void {

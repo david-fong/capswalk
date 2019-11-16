@@ -119,12 +119,10 @@ export class GroupSession {
 
 
     /**
-     * 
-     * @param height -  Vertical dimension of the grid to create.
-     * @param width - Horizontal dimension of the grid to create. Defaults to `height`.
+     * @param dimensions - 
      */
-    private createGameInstance(height: number, width: number = height): void {
-        const newGame: ServerGame = new ServerGame(this, height, width);
+    private createGameInstance(dimensions: { height: number, width?: number, }): void {
+        const newGame: ServerGame = new ServerGame(this, dimensions);
 
         this.currentGame = newGame;
         this.namespace.emit(

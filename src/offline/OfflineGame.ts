@@ -1,5 +1,7 @@
+import { BarePos } from "src/Pos";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { Game } from "src/base/Game";
+import { LocalGameSettings } from "src/settings/GameSettings";
 
 /**
  * 
@@ -8,15 +10,18 @@ import { Game } from "src/base/Game";
  */
 export class OfflineGame extends Game {
 
-    public constructor(height: number, width: number = height) {
-        super(height, width);
+    protected settings: LocalGameSettings;
+
+    public constructor(dimensions: { height: number, width?: number, }) {
+        super(dimensions);
+        this.settings = LocalGameSettings.getInstance();
     }
 
     /**
      * @override {@link Grid#createTile}
      */
-    public createTile(x: number, y: number): VisibleTile {
-        return new VisibleTile(x, y);
+    public createTile(pos: BarePos): VisibleTile {
+        return new VisibleTile(pos);
     }
 
 }
