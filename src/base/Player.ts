@@ -15,12 +15,17 @@ export type PlayerId = number;
 
 
 
+/**
+ * Made to abstract all operations that change the {@link Player#hostTile}
+ * field. Enforces / exposes the {@link PlayerSkeleton#moveTo} method as
+ * the interface to any such operations. Also bootstraps the `benchTile`
+ * field as a {@link Tile} reserved for this {@link Player}, and the one
+ * it occupies after a reset operation.
+ */
 class PlayerSkeleton {
 
     /**
-     * An integer value unique to this `Player` in this {@link Game}.
-     * If this `Player` is human-controlled, this value is non-negative,
-     * and otherwise, it is negative.
+     * @see PlayerId
      */
     public readonly idNumber: PlayerId;
 
