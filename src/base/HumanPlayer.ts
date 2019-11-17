@@ -1,7 +1,7 @@
 import { LangSeq, Lang } from "src/Lang";
 import { Tile } from "src/base/Tile";
 import { Game } from "base/Game";
-import { Player } from "base/Player";
+import { Player, PlayerId } from "base/Player";
 
 /**
  * Documentation will refer to the human controlling a {@link HumanPlayer}
@@ -17,7 +17,7 @@ export abstract class HumanPlayer extends Player {
      */
     protected _seqBuffer: LangSeq;
 
-    public constructor(game: Game, idNumber: number) {
+    public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
         if (this.idNumber < 0) {
             throw new Error(`Id number for a human-operated Player must be`

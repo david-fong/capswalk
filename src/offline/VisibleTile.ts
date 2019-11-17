@@ -1,5 +1,6 @@
 import { LangChar, LangSeq, LangCharSeqPair } from "src/Lang";
 import { Tile, BarePos } from "src/base/Tile";
+import { PlayerId } from "src/base/Player";
 
 
 /**
@@ -38,7 +39,7 @@ export class VisibleTile extends Tile {
     // TODO: do we need to make the accessible outside?
     // public static readonly CLASS_HOOKS: object = ClassHooks;
 
-    private _occupantId: number | null;
+    private _occupantId: PlayerId;
 
     public  readonly tileCellElem:      HTMLTableCellElement;
     private readonly playerDivElem:     HTMLDivElement;
@@ -82,11 +83,11 @@ export class VisibleTile extends Tile {
 
 
 
-    public get occupantId(): number | null {
+    public get occupantId(): PlayerId {
         return this._occupantId;
     }
 
-    public set occupantId(occupantId: number | null) {
+    public set occupantId(occupantId: PlayerId) {
         // TODO: set some dataset thing to make player face layer visible.
         if (occupantId === null) {
             ;

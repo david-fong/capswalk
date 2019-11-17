@@ -2,7 +2,7 @@ import { Events } from "src/Events";
 import { Tile } from "src/base/Tile";
 import { ClientGame } from "src/client/ClientGame";
 import { HumanPlayer } from "src/base/HumanPlayer";
-import { PlayerMovementEvent } from "src/base/Player";
+import { PlayerId, PlayerMovementEvent } from "src/base/Player";
 
 
 
@@ -34,7 +34,7 @@ export class OnlineHumanPlayer extends HumanPlayer {
     public constructor(
         username: string,
         game: ClientGame,
-        idNumber: number,
+        idNumber: PlayerId,
     ) {
         super(game, idNumber);
         this.username = username;

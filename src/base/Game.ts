@@ -2,7 +2,7 @@ import { Lang, LangCharSeqPair } from "src/Lang";
 import { BalancingScheme } from "src/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
 import { Grid } from "src/base/Grid";
-import { Player, PlayerMovementEvent } from "src/base/Player";
+import { PlayerId, Player, PlayerMovementEvent } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
 
 export { Grid } from "src/base/Grid";
@@ -191,15 +191,23 @@ export abstract class Game extends Grid {
 
 
 
-    public getBenchableTileAt(dest: BarePos, playerId: number): Tile {
+    public getBenchableTileAt(dest: BarePos, playerId: PlayerId): Tile {
         return ((Player.BENCH_POS.equals(dest))
             ? this.getPlayerById(playerId).benchTile
             : this.getTileAt(dest)
         );
     }
 
-    // TODO: use new PlayerId type here:
-    protected getPlayerById(playerId: number): Player | null {
+    /**
+     * 
+     * @param playerId - 
+     * @returns `null` if the specified `playerId` is not allocated
+     *      to any {@link Player}.
+     */
+    protected getPlayerById(playerId: PlayerId): Player | null {
+        if (playerId === 0) {
+            throw new RangeError("zero is reserved to mean \"no player\"");
+        }
         const player: Player = ((playerId < 0)
             ? this.allArtifPlayers[(-playerId) - 1]
             : this.allHumanPlayers[( playerId)] // TODO: - 1

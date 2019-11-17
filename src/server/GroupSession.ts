@@ -3,6 +3,8 @@ import * as io from "socket.io";
 import { Events } from "src/Events";
 import { GameStateDump } from "src/base/Game";
 import { ServerGame } from "src/server/ServerGame";
+import { PlayerId } from "src/base/Player";
+
 export { ServerGame } from "src/server/ServerGame";
 
 
@@ -142,7 +144,7 @@ export class GroupSession {
 
 
 
-    protected allocatePlayerId(): number {
+    protected allocatePlayerId(): PlayerId {
         return -1; // TODO
     }
 

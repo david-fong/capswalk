@@ -1,5 +1,6 @@
 import { LangChar, LangSeq, LangCharSeqPair } from "src/Lang";
 import { Tile } from "src/base/Tile";
+import { PlayerId } from "src/base/Player";
 
 /**
  * Bare minimum implementation. Absolutely no visuals or HTML.
@@ -8,7 +9,7 @@ import { Tile } from "src/base/Tile";
  */
 export class ServerTile extends Tile {
 
-    private _occupantId: number | null;
+    private _occupantId: PlayerId;
     private _scoreValue: number;
 
     protected _langChar: LangChar;
@@ -16,11 +17,11 @@ export class ServerTile extends Tile {
 
 
 
-    public get occupantId(): number | null {
+    public get occupantId(): PlayerId {
         return this._occupantId;
     }
 
-    public set occupantId(occupantId: number | null) {
+    public set occupantId(occupantId: PlayerId) {
         this._occupantId = occupantId;
     }
 

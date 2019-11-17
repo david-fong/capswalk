@@ -4,10 +4,16 @@ import { Game } from "src/base/Game";
 import { VisibleTile } from "src/offline/VisibleTile";
 
 
+/**
+ * An integer value used to uniquely identify `Player`s in the same
+ * {@link Game} together. Strictly negative values correspond to
+ * {@link ArtificialPlayer}s, strictly positive values correspond to
+ * {@link HumanPlayer}s, and the value `zero` is reserved to indicate
+ * that a {@link Tile} is unoccupied.
+ */
+export type PlayerId = number;
 
-// TODO: make type PlayerId so it can the center for documentation on
-// that topic. should be non-nullable. make zero mean not-a-player.
-// use this type in Tile#occupantId as well.
+
 
 class PlayerSkeleton {
 
@@ -16,7 +22,7 @@ class PlayerSkeleton {
      * If this `Player` is human-controlled, this value is non-negative,
      * and otherwise, it is negative.
      */
-    public readonly idNumber: number;
+    public readonly idNumber: PlayerId;
 
     private _hostTile: Tile;
 
@@ -25,7 +31,7 @@ class PlayerSkeleton {
      */
     public readonly benchTile: Tile;
 
-    protected constructor(idNumber: number) {
+    protected constructor(idNumber: PlayerId) {
         this.idNumber = idNumber;
         this.benchTile = new VisibleTile(Player.BENCH_POS);
     }
@@ -109,7 +115,7 @@ export abstract class Player extends PlayerSkeleton {
     protected _isAlive: boolean;
     protected _score:   number;
 
-    public constructor(game: Game, idNumber: number) {
+    public constructor(game: Game, idNumber: PlayerId) {
         super(idNumber);
         this.game = game;
     }
@@ -164,7 +170,7 @@ export abstract class Player extends PlayerSkeleton {
 
 
 /**
- * TODO: add fields for changes to player score
+ * 
  */
 export class PlayerMovementEvent {
 
@@ -175,7 +181,7 @@ export class PlayerMovementEvent {
     public newCharSeqPair: LangCharSeqPair | null;
 
     public constructor(
-        public readonly playerId: number,
+        public readonly playerId: PlayerId,
         destTile: Tile,
     ) {
         this.destPos = destTile.pos;

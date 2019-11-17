@@ -1,5 +1,7 @@
 import { LangSeq, LangChar, LangCharSeqPair } from "src/Lang";
 import { Pos, BarePos } from "src/Pos";
+import { PlayerId } from "src/base/Player";
+
 export { Pos, BarePos } from "src/Pos";
 
 /**
@@ -60,16 +62,16 @@ export abstract class Tile {
 
 
     public isOccupied(): boolean {
-        return this.occupantId === null;
+        return this.occupantId !== 0;
     }
 
     public evictOccupant(): void {
         this.occupantId = null;
     }
 
-    public abstract get occupantId(): number | null;
+    public abstract get occupantId(): PlayerId;
 
-    public abstract set occupantId(occupantId: number | null);
+    public abstract set occupantId(occupantId: PlayerId);
 
     public abstract get scoreValue(): number;
 
