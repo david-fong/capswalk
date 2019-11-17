@@ -2,8 +2,9 @@ import { Lang, LangCharSeqPair } from "src/Lang";
 import { BalancingScheme } from "src/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
 import { Grid } from "src/base/Grid";
-import { PlayerId, Player, PlayerMovementEvent } from "src/base/Player";
+import { PlayerId, Player } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
+import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 export { Grid } from "src/base/Grid";
 

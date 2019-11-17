@@ -1,5 +1,5 @@
 import { BarePos } from "src/Pos";
-import { PlayerMovementEvent } from "src/base/Player";
+import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 /**
  * Global definitions of event names and callback function signatures.

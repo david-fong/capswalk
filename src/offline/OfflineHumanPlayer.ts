@@ -1,7 +1,8 @@
 import { Tile } from "src/base/Tile";
 import { OfflineGame } from "src/offline/OfflineGame";
 import { HumanPlayer } from "src/base/HumanPlayer";
-import { PlayerId, PlayerMovementEvent } from "src/base/Player";
+import { PlayerId } from "src/base/Player";
+import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 /**
  * 

@@ -1,5 +1,4 @@
-import { LangCharSeqPair } from "src/Lang";
-import { BarePos, Pos, Tile } from "src/base/Tile";
+import { Pos, Tile } from "src/base/Tile";
 import { Game } from "src/base/Game";
 import { VisibleTile } from "src/offline/VisibleTile";
 
@@ -59,20 +58,8 @@ class PlayerSkeleton {
     }
 
     /**
-     * This operation should never fail. If two `Player`s attempt to
-     * move to move to the same position, since javascript and Node
-     * are single-threaded, one request will be handled first, the other
-     * will be handled second and "dropped" by the Game Manager: this
-     * method will never get called for the dropped request.
-     * 
-     * If another player makes successful requests entering and leaving
-     * some position `A`, and then I make a request to move to A before
-     * receiving the changes made as an effect of the other player's
-     * movements, the Game Manager will still accept my request: it may
-     * happen that I receive the thumbs-up for my action and make those
-     * changes before the other player's moves' changes reach my local
-     * copy of the game, but this can be (and is) handled gracefully
-     * without any destructive or corruptive effects.
+     * Evicts this `Player` from its last known position (which may be
+     * lagging behind the 
      * 
      * @param dest - 
      */
@@ -171,27 +158,3 @@ export abstract class Player extends PlayerSkeleton {
     }
 
 }
-
-
-
-/**
- * 
- */
-export class PlayerMovementEvent {
-
-    public readonly destPos: BarePos;
-
-    public playerNewScore: number;
-    public destNumTimesOccupied: number;
-    public newCharSeqPair: LangCharSeqPair | null;
-
-    public constructor(
-        public readonly playerId: PlayerId,
-        destTile: Tile,
-    ) {
-        this.destPos = destTile.pos;
-        this.destNumTimesOccupied = destTile.numTimesOccupied;
-    }
-}
-
-// TODO create event for arrival / creation of new scoreValues.

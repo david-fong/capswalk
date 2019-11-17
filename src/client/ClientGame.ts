@@ -3,9 +3,9 @@ import * as io from "socket.io-client";
 import { Events } from "src/Events";
 import { BarePos } from "src/Pos";
 import { VisibleTile } from "src/offline/VisibleTile";
-import { Grid, Game } from "src/base/Game";
 import { LocalGameSettings } from "src/settings/GameSettings";
-import { PlayerMovementEvent } from "src/base/Player";
+import { Grid, Game } from "src/base/Game";
+import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 /**
  * 

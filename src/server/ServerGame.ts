@@ -2,8 +2,8 @@ import { Events } from "src/Events";
 import { BarePos } from "src/Pos";
 import { ServerTile } from "src/server/ServerTile";
 import { Game } from "src/base/Game";
-import { PlayerMovementEvent } from "src/base/Player";
 import { GroupSession } from "src/server/GroupSession";
+import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 /**
  * 
