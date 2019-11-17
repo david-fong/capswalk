@@ -142,10 +142,7 @@ export abstract class Game extends Grid {
             return null;
         }
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
-        if (dest.isOccupied() /*|| dest.numTimesOccupied !== desc.destNumTimesOccupied*/) {
-            // TODO: we actually need to check the occupancy counter. See Player#moveTo.
-            // add docs explaining the reason / adversarial scenaio from Player#moveTo.
-            // explain why this may be _slightly_ unfavorable for performance / user experience.
+        if (dest.isOccupied() /*|| (dest.numTimesOccupied !== desc.destNumTimesOccupied)*/) {
             return null;
         }
 
@@ -179,9 +176,11 @@ export abstract class Game extends Grid {
     public processMoveExecute(desc: PlayerMovementEvent): void {
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         this.getPlayerById(desc.playerId).score = desc.playerNewScore;
+
         if (dest.numTimesOccupied > desc.destNumTimesOccupied) {
             // We have received even more recent updates already.
-            // This update arrived out of order. We can ignore it.
+            // This update arrived out of order. We can ignore the
+            // rest of its effect.
             return;
         }
         // The order of these operations is not important.
@@ -211,7 +210,7 @@ export abstract class Game extends Grid {
         }
         const player: Player = ((playerId < 0)
             ? this.allArtifPlayers[(-playerId) - 1]
-            : this.allHumanPlayers[( playerId)] // TODO: - 1
+            : this.allHumanPlayers[( playerId) - 1]
         );
         return (player) ? player : null;
     }

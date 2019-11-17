@@ -34,11 +34,13 @@ import { PlayerId } from "src/base/Player";
  * assume that emits from the server will arrive to the clients in the
  * same order, but there are no absolute guarantees for this.
  * 
- * The problem can be summed up as so:
+ * ### The Problem in Summary
+ * 
  * - Client copies of the game should lag behind the master copy of
- *   the game state as little as possible. This pretty much rules out
- *   mechanisms such as periodic game-state-dump broadcasts (because
- *   of the transmission delay), and "big-locks" requiring a client to
+ *   the game state as little as possible with as small of a choking
+ *   effect on a client's ability to send requests as possible. This
+ *   rules out doing periodic game-state-dump broadcasts (because of
+ *   the transmission delay), and "big-locks" requiring a client to
  *   have a completely up-to-date copy of the game state to have its
  *   requests processed.
  * - Nothing should ever happen in the client copies of the game that
@@ -46,10 +48,10 @@ import { PlayerId } from "src/base/Player";
  *   state-dumps are out of the question, any corruption / desync of
  *   the client's copy of the game is considered fatal and completely
  *   unrecoverable.
- * 
- * As a bonus, it would be nice to bake in a mechanism to prevent spam
- * from a trigger-happy client without excessively / unnecessarily
- * throttling the request-making throughput of any clients.
+ * - As a bonus, it would be nice to bake in a mechanism to prevent
+ *   malicious or unintended spam from a trigger-happy client without
+ *   excessively / unnecessarily throttling the request-making ability
+ *   or throughput of any clients.
  *
  * ### The Dreaded Adversarial Scenario
  * 
@@ -69,11 +71,18 @@ import { PlayerId } from "src/base/Player";
  * 
  */
 export class PlayerMovementEvent {
+
+    public readonly playerId: PlayerId;
     public readonly destPos: BarePos;
     public playerNewScore: number;
     public destNumTimesOccupied: number;
     public newCharSeqPair: LangCharSeqPair | null;
-    public constructor(public readonly playerId: PlayerId, destTile: Tile) {
+
+    public constructor(
+        playerId: PlayerId,
+        destTile: Tile,
+    ) {
+        this.playerId = playerId;
         this.destPos = destTile.pos;
         this.destNumTimesOccupied = destTile.numTimesOccupied;
     }

@@ -1,7 +1,7 @@
 import { LangSeq, Lang } from "src/Lang";
 import { Tile } from "src/base/Tile";
 import { Game } from "base/Game";
-import { Player, PlayerId } from "base/Player";
+import { PlayerId, Player } from "base/Player";
 
 /**
  * Documentation will refer to the human controlling a {@link HumanPlayer}
@@ -15,7 +15,10 @@ export abstract class HumanPlayer extends Player {
      * Invariant: always matches the prefix of the {@link LangSeq} of
      * an unoccupied neighbouring {@link Tile}.
      */
-    protected _seqBuffer: LangSeq;
+    private _seqBuffer: LangSeq;
+
+    private lastRequestId: number;
+    private requestInFlight: boolean;
 
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
@@ -32,6 +35,8 @@ export abstract class HumanPlayer extends Player {
     public reset(): void {
         super.reset();
         this._seqBuffer = "";
+        this.lastRequestId = 0;
+        this.requestInFlight = false;
     }
 
 
@@ -49,13 +54,17 @@ export abstract class HumanPlayer extends Player {
     public processClientInput(event: KeyboardEvent): void {
         if (false) {
             ;
-        } else if (this._isAlive) {
-            // process movement-type input if still alive.
+        } else if (this._isAlive && !(this.requestInFlight)) {
+            // Process movement-type input if still alive and the
+            // last request got  acknowledged by the Game Manager.
             this.seqBufferAcceptKey(event.key);
         }
     }
 
     /**
+     * Automaticaly makes a call to make a movement request if the
+     * provided `key` completes the `LangSeq` of a UNT. Does not do
+     * any checking regarding {@link HumanPlayer#requestInFlight}.
      * 
      * @param key - The pressed typable key as a string. Pass null to
      *      trigger a refresh of the {@link HumanPlayer#_seqBuffer}
@@ -68,12 +77,13 @@ export abstract class HumanPlayer extends Player {
             // In this case, no movement is possible.
             return;
         }
-        key = ((key !== null)
-            ? this.lang.remapKey(key)
-            : "" // Caller intends to refresh seqBuffer invariant.
-        ) as string;
-        // TODO: add check here for optimization purposes to short-circuit
-        // if key does not match the LANG_SEQ_REGEXP ?
+        if (key) {
+            key = this.lang.remapKey(key) as LangSeq;
+            // TODO: add check here for optimization purposes to
+            // short-circuit if key does not match the LANG_SEQ_REGEXP ?
+        } else {
+            key = ""; // Caller intends to refresh seqBuffer invariant.
+        }
 
         let newSeqBuffer: LangSeq;
         for ( // loop through substring start offset of newSeqBuffer:
@@ -81,39 +91,44 @@ export abstract class HumanPlayer extends Player {
             newSeqBuffer.length > 0;
             newSeqBuffer = newSeqBuffer.substring(1)
         ) {
-            // look for the longest suffixing substring of [newSeqBuffer]
+            // look for the longest suffixing substring of `newSeqBuffer`
             // that is a prefixing substring of any UNT's.
-            // TODO: change this to make it always be the prefix of a seq
-            // in their game's lang- not just of UNT's.
-            const matchletTiles: Array<Tile> = unoccupiedNeighbouringTiles
-                    .filter(t => t.langSeq.startsWith(newSeqBuffer));
-            Object.freeze(matchletTiles);
+            const matchletTiles: ReadonlyArray<Tile> = unoccupiedNeighbouringTiles
+                    .filter(tile => tile.langSeq.startsWith(newSeqBuffer));
             if (matchletTiles.length > 0) {
                 this._seqBuffer = newSeqBuffer;
-                if (matchletTiles.length === 1 && matchletTiles[0].langSeq === newSeqBuffer) {
-                    // Operator typed the [LangSeq] of a UNT (unless they are
-                    // missing incoming updates from the server / [Game] manager).
+                if (matchletTiles.length === 1 &&
+                    matchletTiles[0].langSeq === newSeqBuffer) {
+                    // Operator typed the `LangSeq` of a UNT (unless they are
+                    // missing incoming updates from the server / Game Manager).
+                    this.requestInFlight = true;
                     this.makeMovementRequest(matchletTiles[0]);
                 } else {
                     // Operator typed part of the sequence for a UNT.
-                    console.assert(matchletTiles.every(tile => tile.langSeq.length > newSeqBuffer.length));
+                    console.assert(matchletTiles.every(tile => {
+                        return tile.langSeq.length > newSeqBuffer.length;
+                    }));
                 }
                 break;
             }
         }
         if (newSeqBuffer.length === 0) {
-            // Operator's new [seqBuffer] didn't match anything.
+            // Operator's new `seqBuffer` didn't match anything.
             this._seqBuffer = "";
             this.hostTile.visualBell();
         }
     }
 
     /**
+     * Automatically clears the {@link HumanPlayer#seqBuffer}.
+     * 
      * @override
      */
     public moveTo(dest: Tile): void {
         super.moveTo(dest);
-        // clear [seqBuffer]:
+        // Clear `seqBuffer` this is done even if the movement was
+        // somehow resolved by the Game Manager to be to my same
+        // current position.
         this._seqBuffer = "";
     }
 

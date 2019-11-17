@@ -1,6 +1,7 @@
 import { Pos, Tile } from "src/base/Tile";
-import { Game } from "src/base/Game";
 import { VisibleTile } from "src/offline/VisibleTile";
+import { Game } from "src/base/Game";
+import { ClientGame } from "src/client/ClientGame";
 
 
 /**
@@ -24,6 +25,11 @@ export type PlayerId = number;
 class PlayerSkeleton {
 
     /**
+     * The game object that this player belongs to.
+     */
+    public readonly game: Game;
+
+    /**
      * @see PlayerId
      */
     public readonly idNumber: PlayerId;
@@ -35,7 +41,8 @@ class PlayerSkeleton {
      */
     public readonly benchTile: Tile;
 
-    protected constructor(idNumber: PlayerId) {
+    protected constructor(game: Game, idNumber: PlayerId) {
+        this.game = game;
         this.idNumber = idNumber;
         this.benchTile = new VisibleTile(Player.BENCH_POS);
     }
@@ -64,29 +71,40 @@ class PlayerSkeleton {
      * @param dest - 
      */
     public moveTo(dest: Tile): void {
-        if (this._hostTile.occupantId !== this.idNumber) {
-            // should never happen.
-            // TODO: but this WILL happen in the below (next assertion) scenario.
-            throw new Error("Linkage between player and occupied tile disagrees.");
+        if (this.hostTile.occupantId !== this.idNumber) {
+            if (!(this.game instanceof ClientGame)) {
+                // should never happen.
+                throw new Error("Linkage between player and occupied tile disagrees.");
+            }
+            // Otherwise, this corner case is guaranteed to follow the events
+            // described in the below comment: at this `ClientGame`, `p2` will
+            // move off of the `Tile` currently occupied by this `Player`.
         } else {
             // Move off of current host `Tile`:
             this._hostTile.evictOccupant();
         }
 
         if (dest.isOccupied()) {
-            // should never happen. enforced by caller.
-            /*
-            TODO: actually, this can happen:
-            - I see other player B_p on adjacent tile B_t
-            - Other player's operator 
-            */
-            throw new Error("Only one player can occupy a tile at a time.");
+            if (!(this.game instanceof ClientGame)) {
+                // Should never happen because the Game Manager
+                // rejects requests to move onto an occupied `Tile`.
+                throw new Error("Only one player can occupy a tile at a time.");
+            }
+            // Otherwise, this is actually possible in a variant of the _DAS_
+            // where another `Player` `p2` moves to `B`, I receive that update,
+            // then `p2` makes a request to move to `C`, which the Game Manager
+            // accepts and begins to notify my `ClientGame` of, but between the
+            // time that the GM accepts the request and when I receive the update,
+            // I make a request to move to `B`, which gets accepted by the GM,
+            // and because I might not be using websockets as my underlying
+            // transport, I receive the update for my own request first, which
+            // would appear to my `ClientGame` as if I was moving onto the `Tile`
+            // occupied by `p2`.
+        } else {
+            // Move to occupy the destination `Tile`:
+            this._hostTile = dest;
+            dest.occupantId = this.idNumber;
         }
-        // Move to occupy the destination `Tile`:
-        this._hostTile = dest;
-        dest.occupantId = this.idNumber;
-
-        // TODO: is there more to do?
     }
 }
 
@@ -99,17 +117,11 @@ export abstract class Player extends PlayerSkeleton {
 
     public static readonly BENCH_POS: Pos = new Pos(Infinity, Infinity);
 
-    /**
-     * The game object that this player belongs to.
-     */
-    public readonly game: Game;
-
     protected _isAlive: boolean;
-    protected _score:   number;
+    private   _score:   number;
 
     public constructor(game: Game, idNumber: PlayerId) {
-        super(idNumber);
-        this.game = game;
+        super(game, idNumber);
     }
 
     public reset(): void {
