@@ -142,6 +142,9 @@ export abstract class Player extends PlayerSkeleton {
 
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
+        if (Math.trunc(this.idNumber) !== this.idNumber) {
+            throw new RangeError("player id's must be integer values");
+        }
     }
 
     public reset(): void {

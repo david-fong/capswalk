@@ -23,6 +23,16 @@ export abstract class ArtificialPlayer extends Player {
 
     protected scheduledMovementCallbackId: number;
 
+    public constructor(game: OfflineGame | ServerGame, idNumber: number) {
+        super(game, idNumber);
+        if (this.idNumber >= 0) {
+            throw new RangeError(`Id number for an computationally-`
+                + `controlled Player must be strictly negative, but`
+                + ` we were passed the value \"${idNumber}\"`
+            );
+        }
+    }
+
     /**
      * Returns a {@link Pos} representing an absolute coordinate (ie.
      * one that is relative to the {@link Game}'s origin position')

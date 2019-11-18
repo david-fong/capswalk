@@ -19,9 +19,10 @@ export abstract class HumanPlayer extends Player {
 
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
-        if (this.idNumber < 0) {
-            throw new Error(`Id number for a human-operated Player must be`
-                + `non-negative. Was passed an idNumber equal to ${idNumber}.`
+        if (this.idNumber <= 0) {
+            throw new RangeError(`Id number for a human-operated`
+                + ` Player must be strictly positive, but we were`
+                + ` passed the value \"${idNumber}\"`
             );
         }
     }
