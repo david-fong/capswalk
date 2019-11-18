@@ -127,15 +127,25 @@ export class PlayerMovementEvent {
 
     /**
      * Any value assigned by the requester to this field should be
-     * ignored by the server.
+     * ignored by the server. The server should respond with the change
+     * in value that should be made to the requester's score. Positive
+     * values indicate an increase.
      */
-    public playerNewScore: number;
+    public playerScoreDelta: number;
 
     public readonly destPos: BarePos;
 
     public destNumTimesOccupied: number;
 
-    public newCharSeqPair: LangCharSeqPair | null;
+    /**
+     * The requester should set this to the value they currently see.
+     * If the request was to get benched, the server should respond
+     * with these values unchanged (no shuffle). The server may choose
+     * to make an assertion that the requester's seen values at the
+     * destination are in sync if the occupancy counter is also in
+     * sync.
+     */
+    public newCharSeqPair: LangCharSeqPair;
 
     public constructor(
         playerId: PlayerId,
@@ -146,6 +156,10 @@ export class PlayerMovementEvent {
         this.lastAccpectedRequestId  = lastAccpectedRequestId;
         this.destPos = destTile.pos;
         this.destNumTimesOccupied = destTile.numTimesOccupied;
+        this.newCharSeqPair = {
+            char: destTile.langChar,
+            seq: destTile.langSeq,
+        };
     }
 
 }

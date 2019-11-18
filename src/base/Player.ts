@@ -54,6 +54,7 @@ class PlayerSkeleton {
     protected reset(): void {
         this.benchTile.reset();
         this.benchTile.setLangCharSeq({
+            // These values are not functional.
             char: this.idNumber.toString(),
             seq:  this.idNumber.toString(),
         });

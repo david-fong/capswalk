@@ -58,7 +58,7 @@ export abstract class Game extends Grid {
      * TODO: change the player arrays to be constructor arguments. Not
      * sure about the aritifial players. But definitely the human ones.
      * 
-     * Does not call reset.
+     * _Does not call reset._
      * 
      * @override
      */
@@ -74,9 +74,8 @@ export abstract class Game extends Grid {
     }
 
     /**
-     * TODO: update this doc as behaviour is added.
-     * 
-     * Reset the grid and players.
+     * Reset the grid and the language hit-counters, performs language
+     * sequence shuffle-ins, respawns players, and spawns in targets.
      * 
      * @override {@link Grid#reset}
      */
@@ -129,13 +128,12 @@ export abstract class Game extends Grid {
     /**
      * Call for a {@link HumanPlayer} whose {@link HumanPlayer#seqBuffer}
      * should be that of the {@link Tile} at `dest`. Reject the request
-     * by short-ciruiting if `dest` is occupied.
+     * by short-circuiting if `dest` is occupied, or if the player
+     * specified by the given id does not exist, or if the requester has
+     * not yet received updates for the destination they requested to
+     * move to.
      * 
      * Should never be called by {@link ClientGame}.
-     * 
-     * Short-circuits if the player specified by the given id does not
-     * exist, or if the requester has not yet received updates for the
-     * destination they requested to move to.
      * 
      * @param desc - A descriptor of the request, with fields indicating
      *      the requester's views of critical parts of the game-state
@@ -145,7 +143,7 @@ export abstract class Game extends Grid {
     public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
         const player = this.getPlayerById(desc.playerId);
         if (player === null) {
-            // specified player does not exist.
+            // The specified player does not exist.
             return null;
 
         } else if (desc.lastAccpectedRequestId !== player.lastAcceptedRequestId) {
@@ -168,12 +166,16 @@ export abstract class Game extends Grid {
             return null;
         }
 
-        // We are all go. Do it.
-        player.lastAcceptedRequestId = ++(desc.lastAccpectedRequestId);
-        desc.playerNewScore = player.score + dest.scoreValue;
-        desc.destNumTimesOccupied = dest.numTimesOccupied + 1,
-        desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
+        // Set response fields according to spec in `PlayerMovementEvent`:
+        player.lastAcceptedRequestId    = ++(desc.lastAccpectedRequestId);
+        desc.playerScoreDelta           = dest.scoreValue;
+        desc.destNumTimesOccupied       = dest.numTimesOccupied + 1;
+        if (dest === player.benchTile) {
+            // keep the old value for bench tiles:
+            desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
+        }
 
+        // We are all go! Do it:
         this.processMoveExecute(desc);
         return desc;
     }
@@ -185,7 +187,8 @@ export abstract class Game extends Grid {
      * {@link ClientGame}.
      * 
      * Automatically lowers the {@link Player#requestInFlight} field
-     * for the requesting `Player` if 
+     * for the requesting `Player` if the arriving event description
+     * is the newest one for the specified `Player`.
      * 
      * It is essential that for these implementations, this method is
      * not scheduled for later since it is the "write" stage of that
@@ -203,8 +206,9 @@ export abstract class Game extends Grid {
     public processMoveExecute(desc: PlayerMovementEvent): void {
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const player = this.getPlayerById(desc.playerId);
-        // TODO: change this field to an increment / delta field.
-        player.score = desc.playerNewScore;
+
+        // This should happen regardless of the order of receipt:
+        player.score += desc.playerScoreDelta;
 
         const playerLagState = player.lastAcceptedRequestId - desc.lastAccpectedRequestId;
         if ((playerLagState < -1) ||
@@ -212,7 +216,8 @@ export abstract class Game extends Grid {
             // We have received even more recent updates already.
             // This update arrived out of order. `Tile` occupancy
             // counter should still be updated if increasing. The
-            // rest of the effects can be ignored.
+            // rest of the event's effects can be ignored as move
+            // operations for `Player`s are transitive in nature.
             if (dest.numTimesOccupied < desc.destNumTimesOccupied) {
                 dest.numTimesOccupied = desc.destNumTimesOccupied;
             }
