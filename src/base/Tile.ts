@@ -1,4 +1,4 @@
-import { LangSeq, LangChar, LangCharSeqPair } from "src/Lang";
+import { LangSeq, LangChar, LangCharSeqPair, EMPTY_CSP } from "src/Lang";
 import { Pos, BarePos } from "src/Pos";
 import { PlayerId } from "src/base/Player";
 
@@ -14,6 +14,12 @@ export { Pos, BarePos } from "src/Pos";
 export abstract class Tile {
 
     public readonly pos: Pos;
+
+    protected _occupantId: PlayerId;
+    protected _scoreValue: number;
+
+    protected _langChar: LangChar;
+    protected _langSeq:  LangSeq;
 
     /**
      * The number of times this `Tile` was occupied since the last
@@ -45,7 +51,7 @@ export abstract class Tile {
         this.evictOccupant();
         this.numTimesOccupied = 1;
         this.scoreValue = 0;
-        this.setLangCharSeq({ char: null, seq: null, });
+        this.setLangCharSeq(EMPTY_CSP);
     }
 
 
@@ -69,18 +75,38 @@ export abstract class Tile {
         this.occupantId = null;
     }
 
-    public abstract get occupantId(): PlayerId;
+    public get occupantId(): PlayerId {
+        return this._occupantId;
+    }
 
-    public abstract set occupantId(occupantId: PlayerId);
+    public set occupantId(occupantId: PlayerId) {
+        this._occupantId = occupantId;
+    }
 
-    public abstract get scoreValue(): number;
 
-    public abstract set scoreValue(score: number);
 
-    public abstract setLangCharSeq(charSeqPair: LangCharSeqPair): void;
+    public get scoreValue(): number {
+        return this._scoreValue;
+    }
 
-    public abstract get langChar(): LangChar;
+    public set scoreValue(score: number) {
+        this._scoreValue = score;
+    }
 
-    public abstract get langSeq(): LangSeq;
+
+
+
+    public setLangCharSeq(charSeqPair: LangCharSeqPair): void {
+        this._langChar = charSeqPair.char;
+        this._langSeq  = charSeqPair.seq;
+    }
+
+    public get langChar(): LangChar {
+        return this._langChar;
+    }
+
+    public get langSeq(): LangSeq {
+        return this._langSeq;
+    }
 
 }

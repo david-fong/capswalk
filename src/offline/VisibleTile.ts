@@ -39,8 +39,6 @@ export class VisibleTile extends Tile {
     // TODO: do we need to make the accessible outside?
     // public static readonly CLASS_HOOKS: object = ClassHooks;
 
-    private _occupantId: PlayerId;
-
     public  readonly tileCellElem:      HTMLTableCellElement;
     private readonly playerDivElem:     HTMLDivElement;
     private readonly langCharDivElem:   HTMLDivElement;
@@ -83,39 +81,27 @@ export class VisibleTile extends Tile {
 
 
 
-    public get occupantId(): PlayerId {
-        return this._occupantId;
-    }
-
     public set occupantId(occupantId: PlayerId) {
+        this._occupantId = occupantId;
         // TODO: set some dataset thing to make player face layer visible.
-        if (occupantId === null) {
+        if (occupantId === 0) {
+            // Eviction-type action:
             ;
         } else {
+            // Inhabitation-type action:
             ;
         }
-        this._occupantId = occupantId;
-    }
-
-    public get scoreValue(): number {
-        return Number.parseInt(this.tileCellElem.dataset[TileDataSetHooks.SCORE_VALUE]);
     }
 
     public set scoreValue(score: number) {
+        this._scoreValue = score;
         this.tileCellElem.dataset[TileDataSetHooks.SCORE_VALUE] = score.toString();
     }
 
     public setLangCharSeq(charSeqPair: LangCharSeqPair): void {
+        super.setLangCharSeq(charSeqPair);
         this.langCharDivElem.innerText = charSeqPair.char;
         this.langSeqDivElem.innerText  = charSeqPair.seq;
-    }
-
-    public get langChar(): LangChar {
-        return this.langCharDivElem.innerText;
-    }
-
-    public get langSeq(): LangSeq {
-        return this.langSeqDivElem.innerText;
     }
 
 }

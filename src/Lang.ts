@@ -52,10 +52,12 @@ export const LANG_SEQ_REGEXP = new RegExp("^[a-zA-Z\-.]+$");
 export type LangCharSeqPair = {
     readonly char: LangChar,
     readonly seq:  LangSeq,
-} | {
-    readonly char: null,
-    readonly seq:  null,
 };
+
+export const EMPTY_CSP = Object.freeze(<const>{
+    char: "",
+    seq:  "",
+});
 
 
 
@@ -159,7 +161,7 @@ export abstract class Lang {
      * @param input - Never `null`.
      * @returns Never `null`.
      */
-    public abstract remapKey(input: string): string;
+    public abstract remapKey(input: string): LangSeq;
 
 
 
