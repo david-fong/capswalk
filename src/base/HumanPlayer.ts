@@ -17,9 +17,6 @@ export abstract class HumanPlayer extends Player {
      */
     private _seqBuffer: LangSeq;
 
-    private lastRequestId: number;
-    private requestInFlight: boolean;
-
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
         if (this.idNumber < 0) {
@@ -35,8 +32,6 @@ export abstract class HumanPlayer extends Player {
     public reset(): void {
         super.reset();
         this._seqBuffer = "";
-        this.lastRequestId = 0;
-        this.requestInFlight = false;
     }
 
 
@@ -56,7 +51,7 @@ export abstract class HumanPlayer extends Player {
             ;
         } else if (this._isAlive && !(this.requestInFlight)) {
             // Process movement-type input if still alive and the
-            // last request got  acknowledged by the Game Manager.
+            // last request got acknowledged by the Game Manager.
             this.seqBufferAcceptKey(event.key);
         }
     }
@@ -101,7 +96,6 @@ export abstract class HumanPlayer extends Player {
                     matchletTiles[0].langSeq === newSeqBuffer) {
                     // Operator typed the `LangSeq` of a UNT (unless they are
                     // missing incoming updates from the server / Game Manager).
-                    this.requestInFlight = true;
                     this.makeMovementRequest(matchletTiles[0]);
                 } else {
                     // Operator typed part of the sequence for a UNT.

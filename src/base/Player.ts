@@ -2,6 +2,7 @@ import { Pos, Tile } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { Game } from "src/base/Game";
 import { ClientGame } from "src/client/ClientGame";
+import { PlayerMovementEvent } from "./PlayerMovementEvent";
 
 
 /**
@@ -66,14 +67,27 @@ class PlayerSkeleton {
 
     /**
      * Evicts this `Player` from its last known position (which may be
-     * lagging behind the 
+     * lagging behind the state of the master copy of the game. This
+     * method must be called after the new {@link LangCharSeqPair} has
+     * been set.
      * 
      * @param dest - 
      */
     public moveTo(dest: Tile): void {
+        // Refresh the operator's `seqBuffer`:
+        if (this.game.operator !== null &&
+            this.idNumber !== this.game.operator.idNumber &&
+            dest.pos.sub(this.game.operator.pos).infNorm === 1) {
+            // If I moved in the vicinity of the operator, and I
+            // am not the operator. This is because the movement
+            // event comes with a `LangCharSeqPair` shuffling.
+            this.game.operator.seqBufferAcceptKey(null);
+        }
+
+        // Evict self from current `Tile`.
         if (this.hostTile.occupantId !== this.idNumber) {
             if (!(this.game instanceof ClientGame)) {
-                // should never happen.
+                // Should never happen.
                 throw new Error("Linkage between player and occupied tile disagrees.");
             }
             // Otherwise, this corner case is guaranteed to follow the events
@@ -84,6 +98,7 @@ class PlayerSkeleton {
             this._hostTile.evictOccupant();
         }
 
+        // Occupy the destination `Tile.
         if (dest.isOccupied()) {
             if (!(this.game instanceof ClientGame)) {
                 // Should never happen because the Game Manager
@@ -110,6 +125,8 @@ class PlayerSkeleton {
 
 
 
+
+
 /**
  * 
  */
@@ -120,6 +137,9 @@ export abstract class Player extends PlayerSkeleton {
     protected _isAlive: boolean;
     private   _score:   number;
 
+    public lastAcceptedRequestId: number;
+    protected requestInFlight: boolean;
+
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
     }
@@ -128,11 +148,23 @@ export abstract class Player extends PlayerSkeleton {
         super.reset();
         this._isAlive   = true;
         this._score     = 0;
+        this.lastAcceptedRequestId = PlayerMovementEvent.INITIAL_REQUEST_ID;
+        this.requestInFlight = false;
     }
 
 
+    public makeMovementRequest(dest: Tile): void {
+        if (this.requestInFlight) {
+            throw new Error("Only one request should ever be in flight at a time.");
+        }
+        this.requestInFlight = true;
+        this.abstractMakeMovementRequest(dest);
+    }
 
     /**
+     * **Do not call this directly!** Instead, make a call to the
+     * {@link Player#makeMovementRequest} method, which calls this.
+     * 
      * Send a descriptor of the movement request to the Game Manager.
      * Called automatically by {@link HumanPlayer#seqBufferAcceptKey}
      * for {@link HumanPlayer}s, and by a periodic callback for
@@ -145,7 +177,7 @@ export abstract class Player extends PlayerSkeleton {
      * 
      * @throws `Error` if `dest` is occupied by another `Player`.
      */
-    public abstract makeMovementRequest(dest: Tile): void;
+    protected abstract abstractMakeMovementRequest(dest: Tile): void;
 
     public bench(): void {
         this.makeMovementRequest(this.benchTile);

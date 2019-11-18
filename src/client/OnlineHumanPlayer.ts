@@ -51,12 +51,16 @@ export class OnlineHumanPlayer extends HumanPlayer {
     /**
      * @override
      */
-    public makeMovementRequest(dest: Tile): void {
+    public abstractMakeMovementRequest(dest: Tile): void {
         // ServerGame handles with processMoveRequest.
         // Arguments must follow that function signature.
         this.game.socket.emit(
             Events.PlayerMovement.name,
-            new PlayerMovementEvent(this.idNumber, dest),
+            new PlayerMovementEvent(
+                this.idNumber,
+                this.lastAcceptedRequestId,
+                dest,
+            ),
         );
     }
 

@@ -33,7 +33,7 @@ export class ClientGame extends Game {
     }
 
     /**
-     * @override {@link Game#reset}
+     * @override
      */
     public reset(): void {
         // Bypass my direct parent's reset implementation.
@@ -45,7 +45,7 @@ export class ClientGame extends Game {
     }
 
     /**
-     * @override {@link Grid#createTile}
+     * @override
      */
     public createTile(pos: BarePos): VisibleTile {
         return new VisibleTile(pos);
@@ -53,10 +53,10 @@ export class ClientGame extends Game {
 
     /**
      * Normally calls {@link Game#processMoveExecute}. However, here,
-     * this should be done as a callback to an event created by the
+     * that should be done as a callback to an event created by the
      * server.
      * 
-     * @override {@link Game#processMoveRequest}
+     * @override
      * @throws `TypeError` Unconditionally.
      */
     public processMoveRequest(desc: PlayerMovementEvent): never {

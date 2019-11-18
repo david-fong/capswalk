@@ -4,6 +4,7 @@ import { BarePos, Tile } from "src/base/Tile";
 import { Grid } from "src/base/Grid";
 import { PlayerId, Player } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
+import { OnlineHumanPlayer } from "src/client/OnlineHumanPlayer";
 import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 export { Grid } from "src/base/Grid";
@@ -33,6 +34,13 @@ export { Grid } from "src/base/Grid";
 export abstract class Game extends Grid {
 
     public lang: Lang;
+
+    /**
+     * Set to `null` for {@link ServerGame}
+     * 
+     * TODO: initialize this field in constructor.
+     */
+    public readonly operator: OnlineHumanPlayer | null;
 
     /**
      * Does not use the HumanPlayer type annotation. This is to
@@ -142,7 +150,14 @@ export abstract class Game extends Grid {
             return null;
         }
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
-        if (dest.isOccupied() /*|| (dest.numTimesOccupied !== desc.destNumTimesOccupied)*/) {
+        if (dest.isOccupied() ||
+            dest.numTimesOccupied !== desc.destNumTimesOccupied) {
+            // The check concerning the destination `Tile`'s occupancy
+            // counter is not absolutely necessary. It does not enforce
+            // stringer invariant-keeping consistency, but it does enforce
+            // stronger client-experience consistency: they cannot move
+            // somewhere where they have not realized the `LangSeq` has
+            // changed.
             return null;
         }
 
@@ -183,10 +198,11 @@ export abstract class Game extends Grid {
             // rest of its effect.
             return;
         }
-        // The order of these operations is not important.
+        // The `LangCharSeqPair` shuffle changes must take effect
+        // before moving the player. See the spec for `#moveTo`.
+        dest.setLangCharSeq(desc.newCharSeqPair);
         this.getPlayerById(desc.playerId).moveTo(dest);
         dest.numTimesOccupied = desc.destNumTimesOccupied;
-        dest.setLangCharSeq(desc.newCharSeqPair);
     }
 
 

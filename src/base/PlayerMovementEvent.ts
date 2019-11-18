@@ -4,7 +4,7 @@ import { PlayerId } from "src/base/Player";
 
 
 /**
- * ## A Fantastic Nightmare of a Problem to Solve
+ * ## One Fantastic Nightmare of a Problem to Solve
  * 
  * This single methodless class is the ship that carries this project
  * a thousand troubles. Its job is to carry the bare minimum amount of
@@ -72,18 +72,71 @@ import { PlayerId } from "src/base/Player";
  */
 export class PlayerMovementEvent {
 
+    /**
+     * This is the agreed upon value that both the server and client
+     * copies of a game should set as the initial value for request id
+     * counters.
+     */
+    public static readonly INITIAL_REQUEST_ID = -1;
+
     public readonly playerId: PlayerId;
-    public readonly destPos: BarePos;
+
+    /**
+     * ### Client Request
+     * 
+     * Requester sends this desc to the Game Manager with a vaue of the
+     * id of the last request from the specified player that the server
+     * accepted.
+     * 
+     * ### Server Response
+     * 
+     * If the server accepts the request, it must broadcast a response
+     * with this field set to the incremented value.
+     * 
+     * If it rejects this request, it must directly acknowledge its
+     * receipt of the request (no need to broadcast to all clients)
+     * with this field unchanged, which indicates a rejection of the
+     * request.
+     * 
+     * ### Handling Unexeptected Values
+     * 
+     * If the server / Game Manager receives a request with a value in
+     * this field lower than the one it set in its last response to the
+     * requester, this would mean that the requester didn't wait for a
+     * response to its previous request, which it is not supposed to do.
+     * 
+     * The server should never receive a request with a value higher
+     * than the one it provided in its last response to this requester
+     * because it in charge of incrementing it- the client should only
+     * change the value it sees to match the one from the server's
+     * response.
+     * 
+     * In both these cases, the server may throw an assertion error for
+     * debugging purposes.
+     */
+    public lastAccpectedRequestId: number;
+
+    /**
+     * Any value assigned by the requester to this field should be
+     * ignored by the server.
+     */
     public playerNewScore: number;
+
+    public readonly destPos: BarePos;
+
     public destNumTimesOccupied: number;
+
     public newCharSeqPair: LangCharSeqPair | null;
 
     public constructor(
         playerId: PlayerId,
+        lastAccpectedRequestId: number,
         destTile: Tile,
     ) {
         this.playerId = playerId;
+        this.lastAccpectedRequestId  = lastAccpectedRequestId;
         this.destPos = destTile.pos;
         this.destNumTimesOccupied = destTile.numTimesOccupied;
     }
+
 }
