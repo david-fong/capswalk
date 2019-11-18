@@ -43,7 +43,7 @@ export abstract class Grid {
      * class, they will be truncated before being used. No error will
      * be thrown.
      * 
-     * Does not call reset.
+     * _Does not call reset._
      * 
      * @param dimensions - 
      * @param domGridHtmlIdHook - The identifier for the HTML element

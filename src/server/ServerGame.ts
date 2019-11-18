@@ -14,6 +14,12 @@ export class ServerGame extends Game {
 
     protected readonly session: GroupSession;
 
+    /**
+     * _Calls reset recursively for this entire composition._
+     * 
+     * @param session - 
+     * @param dimensions - 
+     */
     public constructor(
         session: GroupSession,
         dimensions: { height: number, width?: number, },

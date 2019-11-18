@@ -47,7 +47,7 @@ export class LangSeqTreeNode {
 
 
     /**
-     * Does not call reset on the returned root node.
+     * _Does not call reset._
      * 
      * @param forwardDict - 
      * @returns The root node of a new tree map.

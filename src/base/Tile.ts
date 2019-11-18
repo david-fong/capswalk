@@ -34,9 +34,9 @@ export abstract class Tile {
     public numTimesOccupied: number;
 
     /**
+     * _Does not call reset._
      * 
      * @param pos - 
-     * 
      * @throws `TypeError` if `x` or `y` are not integer values.
      */
     public constructor(pos: BarePos) {
@@ -44,7 +44,6 @@ export abstract class Tile {
         if (!(this.pos.equals(this.pos.round()))) {
             throw new TypeError("Tile position coordinates must be integers.");
         }
-        this.reset();
     }
 
     public reset(): void {

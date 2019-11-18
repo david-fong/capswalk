@@ -105,6 +105,7 @@ export abstract class Lang {
     }
 
     /**
+     * _Does not call reset._
      * 
      * @param name - 
      * @param forwardDict - Note: weights are relative values handled
@@ -128,7 +129,6 @@ export abstract class Lang {
                 + `for ${Lang.prototype.getNonConflictingChar.name}.`
             );
         }
-        this.reset();
     }
 
     public reset(): void {

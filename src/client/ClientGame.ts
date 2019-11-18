@@ -30,6 +30,8 @@ export class ClientGame extends Game {
             Events.PlayerMovement.name,
             this.processMoveExecute
         );
+        // TODO: should this call reset? The other implementations
+        // (Game Managers) do.
     }
 
     /**

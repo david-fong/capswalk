@@ -12,13 +12,20 @@ export class OfflineGame extends Game {
 
     protected settings: LocalGameSettings;
 
+    /**
+     * _Calls reset recursively for this entire composition._
+     * 
+     * @param dimensions - 
+     */
     public constructor(dimensions: { height: number, width?: number, }) {
         super(dimensions);
         this.settings = LocalGameSettings.getInstance();
+
+        this.reset();
     }
 
     /**
-     * @override {@link Grid#createTile}
+     * @override
      */
     public createTile(pos: BarePos): VisibleTile {
         return new VisibleTile(pos);
