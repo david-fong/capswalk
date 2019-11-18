@@ -82,7 +82,7 @@ export abstract class ArtificialPlayer extends Player {
                 this.idNumber,
                 this.lastAcceptedRequestId,
                 dest,
-            )
+            ),
         );
     }
 

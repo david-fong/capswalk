@@ -2,7 +2,7 @@ import { Pos, Tile } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { Game } from "src/base/Game";
 import { ClientGame } from "src/client/ClientGame";
-import { PlayerMovementEvent } from "./PlayerMovementEvent";
+import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 
 /**
@@ -138,7 +138,7 @@ export abstract class Player extends PlayerSkeleton {
     private   _score:   number;
 
     public lastAcceptedRequestId: number;
-    protected requestInFlight: boolean;
+    public requestInFlight: boolean;
 
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
@@ -156,7 +156,8 @@ export abstract class Player extends PlayerSkeleton {
     }
 
 
-    public makeMovementRequest(dest: Tile): void {
+
+    protected makeMovementRequest(dest: Tile): void {
         if (this.requestInFlight) {
             throw new Error("Only one request should ever be in flight at a time.");
         }
@@ -165,8 +166,10 @@ export abstract class Player extends PlayerSkeleton {
     }
 
     /**
-     * **Do not call this directly!** Instead, make a call to the
-     * {@link Player#makeMovementRequest} method, which calls this.
+     * **_Do not call this directly!_** Instead, make a call to the
+     * {@link Player#makeMovementRequest} method, which calls this,
+     * and performs relevant non-implementation-dependant operations
+     * such as book-keeping for spam control.
      * 
      * Send a descriptor of the movement request to the Game Manager.
      * Called automatically by {@link HumanPlayer#seqBufferAcceptKey}

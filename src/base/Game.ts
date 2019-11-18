@@ -90,7 +90,7 @@ export abstract class Game extends Grid {
 
         // Shuffle everything:
         this.grid.forEach(row => row.forEach(tile => {
-            this.shuffleLangCharSeqAt(tile); // TODO: don't call this. call what it calls?
+            this.shuffleLangCharSeqAt(tile);
         }, this), this);
 
         // TODO: reset and respawn players:
@@ -110,9 +110,9 @@ export abstract class Game extends Grid {
      * However, this method will nullify the existing values at `tile`.
      * 
      * @param tile - The {@link Tile} to shuffle their {@link LangChar}-
-     *          {@link LangSeq} pair for.
+     *      {@link LangSeq} pair for.
      * @returns A {@link LangCharSeqPair} that can be used as a replacement
-     *          for that currently being used by `tile`.
+     *      for that currently being used by `tile`.
      */
     private shuffleLangCharSeqAt(tile: Tile): LangCharSeqPair {
         // Clear values for the target tile so its current (to-be-
@@ -140,21 +140,28 @@ export abstract class Game extends Grid {
      * @param desc - A descriptor of the request, with fields indicating
      *      the requester's views of critical parts of the game-state
      *      from their copy of the game-state at the time of the request.
-     * @returns A descriptor of changes to be made, or `null` if the
-     *      request is rejected.
+     * @returns A descriptor of changes to be made.
      */
     public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
         const player = this.getPlayerById(desc.playerId);
         if (player === null) {
             // specified player does not exist.
             return null;
+
+        } else if (desc.lastAccpectedRequestId !== player.lastAcceptedRequestId) {
+            throw new RangeError((desc.lastAccpectedRequestId < player.lastAcceptedRequestId)
+                ? ("Clients should not make requests until they have"
+                    + " received my response to their last request")
+                : ("Client seems to have incremented the request ID"
+                    + " counter on their own, which is is illegal")
+            );
         }
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         if (dest.isOccupied() ||
             dest.numTimesOccupied !== desc.destNumTimesOccupied) {
             // The check concerning the destination `Tile`'s occupancy
             // counter is not absolutely necessary. It does not enforce
-            // stringer invariant-keeping consistency, but it does enforce
+            // stronger invariant-keeping consistency, but it does enforce
             // stronger client-experience consistency: they cannot move
             // somewhere where they have not realized the `LangSeq` has
             // changed.
@@ -162,9 +169,11 @@ export abstract class Game extends Grid {
         }
 
         // We are all go. Do it.
+        player.lastAcceptedRequestId = ++(desc.lastAccpectedRequestId);
         desc.playerNewScore = player.score + dest.scoreValue;
         desc.destNumTimesOccupied = dest.numTimesOccupied + 1,
         desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
+
         this.processMoveExecute(desc);
         return desc;
     }
@@ -174,6 +183,9 @@ export abstract class Game extends Grid {
      * {@link Game#processMoveRequest} if I am a {@link ServerGame} or
      * {@link OfflineGame}, or as an event callback if I am a
      * {@link ClientGame}.
+     * 
+     * Automatically lowers the {@link Player#requestInFlight} field
+     * for the requesting `Player` if 
      * 
      * It is essential that for these implementations, this method is
      * not scheduled for later since it is the "write" stage of that
@@ -190,19 +202,36 @@ export abstract class Game extends Grid {
      */
     public processMoveExecute(desc: PlayerMovementEvent): void {
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
-        this.getPlayerById(desc.playerId).score = desc.playerNewScore;
+        const player = this.getPlayerById(desc.playerId);
+        // TODO: change this field to an increment / delta field.
+        player.score = desc.playerNewScore;
 
-        if (dest.numTimesOccupied > desc.destNumTimesOccupied) {
+        const playerLagState = player.lastAcceptedRequestId - desc.lastAccpectedRequestId;
+        if ((playerLagState < -1) ||
+            (dest.numTimesOccupied > desc.destNumTimesOccupied)) {
             // We have received even more recent updates already.
             // This update arrived out of order. We can ignore the
             // rest of its effect.
             return;
         }
-        // The `LangCharSeqPair` shuffle changes must take effect
-        // before moving the player. See the spec for `#moveTo`.
-        dest.setLangCharSeq(desc.newCharSeqPair);
-        this.getPlayerById(desc.playerId).moveTo(dest);
-        dest.numTimesOccupied = desc.destNumTimesOccupied;
+        // Okay, we either got accepted or rejected now.
+        player.requestInFlight = false;
+
+        if (playerLagState === 0) {
+            // The request was rejected by the Game Manager.
+            return;
+
+        } else if (playerLagState === -1) {
+            // The `LangCharSeqPair` shuffle changes must take effect
+            // before moving the player. See the spec for `#moveTo`.
+            dest.setLangCharSeq(desc.newCharSeqPair);
+            player.moveTo(dest);
+            player.lastAcceptedRequestId = desc.lastAccpectedRequestId;
+            dest.numTimesOccupied = desc.destNumTimesOccupied;
+
+        } else {
+            throw new RangeError("client seems to have tampered with their request counter");
+        }
     }
 
 
@@ -218,7 +247,7 @@ export abstract class Game extends Grid {
      * 
      * @param playerId - 
      * @returns `null` if the specified `playerId` is not allocated
-     *      to any {@link Player}.
+     *      to any {@link Player} in this `Game`.
      */
     protected getPlayerById(playerId: PlayerId): Player | null {
         if (playerId === 0) {
@@ -232,7 +261,9 @@ export abstract class Game extends Grid {
     }
 
     protected get langBalancingScheme(): BalancingScheme {
-        return this.settings.langBalancingScheme.selectedValue;
+        // TODO
+        //return this.settings.langBalancingScheme.selectedValue;
+        return undefined;
     }
 
 }

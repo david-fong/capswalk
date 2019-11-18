@@ -7,13 +7,14 @@ import { PlayerId } from "src/base/Player";
  * ## One Fantastic Nightmare of a Problem to Solve
  * 
  * This single methodless class is the ship that carries this project
- * a thousand troubles. Its job is to carry the bare minimum amount of
- * information needed to describe a client / operator's request for
+ * a thousand troubles. Its job is to carry the _bare minimum amount_
+ * of information needed to describe a client / operator's request for
  * movement to the server, and to broadcast an acceptance of the request
  * to all clients describing all changes to the game state that need to
  * be made in response to that request (or to otherwise reply to the
- * requester saying that their request was rejected). It must do so in
- * a way that allows the server and clients to infer message reordering
+ * requester saying that their request was rejected), and must do so in
+ * a way that allows the server and clients to infer whether any message
+ * reordering occurred.
  * 
  * This is my first time working with client-server interactions, and
  * I find myself face-to-face with a deliciously maddening problem: A
@@ -30,9 +31,10 @@ import { PlayerId } from "src/base/Player";
  * the client side as responses and updates arrive, and to synchronize
  * every possible outcome of what I am calling the _dreaded adversarial
  * scenario_. Using socket.io, if all clients immediately upgrade to
- * use websockets for the underlying transport, then it is safe to
+ * use websockets for their underlying transport, then it is safe to
  * assume that emits from the server will arrive to the clients in the
- * same order, but there are no absolute guarantees for this.
+ * same order. But, there are no absolute guarantees that clients will
+ * support this, so we have to design accordingly.
  * 
  * ### The Problem in Summary
  * 
@@ -84,9 +86,11 @@ export class PlayerMovementEvent {
     /**
      * ### Client Request
      * 
-     * Requester sends this desc to the Game Manager with a vaue of the
-     * id of the last request from the specified player that the server
-     * accepted.
+     * Requester sends this desc to the Game Manager with a value of
+     * the ID of the last request it that the server _accepted_. This
+     * naturally implies that a requester cannot send a new request to
+     * the Game Manager until it has received the Game Manager's
+     * response to the last request it made.
      * 
      * ### Server Response
      * 
@@ -98,12 +102,17 @@ export class PlayerMovementEvent {
      * with this field unchanged, which indicates a rejection of the
      * request.
      * 
-     * ### Handling Unexeptected Values
+     * ### Handling Unexpected Values
      * 
      * If the server / Game Manager receives a request with a value in
      * this field lower than the one it set in its last response to the
      * requester, this would mean that the requester didn't wait for a
      * response to its previous request, which it is not supposed to do.
+     * 
+     * **Important:** If the above requirement is ever changed, (in
+     * addition to other mechanisms I haven't reasoned through,) this
+     * field's spec should change to require _all_ server responses to
+     * have this field set to an incremented value, including rejects.
      * 
      * The server should never receive a request with a value higher
      * than the one it provided in its last response to this requester
