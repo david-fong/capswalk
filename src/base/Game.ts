@@ -210,8 +210,12 @@ export abstract class Game extends Grid {
         if ((playerLagState < -1) ||
             (dest.numTimesOccupied > desc.destNumTimesOccupied)) {
             // We have received even more recent updates already.
-            // This update arrived out of order. We can ignore the
-            // rest of its effect.
+            // This update arrived out of order. `Tile` occupancy
+            // counter should still be updated if increasing. The
+            // rest of the effects can be ignored.
+            if (dest.numTimesOccupied < desc.destNumTimesOccupied) {
+                dest.numTimesOccupied = desc.destNumTimesOccupied;
+            }
             return;
         }
         // Okay, we either got accepted or rejected now.
