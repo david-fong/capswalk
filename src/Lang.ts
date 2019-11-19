@@ -108,9 +108,10 @@ export abstract class Lang {
      * _Does not call reset._
      * 
      * @param name - 
-     * @param forwardDict - Note: weights are relative values handled
-     *      by {@link LangSeqTreeNode}. They do not all need to sum to
-     *      a specific value such as 100.
+     * @param forwardDict - Weights are _relative_ values handled by
+     *      {@link LangSeqTreeNode}, which requires the provided values
+     *      to all be strictly positive values. They do not all need
+     *      to sum to a specific value such as 100.
      */
     protected constructor(name: string, forwardDict: WeightedCspForwardMap) {
         // Write JSON data to my `dict`:

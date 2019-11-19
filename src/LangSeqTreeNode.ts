@@ -31,7 +31,6 @@ export type WeightedCspForwardMap = Record<LangChar, {seq: LangSeq, weight: numb
  * 
  * The enclosing {@link Lang} object has no concept of `LangChar` weights.
  * All it has is the interfaces provided by the hit-count getter methods.
- * TODO: make those getters accomodate char weights.
  */
 export class LangSeqTreeNode {
 
@@ -109,7 +108,7 @@ export class LangSeqTreeNode {
 
     public reset(): void {
         this.hitCount = 0;
-        this.weightedHitCount = 0;
+        this.weightedHitCount = 0.000;
         this.characters.forEach(char => char.reset());
         this.children.forEach(child => child.reset());
     }
@@ -254,6 +253,32 @@ export class LangSeqTreeNode {
 class WeightedLangChar {
 
     public readonly char: LangChar;
+
+    /**
+     * A weight is relative to weights of other unique characters in
+     * the contextual language. A character with a higher weight, when
+     * using the {@link BalancingScheme#WEIGHT} scheme, will have a
+     * higher shuffle-in priority than characters with a lower weight.
+     * 
+     * Specifically, using the {@link BalancingScheme#WEIGHT} scheme,
+     * a character `cA` with a weight `N` times that of another `cB`
+     * will, on average, be returned `N` times more often by the
+     * {@link LangSeqTreeNode#chooseOnePair} method than `cB`.
+     * 
+     * This is implemented using counters that last for the lifetime
+     * of one game, and increment for a chosen character by the inverse
+     * of its weight every time it is chosen. Choosing the character
+     * with the lowest such counter at a given time will produce the
+     * desired effect:
+     * 
+     * If there are three characters mapped with weights `cA: 1`, `cB:
+     * 2`, `cC: 3`, and share no prefixing substrings and we pretend
+     * that there are never any sequences to avoid when shuffling in
+     * characters, then the results of consecutive calls should produce
+     * something like: `A(0), B(0), C(0), A(1/3), B(1/2), A(2/3),
+     * (repeat forever)`, where the bracketed values are their weighted
+     * hit-counts before they were returned, since the last reset.
+     */
     public readonly weightInv: number;
     public hitCount: number;
     public weightedHitCount: number;
@@ -262,13 +287,18 @@ class WeightedLangChar {
         char: LangChar,
         weight: number,
     ) {
+        if (weight <= 0) {
+            throw new RangeError(`All weights must be positive, but we`
+                + ` were passed the value ${weight} for the character`
+                + ` ${char}`);
+        }
         this.char = char;
-        this.weightInv = 1 / weight;
+        this.weightInv = 1.000 / weight;
     }
 
     public reset(): void {
         this.hitCount = 0;
-        this.weightedHitCount = 0;
+        this.weightedHitCount = 0.000;
     }
 
     /**
