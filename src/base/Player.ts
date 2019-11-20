@@ -3,11 +3,12 @@ import { VisibleTile } from "src/offline/VisibleTile";
 import { Game } from "src/base/Game";
 import { ClientGame } from "src/client/ClientGame";
 import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
+import { isNullOrUndefined } from "util";
 
 
 /**
- * An integer value used to uniquely identify `Player`s in the same
- * {@link Game} together. Strictly negative values correspond to
+ * An **integer value** used to uniquely identify `Player`s in the
+ * same {@link Game} together. Strictly negative values correspond to
  * {@link ArtificialPlayer}s, strictly positive values correspond to
  * {@link HumanPlayer}s, and the value `zero` is reserved to indicate
  * that a {@link Tile} is unoccupied.
@@ -49,6 +50,8 @@ class PlayerSkeleton {
     }
 
     /**
+     * Automatically benches this `Player`.
+     * 
      * Must be called _after_ the {@link Grid} has been reset.
      */
     protected reset(): void {
@@ -58,8 +61,8 @@ class PlayerSkeleton {
             char: this.idNumber.toString(),
             seq:  this.idNumber.toString(),
         });
-        this.benchTile.occupantId = this.idNumber;
         this._hostTile = this.benchTile;
+        this.benchTile.occupantId = this.idNumber;
     }
 
     protected get hostTile(): Tile {
@@ -81,7 +84,9 @@ class PlayerSkeleton {
             dest.pos.sub(this.game.operator.pos).infNorm === 1) {
             // If I moved in the vicinity of the operator, and I
             // am not the operator. This is because the movement
-            // event comes with a `LangCharSeqPair` shuffling.
+            // event comes with a `LangCharSeqPair` shuffling. This
+            // operation is necessary to maintain the `seqBuffer`
+            // invariant.
             this.game.operator.seqBufferAcceptKey(null);
         }
 
@@ -135,12 +140,33 @@ export abstract class Player extends PlayerSkeleton {
 
     public static readonly BENCH_POS: Pos = new Pos(Infinity, Infinity);
 
-    protected _isAlive: boolean;
-    private   _score:   number;
+    /**
+     * This should never be accessed directly. Use accessors instead.
+     */
+    protected _isDowned: boolean;
+
+    /**
+     * This should never be accessed directly. Use accessors instead.
+     */
+    protected _score: number;
+
+    /**
+     * This should never be accessed directly. Use accessors instead.
+     */
+    protected _stockpile: number;
+
+    /**
+     * This should never be accessed directly. Use accessors instead.
+     */
+    protected _isBubbling: boolean;
 
     public lastAcceptedRequestId: number;
+
     public requestInFlight: boolean;
 
+    /**
+     * @inheritdoc
+     */
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
         if (Math.trunc(this.idNumber) !== this.idNumber) {
@@ -150,8 +176,10 @@ export abstract class Player extends PlayerSkeleton {
 
     public reset(): void {
         super.reset();
-        this._isAlive   = true;
-        this._score     = 0;
+        this.isDowned   = false;
+        this.score      = 0;
+        this.stockpile  = 0;
+        this.isBubbling = false;
         this.lastAcceptedRequestId = PlayerMovementEvent.INITIAL_REQUEST_ID;
         this.requestInFlight = false;
     }
@@ -196,12 +224,36 @@ export abstract class Player extends PlayerSkeleton {
         return this.hostTile.pos;
     }
 
+    public get isDowned(): boolean {
+        return this._isDowned;
+    }
+
+    public set isDowned(isDowned: boolean) {
+        this._isDowned = isDowned;
+    }
+
     public get score(): number {
         return this._score;
     }
 
     public set score(newValue: number) {
         this._score = newValue;
+    }
+
+    public get stockpile(): number {
+        return this._stockpile;
+    }
+
+    public set stockpile(stockpile: number) {
+        this._stockpile = stockpile;
+    }
+
+    public get isBubbling(): boolean {
+        return this._isBubbling;
+    }
+
+    public set isBubbling(isBubbling: boolean) {
+        this._isBubbling = isBubbling;
     }
 
     public getUNT(): Array<Tile> {
