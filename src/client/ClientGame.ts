@@ -1,6 +1,5 @@
 import * as io from "socket.io-client";
 
-import { Events } from "src/Events";
 import { BarePos } from "src/Pos";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { LocalGameSettings } from "src/settings/GameSettings";
@@ -27,7 +26,7 @@ export class ClientGame extends Game {
         this.socket = socket;
 
         this.socket.on(
-            Events.PlayerMovement.name,
+            PlayerMovementEvent.EVENT_NAME,
             this.processMoveExecute
         );
         // TODO: should this call reset? The other implementations

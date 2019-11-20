@@ -1,9 +1,9 @@
 import * as io from "socket.io";
 
-import { Events } from "src/Events";
 import { GameStateDump } from "src/base/Game";
 import { ServerGame } from "src/server/ServerGame";
 import { PlayerId } from "src/base/Player";
+import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 export { ServerGame } from "src/server/ServerGame";
 
@@ -99,7 +99,7 @@ export class GroupSession {
         });
 
         socket.on(
-            Events.PlayerMovement.name,
+            PlayerMovementEvent.EVENT_NAME,
             this.currentGame.processMoveRequest,
         );
     }
@@ -128,7 +128,7 @@ export class GroupSession {
 
         this.currentGame = newGame;
         this.namespace.emit(
-            Events.DumpGameState.name,
+            GameStateDump.EVENT_NAME,
             new GameStateDump(this.currentGame)
         );
     }

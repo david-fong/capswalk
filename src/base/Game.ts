@@ -280,9 +280,10 @@ export abstract class Game extends Grid {
 
 
 /**
- * 
+ * TODO: move this class to its own file.
  */
 export class GameStateDump {
+
 
     public constructor(game: Game) {
         ;

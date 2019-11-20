@@ -57,7 +57,7 @@ export class ServerGame extends Game {
             // Request was accepted.
             // Pass on change descriptor to all clients:
             this.session.namespace.emit(
-                Events.PlayerMovement.name,
+                PlayerMovementEvent.EVENT_NAME,
                 reponseDesc,
             );
         } else {
@@ -68,7 +68,7 @@ export class ServerGame extends Game {
             // to the spec, indicates a rejected request.
             // TODO: don't broadcast. just respond directly to the requester.
             this.session.namespace.emit(
-                Events.PlayerMovement.name,
+                PlayerMovementEvent.EVENT_NAME,
                 desc,
             );
         }

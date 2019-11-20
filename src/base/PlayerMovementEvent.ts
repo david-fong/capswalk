@@ -74,6 +74,8 @@ import { PlayerId } from "src/base/Player";
  */
 export class PlayerMovementEvent {
 
+    public static readonly EVENT_NAME = "player movement";
+
     /**
      * This is the agreed upon value that both the server and client
      * copies of a game should set as the initial value for request id
@@ -127,14 +129,38 @@ export class PlayerMovementEvent {
 
     /**
      * Any value assigned by the requester to this field should be
-     * ignored by the server. The server should respond with the change
-     * in value that should be made to the requester's score. Positive
-     * values indicate an increase.
+     * ignored by the server.
+     * 
+     * The server should respond with the new value of the requester's
+     * score.
      */
-    public playerScoreDelta: number;
+    public playerScore: number;
+
+    /**
+     * Any value assigned by the requester to this field should be
+     * ignored by the server.
+     * 
+     * The server should respond with the new value of the requester's
+     * stockpile.
+     */
+    public playerStockpile: number;
 
     public readonly destPos: BarePos;
 
+    /**
+     * The requester should set this field to the highest value they
+     * received from any previous responses from the server. In normal
+     * cases (no message reordering), this should be equal to the last
+     * value seen in the response from the server.
+     * 
+     * The server should respond with the increment of this value. A
+     * movement event causes a shuffle-in at the destination position,
+     * which can affect whether another player intending to move to
+     * the same position can do so. For this reason, the server should
+     * reject requests where the requester has not received changes
+     * involving a shuffle-in at their desired destination. This is
+     * not mandatory, but preferred behaviour.
+     */
     public destNumTimesOccupied: number;
 
     /**

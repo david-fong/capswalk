@@ -1,4 +1,3 @@
-import { Events } from "src/Events";
 import { Tile } from "src/base/Tile";
 import { ClientGame } from "src/client/ClientGame";
 import { HumanPlayer } from "src/base/HumanPlayer";
@@ -51,7 +50,7 @@ export class OnlineHumanPlayer extends HumanPlayer {
         // ServerGame handles with processMoveRequest.
         // Arguments must follow that function signature.
         this.game.socket.emit(
-            Events.PlayerMovement.name,
+            PlayerMovementEvent.EVENT_NAME,
             new PlayerMovementEvent(
                 this.idNumber,
                 this.lastAcceptedRequestId,
