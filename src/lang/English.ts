@@ -10,11 +10,11 @@ export class English extends Lang {
     private static SINGLETON: English = undefined;
 
     public static getInstance(): English {
-        if (this.SINGLETON === undefined) {
-            this.SINGLETON = new English();
+        if (!(English.SINGLETON)) {
+            English.SINGLETON  = new English();
             English.INITIALIZER = null;
         }
-        return this.SINGLETON;
+        return English.SINGLETON;
     }
 
     /**
@@ -26,9 +26,10 @@ export class English extends Lang {
         return input.toLowerCase();
     }
 
-    // only used during the first construction.
+    /**
+     * Values obtained from https://wikipedia.org/wiki/Letter_frequency
+     */
     private static INITIALIZER = Object.freeze(<const>{
-        // Values from https://wikipedia.org/wiki/Letter_frequency.
         a: 8.167, b: 1.492, c: 2.202, d: 4.253,
         e:12.702, f: 2.228, g: 2.015, h: 6.094,
         i: 6.966, j: 0.153, k: 1.292, l: 4.025,
