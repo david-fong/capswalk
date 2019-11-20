@@ -30,37 +30,6 @@ export namespace Events {
     }
 
     /**
-     * Dump game state
-     */
-    export namespace DumpGameState {
-        export const name = "dump game state";
-
-        export interface Initiate {
-            (ack: Acknowlege): void;
-        };
-        export interface Acknowlege {
-            (): void;
-        };
-    };
-
-    /**
-     * Player movement.
-     * Client initiates with `id` and `dest` through player method.
-     * Server validates request, and if accepted, broadcasts to all
-     *      clients with {@link PlayerMovementDesc}.
-     */
-    export namespace PlayerMovement {
-        export const name = "player movement";
-
-        export interface Initiate {
-            (playerId: number, destPos: BarePos, ack: Acknowlege): void;
-        };
-        export interface Acknowlege {
-            (desc: PlayerMovementEvent): void;
-        };
-    }
-
-    /**
      * Language change.
      */
     export namespace LanguageChange {

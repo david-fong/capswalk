@@ -2,10 +2,12 @@ import { Lang, LangCharSeqPair, EMPTY_CSP } from "src/Lang";
 import { BalancingScheme } from "src/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
 import { Grid } from "src/base/Grid";
+
 import { PlayerId, Player } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
 import { OnlineHumanPlayer } from "src/client/OnlineHumanPlayer";
 import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
+import { Bubble } from "src/base/Bubble";
 
 export { Grid } from "src/base/Grid";
 
@@ -126,24 +128,27 @@ export abstract class Game extends Grid {
     }
 
     /**
+     * @see PlayerMovementEvent
+     * 
      * Call for a {@link HumanPlayer} whose {@link HumanPlayer#seqBuffer}
      * should be that of the {@link Tile} at `dest`. Reject the request
-     * by short-circuiting if `dest` is occupied, or if the player
+     * by returning `null` if `dest` is occupied, or if the player
      * specified by the given id does not exist, or if the requester has
      * not yet received updates for the destination they requested to
-     * move to.
+     * move to, or the requester is still bubbling.
      * 
      * Should never be called by {@link ClientGame}.
      * 
      * @param desc - A descriptor of the request, with fields indicating
      *      the requester's views of critical parts of the game-state
      *      from their copy of the game-state at the time of the request.
-     * @returns A descriptor of changes to be made.
+     * @returns A descriptor of changes to be made, or `null` if the
+     *      request was rejected for any of the reasons stated above.
      */
     public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
         const player = this.getPlayerById(desc.playerId);
-        if (player === null) {
-            // The specified player does not exist.
+        if (!(player) || player.isBubbling) {
+            // The specified player does not exist or is bubbling.
             return null;
 
         } else if (desc.lastAccpectedRequestId !== player.lastAcceptedRequestId) {
@@ -167,11 +172,20 @@ export abstract class Game extends Grid {
         }
 
         // Set response fields according to spec in `PlayerMovementEvent`:
-        player.lastAcceptedRequestId    = ++(desc.lastAccpectedRequestId);
-        desc.playerScoreDelta           = dest.scoreValue;
-        desc.destNumTimesOccupied       = dest.numTimesOccupied + 1;
-        if (dest === player.benchTile) {
-            // keep the old value for bench tiles:
+
+        (desc.lastAccpectedRequestId)++;
+        (desc.destNumTimesOccupied)++;
+
+        desc.playerScore = (player.score + dest.scoreValue);
+        if (Bubble.computeTimerDuration(player) >= Bubble.MIN_TIMER_DURATION) {
+            // This allows the player's stockpile to increase if its
+            // original stockpile value is not such that its calculated
+            // timer is outside the required range.
+            desc.playerStockpile = (player.stockpile + dest.scoreValue);
+        }
+
+        if (dest !== player.benchTile) {
+            // Don't change this value for bench tiles:
             desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
         }
 
@@ -207,17 +221,14 @@ export abstract class Game extends Grid {
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const player = this.getPlayerById(desc.playerId);
 
-        // This should happen regardless of the order of receipt:
-        player.score += desc.playerScoreDelta;
-
         const playerLagState = player.lastAcceptedRequestId - desc.lastAccpectedRequestId;
         if ((playerLagState < -1) ||
             (dest.numTimesOccupied > desc.destNumTimesOccupied)) {
-            // We have received even more recent updates already.
-            // This update arrived out of order. `Tile` occupancy
-            // counter should still be updated if increasing. The
-            // rest of the event's effects can be ignored as move
-            // operations for `Player`s are transitive in nature.
+            // We have received even more recent updates already. This update
+            // arrived out of order. The `Tile` occupancy counter should still
+            // be updated if increasing, which will happen if this is an older
+            // player movement. The rest of the event's effects can be ignored
+            // as move operations for `Player`s are transitive in nature.
             if (dest.numTimesOccupied < desc.destNumTimesOccupied) {
                 dest.numTimesOccupied = desc.destNumTimesOccupied;
             }
@@ -225,6 +236,14 @@ export abstract class Game extends Grid {
         }
         // Okay, we either got accepted or rejected now.
         player.requestInFlight = false;
+
+        // If using relative values (which we are not), then this
+        // should happen regardless of the order of receipt. These
+        // values are currently never modified unless the request
+        // succeeds, so they could technically go in the "else if"
+        // block.
+        player.score = desc.playerScore;
+        player.stockpile = desc.playerStockpile;
 
         if (playerLagState === 0) {
             // The request was rejected by the Game Manager.
@@ -241,6 +260,36 @@ export abstract class Game extends Grid {
         } else {
             throw new RangeError("client seems to have tampered with their request counter");
         }
+    }
+
+
+
+    /**
+     * @see Bubble.MakeEvent
+     * 
+     * @param desc - 
+     * @returns todo
+     */
+    public processBubbleMakeRequest(desc: Bubble.MakeEvent): Bubble.MakeEvent {
+        // TODO:
+        // if successful, make sure to modify the score and stockpile fields.
+        // make abstract method for player to trigger this event.
+        // override to throw error in ClientGame.
+        // make sure to use Math.max(Bubble.MIN_TIMER_VALUE, <bubbleTimerDuration>)
+        return undefined;
+    }
+
+    public executeBubbleMakeRequest(desc: Bubble.MakeEvent): void {
+        ;
+    }
+
+    public executeBubblePop(desc: Bubble.PopEvent): Bubble.PopEvent {
+        // TODO:
+        // make sure to lower "isBubbling" flag for the player.
+        // make the server game override this to also broadcast
+        //   changes to all clients.
+        ;
+        return undefined;
     }
 
 
@@ -284,6 +333,7 @@ export abstract class Game extends Grid {
  */
 export class GameStateDump {
 
+    public static readonly EVENT_NAME = "dump game state";
 
     public constructor(game: Game) {
         ;

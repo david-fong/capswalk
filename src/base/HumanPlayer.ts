@@ -50,7 +50,7 @@ export abstract class HumanPlayer extends Player {
     public processClientInput(event: KeyboardEvent): void {
         if (false) {
             ;
-        } else if (this._isAlive && !(this.requestInFlight)) {
+        } else if (this._isDowned && !(this.requestInFlight)) {
             // Process movement-type input if still alive and the
             // last request got acknowledged by the Game Manager.
             this.seqBufferAcceptKey(event.key);
