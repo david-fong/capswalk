@@ -246,7 +246,7 @@ export abstract class Game extends Grid {
      * @param desc - A descriptor for all changes mandated by the
      *      player-movement event.
      */
-    public processMoveExecute(desc: PlayerMovementEvent): void {
+    public processMoveExecute(desc: Readonly<PlayerMovementEvent>): void {
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const player = this.getPlayerById(desc.playerId);
 
@@ -301,14 +301,19 @@ export abstract class Game extends Grid {
      */
     public processBubbleMakeRequest(desc: Bubble.MakeEvent): Bubble.MakeEvent {
         // TODO:
-        // if successful, make sure to modify the score and stockpile fields.
+        // if successful, make sure to modify the score and stockpile fields, and save desc to event record.
         // make abstract method for player to trigger this event.
         // override to throw error in ClientGame.
         // make sure to use Math.max(Bubble.MIN_TIMER_VALUE, <bubbleTimerDuration>)
+
+        // We are all go! Do it.
+        // (note: the order of the below calls currently does not matter)
+        this.processBubbleMakeExecute(desc);
+        this.eventRecord.push(desc);
         return undefined;
     }
 
-    public processBubbleMakeExecute(desc: Bubble.MakeEvent): void {
+    public processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
         // Note: We do not need to raise the "isBubbling" flag for the
         // player; doing that is their responsibility on the client-side.
 
@@ -318,13 +323,28 @@ export abstract class Game extends Grid {
         ;
     }
 
-    public processBubblePopExecute(desc: Bubble.PopEvent): Bubble.PopEvent {
+    private processBubblePopRequest(bubbler: Player): Bubble.PopEvent {
         // TODO:
-        // make sure to lower "isBubbling" flag for the player.
         // make the server game override this to also broadcast
         //   changes to all clients.
+        const desc = new Bubble.PopEvent();
+
+        // We are all go! Do it.
+        // (note: the order of the below calls currently does not matter)
+        this.processBubblePopExecute(desc);
+        this.eventRecord.push(desc);
+        return desc;
+    }
+
+    /**
+     * 
+     * @param desc - 
+     */
+    protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
+        // TODO:
+        // make sure to lower "isBubbling" flag for the player.
         ;
-        return undefined;
+        return;
     }
 
 
