@@ -79,7 +79,7 @@ class PlayerSkeleton {
      */
     public moveTo(dest: Tile): void {
         // Refresh the operator's `seqBuffer`:
-        if (this.game.operator !== null &&
+        if (this.game.operator && // ignore if ServerGame
             this.idNumber !== this.game.operator.idNumber &&
             dest.pos.sub(this.game.operator.pos).infNorm === 1) {
             // If I moved in the vicinity of the operator, and I

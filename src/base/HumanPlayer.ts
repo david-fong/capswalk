@@ -74,7 +74,7 @@ export abstract class HumanPlayer extends Player {
             return;
         }
         if (key) {
-            key = this.lang.remapKey(key) as LangSeq;
+            key = this.lang.remapKey(key);
             // TODO: add check here for optimization purposes to
             // short-circuit if key does not match the LANG_SEQ_REGEXP ?
         } else {
@@ -83,27 +83,34 @@ export abstract class HumanPlayer extends Player {
 
         let newSeqBuffer: LangSeq;
         for ( // loop through substring start offset of newSeqBuffer:
-            newSeqBuffer = this._seqBuffer + key;
+            newSeqBuffer = this.seqBuffer + key;
             newSeqBuffer.length > 0;
             newSeqBuffer = newSeqBuffer.substring(1)
         ) {
             // look for the longest suffixing substring of `newSeqBuffer`
             // that is a prefixing substring of any UNT's.
             const matchletTiles: ReadonlyArray<Tile> = unoccupiedNeighbouringTiles
-                    .filter(tile => tile.langSeq.startsWith(newSeqBuffer));
+                    .filter((tile) => tile.langSeq.startsWith(newSeqBuffer));
             if (matchletTiles.length > 0) {
+                // Found a suffix of newSeqBuffer that prefixes a UNT's
+                // sequence. Update seqBuffer field to use newSeqBuffer:
                 this._seqBuffer = newSeqBuffer;
                 if (matchletTiles.length === 1 &&
                     matchletTiles[0].langSeq === newSeqBuffer) {
-                    // Operator typed the `LangSeq` of a UNT (unless they are
-                    // missing incoming updates from the server / Game Manager).
-                    this.makeMovementRequest(matchletTiles[0]);
-                } else {
-                    // Operator typed part of the sequence for a UNT.
-                    console.assert(matchletTiles.every(tile => {
-                        return tile.langSeq.length > newSeqBuffer.length;
-                    }));
+                    if (key) {
+                        // Operator typed the `LangSeq` of a UNT (unless they are
+                        // missing incoming updates from the server / Game Manager).
+                        this.makeMovementRequest(matchletTiles[0]);
+                    } else {
+                        // Refreshing seqBuffer due to external events and found a
+                        // new completion. Probably, another player moved near me,
+                        // and the shuffle-in happened to complete something else
+                        // I was trying to type. In this case, don't try to move.
+                        // Instead, clear the seqBuffer.
+                        this._seqBuffer = "";
+                    }
                 }
+                // Stop searching through suffixes of newSeqBuffer:
                 break;
             }
         }
