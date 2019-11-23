@@ -2,6 +2,17 @@ import { HtmlIdHooks } from "src/Defs";
 import { BarePos, Tile } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
 
+
+/**
+ * Values do not _need_ to be in range or integers. Cleaning to handle
+ * such values is performed by the {@link Grid} constructor.
+ */
+export type GridDimensionDesc = {
+    height: number,
+    width?: number,
+};
+
+
 /**
  * Provides basic management of The basic 2-dimensional-array-like
  * structure containing {@link Tile}s.
@@ -11,9 +22,9 @@ export abstract class Grid {
     /**
      * Bounds are inclusive. Ie. the specified values are _just_ allowed.
      */
-    public static readonly SIZE_LIMITS = Object.freeze(<const>{
-        height: <const>{ min: <const>10, max: <const>70, },
-        width:  <const>{ min: <const>10, max: <const>70, },
+    public static readonly SIZE_LIMITS = Object.freeze({
+        height: Object.freeze({ min: 10, max: 70, }),
+        width:  Object.freeze({ min: 10, max: 70, }),
     });
 
     public readonly height: number;
@@ -52,7 +63,7 @@ export abstract class Grid {
      *      are kicked out. Must refer to an existing element.
      */
     public constructor(
-        dimensions: { height: number, width?: number, },
+        dimensions: GridDimensionDesc,
         domGridHtmlIdHook = HtmlIdHooks.GRID
     ) {
         if (!(dimensions.width)) {
@@ -117,7 +128,7 @@ export abstract class Grid {
      * Calls {@link Tile#reset} for each {@link Tile} in this `Grid`.
      */
     public reset(): void {
-        this.grid.forEach(row => row.forEach(tile => tile.reset()));
+        this.grid.forEach((row) => row.forEach((tile) => tile.reset()));
     }
 
 
@@ -162,7 +173,7 @@ export abstract class Grid {
      *      Defaults to `1`.
      */
     public getUNT(pos: BarePos, radius: number = 1): Array<Tile> {
-        return this.getNeighbouringTiles(pos, radius).filter(tile => !(tile.isOccupied()));
+        return this.getNeighbouringTiles(pos, radius).filter((tile) => !(tile.isOccupied()));
     }
 
 }

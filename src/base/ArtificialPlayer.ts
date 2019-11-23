@@ -1,7 +1,7 @@
 import { Pos, Tile } from "src/base/Tile";
 import { OfflineGame } from "src/offline/OfflineGame";
 import { ServerGame } from "src/server/ServerGame";
-import { Player } from "src/base/Player";
+import { PlayerId, Player } from "src/base/Player";
 import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 /**
@@ -21,9 +21,9 @@ export abstract class ArtificialPlayer extends Player {
      */
     public readonly game: OfflineGame | ServerGame;
 
-    protected scheduledMovementCallbackId: number;
+    protected scheduledMovementCallbackId: number | NodeJS.Timeout;
 
-    public constructor(game: OfflineGame | ServerGame, idNumber: number) {
+    public constructor(game: OfflineGame | ServerGame, idNumber: PlayerId) {
         super(game, idNumber);
         if (this.idNumber >= 0) {
             throw new RangeError(`Id number for an computationally-`
@@ -53,14 +53,13 @@ export abstract class ArtificialPlayer extends Player {
      * @param intendedDest - 
      */
     protected getUntToward(intendedDest: Pos): Tile {
-        const unfavorableness: Function = (tile: Tile): number => {
+        const unfavorableness = (tile: Tile): number => {
             return intendedDest.sub(tile.pos).twoNorm;
         };
         const options: Array<Tile> = this.getUNT();
         options.push(this.hostTile);
         options.sort((tileA, TileB) => {
-            return unfavorableness(tileA.pos)
-                    - unfavorableness(TileB.pos);
+            return unfavorableness(tileA) - unfavorableness(TileB);
         });
         // choose one of the two most favorable using some randomness
         // weighted to make the long term path of movement to follow

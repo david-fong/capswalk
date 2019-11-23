@@ -1,8 +1,9 @@
 import { BarePos } from "src/Pos";
 import { ServerTile } from "src/server/ServerTile";
-import { Game } from "src/base/Game";
+import { GridDimensionDesc, Game } from "src/base/Game";
 import { GroupSession } from "src/server/GroupSession";
 import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
+import { setTimeout } from "timers";
 
 /**
  * 
@@ -21,7 +22,7 @@ export class ServerGame extends Game {
      */
     public constructor(
         session: GroupSession,
-        dimensions: { height: number, width?: number, },
+        dimensions: GridDimensionDesc,
     ) {
         super(dimensions);
         this.session = session;
@@ -45,6 +46,14 @@ export class ServerGame extends Game {
      */
     public createTile(pos: BarePos): ServerTile {
         return new ServerTile(pos);
+    }
+
+    public setTimeout(callback: VoidFunction, millis: number, ...args: any[]): NodeJS.Timeout {
+        return setTimeout(callback, millis, args);
+    }
+
+    public cancelTimeout(handle: NodeJS.Timeout): void {
+        clearTimeout(handle);
     }
 
     /**

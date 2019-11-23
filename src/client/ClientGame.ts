@@ -3,7 +3,7 @@ import * as io from "socket.io-client";
 import { BarePos } from "src/Pos";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { LocalGameSettings } from "src/settings/GameSettings";
-import { Grid, Game } from "src/base/Game";
+import { GridDimensionDesc, Grid, Game } from "src/base/Game";
 import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 /**
@@ -19,7 +19,7 @@ export class ClientGame extends Game {
 
     public constructor(
         socket: SocketIOClient.Socket,
-        dimensions: { height: number, width?: number, },
+        dimensions: GridDimensionDesc,
     ) {
         super(dimensions);
         this.settings = LocalGameSettings.getInstance();
@@ -50,6 +50,14 @@ export class ClientGame extends Game {
      */
     public createTile(pos: BarePos): VisibleTile {
         return new VisibleTile(pos);
+    }
+
+    public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
+        return setTimeout(callback, millis, args);
+    }
+
+    public cancelTimeout(handle: number): void {
+        clearTimeout(handle);
     }
 
     /**

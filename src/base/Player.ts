@@ -3,7 +3,6 @@ import { VisibleTile } from "src/offline/VisibleTile";
 import { Game } from "src/base/Game";
 import { ClientGame } from "src/client/ClientGame";
 import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
-import { isNullOrUndefined } from "util";
 
 
 /**
@@ -14,7 +13,6 @@ import { isNullOrUndefined } from "util";
  * that a {@link Tile} is unoccupied.
  */
 export type PlayerId = number;
-
 
 
 /**
@@ -42,6 +40,8 @@ class PlayerSkeleton {
      * A {@link Tile} that can only be occupied by this `Player`.
      */
     public readonly benchTile: Tile;
+
+
 
     protected constructor(game: Game, idNumber: PlayerId) {
         this.game = game;
@@ -160,9 +160,16 @@ export abstract class Player extends PlayerSkeleton {
      */
     protected _isBubbling: boolean;
 
+    /**
+     * Managed externally by the Game Manager. Here for composition.
+     */
+    public bubbleTimer: number | NodeJS.Timeout;
+
     public lastAcceptedRequestId: number;
 
     public requestInFlight: boolean;
+
+
 
     /**
      * @inheritdoc
@@ -170,7 +177,7 @@ export abstract class Player extends PlayerSkeleton {
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
         if (Math.trunc(this.idNumber) !== this.idNumber) {
-            throw new RangeError("player id's must be integer values");
+            throw new RangeError("Player ID's must be integer values.");
         }
     }
 
@@ -180,6 +187,8 @@ export abstract class Player extends PlayerSkeleton {
         this.score      = 0;
         this.stockpile  = 0;
         this.isBubbling = false;
+        this.game.cancelTimeout(this.bubbleTimer);
+        this.bubbleTimer = undefined;
         this.lastAcceptedRequestId = PlayerMovementEvent.INITIAL_REQUEST_ID;
         this.requestInFlight = false;
     }

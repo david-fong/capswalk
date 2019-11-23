@@ -1,7 +1,7 @@
 import { Lang, LangCharSeqPair, EMPTY_CSP } from "src/Lang";
 import { BalancingScheme } from "src/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
-import { Grid } from "src/base/Grid";
+import { GridDimensionDesc, Grid } from "src/base/Grid";
 
 import { PlayerId, Player } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
@@ -9,7 +9,17 @@ import { OnlineHumanPlayer } from "src/client/OnlineHumanPlayer";
 import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 import { Bubble } from "src/base/Bubble";
 
-export { Grid } from "src/base/Grid";
+export { GridDimensionDesc, Grid } from "src/base/Grid";
+
+
+/**
+ * Events recorded in the {@link Game#eventRecord} field.
+ */
+type GameEvent =
+      PlayerMovementEvent
+    | Bubble.MakeEvent
+    | Bubble.PopEvent;
+
 
 /**
  * 
@@ -50,9 +60,15 @@ export abstract class Game extends Grid {
      * unique properties of a {@link HumanPlayer} over a regular
      * {@link Player}.
      */
-    private readonly allHumanPlayers: Array<Player>;
+    private readonly allHumanPlayers: ReadonlyArray<Player>;
 
-    private readonly allArtifPlayers: Array<ArtificialPlayer>;
+    private readonly allArtifPlayers: ReadonlyArray<ArtificialPlayer>;
+
+    /**
+     * This is currently not updated for a ClientGame since it is not
+     * a Game Manager (does not process (and hence, validate,) requests).
+     */
+    private readonly eventRecord: Array<GameEvent>;
 
 
 
@@ -64,7 +80,7 @@ export abstract class Game extends Grid {
      * 
      * @override
      */
-    public constructor(dimensions: { height: number, width?: number, }) {
+    public constructor(dimensions: GridDimensionDesc) {
         super(dimensions);
 
         // TODO: set default language (must be done before call to reset):
@@ -73,6 +89,8 @@ export abstract class Game extends Grid {
         // TODO: setup allHumanPlayers?
         this.allHumanPlayers = [];
         this.allArtifPlayers = [];
+
+        this.eventRecord = [];
     }
 
     /**
@@ -84,19 +102,22 @@ export abstract class Game extends Grid {
     public reset(): void {
         super.reset();
 
+        // Clear the event record:
+        this.eventRecord.splice(0);
+
         // Reset hit-counters in the current language:
         // This must be done before shuffling so that the previous
         // history of shuffle-ins has no effects on the new pairs.
         this.lang.reset();
 
         // Shuffle everything:
-        this.grid.forEach(row => row.forEach(tile => {
+        this.grid.forEach((row) => row.forEach((tile) => {
             this.shuffleLangCharSeqAt(tile);
         }, this), this);
 
         // TODO: reset and respawn players:
-        this.allHumanPlayers.forEach(player => player.reset());
-        this.allArtifPlayers.forEach(player => player.reset());
+        this.allHumanPlayers.forEach((player) => player.reset());
+        this.allArtifPlayers.forEach((player) => player.reset());
 
         // TODO: spawn targets:
         // While not necessary, this should be done after players have
@@ -121,8 +142,8 @@ export abstract class Game extends Grid {
         tile.setLangCharSeq(EMPTY_CSP);
         return this.lang.getNonConflictingChar(
             this.getNeighbouringTiles(tile.pos)
-                .map(tile => tile.langSeq)
-                .filter(seq => seq), // no falsy values.
+                .map((tile) => tile.langSeq)
+                .filter((seq) => seq), // no falsy values.
             this.langBalancingScheme,
         );
     }
@@ -140,6 +161,8 @@ export abstract class Game extends Grid {
      * Does not actually make any modifications to any part of the game
      * state, and instead, delegates the execution of all necessitated
      * changes to {@link Game#processMoveExecute}.
+     * 
+     * Updates the event record if the response is accepted.
      * 
      * Should never be called by {@link ClientGame}.
      * 
@@ -193,8 +216,10 @@ export abstract class Game extends Grid {
             desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
         }
 
-        // We are all go! Do it:
+        // We are all go! Do it.
+        // (note: the order of the below calls currently does not matter)
         this.processMoveExecute(desc);
+        this.eventRecord.push(desc);
         return desc;
     }
 
@@ -303,6 +328,10 @@ export abstract class Game extends Grid {
     }
 
 
+
+    public abstract setTimeout(callback: Function, millis: number, ...args: any[]): number | NodeJS.Timeout;
+
+    public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
 
     public getBenchableTileAt(dest: BarePos, playerId: PlayerId): Tile {
         return ((Player.BENCH_POS.equals(dest))
