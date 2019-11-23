@@ -1,4 +1,3 @@
-import { Events } from "src/Events";
 import { BarePos } from "src/Pos";
 import { ServerTile } from "src/server/ServerTile";
 import { Game } from "src/base/Game";
@@ -52,27 +51,26 @@ export class ServerGame extends Game {
      * @override
      */
     public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
-        const reponseDesc = super.processMoveRequest(desc);
-        if (reponseDesc !== null) {
+        const responseDesc = super.processMoveRequest(desc);
+        if (responseDesc !== null) {
             // Request was accepted.
             // Pass on change descriptor to all clients:
             this.session.namespace.emit(
                 PlayerMovementEvent.EVENT_NAME,
-                reponseDesc,
+                responseDesc,
             );
         } else {
-            // The request was rejected.
-            // Notify the requester. Note the use of `desc` instead of
-            // `responseDesc`. `desc` can be used with no change. Its
-            // request ID field is correctly unchanged, which according
-            // to the spec, indicates a rejected request.
+            // The request was rejected- Notify the requester. Note the use
+            // of `desc` instead of `responseDesc`. `desc` can be used with
+            // no change. Its request ID field is correctly unchanged, which
+            // according to the spec, indicates a rejected request.
             // TODO: don't broadcast. just respond directly to the requester.
             this.session.namespace.emit(
                 PlayerMovementEvent.EVENT_NAME,
                 desc,
             );
         }
-        return desc;
+        return responseDesc;
     }
 
 }

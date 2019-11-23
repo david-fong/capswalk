@@ -38,11 +38,11 @@ export abstract class Game extends Grid {
     public lang: Lang;
 
     /**
-     * Set to `null` for {@link ServerGame}
+     * Set to `undefined` for {@link ServerGame}
      * 
      * TODO: initialize this field in constructor.
      */
-    public readonly operator: OnlineHumanPlayer | null;
+    public readonly operator: OnlineHumanPlayer;
 
     /**
      * Does not use the HumanPlayer type annotation. This is to
@@ -137,6 +137,10 @@ export abstract class Game extends Grid {
      * not yet received updates for the destination they requested to
      * move to, or the requester is still bubbling.
      * 
+     * Does not actually make any modifications to any part of the game
+     * state, and instead, delegates the execution of all necessitated
+     * changes to {@link Game#processMoveExecute}.
+     * 
      * Should never be called by {@link ClientGame}.
      * 
      * @param desc - A descriptor of the request, with fields indicating
@@ -173,8 +177,8 @@ export abstract class Game extends Grid {
 
         // Set response fields according to spec in `PlayerMovementEvent`:
 
-        (desc.lastAccpectedRequestId)++;
-        (desc.destNumTimesOccupied)++;
+        desc.lastAccpectedRequestId = (1 + player.lastAcceptedRequestId);
+        desc.destNumTimesOccupied   = (1 + dest.numTimesOccupied);
 
         desc.playerScore = (player.score + dest.scoreValue);
         if (Bubble.computeTimerDuration(player) >= Bubble.MIN_TIMER_DURATION) {
@@ -279,11 +283,17 @@ export abstract class Game extends Grid {
         return undefined;
     }
 
-    public executeBubbleMakeRequest(desc: Bubble.MakeEvent): void {
+    public processBubbleMakeExecute(desc: Bubble.MakeEvent): void {
+        // Note: We do not need to raise the "isBubbling" flag for the
+        // player; doing that is their responsibility on the client-side.
+
+        // TODO:
+        // make the server game override this to also broadcast
+        //   changes to all clients.
         ;
     }
 
-    public executeBubblePop(desc: Bubble.PopEvent): Bubble.PopEvent {
+    public processBubblePopExecute(desc: Bubble.PopEvent): Bubble.PopEvent {
         // TODO:
         // make sure to lower "isBubbling" flag for the player.
         // make the server game override this to also broadcast
