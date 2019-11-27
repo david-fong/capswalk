@@ -118,24 +118,11 @@ class PlayerSkeleton {
 
     /**
      * Evicts this `Player` from its last known position (which may be
-     * lagging behind the state of the master copy of the game. This
-     * method must be called after the new {@link LangCharSeqPair} has
-     * been set.
+     * lagging behind the state of the master copy of the game.
      * 
      * @param dest - 
      */
     public moveTo(dest: Tile): void {
-        // Refresh the operator's `seqBuffer`:
-        if (this.game.operator && // ignore if ServerGame
-            this.idNumber !== this.game.operator.idNumber &&
-            dest.pos.sub(this.game.operator.pos).infNorm === 1) {
-            // If I moved in the vicinity of the operator, and I
-            // am not the operator. This is because the movement
-            // event comes with a `LangCharSeqPair` shuffling. This
-            // operation is necessary to maintain the `seqBuffer`
-            // invariant.
-            this.game.operator.seqBufferAcceptKey(null);
-        }
 
         // Evict self from current `Tile`.
         if (this.hostTile.occupantId !== this.idNumber) {
@@ -218,9 +205,6 @@ export abstract class Player extends PlayerSkeleton {
 
 
 
-    /**
-     * @inheritdoc
-     */
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
         if (Math.trunc(this.idNumber) !== this.idNumber) {

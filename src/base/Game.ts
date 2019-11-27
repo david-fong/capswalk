@@ -263,9 +263,27 @@ export abstract class Game extends Grid {
     public processMoveExecute(desc: Readonly<PlayerMovementEvent>): void {
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const player = this.getPlayerById(desc.playerId);
+        const executeBasicTileUpdates = (): void => {
+            // The `LangCharSeqPair` shuffle changes must take effect
+            // before updating the operator's seqBuffer if need be.
+            if (dest !== player.benchTile) {
+                // Don't change this value for bench tiles:
+                dest.setLangCharSeq(desc.newCharSeqPair);
+            }
+            // Refresh the operator's `seqBuffer`:
+            if (this.operator && // Ignore if ServerGame
+                player.idNumber !== this.operator.idNumber &&
+                dest.pos.sub(this.operator.pos).infNorm === 1) {
+                // Do if moving into the vicinity of the operator, and
+                // requester is not the operator. This operation is
+                // necessary to maintain the `seqBuffer` invariant.
+                this.operator.seqBufferAcceptKey(null);
+            }
+            dest.numTimesOccupied = desc.destNumTimesOccupied;
+        };
 
-        const playerLagState = player.lastAcceptedRequestId - desc.lastAcceptedRequestId;
-        if ((playerLagState < -1) ||
+        const playerLagState = desc.lastAcceptedRequestId - player.lastAcceptedRequestId;
+        if ((playerLagState > 1) ||
             (dest.numTimesOccupied > desc.destNumTimesOccupied)) {
             // We have received even more recent updates already. This update
             // arrived out of order. The `Tile` occupancy counter should still
@@ -273,11 +291,14 @@ export abstract class Game extends Grid {
             // player movement. The rest of the event's effects can be ignored
             // as move operations for `Player`s are transitive in nature.
             if (dest.numTimesOccupied < desc.destNumTimesOccupied) {
-                dest.numTimesOccupied = desc.destNumTimesOccupied;
+                executeBasicTileUpdates();
             }
             return;
         }
-        // Okay, we either got accepted or rejected now.
+
+        // Okay- the response we received is for the specified player's most
+        // recent request pending this acknowledgement. We either got accepted
+        // or rejected now:
         player.requestInFlight = false;
 
         // If using relative values (which we are not), then this
@@ -289,16 +310,16 @@ export abstract class Game extends Grid {
         player.stockpile = desc.playerStockpile;
 
         if (playerLagState === 0) {
-            // The request was rejected by the Game Manager.
+            // The request was rejected by the Game Manager. That is,
+            // the response's id is unchanged. No need to assign it
+            // into this local copy of the last accepted request.
             return;
 
-        } else if (playerLagState === -1) {
-            // The `LangCharSeqPair` shuffle changes must take effect
-            // before moving the player. See the spec for `#moveTo`.
-            dest.setLangCharSeq(desc.newCharSeqPair);
+        } else if (playerLagState === 1) {
+            executeBasicTileUpdates();
             player.moveTo(dest);
+            // Below is the same as "(player.lastAcceptedRequestId)++"
             player.lastAcceptedRequestId = desc.lastAcceptedRequestId;
-            dest.numTimesOccupied = desc.destNumTimesOccupied;
 
         } else {
             throw new RangeError("client seems to have tampered with their request counter");
