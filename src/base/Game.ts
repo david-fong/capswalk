@@ -3,7 +3,7 @@ import { BalancingScheme } from "src/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
 import { GridDimensionDesc, Grid } from "src/base/Grid";
 
-import { PlayerId, Player } from "src/base/Player";
+import { PlayerId, Player, PlayerGeneratedRequest } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
 import { OnlineHumanPlayer } from "src/client/OnlineHumanPlayer";
 import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
@@ -149,6 +149,30 @@ export abstract class Game extends Grid {
     }
 
     /**
+     * 
+     * @param desc - 
+     * @returns `null` if the player did not exist or is still bubbling.
+     * @throws `RangeError` if the request was made before receiving an
+     *      acknowledgement for the previous request.
+     */
+    private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player | null {
+        const player = this.getPlayerById(desc.playerId);
+        if (!(player) || player.isBubbling) {
+            // The specified player does not exist or is bubbling.
+            return null;
+
+        } else if (desc.lastAcceptedRequestId !== player.lastAcceptedRequestId) {
+            throw new RangeError((desc.lastAcceptedRequestId < player.lastAcceptedRequestId)
+                ? ("Clients should not make requests until they have"
+                    + " received my response to their last request")
+                : ("Client seems to have incremented the request ID"
+                    + " counter on their own, which is is illegal")
+            );
+        }
+        return player;
+    }
+
+    /**
      * @see PlayerMovementEvent
      * 
      * Call for a {@link HumanPlayer} whose {@link HumanPlayer#seqBuffer}
@@ -173,19 +197,8 @@ export abstract class Game extends Grid {
      *      request was rejected for any of the reasons stated above.
      */
     public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
-        const player = this.getPlayerById(desc.playerId);
-        if (!(player) || player.isBubbling) {
-            // The specified player does not exist or is bubbling.
-            return null;
-
-        } else if (desc.lastAccpectedRequestId !== player.lastAcceptedRequestId) {
-            throw new RangeError((desc.lastAccpectedRequestId < player.lastAcceptedRequestId)
-                ? ("Clients should not make requests until they have"
-                    + " received my response to their last request")
-                : ("Client seems to have incremented the request ID"
-                    + " counter on their own, which is is illegal")
-            );
-        }
+        const player = this.checkIncomingPlayerRequestId(desc);
+        if (!(player)) return null;
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         if (dest.isOccupied() ||
             dest.numTimesOccupied !== desc.destNumTimesOccupied) {
@@ -198,9 +211,10 @@ export abstract class Game extends Grid {
             return null;
         }
 
-        // Set response fields according to spec in `PlayerMovementEvent`:
-
-        desc.lastAccpectedRequestId = (1 + player.lastAcceptedRequestId);
+        /**
+         * Set response fields according to spec in `PlayerMovementEvent`:
+         */
+        desc.lastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
         desc.destNumTimesOccupied   = (1 + dest.numTimesOccupied);
 
         desc.playerScore = (player.score + dest.scoreValue);
@@ -250,7 +264,7 @@ export abstract class Game extends Grid {
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const player = this.getPlayerById(desc.playerId);
 
-        const playerLagState = player.lastAcceptedRequestId - desc.lastAccpectedRequestId;
+        const playerLagState = player.lastAcceptedRequestId - desc.lastAcceptedRequestId;
         if ((playerLagState < -1) ||
             (dest.numTimesOccupied > desc.destNumTimesOccupied)) {
             // We have received even more recent updates already. This update
@@ -283,7 +297,7 @@ export abstract class Game extends Grid {
             // before moving the player. See the spec for `#moveTo`.
             dest.setLangCharSeq(desc.newCharSeqPair);
             player.moveTo(dest);
-            player.lastAcceptedRequestId = desc.lastAccpectedRequestId;
+            player.lastAcceptedRequestId = desc.lastAcceptedRequestId;
             dest.numTimesOccupied = desc.destNumTimesOccupied;
 
         } else {
@@ -297,37 +311,54 @@ export abstract class Game extends Grid {
      * @see Bubble.MakeEvent
      * 
      * @param desc - 
-     * @returns todo
+     * @returns `null` if the request was rejected.
      */
     public processBubbleMakeRequest(desc: Bubble.MakeEvent): Bubble.MakeEvent {
         // TODO:
-        // if successful, make sure to modify the score and stockpile fields, and save desc to event record.
-        // make abstract method for player to trigger this event.
+        // if successful, make sure to lower the (score? and) stockpile fields.
+        // make an abstract method in the HumanPlayer class called in the top-
+        // level input processor for it to trigger this event.
         // override to throw error in ClientGame.
-        // make sure to use Math.max(Bubble.MIN_TIMER_VALUE, <bubbleTimerDuration>)
+        const bubbler: Player = this.checkIncomingPlayerRequestId(desc);
+        if (!(bubbler)) return null;
+        const millis = Math.max(Bubble.MIN_TIMER_DURATION, Bubble.computeTimerDuration(bubbler));
+
+        desc.lastAcceptedRequestId  = (1 + bubbler.lastAcceptedRequestId);
+        desc.estimatedTimerDuration = millis;
 
         // We are all go! Do it.
         // (note: the order of the below calls currently does not matter)
         this.processBubbleMakeExecute(desc);
         this.eventRecord.push(desc);
-        return undefined;
+
+        // Schedule the bubble to pop:
+        this.setTimeout(this.processBubblePopExecute, millis, desc);
+        return desc;
     }
 
     public processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
-        // Note: We do not need to raise the "isBubbling" flag for the
+        // Note: We do not need to raise the "requestInFlight" flag for the
         // player; doing that is their responsibility on the client-side.
 
         // TODO:
+        // Visually highlight the affected tiles for the specified estimate-duration.
         // make the server game override this to also broadcast
         //   changes to all clients.
         ;
     }
+
+
 
     private processBubblePopRequest(bubbler: Player): Bubble.PopEvent {
         // TODO:
         // make the server game override this to also broadcast
         //   changes to all clients.
         const desc = new Bubble.PopEvent();
+        desc.bubblerId = bubbler.idNumber;
+        // TODO
+        // desc.playersToDown   = get adjacent un-downed players who are not in any of my teams. extend range to prevent turtling.
+        // desc.playersToFreeze = get adjacent    downed players who are not in any of my teams
+        // desc.playersToRaise  = get adjacent    downed players who are     in any of my teams
 
         // We are all go! Do it.
         // (note: the order of the below calls currently does not matter)
@@ -342,10 +373,38 @@ export abstract class Game extends Grid {
      */
     protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
         // TODO:
-        // make sure to lower "isBubbling" flag for the player.
-        ;
+        const bubbler: Player = this.getPlayerById(desc.bubblerId);
+
+        // Lower the ""requestInFlight" and "isBubbling" flags for the player:
+        bubbler.requestInFlight = false;
+        bubbler.isBubbling = false;
+
+        // Enact effects on supposedly un-downed enemy players:
+        desc.playersToDown.forEach((enemyId, index) => {
+            const enemy: Player = this.getPlayerById(enemyId);
+            enemy.isDowned = true;
+        }, this);
+
+        // Enact effects on supposedly downed teammates:
+        desc.playersToRaise.forEach((teammateId, index) => {
+            const teammate: Player = this.getPlayerById(teammateId);
+            teammate.isDowned = false;
+        }, this);
+
+        // Enact effects on 
+        Object.entries(desc.playersToFreeze).forEach(([enemyId, duration,], index) => {
+            this.freezePlayer(this.getPlayerById(parseInt(enemyId)), duration);
+        }, this);
         return;
     }
+
+    /**
+     * TODO: make abstract. server manages, client displays, offline does both.
+     * 
+     * @param player - 
+     * @param duration - 
+     */
+    protected freezePlayer(player: Player, duration: number): void { }
 
 
 

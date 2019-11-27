@@ -1,4 +1,4 @@
-import { PlayerId, Player } from "src/base/Player";
+import { PlayerId, PlayerGeneratedRequest, Player } from "src/base/Player";
 
 /**
  * # The Object of the Game
@@ -92,7 +92,7 @@ export namespace Bubble {
         // faring. (according to the spec above).
 
         // TODO
-        return MIN_TIMER_DURATION;
+        return 0xdeadbeef;
     };
 
 
@@ -100,16 +100,13 @@ export namespace Bubble {
     /**
      * 
      */
-    export class MakeEvent {
+    export class MakeEvent implements PlayerGeneratedRequest {
 
         public static readonly EVENT_NAME = "bubble make";
 
         public readonly playerId: PlayerId;
 
-        /**
-         * See the field by the same name in {@link PlayerMovementEvent}.
-         */
-        public lastAccpectedRequestId: number;
+        public lastAcceptedRequestId: number;
 
         /**
          * Units are the same as those used for {@link MIN_TIMER_DURATION}.
@@ -119,10 +116,10 @@ export namespace Bubble {
          * The server should set this to the value of the timer duration
          * that it will use to schedule the pop event.
          */
-        public readonly estimatedTimerDuration: number;
+        public estimatedTimerDuration: number;
 
         public constructor(playerId: PlayerId) {
-            ;
+            this.playerId = playerId;
         }
 
     }
@@ -130,20 +127,24 @@ export namespace Bubble {
 
 
     /**
-     * This descriptor is only ever used to send event information
-     * from the server to clients.
+     * This descriptor is only ever used to send event information from
+     * the server to clients. Since this event is triggered by the Game
+     * Manager (as a timed callback to a bubble-make request), there is
+     * no exposed method to process a request, and all the descriptor
+     * fields are strictly readonly.
      */
     export class PopEvent {
 
         public static readonly EVENT_NAME = "bubble pop";
 
-        public readonly bubblerId: PlayerId;
+        public bubblerId: PlayerId;
 
-        public readonly playersToDown: Readonly<PlayerId>;
+        public playersToDown: ReadonlyArray<PlayerId>;
 
-        public readonly playersToRaise: Readonly<PlayerId>;
+        public playersToRaise: ReadonlyArray<PlayerId>;
 
-        // TODO: players to freeze?
+        // map to how long to freeze (todo: say units are same as those in the bounds constants)
+        public playersToFreeze: Record<PlayerId, number>;
 
         public constructor(/* TODO */) {
             ;
