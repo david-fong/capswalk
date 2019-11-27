@@ -49,7 +49,7 @@ export class ServerGame extends Game {
     }
 
     public setTimeout(callback: VoidFunction, millis: number, ...args: any[]): NodeJS.Timeout {
-        return setTimeout(callback, millis, args);
+        return setTimeout(callback, millis, args).unref();
     }
 
     public cancelTimeout(handle: NodeJS.Timeout): void {

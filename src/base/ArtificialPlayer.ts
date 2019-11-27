@@ -75,7 +75,7 @@ export abstract class ArtificialPlayer extends Player {
      * 
      * @override
      */
-    public abstractMakeMovementRequest(dest: Tile): void {
+    protected abstractMakeMovementRequest(dest: Tile): void {
         this.game.processMoveRequest(
             new PlayerMovementEvent(
                 this.idNumber,

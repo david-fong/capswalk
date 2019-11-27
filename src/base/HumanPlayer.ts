@@ -50,7 +50,7 @@ export abstract class HumanPlayer extends Player {
     public processClientInput(event: KeyboardEvent): void {
         if (false) {
             ;
-        } else if (this._isDowned && !(this.requestInFlight)) {
+        } else if (!(this.requestInFlight)) {
             // Process movement-type input if still alive and the
             // last request got acknowledged by the Game Manager.
             this.seqBufferAcceptKey(event.key);
@@ -127,11 +127,9 @@ export abstract class HumanPlayer extends Player {
      * @override
      */
     public moveTo(dest: Tile): void {
-        super.moveTo(dest);
-        // Clear `seqBuffer` this is done even if the movement was
-        // somehow resolved by the Game Manager to be to my same
-        // current position.
+        // Clear my `seqBuffer` first:
         this._seqBuffer = "";
+        super.moveTo(dest);
     }
 
 
