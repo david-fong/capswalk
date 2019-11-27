@@ -28,7 +28,7 @@ export namespace HtmlIdHooks {
     /**
      * Should only have one child: the main game grid's display.
      */
-    export const GRID = "grid";
+    export const GRID = "game-grid-host";
 
 }
 

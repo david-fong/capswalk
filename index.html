@@ -8,11 +8,15 @@
         <meta name='viewport'       content='width=device-width, initial-scale=1.0' />
         <meta charset='UTF-8' /> <!-- make sure languages render -->
         <link rel='icon' href='favicon.ico' type='image/png'/>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="module" src="src/client/Setup.ts"></script>
     </head>
 
 
-    <body style='margin:0px;'>
+    <body style='margin:0;'>
         <div id='background'></div>
+        <div id='game-grid-host'></div>
 
     
         <!-- Run Game Code: -->
@@ -25,8 +29,6 @@
                 }
             });
             // window.onbeforeunload = (event) => '';
-            
-            //const GAME = new Game();
         </script>
     </body>
 </html>
