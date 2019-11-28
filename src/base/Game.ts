@@ -162,9 +162,9 @@ export abstract class Game extends Grid {
         } else if (desc.lastAcceptedRequestId !== player.lastAcceptedRequestId) {
             throw new RangeError((desc.lastAcceptedRequestId < player.lastAcceptedRequestId)
                 ? ("Clients should not make requests until they have"
-                    + " received my response to their last request")
+                    + " received my response to their last request.")
                 : ("Client seems to have incremented the request ID"
-                    + " counter on their own, which is is illegal")
+                    + " counter on their own, which is is illegal.")
             );
         }
         return player;
@@ -304,7 +304,7 @@ export abstract class Game extends Grid {
             // the response's id is unchanged. No need to assign it
             // into this local copy of the last accepted request.
             if (desc.eventId !== EventRecordEntry.REJECT) {
-                throw new Error("this should never happen.");
+                throw new Error("This should never happen.");
             }
             return;
 

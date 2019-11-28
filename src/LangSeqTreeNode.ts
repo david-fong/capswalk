@@ -299,7 +299,7 @@ class WeightedLangChar {
         if (weight <= 0) {
             throw new RangeError(`All weights must be positive, but we`
                 + ` were passed the value ${weight} for the character`
-                + ` ${char}`);
+                + ` ${char}.`);
         }
         this.char = char;
         this.weightInv = 1.000 / weight;

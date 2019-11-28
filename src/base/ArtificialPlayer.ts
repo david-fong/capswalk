@@ -26,9 +26,9 @@ export abstract class ArtificialPlayer extends Player {
     public constructor(game: OfflineGame | ServerGame, idNumber: PlayerId) {
         super(game, idNumber);
         if (this.idNumber >= 0) {
-            throw new RangeError(`Id number for an computationally-`
+            throw new RangeError(`ID number for an computationally-`
                 + `controlled Player must be strictly negative, but`
-                + ` we were passed the value \"${idNumber}\"`
+                + ` we were passed the value \"${idNumber}\".`
             );
         }
     }

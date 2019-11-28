@@ -36,7 +36,7 @@ export class OnlineHumanPlayer extends HumanPlayer {
         this.username = username;
         if (!(USERNAME_REGEXP.test(username))) {
             throw new RangeError(
-                `username \"${username}\" does not match the required regexp.`
+                `Username \"${username}\" does not match the required regexp.`
             );
         }
     }

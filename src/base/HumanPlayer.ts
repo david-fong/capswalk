@@ -20,9 +20,9 @@ export abstract class HumanPlayer extends Player {
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
         if (this.idNumber <= 0) {
-            throw new RangeError(`Id number for a human-operated`
+            throw new RangeError(`ID number for a human-operated`
                 + ` Player must be strictly positive, but we were`
-                + ` passed the value \"${idNumber}\"`
+                + ` passed the value \"${idNumber}\".`
             );
         }
     }

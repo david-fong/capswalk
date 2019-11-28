@@ -12,7 +12,7 @@ export const LANG_MODULE_PATHS: ReadonlyArray<string> = [
 ].map((filename) => {
     // This test is somewhat arbitrary.
     if (!(/[A-Z][a-zA-Z]*/.test(filename))) {
-        throw new Error(`filename ${filename} does not match PascalCase.`);
+        throw new Error(`The filename ${filename} does not match PascalCase.`);
     }
     return `src/lang/${filename}`;
 });
@@ -118,7 +118,7 @@ export abstract class Lang {
         this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes = this.treeMap.getLeafNodes();
 
-        // TODO: This is implementation specific. If the code is ever
+        // NOTE: This is implementation specific. If the code is ever
         // made to handle more complex connections (Ex. hexagon tiling
         // or variable neighbours through graph structures), then this
         // must change to account for that.
