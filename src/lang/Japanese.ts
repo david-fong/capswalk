@@ -197,6 +197,27 @@ export namespace Japanese {
             "ィ": { seq: "i",  weight:  33747, }, // small
             "デ": { seq: "de", weight:  32665, },
             "ュ": { seq: "yu", weight:  32616, }, // small
+            "ミ": { seq: "mi", weight:  29262, },
+            "ャ": { seq: "ya", weight:  28144, },
+            "ボ": { seq: "bo", weight:  26651, },
+            "ダ": { seq: "da", weight:  26396, },
+            "ツ": { seq: "tsu",weight:  24541, },
+            "ポ": { seq: "ho", weight:  23742, },
+            "ベ": { seq: "be", weight:  22755, },
+            "ネ": { seq: "ne", weight:  22462, },
+            "ガ": { seq: "ga", weight:  22061, },
+            "ハ": { seq: "ha", weight:  21839, },
+            "ワ": { seq: "wa", weight:  21784, },
+            "ソ": { seq: "so", weight:  20784, },
+            "ケ": { seq: "ke", weight:  20633, },
+            "モ": { seq: "ho", weight:  20070, },
+            "ノ": { seq: "no", weight:  19572, },
+            "ズ": { seq: "zu", weight:  19240, },
+            "ピ": { seq: "pi", weight:  18692, },
+            "ホ": { seq: "ho", weight:  18204, },
+            "ェ": { seq: "e",  weight:  17817, }, // small
+            "ョ": { seq: "yo", weight:  17731, }, // small
+            "ペ": { seq: "pe", weight:  14881, },
         });
 
         private constructor() {
