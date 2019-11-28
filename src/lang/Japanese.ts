@@ -156,7 +156,32 @@ export namespace Japanese {
          * https://link.springer.com/content/pdf/10.3758/BF03200819.pdf
          */
         public static INITIALIZER = Object.freeze(<const>{
-            "": { seq: "", weight: 0, }, // TODO
+            "ン": { seq: "nn", weight: 290948, },
+            "ル": { seq: "ru", weight: 189442, },
+            "ス": { seq: "su", weight: 178214, },
+            "ト": { seq: "to", weight: 162802, },
+            "ア": { seq: "a",  weight: 127845, },
+            "イ": { seq: "i",  weight: 120807, },
+            "ラ": { seq: "ra", weight: 117203, },
+            "リ": { seq: "ri", weight: 106744, },
+            "ク": { seq: "ku", weight:  98209, },
+            "ッ": { seq: "-",  weight:  86894, }, // TODO
+            "カ": { seq: "ka", weight:  82982, },
+            "シ": { seq: "shi",weight:  80626, },
+            "タ": { seq: "ta", weight:  75319, },
+            "ロ": { seq: "ro", weight:  75301, },
+            "ド": { seq: "do", weight:  74257, },
+            "ジ": { seq: "ji", weight:  61171, },
+            "フ": { seq: "fu", weight:  61115, },
+            "レ": { seq: "re", weight:  60608, },
+            "メ": { seq: "me", weight:  60230, },
+            "コ": { seq: "ko", weight:  58724, },
+            "マ": { seq: "ma", weight:  56123, },
+            "プ": { seq: "pu", weight:  54159, },
+            "テ": { seq: "te", weight:  53404, },
+            "ム": { seq: "mu", weight:  50758, },
+            "チ": { seq: "chi",weight:  48437, },
+            "バ": { seq: "ba", weight:  44970, },
         });
 
         private constructor() {
