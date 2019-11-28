@@ -52,7 +52,7 @@ export namespace Japanese {
             "て": { seq: "te", weight:  758316, },
             "な": { seq: "na", weight:  720156, },
             "か": { seq: "ka", weight:  537294, },
-          //"っ": { seq: "-",  weight:  467350, }, // small
+          //"っ": { seq: "-",  weight:  467350, }, // TODO
             "れ": { seq: "re", weight:  450805, },
             "ら": { seq: "ra", weight:  42329, },
             "も": { seq: "mo", weight:  396142, },
@@ -165,7 +165,7 @@ export namespace Japanese {
             "ラ": { seq: "ra", weight: 117203, },
             "リ": { seq: "ri", weight: 106744, },
             "ク": { seq: "ku", weight:  98209, },
-            "ッ": { seq: "-",  weight:  86894, }, // TODO
+          //"ッ": { seq: "-",  weight:  86894, }, // TODO
             "カ": { seq: "ka", weight:  82982, },
             "シ": { seq: "shi",weight:  80626, },
             "タ": { seq: "ta", weight:  75319, },
@@ -182,6 +182,21 @@ export namespace Japanese {
             "ム": { seq: "mu", weight:  50758, },
             "チ": { seq: "chi",weight:  48437, },
             "バ": { seq: "ba", weight:  44970, },
+            "ビ": { seq: "bi", weight:  44462, },
+            "グ": { seq: "gu", weight:  40433, },
+            "キ": { seq: "ki", weight:  39608, },
+            "ウ": { seq: "u",  weight:  39323, },
+            "サ": { seq: "sa", weight:  39202, },
+            "ニ": { seq: "ni", weight:  38711, },
+            "ナ": { seq: "na", weight:  38047, },
+            "エ": { seq: "e",  weight:  36458, },
+            "ブ": { seq: "bu", weight:  35920, },
+            "パ": { seq: "pa", weight:  35416, },
+            "セ": { seq: "se", weight:  34883, },
+            "オ": { seq: "o",  weight:  34718, },
+            "ィ": { seq: "i",  weight:  33747, }, // small
+            "デ": { seq: "de", weight:  32665, },
+            "ュ": { seq: "yu", weight:  32616, }, // small
         });
 
         private constructor() {
