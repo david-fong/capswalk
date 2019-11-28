@@ -2,7 +2,7 @@ import { Pos, Tile } from "src/base/Tile";
 import { OfflineGame } from "src/offline/OfflineGame";
 import { ServerGame } from "src/server/ServerGame";
 import { PlayerId, Player } from "src/base/Player";
-import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
+import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 /**
  * TODO: this will be a little tricky to reuse code:

@@ -6,8 +6,8 @@ import { GridDimensionDesc, Grid } from "src/base/Grid";
 import { PlayerId, Player, PlayerGeneratedRequest } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
 import { HumanPlayer } from "src/base/HumanPlayer";
-import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
-import { Bubble } from "src/base/Bubble";
+import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
+import { Bubble } from "src/events/Bubble";
 
 export { GridDimensionDesc, Grid } from "src/base/Grid";
 
@@ -50,7 +50,7 @@ export abstract class Game extends Grid {
     /**
      * Set to `undefined` for {@link ServerGame}
      * 
-     * TODO: initialize this field in constructor.
+     * TODO: initialize this field in constructor. Consider tightening access modifier.
      */
     public readonly operator: HumanPlayer;
 
@@ -65,8 +65,10 @@ export abstract class Game extends Grid {
     private readonly allArtifPlayers: ReadonlyArray<ArtificialPlayer>;
 
     /**
-     * This is currently not updated for a ClientGame since it is not
-     * a Game Manager (does not process (and hence, validate,) requests).
+     * All copies of the game should contain identical entries. That
+     * in a {@link ClientGame} may at any instant be missing trailing
+     * entries, or contain some trailing holes, but such gaps should
+     * eventually be filled to match those in the Game Manager.
      */
     private readonly eventRecord: Array<GameEvent>;
 

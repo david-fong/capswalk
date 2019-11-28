@@ -1,11 +1,11 @@
-import { BarePos } from "src/Pos";
-import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 
 /**
  * Global definitions of event names and callback function signatures.
  * These will be enforced by non-callable verification functions that
  * will be flagged by the typescript parser if implementations diverge
  * from the difinitions here.
+ * 
+ * TODO: delete this please.
  */
 export namespace Events {
 

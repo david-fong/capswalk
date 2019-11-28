@@ -3,7 +3,7 @@ import * as io from "socket.io";
 import { GameStateDump } from "src/base/Game";
 import { ServerGame } from "src/server/ServerGame";
 import { PlayerId } from "src/base/Player";
-import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
+import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 export { ServerGame } from "src/server/ServerGame";
 
@@ -124,7 +124,7 @@ export class GroupSession {
      * @param dimensions - 
      */
     private createGameInstance(dimensions: { height: number, width?: number, }): void {
-        const newGame: ServerGame = new ServerGame(this, dimensions);
+        const newGame = new ServerGame(this, dimensions);
 
         this.currentGame = newGame;
         this.namespace.emit(

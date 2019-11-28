@@ -4,7 +4,8 @@ import { BarePos } from "src/Pos";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { LocalGameSettings } from "src/settings/GameSettings";
 import { GridDimensionDesc, Grid, Game } from "src/base/Game";
-import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
+import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
+import { Bubble } from "src/events/Bubble";
 
 /**
  * 

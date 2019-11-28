@@ -2,7 +2,7 @@ import { Pos, Tile } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { Game } from "src/base/Game";
 import { ClientGame } from "src/client/ClientGame";
-import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
+import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 
 /**

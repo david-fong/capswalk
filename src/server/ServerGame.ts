@@ -1,9 +1,10 @@
+import { setTimeout } from "timers";
+
 import { BarePos } from "src/Pos";
 import { ServerTile } from "src/server/ServerTile";
 import { GridDimensionDesc, Game } from "src/base/Game";
 import { GroupSession } from "src/server/GroupSession";
-import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
-import { setTimeout } from "timers";
+import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 /**
  * 
