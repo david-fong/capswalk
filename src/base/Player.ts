@@ -226,6 +226,13 @@ export abstract class Player extends PlayerSkeleton {
 
 
 
+    /**
+     * Called automatically by {@link HumanPlayer#seqBufferAcceptKey}
+     * for {@link HumanPlayer}s, and by a periodic callback for
+     * {@link ArtificialPlayer}s.
+     * 
+     * @param dest - 
+     */
     protected makeMovementRequest(dest: Tile): void {
         if (this.requestInFlight) {
             throw new Error("Only one request should ever be in flight at a time.");
@@ -235,15 +242,12 @@ export abstract class Player extends PlayerSkeleton {
     }
 
     /**
+     * Sends a descriptor of the movement request to the Game Manager.
+     * 
      * **_Do not call this directly!_** Instead, make a call to the
      * {@link Player#makeMovementRequest} method, which calls this,
      * and performs relevant non-implementation-dependant operations
      * such as book-keeping for spam control.
-     * 
-     * Send a descriptor of the movement request to the Game Manager.
-     * Called automatically by {@link HumanPlayer#seqBufferAcceptKey}
-     * for {@link HumanPlayer}s, and by a periodic callback for
-     * {@link ArtificialPlayer}s.
      * 
      * Request should call functions with a flow that either short-
      * circuits, or terminates with a call to {@link Player#moveTo}.

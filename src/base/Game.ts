@@ -199,7 +199,7 @@ export abstract class Game extends Grid {
     public processMoveRequest(desc: PlayerMovementEvent): void {
         const player = this.checkIncomingPlayerRequestId(desc);
         if (!(player)) {
-            this.processMoveExecute(desc);
+            // No call to execute since args are completely unusable.
             return;
         }
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
@@ -274,9 +274,9 @@ export abstract class Game extends Grid {
             if (this.operator && // Ignore if ServerGame
                 player.idNumber !== this.operator.idNumber &&
                 dest.pos.sub(this.operator.pos).infNorm === 1) {
-                // Do if moving into the vicinity of the operator, and
-                // requester is not the operator. This operation is
-                // necessary to maintain the `seqBuffer` invariant.
+                // Do this if moving into the vicinity of the operator
+                // and the requester is not the operator. This operation
+                // is necessary to maintain the `seqBuffer` invariant.
                 this.operator.seqBufferAcceptKey(null);
             }
             dest.numTimesOccupied = desc.destNumTimesOccupied;
@@ -337,17 +337,16 @@ export abstract class Game extends Grid {
      * Should never be called by {@link ClientGame}.
      * 
      * @param desc - 
-     * @returns A descriptor of changes to be made, or `null` if the
-     *      request was rejected for any of the reasons stated above.
      */
-    public processBubbleMakeRequest(desc: Bubble.MakeEvent): Bubble.MakeEvent | null {
+    public processBubbleMakeRequest(desc: Bubble.MakeEvent): void {
         // TODO:
         // if successful, make sure to lower the (score? and) stockpile fields.
         // make an abstract method in the HumanPlayer class called in the top-
         // level input processor for it to trigger this event.
         const bubbler: Player = this.checkIncomingPlayerRequestId(desc);
         if (!(bubbler)) {
-            return null;
+            // No call to execute since args are completely unusable.
+            return;
         }
         const millis = Bubble.computeTimerDuration(bubbler).value;
 
@@ -360,49 +359,44 @@ export abstract class Game extends Grid {
         this.eventRecord.push(desc);
 
         // Schedule the bubble to pop:
-        this.setTimeout(this.processBubblePopExecute, millis, desc);
-        return desc;
+        this.setTimeout(this.processBubblePopRequest, millis, bubbler);
     }
 
     public processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
-        // Note: We do not need to raise the "isBubbling" flag for the
-        // player; doing that is their responsibility on the client-side.
-
         // TODO:
         // Visually highlight the affected tiles for the specified estimate-duration.
         // make the server game override this to also broadcast
         //   changes to all clients.
-        ;
+        const bubbler = this.getPlayerById(desc.playerId);
+        bubbler.requestInFlight = false;
+        bubbler.isBubbling = true;
     }
 
 
 
     /**
+     * Unlike other request processors, this will never fail since it
+     * is not triggered on the client's side, and instead, by the Game
+     * Manager. Ie. There will never be any issues due to reordering
+     * on the way to the Game Manager. Never called externally (hence,
+     * the private access modifier).
      * 
      * Updates the event record if the response is accepted.
      * 
      * @param bubbler - 
-     * @returns A descriptor of changes to be made. Unlike other request
-     *      processors, this will never fail since it is not triggered
-     *      on the client's side, and instead, by the Game Manager. Ie.
-     *      There will never be issues due to reordering.
      */
-    protected processBubblePopRequest(bubbler: Player): Bubble.PopEvent {
-        // TODO:
-        // make the server game override this to also broadcast
-        //   changes to all clients.
-        const desc = new Bubble.PopEvent();
-        desc.bubblerId = bubbler.idNumber;
+    private processBubblePopRequest(bubbler: Player): void {
+        const desc = new Bubble.PopEvent(bubbler.idNumber);
         // TODO
-        // desc.playersToDown   = get adjacent un-downed players who are not in any of my teams. extend range to prevent turtling.
-        // desc.playersToFreeze = get adjacent    downed players who are not in any of my teams
-        // desc.playersToRaise  = get adjacent    downed players who are     in any of my teams
+        // first, get the range of covered tiles.
+        // desc.playersToDown   = get in-range un-downed players who are not in any of my teams. extend range to prevent turtling.
+        // desc.playersToFreeze = get in-range    downed players who are not in any of my teams
+        // desc.playersToRaise  = get in-range    downed players who are     in any of my teams
 
         // We are all go! Do it.
         // (note: the order of the below calls currently does not matter)
         this.processBubblePopExecute(desc);
         this.eventRecord.push(desc);
-        return desc;
     }
 
     /**
@@ -411,26 +405,27 @@ export abstract class Game extends Grid {
      */
     protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
         // TODO:
+        // make the server game override this to also broadcast
+        //   changes to all clients.
         const bubbler: Player = this.getPlayerById(desc.bubblerId);
 
-        // Lower the ""requestInFlight" and "isBubbling" flags for the player:
-        bubbler.requestInFlight = false;
+        // Lower the "isBubbling" flags for the player:
         bubbler.isBubbling = false;
 
         // Enact effects on supposedly un-downed enemy players:
-        desc.playersToDown.forEach((enemyId, index) => {
+        desc.playersToDown.forEach((enemyId) => {
             const enemy: Player = this.getPlayerById(enemyId);
             enemy.isDowned = true;
         }, this);
 
         // Enact effects on supposedly downed teammates:
-        desc.playersToRaise.forEach((teammateId, index) => {
+        desc.playersToRaise.forEach((teammateId) => {
             const teammate: Player = this.getPlayerById(teammateId);
             teammate.isDowned = false;
         }, this);
 
         // Enact effects on 
-        Object.entries(desc.playersToFreeze).forEach(([enemyId, duration,], index) => {
+        Object.entries(desc.playersToFreeze).forEach(([enemyId, duration,]) => {
             this.freezePlayer(this.getPlayerById(parseInt(enemyId)), duration);
         }, this);
         return;

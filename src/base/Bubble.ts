@@ -126,10 +126,14 @@ export namespace Bubble {
          * The server should set this to the value of the timer duration
          * that it will use to schedule the pop event.
          */
-        public estimatedTimerDuration: number;
+        public estimatedTimerDuration: number = undefined;
 
-        public constructor(playerId: PlayerId) {
+        public constructor(
+            playerId: PlayerId,
+            lastAcceptedRequestId: number,
+        ) {
             this.playerId = playerId;
+            this.lastAcceptedRequestId = lastAcceptedRequestId;
         }
 
     }
@@ -156,8 +160,8 @@ export namespace Bubble {
         // map to how long to freeze (todo: say units are same as those in the bounds constants)
         public playersToFreeze: Record<PlayerId, number>;
 
-        public constructor(/* TODO */) {
-            ;
+        public constructor(bubblerId: PlayerId) {
+            this.bubblerId = bubblerId;
         }
 
     }
