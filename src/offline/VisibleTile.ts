@@ -100,8 +100,8 @@ export class VisibleTile extends Tile {
 
     public setLangCharSeq(charSeqPair: LangCharSeqPair): void {
         super.setLangCharSeq(charSeqPair);
-        this.langCharDivElem.innerText = charSeqPair.char;
-        this.langSeqDivElem.innerText  = charSeqPair.seq;
+        this.langCharDivElem.innerText = this.langChar;
+        this.langSeqDivElem.innerText  = this.langSeq;
     }
 
 }

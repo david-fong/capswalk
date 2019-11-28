@@ -83,6 +83,8 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
      */
     public static readonly INITIAL_REQUEST_ID = -1;
 
+
+
     public readonly playerId: PlayerId;
 
     public lastAcceptedRequestId: number;
@@ -94,7 +96,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
      * The server should respond with the new value of the requester's
      * score.
      */
-    public playerScore: number;
+    public playerScore: number = undefined;
 
     /**
      * Any value assigned by the requester to this field should be
@@ -103,7 +105,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
      * The server should respond with the new value of the requester's
      * stockpile.
      */
-    public playerStockpile: number;
+    public playerStockpile: number = undefined;
 
     public readonly destPos: BarePos;
 
@@ -124,14 +126,13 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
     public destNumTimesOccupied: number;
 
     /**
-     * The requester should set this to the value they currently see.
-     * If the request was to get benched, the server should respond
-     * with these values unchanged (no shuffle). The server may choose
-     * to make an assertion that the requester's seen values at the
-     * destination are in sync if the occupancy counter is also in
-     * sync.
+     * Any value assigned by the requester to this field should be
+     * ignored by the server.
+     * 
+     * The server must set this to describe the new values to be
+     * shuffled-in to the destination tile.
      */
-    public newCharSeqPair: LangCharSeqPair;
+    public newCharSeqPair: LangCharSeqPair = undefined;
 
     public constructor(
         playerId: PlayerId,
@@ -142,10 +143,6 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
         this.lastAcceptedRequestId  = lastAccpectedRequestId;
         this.destPos = destTile.pos;
         this.destNumTimesOccupied = destTile.numTimesOccupied;
-        this.newCharSeqPair = {
-            char: destTile.langChar,
-            seq: destTile.langSeq,
-        };
     }
 
 }

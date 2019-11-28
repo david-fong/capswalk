@@ -5,7 +5,7 @@ import { GridDimensionDesc, Grid } from "src/base/Grid";
 
 import { PlayerId, Player, PlayerGeneratedRequest } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
-import { OnlineHumanPlayer } from "src/client/OnlineHumanPlayer";
+import { HumanPlayer } from "src/base/HumanPlayer";
 import { PlayerMovementEvent } from "src/base/PlayerMovementEvent";
 import { Bubble } from "src/base/Bubble";
 
@@ -52,7 +52,7 @@ export abstract class Game extends Grid {
      * 
      * TODO: initialize this field in constructor.
      */
-    public readonly operator: OnlineHumanPlayer;
+    public readonly operator: HumanPlayer;
 
     /**
      * Does not use the HumanPlayer type annotation. This is to
@@ -159,6 +159,8 @@ export abstract class Game extends Grid {
         const player = this.getPlayerById(desc.playerId);
         if (!(player) || player.isBubbling) {
             // The specified player does not exist or is bubbling.
+            // This is _not_ the same as if the requester has their
+            // movement frozen.
             return null;
 
         } else if (desc.lastAcceptedRequestId !== player.lastAcceptedRequestId) {
@@ -186,19 +188,20 @@ export abstract class Game extends Grid {
      * state, and instead, delegates the execution of all necessitated
      * changes to {@link Game#processMoveExecute}.
      * 
-     * Updates the event record if the response is accepted.
+     * TODO: move this code to execute function: Updates the event record if the response is accepted.
      * 
      * Should never be called by {@link ClientGame}.
      * 
      * @param desc - A descriptor of the request, with fields indicating
      *      the requester's views of critical parts of the game-state
      *      from their copy of the game-state at the time of the request.
-     * @returns A descriptor of changes to be made, or `null` if the
-     *      request was rejected for any of the reasons stated above.
      */
-    public processMoveRequest(desc: PlayerMovementEvent): PlayerMovementEvent | null {
+    public processMoveRequest(desc: PlayerMovementEvent): void {
         const player = this.checkIncomingPlayerRequestId(desc);
-        if (!(player)) return null;
+        if (!(player)) {
+            this.processMoveExecute(desc);
+            return;
+        }
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         if (dest.isOccupied() ||
             dest.numTimesOccupied !== desc.destNumTimesOccupied) {
@@ -208,33 +211,30 @@ export abstract class Game extends Grid {
             // stronger client-experience consistency: they cannot move
             // somewhere where they have not realized the `LangSeq` has
             // changed.
-            return null;
+            this.processMoveExecute(desc);
+            return;
         }
 
         /**
          * Set response fields according to spec in `PlayerMovementEvent`:
          */
         desc.lastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
-        desc.destNumTimesOccupied   = (1 + dest.numTimesOccupied);
+        desc.destNumTimesOccupied  = (1 + dest.numTimesOccupied);
 
         desc.playerScore = (player.score + dest.scoreValue);
-        if (Bubble.computeTimerDuration(player) >= Bubble.MIN_TIMER_DURATION) {
+        if (Bubble.computeTimerDuration(player).performedConstrain) {
             // This allows the player's stockpile to increase if its
             // original stockpile value is not such that its calculated
             // timer is outside the required range.
             desc.playerStockpile = (player.stockpile + dest.scoreValue);
         }
 
-        if (dest !== player.benchTile) {
-            // Don't change this value for bench tiles:
-            desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
-        }
+        desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
 
         // We are all go! Do it.
         // (note: the order of the below calls currently does not matter)
         this.processMoveExecute(desc);
         this.eventRecord.push(desc);
-        return desc;
     }
 
     /**
@@ -298,16 +298,9 @@ export abstract class Game extends Grid {
 
         // Okay- the response we received is for the specified player's most
         // recent request pending this acknowledgement. We either got accepted
-        // or rejected now:
+        // or rejected now. If the response is a rejection to the operator,
+        // then the below line should be the only change made by this call.
         player.requestInFlight = false;
-
-        // If using relative values (which we are not), then this
-        // should happen regardless of the order of receipt. These
-        // values are currently never modified unless the request
-        // succeeds, so they could technically go in the "else if"
-        // block.
-        player.score = desc.playerScore;
-        player.stockpile = desc.playerStockpile;
 
         if (playerLagState === 0) {
             // The request was rejected by the Game Manager. That is,
@@ -317,6 +310,14 @@ export abstract class Game extends Grid {
 
         } else if (playerLagState === 1) {
             executeBasicTileUpdates();
+            // If using relative values (which we are not), the below
+            // should happen regardless of the order of receipt. These
+            // values are currently never modified unless the request
+            // succeeds, so they could technically go in the "else if"
+            // block.
+            player.score = desc.playerScore;
+            player.stockpile = desc.playerStockpile;
+
             player.moveTo(dest);
             // Below is the same as "(player.lastAcceptedRequestId)++"
             player.lastAcceptedRequestId = desc.lastAcceptedRequestId;
@@ -331,18 +332,24 @@ export abstract class Game extends Grid {
     /**
      * @see Bubble.MakeEvent
      * 
+     * Updates the event record if the response is accepted.
+     * 
+     * Should never be called by {@link ClientGame}.
+     * 
      * @param desc - 
-     * @returns `null` if the request was rejected.
+     * @returns A descriptor of changes to be made, or `null` if the
+     *      request was rejected for any of the reasons stated above.
      */
-    public processBubbleMakeRequest(desc: Bubble.MakeEvent): Bubble.MakeEvent {
+    public processBubbleMakeRequest(desc: Bubble.MakeEvent): Bubble.MakeEvent | null {
         // TODO:
         // if successful, make sure to lower the (score? and) stockpile fields.
         // make an abstract method in the HumanPlayer class called in the top-
         // level input processor for it to trigger this event.
-        // override to throw error in ClientGame.
         const bubbler: Player = this.checkIncomingPlayerRequestId(desc);
-        if (!(bubbler)) return null;
-        const millis = Math.max(Bubble.MIN_TIMER_DURATION, Bubble.computeTimerDuration(bubbler));
+        if (!(bubbler)) {
+            return null;
+        }
+        const millis = Bubble.computeTimerDuration(bubbler).value;
 
         desc.lastAcceptedRequestId  = (1 + bubbler.lastAcceptedRequestId);
         desc.estimatedTimerDuration = millis;
@@ -358,7 +365,7 @@ export abstract class Game extends Grid {
     }
 
     public processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
-        // Note: We do not need to raise the "requestInFlight" flag for the
+        // Note: We do not need to raise the "isBubbling" flag for the
         // player; doing that is their responsibility on the client-side.
 
         // TODO:
@@ -370,7 +377,17 @@ export abstract class Game extends Grid {
 
 
 
-    private processBubblePopRequest(bubbler: Player): Bubble.PopEvent {
+    /**
+     * 
+     * Updates the event record if the response is accepted.
+     * 
+     * @param bubbler - 
+     * @returns A descriptor of changes to be made. Unlike other request
+     *      processors, this will never fail since it is not triggered
+     *      on the client's side, and instead, by the Game Manager. Ie.
+     *      There will never be issues due to reordering.
+     */
+    protected processBubblePopRequest(bubbler: Player): Bubble.PopEvent {
         // TODO:
         // make the server game override this to also broadcast
         //   changes to all clients.

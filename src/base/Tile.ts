@@ -95,9 +95,14 @@ export abstract class Tile {
 
 
 
+    /**
+     * @param charSeqPair - May be undefined. If so, no changes take place.
+     */
     public setLangCharSeq(charSeqPair: LangCharSeqPair): void {
-        this._langChar = charSeqPair.char;
-        this._langSeq  = charSeqPair.seq;
+        if (charSeqPair) {
+            this._langChar = charSeqPair.char;
+            this._langSeq  = charSeqPair.seq;
+        }
     }
 
     public get langChar(): LangChar {

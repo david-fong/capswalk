@@ -74,25 +74,35 @@ export namespace Bubble {
      *   of headcount, and to mildly favour teams that are not doing as
      *   well as other teams.
      * 
-     * **Important:** The returned value may be less than
-     * {@link MIN_TIMER_DURATION} based on the player's current
-     * stockpile. If the produced value is within that range, then no
-     * reasonable changes in other variables used by this function can
-     * cause the output to go out of range.
-     * 
-     * Therefore, external callers of this function must manually
-     * constrain the returned value into the required range.
+     * **Important:** The returned value may have required this function
+     * to perform constraining to be within legal bounds based on the
+     * player's current stockpile. If not, then no changes in other
+     * variables used by this function can cause the output to go out of
+     * range. Whether constraining was performed is indicated in a field
+     * of the returned object. Callers may use this to decide if fields
+     * storing arguments to pass this function later should be changed.
      * 
      * @param player - 
      */
-    export const computeTimerDuration = (player: Player): number => {
+    export const computeTimerDuration = (player: Player): Readonly<{
+        value: number,
+        performedConstrain: boolean,
+    }> => {
         // We are allowed to go below MIN_TIMER-DURATION based on the
         // player's stockpile value, but not because of how long the
         // game has lasted, or because of how the player's team is
         // faring. (according to the spec above).
 
+        let value: number = 0xdeadbeef;
+        let performedConstrain = false;
         // TODO
-        return 0xdeadbeef;
+
+        // Perform cleaning and then return:
+        if (value > MIN_TIMER_DURATION) {
+            value = MIN_TIMER_DURATION;
+            performedConstrain = true;
+        }
+        return { value, performedConstrain, };
     };
 
 
