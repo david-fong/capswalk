@@ -32,7 +32,7 @@ import { PlayerId, PlayerGeneratedRequest, Player } from "src/base/Player";
  * be raised. Downed members can still move and take actions to assist
  * their teammates take down opposing players.
  * 
- * ### The Bubble Mechanic (How Players Get Taken Down)
+ * ## The Bubble Mechanic (How Players Get Taken Down)
  * 
  * At any given time, a player can (make a) "bubble". This starts a
  * countdown / timer during which they cannot move (the Game Manager,
@@ -42,12 +42,32 @@ import { PlayerId, PlayerGeneratedRequest, Player } from "src/base/Player";
  * within the range of their bubble will be affected by the pop based
  * on whether they are downed, whether they are on the same team as
  * the bubbling player, and whether the bubbling player is downed.
+ * The range of the bubble can increase to include the typical range
+ * of an affected player. A player who is bubbling is not immune to
+ * the effects of another players' popping bubble.
+ * 
+ * The effects follow the following logical decision-making flow:
+ * - Is the bubble-maker downed?
+ *   - Yes: Is the other player a teammate?
+ *     - Yes: Include their basic range.
+ *     - No: Other player is temporarily frozen.
+ *   - No: Is the other player a teammate?
+ *     - Yes: Is the other player downed?
+ *       - Yes: Other player is raised.
+ *       - No: Include their basic range. No effect.
+ *     - No: Is the other player downed?
+ *       - Yes: 
+ * 
+ * Remember that all the variables taken into consideration are used
+ * by the value they hold _when the bubble pops_ and _before_ any of
+ * the resulting changes of the popping event take place.
  * 
  * The player can decrease the duration of the timer for their next
  * bubble by stockpiling score. The relative effect of their stockpile
  * can vary depending on factors that indicate how their team is doing
  * at the moment. The bias goes in a direction to sympathize with teams
- * that are faring poorly, or have a headcount-disadvantage.
+ * that are faring poorly, or have a headcount-disadvantage. For more
+ * imformation, see {@link computeTimerDuration}.
  * 
  */
 export namespace Bubble {
@@ -55,15 +75,15 @@ export namespace Bubble {
     /**
      * An _inclusive_ lower bound on legal values.
      * 
-     * Units are in milliseconds.
+     * Units are the same as those in {@link computeTimerDuration}.
      */
-    export const MIN_TIMER_DURATION = 0;
+    const MIN_TIMER_DURATION = 0;
 
     /**
      * @returns A positive real number representing how long it should
      * take for a new bubble made by the specified {@link Player} to pop
      * at the current time and under the current circumstances. Units
-     * are the same as those used by {@link MIN_TIMER_DURATION}.
+     * are in milliseconds.
      * 
      * This value...
      * - Strictly increases as `player`'s stockpile value increases.
@@ -119,7 +139,7 @@ export namespace Bubble {
         public lastAcceptedRequestId: number;
 
         /**
-         * Units are the same as those used for {@link MIN_TIMER_DURATION}.
+         * Units are the same as those used in {@link computeTimerDuration}.
          * 
          * The server should ignore any values set here by the requester.
          * 
