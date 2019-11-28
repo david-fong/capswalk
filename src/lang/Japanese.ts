@@ -38,7 +38,34 @@ export namespace Japanese {
          * (https://gawron.sdsu.edu/crypto/lectures/hiragana.html)
          */
         public static INITIALIZER = Object.freeze(<const>{
-            "": { seq: "", weight: 0, }, // TODO
+            "の": { seq: "no", weight: 1918313, },
+            "に": { seq: "ni", weight: 1108840, },
+            "た": { seq: "ta", weight: 1067566, },
+            "い": { seq: "i",  weight: 1060284, },
+            "は": { seq: "ha", weight:  937811, },
+            "を": { seq: "wo", weight:  936356, },
+            "と": { seq: "to", weight:  927938, },
+            "る": { seq: "ru", weight:  916652, },
+            "が": { seq: "ga", weight:  860742, },
+            "し": { seq: "shi",weight:  848132, },
+            "で": { seq: "de", weight:  764834, },
+            "て": { seq: "te", weight:  758316, },
+            "な": { seq: "na", weight:  720156, },
+            "あ": { seq: "a",  weight:  537294, },
+          //"っ": { seq: "-",  weight:  467350, },
+            "れ": { seq: "re", weight:  450805, },
+            "ら": { seq: "ra", weight:  42329, },
+            "も": { seq: "mo", weight:  396142, },
+            "う": { seq: "u",  weight:  352965, },
+            "す": { seq: "su", weight:  340654, },
+            "り": { seq: "ri", weight:  333999, },
+            "こ": { seq: "ko", weight:  312227, },
+            "だ": { seq: "da", weight:  280911, },
+            "ま": { seq: "ma", weight:  278599, },
+            "さ": { seq: "sa", weight:  258960, },
+            "き": { seq: "ki", weight:  233505, },
+            "め": { seq: "me", weight:  223806, },
+            "く": { seq: "ku", weight:  221960, },
         });
 
         private constructor() {
