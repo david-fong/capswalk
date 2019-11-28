@@ -102,7 +102,19 @@ export namespace Japanese {
             "ざ": { seq: "za", weight:   12108, },
             "ふ": { seq: "fu", weight:   11606, },
             "ゃ": { seq: "ya", weight:   11522, }, // small
-
+            "ぞ": { seq: "zo", weight:   10047, },
+            "ゆ": { seq: "yu", weight:    8486, },
+            "ぜ": { seq: "ze", weight:    6893, },
+            "ぬ": { seq: "nu", weight:    5124, },
+            "ぱ": { seq: "pa", weight:    4349, },
+            "ゅ": { seq: "yu", weight:    2755, },
+            "ぴ": { seq: "pi", weight:    1608, },
+            "ぽ": { seq: "po", weight:    1315, },
+            "ぷ": { seq: "pu", weight:     986, },
+            "ぺ": { seq: "pe", weight:     477, },
+          //"あ": { seq: "a",  weight:     125, }, // small
+          //"え": { seq: "e",  weight:     106, }, // small
+            "ぢ": { seq: "di", weight:      82, },
         });
 
         private constructor() {
