@@ -1,6 +1,8 @@
 import { PlayerId } from "src/base/Player";
 import { EventRecordEntry } from "./EventRecordEntry";
 
+export { EventRecordEntry } from "src/events/EventRecordEntry";
+
 export interface PlayerGeneratedRequest extends EventRecordEntry {
 
     readonly playerId: PlayerId;

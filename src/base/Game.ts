@@ -196,6 +196,7 @@ export abstract class Game extends Grid {
         const player = this.checkIncomingPlayerRequestId(desc);
         if (!(player)) {
             // No call to execute since args are completely unusable.
+            // TODO: consider throwing an error here.
             return;
         }
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
@@ -302,9 +303,13 @@ export abstract class Game extends Grid {
             // The request was rejected by the Game Manager. That is,
             // the response's id is unchanged. No need to assign it
             // into this local copy of the last accepted request.
+            if (desc.eventId !== EventRecordEntry.REJECT) {
+                throw new Error("this should never happen.");
+            }
             return;
 
         } else if (playerLagState === 1) {
+            this.recordEvent(desc); // Record the event.
             executeBasicTileUpdates();
             // If using relative values (which we are not), the below
             // should happen regardless of the order of receipt. These
@@ -342,6 +347,7 @@ export abstract class Game extends Grid {
         const bubbler: Player = this.checkIncomingPlayerRequestId(desc);
         if (!(bubbler)) {
             // No call to execute since args are completely unusable.
+            // TODO: consider throwing an error here.
             return;
         }
         const millis = Bubble.computeTimerDuration(bubbler).value;
@@ -364,8 +370,12 @@ export abstract class Game extends Grid {
         // make the server game override this to also broadcast
         //   changes to all clients.
         const bubbler = this.getPlayerById(desc.playerId);
-        bubbler.requestInFlight = false;
-        bubbler.isBubbling = true;
+
+        if (desc.eventId !== EventRecordEntry.REJECT) {
+            this.recordEvent(desc); // Record the event.
+            bubbler.requestInFlight = false;
+            bubbler.isBubbling = true;
+        }
     }
 
 
@@ -400,6 +410,9 @@ export abstract class Game extends Grid {
      * @param desc - 
      */
     protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
+        // Record the event. No need to check acceptance since this
+        // kind of event is made in such a way that it is always accepted.
+        this.recordEvent(desc);
         // TODO:
         // make the server game override this to also broadcast
         //   changes to all clients.
@@ -436,6 +449,29 @@ export abstract class Game extends Grid {
     protected freezePlayer(player: Player, duration: number): void { }
 
 
+
+    /**
+     * Basically does `this.eventRecord[id] = desc;` with value checking.
+     * 
+     * @param desc - 
+     * @throws TypeError if the event ID indicates a rejected request,
+     *      RangeError if it is not a positive integer, and Error if
+     *      another event was already recorded with the same ID.
+     */
+    private recordEvent(desc: EventRecordEntry): void {
+        const id = desc.eventId;
+        if (id === EventRecordEntry.REJECT) {
+            throw new TypeError("Do not try to record events for rejected requests.");
+        } else if (id < 0 || id !== Math.trunc(id)) {
+            throw new RangeError("Event ID's must only be assigned positive, integer values.");
+        } else if (this.eventRecord[id]) {
+            throw new Error("Event ID's must be assigned unique values.");
+        }
+        // TODO: If storage becomes a concern with logging events,
+        // create a static constant for the record's buffer size,
+        // and then here, wrap around.
+        this.eventRecord[id] = desc;
+    }
 
     public abstract setTimeout(callback: Function, millis: number, ...args: any[]): number | NodeJS.Timeout;
 

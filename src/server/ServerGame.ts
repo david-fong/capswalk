@@ -60,7 +60,7 @@ export class ServerGame extends Game {
     /**
      * @override
      */
-    public processMoveExecute(desc: PlayerMovementEvent): void {
+    public processMoveExecute(desc: Readonly<PlayerMovementEvent>): void {
         super.processMoveExecute(desc);
 
         const requestRejected: boolean = (

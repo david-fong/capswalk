@@ -1,8 +1,7 @@
 import { LangCharSeqPair } from "src/Lang";
 import { BarePos, Tile } from "src/base/Tile";
 import { PlayerId } from "src/base/Player";
-import { PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
-
+import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
 
 /**
  * ## One Fantastic Nightmare of a Problem to Solve
@@ -84,7 +83,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
      */
     public static readonly INITIAL_REQUEST_ID = -1;
 
-    public readonly eventId: number;
+    public eventId: number = EventRecordEntry.REJECT;
 
     public readonly playerId: PlayerId;
 

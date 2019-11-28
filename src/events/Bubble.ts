@@ -1,6 +1,5 @@
 import { PlayerId, Player } from "src/base/Player";
-import { PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
-import { EventRecordEntry } from "./EventRecordEntry";
+import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
 
 /**
  * # The Object of the Game
@@ -136,7 +135,7 @@ export namespace Bubble {
 
         public static readonly EVENT_NAME = "bubble make";
 
-        public readonly eventId: number;
+        public eventId: number = EventRecordEntry.REJECT;
 
         public readonly playerId: PlayerId;
 
@@ -175,7 +174,8 @@ export namespace Bubble {
 
         public static readonly EVENT_NAME = "bubble pop";
 
-        public readonly eventId: number;
+        // For this class, the request should never get rejected.
+        public eventId: number = undefined;
 
         public bubblerId: PlayerId;
 
