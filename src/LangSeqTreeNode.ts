@@ -1,5 +1,4 @@
-import { LangChar, LangSeq, LangCharSeqPair } from "src/Lang";
-
+import { LangChar, LangSeq, LangCharSeqPair, LANG_SEQ_REGEXP } from "src/Lang";
 
 
 /**
@@ -11,19 +10,21 @@ export enum BalancingScheme {
     SEQ, CHAR, WEIGHT,
 }
 
+type BalanceSchemeSorterMap<T> = ReadonlyMap<BalancingScheme, (a: T, b: T) => number>;
+
 /**
  * Shape that must be passed in to the static tree producer. The
  * `Record` type enforces the invariant that {@link LangChar}s are
  * unique in a {@link Lang}. "CSP" is short for {@link LangCharSeqPair}
  */
-export type WeightedCspForwardMap = Record<LangChar, {seq: LangSeq, weight: number,}>;
+export type WeightedCspForwardMap = Record<LangChar, Readonly<{seq: LangSeq, weight: number,}>>;
 
 
 
 /**
  * No `LangSeqTreeNode`s mapped in the `children` field have an empty
  * `characters` collection (with the exception of the root node). The
- * root node should have a `null` parent, and the empty string as its
+ * root node should have a falsy parent, and the `empty string` as its
  * `sequence` field, with a correspondingly empty `characters` collection.
  * 
  * All non-root nodes have a `sequence` that is prefixed by their parent's
@@ -71,12 +72,10 @@ export class LangSeqTreeNode {
         Array.from(reverseDict)
           //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
             .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
-            .forEach(mapping => {
+            .forEach((mapping) => {
                 rootNode.addCharMapping(...mapping);
             }, this);
         rootNode.finalize();
-        // reset will be called automatically by `Lang`.
-        // rootNode.reset();
         return rootNode;
     }
 
@@ -92,7 +91,7 @@ export class LangSeqTreeNode {
     }
 
     private finalize(): void {
-        if (this.parent === null) {
+        if (!(this.parent)) {
             if (this.sequence.length > 0) {
                 throw new Error("Root node's sequence must be the empty string.");
             }
@@ -103,14 +102,14 @@ export class LangSeqTreeNode {
         }
         Object.freeze(this.characters);
         Object.freeze(this.children);
-        this.children.forEach(child => child.finalize());
+        this.children.forEach((child) => child.finalize());
     }
 
     public reset(): void {
         this.hitCount = 0;
         this.weightedHitCount = 0.000;
-        this.characters.forEach(char => char.reset());
-        this.children.forEach(child => child.reset());
+        this.characters.forEach((char) => char.reset());
+        this.children.forEach((child) => child.reset());
     }
 
     /**
@@ -119,16 +118,17 @@ export class LangSeqTreeNode {
      * @param chars A collection of unique characters in a written language.
      */
     private addCharMapping(seq: LangSeq, chars: Array<WeightedLangChar>): void {
-        if (seq.length === 0) {
-            throw new Error("Mapping sequence must not be the empty string.");
+        if (!(LANG_SEQ_REGEXP.test(seq))) {
+            throw new Error(`Mapping sequence must match ${LANG_SEQ_REGEXP}.`);
         } else if (chars.length === 0) {
             throw new Error("Must not make mapping without written characters.");
         }
-        let node: LangSeqTreeNode;
-        let childNode: LangSeqTreeNode = this;
-        while (childNode !== undefined) {
-            node = childNode;
-            childNode = node.children.find(child => seq.startsWith(child.sequence));
+        let node: LangSeqTreeNode; {
+            let childNode: LangSeqTreeNode = this;
+            while (childNode !== undefined) {
+                node = childNode;
+                childNode = node.children.find((child) => seq.startsWith(child.sequence));
+            }
         }
         if (node.sequence === seq) {
             throw new Error(`Mappings for all written-characters with a common`
@@ -153,7 +153,7 @@ export class LangSeqTreeNode {
      *      been selected the least according to the specified scheme.
      */
     public chooseOnePair(balancingScheme: BalancingScheme): LangCharSeqPair {
-        if (this.parent === null) {
+        if (!(this.parent)) {
             throw new Error("Should never hit on the root.");
         }
         const weightedChar: WeightedLangChar = this.characters.slice(0)
@@ -171,7 +171,7 @@ export class LangSeqTreeNode {
     private recursiveIncrementNumHits(weightInv: number): void {
         this.hitCount += 1;
         this.weightedHitCount += weightInv;
-        this.children.forEach(child => child.recursiveIncrementNumHits(weightInv));
+        this.children.forEach((child) => child.recursiveIncrementNumHits(weightInv));
     }
 
     /**
@@ -179,16 +179,23 @@ export class LangSeqTreeNode {
      *
      * @returns How many hits were made on this node since the last reset.
      */
-    public get personalHitCount(): number {
+    protected get personalHitCount(): number {
         return this.hitCount - this.parent.hitCount;
     }
 
+    protected get averageCharHitCount(): number {
+        return (
+            this.characters.reduce<number>((prev, curr) => prev + curr.hitCount, 0)
+            / this.characters.length
+        );
+    }
+
     /**
      * Do not call this on a root node.
      *
      * @returns How many hits were made on this node since the last reset.
      */
-    public get personalWeightedHitCount(): number {
+    protected get personalWeightedHitCount(): number {
         return this.weightedHitCount - this.parent.weightedHitCount;
     }
 
@@ -196,7 +203,7 @@ export class LangSeqTreeNode {
         const upstreamNodes: Array<LangSeqTreeNode> = [];
 
         let node: LangSeqTreeNode = this;
-        while (node.parent !== null) {
+        while (node.parent) {
             upstreamNodes.push(node);
             node = node.parent;
         }
@@ -212,7 +219,7 @@ export class LangSeqTreeNode {
         if (this.children.length === 0) {
             leafNodes.push(this);
         } else {
-            this.children.forEach(child => child.recursiveGetLeafNodes(leafNodes));
+            this.children.forEach((child) => child.recursiveGetLeafNodes(leafNodes));
         }
     }
 
@@ -223,33 +230,35 @@ export class LangSeqTreeNode {
      * @param b - 
      * @returns - 
      */
-    public static readonly LEAF_CMP:
-        ReadonlyMap<BalancingScheme, {(a: LangSeqTreeNode, b: LangSeqTreeNode): number}>
-        = new Map([
-            [BalancingScheme.SEQ,   ((a, b) => a.hitCount - b.hitCount),],
-            [BalancingScheme.CHAR,  ((a, b) => a.hitCount - b.hitCount),],
-            [BalancingScheme.WEIGHT,((a, b) => a.weightedHitCount - b.weightedHitCount),],
-        ]
-    );
+    public static readonly LEAF_CMP: BalanceSchemeSorterMap<LangSeqTreeNode> = new Map([
+        [ BalancingScheme.SEQ,   ((a, b) => a.hitCount - b.hitCount), ],
+        [ BalancingScheme.CHAR,  ((a, b) => a.hitCount - b.hitCount), ],
+        [ BalancingScheme.WEIGHT,((a, b) => a.weightedHitCount - b.weightedHitCount), ],
+    ]);
 
     /**
      * @param a - 
      * @param b - 
      * @returns - 
      */
-    public static readonly PATH_CMP:
-        ReadonlyMap<BalancingScheme, {(a: LangSeqTreeNode, b: LangSeqTreeNode): number}>
-        = new Map([
-            [BalancingScheme.SEQ,   ((a, b) => a.personalHitCount - b.personalHitCount),],
-            [BalancingScheme.CHAR,  ((a, b) => a.personalHitCount - b.personalHitCount),], // TODO: use min character hitcount
-            [BalancingScheme.WEIGHT,((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount),],
-        ]
-    );
+    public static readonly PATH_CMP: BalanceSchemeSorterMap<LangSeqTreeNode> = new Map([
+        [ BalancingScheme.SEQ,   ((a, b) => a.personalHitCount - b.personalHitCount), ],
+        [ BalancingScheme.CHAR,  ((a, b) => a.averageCharHitCount - b.averageCharHitCount), ],
+        [ BalancingScheme.WEIGHT,((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount), ],
+    ]);
 
 }
 
 
 
+/**
+ * Has no concept of an associated typable sequence. Used to associate
+ * a written character to a relative frequency of occurance in samples
+ * of writing, and to keep a counter for how many times this character
+ * has been shuffled-in in the current game session.
+ * 
+ * Not exported.
+ */
 class WeightedLangChar {
 
     public readonly char: LangChar;
@@ -306,12 +315,9 @@ class WeightedLangChar {
      * @param b - 
      * @returns - 
      */
-    public static readonly CMP:
-        ReadonlyMap<BalancingScheme, (nodeA: WeightedLangChar, nodeB: WeightedLangChar) => number>
-        = new Map([
-            [BalancingScheme.SEQ,   (a, b) => a.hitCount - b.hitCount,], // design choice.
-            [BalancingScheme.CHAR,  (a, b) => a.hitCount - b.hitCount,],
-            [BalancingScheme.WEIGHT,(a, b) => a.weightedHitCount - b.weightedHitCount,],
-        ]
-    );
+    public static readonly CMP: BalanceSchemeSorterMap<WeightedLangChar> = new Map([
+        [ BalancingScheme.SEQ,   (a, b) => a.hitCount - b.hitCount, ], // design choice.
+        [ BalancingScheme.CHAR,  (a, b) => a.hitCount - b.hitCount, ],
+        [ BalancingScheme.WEIGHT,(a, b) => a.weightedHitCount - b.weightedHitCount, ],
+    ]);
 };

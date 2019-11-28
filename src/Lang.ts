@@ -49,12 +49,12 @@ export const LANG_SEQ_REGEXP = new RegExp("^[a-zA-Z\-.]+$");
  * A key-value pair containing a `LangChar` and its corresponding
  * `LangSeq`.
  */
-export type LangCharSeqPair = {
-    readonly char: LangChar,
-    readonly seq:  LangSeq,
-};
+export type LangCharSeqPair = Readonly<{
+    char: LangChar,
+    seq:  LangSeq,
+}>;
 
-export const EMPTY_CSP = Object.freeze(<const>{
+export const EMPTY_CSP = Object.freeze({
     char: "",
     seq:  "",
 });
