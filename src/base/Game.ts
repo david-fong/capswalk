@@ -3,22 +3,16 @@ import { BalancingScheme } from "src/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
 import { GridDimensionDesc, Grid } from "src/base/Grid";
 
-import { PlayerId, Player, PlayerGeneratedRequest } from "src/base/Player";
+import { PlayerId, Player } from "src/base/Player";
 import { ArtificialPlayer } from "src/base/ArtificialPlayer";
 import { HumanPlayer } from "src/base/HumanPlayer";
+
+import { PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { Bubble } from "src/events/Bubble";
+import { EventRecordEntry } from "src/events/EventRecordEntry";
 
 export { GridDimensionDesc, Grid } from "src/base/Grid";
-
-
-/**
- * Events recorded in the {@link Game#eventRecord} field.
- */
-type GameEvent =
-      PlayerMovementEvent
-    | Bubble.MakeEvent
-    | Bubble.PopEvent;
 
 
 /**
@@ -70,7 +64,7 @@ export abstract class Game extends Grid {
      * entries, or contain some trailing holes, but such gaps should
      * eventually be filled to match those in the Game Manager.
      */
-    private readonly eventRecord: Array<GameEvent>;
+    private readonly eventRecord: Array<EventRecordEntry>;
 
 
 

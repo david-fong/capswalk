@@ -1,6 +1,7 @@
 import { LangCharSeqPair } from "src/Lang";
 import { BarePos, Tile } from "src/base/Tile";
-import { PlayerId, PlayerGeneratedRequest } from "src/base/Player";
+import { PlayerId } from "src/base/Player";
+import { PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
 
 
 /**
@@ -83,7 +84,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
      */
     public static readonly INITIAL_REQUEST_ID = -1;
 
-
+    public readonly eventId: number;
 
     public readonly playerId: PlayerId;
 

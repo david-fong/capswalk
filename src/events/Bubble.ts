@@ -1,4 +1,6 @@
-import { PlayerId, PlayerGeneratedRequest, Player } from "src/base/Player";
+import { PlayerId, Player } from "src/base/Player";
+import { PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
+import { EventRecordEntry } from "./EventRecordEntry";
 
 /**
  * # The Object of the Game
@@ -134,6 +136,8 @@ export namespace Bubble {
 
         public static readonly EVENT_NAME = "bubble make";
 
+        public readonly eventId: number;
+
         public readonly playerId: PlayerId;
 
         public lastAcceptedRequestId: number;
@@ -167,9 +171,11 @@ export namespace Bubble {
      * no exposed method to process a request, and all the descriptor
      * fields are strictly readonly.
      */
-    export class PopEvent {
+    export class PopEvent implements EventRecordEntry {
 
         public static readonly EVENT_NAME = "bubble pop";
+
+        public readonly eventId: number;
 
         public bubblerId: PlayerId;
 
