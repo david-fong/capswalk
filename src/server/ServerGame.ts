@@ -4,7 +4,10 @@ import { BarePos } from "src/Pos";
 import { ServerTile } from "src/server/ServerTile";
 import { GridDimensionDesc, Game } from "src/base/Game";
 import { GroupSession } from "src/server/GroupSession";
+
+import { EventRecordEntry } from "src/events/EventRecordEntry";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
+import { Bubble } from "src/events/Bubble";
 
 /**
  * 
@@ -63,11 +66,7 @@ export class ServerGame extends Game {
     public processMoveExecute(desc: Readonly<PlayerMovementEvent>): void {
         super.processMoveExecute(desc);
 
-        const requestRejected: boolean = (
-            desc.lastAcceptedRequestId ===
-            this.getPlayerById(desc.playerId).lastAcceptedRequestId
-        );
-        if (requestRejected) {
+        if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
             // TODO: don't broadcast. just respond directly to the requester.
             this.session.namespace.emit(
@@ -79,6 +78,45 @@ export class ServerGame extends Game {
             // Pass on change descriptor to all clients:
             this.session.namespace.emit(
                 PlayerMovementEvent.EVENT_NAME,
+                desc,
+            );
+        }
+    }
+
+    public processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
+        super.processBubbleMakeExecute(desc);
+
+        if (desc.eventId === EventRecordEntry.REJECT) {
+            // The request was rejected- Notify the requester.
+            // TODO: don't broadcast. just respond directly to the requester.
+            this.session.namespace.emit(
+                Bubble.MakeEvent.EVENT_NAME,
+                desc,
+            );
+        } else {
+            // Request was accepted.
+            // Pass on change descriptor to all clients:
+            this.session.namespace.emit(
+                Bubble.MakeEvent.EVENT_NAME,
+                desc,
+            );
+        }
+    }
+
+    /**
+     * @override
+     */
+    protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
+        ;
+        super.processBubblePopExecute(desc);
+
+        if (desc.eventId === EventRecordEntry.REJECT) {
+            throw new Error("This should never happen.");
+        } else {
+            // Request was accepted.
+            // Pass on change descriptor to all clients:
+            this.session.namespace.emit(
+                Bubble.PopEvent.EVENT_NAME,
                 desc,
             );
         }

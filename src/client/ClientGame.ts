@@ -30,6 +30,14 @@ export class ClientGame extends Game {
             PlayerMovementEvent.EVENT_NAME,
             this.processMoveExecute
         );
+        this.socket.on(
+            Bubble.MakeEvent.EVENT_NAME,
+            this.processBubbleMakeExecute,
+        );
+        this.socket.on(
+            Bubble.PopEvent.EVENT_NAME,
+            this.processBubblePopExecute,
+        );
         // TODO: should this call reset? The other implementations
         // (Game Managers) do.
     }
@@ -70,6 +78,18 @@ export class ClientGame extends Game {
      * @throws `TypeError` Unconditionally.
      */
     public processMoveRequest(desc: PlayerMovementEvent): never {
+        throw new TypeError("This operation unsupported for the ClientGame class.");
+    }
+
+    /**
+     * Normally calls {@link Game#processBubbleMakeExecute}. However,
+     * there, that should be done as a callback to an event created by
+     * the server.
+     * 
+     * @override
+     * @throws `TypeError` Unconditionally.
+     */
+    public processBubbleMakeRequest(desc: Bubble.MakeEvent): never {
         throw new TypeError("This operation unsupported for the ClientGame class.");
     }
 
