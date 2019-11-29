@@ -63,8 +63,13 @@ export abstract class Game extends Grid {
      * in a {@link ClientGame} may at any instant be missing trailing
      * entries, or contain some trailing holes, but such gaps should
      * eventually be filled to match those in the Game Manager.
+     * 
+     * Do not modify this directly. To register an accepted event,
+     * call the {@link Game#recordEvent} method, passing it the event
+     * descriptor. To get a new event ID, just take the current length
+     * of this array.
      */
-    private readonly eventRecord: Array<EventRecordEntry>;
+    private readonly eventRecord: Array<Readonly<EventRecordEntry>>;
 
 
 
@@ -111,13 +116,12 @@ export abstract class Game extends Grid {
             this.shuffleLangCharSeqAt(tile);
         }, this), this);
 
-        // TODO: reset and respawn players:
         this.allHumanPlayers.forEach((player) => player.reset());
         this.allArtifPlayers.forEach((player) => player.reset());
 
-        // TODO: spawn targets:
-        // While not necessary, this should be done after players have
-        // spawned so targets do not spawn under players.
+        // TODO: spawn players and targets:
+        // While not necessary, targets should be done after players have
+        // spawned so they do not spawn under players.
     }
 
 
@@ -147,13 +151,19 @@ export abstract class Game extends Grid {
     /**
      * 
      * @param desc - 
-     * @returns `null` if the player did not exist or is still bubbling.
+     * @returns The player specified by the given ID, or a falsy value
+     *      if the player is still bubbling, in which case the request
+     *      should probably be rejected.
      * @throws `RangeError` if the request was made before receiving an
-     *      acknowledgement for the previous request.
+     *      acknowledgement for the previous request, or if the given
+     *      ID does not belong to any existing player.
      */
     private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player | null {
         const player = this.getPlayerById(desc.playerId);
-        if (!(player) || player.isBubbling) {
+        if (!player) {
+            throw new RangeError(`No player with the ID ${desc.playerId} exists.`);
+
+        } else if (player.isBubbling) {
             // The specified player does not exist or is bubbling.
             // This is _not_ the same as if the requester has their
             // movement frozen.
@@ -184,19 +194,18 @@ export abstract class Game extends Grid {
      * state, and instead, delegates the execution of all necessitated
      * changes to {@link Game#processMoveExecute}.
      * 
-     * TODO: move this code to execute function: Updates the event record if the response is accepted.
-     * 
      * Should never be called by {@link ClientGame}.
      * 
      * @param desc - A descriptor of the request, with fields indicating
      *      the requester's views of critical parts of the game-state
      *      from their copy of the game-state at the time of the request.
+     *      Is modified to describe changes to be made.
      */
     public processMoveRequest(desc: PlayerMovementEvent): void {
         const player = this.checkIncomingPlayerRequestId(desc);
         if (!(player)) {
-            // No call to execute since args are completely unusable.
-            // TODO: consider throwing an error here.
+            // Player is still bubbling. Reject the request:
+            this.processMoveExecute(desc);
             return;
         }
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
@@ -229,9 +238,8 @@ export abstract class Game extends Grid {
         desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
 
         // We are all go! Do it.
-        // (note: the order of the below calls currently does not matter)
+        desc.eventId = this.eventRecord.length;
         this.processMoveExecute(desc);
-        this.eventRecord.push(desc);
     }
 
     /**
@@ -253,6 +261,8 @@ export abstract class Game extends Grid {
      * concern the same {@link Tile} are ignored. This is okay since
      * the only thing that matters about a {@link Tile} to the outside
      * world is its last known state.
+     * 
+     * Updates the event record if the response is accepted.
      * 
      * @param desc - A descriptor for all changes mandated by the
      *      player-movement event.
@@ -324,7 +334,7 @@ export abstract class Game extends Grid {
             player.lastAcceptedRequestId = desc.lastAcceptedRequestId;
 
         } else {
-            throw new RangeError("client seems to have tampered with their request counter");
+            throw new RangeError("The client seems to have tampered with their request counter.");
         }
     }
 
@@ -333,11 +343,9 @@ export abstract class Game extends Grid {
     /**
      * @see Bubble.MakeEvent
      * 
-     * Updates the event record if the response is accepted.
-     * 
      * Should never be called by {@link ClientGame}.
      * 
-     * @param desc - 
+     * @param desc - Is modified to describe changes to be made.
      */
     public processBubbleMakeRequest(desc: Bubble.MakeEvent): void {
         // TODO:
@@ -346,8 +354,8 @@ export abstract class Game extends Grid {
         // level input processor for it to trigger this event.
         const bubbler: Player = this.checkIncomingPlayerRequestId(desc);
         if (!(bubbler)) {
-            // No call to execute since args are completely unusable.
-            // TODO: consider throwing an error here.
+            // Player is still bubbling. Reject the request:
+            this.processBubbleMakeExecute(desc);
             return;
         }
         const millis = Bubble.computeTimerDuration(bubbler).value;
@@ -356,25 +364,32 @@ export abstract class Game extends Grid {
         desc.estimatedTimerDuration = millis;
 
         // We are all go! Do it.
-        // (note: the order of the below calls currently does not matter)
+        desc.eventId = this.eventRecord.length;
         this.processBubbleMakeExecute(desc);
-        this.eventRecord.push(desc);
 
         // Schedule the bubble to pop:
         this.setTimeout(this.processBubblePopRequest, millis, bubbler);
     }
 
+    /**
+     * 
+     * 
+     * Updates the event record if the response is accepted.
+     * 
+     * @param desc - 
+     */
     public processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
         // TODO:
         // Visually highlight the affected tiles for the specified estimate-duration.
-        // make the server game override this to also broadcast
-        //   changes to all clients.
         const bubbler = this.getPlayerById(desc.playerId);
+
+        bubbler.requestInFlight = false;
 
         if (desc.eventId !== EventRecordEntry.REJECT) {
             this.recordEvent(desc); // Record the event.
-            bubbler.requestInFlight = false;
             bubbler.isBubbling = true;
+        } else {
+            bubbler.isBubbling = false;
         }
     }
 
@@ -387,8 +402,6 @@ export abstract class Game extends Grid {
      * on the way to the Game Manager. Never called externally (hence,
      * the private access modifier).
      * 
-     * Updates the event record if the response is accepted.
-     * 
      * @param bubbler - 
      */
     private processBubblePopRequest(bubbler: Player): void {
@@ -400,12 +413,13 @@ export abstract class Game extends Grid {
         // desc.playersToRaise  = get in-range    downed players who are     in any of my teams
 
         // We are all go! Do it.
-        // (note: the order of the below calls currently does not matter)
+        desc.eventId = this.eventRecord.length;
         this.processBubblePopExecute(desc);
-        this.eventRecord.push(desc);
     }
 
     /**
+     * 
+     * Updates the event record if the response is accepted.
      * 
      * @param desc - 
      */
@@ -413,12 +427,10 @@ export abstract class Game extends Grid {
         // Record the event. No need to check acceptance since this
         // kind of event is made in such a way that it is always accepted.
         this.recordEvent(desc);
-        // TODO:
-        // make the server game override this to also broadcast
-        //   changes to all clients.
         const bubbler: Player = this.getPlayerById(desc.bubblerId);
 
         // Lower the "isBubbling" flags for the player:
+        this.recordEvent(desc);
         bubbler.isBubbling = false;
 
         // Enact effects on supposedly un-downed enemy players:
@@ -467,7 +479,7 @@ export abstract class Game extends Grid {
         } else if (this.eventRecord[id]) {
             throw new Error("Event ID's must be assigned unique values.");
         }
-        // TODO: If storage becomes a concern with logging events,
+        // NOTE: If storage becomes a concern with logging events,
         // create a static constant for the record's buffer size,
         // and then here, wrap around.
         this.eventRecord[id] = desc;
@@ -492,7 +504,7 @@ export abstract class Game extends Grid {
      */
     protected getPlayerById(playerId: PlayerId): Player | null {
         if (playerId === 0) {
-            throw new RangeError("zero is reserved to mean \"no player\"");
+            throw new RangeError("Zero is reserved to mean \"no player\".");
         }
         const player: Player = ((playerId < 0)
             ? this.allArtifPlayers[(-playerId) - 1]
