@@ -1,4 +1,4 @@
-import { LangChar, LangSeq, LangCharSeqPair, LANG_SEQ_REGEXP } from "src/Lang";
+import { Lang } from "src/lang/Lang";
 
 
 /**
@@ -14,10 +14,10 @@ type BalanceSchemeSorterMap<T> = ReadonlyMap<BalancingScheme, (a: T, b: T) => nu
 
 /**
  * Shape that must be passed in to the static tree producer. The
- * `Record` type enforces the invariant that {@link LangChar}s are
- * unique in a {@link Lang}. "CSP" is short for {@link LangCharSeqPair}
+ * `Record` type enforces the invariant that {@link Lang.Char}s are
+ * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}
  */
-export type WeightedCspForwardMap = Record<LangChar, Readonly<{seq: LangSeq, weight: number,}>>;
+export type WeightedCspForwardMap = Record<Lang.Char, Readonly<{seq: Lang.Seq, weight: number,}>>;
 
 
 
@@ -35,7 +35,7 @@ export type WeightedCspForwardMap = Record<LangChar, Readonly<{seq: LangSeq, wei
  */
 export class LangSeqTreeNode {
 
-    public readonly sequence:   LangSeq;
+    public readonly sequence:   Lang.Seq;
     public readonly characters: ReadonlyArray<WeightedLangChar>; // Frozen.
 
     public readonly parent:     LangSeqTreeNode | null; // `null` for root node.
@@ -54,9 +54,9 @@ export class LangSeqTreeNode {
      */
     public static CREATE_TREE_MAP(forwardDict: WeightedCspForwardMap): LangSeqTreeNode {
         // Reverse the map:
-        const reverseDict: Map<LangSeq, Array<WeightedLangChar>> = new Map();
+        const reverseDict: Map<Lang.Seq, Array<WeightedLangChar>> = new Map();
         for (const char in forwardDict) {
-            const seq: LangSeq = forwardDict[char].seq;
+            const seq: Lang.Seq = forwardDict[char].seq;
             const weightedChar = new WeightedLangChar(
                 char, forwardDict[char].weight,
             );
@@ -81,7 +81,7 @@ export class LangSeqTreeNode {
 
     private constructor(
         parent: LangSeqTreeNode,
-        sequence: LangSeq,
+        sequence: Lang.Seq,
         characters: ReadonlyArray<WeightedLangChar>,
     ) {
         this.sequence   = sequence;
@@ -117,9 +117,9 @@ export class LangSeqTreeNode {
      * @param seq The typable sequence corrensponding to entries of `chars`.
      * @param chars A collection of unique characters in a written language.
      */
-    private addCharMapping(seq: LangSeq, chars: Array<WeightedLangChar>): void {
-        if (!(LANG_SEQ_REGEXP.test(seq))) {
-            throw new Error(`Mapping sequence must match ${LANG_SEQ_REGEXP}.`);
+    private addCharMapping(seq: Lang.Seq, chars: Array<WeightedLangChar>): void {
+        if (!(Lang.SEQ_REGEXP.test(seq))) {
+            throw new Error(`Mapping sequence must match ${Lang.SEQ_REGEXP}.`);
         } else if (chars.length === 0) {
             throw new Error("Must not make mapping without written characters.");
         }
@@ -152,14 +152,14 @@ export class LangSeqTreeNode {
      * @returns A character / sequence pair from this node that has
      *      been selected the least according to the specified scheme.
      */
-    public chooseOnePair(balancingScheme: BalancingScheme): LangCharSeqPair {
+    public chooseOnePair(balancingScheme: BalancingScheme): Lang.CharSeqPair {
         if (!(this.parent)) {
             throw new Error("Should never hit on the root.");
         }
         const weightedChar: WeightedLangChar = this.characters.slice(0)
             .sort(WeightedLangChar.CMP.get(balancingScheme))
             .shift();
-        const pair: LangCharSeqPair = {
+        const pair: Lang.CharSeqPair = {
             char: weightedChar.char,
             seq:  this.sequence,
         };
@@ -261,7 +261,7 @@ export class LangSeqTreeNode {
  */
 class WeightedLangChar {
 
-    public readonly char: LangChar;
+    public readonly char: Lang.Char;
 
     /**
      * A weight is relative to weights of other unique characters in
@@ -293,7 +293,7 @@ class WeightedLangChar {
     public weightedHitCount: number;
 
     public constructor(
-        char: LangChar,
+        char: Lang.Char,
         weight: number,
     ) {
         if (weight <= 0) {

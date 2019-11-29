@@ -1,5 +1,5 @@
 import { Defs } from "src/Defs";
-import { LangSeqTreeNode, WeightedCspForwardMap, BalancingScheme } from "src/LangSeqTreeNode";
+import { LangSeqTreeNode, WeightedCspForwardMap, BalancingScheme } from "src/lang/LangSeqTreeNode";
 
 /**
  * All `Lang` implementations should put their module file names
@@ -15,48 +15,6 @@ export const LANG_MODULE_PATHS: ReadonlyArray<string> = [
         throw new Error(`The filename ${filename} does not match PascalCase.`);
     }
     return `src/lang/${filename}`;
-});
-
-
-
-/**
- * An atomic unit in a written language that constitutes a single
- * character. It is completely unique in its language, and has a
- * single corresponding sequence (string) typeable on a keyboard.
- */
-export type LangChar = string;
-
-/**
- * A sequence of characters each matching {@link LANG_SEQ_REGEXP}
- * that represent the intermediate interface between an Operator
- * and a `LangChar`. The immediate interface is through the `Lang`
- * implementation's {@link Lang#remapKey} method.
- */
-export type LangSeq = string;
-
-/**
- * The choice of this pattern is not out of necessity, but following
- * the mindset of spec designers when they mark something as reserved:
- * For the language implementations I have in mind, I don't see the
- * need to include characters other than these.
- * 
- * Characters that must never be unmarked as reserved (state reason):
- * (currently none. update as needed)
- */
-export const LANG_SEQ_REGEXP = new RegExp("^[a-zA-Z\-.]+$");
-
-/**
- * A key-value pair containing a `LangChar` and its corresponding
- * `LangSeq`.
- */
-export type LangCharSeqPair = Readonly<{
-    char: LangChar,
-    seq:  LangSeq,
-}>;
-
-export const EMPTY_CSP = Object.freeze({
-    char: "",
-    seq:  "",
 });
 
 
@@ -154,7 +112,7 @@ export abstract class Lang {
      * regular English), or in cases where the input is completely
      * irrelevant before and after remapping), or be a translation to
      * some character that is relevant to the `Lang` and hand, and that
-     * matches against {@link LANG_SEQ_REGEXP}. This behaviour is not
+     * matches against {@link SEQ_REGEXP}. This behaviour is not
      * checked or mandated, and will not result in errors in cases of
      * deviation (see {@link HumanPlayer#seqBufferAcceptKey}), but is
      * the only behaviour that makes any sense.
@@ -162,7 +120,7 @@ export abstract class Lang {
      * @param input - Never `null`.
      * @returns Never `null`.
      */
-    public abstract remapKey(input: string): LangSeq;
+    public abstract remapKey(input: string): Lang.Seq;
 
 
 
@@ -196,9 +154,9 @@ export abstract class Lang {
      * @param balancingScheme - 
      */
     public getNonConflictingChar(
-        avoid: ReadonlyArray<LangSeq>,
+        avoid: ReadonlyArray<Lang.Seq>,
         balancingScheme: BalancingScheme,
-    ): LangCharSeqPair {
+    ): Lang.CharSeqPair {
         // Wording the spec closer to this implementation: We must find
         // characters from nodes that are not descendants or ancestors
         // of nodes for sequences to avoid. We can be sure that none of
@@ -215,7 +173,7 @@ export abstract class Lang {
             // choose the node with the least actual/personal hit-count.
             const upstreamNodes: Array<LangSeqTreeNode> = leaf.andNonRootParents();
             for (let i = 0; i < upstreamNodes.length; i++) {
-                const conflictSeq: LangSeq = avoid.find(avoidSeq => {
+                const conflictSeq: Lang.Seq = avoid.find(avoidSeq => {
                     return avoidSeq.startsWith(upstreamNodes[i].sequence);
                 });
                 if (conflictSeq !== undefined) {
@@ -248,5 +206,51 @@ export abstract class Lang {
         }
         return nodeToHit.chooseOnePair(balancingScheme);
     }
+
+}
+
+
+
+export namespace Lang {
+
+    /**
+     * An atomic unit in a written language that constitutes a single
+     * character. It is completely unique in its language, and has a
+     * single corresponding sequence (string) typeable on a keyboard.
+     */
+    export type Char = string;
+
+    /**
+     * A sequence of characters each matching {@link SEQ_REGEXP}
+     * that represent the intermediate interface between an Operator
+     * and a `LangChar`. The immediate interface is through the `Lang`
+     * implementation's {@link Lang#remapKey} method.
+     */
+    export type Seq = string;
+
+    /**
+     * The choice of this pattern is not out of necessity, but following
+     * the mindset of spec designers when they mark something as reserved:
+     * For the language implementations I have in mind, I don't see the
+     * need to include characters other than these.
+     * 
+     * Characters that must never be unmarked as reserved (state reason):
+     * (currently none. update as needed)
+     */
+    export const SEQ_REGEXP = new RegExp("^[a-zA-Z\-.]+$");
+
+    /**
+     * A key-value pair containing a `LangChar` and its corresponding
+     * `LangSeq`.
+     */
+    export type CharSeqPair = Readonly<{
+        char: Lang.Char,
+        seq:  Lang.Seq,
+    }>;
+
+    export const EMPTY_CSP = Object.freeze({
+        char: "",
+        seq:  "",
+    });
 
 }

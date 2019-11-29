@@ -1,4 +1,4 @@
-import { LangSeq, LangChar, LangCharSeqPair, EMPTY_CSP } from "src/Lang";
+import { Lang } from "src/lang/Lang";
 import { Pos, BarePos } from "src/Pos";
 import { PlayerId } from "src/base/Player";
 
@@ -18,8 +18,8 @@ export abstract class Tile {
     protected _occupantId: PlayerId;
     protected _scoreValue: number;
 
-    protected _langChar: LangChar;
-    protected _langSeq:  LangSeq;
+    protected _langChar: Lang.Char;
+    protected _langSeq:  Lang.Seq;
 
     /**
      * The number of times this `Tile` was occupied since the last
@@ -50,7 +50,7 @@ export abstract class Tile {
         this.evictOccupant();
         this.numTimesOccupied = 1;
         this.scoreValue = 0;
-        this.setLangCharSeq(EMPTY_CSP);
+        this.setLangCharSeq(Lang.EMPTY_CSP);
     }
 
 
@@ -98,18 +98,18 @@ export abstract class Tile {
     /**
      * @param charSeqPair - May be undefined. If so, no changes take place.
      */
-    public setLangCharSeq(charSeqPair: LangCharSeqPair): void {
+    public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
         if (charSeqPair) {
             this._langChar = charSeqPair.char;
             this._langSeq  = charSeqPair.seq;
         }
     }
 
-    public get langChar(): LangChar {
+    public get langChar(): Lang.Char {
         return this._langChar;
     }
 
-    public get langSeq(): LangSeq {
+    public get langSeq(): Lang.Seq {
         return this._langSeq;
     }
 

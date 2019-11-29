@@ -1,4 +1,4 @@
-import { LangSeq, Lang } from "src/Lang";
+import { Lang } from "src/lang/Lang";
 import { Tile } from "src/base/Tile";
 import { Game } from "base/Game";
 import { PlayerId, Player } from "base/Player";
@@ -15,7 +15,7 @@ export abstract class HumanPlayer extends Player {
      * Invariant: always matches the prefix of the {@link LangSeq} of
      * an unoccupied neighbouring {@link Tile}.
      */
-    private _seqBuffer: LangSeq;
+    private _seqBuffer: Lang.Seq;
 
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
@@ -81,7 +81,7 @@ export abstract class HumanPlayer extends Player {
             key = ""; // Caller intends to refresh seqBuffer invariant.
         }
 
-        let newSeqBuffer: LangSeq;
+        let newSeqBuffer: Lang.Seq;
         for ( // loop through substring start offset of newSeqBuffer:
             newSeqBuffer = this.seqBuffer + key;
             newSeqBuffer.length > 0;
@@ -134,7 +134,7 @@ export abstract class HumanPlayer extends Player {
 
 
 
-    public get seqBuffer(): LangSeq {
+    public get seqBuffer(): Lang.Seq {
         return this._seqBuffer;
     }
 

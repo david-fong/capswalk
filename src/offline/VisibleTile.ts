@@ -1,4 +1,4 @@
-import { LangChar, LangSeq, LangCharSeqPair } from "src/Lang";
+import { Lang } from "src/lang/Lang";
 import { Tile, BarePos } from "src/base/Tile";
 import { PlayerId } from "src/base/Player";
 
@@ -98,7 +98,7 @@ export class VisibleTile extends Tile {
         this.tileCellElem.dataset[TileDataSetHooks.SCORE_VALUE] = score.toString();
     }
 
-    public setLangCharSeq(charSeqPair: LangCharSeqPair): void {
+    public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
         super.setLangCharSeq(charSeqPair);
         this.langCharDivElem.innerText = this.langChar;
         this.langSeqDivElem.innerText  = this.langSeq;

@@ -1,5 +1,5 @@
-import { Lang, LangCharSeqPair, EMPTY_CSP } from "src/Lang";
-import { BalancingScheme } from "src/LangSeqTreeNode";
+import { Lang } from "src/lang/Lang";
+import { BalancingScheme } from "src/lang/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
 import { GridDimensionDesc, Grid } from "src/base/Grid";
 
@@ -132,10 +132,10 @@ export abstract class Game extends Grid {
      * @returns A {@link LangCharSeqPair} that can be used as a replacement
      *      for that currently being used by `tile`.
      */
-    private shuffleLangCharSeqAt(tile: Tile): LangCharSeqPair {
+    private shuffleLangCharSeqAt(tile: Tile): Lang.CharSeqPair {
         // Clear values for the target tile so its current (to-be-
         // previous) values don't get unnecessarily avoided.
-        tile.setLangCharSeq(EMPTY_CSP);
+        tile.setLangCharSeq(Lang.EMPTY_CSP);
         return this.lang.getNonConflictingChar(
             this.getNeighbouringTiles(tile.pos)
                 .map((tile) => tile.langSeq)

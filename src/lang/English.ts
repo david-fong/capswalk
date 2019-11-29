@@ -1,5 +1,5 @@
-import { Lang, LangChar, LangSeq } from "src/Lang";
-import { WeightedCspForwardMap } from "src/LangSeqTreeNode";
+import { Lang } from "src/lang/Lang";
+import { WeightedCspForwardMap } from "src/lang/LangSeqTreeNode";
 
 
 /**
@@ -44,9 +44,9 @@ export class English extends Lang {
             "English",
             Object.entries(English.INITIALIZER).reduce<WeightedCspForwardMap>(
                 (accumulator, current) => {
-                    const char: LangChar = current[0];
-                    const seq:  LangSeq  = current[0];
-                    const weight: number = current[1];
+                    const char: Lang.Char = current[0];
+                    const seq:  Lang.Seq  = current[0];
+                    const weight: number  = current[1];
                     accumulator[char] = { seq, weight, };
                     return accumulator;
                 },

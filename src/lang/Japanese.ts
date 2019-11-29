@@ -1,5 +1,4 @@
-import { Lang, LangChar, LangSeq } from "src/Lang";
-import { WeightedCspForwardMap } from "src/LangSeqTreeNode";
+import { Lang } from "src/lang/Lang";
 
 
 export namespace Japanese {

@@ -1,4 +1,4 @@
-import { LangCharSeqPair } from "src/Lang";
+import { Lang } from "src/lang/Lang";
 import { BarePos, Tile } from "src/base/Tile";
 import { PlayerId } from "src/base/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
@@ -132,7 +132,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
      * The server must set this to describe the new values to be
      * shuffled-in to the destination tile.
      */
-    public newCharSeqPair: LangCharSeqPair = undefined;
+    public newCharSeqPair: Lang.CharSeqPair = undefined;
 
     public constructor(
         playerId: PlayerId,
