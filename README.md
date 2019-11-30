@@ -1,9 +1,11 @@
 
-# 🐍⌨ SnaKey
+# ⌨🐍 SnaKey
 
 [**`try it!`**](index.html)
 
-At its core, SnaKey is a typing game where you move by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character with the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese, you would type the keyboard sequence "no" to move onto an adjacent "の". It draws some inspiration from the well-known [Snake Game](https://wikipedia.org/wiki/Snake_(video_game_genre)), hence its name.
+At its core, SnaKey is a typing game where you move by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character with the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese, you would type the keyboard sequence "no" to move onto an adjacent "の".
+
+SnaKey drew some initial inspiration from the well-known [Snake Game](https://wikipedia.org/wiki/Snake_(video_game_genre)), hence its name, which is a pun on "snake" and "keyboard".
 
 ## Contents
 
@@ -20,21 +22,21 @@ At its core, SnaKey is a typing game where you move by typing keyboard sequences
 
 ## My Goals and Why I do This
 
-For me, there are three purposes and goals for my continued work on this project (listed in order of precedence):
+For me, there are three purposes / goals for my continued work on this project. Here they are in order of precedence:
 
-### 💡 1. I have an idea that matters to me and I want to champion it
+### 💡 I have an idea that matters to me
 
-I like the idea of this game. Although it didn't fall out of the sky and hit me in the head, [it kind of feels that way](https://www.ted.com/talks/ok_go_how_to_find_a_wonderful_idea). And while I don't know for a fact whether or not anything exactly like it has ever been made, it has the added thrill of at least being something that I have never seen anyone do or been asked to do, and that I am not simultaneously trying to solve separately with more than sixty other people that I see every day.
+I like the idea of this game, and I want to champion it. Although it didn't fall out of the sky and hit me in the head, [it kind of feels that way](https://www.ted.com/talks/ok_go_how_to_find_a_wonderful_idea). And while I don't know for a fact whether or not anything exactly like it has ever been made, it gives me the thrill of at least being something that I have never seen anyone do or been asked to do, and that I am not simultaneously trying to solve separately with more than sixty other people that I see every day. I'll talk more about why this idea matters to me in my reflection on my work in previous versions of this project.
 
-### 🍏 2. I want to learn and push myself
+### 🍏 I want to learn and push myself
 
-This is not a pure goal, but one that comes naturally from having one. That is- to achieve my goal of make my idea a reality, I need to learn. First I need to learn what I need to learn to achieve my goal, and read up enough on my choices to make a basic educated decision on what technologies to learn, and then I need to learn them. First it was Python, and then it was HTML, Javascript, and CSS. Now, it's NodeJS, expressJS, SocketIO, VSCode, eslint, and Typescript.
+This is not a pure goal, but one that comes naturally from having one. That is- to achieve my goal of make my idea a reality, I need to learn things. First I need to learn _what I need to learn_ to achieve my goal, and read up enough on the available choices to make a basic, educated decision on what technologies to pursue learning. And then I need to actually learn them. First it was Python, and then it was HTML, Javascript, and CSS. Now, it's NodeJS, expressJS, SocketIO, VSCode, eslint, and Typescript.
 
-One of the plus sides of pushing myself in this way is that historically, it has always come in handy later in school assignments where I would otherwise be learning these things from scratch. The nicest thing about having a pure goal is that it takes a lot of the drag out of learning. One thing I feel a little tired of in my experience with school is how the technical material often seems to steal the spotlight from pure goals and applications. It's refreshing to start with a goal at the forefront of my mind.
+One of the plus sides of pushing myself in this way is that historically, it has always come in handy later in school assignments where I would otherwise be learning these things from scratch. The nicest thing about having a pure goal by far is that it takes a lot of the drag out of learning. One thing I feel a little tired of in my experience with school is how the technical material often seems to steal the spotlight from pure goals and applications. It's refreshing to start with a goal at the forefront of my mind.
 
-### 💼 3. I want to build up my portfolio
+### 💼 I want to build up my portfolio
 
-By this, I mean that I aim to make something polished, and that communicates the journey of the design and the interesting parts of the design itself. This is because I expect that the things I make and learn will not only transfer to some benefit in school-related work, but also in wherever I go during COOP terms and after graduation. While this is the least of my goals, that isn't to say that it doesn't change my approach to my work. The intent I have to share my process and design in addition to the final product gives me the extra motivation to to do things like write good documentation. It's like keeping a house clean so it's always ready for guests.
+By this, I mean that I aim to make something polished, and that communicates the journey of the design and the interesting parts of the design itself. This is because I expect that the things I make and learn will not only transfer to some benefit in school-related work, but also in wherever I go during COOP terms and after graduation. While this is the least of my goals, that isn't to say that it doesn't change my approach to my work. The intent I have to share my process and design in addition to the final product gives me the extra motivation to to do things like write good documentation. It's like keeping a house clean so that it's always ready for guests.
 
 ## 🚋 Looking Back and Looking Forward
 
@@ -46,7 +48,7 @@ This is a non-technical section to reflect on my previous work on this project, 
 
 I wrote the bulk of [the first version of this game](https://github.com/david-fong/SnaKey) in the February of 2018 using Python. At the time, I had pretty much just finished [learning Python over the Winter break](https://github.com/david-fong/Tetris), and I wanted to do something original with it. I came up with the start of an idea spinning off of the classic snake game, with a twist on the movement mechanic: to move by typing. In this version, there were color themes, basic language support (Japanese Hiragana and Katakana), and basic computer-opponents.
 
-The idea of adding different languages came because I was taking a beginners class in Japanese, and needed to learn its two basic alphabets. I really enjoyed that class- not just because I was interested in the content, but also because the prof was a kind person and a good teacher. Helping people practice recognizing characters from other languages has become a big motivator for my continued work on this game.
+The idea of adding different languages came because I was taking a beginners' class in Japanese, and needed to learn its two basic alphabets. I really enjoyed that class- not just because I was interested in the content, but also because the prof was a kind person and a good teacher. Helping people practice recognizing characters from other languages has become a big motivator for my continued work on this game.
 
 A major theme for this version was baseline design. I came up with a representation for language mappings, maintaining necessary invariants, and designing movement algorithms for the artificially controlled opponents. I also spent a lot of effort designing the game objective to motivate the player to keep moving around: The player would accumulate score points by landing on tiles highlighted in green. A pink computer-player would chase the player, ending the game if it caught them, while a blue computer-player would compete with the player for score. The pink chaser would slowly get faster, so there was a yellow computer-player that would run away from the player, bumping the chaser's speed back down a notch if the player caught it.
 
