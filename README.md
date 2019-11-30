@@ -1,14 +1,15 @@
 
 # 🐍⌨ SnaKey
 
-[click here to play](index.html)
+[**`try it!`**](index.html)
 
 At its core, SnaKey is a typing game where you move by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character with the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese, you would type the keyboard sequence "no" to move onto an adjacent "の". It draws some inspiration from the well-known [Snake Game](https://wikipedia.org/wiki/Snake_(video_game_genre)), hence its name.
 
 ## Contents
 
+- [Contents](#contents "Legends say they are still clicking to this very day.")
 - [My Goals and Why I do This](#my-goals-and-why-i-do-this)
-- [Looking Back and Looking Forward](#🚋-looking-back-and-looking-forward)
+- [Looking Back and Looking Forward](#-looking-back-and-looking-forward)
   - [Version #1 - Born on a Python](#version-1---born-on-a-python)
   - [Version #2 - Slithering to the Web](#version-2---slithering-to-the-web)
   - [Version #3 - Snakes With Wings](#version-3---snakes-with-wings-you-are-here)
@@ -76,6 +77,10 @@ One of the big challenges for this project is to give the user the choice betwee
 | Maintain the master copy of the game state | :heavy_check_mark: | :heavy_check_mark: | :heavy_multiplication_x: |
 | Display the game state via the browser DOM | :heavy_check_mark: | :heavy_multiplication_x: | :heavy_check_mark: |
 | Use network operations to exchange events  | :heavy_multiplication_x: | :heavy_check_mark: | :heavy_check_mark: |
+
+This means that the code that receives a request for something like player movement and performs validation must be in a separate function from that which enacts all changes to all parts of the game state that are affected by an acceptance of the request. In addition to that, SocketIO can only guarantee that application messages will arrive in order if the client is using websockets for its underlying transport, which, while common, is not an absolute given, and is indeed not the case before a temporary long-polling connection upgrades to use websockets. This means that these request processing and executing functions must use event ID systems to handle out-of-order message arrivals.
+
+Now that we understand the start of why the design requires so much more care in this version, we can talk about the solving the problems plaguing the two earlier versions.
 
 |     Topic     | The What and Why of the Problem | The Solution and its Necessity |
 |:-------------:|---------------------------------|--------------------------------|
