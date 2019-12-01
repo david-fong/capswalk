@@ -5,6 +5,10 @@ import { ServerTile } from "src/server/ServerTile";
 import { GridDimensionDesc, Game } from "src/base/Game";
 import { GroupSession } from "src/server/GroupSession";
 
+import { PlayerId } from "src/base/player/Player";
+import { PuppetPlayer } from "src/base/player/PuppetPlayer";
+import { HumanPlayer } from "src/base/player/HumanPlayer";
+
 import { EventRecordEntry } from "src/events/EventRecordEntry";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { Bubble } from "src/events/Bubble";
@@ -51,6 +55,22 @@ export class ServerGame extends Game {
     public createTile(pos: BarePos): ServerTile {
         return new ServerTile(pos);
     }
+
+    /**
+     * @override
+     */
+    protected createOperatorPlayer(idNUmber: PlayerId): HumanPlayer {
+        return undefined;
+    }
+
+    /**
+     * @override
+     */
+    protected createArtifPlayer(idNumber: PlayerId): PuppetPlayer {
+        return new PuppetPlayer(this, idNumber);
+    }
+
+
 
     public setTimeout(callback: VoidFunction, millis: number, ...args: any[]): NodeJS.Timeout {
         return setTimeout(callback, millis, args).unref();

@@ -8,11 +8,10 @@ import { Player, PlayerId } from "src/base/player/Player";
  * does not need to manage the internals of a certain player.
  * 
  * Specifically,
- * - Offline games never use this.
- * - Server  games use this for the operator, which doesn't exist, and in place of human players.
- * - Client  games use this in place of artificial players and human players.
+ * - All game implementations use this for non-operator human players.
+ * - Client  games use this in place of artificial players.
  */
-class PuppetPlayer extends Player {
+export class PuppetPlayer extends Player {
 
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);

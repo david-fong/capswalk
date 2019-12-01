@@ -4,8 +4,9 @@ import { BarePos, Tile } from "src/base/Tile";
 import { GridDimensionDesc, Grid } from "src/base/Grid";
 
 import { PlayerId, Player } from "src/base/player/Player";
-import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
+import { PuppetPlayer } from "src/base/player/PuppetPlayer";
 import { HumanPlayer } from "src/base/player/HumanPlayer";
+import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
 
 import { PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
@@ -44,7 +45,7 @@ export abstract class Game extends Grid {
     /**
      * Set to `undefined` for {@link ServerGame}
      * 
-     * TODO: initialize this field in constructor. Consider tightening access modifier.
+     * TODO: Consider tightening access modifier.
      */
     public readonly operator: HumanPlayer;
 
@@ -88,6 +89,7 @@ export abstract class Game extends Grid {
         this.lang = null;
 
         // TODO: setup allHumanPlayers?
+        this.operator = this.createOperatorPlayer(-1); // TODO
         this.allHumanPlayers = [];
         this.allArtifPlayers = [];
 
@@ -123,6 +125,20 @@ export abstract class Game extends Grid {
         // While not necessary, targets should be done after players have
         // spawned so they do not spawn under players.
     }
+
+    /**
+     * Called automatically in the constructor for this class.
+     * 
+     * @param idNumber - 
+     */
+    protected abstract createOperatorPlayer(idNumber: PlayerId): HumanPlayer;
+
+    /**
+     * TODO: add an argument of enum-type for the kind of artificial player to create.
+     * 
+     * @param idNumber - 
+     */
+    protected abstract createArtifPlayer(idNumber: PlayerId): PuppetPlayer | ArtificialPlayer;
 
 
 

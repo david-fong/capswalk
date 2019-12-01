@@ -51,8 +51,8 @@ export abstract class HumanPlayer extends Player {
         if (false) {
             ;
         } else if (!(this.requestInFlight)) {
-            // Process movement-type input if still alive and the
-            // last request got acknowledged by the Game Manager.
+            // Only process movement-type input if the last request got
+            // acknowledged by the Game Manager and the game is not paused.
             this.seqBufferAcceptKey(event.key);
         }
     }

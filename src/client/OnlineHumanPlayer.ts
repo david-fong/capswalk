@@ -28,9 +28,9 @@ export class OnlineHumanPlayer extends HumanPlayer {
 
 
     public constructor(
-        username: string,
         game: ClientGame,
         idNumber: PlayerId,
+        username: string,
     ) {
         super(game, idNumber);
         this.username = username;

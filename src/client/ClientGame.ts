@@ -4,6 +4,12 @@ import { BarePos } from "src/Pos";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { LocalGameSettings } from "src/settings/GameSettings";
 import { GridDimensionDesc, Grid, Game } from "src/base/Game";
+
+import { PlayerId } from "src/base/player/Player";
+import { PuppetPlayer } from "src/base/player/PuppetPlayer";
+import { HumanPlayer } from "src/base/player/HumanPlayer";
+import { OnlineHumanPlayer } from "./OnlineHumanPlayer";
+
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { Bubble } from "src/events/Bubble";
 
@@ -60,6 +66,22 @@ export class ClientGame extends Game {
     public createTile(pos: BarePos): VisibleTile {
         return new VisibleTile(pos);
     }
+
+    /**
+     * @override
+     */
+    protected createOperatorPlayer(idNumber: PlayerId): HumanPlayer {
+        return new OnlineHumanPlayer(this, idNumber, "username"); // TODO: make username a Player field
+    }
+
+    /**
+     * @override
+     */
+    protected createArtifPlayer(idNumber: PlayerId): PuppetPlayer {
+        return new PuppetPlayer(this, idNumber);
+    }
+
+
 
     public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
         return setTimeout(callback, millis, args);

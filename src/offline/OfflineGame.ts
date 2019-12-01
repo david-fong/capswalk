@@ -3,6 +3,11 @@ import { VisibleTile } from "src/offline/VisibleTile";
 import { GridDimensionDesc, Game } from "src/base/Game";
 import { LocalGameSettings } from "src/settings/GameSettings";
 
+import { PlayerId } from "src/base/player/Player";
+import { HumanPlayer } from "src/base/player/HumanPlayer";
+import { OfflineHumanPlayer } from "src/offline/OfflineHumanPlayer";
+import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
+
 /**
  * 
  * 
@@ -30,6 +35,22 @@ export class OfflineGame extends Game {
     public createTile(pos: BarePos): VisibleTile {
         return new VisibleTile(pos);
     }
+
+    /**
+     * @override
+     */
+    protected createOperatorPlayer(idNumber: PlayerId): HumanPlayer {
+        return new OfflineHumanPlayer(this, idNumber);
+    }
+
+    /**
+     * @override
+     */
+    protected createArtifPlayer(idNumber: PlayerId): ArtificialPlayer {
+        return undefined;
+    }
+
+
 
     public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
         return setTimeout(callback, millis, args);
