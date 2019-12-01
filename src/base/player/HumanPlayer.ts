@@ -1,7 +1,7 @@
 import { Lang } from "src/lang/Lang";
 import { Tile } from "src/base/Tile";
 import { Game } from "base/Game";
-import { PlayerId, Player } from "base/Player";
+import { PlayerId, Player } from "src/base/player/Player";
 
 /**
  * Documentation will refer to the human controlling a {@link HumanPlayer}

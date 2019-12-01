@@ -3,9 +3,9 @@ import { BalancingScheme } from "src/lang/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
 import { GridDimensionDesc, Grid } from "src/base/Grid";
 
-import { PlayerId, Player } from "src/base/Player";
-import { ArtificialPlayer } from "src/base/ArtificialPlayer";
-import { HumanPlayer } from "src/base/HumanPlayer";
+import { PlayerId, Player } from "src/base/player/Player";
+import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
+import { HumanPlayer } from "src/base/player/HumanPlayer";
 
 import { PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
@@ -56,7 +56,7 @@ export abstract class Game extends Grid {
      */
     private readonly allHumanPlayers: ReadonlyArray<Player>;
 
-    private readonly allArtifPlayers: ReadonlyArray<ArtificialPlayer>;
+    private readonly allArtifPlayers: ReadonlyArray<Player>;
 
     /**
      * All copies of the game should contain identical entries. That

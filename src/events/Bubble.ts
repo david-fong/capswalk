@@ -1,4 +1,4 @@
-import { PlayerId, Player } from "src/base/Player";
+import { PlayerId, Player } from "src/base/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
 
 /**
@@ -86,17 +86,32 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGener
 export namespace Bubble {
 
     /**
-     * An _inclusive_ lower bound on legal values.
+     * An _inclusive_ lower bound on legal values. Ie. this value is
+     * _just barely_ legal.
      * 
      * Units are the same as those in {@link computeTimerDuration}.
      */
-    const MIN_TIMER_DURATION = 0;
+    const MIN_TIMER_DURATION = 0_000;
+
+    /**
+     * An _inclusive_ upper bound on legal values. Ie. this value is
+     * _just barely_ legal.
+     * 
+     * Units are the same as those in {@link computeTimerDuration}.
+     */
+    const MAX_TIMER_DURATION = 10_000;
 
     /**
      * @returns A positive real number representing how long it should
      * take for a new bubble made by the specified {@link Player} to pop
      * at the current time and under the current circumstances. Units
      * are in milliseconds.
+     * 
+     * The `percentCharged` field is an integer value out of 100%, and
+     * is returned to make visual indications of how "dangerous" a player
+     * currently is. If the player's stockpile is 0, then this value must
+     * also be zero, and the timer duration must be the minimum possible
+     * value.
      * 
      * This value...
      * - Strictly increases as `player`'s stockpile value increases.
@@ -119,6 +134,7 @@ export namespace Bubble {
      */
     export const computeTimerDuration = (player: Player): Readonly<{
         value: number,
+        percentCharged: number,
         performedConstrain: boolean,
     }> => {
         // We are allowed to go below MIN_TIMER-DURATION based on the
@@ -131,11 +147,22 @@ export namespace Bubble {
         // TODO
 
         // Perform cleaning and then return:
-        if (value > MIN_TIMER_DURATION) {
+        if (value < MIN_TIMER_DURATION) {
             value = MIN_TIMER_DURATION;
             performedConstrain = true;
+        } else if (value > MAX_TIMER_DURATION) {
+            value = MAX_TIMER_DURATION;
+            performedConstrain = true;
         }
-        return { value, performedConstrain, };
+        const percentCharged = ((100)
+            * (value - MIN_TIMER_DURATION)
+            / (MAX_TIMER_DURATION - MIN_TIMER_DURATION)
+        );
+        return {
+            value,
+            percentCharged,
+            performedConstrain,
+        };
     };
 
 

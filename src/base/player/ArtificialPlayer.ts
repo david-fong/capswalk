@@ -1,16 +1,10 @@
 import { Pos, Tile } from "src/base/Tile";
 import { OfflineGame } from "src/offline/OfflineGame";
 import { ServerGame } from "src/server/ServerGame";
-import { PlayerId, Player } from "src/base/Player";
+import { PlayerId, Player } from "src/base/player/Player";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 /**
- * TODO: this will be a little tricky to reuse code:
- * Offline implementation needs to use browser versions of setTimeout
- * and cancelTimeout, which have different cancelId types than the
- * Node.js versions. See if this can be handled with Typescript's
- * conditional types or with Generics. If things get any more
- * complicated, look into using Typescript Mixins.
  * 
  * @extends Player
  */
@@ -40,9 +34,11 @@ export abstract class ArtificialPlayer extends Player {
      * movement request. Pos may contain non-integer coordinate values,
      * and it does not have to be inside the bounds of the {@link Grid}.
      */
-    public abstract computeDesiredDestination(): Pos;
+    protected abstract computeDesiredDestination(): Pos;
 
-    public abstract computeNextMovementTimer(): number;
+    protected abstract computeNextMovementTimer(): number;
+
+
 
     /**
      * @returns TODO

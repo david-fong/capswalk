@@ -1,6 +1,6 @@
 import { Lang } from "src/lang/Lang";
 import { Pos, BarePos } from "src/Pos";
-import { PlayerId } from "src/base/Player";
+import { PlayerId } from "src/base/player/Player";
 
 export { Pos, BarePos } from "src/Pos";
 

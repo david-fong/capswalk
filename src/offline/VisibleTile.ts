@@ -1,6 +1,6 @@
 import { Lang } from "src/lang/Lang";
 import { Tile, BarePos } from "src/base/Tile";
-import { PlayerId } from "src/base/Player";
+import { PlayerId } from "src/base/player/Player";
 
 
 /**

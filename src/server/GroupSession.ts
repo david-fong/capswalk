@@ -2,7 +2,7 @@ import * as io from "socket.io";
 
 import { GameStateDump } from "src/base/Game";
 import { ServerGame } from "src/server/ServerGame";
-import { PlayerId } from "src/base/Player";
+import { PlayerId } from "src/base/player/Player";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 export { ServerGame } from "src/server/ServerGame";

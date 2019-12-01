@@ -1,5 +1,5 @@
-import { PlayerId } from "src/base/Player";
-import { EventRecordEntry } from "./EventRecordEntry";
+import { PlayerId } from "src/base/player/Player";
+import { EventRecordEntry } from "src/events/EventRecordEntry";
 
 export { EventRecordEntry } from "src/events/EventRecordEntry";
 
