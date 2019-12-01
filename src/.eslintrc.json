@@ -42,7 +42,7 @@
         }],
         "comma-dangle": ["error", {
             "arrays": "always",
-            "objects": "always-multiline",
+            "objects": "always",
             "imports": "always-multiline",
             "exports": "always-multiline",
             "functions": "only-multiline"
