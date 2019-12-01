@@ -43,9 +43,7 @@ export abstract class Game extends Grid {
     public lang: Lang;
 
     /**
-     * Set to `undefined` for {@link ServerGame}
-     * 
-     * TODO: Consider tightening access modifier.
+     * Set to `undefined` for {@link ServerGame}.
      */
     public readonly operator: HumanPlayer;
 
@@ -89,7 +87,7 @@ export abstract class Game extends Grid {
         this.lang = null;
 
         // TODO: setup allHumanPlayers?
-        this.operator = this.createOperatorPlayer(-1); // TODO
+        this.operator = this.createOperatorPlayer(-1, undefined); // TODO
         this.allHumanPlayers = [];
         this.allArtifPlayers = [];
 
@@ -127,18 +125,28 @@ export abstract class Game extends Grid {
     }
 
     /**
-     * Called automatically in the constructor for this class.
+     * Called automatically in the constructor for this class. This
+     * method should not add the produced player to the game's
+     * {@link Game#allHumanPlayers} array.
      * 
      * @param idNumber - 
      */
-    protected abstract createOperatorPlayer(idNumber: PlayerId): HumanPlayer;
+    protected abstract createOperatorPlayer(idNumber: PlayerId, username: string): HumanPlayer;
 
     /**
-     * TODO: add an argument of enum-type for the kind of artificial player to create.
+     * @returns An {@link ArtificialPlayer} of the specified type.
+     * This is overridden in {@link ClientGame} to return a
+     * {@link PuppetPlayer}.
      * 
      * @param idNumber - 
+     * @param type - 
      */
-    protected abstract createArtifPlayer(idNumber: PlayerId): PuppetPlayer | ArtificialPlayer;
+    protected createArtifPlayer(
+        idNumber: PlayerId,
+        type: ArtificialPlayer.Type,
+    ): PuppetPlayer | ArtificialPlayer {
+        return undefined; // TODO
+    }
 
 
 

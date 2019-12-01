@@ -39,15 +39,8 @@ export class OfflineGame extends Game {
     /**
      * @override
      */
-    protected createOperatorPlayer(idNumber: PlayerId): HumanPlayer {
+    protected createOperatorPlayer(idNumber: PlayerId, username: string): HumanPlayer {
         return new OfflineHumanPlayer(this, idNumber);
-    }
-
-    /**
-     * @override
-     */
-    protected createArtifPlayer(idNumber: PlayerId): ArtificialPlayer {
-        return undefined;
     }
 
 

@@ -1,6 +1,6 @@
 import { Pos, Tile } from "src/base/Tile";
-import { OfflineGame } from "src/offline/OfflineGame";
-import { ServerGame } from "src/server/ServerGame";
+import { Game } from "src/base/Game";
+import { ClientGame } from "src/client/ClientGame";
 import { PlayerId, Player } from "src/base/player/Player";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
@@ -10,20 +10,18 @@ import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
  */
 export abstract class ArtificialPlayer extends Player {
 
-    /**
-     * @override
-     */
-    public readonly game: OfflineGame | ServerGame;
-
     protected scheduledMovementCallbackId: number | NodeJS.Timeout;
 
-    public constructor(game: OfflineGame | ServerGame, idNumber: PlayerId) {
+    public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
         if (this.idNumber >= 0) {
             throw new RangeError(`ID number for an computationally-`
                 + `controlled Player must be strictly negative, but`
                 + ` we were passed the value \"${idNumber}\".`
             );
+        }
+        if (game instanceof ClientGame) {
+            throw new TypeError("ClientGames should be using PuppetPlayers instead.");
         }
     }
 
@@ -80,5 +78,21 @@ export abstract class ArtificialPlayer extends Player {
             ),
         );
     }
+
+}
+
+
+
+export namespace ArtificialPlayer {
+
+    export enum Type {
+        CHASER,
+        NOMMER,
+        RUNNER,
+    }
+
+    export const Constructors = new Map<Type, Function>([
+        [ Type.CHASER, undefined, ],
+    ]);
 
 }

@@ -8,7 +8,8 @@ import { GridDimensionDesc, Grid, Game } from "src/base/Game";
 import { PlayerId } from "src/base/player/Player";
 import { PuppetPlayer } from "src/base/player/PuppetPlayer";
 import { HumanPlayer } from "src/base/player/HumanPlayer";
-import { OnlineHumanPlayer } from "./OnlineHumanPlayer";
+import { OnlineHumanPlayer } from "src/client/OnlineHumanPlayer";
+import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
 
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { Bubble } from "src/events/Bubble";
@@ -70,14 +71,14 @@ export class ClientGame extends Game {
     /**
      * @override
      */
-    protected createOperatorPlayer(idNumber: PlayerId): HumanPlayer {
-        return new OnlineHumanPlayer(this, idNumber, "username"); // TODO: make username a Player field
+    protected createOperatorPlayer(idNumber: PlayerId, username: string): HumanPlayer {
+        return new OnlineHumanPlayer(this, idNumber, username);
     }
 
     /**
      * @override
      */
-    protected createArtifPlayer(idNumber: PlayerId): PuppetPlayer {
+    protected createArtifPlayer(idNumber: PlayerId, type: ArtificialPlayer.Type): PuppetPlayer {
         return new PuppetPlayer(this, idNumber);
     }
 

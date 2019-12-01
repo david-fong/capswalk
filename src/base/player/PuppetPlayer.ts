@@ -9,7 +9,7 @@ import { Player, PlayerId } from "src/base/player/Player";
  * 
  * Specifically,
  * - All game implementations use this for non-operator human players.
- * - Client  games use this in place of artificial players.
+ * - Client games use this in place of artificial players.
  */
 export class PuppetPlayer extends Player {
 

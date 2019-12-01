@@ -7,18 +7,10 @@ import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 
 /**
- * The choice of this is somewhat arbitrary. This should be enforced
- * externally since player descriptors are passed to the constructor.
- */
-export const USERNAME_REGEXP = new RegExp("[a-zA-Z](\s?[a-zA-Z0-9:-]+)*");
-
-/**
  * 
  * @extends HumanPlayer
  */
 export class OnlineHumanPlayer extends HumanPlayer {
-
-    public readonly username: string;
 
     /**
      * @override
@@ -32,13 +24,7 @@ export class OnlineHumanPlayer extends HumanPlayer {
         idNumber: PlayerId,
         username: string,
     ) {
-        super(game, idNumber);
-        this.username = username;
-        if (!(USERNAME_REGEXP.test(username))) {
-            throw new RangeError(
-                `Username \"${username}\" does not match the required regexp.`
-            );
-        }
+        super(game, idNumber, username);
     }
 
 

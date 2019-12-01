@@ -3,6 +3,15 @@ import { Tile } from "src/base/Tile";
 import { Game } from "base/Game";
 import { PlayerId, Player } from "src/base/player/Player";
 
+
+/**
+ * The choice of this is somewhat arbitrary. This should be enforced
+ * externally since player descriptors are passed to the constructor.
+ */
+export const USERNAME_REGEXP = new RegExp("[a-zA-Z](\s?[a-zA-Z0-9:-]+)*");
+
+
+
 /**
  * Documentation will refer to the human controlling a {@link HumanPlayer}
  * as its "Operator".
@@ -17,12 +26,24 @@ export abstract class HumanPlayer extends Player {
      */
     private _seqBuffer: Lang.Seq;
 
-    public constructor(game: Game, idNumber: PlayerId) {
+    public readonly username: string;
+
+    public constructor(
+        game: Game,
+        idNumber: PlayerId,
+        username: string,
+    ) {
         super(game, idNumber);
         if (this.idNumber <= 0) {
             throw new RangeError(`ID number for a human-operated`
                 + ` Player must be strictly positive, but we were`
                 + ` passed the value \"${idNumber}\".`
+            );
+        }
+        this.username = username;
+        if (!(USERNAME_REGEXP.test(username))) {
+            throw new RangeError(
+                `Username \"${username}\" does not match the required regexp.`
             );
         }
     }
@@ -53,6 +74,11 @@ export abstract class HumanPlayer extends Player {
         } else if (!(this.requestInFlight)) {
             // Only process movement-type input if the last request got
             // acknowledged by the Game Manager and the game is not paused.
+            // TODO: check if game is paused? This means we either need to
+            // add an event to signal pauses to clients (I don't like this
+            // because it means delay), or we change this to allow sending
+            // requests to the Game Manager even if the game is paused, and
+            // leave it up to the Game Managaer to ignore the request.
             this.seqBufferAcceptKey(event.key);
         }
     }
@@ -75,8 +101,13 @@ export abstract class HumanPlayer extends Player {
         }
         if (key) {
             key = this.lang.remapKey(key);
-            // TODO: add check here for optimization purposes to
-            // short-circuit if key does not match the LANG_SEQ_REGEXP ?
+            if (!(Lang.SEQ_REGEXP.test(key))) {
+                throw new Error(`The implementation of input transformation in`
+                    + `the language \"${this.lang.name}\" did not follow the`
+                    + `rule of producing output matching the regular expression`
+                    + `\"${Lang.SEQ_REGEXP}\".`
+                );
+            }
         } else {
             key = ""; // Caller intends to refresh seqBuffer invariant.
         }
@@ -106,8 +137,8 @@ export abstract class HumanPlayer extends Player {
                         // new completion. Probably, another player moved near me,
                         // and the shuffle-in happened to complete something else
                         // I was trying to type. In this case, don't try to move.
-                        // Instead, clear the seqBuffer.
-                        this._seqBuffer = "";
+                        // Instead, break the loop in a way that clears the seqBuffer.
+                        newSeqBuffer = "";
                     }
                 }
                 // Stop searching through suffixes of newSeqBuffer:

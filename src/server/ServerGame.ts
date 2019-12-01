@@ -6,8 +6,6 @@ import { GridDimensionDesc, Game } from "src/base/Game";
 import { GroupSession } from "src/server/GroupSession";
 
 import { PlayerId } from "src/base/player/Player";
-import { PuppetPlayer } from "src/base/player/PuppetPlayer";
-import { HumanPlayer } from "src/base/player/HumanPlayer";
 
 import { EventRecordEntry } from "src/events/EventRecordEntry";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
@@ -21,6 +19,11 @@ import { Bubble } from "src/events/Bubble";
 export class ServerGame extends Game {
 
     protected readonly session: GroupSession;
+
+    /**
+     * @override The Server copy has no Operator.
+     */
+    public readonly operator: undefined;
 
     /**
      * _Calls reset recursively for this entire composition._
@@ -59,15 +62,8 @@ export class ServerGame extends Game {
     /**
      * @override
      */
-    protected createOperatorPlayer(idNUmber: PlayerId): HumanPlayer {
+    protected createOperatorPlayer(idNumber: PlayerId, username: string): undefined {
         return undefined;
-    }
-
-    /**
-     * @override
-     */
-    protected createArtifPlayer(idNumber: PlayerId): PuppetPlayer {
-        return new PuppetPlayer(this, idNumber);
     }
 
 
