@@ -405,12 +405,34 @@ export abstract class Game extends Grid {
      * @param bubbler - 
      */
     private processBubblePopRequest(bubbler: Player): void {
+        // First, get the range of covered tiles.
+        const jumpNeighbours = [ bubbler, ]; {
+            // Note: Actually used as stack. It doesn't matter.
+            const neighbourQueue = [ bubbler, ];
+            while (neighbourQueue.length > 0) {
+                const neighbour = neighbourQueue.pop();
+                neighbour.getNeighbours().filter((jumpPlayer) => {
+                    // Filter out neighbours that we have already processed:
+                    return !(jumpNeighbours.includes(jumpPlayer))
+                        && (true); // TODO: add conditions from the spec here.
+                }).forEach((jumpPlayer) => {
+                    jumpNeighbours.push(jumpPlayer);
+                    neighbourQueue.push(jumpPlayer);
+                });
+            }
+            // Last step: remove the first element, which is the bubbler.
+            jumpNeighbours.shift();
+        }
+
         const desc = new Bubble.PopEvent(bubbler.idNumber);
-        // TODO
-        // first, get the range of covered tiles.
-        // desc.playersToDown   = get in-range un-downed players who are not in any of my teams. extend range to prevent turtling.
-        // desc.playersToFreeze = get in-range    downed players who are not in any of my teams
+
+        desc.playersToDown = jumpNeighbours.filter((player) => {
+            return true; // TODO
+        }).map((player) => player.idNumber);
+
         // desc.playersToRaise  = get in-range    downed players who are     in any of my teams
+
+        // desc.playersToFreeze = get in-range    downed players who are not in any of my teams
 
         // We are all go! Do it.
         desc.eventId = this.eventRecord.length;
@@ -446,7 +468,7 @@ export abstract class Game extends Grid {
         }, this);
 
         // Enact effects on 
-        Object.entries(desc.playersToFreeze).forEach(([enemyId, duration,]) => {
+        Object.entries(desc.playersToFreeze).forEach(([ enemyId, duration, ]) => {
             this.freezePlayer(this.getPlayerById(parseInt(enemyId)), duration);
         }, this);
         return;
@@ -513,24 +535,23 @@ export abstract class Game extends Grid {
         return (player) ? player : null;
     }
 
+    /**
+     * @returns All {@link Player}s within a `radius` infinity-norm of
+     *      `pos`.
+     * 
+     * @param pos - 
+     * @param radius - defaults to one.
+     */
+    public getNeighbours(pos: BarePos, radius: number = 1): Array<Player> {
+        return this.getNeighbouringTiles(pos, radius)
+            .filter((tile) => tile.isOccupied)
+            .map((tile) => this.getPlayerById(tile.occupantId));
+    }
+
     protected get langBalancingScheme(): BalancingScheme {
         // TODO
         //return this.settings.langBalancingScheme.selectedValue;
         return undefined;
     }
 
-}
-
-
-
-/**
- * TODO: move this class to its own file.
- */
-export class GameStateDump {
-
-    public static readonly EVENT_NAME = "dump game state";
-
-    public constructor(game: Game) {
-        ;
-    }
 }
