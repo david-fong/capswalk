@@ -50,14 +50,26 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGener
  * The effects follow the following logical decision-making flow:
  * - Is the bubble-maker downed?
  *   - Yes: Is the other player a teammate?
- *     - Yes: Include their basic range.
- *     - No: Other player is temporarily frozen.
+ *     - Yes: Include their basic range. (too confusing?)
+ *     - No: Other player is temporarily frozen. Is other player downed?
+ *       - Yes: Include their basic range.
  *   - No: Is the other player a teammate?
  *     - Yes: Is the other player downed?
  *       - Yes: Other player is raised.
- *       - No: Include their basic range. No effect.
- *     - No: Is the other player downed?
- *       - Yes: 
+ *       - No: Include their basic range.
+ *     - No: Other player is temporarily frozen. Is the other player downed?
+ *       - Yes: Include their basic range. (move up?)
+ *       - No: Other player gets downed (in addition to freezing).
+ * 
+ * Reject bubble requests from frozen players. This helps un-downed
+ * players running from a downed enemy to escape if they can freeze
+ * the enemy chasing them by ignoring "tag-back"-like actions.
+ * 
+ * The rationale for expanding ranges is to prevent turtling (Ie. for
+ * downed teammates to gather around a non-downed teammate, blocking
+ * access and preventing them from any possbility of getting downed).
+ * Note that between teammates, an un-downed-player cannot bubble
+ * through a downed 
  * 
  * Remember that all the variables taken into consideration are used
  * by the value they hold _when the bubble pops_ and _before_ any of
@@ -133,7 +145,7 @@ export namespace Bubble {
      */
     export class MakeEvent implements PlayerGeneratedRequest {
 
-        public static readonly EVENT_NAME = "bubble make";
+        public static readonly EVENT_NAME = "bubble-make";
 
         public eventId: number = EventRecordEntry.REJECT;
 
@@ -167,15 +179,14 @@ export namespace Bubble {
      * This descriptor is only ever used to send event information from
      * the server to clients. Since this event is triggered by the Game
      * Manager (as a timed callback to a bubble-make request), there is
-     * no exposed method to process a request, and all the descriptor
-     * fields are strictly readonly.
+     * no exposed method to process a request.
      */
     export class PopEvent implements EventRecordEntry {
 
-        public static readonly EVENT_NAME = "bubble pop";
+        public static readonly EVENT_NAME = "bubble-pop";
 
         // For this class, the request should never get rejected.
-        public eventId: number = undefined;
+        public eventId: number;
 
         public bubblerId: PlayerId;
 
@@ -184,7 +195,7 @@ export namespace Bubble {
         public playersToRaise: ReadonlyArray<PlayerId>;
 
         // map to how long to freeze (todo: say units are same as those in the bounds constants)
-        public playersToFreeze: Record<PlayerId, number>;
+        public playersToFreeze: Readonly<Record<PlayerId, number>>;
 
         public constructor(bubblerId: PlayerId) {
             this.bubblerId = bubblerId;

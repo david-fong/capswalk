@@ -113,11 +113,11 @@ export abstract class Grid {
             }
             const carrier: HTMLElement = document.getElementById(domGridHtmlIdHook);
             if (!carrier) {
-                throw new RangeError(`id \"${domGridHtmlIdHook}\" did not refer`
+                throw new RangeError(`The ID \"${domGridHtmlIdHook}\" did not refer`
                     + `to an existing html element.`
                 );
             }
-            carrier.childNodes.forEach(node => carrier.removeChild(node));
+            carrier.childNodes.forEach((node) => carrier.removeChild(node));
             carrier.appendChild(this.domGrid);
         } else {
             this.domGrid = null;
@@ -154,7 +154,7 @@ export abstract class Grid {
                 // filter for included rows:
                 Math.max(0, pos.y - radius),
                 Math.min(this.height, pos.y + radius + 1),
-        ).flatMap(tile => tile.slice(
+        ).flatMap((tile) => tile.slice(
                 // filter for included slices of rows (columns):
                 Math.max(0, pos.x - radius,
                 Math.min(this.width, pos.x + radius + 1)),

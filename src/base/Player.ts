@@ -64,7 +64,7 @@ class PlayerSkeleton {
         this.benchTile.occupantId = this.idNumber;
     }
 
-    protected get hostTile(): Tile {
+    public get hostTile(): Tile {
         return this._hostTile;
     }
 
@@ -252,8 +252,18 @@ export abstract class Player extends PlayerSkeleton {
         this._isBubbling = isBubbling;
     }
 
-    public getUNT(): Array<Tile> {
-        return this.game.getUNT(this.pos);
+
+
+    public getNeighbouringTiles(radius: number = 1): Array<Tile> {
+        return this.game.getNeighbouringTiles(this.pos, radius);
+    }
+
+    public getUNT(radius: number = 1): Array<Tile> {
+        return this.game.getUNT(this.pos, radius);
+    }
+
+    public getNeighbours(radius: number = 1): Array<Player> {
+        return this.game.getNeighbours(this.pos, radius);
     }
 
 }

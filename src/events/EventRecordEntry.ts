@@ -2,15 +2,6 @@
 /**
  * 
  */
-export namespace EventRecordEntry {
-
-    export const REJECT = -1;
-
-}
-
-/**
- * 
- */
 export interface EventRecordEntry {
 
     /**
@@ -24,5 +15,14 @@ export interface EventRecordEntry {
      * to a valid value as described above, or leave it as {@link REJECT}.
      */
     eventId: number;
+
+}
+
+/**
+ * https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-namespaces-with-classes-functions-and-enums
+ */
+export namespace EventRecordEntry {
+
+    export const REJECT = -1;
 
 }

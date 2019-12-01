@@ -74,7 +74,7 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGener
  */
 export class PlayerMovementEvent implements PlayerGeneratedRequest {
 
-    public static readonly EVENT_NAME = "player movement";
+    public static readonly EVENT_NAME = "player-movement";
 
     /**
      * This is the agreed upon value that both the server and client
