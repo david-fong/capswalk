@@ -84,7 +84,7 @@ export class VisibleTile extends Tile {
     public set occupantId(occupantId: PlayerId) {
         this._occupantId = occupantId;
         // TODO: set some dataset thing to make player face layer visible.
-        if (occupantId === 0) {
+        if (occupantId === PlayerId.NULL) {
             // Eviction-type action:
             ;
         } else {

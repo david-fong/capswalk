@@ -10,9 +10,43 @@ import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
  * same {@link Game} together. Strictly negative values correspond to
  * {@link ArtificialPlayer}s, strictly positive values correspond to
  * {@link HumanPlayer}s, and the value `zero` is reserved to indicate
- * that a {@link Tile} is unoccupied.
+ * that a {@link Tile} is unoccupied (See {@link PlayerId.NULL}).
  */
 export type PlayerId = number;
+
+export namespace PlayerId {
+    export const NULL = 0;
+}
+
+/**
+ * Information used by a {@link VisibleTile} to decide how to render
+ * the specified player. See {@link VisibleTile#occupantId}.
+ */
+export type PlayerVisibleState = Readonly<{
+    // TODO: add field for estimated percentage of bubble time.
+    //  the will require adding such a field in PlayerMovementEvent.
+    idNumber:   PlayerId;
+    isDowned:   boolean;
+    isFrozen:   boolean;
+    isBubbling: boolean;
+    percentBubbleCharge: number;
+}>;
+
+export namespace PlayerVisibleState {
+    /**
+     * Use for Tile-occupant eviction.
+     */
+    export const NULL = Object.freeze(<const>{
+        idNumber:   PlayerId.NULL,
+        isDowned:   false,
+        isFrozen:   false,
+        isBubbling: false,
+        percentBubbleCharge: 0,
+    });
+    NULL as PlayerVisibleState;
+}
+
+
 
 /**
  * Made to abstract all operations that change the {@link Player#hostTile}
@@ -21,7 +55,7 @@ export type PlayerId = number;
  * field as a {@link Tile} reserved for this {@link Player}, and the one
  * it occupies after a reset operation.
  */
-class PlayerSkeleton {
+class PlayerSkeleton implements PlayerVisibleState {
 
     /**
      * The game object that this player belongs to.
@@ -33,6 +67,9 @@ class PlayerSkeleton {
      */
     public readonly idNumber: PlayerId;
 
+    /**
+     * This should never be accessed directly. Use accessors instead.
+     */
     private _hostTile: Tile;
 
     /**
@@ -40,9 +77,19 @@ class PlayerSkeleton {
      */
     public readonly benchTile: Tile;
 
+    private _score:         number;
+    private _stockpile:     number;
+    private _isDowned:      boolean;
+    private _isFrozen:      boolean;
+    private _isBubbling:    boolean;
+    private _percentBubbleCharge:  number;
+
 
 
     protected constructor(game: Game, idNumber: PlayerId) {
+        if (Math.trunc(this.idNumber) !== this.idNumber) {
+            throw new RangeError("Player ID's must be integer values.");
+        }
         this.game = game;
         this.idNumber = idNumber;
         this.benchTile = new VisibleTile(Player.BENCH_POS);
@@ -62,10 +109,28 @@ class PlayerSkeleton {
         });
         this._hostTile = this.benchTile;
         this.benchTile.occupantId = this.idNumber;
+
+        this.score      = 0;
+        this.stockpile  = 0;
+        this.isDowned   = false;
+        this.isFrozen   = false;
+        this.isBubbling = false;
+        this.percentBubbleCharge = 0;
     }
 
     public get hostTile(): Tile {
         return this._hostTile;
+    }
+
+    // Note: this is currently not used outside.
+    public get visibleState(): PlayerVisibleState {
+        return {
+            idNumber: this.idNumber,
+            isDowned: this.isDowned,
+            isFrozen: this.isFrozen,
+            isBubbling: this.isBubbling,
+            percentBubbleCharge: this.percentBubbleCharge,
+        };
     }
 
     /**
@@ -75,7 +140,6 @@ class PlayerSkeleton {
      * @param dest - 
      */
     public moveTo(dest: Tile): void {
-
         // Evict self from current `Tile`.
         if (this.hostTile.occupantId !== this.idNumber) {
             if (!(this.game instanceof ClientGame)) {
@@ -113,6 +177,60 @@ class PlayerSkeleton {
             dest.occupantId = this.idNumber;
         }
     }
+
+
+
+    public get score(): number {
+        return this._score;
+    }
+
+    public set score(newValue: number) {
+        // TODO: render this in the browser if not a ServerGame
+        this._score = newValue;
+    }
+
+    public get stockpile(): number {
+        return this._stockpile;
+    }
+
+    public set stockpile(stockpile: number) {
+        this._stockpile = stockpile;
+    }
+
+
+
+    public get isDowned(): boolean {
+        return this._isDowned;
+    }
+
+    public set isDowned(isDowned: boolean) {
+        this._isDowned = isDowned;
+    }
+
+    public get isFrozen(): boolean {
+        return this._isFrozen;
+    }
+
+    public set isFrozen(isFrozen: boolean) {
+        this._isFrozen = isFrozen;
+    }
+
+    public get isBubbling(): boolean {
+        return this._isBubbling;
+    }
+
+    public set isBubbling(isBubbling: boolean) {
+        this._isBubbling = isBubbling;
+    }
+
+    public get percentBubbleCharge(): number {
+        return this._percentBubbleCharge;
+    }
+
+    public set percentBubbleCharge(bubbleCharge: number) {
+        this._percentBubbleCharge = bubbleCharge;
+    }
+
 }
 
 
@@ -127,26 +245,6 @@ export abstract class Player extends PlayerSkeleton {
     public static readonly BENCH_POS: Pos = new Pos(Infinity, Infinity);
 
     /**
-     * This should never be accessed directly. Use accessors instead.
-     */
-    protected _isDowned: boolean;
-
-    /**
-     * This should never be accessed directly. Use accessors instead.
-     */
-    protected _score: number;
-
-    /**
-     * This should never be accessed directly. Use accessors instead.
-     */
-    protected _stockpile: number;
-
-    /**
-     * This should never be accessed directly. Use accessors instead.
-     */
-    protected _isBubbling: boolean;
-
-    /**
      * Managed externally by the Game Manager. Here for composition.
      */
     public bubbleTimer: number | NodeJS.Timeout;
@@ -159,17 +257,10 @@ export abstract class Player extends PlayerSkeleton {
 
     public constructor(game: Game, idNumber: PlayerId) {
         super(game, idNumber);
-        if (Math.trunc(this.idNumber) !== this.idNumber) {
-            throw new RangeError("Player ID's must be integer values.");
-        }
     }
 
     public reset(): void {
         super.reset();
-        this.isDowned   = false;
-        this.score      = 0;
-        this.stockpile  = 0;
-        this.isBubbling = false;
         this.game.cancelTimeout(this.bubbleTimer);
         this.bubbleTimer = undefined;
         this.lastAcceptedRequestId = PlayerMovementEvent.INITIAL_REQUEST_ID;
@@ -218,38 +309,6 @@ export abstract class Player extends PlayerSkeleton {
 
     public get pos(): Pos {
         return this.hostTile.pos;
-    }
-
-    public get isDowned(): boolean {
-        return this._isDowned;
-    }
-
-    public set isDowned(isDowned: boolean) {
-        this._isDowned = isDowned;
-    }
-
-    public get score(): number {
-        return this._score;
-    }
-
-    public set score(newValue: number) {
-        this._score = newValue;
-    }
-
-    public get stockpile(): number {
-        return this._stockpile;
-    }
-
-    public set stockpile(stockpile: number) {
-        this._stockpile = stockpile;
-    }
-
-    public get isBubbling(): boolean {
-        return this._isBubbling;
-    }
-
-    public set isBubbling(isBubbling: boolean) {
-        this._isBubbling = isBubbling;
     }
 
 

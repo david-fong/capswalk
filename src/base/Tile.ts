@@ -67,11 +67,11 @@ export abstract class Tile {
 
 
     public isOccupied(): boolean {
-        return this.occupantId !== 0;
+        return this.occupantId !== PlayerId.NULL;
     }
 
     public evictOccupant(): void {
-        this.occupantId = null;
+        this.occupantId = PlayerId.NULL;
     }
 
     public get occupantId(): PlayerId {
