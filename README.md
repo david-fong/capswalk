@@ -18,6 +18,7 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
 - [Design Challenges & Stepping up my Game](#-design-challenges--stepping-up-my-game "pun intended")
 - [My Joy in TypeScript](#-my-joy-in-typescript)
   - [Bundling Constructor Arguments as Objects](#-bundling-constructor-arguments-as-objects)
+  - [Type Aliases and Declaration Merging](#-type-aliases-and-declaration-merging)
 - [Language Representation](#language-representation)
   - [Language Size Requirements](#language-size-requirements)
   - [Effective Shuffling With Trees](#effective-shuffling-with-trees)
@@ -116,6 +117,35 @@ It makes constructor signatures incredibly malleable. If I need to add, remove, 
 
 Unlike passing arguments in an argument list, this requires wrapping arguments in an object, where mapping the value from the argument / object-field name is mandatory. This makes it _very_ difficult to pass arguments in "the wrong order", because now order is meaningless. All the cognitive effort is migrated to using good object-field and variable names, which is much more intuitive and robust.
 
+### 🧩 Type Aliases and Declaration Merging
+
+Get this- you can type alias a primitive type to give it a name suited to a use-case, and then _document it_. A prime example of the difference this makes in this project is in the `Player.Id` type. It aliases to mean a number. Each player has a unique ID, and there are semantics to value ranges: Strictly negative values are for computer-controlled players, strictly positive values for human-controlled players, and the value zero to indicate that a Tile has no occupant.
+
+#### 🔢 Documenting Primitives
+
+Type Aliases in TypeScript are very much like the `typedef` keyword in C: They allow you to give a type annotation a meaningful name, and to centralize documentation on the semantics of fields and variables of that type. When documenting function arguments, sometimes it is even enough to just let the type annotation do the talking.
+
+#### 📦 "Scoped" TypeDefs and Validators
+
+Using TypeScript's declaration merging capabilities, type declarations can be put under a namespace. Instead of writing `export type PlayerId` outside of a namespace, which pollutes the global type-declaration group and adds to module-import clutter, I can write something like:
+
+```typescript
+// <docuentation>
+export class Player {
+    idNumber: Player.Id;
+    <...>
+}
+export namespace Player {
+    // <documentation>
+    export type Id;
+    export namespace Id {
+        // <documentation>
+        export const NULL = 0;
+    }
+}
+```
+
+The example shows how namespace merging allows you to scope type declarations, and make it look like they declare special constants. With fields like usernames, this can be used to scope regular expression checkers under the type alias. In Java, you can't alias primitive types, [and that's final (🥁)](https://stackoverflow.com/a/28238107/11107541). In C, you can alias anything, but you can't scope type definitions unless you are using C++. In TypeScript, you can do both, and I think that's super cool.
 
 ## Language Representation
 
