@@ -89,11 +89,15 @@ export abstract class Game extends Grid {
             let operator: HumanPlayer;
             const allHumanPlayers = [];
             const allArtifPlayers = [];
-            desc.playerDescs.forEach((playerDesc) => {
-                const id: Player.Id = playerDesc.idNumber;
-                if (id === desc.operatorId) {
+            desc.playerDescs.forEach((playerDesc, index) => {
+                // If the player is on any human team, then the player is a human.
+                const id: Player.Id = (playerDesc.teamNumbers.some((teamNumber) => teamNumber >= 0))
+                    ? +(1 + allHumanPlayers.length) + Player.Id.NULL
+                    : -(1 + allArtifPlayers.length) + Player.Id.NULL;
+                playerDesc.idNumber = id;
+                if (index === desc.operatorIndex) {
                     // Found the operator. Note: this will never happen for
-                    // a ServerGame instance.
+                    // a ServerGame instance, which sets this to `undefined`.
                     operator = this.createOperatorPlayer(playerDesc);
                     allHumanPlayers[id] = operator;
                 } else {
@@ -457,8 +461,8 @@ export abstract class Game extends Grid {
      */
     private processBubblePopRequest(bubbler: Player): void {
         // First, get the range of covered tiles.
-        const jumpNeighbours = [ bubbler, ]; {
-            // Note: Actually used as stack. It doesn't matter.
+        const jumpNeighbours: Array<Player> = [ bubbler, ]; {
+            // Note: Actually used as a stack. It doesn't matter.
             const neighbourQueue = [ bubbler, ];
             while (neighbourQueue.length > 0) {
                 const neighbour = neighbourQueue.pop();
@@ -518,7 +522,7 @@ export abstract class Game extends Grid {
             teammate.isDowned = false;
         }, this);
 
-        // Enact effects on 
+        // Enact effects on players to freeze:
         Object.entries(desc.playersToFreeze).forEach(([ enemyId, duration, ]) => {
             this.freezePlayer(this.getPlayerById(parseInt(enemyId)), duration);
         }, this);
@@ -576,12 +580,12 @@ export abstract class Game extends Grid {
      *      to any {@link Player} in this `Game`.
      */
     protected getPlayerById(playerId: Player.Id): Player | null {
-        if (playerId === 0) {
-            throw new RangeError("Zero is reserved to mean \"no player\".");
+        if (playerId === Player.Id.NULL) {
+            throw new RangeError(`The ID \"${Player.Id.NULL}\" is reserved to mean \"no player\".`);
         }
-        const player: Player = ((playerId < 0)
+        const player: Player = ((playerId < Player.Id.NULL)
             ? this.allArtifPlayers[(-playerId) - 1]
-            : this.allHumanPlayers[( playerId) - 1]
+            : this.allHumanPlayers[(+playerId) - 1]
         );
         return (player) ? player : null;
     }
@@ -619,9 +623,11 @@ export namespace Game {
         gridDimensions: Grid.DimensionDesc;
 
         /**
-         * This should be set to {@link Player.Id.NULL} for {@link ServerGame}.
+         * The index in `playerDescs` of the operator's ctor args.
+         * 
+         * This should be set to `undefined for a {@link ServerGame}.
          */
-        operatorId: Player.Id;
+        operatorIndex: number;
 
         playerDescs: ReadonlyArray<Player.ConstructorArguments>;
     }>;

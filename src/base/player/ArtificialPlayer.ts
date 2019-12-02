@@ -22,9 +22,9 @@ export abstract class ArtificialPlayer extends Player {
     protected constructor(game: Game, desc: Player.ConstructorArguments) {
         super(game, desc);
         if (this.idNumber >= 0) {
-            throw new RangeError(`ID number for an computationally-`
-                + `controlled Player must be strictly negative, but`
-                + ` we were passed the value \"${this.idNumber}\".`
+            throw new RangeError(`The ID number for a human-operated player`
+                + ` must be strictly lesser than ${Player.Id.NULL}, but we`
+                + ` were passed the value \"${this.idNumber}\".`
             );
         }
         if (desc.teamNumbers.length > 1) {

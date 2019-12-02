@@ -206,7 +206,7 @@ export namespace Player {
     }
 
     export type ConstructorArguments = {
-        idNumber: Id;
+        idNumber: Id; // undefined for game ctor args
         readonly teamNumbers: ReadonlyArray<TeamNumber>;
         readonly username: Username;
     };

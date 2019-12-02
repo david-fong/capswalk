@@ -21,9 +21,9 @@ export abstract class HumanPlayer extends Player {
     public constructor(game: Game, desc: Player.ConstructorArguments) {
         super(game, desc);
         if (this.idNumber <= 0) {
-            throw new RangeError(`The ID number for a human-operated`
-                + ` Player must be strictly positive, but we were`
-                + ` passed the value \"${this.idNumber}\".`
+            throw new RangeError(`The ID number for a human-operated player`
+                + ` must be strictly greater than ${Player.Id.NULL}, but we`
+                + ` were passed the value \"${this.idNumber}\".`
             );
         }
     }

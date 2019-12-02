@@ -43,6 +43,9 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
         if (Math.trunc(this.idNumber) !== this.idNumber) {
             throw new RangeError("Player ID's must be integer values.");
         }
+        if (idNumber === Player.Id.NULL) {
+            throw new RangeError(`The ID \"${Player.Id.NULL}\" is reserved to mean \"no player\".`);
+        }
         this.game = game;
         this.idNumber = idNumber;
         this.benchTile = this.game.createTile(Player.BENCH_POS);
