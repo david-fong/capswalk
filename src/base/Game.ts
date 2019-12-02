@@ -3,7 +3,7 @@ import { BalancingScheme } from "src/lang/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
 import { Grid } from "src/base/Grid";
 
-import { PlayerId, Player } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 import { PuppetPlayer } from "src/base/player/PuppetPlayer";
 import { HumanPlayer } from "src/base/player/HumanPlayer";
 import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
@@ -562,7 +562,7 @@ export abstract class Game extends Grid {
 
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
 
-    public getBenchableTileAt(dest: BarePos, playerId: PlayerId): Tile {
+    public getBenchableTileAt(dest: BarePos, playerId: Player.Id): Tile {
         return ((Player.BENCH_POS.equals(dest))
             ? this.getPlayerById(playerId).benchTile
             : this.getTileAt(dest)
@@ -575,7 +575,7 @@ export abstract class Game extends Grid {
      * @returns `null` if the specified `playerId` is not allocated
      *      to any {@link Player} in this `Game`.
      */
-    protected getPlayerById(playerId: PlayerId): Player | null {
+    protected getPlayerById(playerId: Player.Id): Player | null {
         if (playerId === 0) {
             throw new RangeError("Zero is reserved to mean \"no player\".");
         }

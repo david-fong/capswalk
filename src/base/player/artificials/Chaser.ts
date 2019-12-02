@@ -1,6 +1,6 @@
 import { Pos } from "src/Pos";
 import { Game } from "src/base/Game";
-import { PlayerId, Player } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
 
 

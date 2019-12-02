@@ -1,6 +1,6 @@
 import { Lang } from "src/lang/Lang";
 import { Tile, BarePos } from "src/base/Tile";
-import { PlayerId } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 
 
 /**
@@ -81,10 +81,10 @@ export class VisibleTile extends Tile {
 
 
 
-    public set occupantId(occupantId: PlayerId) {
+    public set occupantId(occupantId: Player.Id) {
         this._occupantId = occupantId;
         // TODO: set some dataset thing to make player face layer visible.
-        if (occupantId === PlayerId.NULL) {
+        if (occupantId === Player.Id.NULL) {
             // Eviction-type action:
             ;
         } else {

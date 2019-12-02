@@ -1,11 +1,11 @@
-import { PlayerId } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 import { EventRecordEntry } from "src/events/EventRecordEntry";
 
 export { EventRecordEntry } from "src/events/EventRecordEntry";
 
 export interface PlayerGeneratedRequest extends EventRecordEntry {
 
-    readonly playerId: PlayerId;
+    readonly playerId: Player.Id;
 
     /**
      * ### Client Request

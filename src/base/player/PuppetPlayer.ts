@@ -1,6 +1,6 @@
 import { Tile } from "src/base/Tile";
 import { Game } from "src/base/Game";
-import { Player, PlayerId } from "src/base/player/Player";
+import { Player} from "src/base/player/Player";
 
 
 /**

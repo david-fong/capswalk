@@ -5,11 +5,10 @@ import { VisibleTile } from "src/offline/VisibleTile";
 import { LocalGameSettings } from "src/settings/GameSettings";
 import { Grid, Game } from "src/base/Game";
 
-import { PlayerId, Player } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 import { PuppetPlayer } from "src/base/player/PuppetPlayer";
 import { HumanPlayer } from "src/base/player/HumanPlayer";
 import { OnlineHumanPlayer } from "src/client/OnlineHumanPlayer";
-import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
 
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { Bubble } from "src/events/Bubble";

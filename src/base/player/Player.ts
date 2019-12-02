@@ -5,21 +5,6 @@ import { PlayerSkeleton } from "src/base/player/PlayerSkeleton";
 
 
 /**
- * An **integer value** used to uniquely identify `Player`s in the
- * same {@link Game} together. Strictly negative values correspond to
- * {@link ArtificialPlayer}s, strictly positive values correspond to
- * {@link HumanPlayer}s, and the value `zero` is reserved to indicate
- * that a {@link Tile} is unoccupied (See {@link PlayerId.NULL}).
- */
-export type PlayerId = number;
-
-export namespace PlayerId {
-    export const NULL = 0;
-}
-
-
-
-/**
  * 
  */
 export abstract class Player extends PlayerSkeleton {
@@ -179,14 +164,34 @@ export abstract class Player extends PlayerSkeleton {
 
 export namespace Player {
 
+    /**
+     * An **integer value** used to uniquely identify `Player`s in the
+     * same {@link Game} together. These are not meaningful to humans
+     * playing the game- rather, they are for internal use. Values are
+     * allocated by the Game Manager during game construction.
+     * 
+     * Values strictly less than {@link Player.Id.NULL} correspond to
+     * {@link ArtificialPlayer}s, and values strictly greater than
+     * {@link Player.Id.NULL} correspond to {@link HumanPlayer}s. The
+     * value {@link Player.Id.NULL} is reserved to indicate that a
+     * {@link Tile} is unoccupied.
+     */
     export type Id = number;
 
+    export namespace Id {
+        export const NULL = 0;
+    }
+
     /**
-     * An integer value. Strictly negative values correspond to enemy
-     * teams, where all enemies of the same type are on a the same
-     * team. These values are hard-coded into implementations of the
-     * {@link ArtificialPlayer} class. Positive values including zero
-     * are reserved for human-operated players.
+     * An integer value.
+     * 
+     * Strictly negative values correspond to teams for artificially
+     * controlled players, where all those of the same type are on the
+     * same team and on that team _only_. Those values are hard-coded
+     * into implementations of the {@link ArtificialPlayer} class.
+     * 
+     * Positive values including zero are reserved for human-operated
+     * players.
      */
     export type TeamNumber = number;
 
@@ -200,10 +205,10 @@ export namespace Player {
         export const REGEXP = new RegExp("[a-zA-Z](\s?[a-zA-Z0-9:-]+)*");
     }
 
-    export type ConstructorArguments = Readonly<{
+    export type ConstructorArguments = {
         idNumber: Id;
-        teamNumbers: ReadonlyArray<TeamNumber>;
-        username: Username;
-    }>;
+        readonly teamNumbers: ReadonlyArray<TeamNumber>;
+        readonly username: Username;
+    };
 
 }

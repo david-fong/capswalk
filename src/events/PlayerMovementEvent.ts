@@ -1,6 +1,6 @@
 import { Lang } from "src/lang/Lang";
 import { BarePos, Tile } from "src/base/Tile";
-import { PlayerId } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
 
 /**
@@ -57,7 +57,7 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGener
  *
  * ### The Dreaded Adversarial Scenario
  * 
- * ```
+ * ```txt
  * ---------------------------------
  * |  Server copy  |  Client copy  |
  * |---------------|---------------|
@@ -85,7 +85,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
 
     public eventId: number = EventRecordEntry.REJECT;
 
-    public readonly playerId: PlayerId;
+    public readonly playerId: Player.Id;
 
     public lastAcceptedRequestId: number;
 
@@ -135,7 +135,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
     public newCharSeqPair: Lang.CharSeqPair = undefined;
 
     public constructor(
-        playerId: PlayerId,
+        playerId: Player.Id,
         lastAccpectedRequestId: number,
         destTile: Tile,
     ) {

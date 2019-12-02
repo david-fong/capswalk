@@ -1,7 +1,7 @@
 import { Tile } from "src/base/Tile";
 import { Game } from "src/base/Game";
 import { ClientGame } from "src/client/ClientGame";
-import { PlayerId, Player } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 
 
 /**
@@ -21,7 +21,7 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
     /**
      * @see PlayerId
      */
-    public readonly idNumber: PlayerId;
+    public readonly idNumber: Player.Id;
 
     private _hostTile: Tile;
 
@@ -39,7 +39,7 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
 
 
 
-    protected constructor(game: Game, idNumber: PlayerId) {
+    protected constructor(game: Game, idNumber: Player.Id) {
         if (Math.trunc(this.idNumber) !== this.idNumber) {
             throw new RangeError("Player ID's must be integer values.");
         }
@@ -195,7 +195,7 @@ export namespace PlayerSkeleton {
      * All fields are readonly.
      */
     export type VisibleState = Readonly<{
-        idNumber:   PlayerId;
+        idNumber:   Player.Id;
         isDowned:   boolean;
         isFrozen:   boolean;
         isBubbling: boolean;
@@ -207,7 +207,7 @@ export namespace PlayerSkeleton {
          * Use for Tile-occupant eviction.
          */
         export const NULL = Object.freeze(<const>{
-            idNumber:   PlayerId.NULL,
+            idNumber:   Player.Id.NULL,
             isDowned:   false,
             isFrozen:   false,
             isBubbling: false,

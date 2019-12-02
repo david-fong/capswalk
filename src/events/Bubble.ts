@@ -1,4 +1,4 @@
-import { PlayerId, Player } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
 
 /**
@@ -176,7 +176,7 @@ export namespace Bubble {
 
         public eventId: number = EventRecordEntry.REJECT;
 
-        public readonly playerId: PlayerId;
+        public readonly playerId: Player.Id;
 
         public lastAcceptedRequestId: number;
 
@@ -191,7 +191,7 @@ export namespace Bubble {
         public estimatedTimerDuration: number = undefined;
 
         public constructor(
-            playerId: PlayerId,
+            playerId: Player.Id,
             lastAcceptedRequestId: number,
         ) {
             this.playerId = playerId;
@@ -215,16 +215,16 @@ export namespace Bubble {
         // For this class, the request should never get rejected.
         public eventId: number;
 
-        public bubblerId: PlayerId;
+        public bubblerId: Player.Id;
 
-        public playersToDown: ReadonlyArray<PlayerId>;
+        public playersToDown: ReadonlyArray<Player.Id>;
 
-        public playersToRaise: ReadonlyArray<PlayerId>;
+        public playersToRaise: ReadonlyArray<Player.Id>;
 
         // map to how long to freeze (todo: say units are same as those in the bounds constants)
-        public playersToFreeze: Readonly<Record<PlayerId, number>>;
+        public playersToFreeze: Readonly<Record<Player.Id, number>>;
 
-        public constructor(bubblerId: PlayerId) {
+        public constructor(bubblerId: Player.Id) {
             this.bubblerId = bubblerId;
         }
 

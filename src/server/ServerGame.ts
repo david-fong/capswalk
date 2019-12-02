@@ -4,7 +4,7 @@ import { BarePos } from "src/Pos";
 import { ServerTile } from "src/server/ServerTile";
 import { Game } from "src/base/Game";
 import { GroupSession } from "src/server/GroupSession";
-import { PlayerId, Player } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 
 import { EventRecordEntry } from "src/events/EventRecordEntry";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";

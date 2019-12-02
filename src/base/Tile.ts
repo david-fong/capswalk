@@ -1,6 +1,6 @@
 import { Lang } from "src/lang/Lang";
 import { Pos, BarePos } from "src/Pos";
-import { PlayerId } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 
 export { Pos, BarePos } from "src/Pos";
 
@@ -15,7 +15,7 @@ export abstract class Tile {
 
     public readonly pos: Pos;
 
-    protected _occupantId: PlayerId;
+    protected _occupantId: Player.Id;
     protected _scoreValue: number;
 
     protected _langChar: Lang.Char;
@@ -67,18 +67,18 @@ export abstract class Tile {
 
 
     public isOccupied(): boolean {
-        return this.occupantId !== PlayerId.NULL;
+        return this.occupantId !== Player.Id.NULL;
     }
 
     public evictOccupant(): void {
-        this.occupantId = PlayerId.NULL;
+        this.occupantId = Player.Id.NULL;
     }
 
-    public get occupantId(): PlayerId {
+    public get occupantId(): Player.Id {
         return this._occupantId;
     }
 
-    public set occupantId(occupantId: PlayerId) {
+    public set occupantId(occupantId: Player.Id) {
         this._occupantId = occupantId;
     }
 

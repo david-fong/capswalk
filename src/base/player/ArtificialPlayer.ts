@@ -1,7 +1,7 @@
 import { Pos, Tile } from "src/base/Tile";
 import { Game } from "src/base/Game";
 import { ClientGame } from "src/client/ClientGame";
-import { PlayerId, Player } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { ArtificialPlayerTypes as Types } from "src/base/player/artificials/Chaser";
 

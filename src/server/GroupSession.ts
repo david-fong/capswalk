@@ -1,9 +1,9 @@
 import * as io from "socket.io";
 
-import { GameStateDump } from "src/base/Game";
+import { GameStateDump } from "src/events/GameStartup";
 import { ServerGame } from "src/server/ServerGame";
-import { PlayerId } from "src/base/player/Player";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
+import { Game } from "src/base/Game";
 
 export { ServerGame } from "src/server/ServerGame";
 
@@ -121,31 +121,16 @@ export class GroupSession {
 
 
     /**
-     * @param dimensions - 
+     * @param desc - 
      */
-    private createGameInstance(dimensions: { height: number, width?: number, }): void {
-        const newGame = new ServerGame(this, dimensions);
+    private createGameInstance(desc: Game.ConstructorArguments): void {
+        const newGame = new ServerGame(this, desc);
 
         this.currentGame = newGame;
         this.namespace.emit(
             GameStateDump.EVENT_NAME,
             new GameStateDump(this.currentGame)
         );
-    }
-
-
-
-    /**
-     * {@link Events}
-     */
-    private verifyCallbackFuncSignatures(): never {
-        throw new Error("We don't do that here.");
-    }
-
-
-
-    protected allocatePlayerId(): PlayerId {
-        return -1; // TODO
     }
 
 }
