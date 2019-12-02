@@ -75,6 +75,8 @@ export abstract class Game extends Grid {
     /**
      * _Does not call reset._
      * 
+     * Performs the "no invincible player" check (See {@link Player#teamSet}).
+     * 
      * @override
      */
     public constructor(desc: Game.ConstructorArguments) {
@@ -83,32 +85,42 @@ export abstract class Game extends Grid {
         // TODO: set default language (must be done before call to reset):
         this.lang = null;
 
-        let operator: HumanPlayer;
-        const allHumanPlayers = [];
-        const allArtifPlayers = [];
-        desc.playerDescs.forEach((playerDesc) => {
-            const id: Player.Id = playerDesc.idNumber;
-            if (id === desc.operatorId) {
-                // Found the operator. Note: this will never happen for
-                // a ServerGame instance.
-                operator = this.createOperatorPlayer(playerDesc);
-                allHumanPlayers[id] = operator;
-            } else {
-                if (id >= 0) {
-                    // Human-operated players (unless the operator), are
-                    // represented by a `PuppetPlayer`-type object.
-                    allHumanPlayers[id] = new PuppetPlayer(this, playerDesc);
+        { // Construct Players:
+            let operator: HumanPlayer;
+            const allHumanPlayers = [];
+            const allArtifPlayers = [];
+            desc.playerDescs.forEach((playerDesc) => {
+                const id: Player.Id = playerDesc.idNumber;
+                if (id === desc.operatorId) {
+                    // Found the operator. Note: this will never happen for
+                    // a ServerGame instance.
+                    operator = this.createOperatorPlayer(playerDesc);
+                    allHumanPlayers[id] = operator;
                 } else {
-                    // Artificial players' representation depends on the
-                    // Game implementation type. We have an abstract method
-                    // expressly for that purpose:
-                    allArtifPlayers[id] = this.createArtifPlayer(playerDesc);
+                    if (id >= 0) {
+                        // Human-operated players (unless the operator), are
+                        // represented by a `PuppetPlayer`-type object.
+                        allHumanPlayers[id] = new PuppetPlayer(this, playerDesc);
+                    } else {
+                        // Artificial players' representation depends on the
+                        // Game implementation type. We have an abstract method
+                        // expressly for that purpose:
+                        allArtifPlayers[id] = this.createArtifPlayer(playerDesc);
+                    }
                 }
-            }
-        });
-        this.operator = operator;
-        this.allHumanPlayers = allHumanPlayers;
-        this.allArtifPlayers = allArtifPlayers;
+            });
+            this.operator = operator;
+            this.allHumanPlayers = allHumanPlayers;
+            this.allArtifPlayers = allArtifPlayers;
+        }
+
+        // Check to make sure that none of the players are invincible:
+        // (this happens if a player is "subscribed" to every team number)
+        // TODO: also simplify and merge teams to equivalent representation where possible.
+        {
+            const allTeamsSet: Set<Player.TeamNumber> = new Set();
+            ;
+        }
 
         this.eventRecord = [];
     }

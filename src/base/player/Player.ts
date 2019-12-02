@@ -39,7 +39,18 @@ export abstract class Player extends PlayerSkeleton {
      * documentation for explanations of the consequences / effects of
      * such a relationship (or lack thereof) on how those players are
      * intended to interact by the design of the game's objective and
-     * mechanics.
+     * mechanics. An empty collection indicates that the player is not
+     * ony any team.
+     * 
+     * It must be checked that in the context of all players in a game,
+     * at least one of the following is true, or else there will be a
+     * player that cannot be permanently downed, and the game cannot
+     * end:
+     * - There exists a human-operated player that is not on any team.
+     * - No single player is on every human team.
+     * - There exists an artificial player that can down human players,
+     *   and any player that is on every human team is not on that
+     *   artificial player's team.
      * 
      * The ordering of entries is not meaningful, and duplicated values
      * are removed during construction.
