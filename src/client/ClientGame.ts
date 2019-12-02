@@ -5,7 +5,7 @@ import { VisibleTile } from "src/offline/VisibleTile";
 import { LocalGameSettings } from "src/settings/GameSettings";
 import { Grid, Game } from "src/base/Game";
 
-import { PlayerId } from "src/base/player/Player";
+import { PlayerId, Player } from "src/base/player/Player";
 import { PuppetPlayer } from "src/base/player/PuppetPlayer";
 import { HumanPlayer } from "src/base/player/HumanPlayer";
 import { OnlineHumanPlayer } from "src/client/OnlineHumanPlayer";
@@ -81,15 +81,15 @@ export class ClientGame extends Game {
     /**
      * @override
      */
-    protected createOperatorPlayer(idNumber: PlayerId, username: string): HumanPlayer {
-        return new OnlineHumanPlayer(this, idNumber, username);
+    protected createOperatorPlayer(desc: Player.ConstructorArguments): HumanPlayer {
+        return new OnlineHumanPlayer(this, desc);
     }
 
     /**
      * @override
      */
-    protected createArtifPlayer(idNumber: PlayerId, type: ArtificialPlayer.Type): PuppetPlayer {
-        return new PuppetPlayer(this, idNumber);
+    protected createArtifPlayer(desc: Player.ConstructorArguments): PuppetPlayer {
+        return new PuppetPlayer(this, desc);
     }
 
 

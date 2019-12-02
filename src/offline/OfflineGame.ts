@@ -3,7 +3,7 @@ import { VisibleTile } from "src/offline/VisibleTile";
 import { Game } from "src/base/Game";
 import { LocalGameSettings } from "src/settings/GameSettings";
 
-import { PlayerId } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 import { HumanPlayer } from "src/base/player/HumanPlayer";
 import { OfflineHumanPlayer } from "src/offline/OfflineHumanPlayer";
 
@@ -39,8 +39,8 @@ export class OfflineGame extends Game {
     /**
      * @override
      */
-    protected createOperatorPlayer(idNumber: PlayerId, username: string): HumanPlayer {
-        return new OfflineHumanPlayer(this, idNumber, username);
+    protected createOperatorPlayer(desc: Player.ConstructorArguments): HumanPlayer {
+        return new OfflineHumanPlayer(this, desc);
     }
 
 

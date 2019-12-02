@@ -1,7 +1,7 @@
 import { Tile } from "src/base/Tile";
 import { ClientGame } from "src/client/ClientGame";
+import { Player } from "src/base/player/Player";
 import { HumanPlayer } from "src/base/player/HumanPlayer";
-import { PlayerId } from "src/base/player/Player";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 
@@ -20,10 +20,9 @@ export class OnlineHumanPlayer extends HumanPlayer {
 
     public constructor(
         game: ClientGame,
-        idNumber: PlayerId,
-        username: string,
+        desc: Player.ConstructorArguments,
     ) {
-        super(game, idNumber, username);
+        super(game, desc);
     }
 
 

@@ -13,8 +13,8 @@ import { Player, PlayerId } from "src/base/player/Player";
  */
 export class PuppetPlayer extends Player {
 
-    public constructor(game: Game, idNumber: PlayerId) {
-        super(game, idNumber);
+    public constructor(game: Game, desc: Player.ConstructorArguments) {
+        super(game, desc);
     }
 
     /**

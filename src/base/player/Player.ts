@@ -24,29 +24,66 @@ export namespace PlayerId {
  */
 export abstract class Player extends PlayerSkeleton {
 
+    /**
+     * The `x` and `y` coordinates could be any arbitrary value as long
+     * as they are outside the range of valid {@link Grid} dimensions.
+     */
     public static readonly BENCH_POS: Pos = new Pos(Infinity, Infinity);
+
+
+    public readonly username: Player.Username;
+
+    /**
+     * See {@link Player#isOnATeamWith} for what qualifies a teammate
+     * relationship between two players, and the {@link Bubble} module
+     * documentation for explanations of the consequences / effects of
+     * such a relationship (or lack thereof) on how those players are
+     * intended to interact by the design of the game's objective and
+     * mechanics.
+     * 
+     * The ordering of entries is not meaningful, and duplicated values
+     * are removed during construction.
+     * 
+     * These are fixed once the enclosing Game has been constructed.
+     * To change these values, a new Game must be constructed.
+     */
+    public readonly teamSet: ReadonlyArray<Player.TeamNumber>;
+
+    public lastAcceptedRequestId: number;
+
+    public requestInFlight: boolean;
 
     /**
      * Managed externally by the Game Manager. Here for composition.
      */
     public bubbleTimer: number | NodeJS.Timeout;
 
-    public lastAcceptedRequestId: number;
-
-    public requestInFlight: boolean;
 
 
+    public constructor(game: Game, desc: Readonly<Player.ConstructorArguments>) {
+        super(game, desc.idNumber);
 
-    public constructor(game: Game, idNumber: PlayerId) {
-        super(game, idNumber);
+        if (!(Player.Username.REGEXP.test(desc.username))) {
+            throw new RangeError( `Username \"${desc.username}\"`
+                + ` does not match the required regular expression,`
+                + ` \"${Player.Username.REGEXP}\".`
+            );
+        }
+        this.username = desc.username;
+
+        // Set the `teamSet` field (first remove duplicate values; sorting is optional):
+        this.teamSet = Array.from((new Set(desc.teamNumbers))).sort((a, b) => a - b);
+        if (this.teamSet.some((teamNumber) => teamNumber !== Math.trunc(teamNumber))) {
+            throw new RangeError(`Team numbers must all be integer values.`);
+        }
     }
 
     public reset(): void {
         super.reset();
-        this.game.cancelTimeout(this.bubbleTimer);
-        this.bubbleTimer = undefined;
         this.lastAcceptedRequestId = PlayerMovementEvent.INITIAL_REQUEST_ID;
         this.requestInFlight = false;
+        this.game.cancelTimeout(this.bubbleTimer);
+        this.bubbleTimer = undefined;
     }
 
 
@@ -83,11 +120,29 @@ export abstract class Player extends PlayerSkeleton {
      */
     protected abstract abstractMakeMovementRequest(dest: Tile): void;
 
+    /**
+     * Conveniece method.
+     */
     public bench(): void {
         this.makeMovementRequest(this.benchTile);
     }
 
 
+
+    /**
+     * @returns Whether this and the `other` player are on a team
+     * with each other.
+     * 
+     * @param other - 
+     */
+    public isOnATeamWith(other: Player): boolean {
+        // Note: if this is ever changed, make sure to add the "this"
+        // argument if necessary. It currently is neither needed nor
+        // passed.
+        return this.teamSet.some((teamNumA) => {
+            return other.teamSet.some((teamNumB) => teamNumA === teamNumB);
+        });
+    }
 
     public get pos(): Pos {
         return this.hostTile.pos;
@@ -106,5 +161,38 @@ export abstract class Player extends PlayerSkeleton {
     public getNeighbours(radius: number = 1): Array<Player> {
         return this.game.getNeighbours(this.pos, radius);
     }
+
+}
+
+
+
+export namespace Player {
+
+    export type Id = number;
+
+    /**
+     * An integer value. Strictly negative values correspond to enemy
+     * teams, where all enemies of the same type are on a the same
+     * team. These values are hard-coded into implementations of the
+     * {@link ArtificialPlayer} class. Positive values including zero
+     * are reserved for human-operated players.
+     */
+    export type TeamNumber = number;
+
+    export type Username = string;
+
+    /**
+     * The choice of this is somewhat arbitrary. This should be enforced
+     * externally since player descriptors are passed to the constructor.
+     */
+    export namespace Username {
+        export const REGEXP = new RegExp("[a-zA-Z](\s?[a-zA-Z0-9:-]+)*");
+    }
+
+    export type ConstructorArguments = Readonly<{
+        idNumber: Id;
+        teamNumbers: ReadonlyArray<TeamNumber>;
+        username: Username;
+    }>;
 
 }

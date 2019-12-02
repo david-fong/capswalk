@@ -4,7 +4,7 @@ import { BarePos } from "src/Pos";
 import { ServerTile } from "src/server/ServerTile";
 import { Game } from "src/base/Game";
 import { GroupSession } from "src/server/GroupSession";
-import { PlayerId } from "src/base/player/Player";
+import { PlayerId, Player } from "src/base/player/Player";
 
 import { EventRecordEntry } from "src/events/EventRecordEntry";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
@@ -64,8 +64,8 @@ export class ServerGame extends Game {
     /**
      * @override
      */
-    protected createOperatorPlayer(idNumber: PlayerId, username: string): undefined {
-        return undefined;
+    protected createOperatorPlayer(desc: Player.ConstructorArguments): never {
+        throw new TypeError("This should never be called for a ServerGame.");
     }
 
 

@@ -1,7 +1,7 @@
 import { Tile } from "src/base/Tile";
 import { OfflineGame } from "src/offline/OfflineGame";
 import { HumanPlayer } from "src/base/player/HumanPlayer";
-import { PlayerId } from "src/base/player/Player";
+import { Player } from "src/base/player/Player";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 /**
@@ -11,8 +11,8 @@ import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
  */
 export class OfflineHumanPlayer extends HumanPlayer {
 
-    public constructor(game: OfflineGame, idNumber: PlayerId, username: string) {
-        super(game, idNumber, username);
+    public constructor(game: OfflineGame, desc: Player.ConstructorArguments) {
+        super(game, desc);
     }
 
 

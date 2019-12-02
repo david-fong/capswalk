@@ -73,24 +73,40 @@ export abstract class Game extends Grid {
 
 
     /**
-     * TODO: change the player arrays to be constructor arguments. Not
-     * sure about the aritifial players. But definitely the human ones.
-     * 
      * _Does not call reset._
      * 
      * @override
      */
     public constructor(desc: Game.ConstructorArguments) {
-        super(desc.gridDimensions, desc.htmlRootId);
+        super(desc.gridDimensions);
 
         // TODO: set default language (must be done before call to reset):
         this.lang = null;
 
-        // TODO: setup player arrays:
+        let operator: HumanPlayer;
         const allHumanPlayers = [];
         const allArtifPlayers = [];
-        this.operator = this.createOperatorPlayer(-1, undefined); // TODO
-        allHumanPlayers[this.operator.idNumber] = this.operator;
+        desc.playerDescs.forEach((playerDesc) => {
+            const id: Player.Id = playerDesc.idNumber;
+            if (id === desc.operatorId) {
+                // Found the operator. Note: this will never happen for
+                // a ServerGame instance.
+                operator = this.createOperatorPlayer(playerDesc);
+                allHumanPlayers[id] = operator;
+            } else {
+                if (id >= 0) {
+                    // Human-operated players (unless the operator), are
+                    // represented by a `PuppetPlayer`-type object.
+                    allHumanPlayers[id] = new PuppetPlayer(this, playerDesc);
+                } else {
+                    // Artificial players' representation depends on the
+                    // Game implementation type. We have an abstract method
+                    // expressly for that purpose:
+                    allArtifPlayers[id] = this.createArtifPlayer(playerDesc);
+                }
+            }
+        });
+        this.operator = operator;
         this.allHumanPlayers = allHumanPlayers;
         this.allArtifPlayers = allArtifPlayers;
 
@@ -132,23 +148,19 @@ export abstract class Game extends Grid {
      * method should not add the produced player to the game's
      * {@link Game#allHumanPlayers} array.
      * 
-     * @param idNumber - 
      */
-    protected abstract createOperatorPlayer(idNumber: PlayerId, username: string): HumanPlayer;
+    protected abstract createOperatorPlayer(desc: Player.ConstructorArguments): HumanPlayer;
 
     /**
      * @returns An {@link ArtificialPlayer} of the specified type.
-     * This is overridden in {@link ClientGame} to return a
-     * {@link PuppetPlayer}.
+     * This is overridden in {@link ClientGame} to throw an error.
      * 
-     * @param idNumber - 
-     * @param type - 
+     * @param desc - 
      */
     protected createArtifPlayer(
-        idNumber: PlayerId,
-        type: ArtificialPlayer.Type,
+        desc: Player.ConstructorArguments,
     ): PuppetPlayer | ArtificialPlayer {
-        return undefined; // TODO
+        return ArtificialPlayer.of(this, desc);
     }
 
 

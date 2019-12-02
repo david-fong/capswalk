@@ -1,15 +1,7 @@
 import { Lang } from "src/lang/Lang";
 import { Tile } from "src/base/Tile";
 import { Game } from "base/Game";
-import { PlayerId, Player } from "src/base/player/Player";
-
-
-/**
- * The choice of this is somewhat arbitrary. This should be enforced
- * externally since player descriptors are passed to the constructor.
- */
-export const USERNAME_REGEXP = new RegExp("[a-zA-Z](\s?[a-zA-Z0-9:-]+)*");
-
+import { Player } from "src/base/player/Player";
 
 
 /**
@@ -26,24 +18,12 @@ export abstract class HumanPlayer extends Player {
      */
     private _seqBuffer: Lang.Seq;
 
-    public readonly username: string;
-
-    public constructor(
-        game: Game,
-        idNumber: PlayerId,
-        username: string,
-    ) {
-        super(game, idNumber);
+    public constructor(game: Game, desc: Player.ConstructorArguments) {
+        super(game, desc);
         if (this.idNumber <= 0) {
             throw new RangeError(`The ID number for a human-operated`
                 + ` Player must be strictly positive, but we were`
-                + ` passed the value \"${idNumber}\".`
-            );
-        }
-        this.username = username;
-        if (!(USERNAME_REGEXP.test(username))) {
-            throw new RangeError(
-                `Username \"${username}\" does not match the required regexp.`
+                + ` passed the value \"${this.idNumber}\".`
             );
         }
     }
@@ -103,9 +83,9 @@ export abstract class HumanPlayer extends Player {
             key = this.lang.remapKey(key);
             if (!(Lang.SEQ_REGEXP.test(key))) {
                 throw new Error(`The implementation of input transformation in`
-                    + `the language \"${this.lang.name}\" did not follow the`
-                    + `rule of producing output matching the regular expression`
-                    + `\"${Lang.SEQ_REGEXP}\".`
+                    + ` the language \"${this.lang.name}\" did not follow the`
+                    + ` rule of producing output matching the regular expression`
+                    + ` \"${Lang.SEQ_REGEXP}\".`
                 );
             }
         } else {
