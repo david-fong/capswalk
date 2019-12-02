@@ -1,9 +1,9 @@
 
 # ⌨🐍 SnaKey
 
-[**`try it!`**](index.html)
+[**`try it!` 👈**](index.html "*boop*")
 
-At its core, SnaKey is a typing game where you move by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character with the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese, you would type the keyboard sequence "no" to move onto an adjacent tile marked by the written character "の".
+At its core, SnaKey is a typing game where you move around by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character marked by the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese Hiragana, you would type the keyboard sequence "no" to move onto an adjacent tile marked by the written character "の".
 
 SnaKey drew some initial inspiration from the well-known [Snake Game](https://wikipedia.org/wiki/Snake_(video_game_genre)), hence its name, which is a pun on the words "snake" and "keyboard".
 
@@ -16,12 +16,14 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
   - [Version #2 - Slithering to the Web](#-version-2---slithering-to-the-web)
   - [Version #3 - Snakes With Wings](#-version-3---snakes-with-wings-you-are-here)
 - [Design Challenges & Stepping up my Game](#-design-challenges--stepping-up-my-game "pun intended")
-- [My Joy in TypeScript](#-my-joy-in-typescript)
+- [My Joy in TypeScript](#--my-joy-in-typescript)
   - [Bundling Constructor Arguments as Objects](#-bundling-constructor-arguments-as-objects)
   - [Type Aliases and Declaration Merging](#-type-aliases-and-declaration-merging)
 - [Language Representation](#language-representation)
   - [Language Size Requirements](#language-size-requirements)
   - [Effective Shuffling With Trees](#effective-shuffling-with-trees)
+
+---
 
 ## My Goals and Why I do This
 
@@ -40,6 +42,8 @@ One of the plus sides of pushing myself in this way is that historically, it has
 ### 💼 I want to build up my portfolio
 
 By this, I mean that I aim to make something polished, and something that communicates my journey with the design, as well as the interesting parts of the design itself. This is because I expect that the things I make and learn will not only transfer to some benefit in school-related work, but also in wherever I go during COOP terms and after graduation. While this is the least of my goals, that isn't to say that it doesn't change my approach to my work. The intent I have to share my process and design in addition to the final product gives me the extra motivation to to do things like write good documentation. It's like keeping a house clean so that it's always ready for guests. Whether or not guests ever come, a clean house makes for a good house to live in.
+
+---
 
 ## 🚋 Looking Back and Looking Forward
 
@@ -71,6 +75,8 @@ This brings us to where we are now- around November of 2019. The leading goal of
 
 You might think that after making this game twice I'd be tired of it. But that's not at all the case. For one thing, I see so many opportunities to improve on my previous work. After all, learning has been a major motivation for this project from the start. In each version of this project, I try to make it more and more accessible to people. I for one, cannot wait for the day when I can sit down and play this game together with a group of friends or perhaps even with complete strangers.
 
+---
+
 ## 🛩 Design Challenges & Stepping up my Game
 
 I envision this version to be the last remake- again, not at all because I'm tired of it, but because I finally have the tools and know-how to build up a maintainable code base. Both of the previous versions suffered from three main problems- largely due to me being new to the language. Before I can talk about those problems, solving them, and why solving them is necessary for this version, I need to talk about what makes this version so different.
@@ -83,9 +89,9 @@ One of the big challenges for this project is to give the user the choice betwee
 | Display the game state via the browser DOM | :heavy_check_mark: | :heavy_multiplication_x: | :heavy_check_mark: |
 | Use network operations to exchange events  | :heavy_multiplication_x: | :heavy_check_mark: | :heavy_check_mark: |
 
-This means that the code that receives a request for something like player movement and performs validation must be in a separate function from that which enacts all changes to all parts of the game state that are affected by an acceptance of the request. In addition to that, SocketIO can only guarantee that application messages will arrive in order if the client is using websockets for its underlying transport, which, while common, is not an absolute given, and is indeed not the case before a temporary long-polling connection upgrades to use websockets. This means that these request processing and executing functions must use event ID systems to handle out-of-order message arrivals.
+This means that the code that receives a request for something like player movement and performs validation must be in a separate function from that which enacts all changes to all parts of the game state that are affected by an acceptance of the request. In addition to that, SocketIO can only guarantee that application messages will arrive in order if the client is using websockets for its underlying transport, which, while common, is not an absolute given, and is indeed not the case before a temporary long-polling connection upgrades to use websockets. This means that these request processing and executing functions must use event-ID systems to handle out-of-order message arrivals.
 
-### Stepping up my Game (pun intended)
+### 🧗‍♀️ Stepping up my Game (pun intended)
 
 Now that we understand the start of why the design requires so much more care in this version, we can talk about the solving the problems plaguing the two earlier versions.
 
@@ -94,6 +100,8 @@ Now that we understand the start of why the design requires so much more care in
 | 📁<br>Modularity    | | |
 | 🦆<br>Inheritance   | | |
 | 📄<br>Documentation | Unlike the other problems, this wasn't due to not knowing about or understanding how to use a language feature. Rather, it was a problem of values: At the time, writing documentation didn't feel like it mattered. The code was _relatively_ small and simple, and on top of that, I had no IDE to show documentation on mouseover, so any documentation I wrote wasn't even very accessible to me. | The solution here is to be intentional. And to be honest, I may not even need that. As the design becomes more complicated to address the new design requirements, I have a more critical need to clearly communicate a function's purpose. And as I design my function API's, I come across more situations where I need to make a judgement call on which functions in a call chain should handle certain functionalities. Writing good documentation allows me to stop wasting time reading my previous code to remember what it is being held responsible to do. |
+
+---
 
 ## 🤸‍♂️ My Joy in TypeScript
 
@@ -107,15 +115,17 @@ This is something that can be done in plain Javascript. It serves three purposes
 
 #### 👣 Footprint Reduction
 
-It massivly reduces function signature bloat. Compared to Java, creating and defining the shapes of objects in JavaScript is much less verbose.
+This basically nullifies any problems with function signature bloat. Compared to Java, creating and defining the shapes of objects in JavaScript is much less verbose, so using this technique is convenient. This comes at the cost of writing more code (specifying field-names in addition to values) when calling constructors, but if a constructor is called seldomly, and the inheritence heirarchy is large with next-to-identical constructor signatures, then you come out on the winning side.
 
 #### 🧘‍♂️ Flexibility
 
-It makes constructor signatures incredibly malleable. If I need to add, remove, or change the type of an argument, I can change it in the type annotation for the object bundle, modify handler code related to the change, and leave the rest of the constructors of extending classes untouched. I discovered this out of need: If you traverse [the entire `Player` class tree](src/base/player), that's at least eight constructors, and that's not even talking about where those constructors are called. Could you solve this by using a great IDE? Yes. But reduced reliance on an IDE for refactoring means less hassle. Not all IDE's are good at function signature refactoring.
+It makes constructor signatures incredibly malleable. If I need to add, remove, or change the type of an argument, I can simply modify the object bundle and the relevant handler code, and leave the rest of the constructors of extending classes untouched. I discovered this out of need: If you traverse [the entire `Player` class tree](src/base/player), there are at least eight constructors, and therefore at least the same number of sites where such constructors are called. Could you solve this particular issue by using a good IDE? Yes. But reduced reliance on an IDE for refactoring means less hassle; Not all IDE's are good at function signature refactoring, especially when it comes to [the duck-typing model](https://en.wikipedia.org/wiki/Duck_typing).
 
 #### 📛 Explicit Argument Mapping
 
 Unlike passing arguments in an argument list, this requires wrapping arguments in an object, where mapping the value from the argument / object-field name is mandatory. This makes it _very_ difficult to pass arguments in "the wrong order", because now order is meaningless. All the cognitive effort is migrated to using good object-field and variable names, which is much more intuitive and robust.
+
+---
 
 ### 🧩 Type Aliases and Declaration Merging
 
@@ -137,7 +147,7 @@ export class Player {
 }
 export namespace Player {
     // <documentation>
-    export type Id;
+    export type Id = number;
     export namespace Id {
         // <documentation>
         export const NULL = 0;
@@ -146,6 +156,8 @@ export namespace Player {
 ```
 
 The example shows how namespace merging allows you to scope type declarations, and make it look like they declare special constants. With fields like usernames, this can be used to scope regular expression checkers under the type alias. In Java, you can't alias primitive types, [and that's final (🥁)](https://stackoverflow.com/a/28238107/11107541). In C, you can alias anything, but you can't scope type definitions unless you are using C++. In TypeScript, you can do both, and I think that's super cool.
+
+---
 
 ## Language Representation
 
