@@ -16,6 +16,8 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
   - [Version #2 - Slithering to the Web](#-version-2---slithering-to-the-web)
   - [Version #3 - Snakes With Wings](#-version-3---snakes-with-wings-you-are-here)
 - [Design Challenges & Stepping up my Game](#-design-challenges--stepping-up-my-game "pun intended")
+- [My Joy in TypeScript](#-my-joy-in-typescript)
+  - [Bundling Constructor Arguments as Objects](#-bundling-constructor-arguments-as-objects)
 - [Language Representation](#language-representation)
   - [Language Size Requirements](#language-size-requirements)
   - [Effective Shuffling With Trees](#effective-shuffling-with-trees)
@@ -82,13 +84,38 @@ One of the big challenges for this project is to give the user the choice betwee
 
 This means that the code that receives a request for something like player movement and performs validation must be in a separate function from that which enacts all changes to all parts of the game state that are affected by an acceptance of the request. In addition to that, SocketIO can only guarantee that application messages will arrive in order if the client is using websockets for its underlying transport, which, while common, is not an absolute given, and is indeed not the case before a temporary long-polling connection upgrades to use websockets. This means that these request processing and executing functions must use event ID systems to handle out-of-order message arrivals.
 
+### Stepping up my Game (pun intended)
+
 Now that we understand the start of why the design requires so much more care in this version, we can talk about the solving the problems plaguing the two earlier versions.
 
-|     Topic     | The What and Why of the Problem | The Solution and its Necessity |
-|:-------------:|---------------------------------|--------------------------------|
-| Modularity    | | |
-| Inheritance   | | |
-| Documentation | Unlike the other problems, this wasn't due to not knowing about or understanding how to use a language feature. Rather, it was a problem of values: At the time, writing documentation didn't feel like it mattered. The code was _relatively_ small and simple, and on top of that, I had no IDE to show documentation on mouseover, so any documentation I wrote wasn't even very accessible to me. | The solution here is to be intentional. And to be honest, I may not even need that. As the design becomes more complicated to address the new design requirements, I have a more critical need to clearly communicate a function's purpose. And as I design my function API's, I come across more situations where I need to make a judgement call on which functions in a call chain should handle certain functionalities. Writing good documentation allows me to stop wasting time reading my previous code to remember what it is being held responsible to do. |
+|        Topic        | The What and Why of the Problem | The Solution and its Necessity |
+|:-------------------:|---------------------------------|--------------------------------|
+| 📁<br>Modularity    | | |
+| 🦆<br>Inheritance   | | |
+| 📄<br>Documentation | Unlike the other problems, this wasn't due to not knowing about or understanding how to use a language feature. Rather, it was a problem of values: At the time, writing documentation didn't feel like it mattered. The code was _relatively_ small and simple, and on top of that, I had no IDE to show documentation on mouseover, so any documentation I wrote wasn't even very accessible to me. | The solution here is to be intentional. And to be honest, I may not even need that. As the design becomes more complicated to address the new design requirements, I have a more critical need to clearly communicate a function's purpose. And as I design my function API's, I come across more situations where I need to make a judgement call on which functions in a call chain should handle certain functionalities. Writing good documentation allows me to stop wasting time reading my previous code to remember what it is being held responsible to do. |
+
+## 🤸‍♂️ My Joy in TypeScript
+
+In all my experience working with Java (Ie. my first semester of second year uni, my first COOP terms of 4 months, and [in another of my main personal projects](https://github.com/david-fong/UbcCourseSchedulingTool)), The things I have loved most about it are its strong language spec, how strong typing is baked into the grammar, and the resulting ability for good a IDE to make the task of writing code a better experience. That's why as I started breaking into TypeScript and eslint in this project, my heart felt like it was flying.
+
+Here, I want to share ways that I've been leveraging and combining Javascript and TypeScript features to make my code more flexible, organized, and better documented, and what I think those features have over Java. To be clear, I'm not trying to throw dirt at Java. As I said, the whole reason for my love-at-first-sight feeling with TypeScript was that it allowed me to write code like I can in Java. What I'm trying to do here is share things that excite me about TypeScript, and how it adds to my development experience in a way that Java cannot. I could just the same do the reverse, but that's not the point of this section.
+
+### 🍱 Bundling Constructor Arguments as Objects
+
+This is something that can be done in plain Javascript. It serves three purposes:
+
+#### 👣 Footprint Reduction
+
+It massivly reduces function signature bloat. Compared to Java, creating and defining the shapes of objects in JavaScript is much less verbose.
+
+#### 🧘‍♂️ Flexibility
+
+It makes constructor signatures incredibly malleable. If I need to add, remove, or change the type of an argument, I can change it in the type annotation for the object bundle, modify handler code related to the change, and leave the rest of the constructors of extending classes untouched. I discovered this out of need: If you traverse [the entire `Player` class tree](src/base/player), that's at least eight constructors, and that's not even talking about where those constructors are called. Could you solve this by using a great IDE? Yes. But reduced reliance on an IDE for refactoring means less hassle. Not all IDE's are good at function signature refactoring.
+
+#### 📛 Explicit Argument Mapping
+
+Unlike passing arguments in an argument list, this requires wrapping arguments in an object, where mapping the value from the argument / object-field name is mandatory. This makes it _very_ difficult to pass arguments in "the wrong order", because now order is meaningless. All the cognitive effort is migrated to using good object-field and variable names, which is much more intuitive and robust.
+
 
 ## Language Representation
 
