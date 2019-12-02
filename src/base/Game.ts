@@ -1,7 +1,7 @@
 import { Lang } from "src/lang/Lang";
 import { BalancingScheme } from "src/lang/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
-import { GridDimensionDesc, Grid } from "src/base/Grid";
+import { Grid } from "src/base/Grid";
 
 import { PlayerId, Player } from "src/base/player/Player";
 import { PuppetPlayer } from "src/base/player/PuppetPlayer";
@@ -13,7 +13,7 @@ import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { Bubble } from "src/events/Bubble";
 import { EventRecordEntry } from "src/events/EventRecordEntry";
 
-export { GridDimensionDesc, Grid } from "src/base/Grid";
+export { Grid } from "src/base/Grid";
 
 
 /**
@@ -80,16 +80,19 @@ export abstract class Game extends Grid {
      * 
      * @override
      */
-    public constructor(dimensions: GridDimensionDesc) {
-        super(dimensions);
+    public constructor(desc: Game.ConstructorArguments) {
+        super(desc.gridDimensions, desc.htmlRootId);
 
         // TODO: set default language (must be done before call to reset):
         this.lang = null;
 
-        // TODO: setup allHumanPlayers?
+        // TODO: setup player arrays:
+        const allHumanPlayers = [];
+        const allArtifPlayers = [];
         this.operator = this.createOperatorPlayer(-1, undefined); // TODO
-        this.allHumanPlayers = [];
-        this.allArtifPlayers = [];
+        allHumanPlayers[this.operator.idNumber] = this.operator;
+        this.allHumanPlayers = allHumanPlayers;
+        this.allArtifPlayers = allArtifPlayers;
 
         this.eventRecord = [];
     }
@@ -577,5 +580,26 @@ export abstract class Game extends Grid {
         //return this.settings.langBalancingScheme.selectedValue;
         return undefined;
     }
+
+}
+
+
+
+export namespace Game {
+
+    /**
+     * 
+     */
+    export type ConstructorArguments = Readonly<{
+
+        gridDimensions: Grid.DimensionDesc;
+
+        /**
+         * This should be set to {@link Player.Id.NULL} for {@link ServerGame}.
+         */
+        operatorId: Player.Id;
+
+        playerDescs: ReadonlyArray<Player.ConstructorArguments>;
+    }>;
 
 }

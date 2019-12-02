@@ -5,7 +5,6 @@ import { PlayerId } from "src/base/player/Player";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 
-
 /**
  * 
  * @extends HumanPlayer

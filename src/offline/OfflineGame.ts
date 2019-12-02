@@ -1,12 +1,12 @@
 import { BarePos } from "src/Pos";
 import { VisibleTile } from "src/offline/VisibleTile";
-import { GridDimensionDesc, Game } from "src/base/Game";
+import { Game } from "src/base/Game";
 import { LocalGameSettings } from "src/settings/GameSettings";
 
 import { PlayerId } from "src/base/player/Player";
 import { HumanPlayer } from "src/base/player/HumanPlayer";
 import { OfflineHumanPlayer } from "src/offline/OfflineHumanPlayer";
-import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
+
 
 /**
  * 
@@ -20,10 +20,10 @@ export class OfflineGame extends Game {
     /**
      * _Calls reset recursively for this entire composition._
      * 
-     * @param dimensions - 
+     * @param desc - 
      */
-    public constructor(dimensions: GridDimensionDesc) {
-        super(dimensions);
+    public constructor(desc: Game.ConstructorArguments) {
+        super(desc);
         this.settings = LocalGameSettings.getInstance();
 
         this.reset();
@@ -40,7 +40,7 @@ export class OfflineGame extends Game {
      * @override
      */
     protected createOperatorPlayer(idNumber: PlayerId, username: string): HumanPlayer {
-        return new OfflineHumanPlayer(this, idNumber);
+        return new OfflineHumanPlayer(this, idNumber, username);
     }
 
 

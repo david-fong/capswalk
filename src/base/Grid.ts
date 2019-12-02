@@ -3,15 +3,6 @@ import { BarePos, Tile } from "src/base/Tile";
 import { VisibleTile } from "src/offline/VisibleTile";
 
 
-/**
- * Values do not _need_ to be in range or integers. Cleaning to handle
- * such values is performed by the {@link Grid} constructor.
- */
-export type GridDimensionDesc = {
-    height: number,
-    width?: number,
-};
-
 
 /**
  * Provides basic management of The basic 2-dimensional-array-like
@@ -23,8 +14,8 @@ export abstract class Grid {
      * Bounds are inclusive. Ie. the specified values are _just_ allowed.
      */
     public static readonly SIZE_LIMITS = Object.freeze({
-        height: Object.freeze({ min: 10, max: 70, }),
-        width:  Object.freeze({ min: 10, max: 70, }),
+        height: Object.freeze(<const>{ min: 10, max: 50, }),
+        width:  Object.freeze(<const>{ min: 10, max: 50, }),
     });
 
     public readonly height: number;
@@ -63,7 +54,7 @@ export abstract class Grid {
      *      are kicked out. Must refer to an existing element.
      */
     public constructor(
-        dimensions: GridDimensionDesc,
+        dimensions: Grid.DimensionDesc,
         domGridHtmlIdHook = HtmlIdHooks.GRID
     ) {
         if (!(dimensions.width)) {
@@ -175,5 +166,20 @@ export abstract class Grid {
     public getUNT(pos: BarePos, radius: number = 1): Array<Tile> {
         return this.getNeighbouringTiles(pos, radius).filter((tile) => !(tile.isOccupied()));
     }
+
+}
+
+
+
+export namespace Grid {
+
+    /**
+     * Values do not _need_ to be in range or integers. Cleaning to handle
+     * such values is performed by the {@link Grid} constructor.
+     */
+    export type DimensionDesc = {
+        height: number,
+        width?: number,
+    };
 
 }

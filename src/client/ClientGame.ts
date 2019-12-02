@@ -3,7 +3,7 @@ import * as io from "socket.io-client";
 import { BarePos } from "src/Pos";
 import { VisibleTile } from "src/offline/VisibleTile";
 import { LocalGameSettings } from "src/settings/GameSettings";
-import { GridDimensionDesc, Grid, Game } from "src/base/Game";
+import { Grid, Game } from "src/base/Game";
 
 import { PlayerId } from "src/base/player/Player";
 import { PuppetPlayer } from "src/base/player/PuppetPlayer";
@@ -25,13 +25,23 @@ export class ClientGame extends Game {
 
     public readonly socket: SocketIOClient.Socket;
 
+
+
+    /**
+     * _Calls Grid.reset for this composition (bypasses super)._
+     * 
+     * @param socket - 
+     * @param desc - 
+     */
     public constructor(
         socket: SocketIOClient.Socket,
-        dimensions: GridDimensionDesc,
+        desc: Game.ConstructorArguments,
     ) {
-        super(dimensions);
+        super(desc);
         this.settings = LocalGameSettings.getInstance();
         this.socket = socket;
+
+        this.reset();
 
         this.socket.on(
             PlayerMovementEvent.EVENT_NAME,

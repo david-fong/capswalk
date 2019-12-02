@@ -35,7 +35,7 @@ export abstract class HumanPlayer extends Player {
     ) {
         super(game, idNumber);
         if (this.idNumber <= 0) {
-            throw new RangeError(`ID number for a human-operated`
+            throw new RangeError(`The ID number for a human-operated`
                 + ` Player must be strictly positive, but we were`
                 + ` passed the value \"${idNumber}\".`
             );

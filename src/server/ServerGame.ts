@@ -2,14 +2,14 @@ import { setTimeout } from "timers";
 
 import { BarePos } from "src/Pos";
 import { ServerTile } from "src/server/ServerTile";
-import { GridDimensionDesc, Game } from "src/base/Game";
+import { Game } from "src/base/Game";
 import { GroupSession } from "src/server/GroupSession";
-
 import { PlayerId } from "src/base/player/Player";
 
 import { EventRecordEntry } from "src/events/EventRecordEntry";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { Bubble } from "src/events/Bubble";
+
 
 /**
  * 
@@ -25,17 +25,19 @@ export class ServerGame extends Game {
      */
     public readonly operator: undefined;
 
+
+
     /**
      * _Calls reset recursively for this entire composition._
      * 
      * @param session - 
-     * @param dimensions - 
+     * @param desc - 
      */
     public constructor(
         session: GroupSession,
-        dimensions: GridDimensionDesc,
+        desc: Game.ConstructorArguments,
     ) {
-        super(dimensions);
+        super(desc);
         this.session = session;
 
         this.reset();

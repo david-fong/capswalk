@@ -11,8 +11,8 @@ import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
  */
 export class OfflineHumanPlayer extends HumanPlayer {
 
-    public constructor(game: OfflineGame, idNumber: PlayerId) {
-        super(game, idNumber);
+    public constructor(game: OfflineGame, idNumber: PlayerId, username: string) {
+        super(game, idNumber, username);
     }
 
 
