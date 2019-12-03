@@ -206,9 +206,10 @@ export namespace Player {
     }
 
     export type ConstructorArguments = {
-        idNumber: Id; // undefined for game ctor args
+        idNumber: Id; // undefined for game ctor arg
         readonly teamNumbers: ReadonlyArray<TeamNumber>;
         readonly username: Username;
+        readonly socketId?: string; // undefined for offline game
     };
 
 }

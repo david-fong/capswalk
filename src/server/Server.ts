@@ -31,7 +31,11 @@ export class Server {
     protected readonly http: http.Server;
     protected readonly io:   io.Server;
 
-    protected allGroupSessions: Map<string, GroupSession>;
+    /**
+     * This is only used to maintain object references so that
+     * they are not garbage-collection elegible.
+     */
+    private readonly allGroupSessions: Map<string, GroupSession>;
 
     /**
      * 
@@ -73,8 +77,9 @@ export class Server {
                 namespace.name,
                 new GroupSession(
                     namespace,
-                    Defs.GROUP_SESSION_INITIAL_TTL,
                     (): void => {
+                        // Once this reference is deleted, the object
+                        // is elegible for garbage-collection.
                         this.allGroupSessions.delete(namespace.name);
                     }
                 )
