@@ -1,6 +1,5 @@
 import * as io from "socket.io";
 
-import { Defs } from "src/Defs";
 import { Grid } from "src/base/Game";
 import { ServerGame } from "src/server/ServerGame";
 import { Player } from "src/base/player/Player";
@@ -38,7 +37,7 @@ export class GroupSession {
     public constructor(
         namespace: io.Namespace,
         deleteExternalRefs: VoidFunction,
-        initialTtl: number = Defs.GROUP_SESSION_INITIAL_TTL,
+        initialTtl: number,
     ) {
         this.namespace   = namespace;
         this.currentGame = undefined;
@@ -139,8 +138,8 @@ export class GroupSession {
 export namespace GroupSession {
 
     /**
-     * It is very convenient to tack these fields directly onto the
-     * socket objects.
+     * An extension of {@link io.Socket}. It is very convenient to tack
+     * these fields directly onto the socket objects.
      */
     export type Socket = io.Socket & Partial<{
         username: Player.Username;
@@ -154,4 +153,56 @@ export namespace GroupSession {
     export namespace RoomNames {
         export const MAIN = "main";
     }
+
+
+    export type SessionName = string;
+    export namespace SessionName {
+        /**
+         * @see Player.Username.REGEXP
+         */
+        export const REGEXP = Player.Username.REGEXP;
+    }
+
+
+    /**
+     * 
+     */
+    export class CreateEvent {
+
+        public static EVENT_NAME = "group-session-create";
+
+        public static DEFAULT_INITIAL_TTL = 60;
+
+        /**
+         * The client should set this to a string to use as a group
+         * name. They should try to satisfy {@link SessionName.REGEXP},
+         * although that is not manditory.
+         * 
+         * The Server should respond with this field set either to be
+         * a Socket.IO namespace based off the client's request that
+         * is open for connecting, or to the empty string to indicate
+         * that the request was rejected.
+         */
+        public groupName: SessionName;
+
+        /**
+         * The Server should ignore any value set here by the client.
+         * 
+         * The Server should respond to the client setting this value
+         * to an approximate number of _seconds_ before the created
+         * {@link GroupSession} will decide it was abandoned at birth
+         * and get cleaned up (if nobody connects to it in that time).
+         * 
+         * If the request was rejected, the client should ignore any
+         * value set here by the Server.
+         */
+        public initialTtl: number;
+
+        public constructor(
+            initialTtl: number = CreateEvent.DEFAULT_INITIAL_TTL
+        ) {
+            this.initialTtl = initialTtl;
+        }
+    };
+
 }

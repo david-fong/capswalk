@@ -1,5 +1,6 @@
-import * as app     from "express";
+import * as os      from "os";
 import * as http    from "http";
+import * as app     from "express";
 import * as io      from "socket.io";
 
 import { Defs } from "src/Defs";
@@ -8,56 +9,42 @@ import { GroupSession } from "src/server/GroupSession";
 
 
 /**
- * 
- */
-namespace PublicNamespaces {
-    export const GAME_HOSTS     = "/gamehosts";
-    export const GROUP_SESSIONS = "/groups"; // can address using regexp
-}
-
-
-/**
  * Creates and performs management operations on {@link ServerGame}s.
  */
 export class Server {
 
-    // TODO: do we need to make this accessible outside?
-    //public static readonly PUBLIC_NAMESPACES: object = PublicNamespaces;
-
-    protected readonly port: number;
-    protected readonly hostPwd: string;
-
-    protected readonly app:  app.Application;
     protected readonly http: http.Server;
+    protected readonly app:  app.Application;
     protected readonly io:   io.Server;
 
     /**
-     * This is only used to maintain object references so that
-     * they are not garbage-collection elegible.
+     * This is only used to maintain object references so that they are
+     * not garbage-collection elegible. Keys are Socket.IO namespace
+     * names corresponding the the mapped value.
      */
     private readonly allGroupSessions: Map<string, GroupSession>;
 
     /**
      * 
+     * @param host - The hostname of the server. This may be an IP address.
      * @param port - The port number on which to host the Server.
      *          Defaults to {@link Defs.SERVER_PORT}.
      */
-    public constructor(port: number = Defs.SERVER_PORT) {
-        this.port   = port;
+    public constructor(host: string, port: number = Defs.SERVER_PORT) {
         this.app    = app();
-        this.http   = http.createServer(this.app);
+        this.http   = http.createServer({}, this.app);
         this.io     = io(this.http);
-        this.hostPwd = __dirname;
 
-        this.http.listen(this.port, (): void => {
-            console.log(`Now listening on port *:${this.port}.`);
+        this.http.listen({ host, port, }, (): void => {
+            console.log(`Server mounted to: ${this.http.address}.`);
         });
 
         this.app.get("/", (req, res) => {
-            res.sendFile(`${__dirname}/index.html`);
+            res.sendFile(`${__dirname}/../../index.html`);
         });
 
-        this.io.of(PublicNamespaces.GAME_HOSTS).on("connection", this.onGameHostsConnection);
+        this.io.of(Server.SocketIoNamespaces.GROUP_JOINER)
+            .on("connection", this.onGameHostsConnection);
     }
 
     /**
@@ -67,12 +54,19 @@ export class Server {
      * @param socket - The socket from the game host.
      */
     protected onGameHostsConnection(socket: io.Socket): void {
-        console.log("A user has connected.");
-
         // This callback will only be called once.
-        socket.on(Events.CreateSession.name, (ack: Function): void => {
+        socket.on(GroupSession.CreateEvent.EVENT_NAME, (groupName: GroupSession.SessionName): void => {
             // Create a new group session:
-            const namespace: io.Namespace = this.io.of(this.createUniqueSessionName());
+            groupName = this.createUniqueSessionName(groupName);
+            if (!(groupName)) {
+                // The name was not accepted. Notify the client:
+                socket.emit(
+                    GroupSession.CreateEvent.EVENT_NAME,
+                    new GroupSession.CreateEvent(),
+                );
+                return;
+            }
+            const namespace: io.Namespace = this.io.of(groupName);
             this.allGroupSessions.set(
                 namespace.name,
                 new GroupSession(
@@ -82,19 +76,15 @@ export class Server {
                         // is elegible for garbage-collection.
                         this.allGroupSessions.delete(namespace.name);
                     }
+                    initial
                 )
             );
 
             // Notify the host of the namespace created for the
             // requested group session so they can connect to it:
             socket.emit(
-                Events.CreateSession.name,
-                namespace.name,
-                Defs.GROUP_SESSION_INITIAL_TTL,
-                (): void => {
-                    // On client ack, disconnect the client.
-                    socket.disconnect();
-                }
+                GroupSession.CreateEvent.EVENT_NAME,
+                desc,
             );
         });
 
@@ -103,14 +93,59 @@ export class Server {
         });
     }
 
-    protected createUniqueSessionName(): string {
-        const uniqueId: string | number = -1; // TODO
-        const sessionName: string = `${PublicNamespaces.GROUP_SESSIONS}/${uniqueId}`;
+    /**
+     * @returns The Socket.IO namespace using the provided `groupName`.
+     * 
+     * @param groupName - A name to give the group. `null` if rejected,
+     *      which happens if `groupName` is already taken, or if it
+     *      does not match the required regular expression.
+     */
+    protected createUniqueSessionName(groupName: GroupSession.SessionName): string | null {
+        if (!(GroupSession.SessionName.REGEXP.test(groupName))) {
+            return null;
+        }
+        const sessionName: string = `${Server.SocketIoNamespaces.GROUP_LOBBY}/${groupName}`;
         if (this.allGroupSessions.has(sessionName)) {
-            // should never reach here.
-            throw new Error("Another session already has this name.");
+            return null;
         }
         return sessionName;
     }
 
+}
+
+
+
+export namespace Server {
+
+    /**
+     * Paths to pages on the site:
+     */
+    export const PATHS = Object.freeze(<const>{
+
+        /**
+         * A global hub where clients can join or create groups
+         */
+        GROUP_SESSIONS: "groups",
+    });
+
+    /**
+     * 
+     */
+    export namespace SocketIoNamespaces {
+        export const GROUP_JOINER   = "/groups";
+        export const GROUP_LOBBY    = "/groups"; // can address using regexp
+    }
+
+    /**
+     * @returns An array of non-internal IPv4 addresses from any of the
+     * local hosts' network interfaces.
+     * 
+     * TODO: change to return a map from each of "public" and "private" to a list of addresses
+     * https://en.wikipedia.org/wiki/Private_network
+     */
+    export const chooseIPv4Address = (): ReadonlyArray<string> => {
+        return Object.values(os.networkInterfaces()).flat().filter((info) => {
+            return !(info.internal) && info.family === "IPv4";
+        }).map((info) => info.address);
+    };
 }
