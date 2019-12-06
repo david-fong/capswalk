@@ -27,6 +27,8 @@ export class ServerGame extends Game {
      */
     public readonly operator: undefined;
 
+    protected readonly socketMap: ReadonlyMap<Player.Id, io.Socket>;
+
 
 
     /**
@@ -44,11 +46,15 @@ export class ServerGame extends Game {
         desc: Game.ConstructorArguments,
     ) {
         super(desc);
-
         this.namespace = session.namespace;
+        const socketMap: Map<Player.Id, io.Socket> = new Map();
+        desc.playerDescs.forEach((playerDesc) => {
+            socketMap.set(playerDesc.idNumber, this.namespace.sockets[playerDesc.socketId]);
+        }, this);
+        this.socketMap = socketMap;
 
-        // Attach event listeners / handlers to the socket:
-        Object.values(session.sockets).forEach((socket) => {
+        // Attach event listeners / handlers to each socket:
+        Object.values(session.sockets).forEach((socket: GroupSession.Socket) => {
             // Attach the movement request handler:
             socket.removeAllListeners(PlayerMovementEvent.EVENT_NAME);
             socket.on(
@@ -61,7 +67,17 @@ export class ServerGame extends Game {
                 Bubble.MakeEvent.EVENT_NAME,
                 this.processBubbleMakeRequest,
             );
+            // TODO: pause-request handler:
         });
+
+        // Pass on Game constructor arguments to each client:
+        desc.playerDescs.forEach((playerDesc) => {
+            desc.operatorIndex = playerDesc.idNumber;
+            this.namespace.sockets[playerDesc.socketId].emit(
+                Game.ConstructorArguments.EVENT_NAME,
+                desc,
+            );
+        }, this);
 
         this.reset();
     }
@@ -109,8 +125,7 @@ export class ServerGame extends Game {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            // TODO: don't broadcast. just respond directly to the requester.
-            this.namespace.emit(
+            this.socketMap.get(desc.playerId).emit(
                 PlayerMovementEvent.EVENT_NAME,
                 desc,
             );
@@ -129,8 +144,7 @@ export class ServerGame extends Game {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            // TODO: don't broadcast. just respond directly to the requester.
-            this.namespace.emit(
+            this.socketMap.get(desc.playerId).emit(
                 Bubble.MakeEvent.EVENT_NAME,
                 desc,
             );

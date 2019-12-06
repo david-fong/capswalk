@@ -30,7 +30,8 @@ export class ClientGame extends Game {
      * _Calls Grid.reset for this composition (bypasses super)._
      * 
      * @param socket - 
-     * @param desc - 
+     * @param desc - This should come from a Server event by the name
+     *      {@link Game.ConstructorArguments.EVENT_NAME}.
      */
     public constructor(
         socket: SocketIOClient.Socket,
@@ -42,20 +43,23 @@ export class ClientGame extends Game {
 
         this.reset();
 
+        this.socket.off(PlayerMovementEvent.EVENT_NAME);
         this.socket.on(
             PlayerMovementEvent.EVENT_NAME,
             this.processMoveExecute
         );
+        this.socket.off(Bubble.MakeEvent.EVENT_NAME);
         this.socket.on(
             Bubble.MakeEvent.EVENT_NAME,
             this.processBubbleMakeExecute,
         );
+        this.socket.off(Bubble.PopEvent.EVENT_NAME);
         this.socket.on(
             Bubble.PopEvent.EVENT_NAME,
             this.processBubblePopExecute,
         );
-        // TODO: should this call reset? The other implementations
-        // (Game Managers) do.
+
+        this.reset();
     }
 
     /**
@@ -63,11 +67,13 @@ export class ClientGame extends Game {
      */
     public reset(): void {
         // Bypass my direct parent's reset implementation.
-
-        // TODO: do we even need the below call? We should be waiting
-        // for a GameStateDump from the ServerGame, and sending it an
-        // ack to say that we received it.
         Grid.prototype.reset.call(this);
+
+        // TODO: Wait for a GameStateDump from the ServerGame. Send ack.
+        // this.socket.once(
+        //     Game.StateDump.EVENT_NAME,
+        //     () => {},
+        // );
     }
 
     /**

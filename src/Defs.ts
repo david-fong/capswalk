@@ -15,11 +15,6 @@ export namespace Defs {
      */
     export const SERVER_PORT = 8080;
 
-    /**
-     * See {@link GroupSession.constructor}.
-     */
-    export const GROUP_SESSION_INITIAL_TTL = 60;
-
 }
 
 

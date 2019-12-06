@@ -4,7 +4,6 @@ import * as app     from "express";
 import * as io      from "socket.io";
 
 import { Defs } from "src/Defs";
-import { Events } from "src/Events";
 import { GroupSession } from "src/server/GroupSession";
 
 
@@ -54,19 +53,18 @@ export class Server {
      * @param socket - The socket from the game host.
      */
     protected onGameHostsConnection(socket: io.Socket): void {
-        // This callback will only be called once.
-        socket.on(GroupSession.CreateEvent.EVENT_NAME, (groupName: GroupSession.SessionName): void => {
+        socket.on(GroupSession.CreateEvent.EVENT_NAME, (desc: GroupSession.CreateEvent): void => {
             // Create a new group session:
-            groupName = this.createUniqueSessionName(groupName);
-            if (!(groupName)) {
+            desc.groupName = this.createUniqueSessionName(desc.groupName);
+            if (!(desc.groupName)) {
                 // The name was not accepted. Notify the client:
                 socket.emit(
                     GroupSession.CreateEvent.EVENT_NAME,
-                    new GroupSession.CreateEvent(),
+                    new GroupSession.CreateEvent(""),
                 );
                 return;
             }
-            const namespace: io.Namespace = this.io.of(groupName);
+            const namespace: io.Namespace = this.io.of(desc.groupName);
             this.allGroupSessions.set(
                 namespace.name,
                 new GroupSession(
@@ -75,8 +73,8 @@ export class Server {
                         // Once this reference is deleted, the object
                         // is elegible for garbage-collection.
                         this.allGroupSessions.delete(namespace.name);
-                    }
-                    initial
+                    },
+                    desc.initialTtl,
                 )
             );
 
@@ -86,10 +84,6 @@ export class Server {
                 GroupSession.CreateEvent.EVENT_NAME,
                 desc,
             );
-        });
-
-        socket.on("disconnect", (...args: any[]): void => {
-            ;
         });
     }
 
@@ -133,7 +127,7 @@ export namespace Server {
      */
     export namespace SocketIoNamespaces {
         export const GROUP_JOINER   = "/groups";
-        export const GROUP_LOBBY    = "/groups"; // can address using regexp
+        export const GROUP_LOBBY    = "/groups";
     }
 
     /**

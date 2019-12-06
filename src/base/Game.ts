@@ -75,6 +75,8 @@ export abstract class Game extends Grid {
     /**
      * _Does not call reset._
      * 
+     * Sets the `idNumber` field in each {@link PlayerDesc} in `desc`.
+     * 
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
      * 
      * @override
@@ -85,10 +87,11 @@ export abstract class Game extends Grid {
         // TODO: set default language (must be done before call to reset):
         this.lang = null;
 
-        { // Construct Players:
+        /* Construct Players: */ {
             let operator: HumanPlayer;
             const allHumanPlayers = [];
             const allArtifPlayers = [];
+            // Create each player according to their constructor arguments:
             desc.playerDescs.forEach((playerDesc, index) => {
                 // If the player is on any human team, then the player is a human.
                 const id: Player.Id = (playerDesc.teamNumbers.some((teamNumber) => teamNumber >= 0))
@@ -102,8 +105,8 @@ export abstract class Game extends Grid {
                     allHumanPlayers[id] = operator;
                 } else {
                     if (id >= 0) {
-                        // Human-operated players (unless the operator), are
-                        // represented by a `PuppetPlayer`-type object.
+                        // Human-operated players (except for the operator)
+                        // are represented by a `PuppetPlayer`-type object.
                         allHumanPlayers[id] = new PuppetPlayer(this, playerDesc);
                     } else {
                         // Artificial players' representation depends on the
@@ -618,9 +621,9 @@ export namespace Game {
     /**
      * 
      */
-    export type ConstructorArguments = Readonly<{
+    export type ConstructorArguments = {
 
-        gridDimensions: Grid.DimensionDesc;
+        readonly gridDimensions: Grid.DimensionDesc;
 
         /**
          * The index in `playerDescs` of the operator's ctor args.
@@ -629,7 +632,10 @@ export namespace Game {
          */
         operatorIndex: number;
 
-        playerDescs: ReadonlyArray<Player.ConstructorArguments>;
-    }>;
+        readonly playerDescs: ReadonlyArray<Player.ConstructorArguments>;
+    };
+    export namespace ConstructorArguments {
+        export const EVENT_NAME = "game-create";
+    }
 
 }

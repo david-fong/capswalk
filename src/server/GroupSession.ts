@@ -44,7 +44,7 @@ export class GroupSession {
         this.sessionHost = undefined;
 
         this.initialTtlTimeout = setTimeout(() => {
-            if (Object.entries(this.namespace.connected).length === 0) {
+            if (Object.keys(this.namespace.connected).length === 0) {
                 // If nobody connects to this session in the specified
                 // ammount of time, then close the session.
                 this.terminate();
@@ -64,11 +64,12 @@ export class GroupSession {
         console.log("A user has connected.");
         socket.join(GroupSession.RoomNames.MAIN);
 
-        if (Object.entries(this.namespace.connected).length === 0) {
+        if (Object.keys(this.namespace.connected).length === 0) {
             // Nobody has connected yet.
             // The first socket becomes the session host.
             clearTimeout(this.initialTtlTimeout);
             this.sessionHost = socket;
+            // TODO: set socket.isPrivileged
         }
 
         socket.on("disconnect", (...args: any[]): void => {
@@ -78,7 +79,6 @@ export class GroupSession {
                 // that the host player has died, and choose another player to become
                 // the host?
                 this.terminate();
-                this.sessionHost = null; // TODO: change this. host should never be null.
             }
         });
     }
@@ -115,15 +115,14 @@ export class GroupSession {
         this.currentGame = new ServerGame(this, {
             gridDimensions,
             operatorIndex: undefined,
-            playerDescs: Object.values(this.sockets)
-                .map<Player.ConstructorArguments>((socket) => {
-                    return {
-                        idNumber: undefined,
-                        username: socket.username,
-                        teamNumbers: Array.from(socket.teamNumbers),
-                        socketId: socket.id,
-                    };
-                }),
+            playerDescs: Object.values(this.sockets).map((socket) => {
+                return {
+                    idNumber: undefined,
+                    username: socket.username,
+                    teamNumbers: Array.from(socket.teamNumbers),
+                    socketId: socket.id,
+                };
+            }),
         });
     }
 
@@ -160,7 +159,7 @@ export namespace GroupSession {
         /**
          * @see Player.Username.REGEXP
          */
-        export const REGEXP = Player.Username.REGEXP;
+        export const REGEXP = /[a-zA-Z](?:[a-zA-Z0-9:-]+?){4,}/;
     }
 
 
@@ -199,8 +198,10 @@ export namespace GroupSession {
         public initialTtl: number;
 
         public constructor(
+            groupName: SessionName,
             initialTtl: number = CreateEvent.DEFAULT_INITIAL_TTL
         ) {
+            this.groupName = groupName;
             this.initialTtl = initialTtl;
         }
     };
