@@ -2,8 +2,8 @@ import { Pos, Tile } from "src/base/Tile";
 import { Game } from "src/base/Game";
 import { ClientGame } from "src/client/ClientGame";
 import { Player } from "src/base/player/Player";
-import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { ArtificialPlayerTypes as Types } from "src/base/player/artificials/Chaser";
+import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 /**
  * 
@@ -108,7 +108,13 @@ export namespace ArtificialPlayer {
     ]);
 
     export const of = (game: Game, desc: Player.ConstructorArguments): ArtificialPlayer => {
-        return new (Constructors.get(desc.teamNumbers[0])(game, desc));
+        const typeId: Player.TeamNumber = desc.teamNumbers[0];
+        if (!(Constructors.has(typeId))) {
+            throw new RangeError(`No artificial player type with the type-id`
+                + ` ${typeId} exists.`
+            );
+        }
+        return new ((Constructors.get(typeId) as Function)(game, desc));
     };
 
 }

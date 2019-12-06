@@ -9,12 +9,12 @@ export namespace Japanese {
      */
     export class Hiragana extends Lang {
 
-        private static SINGLETON: Hiragana = undefined;
+        private static SINGLETON?: Hiragana = undefined;
 
         public static getInstance(): Hiragana {
             if (!(Hiragana.SINGLETON)) {
                 Hiragana.SINGLETON = new Hiragana();
-                Hiragana.INITIALIZER = null;
+                delete Hiragana.INITIALIZER;
             }
             return Hiragana.SINGLETON;
         }
@@ -131,12 +131,12 @@ export namespace Japanese {
      */
     export class Katakana extends Lang {
 
-        private static SINGLETON: Katakana = undefined;
+        private static SINGLETON?: Katakana = undefined;
 
         public static getInstance(): Katakana {
             if (!(Katakana.SINGLETON)) {
                 Katakana.SINGLETON = new Katakana();
-                Katakana.INITIALIZER = null;
+                delete Katakana.INITIALIZER;
             }
             return Katakana.SINGLETON;
         }

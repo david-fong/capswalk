@@ -57,7 +57,7 @@ export abstract class Player extends PlayerSkeleton {
 
 
     public constructor(game: Game, desc: Readonly<Player.ConstructorArguments>) {
-        super(game, desc.idNumber);
+        super(game, desc.idNumber as Player.Id);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {
             throw new RangeError( `Username \"${desc.username}\"`
@@ -79,7 +79,6 @@ export abstract class Player extends PlayerSkeleton {
         this.lastAcceptedRequestId = PlayerMovementEvent.INITIAL_REQUEST_ID;
         this.requestInFlight = false;
         this.game.cancelTimeout(this.bubbleTimer);
-        this.bubbleTimer = undefined;
     }
 
 
@@ -177,7 +176,6 @@ export namespace Player {
      * {@link Tile} is unoccupied.
      */
     export type Id = number;
-
     export namespace Id {
         export const NULL = 0;
     }
@@ -196,17 +194,22 @@ export namespace Player {
     export type TeamNumber = number;
 
     export type Username = string;
-
-    /**
-     * The choice of this is somewhat arbitrary. This should be enforced
-     * externally since player descriptors are passed to the constructor.
-     */
     export namespace Username {
-        export const REGEXP = new RegExp("[a-zA-Z](\s?[a-zA-Z0-9:-]+)*");
+        /**
+         * The choice of this is somewhat arbitrary. This should be enforced
+         * externally since player descriptors are passed to the constructor.
+         * 
+         * Requirements:
+         * - Starts with a letter.
+         * - No whitespace except for non-consecutive space characters.
+         * - Must contain at least five non-space characters that are
+         *      either letters, numbers, or the dash character.
+         */
+        export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
     }
 
     export type ConstructorArguments = {
-        idNumber: Id; // undefined for game ctor arg
+        idNumber: Id | undefined; // undefined for non-client-game ctor arg
         readonly teamNumbers: ReadonlyArray<TeamNumber>;
         readonly username: Username;
         readonly socketId?: string; // undefined for offline game

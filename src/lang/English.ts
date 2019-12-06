@@ -7,12 +7,12 @@ import { WeightedCspForwardMap } from "src/lang/LangSeqTreeNode";
  */
 export class English extends Lang {
 
-    private static SINGLETON: English = undefined;
+    private static SINGLETON?: English = undefined;
 
     public static getInstance(): English {
         if (!(English.SINGLETON)) {
             English.SINGLETON  = new English();
-            English.INITIALIZER = null;
+            delete English.INITIALIZER;
         }
         return English.SINGLETON;
     }

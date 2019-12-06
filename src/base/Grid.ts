@@ -102,7 +102,7 @@ export abstract class Grid {
                     }
                 }
             }
-            const carrier: HTMLElement = document.getElementById(domGridHtmlIdHook);
+            const carrier = document.getElementById(domGridHtmlIdHook);
             if (!carrier) {
                 throw new RangeError(`The ID \"${domGridHtmlIdHook}\" did not refer`
                     + `to an existing html element.`

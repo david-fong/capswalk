@@ -41,7 +41,6 @@ export class GroupSession {
     ) {
         this.namespace   = namespace;
         this.currentGame = undefined;
-        this.sessionHost = undefined;
 
         this.initialTtlTimeout = setTimeout(() => {
             if (Object.keys(this.namespace.connected).length === 0) {
@@ -60,9 +59,11 @@ export class GroupSession {
      * 
      * @param socket - 
      */
-    protected onConnection(socket: io.Socket): void {
+    protected onConnection(socket: GroupSession.Socket): void {
         console.log("A user has connected.");
         socket.join(GroupSession.RoomNames.MAIN);
+        socket.teamNumbers = new Set();
+        socket.updateId = 0;
 
         if (Object.keys(this.namespace.connected).length === 0) {
             // Nobody has connected yet.
@@ -109,25 +110,32 @@ export class GroupSession {
      * to each client.
      * 
      * @param gridDimensions - 
-     * @throws 
+     * @returns false if the 
      */
-    private createGameInstance(gridDimensions: Grid.DimensionDesc): void {
+    private createGameInstance(gridDimensions: Grid.DimensionDesc): boolean {
+        if (Object.values(this.sockets).some((socket) => {
+            return socket.username === undefined;
+        })) {
+            return false;
+        }
         this.currentGame = new ServerGame(this, {
             gridDimensions,
+            languageName,
             operatorIndex: undefined,
             playerDescs: Object.values(this.sockets).map((socket) => {
                 return {
                     idNumber: undefined,
-                    username: socket.username,
+                    username: socket.username as Player.Username,
                     teamNumbers: Array.from(socket.teamNumbers),
                     socketId: socket.id,
                 };
             }),
         });
+        return true;
     }
 
     public get sockets(): Record<string, GroupSession.Socket> {
-        return this.namespace.sockets;
+        return this.namespace.sockets as { [id: string]: GroupSession.Socket };
     }
 
 }
@@ -140,19 +148,11 @@ export namespace GroupSession {
      * An extension of {@link io.Socket}. It is very convenient to tack
      * these fields directly onto the socket objects.
      */
-    export type Socket = io.Socket & Partial<{
-        username: Player.Username;
+    export type Socket = io.Socket & {
+        username?: Player.Username;
         teamNumbers: Set<Player.TeamNumber>;
         updateId: number; // initial value = 0
-    }>;
-
-    /**
-     * 
-     */
-    export namespace RoomNames {
-        export const MAIN = "main";
-    }
-
+    };
 
     export type SessionName = string;
     export namespace SessionName {
@@ -160,6 +160,13 @@ export namespace GroupSession {
          * @see Player.Username.REGEXP
          */
         export const REGEXP = /[a-zA-Z](?:[a-zA-Z0-9:-]+?){4,}/;
+    }
+
+    /**
+     * 
+     */
+    export namespace RoomNames {
+        export const MAIN = "main";
     }
 
 

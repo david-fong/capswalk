@@ -60,8 +60,9 @@ export class LangSeqTreeNode {
             const weightedChar = new WeightedLangChar(
                 char, forwardDict[char].weight,
             );
-            if (reverseDict.has(seq)) {
-                reverseDict.get(seq).push(weightedChar);
+            const charArray = reverseDict.get(seq);
+            if (charArray) {
+                charArray.push(weightedChar);
             } else {
                 reverseDict.set(seq, [weightedChar,]);
             }
@@ -80,7 +81,7 @@ export class LangSeqTreeNode {
     }
 
     private constructor(
-        parent: LangSeqTreeNode,
+        parent: LangSeqTreeNode | null,
         sequence: Lang.Seq,
         characters: ReadonlyArray<WeightedLangChar>,
     ) {
@@ -123,8 +124,8 @@ export class LangSeqTreeNode {
         } else if (chars.length === 0) {
             throw new Error("Must not make mapping without written characters.");
         }
-        let node: LangSeqTreeNode; {
-            let childNode: LangSeqTreeNode = this;
+        let node: LangSeqTreeNode = this; {
+            let childNode: LangSeqTreeNode | undefined = this;
             while (childNode !== undefined) {
                 node = childNode;
                 childNode = node.children.find((child) => seq.startsWith(child.sequence));
@@ -156,9 +157,9 @@ export class LangSeqTreeNode {
         if (!(this.parent)) {
             throw new Error("Should never hit on the root.");
         }
-        const weightedChar: WeightedLangChar = this.characters.slice(0)
+        const weightedChar = this.characters.slice(0)
             .sort(WeightedLangChar.CMP.get(balancingScheme))
-            .shift();
+            .shift() as WeightedLangChar;
         const pair: Lang.CharSeqPair = {
             char: weightedChar.char,
             seq:  this.sequence,
@@ -180,7 +181,7 @@ export class LangSeqTreeNode {
      * @returns How many hits were made on this node since the last reset.
      */
     protected get personalHitCount(): number {
-        return this.hitCount - this.parent.hitCount;
+        return this.hitCount - (this.parent as LangSeqTreeNode).hitCount;
     }
 
     protected get averageCharHitCount(): number {
@@ -196,7 +197,7 @@ export class LangSeqTreeNode {
      * @returns How many hits were made on this node since the last reset.
      */
     protected get personalWeightedHitCount(): number {
-        return this.weightedHitCount - this.parent.weightedHitCount;
+        return this.weightedHitCount - (this.parent as LangSeqTreeNode).weightedHitCount;
     }
 
     public andNonRootParents(): Array<LangSeqTreeNode> {

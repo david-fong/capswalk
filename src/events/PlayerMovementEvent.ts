@@ -96,7 +96,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
      * The server should respond with the new value of the requester's
      * score.
      */
-    public playerScore: number = undefined;
+    public playerScore?: number = undefined;
 
     /**
      * Any value assigned by the requester to this field should be
@@ -105,7 +105,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
      * The server should respond with the new value of the requester's
      * stockpile.
      */
-    public playerStockpile: number = undefined;
+    public playerStockpile?: number = undefined;
 
     public readonly destPos: BarePos;
 
@@ -132,7 +132,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
      * The server must set this to describe the new values to be
      * shuffled-in to the destination tile.
      */
-    public newCharSeqPair: Lang.CharSeqPair = undefined;
+    public newCharSeqPair?: Lang.CharSeqPair = undefined;
 
     public constructor(
         playerId: Player.Id,

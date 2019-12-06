@@ -165,7 +165,7 @@ export abstract class Lang {
         // Start by sorting according to the desired balancing scheme:
         this.leafNodes.sort(LangSeqTreeNode.LEAF_CMP.get(balancingScheme));
 
-        let nodeToHit: LangSeqTreeNode = null;
+        let nodeToHit: LangSeqTreeNode | null = null;
         for (const leaf of this.leafNodes) {
             // Take the next leaf node (don't remove it!), and if none of
             // its parents are avoid-nodes, then, from the set of nodes
@@ -173,7 +173,7 @@ export abstract class Lang {
             // choose the node with the least actual/personal hit-count.
             const upstreamNodes: Array<LangSeqTreeNode> = leaf.andNonRootParents();
             for (let i = 0; i < upstreamNodes.length; i++) {
-                const conflictSeq: Lang.Seq = avoid.find(avoidSeq => {
+                const conflictSeq: Lang.Seq | undefined = avoid.find(avoidSeq => {
                     return avoidSeq.startsWith(upstreamNodes[i].sequence);
                 });
                 if (conflictSeq !== undefined) {

@@ -89,8 +89,8 @@ export abstract class Game extends Grid {
 
         /* Construct Players: */ {
             let operator: HumanPlayer;
-            const allHumanPlayers = [];
-            const allArtifPlayers = [];
+            const allHumanPlayers: Array<Player> = [];
+            const allArtifPlayers: Array<Player> = [];
             // Create each player according to their constructor arguments:
             desc.playerDescs.forEach((playerDesc, index) => {
                 // If the player is on any human team, then the player is a human.
@@ -219,6 +219,7 @@ export abstract class Game extends Grid {
     private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player | null {
         const player = this.getPlayerById(desc.playerId);
         if (!player) {
+            // This should never happen unless a client is acting maliciously.
             throw new RangeError(`No player with the ID ${desc.playerId} exists.`);
 
         } else if (player.isBubbling) {
@@ -328,6 +329,10 @@ export abstract class Game extends Grid {
     public processMoveExecute(desc: Readonly<PlayerMovementEvent>): void {
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const player = this.getPlayerById(desc.playerId);
+        if (!player) {
+            // This should never happen.
+            throw new Error("Server referenced a non-existant player.");
+        }
         const executeBasicTileUpdates = (): void => {
             // The `LangCharSeqPair` shuffle changes must take effect
             // before updating the operator's seqBuffer if need be.
@@ -410,8 +415,8 @@ export abstract class Game extends Grid {
         // if successful, make sure to lower the (score? and) stockpile fields.
         // make an abstract method in the HumanPlayer class called in the top-
         // level input processor for it to trigger this event.
-        const bubbler: Player = this.checkIncomingPlayerRequestId(desc);
-        if (!(bubbler)) {
+        const bubbler = this.checkIncomingPlayerRequestId(desc);
+        if (!bubbler) {
             // Player is still bubbling. Reject the request:
             this.processBubbleMakeExecute(desc);
             return;
@@ -440,6 +445,10 @@ export abstract class Game extends Grid {
         // TODO:
         // Visually highlight the affected tiles for the specified estimate-duration.
         const bubbler = this.getPlayerById(desc.playerId);
+        if (!bubbler) {
+            // This should never happen.
+            throw new Error("Server referenced a non-existant player.");
+        }
 
         bubbler.requestInFlight = false;
 
@@ -468,7 +477,7 @@ export abstract class Game extends Grid {
             // Note: Actually used as a stack. It doesn't matter.
             const neighbourQueue = [ bubbler, ];
             while (neighbourQueue.length > 0) {
-                const neighbour = neighbourQueue.pop();
+                const neighbour = neighbourQueue.pop() as Player;
                 neighbour.getNeighbours().filter((jumpPlayer) => {
                     // Filter out neighbours that we have already processed:
                     return !(jumpNeighbours.includes(jumpPlayer))
@@ -507,7 +516,11 @@ export abstract class Game extends Grid {
         // Record the event. No need to check acceptance since this
         // kind of event is made in such a way that it is always accepted.
         this.recordEvent(desc);
-        const bubbler: Player = this.getPlayerById(desc.bubblerId);
+        const bubbler = this.getPlayerById(desc.bubblerId);
+        if (!bubbler) {
+            // This should never happen.
+            throw new Error("The server referenced a non-existant player.");
+        }
 
         // Lower the "isBubbling" flags for the player:
         this.recordEvent(desc);
@@ -625,12 +638,14 @@ export namespace Game {
 
         readonly gridDimensions: Grid.DimensionDesc;
 
+        readonly languageName: string;
+
         /**
          * The index in `playerDescs` of the operator's ctor args.
          * 
          * This should be set to `undefined for a {@link ServerGame}.
          */
-        operatorIndex: number;
+        operatorIndex: number | undefined;
 
         readonly playerDescs: ReadonlyArray<Player.ConstructorArguments>;
     };

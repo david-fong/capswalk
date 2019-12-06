@@ -188,7 +188,7 @@ export namespace Bubble {
          * The server should set this to the value of the timer duration
          * that it will use to schedule the pop event.
          */
-        public estimatedTimerDuration: number = undefined;
+        public estimatedTimerDuration?: number = undefined;
 
         public constructor(
             playerId: Player.Id,

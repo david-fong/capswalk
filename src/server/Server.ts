@@ -55,8 +55,8 @@ export class Server {
     protected onGameHostsConnection(socket: io.Socket): void {
         socket.on(GroupSession.CreateEvent.EVENT_NAME, (desc: GroupSession.CreateEvent): void => {
             // Create a new group session:
-            desc.groupName = this.createUniqueSessionName(desc.groupName);
-            if (!(desc.groupName)) {
+            const groupName = this.createUniqueSessionName(desc.groupName);
+            if (!(groupName)) {
                 // The name was not accepted. Notify the client:
                 socket.emit(
                     GroupSession.CreateEvent.EVENT_NAME,
@@ -64,7 +64,8 @@ export class Server {
                 );
                 return;
             }
-            const namespace: io.Namespace = this.io.of(desc.groupName);
+            desc.groupName = groupName;
+            const namespace: io.Namespace = this.io.of(groupName);
             this.allGroupSessions.set(
                 namespace.name,
                 new GroupSession(
