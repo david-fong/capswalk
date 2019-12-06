@@ -1,23 +1,6 @@
 import { Defs } from "src/Defs";
 import { LangSeqTreeNode, WeightedCspForwardMap, BalancingScheme } from "src/lang/LangSeqTreeNode";
 
-/**
- * All `Lang` implementations should put their module file names
- * here so that they can be dynamically loaded later.
- * 
- * TODO: use this in the privileged settings.
- */
-export const LANG_MODULE_PATHS: ReadonlyArray<string> = [
-    "English",
-].map((filename) => {
-    // This test is somewhat arbitrary.
-    if (!(/[A-Z][a-zA-Z]*/.test(filename))) {
-        throw new Error(`The filename ${filename} does not match PascalCase.`);
-    }
-    return `src/lang/${filename}`;
-});
-
-
 
 /**
  * A `Lang`(uage) is a map from a collection of unique characters to
@@ -227,17 +210,18 @@ export namespace Lang {
      * implementation's {@link Lang#remapKey} method.
      */
     export type Seq = string;
-
-    /**
-     * The choice of this pattern is not out of necessity, but following
-     * the mindset of spec designers when they mark something as reserved:
-     * For the language implementations I have in mind, I don't see the
-     * need to include characters other than these.
-     * 
-     * Characters that must never be unmarked as reserved (state reason):
-     * (currently none. update as needed)
-     */
-    export const SEQ_REGEXP = new RegExp("^[a-zA-Z\-.]+$");
+    export namespace Seq {
+        /**
+         * The choice of this pattern is not out of necessity, but following
+         * the mindset of spec designers when they mark something as reserved:
+         * For the language implementations I have in mind, I don't see the
+         * need to include characters other than these.
+         * 
+         * Characters that must never be unmarked as reserved (state reason):
+         * (currently none. update as needed)
+         */
+        export const REGEXP = new RegExp("^[a-zA-Z\-.]+$");
+    }
 
     /**
      * A key-value pair containing a `LangChar` and its corresponding
@@ -252,5 +236,28 @@ export namespace Lang {
         char: "",
         seq:  "",
     });
+
+    export namespace Modules {
+
+        export const NAMES = <const>[
+            "English", "Japanese",
+        ];
+
+        /**
+         * All `Lang` implementations should put their module file names
+         * here so that they can be dynamically loaded later.
+         * 
+         * TODO: use this in the privileged settings.
+         * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
+         */
+        export const PATHS = NAMES.reduce<Record<string, string>>((prev, filename) => {
+            // This test is somewhat arbitrary.
+            if (!(/[A-Z][a-zA-Z]*/.test(filename))) {
+                throw new Error(`The filename ${filename} does not match PascalCase.`);
+            }
+            prev[filename] = `src/lang/${filename}.js`;
+            return prev;
+        }, {}) as Record<typeof NAMES[number], string>;
+    }
 
 }

@@ -119,8 +119,8 @@ export class LangSeqTreeNode {
      * @param chars A collection of unique characters in a written language.
      */
     private addCharMapping(seq: Lang.Seq, chars: Array<WeightedLangChar>): void {
-        if (!(Lang.SEQ_REGEXP.test(seq))) {
-            throw new Error(`Mapping sequence must match ${Lang.SEQ_REGEXP}.`);
+        if (!(Lang.Seq.REGEXP.test(seq))) {
+            throw new Error(`Mapping sequence must match ${Lang.Seq.REGEXP}.`);
         } else if (chars.length === 0) {
             throw new Error("Must not make mapping without written characters.");
         }

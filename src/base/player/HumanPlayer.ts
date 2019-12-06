@@ -81,11 +81,11 @@ export abstract class HumanPlayer extends Player {
         }
         if (key) {
             key = this.lang.remapKey(key);
-            if (!(Lang.SEQ_REGEXP.test(key))) {
+            if (!(Lang.Seq.REGEXP.test(key))) {
                 throw new Error(`The implementation of input transformation in`
                     + ` the language \"${this.lang.name}\" did not follow the`
                     + ` rule of producing output matching the regular expression`
-                    + ` \"${Lang.SEQ_REGEXP}\".`
+                    + ` \"${Lang.Seq.REGEXP}\".`
                 );
             }
         } else {

@@ -327,12 +327,12 @@ export abstract class Game extends Grid {
      *      player-movement event.
      */
     public processMoveExecute(desc: Readonly<PlayerMovementEvent>): void {
-        const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const player = this.getPlayerById(desc.playerId);
         if (!player) {
             // This should never happen.
             throw new Error("Server referenced a non-existant player.");
         }
+        const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const executeBasicTileUpdates = (): void => {
             // The `LangCharSeqPair` shuffle changes must take effect
             // before updating the operator's seqBuffer if need be.
@@ -582,9 +582,14 @@ export abstract class Game extends Grid {
 
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
 
+    /**
+     * @returns The tile at `dest`, or the specified player's {@link Player#benchTile}
+     * @param dest - 
+     * @param playerId - IMPORTANT: Must be a valid player.
+     */
     public getBenchableTileAt(dest: BarePos, playerId: Player.Id): Tile {
         return ((Player.BENCH_POS.equals(dest))
-            ? this.getPlayerById(playerId).benchTile
+            ? (this.getPlayerById(playerId) as Player).benchTile
             : this.getTileAt(dest)
         );
     }
@@ -616,7 +621,9 @@ export abstract class Game extends Grid {
     public getNeighbours(pos: BarePos, radius: number = 1): Array<Player> {
         return this.getNeighbouringTiles(pos, radius)
             .filter((tile) => tile.isOccupied)
-            .map((tile) => this.getPlayerById(tile.occupantId));
+            .map((tile) => this.getPlayerById(tile.occupantId) as Player);
+            // The above typecast is safe since this is not a transactionally
+            // or externally-triggered computation. Internals are trustable.
     }
 
     protected get langBalancingScheme(): BalancingScheme {
@@ -638,7 +645,7 @@ export namespace Game {
 
         readonly gridDimensions: Grid.DimensionDesc;
 
-        readonly languageName: string;
+        readonly languageName: typeof Lang.Modules.NAMES[number];
 
         /**
          * The index in `playerDescs` of the operator's ctor args.

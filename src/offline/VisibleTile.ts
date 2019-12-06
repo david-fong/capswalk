@@ -98,7 +98,7 @@ export class VisibleTile extends Tile {
         this.tileCellElem.dataset[TileDataSetHooks.SCORE_VALUE] = score.toString();
     }
 
-    public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
+    public setLangCharSeq(charSeqPair: Lang.CharSeqPair | undefined): void {
         super.setLangCharSeq(charSeqPair);
         this.langCharDivElem.innerText = this.langChar;
         this.langSeqDivElem.innerText  = this.langSeq;
