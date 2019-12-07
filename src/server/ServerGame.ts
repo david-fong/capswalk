@@ -2,7 +2,7 @@ import * as io from "socket.io";
 import { setTimeout } from "timers";
 
 import { BarePos } from "src/Pos";
-import { ServerTile } from "src/server/ServerTile";
+import { Tile } from "src/base/Tile";
 import { Game } from "src/base/Game";
 import { GroupSession } from "src/server/GroupSession";
 import { Player } from "src/base/player/Player";
@@ -46,10 +46,19 @@ export class ServerGame extends Game {
         desc: Game.ConstructorArguments,
     ) {
         super(desc);
+        if (this.operator) {
+            throw new Error("The Operator for a ServerGame should always be undefined.");
+        }
         this.namespace = session.namespace;
+
+        // Setup the map from player ID's to socket ID's:
+        // This is used to send messages to players by their player ID.
         const socketMap: Map<Player.Id, io.Socket> = new Map();
         desc.playerDescs.forEach((playerDesc) => {
-            socketMap.set(playerDesc.idNumber, this.namespace.sockets[playerDesc.socketId]);
+            socketMap.set(
+                playerDesc.idNumber as Player.Id,
+                this.namespace.sockets[playerDesc.socketId as string],
+            );
         }, this);
         this.socketMap = socketMap;
 
@@ -73,7 +82,7 @@ export class ServerGame extends Game {
         // Pass on Game constructor arguments to each client:
         desc.playerDescs.forEach((playerDesc) => {
             desc.operatorIndex = playerDesc.idNumber;
-            this.namespace.sockets[playerDesc.socketId].emit(
+            this.namespace.sockets[playerDesc.socketId as string].emit(
                 Game.ConstructorArguments.EVENT_NAME,
                 desc,
             );
@@ -96,8 +105,8 @@ export class ServerGame extends Game {
     /**
      * @override
      */
-    public createTile(pos: BarePos): ServerTile {
-        return new ServerTile(pos);
+    public createTile(pos: BarePos): Tile {
+        return new Tile(pos);
     }
 
     /**
@@ -125,7 +134,7 @@ export class ServerGame extends Game {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            this.socketMap.get(desc.playerId).emit(
+            (this.socketMap.get(desc.playerId) as io.Socket).emit(
                 PlayerMovementEvent.EVENT_NAME,
                 desc,
             );
@@ -144,7 +153,7 @@ export class ServerGame extends Game {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            this.socketMap.get(desc.playerId).emit(
+            (this.socketMap.get(desc.playerId) as io.Socket).emit(
                 Bubble.MakeEvent.EVENT_NAME,
                 desc,
             );

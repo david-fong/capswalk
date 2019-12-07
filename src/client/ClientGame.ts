@@ -1,7 +1,7 @@
 import * as io from "socket.io-client";
 
 import { BarePos } from "src/Pos";
-import { VisibleTile } from "src/offline/VisibleTile";
+import { VisibleTile } from "src/base/VisibleTile";
 import { LocalGameSettings } from "src/settings/GameSettings";
 import { Grid, Game } from "src/base/Game";
 
@@ -19,6 +19,11 @@ import { Bubble } from "src/events/Bubble";
  * @extends Game
  */
 export class ClientGame extends Game {
+
+    /**
+     * The Operator is always defined for a {@link ClientGame}.
+     */
+    public readonly operator: HumanPlayer;
 
     protected settings: LocalGameSettings;
 
@@ -38,6 +43,9 @@ export class ClientGame extends Game {
         desc: Game.ConstructorArguments,
     ) {
         super(desc);
+        if (!(this.operator)) {
+            throw new Error("The Operator for a ClientGame should be defined.");
+        }
         this.settings = LocalGameSettings.getInstance();
         this.socket = socket;
 

@@ -11,7 +11,7 @@ export { Pos, BarePos } from "src/Pos";
  * no knowledge of their context. Their internals are all managed by
  * their host {@link Game} object through method calls.
  */
-export abstract class Tile {
+export class Tile {
 
     public readonly pos: Pos;
 

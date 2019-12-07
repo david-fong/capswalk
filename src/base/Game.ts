@@ -45,7 +45,7 @@ export abstract class Game extends Grid {
     /**
      * Set to `undefined` for {@link ServerGame}.
      */
-    public readonly operator: HumanPlayer;
+    public readonly operator: HumanPlayer | undefined;
 
     /**
      * Does not use the HumanPlayer type annotation. This is to
@@ -85,10 +85,10 @@ export abstract class Game extends Grid {
         super(desc.gridDimensions);
 
         // TODO: set default language (must be done before call to reset):
-        this.lang = null;
+        //this.lang = desc.languageName;
 
         /* Construct Players: */ {
-            let operator: HumanPlayer;
+            let operator: HumanPlayer | undefined = undefined;
             const allHumanPlayers: Array<Player> = [];
             const allArtifPlayers: Array<Player> = [];
             // Create each player according to their constructor arguments:
@@ -518,7 +518,9 @@ export abstract class Game extends Grid {
         this.recordEvent(desc);
         const bubbler = this.getPlayerById(desc.bubblerId);
         if (!bubbler) {
-            // This should never happen.
+            // This should never happen. Note: for all the following
+            // calls to get a player by their id, just use type casts
+            // and assume the player exists, which is reasonable.
             throw new Error("The server referenced a non-existant player.");
         }
 
@@ -528,19 +530,19 @@ export abstract class Game extends Grid {
 
         // Enact effects on supposedly un-downed enemy players:
         desc.playersToDown.forEach((enemyId) => {
-            const enemy: Player = this.getPlayerById(enemyId);
+            const enemy = this.getPlayerById(enemyId) as Player;
             enemy.isDowned = true;
         }, this);
 
         // Enact effects on supposedly downed teammates:
         desc.playersToRaise.forEach((teammateId) => {
-            const teammate: Player = this.getPlayerById(teammateId);
+            const teammate = this.getPlayerById(teammateId) as Player;
             teammate.isDowned = false;
         }, this);
 
         // Enact effects on players to freeze:
         Object.entries(desc.playersToFreeze).forEach(([ enemyId, duration, ]) => {
-            this.freezePlayer(this.getPlayerById(parseInt(enemyId)), duration);
+            this.freezePlayer(this.getPlayerById(parseInt(enemyId)) as Player, duration);
         }, this);
         return;
     }
