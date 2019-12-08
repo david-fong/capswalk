@@ -12,13 +12,6 @@ export enum BalancingScheme {
 
 type BalanceSchemeSorterMap<T> = ReadonlyMap<BalancingScheme, (a: T, b: T) => number>;
 
-/**
- * Shape that must be passed in to the static tree producer. The
- * `Record` type enforces the invariant that {@link Lang.Char}s are
- * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}
- */
-export type WeightedCspForwardMap = Record<Lang.Char, Readonly<{seq: Lang.Seq, weight: number,}>>;
-
 
 
 /**
@@ -52,7 +45,7 @@ export class LangSeqTreeNode {
      * @param forwardDict - 
      * @returns The root node of a new tree map.
      */
-    public static CREATE_TREE_MAP(forwardDict: WeightedCspForwardMap): LangSeqTreeNode {
+    public static CREATE_TREE_MAP(forwardDict: Lang.CharSeqPair.WeightedForwardMap): LangSeqTreeNode {
         // Reverse the map:
         const reverseDict: Map<Lang.Seq, Array<WeightedLangChar>> = new Map();
         for (const char in forwardDict) {

@@ -1,5 +1,5 @@
 import { Defs } from "src/Defs";
-import { LangSeqTreeNode, WeightedCspForwardMap, BalancingScheme } from "src/lang/LangSeqTreeNode";
+import { LangSeqTreeNode, BalancingScheme } from "src/lang/LangSeqTreeNode";
 
 
 /**
@@ -54,7 +54,7 @@ export abstract class Lang {
      *      to all be strictly positive values. They do not all need
      *      to sum to a specific value such as 100.
      */
-    protected constructor(name: string, forwardDict: WeightedCspForwardMap) {
+    protected constructor(name: string, forwardDict: Lang.CharSeqPair.WeightedForwardMap) {
         // Write JSON data to my `dict`:
         this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes = this.treeMap.getLeafNodes();
@@ -241,20 +241,35 @@ export namespace Lang {
             char: "",
             seq:  "",
         });
+
+        /**
+         * Shape that must be passed in to the static tree producer. The
+         * `Record` type enforces the invariant that {@link Lang.Char}s are
+         * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}
+         */
+        export type WeightedForwardMap = Record<Lang.Char, Readonly<{seq: Lang.Seq, weight: number,}>>;
     }
+
+
 
     export namespace Modules {
 
-        export const NAMES = <const>[
+        export const NAMES = Object.freeze(<const>[
             "English", "Japanese",
-        ];
+        ]);
 
         /**
-         * All `Lang` implementations should put their module file names
-         * here so that they can be dynamically loaded later.
+         * All `Lang` implementations should put their module _file_
+         * names here so that they can be dynamically loaded later.
          * 
          * TODO: use this in the privileged settings.
+         * 
+         * \@ dynamic imports:
          * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
+         * https://github.com/tc39/proposal-dynamic-import/#import
+         * 
+         * Note: Since this language feature isn't yet implemented in any browsers,
+         * let's just import everything. It's not fancy, but it works.
          */
         export const PATHS = NAMES.reduce<Record<string, string>>((prev, filename) => {
             // This test is somewhat arbitrary.
