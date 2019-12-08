@@ -1,2 +1,2 @@
 #!/bin/bash
-./node_modules/eslint/bin/eslint.js --color --ignore-path "./src/.eslintignore" --cache --cache-location './build/eslint' "${@:-./src/**/*}"
+./node_modules/eslint/bin/eslint.js --color --cache --cache-location './build/eslint' "${@:-./src/**/*}"
