@@ -197,7 +197,7 @@ export abstract class Game extends Grid {
     private shuffleLangCharSeqAt(tile: Tile): Lang.CharSeqPair {
         // Clear values for the target tile so its current (to-be-
         // previous) values don't get unnecessarily avoided.
-        tile.setLangCharSeq(Lang.EMPTY_CSP);
+        tile.setLangCharSeq(Lang.CharSeqPair.NULL);
         return this.lang.getNonConflictingChar(
             this.getNeighbouringTiles(tile.pos)
                 .map((tile) => tile.langSeq)
@@ -218,11 +218,7 @@ export abstract class Game extends Grid {
      */
     private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player | null {
         const player = this.getPlayerById(desc.playerId);
-        if (!player) {
-            // This should never happen unless a client is acting maliciously.
-            throw new RangeError(`No player with the ID ${desc.playerId} exists.`);
-
-        } else if (player.isBubbling) {
+         if (player.isBubbling) {
             // The specified player does not exist or is bubbling.
             // This is _not_ the same as if the requester has their
             // movement frozen.
@@ -328,10 +324,6 @@ export abstract class Game extends Grid {
      */
     public processMoveExecute(desc: Readonly<PlayerMovementEvent>): void {
         const player = this.getPlayerById(desc.playerId);
-        if (!player) {
-            // This should never happen.
-            throw new Error("Server referenced a non-existant player.");
-        }
         const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const executeBasicTileUpdates = (): void => {
             // The `LangCharSeqPair` shuffle changes must take effect
@@ -385,15 +377,12 @@ export abstract class Game extends Grid {
             this.recordEvent(desc); // Record the event.
             executeBasicTileUpdates();
             // If using relative values (which we are not), the below
-            // should happen regardless of the order of receipt. These
-            // values are currently never modified unless the request
-            // succeeds, so they could technically go in the "else if"
-            // block.
-            player.score = desc.playerScore;
-            player.stockpile = desc.playerStockpile;
+            // should happen regardless of the order of receipt.
+            player.score = desc.playerScore!;
+            player.stockpile = desc.playerStockpile!;
 
             player.moveTo(dest);
-            // Below is the same as "(player.lastAcceptedRequestId)++"
+            // Below is computationally the same as "(player.lastAcceptedRequestId)++"
             player.lastAcceptedRequestId = desc.lastAcceptedRequestId;
 
         } else {
@@ -436,6 +425,9 @@ export abstract class Game extends Grid {
 
     /**
      * 
+     * Automatically lowers the {@link Player#requestInFlight} field
+     * for the requesting `Player` ~if the arriving event description
+     * is the newest one for the specified `Player`.~
      * 
      * Updates the event record if the response is accepted.
      * 
@@ -445,10 +437,6 @@ export abstract class Game extends Grid {
         // TODO:
         // Visually highlight the affected tiles for the specified estimate-duration.
         const bubbler = this.getPlayerById(desc.playerId);
-        if (!bubbler) {
-            // This should never happen.
-            throw new Error("Server referenced a non-existant player.");
-        }
 
         bubbler.requestInFlight = false;
 
@@ -477,7 +465,7 @@ export abstract class Game extends Grid {
             // Note: Actually used as a stack. It doesn't matter.
             const neighbourQueue = [ bubbler, ];
             while (neighbourQueue.length > 0) {
-                const neighbour = neighbourQueue.pop() as Player;
+                const neighbour = neighbourQueue.pop()!;
                 neighbour.getNeighbours().filter((jumpPlayer) => {
                     // Filter out neighbours that we have already processed:
                     return !(jumpNeighbours.includes(jumpPlayer))
@@ -517,12 +505,6 @@ export abstract class Game extends Grid {
         // kind of event is made in such a way that it is always accepted.
         this.recordEvent(desc);
         const bubbler = this.getPlayerById(desc.bubblerId);
-        if (!bubbler) {
-            // This should never happen. Note: for all the following
-            // calls to get a player by their id, just use type casts
-            // and assume the player exists, which is reasonable.
-            throw new Error("The server referenced a non-existant player.");
-        }
 
         // Lower the "isBubbling" flags for the player:
         this.recordEvent(desc);
@@ -530,19 +512,19 @@ export abstract class Game extends Grid {
 
         // Enact effects on supposedly un-downed enemy players:
         desc.playersToDown.forEach((enemyId) => {
-            const enemy = this.getPlayerById(enemyId) as Player;
+            const enemy = this.getPlayerById(enemyId);
             enemy.isDowned = true;
         }, this);
 
         // Enact effects on supposedly downed teammates:
         desc.playersToRaise.forEach((teammateId) => {
-            const teammate = this.getPlayerById(teammateId) as Player;
+            const teammate = this.getPlayerById(teammateId);
             teammate.isDowned = false;
         }, this);
 
         // Enact effects on players to freeze:
         Object.entries(desc.playersToFreeze).forEach(([ enemyId, duration, ]) => {
-            this.freezePlayer(this.getPlayerById(parseInt(enemyId)) as Player, duration);
+            this.freezePlayer(this.getPlayerById(parseInt(enemyId)), duration);
         }, this);
         return;
     }
@@ -591,18 +573,17 @@ export abstract class Game extends Grid {
      */
     public getBenchableTileAt(dest: BarePos, playerId: Player.Id): Tile {
         return ((Player.BENCH_POS.equals(dest))
-            ? (this.getPlayerById(playerId) as Player).benchTile
+            ? (this.getPlayerById(playerId)).benchTile
             : this.getTileAt(dest)
         );
     }
 
     /**
-     * 
-     * @param playerId - 
-     * @returns `null` if the specified `playerId` is not allocated
-     *      to any {@link Player} in this `Game`.
+     * @param playerId - The ID of an existing player.
+     * @returns The {@link Player} with ID `playerId`.
+     * @throws RangeError if the specified {@link Player} doesn't exist.
      */
-    protected getPlayerById(playerId: Player.Id): Player | null {
+    protected getPlayerById(playerId: Player.Id): Player {
         if (playerId === Player.Id.NULL) {
             throw new RangeError(`The ID \"${Player.Id.NULL}\" is reserved to mean \"no player\".`);
         }
@@ -610,7 +591,11 @@ export abstract class Game extends Grid {
             ? this.allArtifPlayers[(-playerId) - 1]
             : this.allHumanPlayers[(+playerId) - 1]
         );
-        return (player) ? player : null;
+        if (!player) {
+            throw new RangeError(`There is no player in this game with id \"${playerId}\".`);
+        } else {
+            return player;
+        }
     }
 
     /**
@@ -623,15 +608,13 @@ export abstract class Game extends Grid {
     public getNeighbours(pos: BarePos, radius: number = 1): Array<Player> {
         return this.getNeighbouringTiles(pos, radius)
             .filter((tile) => tile.isOccupied)
-            .map((tile) => this.getPlayerById(tile.occupantId) as Player);
-            // The above typecast is safe since this is not a transactionally
-            // or externally-triggered computation. Internals are trustable.
+            .map((tile) => this.getPlayerById(tile.occupantId));
     }
 
     protected get langBalancingScheme(): BalancingScheme {
         // TODO
         //return this.settings.langBalancingScheme.selectedValue;
-        return undefined;
+        return undefined!;
     }
 
 }
