@@ -50,7 +50,12 @@ export class Tile {
         this.evictOccupant();
         this.numTimesOccupied = 1;
         this.scoreValue = 0;
-        this.setLangCharSeq(Lang.EMPTY_CSP);
+
+        // Note that this is also redone done as part of the game's
+        // reset sequence when shuffling tiles. This also done here
+        // because all `charSeqPair`s in tiles must be cleared before
+        // shuffling since initially, nothing needs to be avoided.
+        this.setLangCharSeq(Lang.CharSeqPair.NULL);
     }
 
 

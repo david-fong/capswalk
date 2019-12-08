@@ -110,7 +110,7 @@ export class GroupSession {
      * to each client.
      * 
      * @param gridDimensions - 
-     * @returns false if the 
+     * @returns false if the passed arguments were incomplete or invalid.
      */
     private createGameInstance(gridDimensions: Grid.DimensionDesc): boolean {
         if (Object.values(this.sockets).some((socket) => {
@@ -120,12 +120,12 @@ export class GroupSession {
         }
         this.currentGame = new ServerGame(this, {
             gridDimensions,
-            languageName,
+            languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.
             operatorIndex: undefined,
             playerDescs: Object.values(this.sockets).map((socket) => {
                 return {
                     idNumber: undefined,
-                    username: socket.username as Player.Username,
+                    username: socket.username!, // checked above.
                     teamNumbers: Array.from(socket.teamNumbers),
                     socketId: socket.id,
                 };

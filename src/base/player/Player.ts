@@ -57,7 +57,7 @@ export abstract class Player extends PlayerSkeleton {
 
 
     public constructor(game: Game, desc: Readonly<Player.ConstructorArguments>) {
-        super(game, desc.idNumber as Player.Id);
+        super(game, desc.idNumber!);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {
             throw new RangeError( `Username \"${desc.username}\"`

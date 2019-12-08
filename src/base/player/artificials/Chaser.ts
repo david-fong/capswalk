@@ -22,14 +22,14 @@ export namespace ArtificialPlayerTypes {
          * @override
          */
         protected computeDesiredDestination(): Pos {
-            return undefined; // TODO
+            return undefined!; // this.game.allHumanPlayers; // TODO
         }
 
         /**
          * @override
          */
         protected computeNextMovementTimer(): number {
-            return undefined; // TODO
+            return undefined!; // TODO
         }
 
     }

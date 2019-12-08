@@ -77,7 +77,7 @@ export abstract class ArtificialPlayer extends Player {
         // weighted to make the long term path of movement to follow
         // a non-45-degree-angled line toward `intendedDest`.
         // TODO
-        return undefined;
+        return undefined!;
     }
 
     /**

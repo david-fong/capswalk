@@ -231,11 +231,17 @@ export namespace Lang {
         char: Lang.Char,
         seq:  Lang.Seq,
     }>;
-
-    export const EMPTY_CSP = Object.freeze({
-        char: "",
-        seq:  "",
-    });
+    export namespace CharSeqPair {
+        /**
+         * Used to clear the {@link CharSeqPair} in a {@link Tile} during
+         * a {@link Game} reset before grid-wide shuffling, or before a
+         * single shuffling operation on the {@link Tile} to be shuffled.
+         */
+        export const NULL = Object.freeze(<const>{
+            char: "",
+            seq:  "",
+        });
+    }
 
     export namespace Modules {
 

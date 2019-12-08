@@ -54,12 +54,18 @@ export class ServerGame extends Game {
         // Setup the map from player ID's to socket ID's:
         // This is used to send messages to players by their player ID.
         const socketMap: Map<Player.Id, io.Socket> = new Map();
-        desc.playerDescs.forEach((playerDesc) => {
+        for(const playerDesc of desc.playerDescs) {
+            if (!playerDesc.idNumber || !playerDesc.socketId) {
+                // This should never happen. The caller is responsible to
+                // ensure this on its own side.
+                throw new Error("The caller did not initialize all the"
+                    + " constructor arguments it was responsible for.");
+            }
             socketMap.set(
-                playerDesc.idNumber as Player.Id,
-                this.namespace.sockets[playerDesc.socketId as string],
+                playerDesc.idNumber!,
+                this.namespace.sockets[playerDesc.socketId!],
             );
-        }, this);
+        };
         this.socketMap = socketMap;
 
         // Attach event listeners / handlers to each socket:
@@ -82,7 +88,7 @@ export class ServerGame extends Game {
         // Pass on Game constructor arguments to each client:
         desc.playerDescs.forEach((playerDesc) => {
             desc.operatorIndex = playerDesc.idNumber;
-            this.namespace.sockets[playerDesc.socketId as string].emit(
+            this.namespace.sockets[playerDesc.socketId!].emit(
                 Game.ConstructorArguments.EVENT_NAME,
                 desc,
             );
@@ -134,7 +140,7 @@ export class ServerGame extends Game {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            (this.socketMap.get(desc.playerId) as io.Socket).emit(
+            (this.socketMap.get(desc.playerId)!).emit(
                 PlayerMovementEvent.EVENT_NAME,
                 desc,
             );
@@ -153,7 +159,7 @@ export class ServerGame extends Game {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            (this.socketMap.get(desc.playerId) as io.Socket).emit(
+            (this.socketMap.get(desc.playerId)!).emit(
                 Bubble.MakeEvent.EVENT_NAME,
                 desc,
             );

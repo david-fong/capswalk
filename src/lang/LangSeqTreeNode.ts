@@ -159,7 +159,7 @@ export class LangSeqTreeNode {
         }
         const weightedChar = this.characters.slice(0)
             .sort(WeightedLangChar.CMP.get(balancingScheme))
-            .shift() as WeightedLangChar;
+            .shift()!;
         const pair: Lang.CharSeqPair = {
             char: weightedChar.char,
             seq:  this.sequence,
@@ -181,7 +181,7 @@ export class LangSeqTreeNode {
      * @returns How many hits were made on this node since the last reset.
      */
     protected get personalHitCount(): number {
-        return this.hitCount - (this.parent as LangSeqTreeNode).hitCount;
+        return this.hitCount - (this.parent!).hitCount;
     }
 
     protected get averageCharHitCount(): number {
@@ -197,7 +197,7 @@ export class LangSeqTreeNode {
      * @returns How many hits were made on this node since the last reset.
      */
     protected get personalWeightedHitCount(): number {
-        return this.weightedHitCount - (this.parent as LangSeqTreeNode).weightedHitCount;
+        return this.weightedHitCount - (this.parent!).weightedHitCount;
     }
 
     public andNonRootParents(): Array<LangSeqTreeNode> {

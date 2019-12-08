@@ -68,7 +68,7 @@ export abstract class HumanPlayer extends Player {
      * provided `key` completes the `LangSeq` of a UNT. Does not do
      * any checking regarding {@link HumanPlayer#requestInFlight}.
      * 
-     * @param key - The pressed typable key as a string. Pass null to
+     * @param key - The pressed typable key as a string. Pass `null` to
      *      trigger a refresh of the {@link HumanPlayer#_seqBuffer}
      *      to maintain its invariant.
      */
