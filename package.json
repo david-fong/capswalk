@@ -14,7 +14,11 @@
     "use ECMA modules by default",
     "https://nodejs.org/api/esm.html#esm_enabling"
   ],
-  "main": "build/src/index.js",
+  "exports": {
+    ".": "./build/index",
+    "./src/": "./build/src/",
+    "./test/": "./build/test/"
+  },
   "scripts": {
     "start": "node --experimental-modules --experimental-json--modules build/src/server/index.js"
   },
@@ -32,6 +36,7 @@
     "@typescript-eslint/parser": "^2.6.1",
     "eslint": "^6.6.0",
     "eslint-plugin-jsdoc": "^17.1.0",
-    "socket.io-client": "^2.3.0"
+    "socket.io-client": "^2.3.0",
+    "ts-loader": "^6.2.1"
   }
 }

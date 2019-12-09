@@ -3,7 +3,7 @@
 /node_modules/
 
 # build
-build/
+/dist/
 
 # vim
 *.swp

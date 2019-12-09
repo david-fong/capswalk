@@ -1,5 +1,6 @@
 {
     "rules": {
+        // Source code does not depend on testing code:
         "no-restricted-imports": ["error", {
             "patterns": ["test/*"]
         }]

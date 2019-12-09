@@ -6,9 +6,10 @@
         "module": "ES6",
 
         // Project directory structure:
-        "baseUrl": "./",
-        "rootDir": "./",
-        "outDir": "./build/",
+        "baseUrl": ".",
+        "rootDir": ".",
+        "outDir": "./dist",
+        "paths": {},
 
         // Emit flags:
         "removeComments": true,
@@ -22,6 +23,7 @@
         "strictNullChecks": true,
         "noImplicitReturns": true,
         "strictBindCallApply": true,
+        //"strictPropertyInitialization": true,
 
         // Javascript handling:
         //"allowJs": true,
