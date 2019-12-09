@@ -31,7 +31,7 @@ export class LangSeqTreeNode {
     public readonly sequence:   Lang.Seq;
     public readonly characters: ReadonlyArray<WeightedLangChar>; // Frozen.
 
-    public readonly parent:     LangSeqTreeNode | null; // `null` for root node.
+    public readonly parent:     LangSeqTreeNode | undefined; // `undefined` for root node.
     public readonly children:   Array<LangSeqTreeNode>; // Empty for leaf nodes. Frozen.
 
     private hitCount: number;
@@ -62,7 +62,7 @@ export class LangSeqTreeNode {
         }
         // Add mappings in ascending order of sequence length:
         // (this is so that no merging of branches needs to be done)
-        const rootNode: LangSeqTreeNode = new LangSeqTreeNode(null, "", []);
+        const rootNode: LangSeqTreeNode = new LangSeqTreeNode(undefined, "", []);
         Array.from(reverseDict)
           //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
             .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
@@ -74,7 +74,7 @@ export class LangSeqTreeNode {
     }
 
     private constructor(
-        parent: LangSeqTreeNode | null,
+        parent: LangSeqTreeNode | undefined,
         sequence: Lang.Seq,
         characters: ReadonlyArray<WeightedLangChar>,
     ) {

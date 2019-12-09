@@ -14,6 +14,9 @@ import { LangSeqTreeNode, BalancingScheme } from "src/lang/LangSeqTreeNode";
  * corresponding unique characters (no character is mapped by multiple
  * key-sequences). This game does not require support for retreiving
  * the `LangSeq` corresponding to a `LangChar`.
+ * 
+ * See the `readme` for this folder for information on writing
+ * implementations of this singleton-style class.
  */
 export abstract class Lang {
 
@@ -35,15 +38,6 @@ export abstract class Lang {
     protected readonly leafNodes: Array<LangSeqTreeNode>;
 
 
-
-    /**
-     * Implementations should follow a singleton pattern.
-     * 
-     * @returns `null`. This is just here as a reminder of the interface.
-     */
-    public static getInstance(): Lang | null {
-        return null;
-    }
 
     /**
      * _Does not call reset._
@@ -100,8 +94,8 @@ export abstract class Lang {
      * deviation (see {@link HumanPlayer#seqBufferAcceptKey}), but is
      * the only behaviour that makes any sense.
      * 
-     * @param input - Never `null`.
-     * @returns Never `null`.
+     * @param input -
+     * @returns 
      */
     public abstract remapKey(input: string): Lang.Seq;
 
@@ -267,6 +261,7 @@ export namespace Lang {
          * \@ dynamic imports:
          * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
          * https://github.com/tc39/proposal-dynamic-import/#import
+         * https://v8.dev/features/dynamic-import
          * 
          * Note: Since this language feature isn't yet implemented in any browsers,
          * let's just import everything. It's not fancy, but it works.
@@ -276,7 +271,7 @@ export namespace Lang {
             if (!(/[A-Z][a-zA-Z]*/.test(filename))) {
                 throw new Error(`The filename ${filename} does not match PascalCase.`);
             }
-            prev[filename] = `src/lang/${filename}.js`;
+            prev[filename] = `src/lang/impl/${filename}`; // file extension is not required (I think).
             return prev;
         }, {}) as Record<typeof NAMES[number], string>;
     }

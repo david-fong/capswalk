@@ -1,5 +1,10 @@
+import { English } from "src/lang/impl/English";
 
 
-export class Lang {
+export namespace Lang {
+
+    const eng = English.getInstance();
+    console.log(eng);
+    console.log("hi");
 
 }

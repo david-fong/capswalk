@@ -49,7 +49,7 @@ export class English extends Lang {
                     accumulator[char] = { seq, weight, };
                     return accumulator;
                 },
-                Object.create(null),
+                {},
             ),
         );
     }
