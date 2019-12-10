@@ -62,7 +62,7 @@ export abstract class Player extends PlayerSkeleton {
         if (!(Player.Username.REGEXP.test(desc.username))) {
             throw new RangeError( `Username \"${desc.username}\"`
                 + ` does not match the required regular expression,`
-                + ` \"${Player.Username.REGEXP}\".`
+                + ` \"${Player.Username.REGEXP.source}\".`
             );
         }
         this.username = desc.username;

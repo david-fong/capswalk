@@ -111,9 +111,10 @@ export class LangSeqTreeNode {
      * @param seq The typable sequence corrensponding to entries of `chars`.
      * @param chars A collection of unique characters in a written language.
      */
-    private addCharMapping(seq: Lang.Seq, chars: Array<WeightedLangChar>): void {
+    private addCharMapping(seq: Lang.Seq, chars: ReadonlyArray<WeightedLangChar>): void {
         if (!(Lang.Seq.REGEXP.test(seq))) {
-            throw new Error(`Mapping sequence must match ${Lang.Seq.REGEXP}.`);
+            throw new RangeError(`Mapping-sequence \"${seq}\" did not match the`
+                + ` required regular expression \"${Lang.Seq.REGEXP.source}\".`);
         } else if (chars.length === 0) {
             throw new Error("Must not make mapping without written characters.");
         }
@@ -292,11 +293,14 @@ class WeightedLangChar {
     ) {
         if (weight <= 0) {
             throw new RangeError(`All weights must be positive, but we`
-                + ` were passed the value ${weight} for the character`
-                + ` ${char}.`);
+                + ` were passed the value \"${weight}\" for the character`
+                + ` \"${char}\".`);
         }
         this.char = char;
         this.weightInv = 1.000 / weight;
+        // The above choice of a numerator is not behaviourally significant.
+        // All that is required is that all single-mappings in a `Lang` use
+        // a consistant value.
     }
 
     public reset(): void {
