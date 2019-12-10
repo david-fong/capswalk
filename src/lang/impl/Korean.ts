@@ -9,44 +9,9 @@ import { Lang } from "src/lang/Lang";
 export namespace Korean {
 
     /**
-     * 
-     * https://en.wikipedia.org/wiki/Revised_Romanization_of_Korean#Transcription_rules
-     * https://en.wikipedia.org/wiki/Romanization_of_Korean#Systems
-     */
-    export class Romanization extends Lang {
-
-        private static SINGLETON?: Romanization = undefined;
-
-        public static getInstance(): Romanization {
-            if (!(Romanization.SINGLETON)) {
-                Romanization.SINGLETON = new Romanization();
-                delete Romanization.INITIALIZER;
-            }
-            return Romanization.SINGLETON;
-        }
-
-        /**
-         * Change uppercase input to lowercase for convenience.
-         * 
-         * @override
-         */
-        public remapKey(input: string): string {
-            return input;
-        }
-
-        private constructor() {
-            super(
-                "Korean Romanization",
-                Romanization.INITIALIZER,
-            );
-        }
-    }
-
-
-
-    /**
      * # Dubeolsik (3-row layout)
      * 
+     * https://en.wikipedia.org/wiki/Keyboard_layout#Dubeolsik
      * https://www.branah.com/korean
      */
     export class Dubeolsik extends Lang {
@@ -62,7 +27,7 @@ export namespace Korean {
         }
 
         /**
-         * Change uppercase input to lowercase for convenience.
+         * Does nothing.
          * 
          * @override
          */
@@ -70,9 +35,20 @@ export namespace Korean {
             return input;
         }
 
+        private static readonly KEYBOARD = Object.freeze(<const>{
+            "ㅂ": "q", "ㅈ": "w", "ㄷ": "e", "ㄱ": "r", "ㅅ": "t",
+            "ㅛ": "y", "ㅕ": "u", "ㅑ": "i", "ㅐ": "o", "ㅔ": "p",
+            "ㅁ": "a", "ㄴ": "s", "ㅇ": "d", "ㄹ": "f", "ㅎ": "g",
+            "ㅗ": "h", "ㅓ": "j", "ㅏ": "k", "ㅣ": "l",
+            "ㅋ": "z", "ㅌ": "x", "ㅊ": "c", "ㅍ": "v", "ㅠ": "b",
+            "ㅜ": "n", "ㅡ": "m",
+            "ㅃ": "Q", "ㅉ": "W", "ㄸ": "E", "ㄲ": "R", "ㅆ": "T",
+            "ㅒ": "O", "ㅖ": "P",
+        });
+
         private constructor() {
             super(
-                "Korean Dubeolsik",
+                "Korean Dubeolsik (한국어 키보드)",
                 Dubeolsik.INITIALIZER,
             );
         }
@@ -83,6 +59,7 @@ export namespace Korean {
     /**
      * # Sebeolsik (5-row layout)
      * 
+     * https://en.wikipedia.org/wiki/Keyboard_layout#Sebeolsik_Final
      * https://www.branah.com/sebeolsik
      */
     export class Sebeolsik extends Lang {
@@ -98,7 +75,72 @@ export namespace Korean {
         }
 
         /**
-         * Change uppercase input to lowercase for convenience.
+         * Does nothing.
+         * 
+         * @override
+         */
+        public remapKey(input: string): string {
+            return input;
+        }
+
+        /**
+         * This is giving me a bad time...
+         * It allows for multiple ways to type something...
+         * Okay scratch above. turns out each half of keyboard has intended
+         * function (initial, medial, final). Need to separate KEYBOARD here
+         * into three sub-maps based on which role the fragment plays.
+         */
+        // TODO: see above.
+        private static readonly KEYBOARD = Object.freeze(<const>{
+            "ㅎ": "1", "ㅆ": "2", "ㅂ": "3", "ㅛ": "4", "ㅠ": "5",
+            "ㅑ": "6", "ㅖ": "7", "ᅴ": "8", "ㅜ": "9", "ㅋ": "0",
+            "ㅅ": "q", "ㄹ": "w", "ㅕ": "e", "ㅐ": "r", "ㅓ": "t",
+            "ㄹ": "y", "ㄷ": "u", "ㅁ": "i", "ㅊ": "o", "ㅍ": "p",
+            "ㅇ": "a",
+            "ㄴ": "s",
+            "": "",
+            "": "",
+            "": "",
+            "": "",
+            "": "",
+            "": "",
+            "": "",
+            "": "",
+            "": "",
+            "": "",
+            "": "",
+            "": "",
+            "": "",
+        });
+
+        private constructor() {
+            super(
+                "Korean Sebeolsik (세벌식 키보드)",
+                Sebeolsik.INITIALIZER,
+            );
+        }
+    }
+
+
+
+    /**
+     * 
+     * https://en.wikipedia.org/wiki/Revised_Romanization_of_Korean#Transcription_rules
+     * https://en.wikipedia.org/wiki/Romanization_of_Korean#Systems
+     */
+    export class Romanization extends Lang {
+
+        private static SINGLETON?: Romanization = undefined;
+
+        public static getInstance(): Romanization {
+            if (!(Romanization.SINGLETON)) {
+                Romanization.SINGLETON = new Romanization();
+            }
+            return Romanization.SINGLETON;
+        }
+
+        /**
+         * Does nothing.
          * 
          * @override
          */
@@ -107,9 +149,24 @@ export namespace Korean {
         }
 
         private constructor() {
+            const forwardDict: Lang.CharSeqPair.WeightedForwardMap = {};
+            INITIALS.forEach((initialJamo, initialIdx) => {
+                MEDIALS.forEach((medialJamo, medialIdx) => {
+                    FINALS.forEach((finalJamo, finalIdx) => {
+                        let unicode = INITIALS.length * (initialIdx);
+                        unicode = MEDIALS.length * (unicode + medialIdx);
+                        unicode =  FINALS.length * (unicode + finalIdx);
+                        const char = String.fromCharCode((UNICODE_HANGUL_SYLLABLES_BASE + unicode));
+                        forwardDict[char] = {
+                            seq: initialJamo.roman + medialJamo.roman + finalJamo.roman,
+                            weight: WEIGHTS[char],
+                        };
+                    });
+                });
+            });
             super(
-                "Korean Sebeolsik",
-                Sebeolsik.INITIALIZER,
+                "Korean Romanization",
+                forwardDict,
             );
         }
     }
@@ -125,34 +182,34 @@ export namespace Korean {
     }>;
 
     type Syllable = Readonly<{
-        initial: JamoDesc;
-        medial:  JamoDesc;
-        final:   JamoDesc;
+        initial: typeof INITIALS[number];
+        medial:  typeof MEDIALS[number];
+        final:   typeof FINALS[number];
     }>;
 
     /**
      * # Initial Jamo (Choseong)
      */
     const INITIALS = Object.freeze(<const>[
-        { value: "ㄱ", atoms: "ㄱ",   roman: "g", },
+        { value: "ㄱ", atoms: "ㄱ",   roman: "g",  },
         { value: "ㄲ", atoms: "ㄱㄱ", roman: "kk", },
-        { value: "ㄴ", atoms: "ㄴ",   roman: "n", },
-        { value: "ㄷ", atoms: "ㄷ",   roman: "d", },
+        { value: "ㄴ", atoms: "ㄴ",   roman: "n",  },
+        { value: "ㄷ", atoms: "ㄷ",   roman: "d",  },
         { value: "ㄸ", atoms: "ㄷㄷ", roman: "tt", },
-        { value: "ㄹ", atoms: "ㄹ",   roman: "r", },
-        { value: "ㅁ", atoms: "ㅁ",   roman: "m", },
-        { value: "ㅂ", atoms: "ㅂ",   roman: "b", },
+        { value: "ㄹ", atoms: "ㄹ",   roman: "r",  },
+        { value: "ㅁ", atoms: "ㅁ",   roman: "m",  },
+        { value: "ㅂ", atoms: "ㅂ",   roman: "b",  },
         { value: "ㅃ", atoms: "ㅂㅂ", roman: "pp", },
-        { value: "ㅅ", atoms: "ㅅ",   roman: "s", },
+        { value: "ㅅ", atoms: "ㅅ",   roman: "s",  },
         { value: "ㅆ", atoms: "ㅅㅅ", roman: "ss", },
-        { value: "ㅇ", atoms: "ㅇ",   roman: "-", }, // TODO: "-" ? see wikipedia
-        { value: "ㅈ", atoms: "ㅈ",   roman: "j", },
+        { value: "ㅇ", atoms: "ㅇ",   roman: "-",  }, // TODO: "-" ? see wikipedia
+        { value: "ㅈ", atoms: "ㅈ",   roman: "j",  },
         { value: "ㅉ", atoms: "ㅈㅈ", roman: "jj", },
         { value: "ㅊ", atoms: "ㅊ",   roman: "ch", },
-        { value: "ㅋ", atoms: "ㅋ",   roman: "k", },
-        { value: "ㅌ", atoms: "ㅌ",   roman: "t", },
-        { value: "ㅍ", atoms: "ㅍ",   roman: "p", },
-        { value: "ㅎ", atoms: "ㅎ",   roman: "h", },
+        { value: "ㅋ", atoms: "ㅋ",   roman: "k",  },
+        { value: "ㅌ", atoms: "ㅌ",   roman: "t",  },
+        { value: "ㅍ", atoms: "ㅍ",   roman: "p",  },
+        { value: "ㅎ", atoms: "ㅎ",   roman: "h",  },
     ]);
     INITIALS as ReadonlyArray<JamoDesc>; // type-check
 
@@ -222,6 +279,8 @@ export namespace Korean {
     /**
      * 
      */
-    const WEIGHTS = {};
+    const WEIGHTS = {
+        "": 1,
+    };
 
 }

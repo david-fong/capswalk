@@ -2,7 +2,9 @@ import { Lang } from "src/lang/Lang";
 
 
 /**
+ * # English (QWERTY)
  * 
+ * https://en.wikipedia.org/wiki/Keyboard_layout#QWERTY
  */
 export class English extends Lang {
 
@@ -16,6 +18,9 @@ export class English extends Lang {
         return English.SINGLETON;
     }
 
+ * 
+    // TODO: see https://en.wikipedia.org/wiki/Keyboard_layout#Dvorak
+    // and https://en.wikipedia.org/wiki/Keyboard_layout#Colemak
     /**
      * Change uppercase input to lowercase for convenience.
      * 

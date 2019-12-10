@@ -235,9 +235,12 @@ export namespace Lang {
         });
 
         /**
+         * A map from written characters to their corresponding typable
+         * keyboard sequence and relative spawn weight.
+         * 
          * Shape that must be passed in to the static tree producer. The
          * `Record` type enforces the invariant that {@link Lang.Char}s are
-         * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}
+         * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}.
          */
         export type WeightedForwardMap = Record<Lang.Char, Readonly<{seq: Lang.Seq, weight: number,}>>;
     }

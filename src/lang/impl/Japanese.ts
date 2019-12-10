@@ -9,6 +9,9 @@ import { Lang } from "src/lang/Lang";
  */
 export namespace Japanese {
 
+    // TODO: https://en.wikipedia.org/wiki/Keyboard_layout#Japanese
+    // add INITIALIZER entry field "kana", make hiragana a namespace
+    // and separate romanization class from kana-keyboard class.
     /**
      * # Hiragana
      */
