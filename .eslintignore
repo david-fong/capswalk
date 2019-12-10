@@ -1,4 +1,5 @@
 # https://eslint.org/docs/user-guide/configuring.html#ignoring-files-and-directories
+/webpack.config.js
 /dist/
 *~
 *.md
