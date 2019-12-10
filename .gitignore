@@ -4,11 +4,14 @@
 
 # build
 /dist/
+/scripts/eslint-cache.json
+/scripts/webpack.config.js
 
 # vim
 *.swp
 *.swo
 *.orig
+Session.vim
 
 # vscode
 .vscode/

@@ -4,10 +4,12 @@
         "target": "es5",
         "lib": ["es6", "dom", "es2019.array",],
         "module": "ES6",
+        "moduleResolution": "node", // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/23649#issuecomment-424355987
 
         // Project directory structure:
-        "baseUrl": ".",
+        "sourceMap": true,
         "rootDir": ".",
+        "baseUrl": ".",
         "outDir": "./dist",
         "paths": {},
 
@@ -21,6 +23,7 @@
 
         // Parsing rules:
         "strictNullChecks": true,
+        "strictFunctionTypes": true,
         "noImplicitReturns": true,
         "strictBindCallApply": true,
         //"strictPropertyInitialization": true,
@@ -33,4 +36,7 @@
         "src/",
         "test/",
     ],
+    "files": [
+        "webpack.config.ts"
+    ]
 }
