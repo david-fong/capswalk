@@ -36,7 +36,4 @@
         "src/",
         "test/",
     ],
-    "files": [
-        "webpack.config.ts"
-    ]
 }

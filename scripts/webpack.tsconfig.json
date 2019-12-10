@@ -1,0 +1,10 @@
+{
+    "removeComments": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+
+    "outDir": "../",
+    "files": [
+        "../webpack.config.ts"
+    ]
+}
