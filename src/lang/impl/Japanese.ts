@@ -1,11 +1,16 @@
 import { Lang } from "src/lang/Lang";
 
 
+/**
+ * # Japanese
+ * 
+ * A namespace grouping implementations of {@link Japanese.Hiragana}
+ * and {@link Japanese.Katakana} alphabets.
+ */
 export namespace Japanese {
 
-
     /**
-     * 
+     * # Hiragana
      */
     export class Hiragana extends Lang {
 
@@ -127,7 +132,7 @@ export namespace Japanese {
 
 
     /**
-     * 
+     * Katakana
      */
     export class Katakana extends Lang {
 

@@ -89,15 +89,13 @@ export abstract class Lang {
      * regular English), or in cases where the input is completely
      * irrelevant before and after remapping), or be a translation to
      * some character that is relevant to the `Lang` and hand, and that
-     * matches against {@link SEQ_REGEXP}. This behaviour is not
-     * checked or mandated, and will not result in errors in cases of
-     * deviation (see {@link HumanPlayer#seqBufferAcceptKey}), but is
-     * the only behaviour that makes any sense.
+     * matches against {@link SEQ_REGEXP}. This behaviour is mandated
+     * by {@link HumanPlayer#seqBufferAcceptKey}.
      * 
      * @param input -
      * @returns 
      */
-    public abstract remapKey(input: string): Lang.Seq;
+    public abstract remapKey(input: string): string;
 
 
 
