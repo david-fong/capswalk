@@ -19,6 +19,14 @@ export namespace Japanese {
 
         private static SINGLETON?: Hiragana = undefined;
 
+        public static getName(): string {
+            return "Japanese Hiragana";
+        }
+
+        public static getBlurb(): string {
+            return ""; // TODO
+        }
+
         public static getInstance(): Hiragana {
             if (!(Hiragana.SINGLETON)) {
                 Hiragana.SINGLETON = new Hiragana();
@@ -126,20 +134,29 @@ export namespace Japanese {
 
         private constructor() {
             super(
-                "Japanese Hiragana",
+                Hiragana.getName(),
                 Hiragana.INITIALIZER,
             );
         }
     }
+    Hiragana as Lang.Info;
 
 
 
     /**
-     * Katakana
+     * # Katakana
      */
     export class Katakana extends Lang {
 
         private static SINGLETON?: Katakana = undefined;
+
+        public static getName(): string {
+            return "Japanese Katakana";
+        }
+
+        public static getBlurb(): string {
+            return ""; // TODO
+        }
 
         public static getInstance(): Katakana {
             if (!(Katakana.SINGLETON)) {
@@ -248,12 +265,11 @@ export namespace Japanese {
 
         private constructor() {
             super(
-                "Japanese Hiragana",
+                Katakana.getName(),
                 Katakana.INITIALIZER, // TODO
             );
         }
-        ;
     }
-
+    Katakana as Lang.Info;
 
 }

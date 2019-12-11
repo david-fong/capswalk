@@ -10,6 +10,14 @@ export class English extends Lang {
 
     private static SINGLETON?: English = undefined;
 
+    public static getName(): string {
+        return "English (QWERTY)";
+    }
+
+    public static getBlurb(): string {
+        return ""; // TODO
+    }
+
     public static getInstance(): English {
         if (!(English.SINGLETON)) {
             English.SINGLETON  = new English();
@@ -18,7 +26,6 @@ export class English extends Lang {
         return English.SINGLETON;
     }
 
- * 
     // TODO: see https://en.wikipedia.org/wiki/Keyboard_layout#Dvorak
     // and https://en.wikipedia.org/wiki/Keyboard_layout#Colemak
     /**
@@ -45,7 +52,7 @@ export class English extends Lang {
 
     private constructor() {
         super(
-            "English",
+            English.getName(),
             Object.entries(English.INITIALIZER).reduce<Lang.CharSeqPair.WeightedForwardMap>(
                 (accumulator, current) => {
                     const char: Lang.Char = current[0];
@@ -60,3 +67,4 @@ export class English extends Lang {
     }
 
 }
+English as Lang.Info;

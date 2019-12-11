@@ -188,6 +188,12 @@ export abstract class Lang {
 
 export namespace Lang {
 
+    export interface Info {
+        getName(): string;
+        getBlurb(): string;
+        getInstance(): Lang;
+    };
+
     /**
      * An atomic unit in a written language that constitutes a single
      * character. It is completely unique in its language, and has a
