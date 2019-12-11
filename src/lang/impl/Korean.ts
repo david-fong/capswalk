@@ -21,7 +21,7 @@ export namespace Korean {
         public static getInstance(): Dubeolsik {
             if (!(Dubeolsik.SINGLETON)) {
                 Dubeolsik.SINGLETON = new Dubeolsik();
-                delete Dubeolsik.INITIALIZER;
+                delete Dubeolsik.KEYBOARD;
             }
             return Dubeolsik.SINGLETON;
         }
@@ -35,7 +35,7 @@ export namespace Korean {
             return input;
         }
 
-        private static readonly KEYBOARD = Object.freeze(<const>{
+        private static KEYBOARD = Object.freeze(<const>{
             "ㅂ": "q", "ㅈ": "w", "ㄷ": "e", "ㄱ": "r", "ㅅ": "t",
             "ㅛ": "y", "ㅕ": "u", "ㅑ": "i", "ㅐ": "o", "ㅔ": "p",
             "ㅁ": "a", "ㄴ": "s", "ㅇ": "d", "ㄹ": "f", "ㅎ": "g",
@@ -49,7 +49,10 @@ export namespace Korean {
         private constructor() {
             super(
                 "Korean Dubeolsik (한국어 키보드)",
-                Dubeolsik.INITIALIZER,
+                INITIALIZE((ij, mj, fj) => {
+                    const atoms = [ij, mj, fj,].flatMap((jamos) => jamos.atoms.split(""));
+                    return atoms.map((atom) => Dubeolsik.KEYBOARD[atom]).join("");
+                }),
             );
         }
     }
@@ -69,7 +72,7 @@ export namespace Korean {
         public static getInstance(): Sebeolsik {
             if (!(Sebeolsik.SINGLETON)) {
                 Sebeolsik.SINGLETON = new Sebeolsik();
-                delete Sebeolsik.INITIALIZER;
+                delete Sebeolsik.KEYBOARD;
             }
             return Sebeolsik.SINGLETON;
         }
@@ -91,7 +94,7 @@ export namespace Korean {
          * into three sub-maps based on which role the fragment plays.
          */
         // TODO: see above.
-        private static readonly KEYBOARD = Object.freeze(<const>{
+        private static KEYBOARD = Object.freeze(<const>{
             "ㅎ": "1", "ㅆ": "2", "ㅂ": "3", "ㅛ": "4", "ㅠ": "5",
             "ㅑ": "6", "ㅖ": "7", "ᅴ": "8", "ㅜ": "9", "ㅋ": "0",
             "ㅅ": "q", "ㄹ": "w", "ㅕ": "e", "ㅐ": "r", "ㅓ": "t",
@@ -149,24 +152,11 @@ export namespace Korean {
         }
 
         private constructor() {
-            const forwardDict: Lang.CharSeqPair.WeightedForwardMap = {};
-            INITIALS.forEach((initialJamo, initialIdx) => {
-                MEDIALS.forEach((medialJamo, medialIdx) => {
-                    FINALS.forEach((finalJamo, finalIdx) => {
-                        let unicode = INITIALS.length * (initialIdx);
-                        unicode = MEDIALS.length * (unicode + medialIdx);
-                        unicode =  FINALS.length * (unicode + finalIdx);
-                        const char = String.fromCharCode((UNICODE_HANGUL_SYLLABLES_BASE + unicode));
-                        forwardDict[char] = {
-                            seq: initialJamo.roman + medialJamo.roman + finalJamo.roman,
-                            weight: WEIGHTS[char],
-                        };
-                    });
-                });
-            });
             super(
                 "Korean Romanization",
-                forwardDict,
+                INITIALIZE((ij, mj, fj) => {
+                    return ij.roman + mj.roman + fj.roman;
+                }),
             );
         }
     }
@@ -181,11 +171,36 @@ export namespace Korean {
         roman: string;
     }>;
 
-    type Syllable = Readonly<{
-        initial: typeof INITIALS[number];
-        medial:  typeof MEDIALS[number];
-        final:   typeof FINALS[number];
-    }>;
+    /**
+     * Helper for each implementation's constructors.
+     * 
+     * @param seqBuilder - Return a {@link Lang.Seq} based on the three
+     *      parts of a syllable (passed in to this as parameters).
+     * @returns A transformation of initializer information to a form
+     *      suitable for consumption by the {@link Lang} constructor.
+     */
+    const INITIALIZE = (seqBuilder: { (
+        ij: typeof INITIALS[number],
+        mj: typeof MEDIALS[number],
+        fj: typeof FINALS[number],
+    ): string, }): Lang.CharSeqPair.WeightedForwardMap => {
+        const forwardDict: Lang.CharSeqPair.WeightedForwardMap = {};
+        INITIALS.forEach((initialJamo, initialIdx) => {
+            MEDIALS.forEach((medialJamo, medialIdx) => {
+                FINALS.forEach((finalJamo, finalIdx) => {
+                    let unicode = INITIALS.length * (initialIdx);
+                    unicode = MEDIALS.length * (unicode + medialIdx);
+                    unicode =  FINALS.length * (unicode + finalIdx);
+                    const char = String.fromCharCode((UNICODE_HANGUL_SYLLABLES_BASE + unicode));
+                    forwardDict[char] = {
+                        seq: seqBuilder(initialJamo, medialJamo, finalJamo),
+                        weight: WEIGHTS[char],
+                    };
+                });
+            });
+        });
+        return forwardDict;
+    }
 
     /**
      * # Initial Jamo (Choseong)
