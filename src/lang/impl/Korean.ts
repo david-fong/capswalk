@@ -2,6 +2,8 @@ import { Lang } from "src/lang/Lang";
 
 
 /**
+ * # Korean
+ * 
  * https://en.wikipedia.org/wiki/Hangul_consonant_and_vowel_tables#Hangul_syllables
  * https://en.wikipedia.org/wiki/Korean_language_and_computers#Hangul_in_Unicode
  * https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)
@@ -17,6 +19,14 @@ export namespace Korean {
     export class Dubeolsik extends Lang {
 
         private static SINGLETON?: Dubeolsik = undefined;
+
+        public static getName(): string {
+            return "Korean Dubeolsik (한국어 키보드)";
+        }
+
+        public static getBlurb(): string {
+            return ""; // TODO
+        }
 
         public static getInstance(): Dubeolsik {
             if (!(Dubeolsik.SINGLETON)) {
@@ -48,7 +58,7 @@ export namespace Korean {
 
         private constructor() {
             super(
-                "Korean Dubeolsik (한국어 키보드)",
+                Dubeolsik.getName(),
                 INITIALIZE((ij, mj, fj) => {
                     const atoms = [ij, mj, fj,].flatMap((jamos) => jamos.atoms.split(""));
                     return atoms.map((atom) => Dubeolsik.KEYBOARD[atom]).join("");
@@ -56,11 +66,15 @@ export namespace Korean {
             );
         }
     }
+    Dubeolsik as Lang.Info;
 
 
 
     /**
      * # Sebeolsik (5-row layout)
+     * 
+     * \*Note: the branah link below is to an earlier version of
+     * Sebeolsik, [Sebeolsik 390](https://en.wikipedia.org/wiki/Keyboard_layout#Sebeolsik_390).
      * 
      * https://en.wikipedia.org/wiki/Keyboard_layout#Sebeolsik_Final
      * https://www.branah.com/sebeolsik
@@ -68,6 +82,14 @@ export namespace Korean {
     export class Sebeolsik extends Lang {
 
         private static SINGLETON?: Sebeolsik = undefined;
+
+        public static getName(): string {
+            return "Korean Sebeolsik (세벌식 최종 키보드)";
+        }
+
+        public static getBlurb(): string {
+            return ""; // TODO
+        }
 
         public static getInstance(): Sebeolsik {
             if (!(Sebeolsik.SINGLETON)) {
@@ -87,42 +109,41 @@ export namespace Korean {
         }
 
         /**
-         * This is giving me a bad time...
-         * It allows for multiple ways to type something...
-         * Okay scratch above. turns out each half of keyboard has intended
-         * function (initial, medial, final). Need to separate KEYBOARD here
-         * into three sub-maps based on which role the fragment plays.
+         * 
          */
-        // TODO: see above.
         private static KEYBOARD = Object.freeze(<const>{
-            "ㅎ": "1", "ㅆ": "2", "ㅂ": "3", "ㅛ": "4", "ㅠ": "5",
-            "ㅑ": "6", "ㅖ": "7", "ᅴ": "8", "ㅜ": "9", "ㅋ": "0",
-            "ㅅ": "q", "ㄹ": "w", "ㅕ": "e", "ㅐ": "r", "ㅓ": "t",
-            "ㄹ": "y", "ㄷ": "u", "ㅁ": "i", "ㅊ": "o", "ㅍ": "p",
-            "ㅇ": "a",
-            "ㄴ": "s",
-            "": "",
-            "": "",
-            "": "",
-            "": "",
-            "": "",
-            "": "",
-            "": "",
-            "": "",
-            "": "",
-            "": "",
-            "": "",
-            "": "",
-            "": "",
+            "FINALS": {
+                "ㅎ": "1", "ㅆ": "2", "ㅂ": "3", // 1-row
+                "ㅅ": "q", "ㄹ": "w", // q-row
+                "ㅇ": "a", "ㄴ": "s", // a-row
+                "ㅁ": "z", "ㄱ": "x", // z-row
+                "ㄲ": "!", "ㄺ": "@", "ㅈ": "#", "ㄿ": "$", "ㄾ": "%", // !-row
+                "ㅍ": "Q", "ㅌ": "W", "ㄵ": "E", "ㅀ": "R", "ㄽ": "T", // Q-row
+                "ㄷ": "A", "ㄶ": "S", "ㄼ": "D", "ㄻ": "F", // A-row
+                "ㅊ": "Z", "ㅄ": "X", "ㅋ": "C", "ㄳ": "V", // Z-row
+            },
+            "MEDIALS": {
+                "ㅛ": "4", "ㅠ": "5", "ㅑ": "6", "ㅖ": "7", "ᅴ": "8", "ㅜ": "9",
+                "ㅕ": "e", "ㅐ": "r", "ㅓ": "t",
+                "ㅣ": "d", "ㅏ": "f", "ㅡ": "g",
+                "ㅔ": "c", "ㅗ": "v", "ㅜ": "b",
+            },
+            "INITIALS": {
+                "ㅋ": "0",
+                "ㄹ": "y", "ㄷ": "u", "ㅁ": "i", "ㅊ": "o", "ㅍ": "p",
+                "ㄴ": "h", "ㅇ": "j", "ㄱ": "k", "ㅈ": "l", "ㅂ": ";", "ㅌ": "'",
+                "ㅅ": "n", "ㅎ": "m",
+            },
         });
 
         private constructor() {
             super(
-                "Korean Sebeolsik (세벌식 키보드)",
+                Sebeolsik.getName(),
                 Sebeolsik.INITIALIZER,
             );
         }
     }
+    Sebeolsik as Lang.Info;
 
 
 
@@ -134,6 +155,14 @@ export namespace Korean {
     export class Romanization extends Lang {
 
         private static SINGLETON?: Romanization = undefined;
+
+        public static getName(): string {
+            return "Korean Romanization";
+        }
+
+        public static getBlurb(): string {
+            return ""; // TODO
+        }
 
         public static getInstance(): Romanization {
             if (!(Romanization.SINGLETON)) {
@@ -153,13 +182,14 @@ export namespace Korean {
 
         private constructor() {
             super(
-                "Korean Romanization",
+                Romanization.getName(),
                 INITIALIZE((ij, mj, fj) => {
                     return ij.roman + mj.roman + fj.roman;
                 }),
             );
         }
     }
+    Romanization as Lang.Info;
 
 
 
