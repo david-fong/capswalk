@@ -40,7 +40,7 @@ export { Grid } from "src/base/Grid";
  */
 export abstract class Game extends Grid {
 
-    public lang: Lang;
+    public readonly lang: Lang;
 
     /**
      * Set to `undefined` for {@link ServerGame}.
@@ -85,7 +85,7 @@ export abstract class Game extends Grid {
         super(desc.gridDimensions);
 
         // TODO: set default language (must be done before call to reset):
-        //this.lang = desc.languageName;
+        //this.lang = import(desc.languageName);
 
         /* Construct Players: */ {
             let operator: HumanPlayer | undefined = undefined;
@@ -335,7 +335,7 @@ export abstract class Game extends Grid {
             // Refresh the operator's `seqBuffer`:
             if (this.operator && // Ignore if ServerGame
                 player.idNumber !== this.operator.idNumber &&
-                dest.pos.sub(this.operator.pos).infNorm === 1) {
+                dest.pos.infNorm(this.operator.pos) === 1) {
                 // Do this if moving into the vicinity of the operator
                 // and the requester is not the operator. This operation
                 // is necessary to maintain the `seqBuffer` invariant.
@@ -507,7 +507,6 @@ export abstract class Game extends Grid {
         const bubbler = this.getPlayerById(desc.bubblerId);
 
         // Lower the "isBubbling" flags for the player:
-        this.recordEvent(desc);
         bubbler.isBubbling = false;
 
         // Enact effects on supposedly un-downed enemy players:

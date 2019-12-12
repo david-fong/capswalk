@@ -1,3 +1,4 @@
+import { BarePos } from "src/Pos";
 import { Pos, Tile } from "src/base/Tile";
 import { Game } from "src/base/Game";
 import { ClientGame } from "src/client/ClientGame";
@@ -57,27 +58,69 @@ export abstract class ArtificialPlayer extends Player {
 
 
     /**
-     * @returns TODO
+     * @returns One of the closest unoccupied neighbouring Tiles in
+     *      the direction of `intendedDest`. Will generally choose
+     *      between equal-cost options in a manner that follows a
+     *      straight-looking path.
+     * 
+     * **Important:** The caller must first break the upward occupancy
+     * link by calling `this.hostTile.evictOccupant();`
      * 
      * Note: the current position of this `ArtificialPlayer` is
      * always an option when everything adjacent to it is occupied.
      * 
-     * @param intendedDest - 
+     * @param intendedDest - Does not need to be within the boundaries
+     *      of the {@link Game}'s grid, or have integer-valued x and y
+     *      coordinates.
      */
-    protected getUntToward(intendedDest: Pos): Tile {
-        const unfavorableness = (tile: Tile): number => {
-            return intendedDest.sub(tile.pos).twoNorm;
-        };
+    private getUntToward(intendedDest: BarePos): Tile {
         const options: Array<Tile> = this.getUNT();
-        options.push(this.hostTile);
+        if (!(options.includes(this.hostTile))) {
+            // This should never happen. It is here as a reminder.
+            throw new Error("Caller code didn't break the upward occupancy link.");
+        }
+        if (options.length === 1) {
+            // Minor optimization:
+            return options[0];
+        }
         options.sort((tileA, TileB) => {
-            return unfavorableness(tileA) - unfavorableness(TileB);
+            // Break (some) ties by one-norm:
+            return tileA.pos.oneNorm(intendedDest) - TileB.pos.oneNorm(intendedDest);
+        }).sort((tileA, TileB) => {
+            // Break (some) ties by one-norm:
+            return tileA.pos.infNorm(intendedDest) - TileB.pos.infNorm(intendedDest);
         });
-        // choose one of the two most favorable using some randomness
-        // weighted to make the long term path of movement to follow
-        // a non-45-degree-angled line toward `intendedDest`.
-        // TODO
-        return undefined!;
+        // Filter out options that are not equally favorable as the
+        // most favorable option. I think this is the best method:
+        // Note: it is safe to start at index `1` because of the
+        // above short-circuit if `options.length === 1`.
+        for (let i = 1; i < options.length; i++) {
+            if (options[i].pos.infNorm(intendedDest) > options[0].pos.infNorm(intendedDest)) {
+                options.splice(i);
+                break;
+            }
+        }
+        if (options.length === 1) {
+            // Minor optimization:
+            return options[0];
+        }
+        // Choose one of the most favorable using some randomness
+        // weighted to follow a straight-looking path of movement.
+        if (options[0].pos.x === 0 || options[0].pos.y === 0) {
+            // (the axial option (if it exists) should be the first
+            // due to the previous sort's tie-breaker.
+            if (this.pos.sub(intendedDest).axialAlignment - 0.5 > 0.0) {
+                // The path to the intended destination is aligned more
+                // with the x or y axis than they are with those axes
+                // rotated 45 degrees.
+                return options[0];
+            } else {
+                // Ignore the axial option in further computations:
+                options.shift();
+            }
+        }
+        // Choose a random non-axial option:
+        return options[Math.floor(options.length * Math.random())];
     }
 
     /**

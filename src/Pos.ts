@@ -55,10 +55,15 @@ export class Pos implements BarePos {
     /**
      * Also known as the "manhattan norm".
      * 
+     * @param other - If included, the norm is taken relative to this.
      * @returns The sum of the absolute values of each coordinate.
      */
-    public get oneNorm(): number {
-        return Math.abs(this.x) + Math.abs(this.y);
+    public oneNorm(other?: BarePos): number {
+        if (other) {
+            return this.sub(other).infNorm();
+        } else {
+            return Math.abs(this.x) + Math.abs(this.y);
+        }
     }
 
     /**
@@ -67,14 +72,37 @@ export class Pos implements BarePos {
      * @returns The square root of the square of each coordinate.
      */
     public get twoNorm(): number {
-        return Math.sqrt((this.x ** 2) + (this.y **2));
+        return Math.sqrt((this.x ** 2) + (this.y ** 2));
     }
 
     /**
+     * @param other - If included, the norm is taken relative to this.
      * @returns The length of the longest dimension.
      */
-    public get infNorm(): number {
-        return Math.max(Math.abs(this.x), Math.abs(this.y));
+    public infNorm(other?: BarePos): number {
+        if (other) {
+            return this.sub(other).infNorm();
+        } else {
+            return Math.max(Math.abs(this.x), Math.abs(this.y));
+        }
+    }
+
+    /**
+     * @returns A number in the range (0, 1). `One` means the x and y
+     *      coordinates align to the x or y axis, and `Zero` means they
+     *      are plus or minus 45 degrees from the x or y axis.
+     * 
+     * You can try this yourself in [Desmos](https://www.desmos.com/calculator)
+     * by pasting in the below code segment and adding a slider for `a`
+     * for continuous values between zero and one.
+     * 
+     * ```latex
+     * \frac{\left|\left|x\right|-\left|y\right|\right|}{\left|x\right|+\left|y\right|}=a
+     * ```
+     */
+    public get axialAlignment(): number {
+        return Math.abs(Math.abs(this.x) - Math.abs(this.y))
+            / (Math.abs(this.x) + Math.abs(this.y));
     }
 
 
