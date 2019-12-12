@@ -21,7 +21,7 @@ export namespace Korean {
         private static SINGLETON?: Dubeolsik = undefined;
 
         public static getName(): string {
-            return "Korean Dubeolsik (한국어 키보드)";
+            return "Korean Dubeolsik (두벌식 키보드)";
         }
 
         public static getBlurb(): string {
@@ -46,6 +46,7 @@ export namespace Korean {
         }
 
         private static KEYBOARD = Object.freeze(<const>{
+            "": "",
             "ㅂ": "q", "ㅈ": "w", "ㄷ": "e", "ㄱ": "r", "ㅅ": "t",
             "ㅛ": "y", "ㅕ": "u", "ㅑ": "i", "ㅐ": "o", "ㅔ": "p",
             "ㅁ": "a", "ㄴ": "s", "ㅇ": "d", "ㄹ": "f", "ㅎ": "g",
@@ -113,6 +114,7 @@ export namespace Korean {
          */
         private static KEYBOARD = Object.freeze(<const>{
             "FINALS": {
+                "": "",
                 "ㅎ": "1", "ㅆ": "2", "ㅂ": "3", // 1-row
                 "ㅅ": "q", "ㄹ": "w", // q-row
                 "ㅇ": "a", "ㄴ": "s", // a-row
@@ -123,23 +125,29 @@ export namespace Korean {
                 "ㅊ": "Z", "ㅄ": "X", "ㅋ": "C", "ㄳ": "V", // Z-row
             },
             "MEDIALS": {
-                "ㅛ": "4", "ㅠ": "5", "ㅑ": "6", "ㅖ": "7", "ᅴ": "8", "ㅜ": "9",
-                "ㅕ": "e", "ㅐ": "r", "ㅓ": "t",
-                "ㅣ": "d", "ㅏ": "f", "ㅡ": "g",
-                "ㅔ": "c", "ㅗ": "v", "ㅜ": "b",
+                "ㅛ": "4", "ㅠ": "5", "ㅑ": "6", "ㅖ": "7", "ᅴ": "8", // "ㅜ": "9",
+                "ㅕ": "e", "ㅐ": "r", "ㅓ": "t", // q-row
+                "ㅣ": "d", "ㅏ": "f", "ㅡ": "g", // a-row
+                "ㅔ": "c", "ㅗ": "v", "ㅜ": "b", // z-row
+                "ㅒ": "G",
             },
             "INITIALS": {
-                "ㅋ": "0",
-                "ㄹ": "y", "ㄷ": "u", "ㅁ": "i", "ㅊ": "o", "ㅍ": "p",
-                "ㄴ": "h", "ㅇ": "j", "ㄱ": "k", "ㅈ": "l", "ㅂ": ";", "ㅌ": "'",
-                "ㅅ": "n", "ㅎ": "m",
+                "ㅋ": "0", // 1-row
+                "ㄹ": "y", "ㄷ": "u", "ㅁ": "i", "ㅊ": "o", "ㅍ": "p", // q-row
+                "ㄴ": "h", "ㅇ": "j", "ㄱ": "k", "ㅈ": "l", "ㅂ": ";", "ㅌ": "'", // a-row
+                "ㅅ": "n", "ㅎ": "m", // z-row
+                // NOTE: If we included numbers, this is where they would go.
             },
         });
 
         private constructor() {
             super(
                 Sebeolsik.getName(),
-                Sebeolsik.INITIALIZER,
+                INITIALIZE((ij, mj, fj) => {
+                    return Sebeolsik.KEYBOARD.INITIALS[ij.value]
+                        + Sebeolsik.KEYBOARD.MEDIALS[mj.value]
+                        + Sebeolsik.KEYBOARD.FINALS[fj.value];
+                }),
             );
         }
     }
@@ -230,7 +238,7 @@ export namespace Korean {
             });
         });
         return forwardDict;
-    }
+    };
 
     /**
      * # Initial Jamo (Choseong)
