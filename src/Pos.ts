@@ -60,7 +60,7 @@ export class Pos implements BarePos {
      */
     public oneNorm(other?: BarePos): number {
         if (other) {
-            return this.sub(other).infNorm();
+            return this.sub(other).oneNorm();
         } else {
             return Math.abs(this.x) + Math.abs(this.y);
         }
@@ -69,10 +69,15 @@ export class Pos implements BarePos {
     /**
      * Diagonal distance in 2D / hypotenuse.
      * 
+     * @param other - If included, the norm is taken relative to this.
      * @returns The square root of the square of each coordinate.
      */
-    public get twoNorm(): number {
-        return Math.sqrt((this.x ** 2) + (this.y ** 2));
+    public twoNorm(other?: BarePos): number {
+        if (other) {
+            return this.sub(other).twoNorm();
+        } else {
+            return Math.sqrt((this.x ** 2) + (this.y ** 2));
+        }
     }
 
     /**
@@ -99,10 +104,16 @@ export class Pos implements BarePos {
      * ```latex
      * \frac{\left|\left|x\right|-\left|y\right|\right|}{\left|x\right|+\left|y\right|}=a
      * ```
+     * 
+     * @param other - If included, the alignment is taken relative to this.
      */
-    public get axialAlignment(): number {
-        return Math.abs(Math.abs(this.x) - Math.abs(this.y))
-            / (Math.abs(this.x) + Math.abs(this.y));
+    public axialAlignment(other?: BarePos): number {
+        if (other) {
+            return this.sub(other).axialAlignment();
+        } else {
+            return Math.abs(Math.abs(this.x) - Math.abs(this.y))
+                / (Math.abs(this.x) + Math.abs(this.y));
+        }
     }
 
 

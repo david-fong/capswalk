@@ -7,9 +7,16 @@ import { ArtificialPlayerTypes as Types } from "src/base/player/artificials/Chas
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 
 /**
+ * Unlike {@link HumanPlayer}s, these are not guided by human input.
+ * Instead, they are essentially defined by how often they move, and
+ * where they decide to move toward each time they move.
+ * 
+ * Can be paused and un-paused by the Game Manager.
  * 
  * @extends Player
  */
+// TODO: if add abstract method hooks for events like player "collision",
+// then add this to the above documentation.
 export abstract class ArtificialPlayer extends Player {
 
     protected scheduledMovementCallbackId: number | NodeJS.Timeout;
@@ -109,7 +116,7 @@ export abstract class ArtificialPlayer extends Player {
         if (options[0].pos.x === 0 || options[0].pos.y === 0) {
             // (the axial option (if it exists) should be the first
             // due to the previous sort's tie-breaker.
-            if (this.pos.sub(intendedDest).axialAlignment - 0.5 > 0.0) {
+            if (this.pos.axialAlignment(intendedDest) - 0.5 > 0.0) {
                 // The path to the intended destination is aligned more
                 // with the x or y axis than they are with those axes
                 // rotated 45 degrees.
@@ -154,7 +161,7 @@ export namespace ArtificialPlayer {
         const typeId: Player.TeamNumber = desc.teamNumbers[0];
         if (!(Constructors.has(typeId))) {
             throw new RangeError(`No artificial player type with the type-id`
-                + ` ${typeId} exists.`
+                + ` \"${typeId}\" exists.`
             );
         }
         return new ((Constructors.get(typeId) as Function)(game, desc));
