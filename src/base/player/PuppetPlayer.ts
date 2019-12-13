@@ -13,14 +13,8 @@ import { Player} from "src/base/player/Player";
  */
 export class PuppetPlayer extends Player {
 
-    /**
-     * @override
-     */
-    public readonly beNiceTo: Player["beNiceTo"];
-
     public constructor(game: Game, desc: Player.CtorArgs) {
         super(game, desc);
-        this.beNiceTo = desc.beNiceTo
     }
 
     /**

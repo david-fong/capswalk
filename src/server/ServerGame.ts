@@ -1,6 +1,8 @@
 import * as io from "socket.io";
 import { setTimeout } from "timers";
 
+import { Modify, Require } from "src/TypeUtils";
+
 import { BarePos } from "src/Pos";
 import { Tile } from "src/base/Tile";
 import { Game } from "src/base/Game";
@@ -10,7 +12,6 @@ import { Player } from "src/base/player/Player";
 import { EventRecordEntry } from "src/events/EventRecordEntry";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { Bubble } from "src/events/Bubble";
-import { Modify } from "src/TypeUtils";
 
 
 /**
@@ -28,7 +29,7 @@ export class ServerGame extends Game {
      */
     public readonly operator: undefined;
 
-    protected readonly socketMap: ReadonlyMap<Player.Id, io.Socket>;
+    protected readonly playerIdToSocketMap: ReadonlyMap<Player.Id, io.Socket>;
 
 
 
@@ -45,31 +46,29 @@ export class ServerGame extends Game {
     public constructor(
         session: GroupSession,
         desc: Modify<Game.CtorArgs, {
-            readonly playerDescs: Array<Player.CtorArgs & {readonly socketId: string;}>;
+            readonly playerDescs: Array<Require<Player.CtorArgs, "socketId">>;
         }>,
     ) {
+        // Don't call super-constructor yet!
         super(desc);
+        // Setup the map from player ID's to socket ID's:
+        // This is used to send messages to players by their player ID.
+        const playerIdToSocketMap: Map<Player.Id, io.Socket> = new Map();
+        for(const playerDesc of desc.playerDescs) {
+            playerIdToSocketMap.set(
+                playerDesc.idNumber!,
+                this.namespace.sockets[playerDesc.socketId],
+            );
+            // TODO: dillema: super constructor assigns player ID's, but also needs
+            // `beNiceTo` in form of player ID's, when at first they are in terms of
+            // socket ID's because the player ID's have not been assigned yet O_o.
+            playerDesc.beNiceTo = playerDesc.beNiceTo.map
+        };
+        this.playerIdToSocketMap = playerIdToSocketMap;
         if (this.operator) {
             throw new Error("The Operator for a ServerGame should always be undefined.");
         }
         this.namespace = session.namespace;
-
-        // Setup the map from player ID's to socket ID's:
-        // This is used to send messages to players by their player ID.
-        const socketMap: Map<Player.Id, io.Socket> = new Map();
-        for(const playerDesc of desc.playerDescs) {
-            if (!(playerDesc.idNumber)) {
-                // This should never happen. The caller is responsible to
-                // ensure this on its own side.
-                throw new Error("The caller did not initialize all the"
-                    + " constructor arguments it was responsible for.");
-            }
-            socketMap.set(
-                playerDesc.idNumber!,
-                this.namespace.sockets[playerDesc.socketId],
-            );
-        };
-        this.socketMap = socketMap;
 
         // Attach event listeners / handlers to each socket:
         Object.values(session.sockets).forEach((socket: GroupSession.Socket) => {
@@ -143,7 +142,7 @@ export class ServerGame extends Game {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            (this.socketMap.get(desc.playerId)!).emit(
+            (this.playerIdToSocketMap.get(desc.playerId)!).emit(
                 PlayerMovementEvent.EVENT_NAME,
                 desc,
             );
@@ -162,7 +161,7 @@ export class ServerGame extends Game {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            (this.socketMap.get(desc.playerId)!).emit(
+            (this.playerIdToSocketMap.get(desc.playerId)!).emit(
                 Bubble.MakeEvent.EVENT_NAME,
                 desc,
             );

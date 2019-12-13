@@ -45,7 +45,7 @@ export abstract class Player extends PlayerSkeleton {
      * These are fixed once the enclosing Game has been constructed.
      * To change these values, a new Game must be constructed.
      */
-    public abstract readonly beNiceTo: ReadonlyArray<Player.Id>;
+    public readonly beNiceTo: ReadonlyArray<Player.Id>;
 
     public lastAcceptedRequestId: number;
 
@@ -68,6 +68,7 @@ export abstract class Player extends PlayerSkeleton {
             );
         }
         this.username = desc.username;
+        this.beNiceTo = desc.beNiceTo;
     }
 
     public reset(): void {
@@ -209,7 +210,9 @@ export namespace Player {
          * **Important**: The builder of this field must enforce that
          * entries are unique (that there are no duplicates).
          */
-        readonly beNiceTo?: Array<string> | Array<Player.Id>;
+        readonly beNiceTo: ReadonlyArray<Player.Id>
+
+        readonly socketId?: string;
     };
 
 }

@@ -19,11 +19,6 @@ import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 // then add this to the above documentation.
 export abstract class ArtificialPlayer extends Player {
 
-    /**
-     * @override
-     */
-    public readonly beNiceTo: Player["beNiceTo"];
-
     protected scheduledMovementCallbackId: number | NodeJS.Timeout;
 
     /**

@@ -1,3 +1,5 @@
+import { Modify } from "src/TypeUtils";
+
 import { Lang } from "src/lang/Lang";
 import { BalancingScheme } from "src/lang/LangSeqTreeNode";
 import { BarePos, Tile } from "src/base/Tile";
@@ -53,6 +55,19 @@ export abstract class Game extends Grid {
     protected readonly langBalancingScheme: BalancingScheme;
 
     /**
+     * All copies of the game should contain identical entries. That
+     * in a {@link ClientGame} may at any instant be missing trailing
+     * entries, or contain some trailing holes, but such gaps should
+     * eventually be filled to match those in the Game Manager.
+     * 
+     * Do not modify this directly. To register an accepted event,
+     * call the {@link Game#recordEvent} method, passing it the event
+     * descriptor. To get a new event ID, just take the current length
+     * of this array.
+     */
+    private readonly eventRecord: Array<Readonly<EventRecordEntry>>;
+
+    /**
      * Set to `undefined` for {@link ServerGame}.
      */
     public readonly operator: HumanPlayer | undefined;
@@ -66,19 +81,6 @@ export abstract class Game extends Grid {
     private readonly allHumanPlayers: ReadonlyArray<Player>;
 
     private readonly allArtifPlayers: ReadonlyArray<Player>;
-
-    /**
-     * All copies of the game should contain identical entries. That
-     * in a {@link ClientGame} may at any instant be missing trailing
-     * entries, or contain some trailing holes, but such gaps should
-     * eventually be filled to match those in the Game Manager.
-     * 
-     * Do not modify this directly. To register an accepted event,
-     * call the {@link Game#recordEvent} method, passing it the event
-     * descriptor. To get a new event ID, just take the current length
-     * of this array.
-     */
-    private readonly eventRecord: Array<Readonly<EventRecordEntry>>;
 
 
 
@@ -97,51 +99,19 @@ export abstract class Game extends Grid {
         // TODO: set default language (must be done before call to reset):
         //this.lang = import(desc.languageName);
         this.langBalancingScheme = desc.langBalancingScheme;
+        this.eventRecord = [];
 
-        /* Construct Players: */ {
-            let operator: HumanPlayer | undefined = undefined;
-            const allHumanPlayers: Array<Player> = [];
-            const allArtifPlayers: Array<Player> = [];
-            // Create each player according to their constructor arguments:
-            desc.playerDescs.forEach((playerDesc, index) => {
-                if (playerDesc.operatorClass > Player.OperatorClass.HUMAN_CLASS) {
-                    throw new RangeError("Invalid operator class.");
-                }
-                // If the player is on any human team, then the player is a human.
-                const id: Player.Id = (playerDesc.operatorClass === Player.OperatorClass.HUMAN_CLASS)
-                    ? +(1 + allHumanPlayers.length) + Player.Id.NULL
-                    : -(1 + allArtifPlayers.length) + Player.Id.NULL;
-                playerDesc.idNumber = id;
-                if (index === desc.operatorIndex) {
-                    // Found the operator. Note: this will never happen for
-                    // a ServerGame instance, which sets this to `undefined`.
-                    operator = this.createOperatorPlayer(playerDesc);
-                    allHumanPlayers[id] = operator;
-                } else {
-                    if (playerDesc.operatorClass === Player.OperatorClass.HUMAN_CLASS) {
-                        // Human-operated players (except for the operator)
-                        // are represented by a `PuppetPlayer`-type object.
-                        allHumanPlayers[id] = new PuppetPlayer(this, playerDesc);
-                    } else {
-                        // Artificial players' representation depends on the
-                        // Game implementation type. We have an abstract method
-                        // expressly for that purpose:
-                        allArtifPlayers[id] = this.createArtifPlayer(playerDesc);
-                    }
-                }
-            });
-            this.operator = operator;
-            this.allHumanPlayers = allHumanPlayers;
-            this.allArtifPlayers = allArtifPlayers;
-        }
+        // Construct players:
+        const playerBundle = this.createPlayers(desc.playerDescs, desc.operatorIndex);
+        this.operator = playerBundle.operator;
+        this.allHumanPlayers = playerBundle.allHumanPlayers;
+        this.allArtifPlayers = playerBundle.allArtifPlayers;
 
         // Check to make sure that none of the players are invincible:
         // (this happens if a player is "subscribed" to every team number)
         {
             ;
         }
-
-        this.eventRecord = [];
     }
 
     /**
@@ -172,6 +142,71 @@ export abstract class Game extends Grid {
         // TODO: spawn players and targets:
         // While not necessary, targets should be done after players have
         // spawned so they do not spawn under players.
+    }
+
+
+
+    /**
+     * Private helper for the constructor.
+     * 
+     * Assigns player ID's.
+     * 
+     * @param playerDescs - 
+     * @param operatorIndex - 
+     * @returns A bundle of the constructed players.
+     */
+    private createPlayers(
+        playerDescs: Game.CtorArgs["playerDescs"],
+        operatorIndex?: number
+    ): {
+        operator?: HumanPlayer,
+        allHumanPlayers: ReadonlyArray<Player>,
+        allArtifPlayers: ReadonlyArray<Player>,
+        // TODO: add `playerIdToSocketMap`
+    } {
+        let operator: HumanPlayer | undefined = undefined;
+        const allHumanPlayers: Array<Player> = [];
+        const allArtifPlayers: Array<Player> = [];
+
+        playerDescs.forEach((playerDesc) => {
+            // First pass - Assign Player ID's:
+            if (playerDesc.operatorClass > Player.OperatorClass.HUMAN_CLASS) {
+                throw new RangeError("Invalid operator class.");
+            }
+            // If the player is on any human team, then the player is a human.
+            playerDesc.idNumber = (playerDesc.operatorClass === Player.OperatorClass.HUMAN_CLASS)
+                ? +(1 + allHumanPlayers.length) + Player.Id.NULL
+                : -(1 + allArtifPlayers.length) + Player.Id.NULL;
+        });
+        (playerDescs as ReadonlyArray<Player.CtorArgs>).forEach((playerDesc, index) => {
+            // Second pass - Create the Players:
+            const id = playerDesc.idNumber!;
+            if (index === operatorIndex) {
+                if (playerDesc.operatorClass !== Player.OperatorClass.HUMAN_CLASS) {
+                    throw new TypeError("Operator must be of the human-operated class.");
+                }
+                // Found the operator. Note: this will never happen for
+                // a ServerGame instance, which sets this to `undefined`.
+                operator = this.createOperatorPlayer(playerDesc);
+                allHumanPlayers[id] = operator;
+            } else {
+                if (playerDesc.operatorClass === Player.OperatorClass.HUMAN_CLASS) {
+                    // Human-operated players (except for the operator)
+                    // are represented by a `PuppetPlayer`-type object.
+                    allHumanPlayers[id] = new PuppetPlayer(this, playerDesc);
+                } else {
+                    // Artificial players' representation depends on the
+                    // Game implementation type. We have an abstract method
+                    // expressly for that purpose:
+                    allArtifPlayers[id] = this.createArtifPlayer(playerDesc);
+                }
+            }
+        });
+        return {
+            operator,
+            allHumanPlayers,
+            allArtifPlayers,
+        };
     }
 
     /**
@@ -646,7 +681,9 @@ export namespace Game {
          */
         operatorIndex?: number;
 
-        readonly playerDescs: ReadonlyArray<Player.CtorArgs>;
+        readonly playerDescs: ReadonlyArray<Modify<Player.CtorArgs, {
+            beNiceTo: Player.CtorArgs["beNiceTo"] | ReadonlyArray<string>;
+        }>>;
     };
     export namespace CtorArgs {
 

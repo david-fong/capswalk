@@ -16,11 +16,6 @@ export class OnlineHumanPlayer extends HumanPlayer {
      */
     public readonly game: ClientGame;
 
-    /**
-     * @override
-     */
-    public readonly beNiceTo: Player["beNiceTo"];
-
 
 
     public constructor(
@@ -28,8 +23,6 @@ export class OnlineHumanPlayer extends HumanPlayer {
         desc: Player.CtorArgs,
     ) {
         super(game, desc);
-        this.beNiceTo = (desc.beNiceTo as Array<Player.Id>).sort((a, b) => a - b);
-        // TODO: remove type-cast after making implementation specific `ConstructorArguments`.
     }
 
 

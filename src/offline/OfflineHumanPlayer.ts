@@ -11,14 +11,8 @@ import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
  */
 export class OfflineHumanPlayer extends HumanPlayer {
 
-    /**
-     * @override
-     */
-    public readonly beNiceTo: Player["beNiceTo"];
-
     public constructor(game: OfflineGame, desc: Player.CtorArgs) {
         super(game, desc);
-        this.beNiceTo = [];
     }
 
 
