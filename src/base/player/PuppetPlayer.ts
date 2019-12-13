@@ -13,6 +13,11 @@ import { Player} from "src/base/player/Player";
  */
 export class PuppetPlayer extends Player {
 
+    /**
+     * @override
+     */
+    public readonly beNiceTo: Player["beNiceTo"];
+
     public constructor(game: Game, desc: Player.ConstructorArguments) {
         super(game, desc);
     }

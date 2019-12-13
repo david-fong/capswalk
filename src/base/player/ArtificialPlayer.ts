@@ -19,6 +19,11 @@ import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 // then add this to the above documentation.
 export abstract class ArtificialPlayer extends Player {
 
+    /**
+     * @override
+     */
+    public readonly beNiceTo: Player["beNiceTo"];
+
     protected scheduledMovementCallbackId: number | NodeJS.Timeout;
 
     /**
@@ -35,15 +40,10 @@ export abstract class ArtificialPlayer extends Player {
                 + ` were passed the value \"${this.idNumber}\".`
             );
         }
-        if (desc.teamNumbers.length > 1) {
-            throw new Error("Artificial players should only be on a team"
-                + " with other artificial players of the same type."
-            );
-        }
-        if (desc.teamNumbers.some((teamNumber) => teamNumber >= 0)) {
-            throw new RangeError("The static constant defining the team"
-                + " number for an artificial player type must be strictly"
-                + " negative."
+        if (desc.operatorClass >= Player.OperatorClass.HUMAN_CLASS) {
+            throw new RangeError(`The static constant defining the team`
+                + ` number for an artificial player type must be strictly`
+                + ` less than ${Player.OperatorClass.HUMAN_CLASS}.`
             );
         }
         if (game instanceof ClientGame) {
@@ -153,12 +153,12 @@ export abstract class ArtificialPlayer extends Player {
 
 export namespace ArtificialPlayer {
 
-    const Constructors = new Map<Player.TeamNumber, Function>([
+    const Constructors = new Map<Player.OperatorClass, Function>([
         [ Types.Chaser.TEAM_NUMBER, Types.Chaser.prototype.constructor, ],
     ]);
 
     export const of = (game: Game, desc: Player.ConstructorArguments): ArtificialPlayer => {
-        const typeId: Player.TeamNumber = desc.teamNumbers[0];
+        const typeId: Player.OperatorClass = desc.operatorClass;
         if (!(Constructors.has(typeId))) {
             throw new RangeError(`No artificial player type with the type-id`
                 + ` \"${typeId}\" exists.`

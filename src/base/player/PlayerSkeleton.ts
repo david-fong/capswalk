@@ -64,13 +64,13 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
             seq: this.idNumber.toString(),
         });
         this._hostTile = this.benchTile;
-        this.benchTile.occupantId = this.idNumber;
         this.score = 0;
         this.stockpile = 0;
         this.isDowned = false;
         this.isFrozen = false;
         this.isBubbling = false;
         this.percentBubbleCharge = 0;
+        this._hostTile.setOccupant(this.visibleState);
     }
 
 
@@ -79,7 +79,6 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
         return this._hostTile;
     }
 
-    // Note: this is currently not used outside. Can make private.
     public get visibleState(): PlayerSkeleton.VisibleState {
         return {
             idNumber: this.idNumber,
@@ -95,6 +94,9 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
     /**
      * Evicts this `Player` from its last known position (which may be
      * lagging behind the state of the master copy of the game.
+     * 
+     * This must be called after all same-event changes pertaining to
+     * this player's fields have been enacted.
      *
      * @param dest -
      */
@@ -134,7 +136,7 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
         else {
             // Move to occupy the destination `Tile`:
             this._hostTile = dest;
-            dest.occupantId = this.idNumber;
+            dest.setOccupant(this.visibleState);
         }
     }
 

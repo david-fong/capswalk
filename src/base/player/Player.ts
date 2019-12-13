@@ -21,31 +21,33 @@ export abstract class Player extends PlayerSkeleton {
     public readonly username: Player.Username;
 
     /**
-     * See {@link Player#isOnATeamWith} for what qualifies a teammate
-     * relationship between two players, and the {@link Bubble} module
-     * documentation for explanations of the consequences / effects of
-     * such a relationship (or lack thereof) on how those players are
-     * intended to interact by the design of the game's objective and
-     * mechanics. An empty collection indicates that the player is not
-     * ony any team.
+     * Remember, just like in real life, being nice to someone isn't
+     * inherently mutually reciprocal. Just because you choose to go
+     * by rules that make you nice to someone doesn't mean they will
+     * be nice back (and here, the point is that sometimes you give
+     * without expecting nicety in return), and if you slap a nice
+     * person in the face in bad humor, see if they're ever nice to
+     * you again.
+     * 
+     * See the {@link Bubble} module documentation for explanations of
+     * the consequences / effects of such a relationship (or lack
+     * thereof) on how those players are intended to interact by the
+     * design of the game's objective and mechanics.
      * 
      * It must be checked that in the context of all players in a game,
-     * at least one of the following is true, or else there will be a
+     * _at least one_ of the following is true, or else there will be a
      * player that cannot be permanently downed, and the game cannot
      * end:
-     * - There exists a human-operated player that is not on any team.
-     * - No single player is on every human team.
-     * - There exists an artificial player that can down human players,
-     *   and any player that is on every human team is not on that
-     *   artificial player's team.
-     * 
-     * The ordering of entries is not meaningful, and duplicated values
-     * are removed during construction.
+     * - There exists an artificial player that can down human players.
+     * - For every human-operated player, there exists another that is
+     *   not nice to it.
      * 
      * These are fixed once the enclosing Game has been constructed.
      * To change these values, a new Game must be constructed.
      */
-    public readonly teamSet: ReadonlyArray<Player.TeamNumber>;
+    // TODO: update. emphasize that (just like in real life, being nice)
+    // isn't inherently mutual.
+    public abstract readonly beNiceTo: ReadonlyArray<Player.Id>;
 
     public lastAcceptedRequestId: number;
 
@@ -68,12 +70,6 @@ export abstract class Player extends PlayerSkeleton {
             );
         }
         this.username = desc.username;
-
-        // Set the `teamSet` field (first remove duplicate values; sorting is optional):
-        this.teamSet = Array.from((new Set(desc.teamNumbers))).sort((a, b) => a - b);
-        if (this.teamSet.some((teamNumber) => teamNumber !== Math.trunc(teamNumber))) {
-            throw new RangeError(`Team numbers must all be integer values.`);
-        }
     }
 
     public reset(): void {
@@ -126,21 +122,6 @@ export abstract class Player extends PlayerSkeleton {
 
 
 
-    /**
-     * @returns Whether this and the `other` player are on a team
-     * with each other.
-     * 
-     * @param other - 
-     */
-    public isOnATeamWith(other: Player): boolean {
-        // Note: if this is ever changed, make sure to add the "this"
-        // argument if necessary. It currently is neither needed nor
-        // passed.
-        return this.teamSet.some((teamNumA) => {
-            return other.teamSet.some((teamNumB) => teamNumA === teamNumB);
-        });
-    }
-
     public get pos(): Pos {
         return this.hostTile.pos;
     }
@@ -185,15 +166,17 @@ export namespace Player {
     /**
      * An integer value.
      * 
-     * Strictly negative values correspond to teams for artificially
-     * controlled players, where all those of the same type are on the
-     * same team and on that team _only_. Those values are hard-coded
-     * into implementations of the {@link ArtificialPlayer} class.
+     * Each implementation of the {@link ArtificialPlayer} class must
+     * define a unique, hard-coded value that is strictly less than
+     * {@link Player.OperatorClass.HUMAN_CLASS}.
      * 
-     * Positive values including zero are reserved for human-operated
-     * players.
+     * {@link Player.OperatorClass.HUMAN_CLASS} is reserved for human-
+     * operated players.
      */
-    export type TeamNumber = number;
+    export type OperatorClass = number;
+    export namespace OperatorClass {
+        export const HUMAN_CLASS = 0;
+    }
 
     export type Username = string;
     export namespace Username {
@@ -211,10 +194,29 @@ export namespace Player {
     }
 
     export type ConstructorArguments = {
-        idNumber: Id | undefined; // undefined for non-client-game ctor arg
-        readonly teamNumbers: ReadonlyArray<TeamNumber>;
+
+        readonly operatorClass: OperatorClass;
+
+        /**
+         * Initially `undefined` for server and offline games. It will
+         * already be defined for a client game by the server.
+         */
+        idNumber?: Id;
+
         readonly username: Username;
-        readonly socketId?: string; // undefined for offline game
+
+        /**
+         * A set of socket ID's. Only defined for non-offline games.
+         * 
+         * **Important**: The builder of this field must enforce that
+         * entries are unique (that there are no duplicates).
+         */
+        readonly beNiceTo?: Array<string> | Array<Player.Id>;
+
+        /**
+         * `undefined` for offline game.
+         */
+        readonly socketId?: string;
     };
 
 }

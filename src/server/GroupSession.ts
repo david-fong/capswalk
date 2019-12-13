@@ -62,7 +62,7 @@ export class GroupSession {
     protected onConnection(socket: GroupSession.Socket): void {
         console.log("A user has connected.");
         socket.join(GroupSession.RoomNames.MAIN);
-        socket.teamNumbers = new Set();
+        socket.beNiceTo = new Set();
         socket.updateId = 0;
 
         if (Object.keys(this.namespace.connected).length === 0) {
@@ -79,6 +79,9 @@ export class GroupSession {
                 // TODO: this seems like a bad decision. What about just broadcasting
                 // that the host player has died, and choose another player to become
                 // the host?
+                Object.values(this.sockets).forEach((otherSocket) => {
+                    otherSocket.beNiceTo.delete(socket.id);
+                });
                 this.terminate();
             }
         });
@@ -122,11 +125,12 @@ export class GroupSession {
             gridDimensions,
             languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.
             operatorIndex: undefined,
-            playerDescs: Object.values(this.sockets).map((socket) => {
+            playerDescs: Object.values(this.sockets).map((socket) => { // TODO: add those for artificial players.
                 return {
+                    operatorClass: Player.OperatorClass.HUMAN_CLASS,
                     idNumber: undefined,
                     username: socket.username!, // checked above.
-                    teamNumbers: Array.from(socket.teamNumbers),
+                    beNiceTo: Array.from(socket.beNiceTo),
                     socketId: socket.id,
                 };
             }),
