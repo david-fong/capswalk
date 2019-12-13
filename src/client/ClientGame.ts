@@ -40,7 +40,7 @@ export class ClientGame extends Game {
      */
     public constructor(
         socket: SocketIOClient.Socket,
-        desc: Game.ConstructorArguments,
+        desc: Game.CtorArgs,
     ) {
         super(desc);
         if (!(this.operator)) {
@@ -48,8 +48,6 @@ export class ClientGame extends Game {
         }
         this.settings = LocalGameSettings.getInstance();
         this.socket = socket;
-
-        this.reset();
 
         this.socket.off(PlayerMovementEvent.EVENT_NAME);
         this.socket.on(
@@ -94,14 +92,14 @@ export class ClientGame extends Game {
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.ConstructorArguments): HumanPlayer {
+    protected createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer {
         return new OnlineHumanPlayer(this, desc);
     }
 
     /**
      * @override
      */
-    protected createArtifPlayer(desc: Player.ConstructorArguments): PuppetPlayer {
+    protected createArtifPlayer(desc: Player.CtorArgs): PuppetPlayer {
         return new PuppetPlayer(this, desc);
     }
 

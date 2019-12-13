@@ -45,8 +45,6 @@ export abstract class Player extends PlayerSkeleton {
      * These are fixed once the enclosing Game has been constructed.
      * To change these values, a new Game must be constructed.
      */
-    // TODO: update. emphasize that (just like in real life, being nice)
-    // isn't inherently mutual.
     public abstract readonly beNiceTo: ReadonlyArray<Player.Id>;
 
     public lastAcceptedRequestId: number;
@@ -60,7 +58,7 @@ export abstract class Player extends PlayerSkeleton {
 
 
 
-    public constructor(game: Game, desc: Readonly<Player.ConstructorArguments>) {
+    public constructor(game: Game, desc: Readonly<Player.CtorArgs>) {
         super(game, desc.idNumber!);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {
@@ -193,7 +191,7 @@ export namespace Player {
         export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
     }
 
-    export type ConstructorArguments = {
+    export type CtorArgs = {
 
         readonly operatorClass: OperatorClass;
 
@@ -212,11 +210,6 @@ export namespace Player {
          * entries are unique (that there are no duplicates).
          */
         readonly beNiceTo?: Array<string> | Array<Player.Id>;
-
-        /**
-         * `undefined` for offline game.
-         */
-        readonly socketId?: string;
     };
 
 }

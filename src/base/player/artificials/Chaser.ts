@@ -14,7 +14,7 @@ export namespace ArtificialPlayerTypes {
 
         public static readonly TEAM_NUMBER = -1;
 
-        protected constructor(game: Game, desc: Player.ConstructorArguments) {
+        protected constructor(game: Game, desc: Player.CtorArgs) {
             super(game, desc);
         }
 

@@ -53,14 +53,14 @@ export class Server {
      * @param socket - The socket from the game host.
      */
     protected onGameHostsConnection(socket: io.Socket): void {
-        socket.on(GroupSession.CreateEvent.EVENT_NAME, (desc: GroupSession.CreateEvent): void => {
+        socket.on(GroupSession.CtorArgs.EVENT_NAME, (desc: GroupSession.CtorArgs): void => {
             // Create a new group session:
             const groupName = this.createUniqueSessionName(desc.groupName);
             if (!(groupName)) {
                 // The name was not accepted. Notify the client:
                 socket.emit(
-                    GroupSession.CreateEvent.EVENT_NAME,
-                    new GroupSession.CreateEvent(""),
+                    GroupSession.CtorArgs.EVENT_NAME,
+                    new GroupSession.CtorArgs(""),
                 );
                 return;
             }
@@ -82,7 +82,7 @@ export class Server {
             // Notify the host of the namespace created for the
             // requested group session so they can connect to it:
             socket.emit(
-                GroupSession.CreateEvent.EVENT_NAME,
+                GroupSession.CtorArgs.EVENT_NAME,
                 desc,
             );
         });

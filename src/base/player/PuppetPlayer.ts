@@ -18,8 +18,9 @@ export class PuppetPlayer extends Player {
      */
     public readonly beNiceTo: Player["beNiceTo"];
 
-    public constructor(game: Game, desc: Player.ConstructorArguments) {
+    public constructor(game: Game, desc: Player.CtorArgs) {
         super(game, desc);
+        this.beNiceTo = desc.beNiceTo
     }
 
     /**

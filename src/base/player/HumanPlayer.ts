@@ -18,7 +18,7 @@ export abstract class HumanPlayer extends Player {
      */
     private _seqBuffer: Lang.Seq;
 
-    public constructor(game: Game, desc: Player.ConstructorArguments) {
+    public constructor(game: Game, desc: Player.CtorArgs) {
         super(game, desc);
         if (this.idNumber <= 0) {
             throw new RangeError(`The ID number for a human-operated player`

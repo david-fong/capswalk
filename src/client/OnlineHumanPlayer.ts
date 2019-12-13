@@ -25,7 +25,7 @@ export class OnlineHumanPlayer extends HumanPlayer {
 
     public constructor(
         game: ClientGame,
-        desc: Player.ConstructorArguments,
+        desc: Player.CtorArgs,
     ) {
         super(game, desc);
         this.beNiceTo = (desc.beNiceTo as Array<Player.Id>).sort((a, b) => a - b);

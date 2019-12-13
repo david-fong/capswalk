@@ -16,7 +16,7 @@ export class OfflineHumanPlayer extends HumanPlayer {
      */
     public readonly beNiceTo: Player["beNiceTo"];
 
-    public constructor(game: OfflineGame, desc: Player.ConstructorArguments) {
+    public constructor(game: OfflineGame, desc: Player.CtorArgs) {
         super(game, desc);
         this.beNiceTo = [];
     }

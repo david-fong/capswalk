@@ -10,6 +10,7 @@ import { Player } from "src/base/player/Player";
 import { EventRecordEntry } from "src/events/EventRecordEntry";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { Bubble } from "src/events/Bubble";
+import { Modify } from "src/TypeUtils";
 
 
 /**
@@ -43,7 +44,9 @@ export class ServerGame extends Game {
      */
     public constructor(
         session: GroupSession,
-        desc: Game.ConstructorArguments,
+        desc: Modify<Game.CtorArgs, {
+            readonly playerDescs: Array<Player.CtorArgs & {readonly socketId: string;}>;
+        }>,
     ) {
         super(desc);
         if (this.operator) {
@@ -55,7 +58,7 @@ export class ServerGame extends Game {
         // This is used to send messages to players by their player ID.
         const socketMap: Map<Player.Id, io.Socket> = new Map();
         for(const playerDesc of desc.playerDescs) {
-            if (!playerDesc.idNumber || !playerDesc.socketId) {
+            if (!(playerDesc.idNumber)) {
                 // This should never happen. The caller is responsible to
                 // ensure this on its own side.
                 throw new Error("The caller did not initialize all the"
@@ -63,7 +66,7 @@ export class ServerGame extends Game {
             }
             socketMap.set(
                 playerDesc.idNumber!,
-                this.namespace.sockets[playerDesc.socketId!],
+                this.namespace.sockets[playerDesc.socketId],
             );
         };
         this.socketMap = socketMap;
@@ -88,8 +91,8 @@ export class ServerGame extends Game {
         // Pass on Game constructor arguments to each client:
         desc.playerDescs.forEach((playerDesc) => {
             desc.operatorIndex = playerDesc.idNumber;
-            this.namespace.sockets[playerDesc.socketId!].emit(
-                Game.ConstructorArguments.EVENT_NAME,
+            this.namespace.sockets[playerDesc.socketId].emit(
+                Game.CtorArgs.EVENT_NAME,
                 desc,
             );
         }, this);
@@ -118,7 +121,7 @@ export class ServerGame extends Game {
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.ConstructorArguments): never {
+    protected createOperatorPlayer(desc: Player.CtorArgs): never {
         throw new TypeError("This should never be called for a ServerGame.");
     }
 
@@ -177,7 +180,6 @@ export class ServerGame extends Game {
      * @override
      */
     protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
-        ;
         super.processBubblePopExecute(desc);
 
         if (desc.eventId === EventRecordEntry.REJECT) {

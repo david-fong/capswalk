@@ -43,6 +43,16 @@ export abstract class Game extends Grid {
     public readonly lang: Lang;
 
     /**
+     * NOTE: While this is a field, shuffling operations and the
+     * {@link Lang} implementation are able to support mid-game changes
+     * to the balancing behaviour. Making it fixed for the lifetime of
+     * a `Game` is a choice I made in order to make the user experience
+     * more simple. It's one less thing they'll see in the in-game UI,
+     * and I don't think they'd feel it were missing.
+     */
+    protected readonly langBalancingScheme: BalancingScheme;
+
+    /**
      * Set to `undefined` for {@link ServerGame}.
      */
     public readonly operator: HumanPlayer | undefined;
@@ -81,11 +91,12 @@ export abstract class Game extends Grid {
      * 
      * @override
      */
-    public constructor(desc: Game.ConstructorArguments) {
+    public constructor(desc: Game.CtorArgs) {
         super(desc.gridDimensions);
 
         // TODO: set default language (must be done before call to reset):
         //this.lang = import(desc.languageName);
+        this.langBalancingScheme = desc.langBalancingScheme;
 
         /* Construct Players: */ {
             let operator: HumanPlayer | undefined = undefined;
@@ -93,8 +104,11 @@ export abstract class Game extends Grid {
             const allArtifPlayers: Array<Player> = [];
             // Create each player according to their constructor arguments:
             desc.playerDescs.forEach((playerDesc, index) => {
+                if (playerDesc.operatorClass > Player.OperatorClass.HUMAN_CLASS) {
+                    throw new RangeError("Invalid operator class.");
+                }
                 // If the player is on any human team, then the player is a human.
-                const id: Player.Id = (playerDesc.teamNumbers.some((teamNumber) => teamNumber >= 0))
+                const id: Player.Id = (playerDesc.operatorClass === Player.OperatorClass.HUMAN_CLASS)
                     ? +(1 + allHumanPlayers.length) + Player.Id.NULL
                     : -(1 + allArtifPlayers.length) + Player.Id.NULL;
                 playerDesc.idNumber = id;
@@ -104,7 +118,7 @@ export abstract class Game extends Grid {
                     operator = this.createOperatorPlayer(playerDesc);
                     allHumanPlayers[id] = operator;
                 } else {
-                    if (id >= 0) {
+                    if (playerDesc.operatorClass === Player.OperatorClass.HUMAN_CLASS) {
                         // Human-operated players (except for the operator)
                         // are represented by a `PuppetPlayer`-type object.
                         allHumanPlayers[id] = new PuppetPlayer(this, playerDesc);
@@ -123,9 +137,7 @@ export abstract class Game extends Grid {
 
         // Check to make sure that none of the players are invincible:
         // (this happens if a player is "subscribed" to every team number)
-        // TODO: also simplify and merge teams to equivalent representation where possible.
         {
-            const allTeamsSet: Set<Player.TeamNumber> = new Set();
             ;
         }
 
@@ -168,7 +180,7 @@ export abstract class Game extends Grid {
      * {@link Game#allHumanPlayers} array.
      * 
      */
-    protected abstract createOperatorPlayer(desc: Player.ConstructorArguments): HumanPlayer;
+    protected abstract createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer;
 
     /**
      * @returns An {@link ArtificialPlayer} of the specified type.
@@ -177,7 +189,7 @@ export abstract class Game extends Grid {
      * @param desc - 
      */
     protected createArtifPlayer(
-        desc: Player.ConstructorArguments,
+        desc: Player.CtorArgs,
     ): PuppetPlayer | ArtificialPlayer {
         return ArtificialPlayer.of(this, desc);
     }
@@ -610,12 +622,6 @@ export abstract class Game extends Grid {
             .map((tile) => this.getPlayerById(tile.occupantId));
     }
 
-    protected get langBalancingScheme(): BalancingScheme {
-        // TODO
-        //return this.settings.langBalancingScheme.selectedValue;
-        return undefined!;
-    }
-
 }
 
 
@@ -625,23 +631,33 @@ export namespace Game {
     /**
      * 
      */
-    export type ConstructorArguments = {
+    export type CtorArgs = {
 
         readonly gridDimensions: Grid.DimensionDesc;
 
         readonly languageName: typeof Lang.Modules.NAMES[number];
+
+        readonly langBalancingScheme: BalancingScheme;
 
         /**
          * The index in `playerDescs` of the operator's ctor args.
          * 
          * This should be set to `undefined for a {@link ServerGame}.
          */
-        operatorIndex: number | undefined;
+        operatorIndex?: number;
 
-        readonly playerDescs: ReadonlyArray<Player.ConstructorArguments>;
+        readonly playerDescs: ReadonlyArray<Player.CtorArgs>;
     };
-    export namespace ConstructorArguments {
+    export namespace CtorArgs {
+
         export const EVENT_NAME = "game-create";
+
+        /**
+         * Not used here, but used in {@link GroupSession#createGameInstance}.
+         */
+        export type FailureReasons = Partial<Readonly<{
+            undefinedUsername: Array<string>; // socket ID's
+        }>>;
     }
 
 }

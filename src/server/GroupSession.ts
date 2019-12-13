@@ -1,6 +1,6 @@
 import * as io from "socket.io";
 
-import { Grid } from "src/base/Game";
+import { Grid, Game } from "src/base/Game";
 import { ServerGame } from "src/server/ServerGame";
 import { Player } from "src/base/player/Player";
 
@@ -88,19 +88,23 @@ export class GroupSession {
     }
 
     /**
+     * - Deletes its own reference to its game (if it exists).
      * - Disconnects each client.
      * - Removes all listeners from this namespace.
      * - Deletes the enclosed Socket.IO namespace from the Server.
      * - Deletes the only external reference so this can be garbage collected.
      */
     protected terminate(): void {
-        // TODO: destroy the game?
-        const namespace: io.Namespace = this.namespace;
-        Object.values(namespace.connected).forEach((socket) => {
+        // TODO: notify clients?
+        delete this.currentGame;
+        const nsps: io.Namespace = this.namespace;
+        nsps.removeAllListeners("connect");
+        nsps.removeAllListeners("connection");
+        Object.values(nsps.connected).forEach((socket) => {
             socket.disconnect();
         });
-        namespace.removeAllListeners();
-        delete namespace.server.nsps[namespace.name];
+        nsps.removeAllListeners();
+        delete nsps.server.nsps[nsps.name];
         (this.deleteExternalRefs)();
     }
 
@@ -115,15 +119,17 @@ export class GroupSession {
      * @param gridDimensions - 
      * @returns false if the passed arguments were incomplete or invalid.
      */
-    private createGameInstance(gridDimensions: Grid.DimensionDesc): boolean {
+    private createGameInstance(gridDimensions: Grid.DimensionDesc): Game.CtorArgs.FailureReasons | undefined {
+        const failureReasons: Partial<Game.CtorArgs.FailureReasons> = {}; // TODO: give this a type
         if (Object.values(this.sockets).some((socket) => {
             return socket.username === undefined;
         })) {
-            return false;
+            return failureReasons;
         }
         this.currentGame = new ServerGame(this, {
             gridDimensions,
             languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.
+            langBalancingScheme: undefined!, // TODO
             operatorIndex: undefined,
             playerDescs: Object.values(this.sockets).map((socket) => { // TODO: add those for artificial players.
                 return {
@@ -135,11 +141,11 @@ export class GroupSession {
                 };
             }),
         });
-        return true;
+        return undefined;
     }
 
     public get sockets(): Record<string, GroupSession.Socket> {
-        return this.namespace.sockets as { [id: string]: GroupSession.Socket };
+        return this.namespace.sockets as Record<io.Socket["id"], GroupSession.Socket>;
     }
 
 }
@@ -153,8 +159,8 @@ export namespace GroupSession {
      * these fields directly onto the socket objects.
      */
     export type Socket = io.Socket & {
-        username?: Player.Username;
-        teamNumbers: Set<Player.TeamNumber>;
+        username: Player.Username;
+        beNiceTo: Set<io.Socket["id"]>;
         updateId: number; // initial value = 0
     };
 
@@ -177,7 +183,7 @@ export namespace GroupSession {
     /**
      * 
      */
-    export class CreateEvent {
+    export class CtorArgs {
 
         public static EVENT_NAME = "group-session-create";
 
@@ -210,7 +216,7 @@ export namespace GroupSession {
 
         public constructor(
             groupName: SessionName,
-            initialTtl: number = CreateEvent.DEFAULT_INITIAL_TTL
+            initialTtl: number = CtorArgs.DEFAULT_INITIAL_TTL
         ) {
             this.groupName = groupName;
             this.initialTtl = initialTtl;

@@ -27,7 +27,7 @@ export class OfflineGame extends Game {
      * 
      * @param desc - 
      */
-    public constructor(desc: Game.ConstructorArguments) {
+    public constructor(desc: Game.CtorArgs) {
         super(desc);
         if (!(this.operator)) {
             throw new Error("The Operator for a ClientGame should be defined.");
@@ -47,7 +47,7 @@ export class OfflineGame extends Game {
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.ConstructorArguments): HumanPlayer {
+    protected createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer {
         return new OfflineHumanPlayer(this, desc);
     }
 

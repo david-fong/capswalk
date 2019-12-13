@@ -32,7 +32,7 @@ export abstract class ArtificialPlayer extends Player {
      * @param game - 
      * @param desc - 
      */
-    protected constructor(game: Game, desc: Player.ConstructorArguments) {
+    protected constructor(game: Game, desc: Player.CtorArgs) {
         super(game, desc);
         if (this.idNumber >= 0) {
             throw new RangeError(`The ID number for a human-operated player`
@@ -157,7 +157,7 @@ export namespace ArtificialPlayer {
         [ Types.Chaser.TEAM_NUMBER, Types.Chaser.prototype.constructor, ],
     ]);
 
-    export const of = (game: Game, desc: Player.ConstructorArguments): ArtificialPlayer => {
+    export const of = (game: Game, desc: Player.CtorArgs): ArtificialPlayer => {
         const typeId: Player.OperatorClass = desc.operatorClass;
         if (!(Constructors.has(typeId))) {
             throw new RangeError(`No artificial player type with the type-id`
