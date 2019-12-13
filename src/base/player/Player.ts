@@ -3,6 +3,8 @@ import { Game } from "src/base/Game";
 import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
 import { PlayerSkeleton } from "src/base/player/PlayerSkeleton";
 
+export { PlayerSkeleton } from "src/base/player/PlayerSkeleton";
+
 
 /**
  * 

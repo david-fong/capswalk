@@ -1,6 +1,6 @@
 import { Lang } from "src/lang/Lang";
 import { Pos, BarePos } from "src/Pos";
-import { Player } from "src/base/player/Player";
+import { PlayerSkeleton, Player } from "src/base/player/Player";
 
 export { Pos, BarePos } from "src/Pos";
 
@@ -71,20 +71,20 @@ export class Tile {
 
 
 
+    public setOccupant(playerDesc: PlayerSkeleton.VisibleState): void {
+        this._occupantId = playerDesc.idNumber;
+    }
+
     public isOccupied(): boolean {
         return this.occupantId !== Player.Id.NULL;
     }
 
     public evictOccupant(): void {
-        this.occupantId = Player.Id.NULL;
+        this._occupantId = Player.Id.NULL;
     }
 
     public get occupantId(): Player.Id {
         return this._occupantId;
-    }
-
-    public set occupantId(occupantId: Player.Id) {
-        this._occupantId = occupantId;
     }
 
 
