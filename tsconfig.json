@@ -7,13 +7,18 @@
         "moduleResolution": "node", // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/23649#issuecomment-424355987
 
         // Project directory structure:
-        "sourceMap": true,
         "rootDir": ".",
         "baseUrl": ".",
         "outDir": "./dist",
         "paths": {},
 
+        // Types:
+        // "declaration": true,
+        // "declarationDir": "./dist/types",
+        // "typeRoots": ["./dist/types", "./node_modules/@types"],
+
         // Emit flags:
+        "sourceMap": true,
         "removeComments": true,
         "alwaysStrict": true,
 

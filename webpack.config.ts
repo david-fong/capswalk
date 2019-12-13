@@ -22,11 +22,12 @@ const config: webpack.Configuration = {
     devtool: "source-map",
     resolve: {
         extensions: [ ".ts", ".json", ".tsx", ".js", ],
-        modules: [ path.resolve(__dirname, "src"), __dirname, "node_modules", ],
+        modules: [ __dirname, "node_modules", ], // .shift(path.resolve(__dirname, "src"))
     },
     module: {
         rules: [
             {
+                // https://github.com/TypeStrong/ts-loader#loader-options
                 test: /\.tsx?$/,
                 use: {
                     loader: "ts-loader",

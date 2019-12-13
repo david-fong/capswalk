@@ -18,6 +18,9 @@
   "exports": {
     ".": "./build/src/index"
   },
+  "files": [
+    "./dist/"
+  ],
   "scripts": {
     "start": "node --experimental-exports --experimental-modules --experimental-json--modules --es-module-specifier-resolution"
   },
