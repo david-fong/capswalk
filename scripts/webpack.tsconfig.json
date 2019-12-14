@@ -1,7 +1,12 @@
 {
-    "removeComments": true,
-    "alwaysStrict": true,
-    "strictNullChecks": true,
+    "compilerOptions": {
+        "target": "es6",
+        "module": "CommonJS",
+
+        "removeComments": true,
+        "alwaysStrict": true,
+        "strictNullChecks": true
+    },
 
     "outDir": "../",
     "files": [

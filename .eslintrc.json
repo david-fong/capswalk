@@ -6,7 +6,10 @@
             "./tsconfig.json",
             "./scripts/webpack.tsconfig.json"
         ],
-        "sourceType": "module"
+        "sourceType": "module",
+        "extraFileExtensions": [
+            ".html"
+        ]
     },
     "plugins": [
         "@typescript-eslint",
@@ -28,6 +31,7 @@
         "consistent-return": "error",
 
         "getter-return": "error",
+        "array-callback-return": "error",
         "no-invalid-regexp": ["error", { "allowConstructorFlags": ["u", "y"] }],
         "no-invalid-this": "error",
         "no-unreachable": "error",
