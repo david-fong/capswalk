@@ -210,7 +210,7 @@ export namespace Player {
          * **Important**: The builder of this field must enforce that
          * entries are unique (that there are no duplicates).
          */
-        readonly beNiceTo: ReadonlyArray<Player.Id>
+        beNiceTo: ReadonlyArray<Player.Id>
 
         readonly socketId?: string;
     };

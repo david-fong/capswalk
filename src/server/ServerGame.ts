@@ -46,23 +46,18 @@ export class ServerGame extends Game {
     public constructor(
         session: GroupSession,
         desc: Modify<Game.CtorArgs, {
-            readonly playerDescs: Array<Require<Player.CtorArgs, "socketId">>;
+            readonly playerDescs: ReadonlyArray<Require<Game.CtorArgs["playerDescs"][number], "socketId">>;
         }>,
     ) {
-        // Don't call super-constructor yet!
         super(desc);
         // Setup the map from player ID's to socket ID's:
         // This is used to send messages to players by their player ID.
         const playerIdToSocketMap: Map<Player.Id, io.Socket> = new Map();
-        for(const playerDesc of desc.playerDescs) {
+        for (const playerDesc of desc.playerDescs) {
             playerIdToSocketMap.set(
                 playerDesc.idNumber!,
                 this.namespace.sockets[playerDesc.socketId],
             );
-            // TODO: dillema: super constructor assigns player ID's, but also needs
-            // `beNiceTo` in form of player ID's, when at first they are in terms of
-            // socket ID's because the player ID's have not been assigned yet O_o.
-            playerDesc.beNiceTo = playerDesc.beNiceTo.map
         };
         this.playerIdToSocketMap = playerIdToSocketMap;
         if (this.operator) {

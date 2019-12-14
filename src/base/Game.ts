@@ -162,12 +162,12 @@ export abstract class Game extends Grid {
         operator?: HumanPlayer,
         allHumanPlayers: ReadonlyArray<Player>,
         allArtifPlayers: ReadonlyArray<Player>,
-        // TODO: add `playerIdToSocketMap`
     } {
         let operator: HumanPlayer | undefined = undefined;
         const allHumanPlayers: Array<Player> = [];
         const allArtifPlayers: Array<Player> = [];
 
+        const socketIdToPlayerIdMap: Record<string, Player.Id> = {};
         playerDescs.forEach((playerDesc) => {
             // First pass - Assign Player ID's:
             if (playerDesc.operatorClass > Player.OperatorClass.HUMAN_CLASS) {
@@ -177,9 +177,18 @@ export abstract class Game extends Grid {
             playerDesc.idNumber = (playerDesc.operatorClass === Player.OperatorClass.HUMAN_CLASS)
                 ? +(1 + allHumanPlayers.length) + Player.Id.NULL
                 : -(1 + allArtifPlayers.length) + Player.Id.NULL;
+            if (playerDesc.socketId) {
+                socketIdToPlayerIdMap[playerDesc.socketId] = playerDesc.idNumber;
+            }
+        });
+        playerDescs.forEach((playerDesc) => {
+            // Second pass - map any socket ID's in `beNiceTo` to player ID's:
+            playerDesc.beNiceTo = playerDesc.beNiceTo.map((socketId) => {
+                ; // TODO
+            });
         });
         (playerDescs as ReadonlyArray<Player.CtorArgs>).forEach((playerDesc, index) => {
-            // Second pass - Create the Players:
+            // Third pass - Create the Players:
             const id = playerDesc.idNumber!;
             if (index === operatorIndex) {
                 if (playerDesc.operatorClass !== Player.OperatorClass.HUMAN_CLASS) {

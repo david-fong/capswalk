@@ -177,9 +177,9 @@ export namespace Grid {
      * Values do not _need_ to be in range or integers. Cleaning to handle
      * such values is performed by the {@link Grid} constructor.
      */
-    export type DimensionDesc = {
+    export type DimensionDesc = Readonly<{
         height: number,
         width?: number,
-    };
+    }>;
 
 }
