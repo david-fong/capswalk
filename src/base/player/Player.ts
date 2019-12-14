@@ -161,6 +161,7 @@ export namespace Player {
     export namespace Id {
         export const NULL = 0;
     }
+    export type SocketId = string;
 
     /**
      * An integer value.
@@ -192,7 +193,11 @@ export namespace Player {
         export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
     }
 
-    export type CtorArgs = {
+    /**
+     * Server should pass ID = Player.SocketId
+     * Client should keep default of Player.Id
+     */
+    export type CtorArgs<ID extends Player.Id | SocketId = Player.Id> = {
 
         readonly operatorClass: OperatorClass;
 
@@ -200,7 +205,7 @@ export namespace Player {
          * Initially `undefined` for server and offline games. It will
          * already be defined for a client game by the server.
          */
-        idNumber?: Id;
+        idNumber: ID extends Player.Id ? (Player.Id | undefined) : undefined;
 
         readonly username: Username;
 
@@ -210,9 +215,9 @@ export namespace Player {
          * **Important**: The builder of this field must enforce that
          * entries are unique (that there are no duplicates).
          */
-        beNiceTo: ReadonlyArray<Player.Id>
+        beNiceTo: ReadonlyArray<ID>
 
-        readonly socketId?: string;
+        readonly socketId: ID extends SocketId ? SocketId : never;
     };
 
 }

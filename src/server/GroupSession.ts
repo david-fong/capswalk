@@ -119,11 +119,14 @@ export class GroupSession {
      * @param gridDimensions - 
      * @returns false if the passed arguments were incomplete or invalid.
      */
-    private createGameInstance(gridDimensions: Grid.DimensionDesc): Game.CtorArgs.FailureReasons | undefined {
-        const failureReasons: Partial<Game.CtorArgs.FailureReasons> = {}; // TODO: give this a type
-        if (Object.values(this.sockets).some((socket) => {
-            return socket.username === undefined;
-        })) {
+    private createGameInstance(
+        gridDimensions: Grid.DimensionDesc
+    ): Readonly<Game.CtorArgs.FailureReasons> | undefined {
+        const failureReasons: Partial<Game.CtorArgs.FailureReasons> = {};
+        failureReasons.undefinedUsername = Object.values(this.sockets)
+            .filter((socket) => !(socket.username))
+            .map((socket) => socket.id);
+        if (failureReasons.undefinedUsername) {
             return failureReasons;
         }
         this.currentGame = new ServerGame(this, {

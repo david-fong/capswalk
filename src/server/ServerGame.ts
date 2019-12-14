@@ -45,9 +45,7 @@ export class ServerGame extends Game {
      */
     public constructor(
         session: GroupSession,
-        desc: Modify<Game.CtorArgs, {
-            readonly playerDescs: ReadonlyArray<Require<Game.CtorArgs["playerDescs"][number], "socketId">>;
-        }>,
+        desc: Game.CtorArgs<Player.SocketId>,
     ) {
         super(desc);
         // Setup the map from player ID's to socket ID's:

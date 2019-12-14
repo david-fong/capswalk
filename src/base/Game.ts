@@ -93,7 +93,7 @@ export abstract class Game extends Grid {
      * 
      * @override
      */
-    public constructor(desc: Game.CtorArgs) {
+    public constructor(desc: Game.CtorArgs<any>) {
         super(desc.gridDimensions);
 
         // TODO: set default language (must be done before call to reset):
@@ -156,7 +156,7 @@ export abstract class Game extends Grid {
      * @returns A bundle of the constructed players.
      */
     private createPlayers(
-        playerDescs: Game.CtorArgs["playerDescs"],
+        playerDescs: Game.CtorArgs<any>["playerDescs"],
         operatorIndex?: number
     ): {
         operator?: HumanPlayer,
@@ -184,11 +184,13 @@ export abstract class Game extends Grid {
         playerDescs.forEach((playerDesc) => {
             // Second pass - map any socket ID's in `beNiceTo` to player ID's:
             playerDesc.beNiceTo = playerDesc.beNiceTo.map((socketId) => {
-                ; // TODO
+                return socketIdToPlayerIdMap[socketId];
             });
         });
-        (playerDescs as ReadonlyArray<Player.CtorArgs>).forEach((playerDesc, index) => {
+        (playerDescs as Game.CtorArgs<Player.Id>["playerDescs"]).forEach((playerDesc, index) => {
             // Third pass - Create the Players:
+            // Note above redundant `<Player.Id>` as a reminder that
+            // the player ID's ahve now been successfully assigned.
             const id = playerDesc.idNumber!;
             if (index === operatorIndex) {
                 if (playerDesc.operatorClass !== Player.OperatorClass.HUMAN_CLASS) {
@@ -675,9 +677,9 @@ export namespace Game {
     /**
      * 
      */
-    export type CtorArgs = {
+    export type CtorArgs<ID extends Player.Id | string = Player.Id> = {
 
-        readonly gridDimensions: Grid.DimensionDesc;
+        readonly gridDimensions: Readonly<Grid.DimensionDesc>;
 
         readonly languageName: typeof Lang.Modules.NAMES[number];
 
@@ -690,9 +692,7 @@ export namespace Game {
          */
         operatorIndex?: number;
 
-        readonly playerDescs: ReadonlyArray<Modify<Player.CtorArgs, {
-            beNiceTo: Player.CtorArgs["beNiceTo"] | ReadonlyArray<string>;
-        }>>;
+        readonly playerDescs: ReadonlyArray<Player.CtorArgs<ID>>;
     };
     export namespace CtorArgs {
 
@@ -701,9 +701,9 @@ export namespace Game {
         /**
          * Not used here, but used in {@link GroupSession#createGameInstance}.
          */
-        export type FailureReasons = Partial<Readonly<{
+        export type FailureReasons = Partial<{
             undefinedUsername: Array<string>; // socket ID's
-        }>>;
+        }>;
     }
 
 }
