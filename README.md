@@ -1,9 +1,21 @@
 
 # ⌨🐍 SnaKey
 
-[**`try it!` 👈**](index.html "*boop*")
+There's nothing to show yet! But, you can try [**`an older, working version` 👈**](https://david-fong.github.io/SnaKey-JS/ "*boop*")
 
-At its core, SnaKey is a typing game where you move around by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character marked by the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese Hiragana, you would type the keyboard sequence "no" to move onto an adjacent tile marked by the written character "の".
+> `<Begin Preamble>`
+>
+> Learning is hard, and that's what makes the process of doing it frustrating. I can vouch for that by nearly every commit in this repository. But I can also say from other past experiences that the difficulty in tackling something new and unfamiliar is what makes its eventual fruit so sweet to enjoy.
+>
+> If I want to get across one message through this project, it is to _be kind to beginners_- whether that is another person or ourself. When I get frustrated learning something, I find myself needing to mentally recite that _"I'm not stupid- I'm just learning"_.
+>
+> People only get good at things by perseverance. I think it's good to remember that for ourselves: Ask a musician to play their instrument flipped, or a person to type on a different keyboard layout than the one they're used to, or ask a driver to drive with their steering flipped. Ask someone to try playing this game (I'm shameless- I know).
+>
+> Learning is difficult. It just is. But we overcome it.
+>
+> `<End Preamble>`
+
+At its core, SnaKey is a typing game where you move around by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character marked by the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese Hiragana, you would type the keyboard sequence "no" to move onto an adjacent tile marked by the written character "の". It's easier done than said.
 
 SnaKey drew some initial inspiration from the well-known [Snake Game](https://wikipedia.org/wiki/Snake_(video_game_genre)), hence its name, which is a pun on the words "snake" and "keyboard".
 
@@ -16,7 +28,7 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
   - [Version #2 - Slithering to the Web](#-version-2---slithering-to-the-web)
   - [Version #3 - Snakes With Wings](#-version-3---snakes-with-wings-you-are-here)
 - [Design Challenges & Stepping up my Game](#-design-challenges--stepping-up-my-game "pun intended")
-- [My Joy in TypeScript](#--my-joy-in-typescript)
+- [My Joy in TypeScript](#---my-joy-in-typescript)
   - [Bundling Constructor Arguments as Objects](#-bundling-constructor-arguments-as-objects)
   - [Type Aliases and Declaration Merging](#-type-aliases-and-declaration-merging)
 - [Language Representation](#language-representation)
@@ -35,7 +47,7 @@ I like the idea of this game, and I want to champion it. Although it didn't fall
 
 ### 🍏 I want to learn and push myself
 
-This is not a pure goal, but one that comes naturally from having one. That is- to achieve my goal of make my idea a reality, I need to learn things. First I need to learn _what I need to learn_ to achieve my goal, and read up on the available choices in order to make a basic, educated decision on what technologies to pursue learning, and then I need to actually learn them. First it was Python, and then it was HTML, Javascript, and CSS, and now, it's NodeJS, expressJS, SocketIO, VSCode, eslint, and Typescript.
+This is not a pure goal, but one that comes naturally from having one. That is- to achieve my goal of make my idea a reality, I need to learn things. First I need to learn _what I need to learn_ to achieve my goal, and read up on the available choices in order to make a basic, educated decision on what technologies to pursue learning, and then I need to actually learn them. First it was Python, and then it was HTML, Javascript, and CSS, and now, it's NodeJS, expressJS, SocketIO, VSCode, Typescript, esLint, and WebPack.
 
 One of the plus sides of pushing myself in this way is that historically, it has always come in handy later in school assignments where I would otherwise be learning these things from scratch. The nicest thing about having a pure goal by far is that it takes a lot of the drag out of learning. One thing I feel a little tired of in my experience with school is how the technical material often seems to creep into the spotlight in the place of pure goals and practical applications. It's refreshing to start with a goal at the forefront of my mind.
 
@@ -98,7 +110,7 @@ Now that we understand the start of why the design requires so much more care in
 |        Topic        | The What and Why of the Problem | The Solution and its Necessity |
 |:-------------------:|---------------------------------|--------------------------------|
 | 📁<br>Modularity    | | |
-| 🦆<br>Inheritance   | | |
+| 🦆<br>Inheritance   | | Here, ideally, there should only be one interface to every class, and concrete implementations should carry as little weight as possible- mainly in how events are handled and how changes are displayed. Typescript enhances the inheritance-grammar of Javascript to the level of Java, for which I am grateful and excited. |
 | 📄<br>Documentation | Unlike the other problems, this wasn't due to not knowing about or understanding how to use a language feature. Rather, it was a problem of values: At the time, writing documentation didn't feel like it mattered. The code was _relatively_ small and simple, and on top of that, I had no IDE to show documentation on mouseover, so any documentation I wrote wasn't even very accessible to me. | The solution here is to be intentional. And to be honest, I may not even need that. As the design becomes more complicated to address the new design requirements, I have a more critical need to clearly communicate a function's purpose. And as I design my function API's, I come across more situations where I need to make a judgement call on which functions in a call chain should handle certain functionalities. Writing good documentation allows me to stop wasting time reading my previous code to remember what it is being held responsible to do. |
 
 ---
