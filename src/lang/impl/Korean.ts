@@ -4,16 +4,16 @@ import { Lang } from "src/lang/Lang";
 /**
  * # Korean
  * 
- * https://en.wikipedia.org/wiki/Hangul_consonant_and_vowel_tables#Hangul_syllables
- * https://en.wikipedia.org/wiki/Korean_language_and_computers#Hangul_in_Unicode
- * https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)
+ * https://wikipedia.org/wiki/Hangul_consonant_and_vowel_tables#Hangul_syllables
+ * https://wikipedia.org/wiki/Korean_language_and_computers#Hangul_in_Unicode
+ * https://wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)
  */
 export namespace Korean {
 
     /**
      * # Dubeolsik (3-row layout)
      * 
-     * https://en.wikipedia.org/wiki/Keyboard_layout#Dubeolsik
+     * https://wikipedia.org/wiki/Keyboard_layout#Dubeolsik
      * https://www.branah.com/korean
      */
     export class Dubeolsik extends Lang {
@@ -25,7 +25,10 @@ export namespace Korean {
         }
 
         public static getBlurb(): string {
-            return ""; // TODO
+            // A paraphrase of a segment from Wikipedia:
+            return "The most common keyboard layout, and South Korea's only Hangul"
+                + " standard since 1969. Consonants are on the left, and vowels on"
+                + " the right.";
         }
 
         public static getInstance(): Dubeolsik {
@@ -75,9 +78,9 @@ export namespace Korean {
      * # Sebeolsik (5-row layout)
      * 
      * \*Note: the branah link below is to an earlier version of
-     * Sebeolsik, [Sebeolsik 390](https://en.wikipedia.org/wiki/Keyboard_layout#Sebeolsik_390).
+     * Sebeolsik, [Sebeolsik 390](https://wikipedia.org/wiki/Keyboard_layout#Sebeolsik_390).
      * 
-     * https://en.wikipedia.org/wiki/Keyboard_layout#Sebeolsik_Final
+     * https://wikipedia.org/wiki/Keyboard_layout#Sebeolsik_Final
      * https://www.branah.com/sebeolsik
      */
     export class Sebeolsik extends Lang {
@@ -89,7 +92,12 @@ export namespace Korean {
         }
 
         public static getBlurb(): string {
-            return ""; // TODO
+            // A paraphrase of a segment from Wikipedia:
+            return "Another Hangul keyboard layout used in South Korea, and the"
+                + " final Sebeolsik layout designed by Dr. Kong Byung Woo, hence"
+                + " the name. Syllable-initial consonants are on the right, final"
+                + " consonants on the left, and vowels in the middle. It is more"
+                + " ergonomic than the dubeolsik, but not widely used.";
         }
 
         public static getInstance(): Sebeolsik {
@@ -156,20 +164,26 @@ export namespace Korean {
 
 
     /**
+     * # Korean Romanization
      * 
-     * https://en.wikipedia.org/wiki/Revised_Romanization_of_Korean#Transcription_rules
-     * https://en.wikipedia.org/wiki/Romanization_of_Korean#Systems
+     * https://wikipedia.org/wiki/Revised_Romanization_of_Korean#Transcription_rules
+     * https://wikipedia.org/wiki/Romanization_of_Korean#Systems
      */
     export class Romanization extends Lang {
 
         private static SINGLETON?: Romanization = undefined;
 
         public static getName(): string {
-            return "Korean Romanization";
+            return "Korean Revised Romanization";
         }
 
         public static getBlurb(): string {
-            return ""; // TODO
+            // A paraphrase of a segment from Wikipedia:
+            return "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
+                + " 表記法) is the official South Korean language romanization system. It"
+                + " was developed by the National Academy of the Korean Language from 1995,"
+                + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
+                + " and Tourism";
         }
 
         public static getInstance(): Romanization {
@@ -217,19 +231,22 @@ export namespace Korean {
      * @returns A transformation of initializer information to a form
      *      suitable for consumption by the {@link Lang} constructor.
      */
-    const INITIALIZE = (seqBuilder: { (
-        ij: typeof INITIALS[number],
-        mj: typeof MEDIALS[number],
-        fj: typeof FINALS[number],
-    ): string, }): Lang.CharSeqPair.WeightedForwardMap => {
+    const INITIALIZE = (
+        seqBuilder: { (
+            ij: typeof INITIALS[number],
+            mj: typeof MEDIALS[number],
+            fj: typeof FINALS[number],
+        ): Lang.Seq, }
+    ): Lang.CharSeqPair.WeightedForwardMap => {
         const forwardDict: Lang.CharSeqPair.WeightedForwardMap = {};
         INITIALS.forEach((initialJamo, initialIdx) => {
             MEDIALS.forEach((medialJamo, medialIdx) => {
                 FINALS.forEach((finalJamo, finalIdx) => {
-                    let unicode = INITIALS.length * (initialIdx);
-                    unicode = MEDIALS.length * (unicode + medialIdx);
-                    unicode =  FINALS.length * (unicode + finalIdx);
-                    const char = String.fromCharCode((UNICODE_HANGUL_SYLLABLES_BASE + unicode));
+                    // base + f + F(m + Mi)
+                    let offset = initialIdx;
+                    offset = MEDIALS.length * offset + medialIdx;
+                    offset =  FINALS.length * offset + finalIdx;
+                    const char = String.fromCharCode(UNICODE_HANGUL_SYLLABLES_BASE + offset);
                     forwardDict[char] = {
                         seq: seqBuilder(initialJamo, medialJamo, finalJamo),
                         weight: WEIGHTS[char],
