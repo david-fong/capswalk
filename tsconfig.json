@@ -7,10 +7,13 @@
         "moduleResolution": "node", // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/23649#issuecomment-424355987
 
         // Project directory structure:
+        // typescript looks for non-relative imports first relative to
+        // the base url, then, since we specified "moduleResolution":
+        // "node", it will follow node's resolution 
         "rootDir": ".",
         "baseUrl": ".",
         "outDir": "./dist",
-        "paths": {},
+        //"paths": {},
 
         // Types:
         // "declaration": true,

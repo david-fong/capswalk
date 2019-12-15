@@ -5,7 +5,6 @@
 # build
 /dist/
 /scripts/eslint-cache.json
-/scripts/Sandbox.js
 /webpack.config.js
 
 # vim
