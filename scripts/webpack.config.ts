@@ -23,16 +23,18 @@ export type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
 /**
  * Relative paths in any config fields will resolve off the parent
- * directory of this file.
+ * directory of this file. Note that __dirname is the absolute path
+ * of the transpiled module, which is set to be one level above that
+ * of this file.
  */
-const PROJECT_ROOT = __dirname;
+export const PROJECT_ROOT = __dirname;
 
 const WATERMARK = "/**\n * " + [
     "SnaKey by David Fong",
     "https://github.com/david-fong/SnaKey-NTS",
 ].join("\n * ") + "\n */";
 
-const BasePlugins: () => Array<webpack.Plugin> = () => {return [
+const BasePlugins: () => Array<Readonly<webpack.Plugin>> = () => { return Array.of(
     new webpack.ProgressPlugin((pct, msg, moduleProgress?, activeModules?, moduleName?) => {
         console.log(
             `[${Math.floor(pct * 100).toString().padStart(3)}% ]`,
@@ -41,7 +43,7 @@ const BasePlugins: () => Array<webpack.Plugin> = () => {return [
             (moduleName || "").replace(PROJECT_ROOT, "...").replace(PROJECT_ROOT, "..."),
         );
     }),
-]; };
+); };
 
 /**
  * # Base Config
@@ -54,8 +56,8 @@ const BasePlugins: () => Array<webpack.Plugin> = () => {return [
  * Everything that builds off of this will need to add the `entry` field.
  * 
  * **Important**: Make sure all referenced objects are only accessible
- * as producers. Otherwise, mutations in one bundle configurations will
- * propagate to all following config definitions.
+ * via pure producers. Otherwise, mutations in one bundle's config will
+ * propagate to all the following config definitions.
  * 
  * ## Help Links
  * 
@@ -71,27 +73,33 @@ const BaseConfig: () => Require<webpack.Configuration,
     target: "node",
     cache: true, // https://webpack.js.org/guides/caching/
     stats: {
-        //cached: false,
-    }, // https://webpack.js.org/configuration/stats/
+        // https://webpack.js.org/configuration/stats/
+        cached: false,
+        warningsFilter: [ /export .* was not found in/, ],
+    },
 
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
     entry: { /* Left to each branch config */ },
     devtool: "source-map",
     plugins: BasePlugins(),
     resolve: {
-        extensions: [ ".ts", ".js", ], // ".json", ".tsx",
+        extensions: [ ".ts", ], // ".json", ".tsx",
         modules: [ PROJECT_ROOT, ], // match tsconfig.baseUrl
+    },
+    watchOptions: {
+        ignored: [ "files/**/*.js", "node_modules", ],
     },
     module: {
         rules: [ // https://webpack.js.org/loaders/
             {
-                test: /\.tsx?$/,
+                test: /[.]ts$/,
                 use: {
                     loader: "ts-loader",
-                    options: {
+                    options: <tsloader.LoaderOptions>{
                         transpileOnly: true, // https://github.com/TypeStrong/ts-loader#faster-builds
-                    } as tsloader.LoaderOptions,
-                } as webpack.RuleSetLoader,
+                        projectReferences: true,
+                    },
+                },
                 exclude: /node_modules/,
             },
             // TODO: look into need for html loader
@@ -132,19 +140,22 @@ const webBundleConfig = BaseConfig(); {
     });
 }
 
-// Basic node configuration:
+/**
+ * ## Basic node configuration:
+ * 
+ * - `target: "node"`. This should mean that node modules are not bundled.
+ * - `resolve.modules.push("node_modules")`
+ * - `externals: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))`
+ */
 const NODE_CONFIG = (config): void => {
     config.target = "node";
     config.resolve.modules!.push("node_modules");
+    config.resolve.extensions.push(".js");
     config.externals = fs.readdirSync(path.resolve(PROJECT_ROOT, "node_modules"));
 };
 
 /**
  * ## Node Bundles
- * 
- * - `target: "node"`. This should mean that node modules are not bundled.
- * - `resolve.modules.push("node_modules")`
- * - `externals: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))`
  */
 const nodeBundleConfig = BaseConfig(); {
     const config = nodeBundleConfig;
