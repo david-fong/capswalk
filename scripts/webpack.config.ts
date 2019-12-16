@@ -16,7 +16,8 @@ import HtmlPlugin = require("html-webpack-plugin");
 // omitted from transpilation output.
 // https://github.com/TypeStrong/ts-loader#loader-options
 import * as tsloader from "ts-loader/dist/interfaces";
-import { Require } from "./src/TypeUtils";
+
+export type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
 
 
@@ -27,8 +28,8 @@ import { Require } from "./src/TypeUtils";
 const PROJECT_ROOT = __dirname;
 
 const WATERMARK = "/**\n * " + [
-      "SnaKey by David Fong",
-      "https://github.com/david-fong/SnaKey-NTS",
+    "SnaKey by David Fong",
+    "https://github.com/david-fong/SnaKey-NTS",
 ].join("\n * ") + "\n */";
 
 const BasePlugins: () => Array<webpack.Plugin> = () => {return [
@@ -69,7 +70,9 @@ const BaseConfig: () => Require<webpack.Configuration,
     mode: "development",
     target: "node",
     cache: true, // https://webpack.js.org/guides/caching/
-    stats: { }, // https://webpack.js.org/configuration/stats/
+    stats: {
+        //cached: false,
+    }, // https://webpack.js.org/configuration/stats/
 
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
     entry: { /* Left to each branch config */ },
@@ -86,6 +89,7 @@ const BaseConfig: () => Require<webpack.Configuration,
                 use: {
                     loader: "ts-loader",
                     options: {
+                        transpileOnly: true, // https://github.com/TypeStrong/ts-loader#faster-builds
                     } as tsloader.LoaderOptions,
                 } as webpack.RuleSetLoader,
                 exclude: /node_modules/,
@@ -120,6 +124,7 @@ const webBundleConfig = BaseConfig(); {
             new HtmlPlugin({
                 template: "./src/base/index.html",
                 filename: `${name}/index.html`,
+                // inject:
                 chunks: [ name, /*`${name}_body`,*/ ],
                 hash: true,
             })

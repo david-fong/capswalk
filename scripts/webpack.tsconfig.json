@@ -2,14 +2,15 @@
     "compilerOptions": {
         "target": "es6",
         "module": "CommonJS",
+        "rootDir": ".",
+        "outDir": "../",
+        "listEmittedFiles": true,
 
         "removeComments": true,
         "alwaysStrict": true,
         "strictNullChecks": true
     },
-
-    "outFile": "../webpack.config.js",
     "files": [
-        "../webpack.config.ts"
+        "webpack.config.ts"
     ]
 }

@@ -9,7 +9,7 @@
         // Project directory structure:
         // typescript looks for non-relative imports first relative to
         // the base url, then, since we specified "moduleResolution":
-        // "node", it will follow node's resolution 
+        // "node", it will follow node's resolution strategy.
         "rootDir": ".",
         "baseUrl": ".",
         "outDir": "./dist",
