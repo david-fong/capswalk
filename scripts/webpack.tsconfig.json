@@ -8,7 +8,7 @@
         "strictNullChecks": true
     },
 
-    "outDir": "../",
+    "outFile": "../webpack.config.js",
     "files": [
         "../webpack.config.ts"
     ]

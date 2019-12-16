@@ -1,4 +1,5 @@
 import path = require("path");
+import fs = require("fs");
 
 import webpack = require("webpack");
 import HtmlPlugin = require("html-webpack-plugin");
@@ -9,12 +10,13 @@ import HtmlPlugin = require("html-webpack-plugin");
 // import clean = require("clean-webpack-plugin");
 
 // https://www.npmjs.com/package/webpack-node-externals
-import nodeExternals = require("webpack-node-externals");
+// import nodeExternals = require("webpack-node-externals");
 
 // only used for type-hinting.
 // omitted from transpilation output.
 // https://github.com/TypeStrong/ts-loader#loader-options
 import * as tsloader from "ts-loader/dist/interfaces";
+import { Require } from "./src/TypeUtils";
 
 
 
@@ -54,20 +56,6 @@ const BasePlugins: () => Array<webpack.Plugin> = () => {return [
  * as producers. Otherwise, mutations in one bundle configurations will
  * propagate to all following config definitions.
  * 
- * ## Web Bundles:
- * 
- * This includes the homepage, 
- * 
- * - `target: "web",`. This is implied, but here, explicitness helps me learn.
- * - `externals: [ nodeExternals(), ],` or something like `[ "socket.io-client", ]`
- * - appropriate plugin entries for the index.html file.
- * 
- * ## Node Bundles:
- * 
- * - `target: "node"`. This should mean that node modules are not bundled.
- * - `resolve.modules.push("node_modules")`
- * - `resolve.extensions.push(".js")`
- * 
  * ## Help Links
  * 
  * - https://www.typescriptlang.org/docs/handbook/react-&-webpack.html
@@ -76,18 +64,19 @@ const BasePlugins: () => Array<webpack.Plugin> = () => {return [
  * 
  * @returns A standalone ("deep-copy") basic configuration.
  */
-const BaseConfig: () => webpack.Configuration = () => { return {
+const BaseConfig: () => Require<webpack.Configuration,
+"entry" | "plugins" | "resolve" | "output"> = () => { return {
     mode: "development",
     target: "node",
-    externals: [ nodeExternals(), ],
-    // cache: true, // https://webpack.js.org/guides/caching/
+    cache: true, // https://webpack.js.org/guides/caching/
     stats: { }, // https://webpack.js.org/configuration/stats/
 
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
+    entry: { /* Left to each branch config */ },
     devtool: "source-map",
     plugins: BasePlugins(),
     resolve: {
-        extensions: [ ".ts", ], // ".json", ".tsx", 
+        extensions: [ ".ts", ".js", ], // ".json", ".tsx",
         modules: [ PROJECT_ROOT, ], // match tsconfig.baseUrl
     },
     module: {
@@ -114,22 +103,72 @@ const BaseConfig: () => webpack.Configuration = () => { return {
 
 
 /**
- * Add entrypoints for webpages:
+ * ## Web Bundles
+ * 
+ * - `target: "web",`. This is implied, but here, explicitness helps me learn.
+ * - `externals: [ nodeExternals(), ],` or something like `[ "socket.io-client", ]`
+ * - appropriate plugin entries for the index.html file.
  */
-const webConfig = BaseConfig();
-(<const>[ /* TODO: "homepage", */ "offline", "client", ]).forEach((name) => {
-    webConfig.entry[name] = `./src/${name}/index.ts`;
-    // entry[`${name}_body`] = `./src/${name}/body.html`;
-    webConfig.plugins.push(
-        new HtmlPlugin({
-            template: "./src/base/index.html",
-            filename: `${name}/index.html`,
-            chunks: [ name, /*`${name}_body`,*/ ],
-            hash: true,
-        })
-    );
-});
+const webBundleConfig = BaseConfig(); {
+    const config = webBundleConfig;
+    config.target = "web";
+    config.externals = [ "socket.io-client", ];
+    (<const>[ /* TODO: "homepage", */ "offline", "client", ]).forEach((name) => {
+        config.entry[name] = `./src/${name}/index.ts`;
+        // config.entry[`${name}_body`] = `./src/${name}/body.html`;
+        config.plugins.push(
+            new HtmlPlugin({
+                template: "./src/base/index.html",
+                filename: `${name}/index.html`,
+                chunks: [ name, /*`${name}_body`,*/ ],
+                hash: true,
+            })
+        );
+    });
+}
+
+// Basic node configuration:
+const NODE_CONFIG = (config): void => {
+    config.target = "node";
+    config.resolve.modules!.push("node_modules");
+    config.externals = fs.readdirSync(path.resolve(PROJECT_ROOT, "node_modules"));
+};
+
+/**
+ * ## Node Bundles
+ * 
+ * - `target: "node"`. This should mean that node modules are not bundled.
+ * - `resolve.modules.push("node_modules")`
+ * - `externals: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))`
+ */
+const nodeBundleConfig = BaseConfig(); {
+    const config = nodeBundleConfig;
+    NODE_CONFIG(config);
+    (<const>[ "server", ]).forEach((name) => {
+        config.entry[name] = `./src/${name}/index.ts`;
+    });
+}
+
+/**
+ * ## Test Bundles
+ * 
+ * See the node settings.
+ * 
+ * Emit all test bundles under a single folder.
+ */
+const testBundleConfig = BaseConfig(); {
+    const config = testBundleConfig;
+    NODE_CONFIG(config);
+    config.output.path = path.resolve(PROJECT_ROOT, "dist", "test");
+    (<const>[ "lang", ]).forEach((name) => {
+        config.entry[name] = `./test/${name}/index.ts`;
+    });
+}
 
 
 
-module.exports = [ webConfig, ];
+module.exports = [
+    webBundleConfig,
+    nodeBundleConfig,
+    testBundleConfig,
+];
