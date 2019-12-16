@@ -29,7 +29,7 @@ export class OfflineGame extends Game {
      */
     public constructor(desc: Game.CtorArgs) {
         super(desc);
-        if (!(this.operator)) {
+        if (!this.operator) {
             throw new Error("The Operator for a ClientGame should be defined.");
         }
         this.settings = LocalGameSettings.getInstance();

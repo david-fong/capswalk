@@ -54,6 +54,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
             );
             const charArray = reverseDict.get(seq);
             if (charArray) {
+                // The entry was already made:
                 charArray.push(weightedChar);
             } else {
                 reverseDict.set(seq, [weightedChar,]);
@@ -112,7 +113,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
         if (!(Lang.Seq.REGEXP.test(seq))) {
             throw new RangeError(`Mapping-sequence \"${seq}\" did not match the`
                 + ` required regular expression \"${Lang.Seq.REGEXP.source}\".`);
-        } else if (!chars) {
+        } else if (chars.length === 0) {
             throw new Error("Must not make mapping without written characters.");
         }
         let node: LangSeqTreeNode<any> = this; {
@@ -206,7 +207,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
         return leafNodes;
     }
     private recursiveGetLeafNodes(leafNodes: Array<LangSeqTreeNode>): void {
-        if (this.children) {
+        if (this.children.length) {
             this.children.forEach((child) => {
                 child.recursiveGetLeafNodes(leafNodes);
             });
@@ -218,12 +219,13 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
 
 
     public simpleView(): object {
-        let chars: any = this.children.map((child) => child.simpleView());
+        let chars = this.characters.map((char) => char.simpleView());
         return {
             seq: this.sequence,
             chars: (chars.length === 1) ? chars[0] : chars,
             hits: this.personalHitCount,
-            kids: this.children,
+            kids: this.children.map((child) => child.simpleView()),
+            __proto__: undefined,
         };
     }
 
@@ -264,11 +266,17 @@ export namespace LangSeqTreeNode {
         public chooseOnePair(balancingScheme: BalancingScheme): never {
             throw new TypeError("Must never hit on the root.");
         }
+        protected get personalHitCount(): number {
+            throw new TypeError("Must never hit on the root.");
+        }
         protected get personalWeightedHitCount(): never {
             throw new TypeError("Must never hit on the root.");
         }
         public andNonRootParents(): never {
             throw new TypeError();
+        }
+        public simpleView(): object {
+            return this.children.map((child) => child.simpleView());
         }
     }
 }

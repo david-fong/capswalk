@@ -24,7 +24,7 @@ export namespace English {
         }
 
         public static getInstance(): Lowercase {
-            if (!(Lowercase.SINGLETON)) {
+            if (!Lowercase.SINGLETON) {
                 Lowercase.SINGLETON  = new Lowercase();
             }
             return Lowercase.SINGLETON;
@@ -79,7 +79,7 @@ export namespace English {
         }
 
         public static getInstance(): MixedCase {
-            if (!(MixedCase.SINGLETON)) {
+            if (!MixedCase.SINGLETON) {
                 MixedCase.SINGLETON  = new MixedCase();
             }
             return MixedCase.SINGLETON;

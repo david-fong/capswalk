@@ -153,7 +153,7 @@ export abstract class Lang {
                 const conflictSeq: Lang.Seq | undefined = avoid.find(avoidSeq => {
                     return avoidSeq.startsWith(upstreamNodes[i].sequence);
                 });
-                if (conflictSeq !== undefined) {
+                if (conflictSeq) {
                     if (conflictSeq === upstreamNodes[i].sequence) {
                         // Cannot use anything on this upstream path because
                         // an avoid-node is directly inside it.
@@ -166,7 +166,7 @@ export abstract class Lang {
                     break;
                 }
             }
-            if (upstreamNodes.length > 0) {
+            if (upstreamNodes.length) {
                 // Found a non-conflicting upstream node.
                 // Find the node with the lowest personal hit-count:
                 upstreamNodes.sort(LangSeqTreeNode.PATH_CMP.get(balancingScheme));
@@ -174,7 +174,7 @@ export abstract class Lang {
                 break;
             }
         }
-        if (nodeToHit === null) {
+        if (!nodeToHit) {
             // Should never reach here because there is a check in the
             // constructor checking for this invariant.
             throw new Error(`Invariants guaranteeing that a LangSeq can`

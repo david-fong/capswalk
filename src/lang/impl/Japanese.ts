@@ -9,7 +9,7 @@ import { Lang } from "src/lang/Lang";
  */
 export namespace Japanese {
 
-    // TODO: https://en.wikipedia.org/wiki/Keyboard_layout#Japanese
+    // TODO: https://wikipedia.org/wiki/Keyboard_layout#Japanese
     // add INITIALIZER entry field "kana", make hiragana a namespace
     // and separate romanization class from kana-keyboard class.
     /**
@@ -28,7 +28,7 @@ export namespace Japanese {
         }
 
         public static getInstance(): Hiragana {
-            if (!(Hiragana.SINGLETON)) {
+            if (!Hiragana.SINGLETON) {
                 Hiragana.SINGLETON = new Hiragana();
                 delete Hiragana.INITIALIZER;
             }
@@ -159,7 +159,7 @@ export namespace Japanese {
         }
 
         public static getInstance(): Katakana {
-            if (!(Katakana.SINGLETON)) {
+            if (!Katakana.SINGLETON) {
                 Katakana.SINGLETON = new Katakana();
                 delete Katakana.INITIALIZER;
             }

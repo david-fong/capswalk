@@ -57,7 +57,7 @@ export abstract class Grid {
         dimensions: Grid.DimensionDesc,
         domGridHtmlIdHook = HtmlIdHooks.GRID
     ) {
-        if (!(dimensions.width)) {
+        if (!dimensions.width) {
             dimensions.width = dimensions.height;
         }
         this.height = Math.round(Math.min(

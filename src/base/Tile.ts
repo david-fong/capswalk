@@ -103,11 +103,9 @@ export class Tile {
     /**
      * @param charSeqPair - May be undefined. If so, no changes take place.
      */
-    public setLangCharSeq(charSeqPair: Lang.CharSeqPair | undefined): void {
-        if (charSeqPair) {
-            this._langChar = charSeqPair.char;
-            this._langSeq  = charSeqPair.seq;
-        }
+    public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
+        this._langChar = charSeqPair.char;
+        this._langSeq  = charSeqPair.seq;
     }
 
     public get langChar(): Lang.Char {

@@ -32,7 +32,7 @@ export namespace Korean {
         }
 
         public static getInstance(): Dubeolsik {
-            if (!(Dubeolsik.SINGLETON)) {
+            if (!Dubeolsik.SINGLETON) {
                 Dubeolsik.SINGLETON = new Dubeolsik();
                 delete Dubeolsik.KEYBOARD;
             }
@@ -101,7 +101,7 @@ export namespace Korean {
         }
 
         public static getInstance(): Sebeolsik {
-            if (!(Sebeolsik.SINGLETON)) {
+            if (!Sebeolsik.SINGLETON) {
                 Sebeolsik.SINGLETON = new Sebeolsik();
                 delete Sebeolsik.KEYBOARD;
             }
@@ -187,7 +187,7 @@ export namespace Korean {
         }
 
         public static getInstance(): Romanization {
-            if (!(Romanization.SINGLETON)) {
+            if (!Romanization.SINGLETON) {
                 Romanization.SINGLETON = new Romanization();
             }
             return Romanization.SINGLETON;

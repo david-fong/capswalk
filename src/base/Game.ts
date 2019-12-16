@@ -173,7 +173,7 @@ export abstract class Game extends Grid {
             if (playerDesc.operatorClass > Player.OperatorClass.HUMAN_CLASS) {
                 throw new RangeError("Invalid operator class.");
             }
-            // If the player is on any human team, then the player is a human.
+            // Allocate a player ID.
             playerDesc.idNumber = (playerDesc.operatorClass === Player.OperatorClass.HUMAN_CLASS)
                 ? +(1 + allHumanPlayers.length) + Player.Id.NULL
                 : -(1 + allArtifPlayers.length) + Player.Id.NULL;
@@ -316,7 +316,7 @@ export abstract class Game extends Grid {
      */
     public processMoveRequest(desc: PlayerMovementEvent): void {
         const player = this.checkIncomingPlayerRequestId(desc);
-        if (!(player)) {
+        if (!player) {
             // Player is still bubbling. Reject the request:
             this.processMoveExecute(desc);
             return;
@@ -386,7 +386,7 @@ export abstract class Game extends Grid {
         const executeBasicTileUpdates = (): void => {
             // The `LangCharSeqPair` shuffle changes must take effect
             // before updating the operator's seqBuffer if need be.
-            if (dest !== player.benchTile) {
+            if (dest !== player.benchTile && desc.newCharSeqPair) {
                 // Don't change this value for bench tiles:
                 dest.setLangCharSeq(desc.newCharSeqPair);
             }

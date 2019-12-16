@@ -22,7 +22,7 @@ export class LocalGameSettings {
     private static SINGLETON?: LocalGameSettings = undefined;
 
     public static getInstance(): LocalGameSettings {
-        if (LocalGameSettings.SINGLETON === undefined) {
+        if (!LocalGameSettings.SINGLETON) {
             LocalGameSettings.SINGLETON = new LocalGameSettings();
         }
         return LocalGameSettings.SINGLETON;
@@ -57,7 +57,7 @@ export class GlobalGameSettings {
     private static SINGLETON?: GlobalGameSettings = undefined;
 
     public static getInstance(): GlobalGameSettings {
-        if (GlobalGameSettings.SINGLETON === undefined) {
+        if (!GlobalGameSettings.SINGLETON) {
             GlobalGameSettings.SINGLETON = new GlobalGameSettings();
         }
         return GlobalGameSettings.SINGLETON;
