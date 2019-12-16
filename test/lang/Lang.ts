@@ -18,6 +18,8 @@ export namespace Lang {
 
     const korD = Korean.Dubeolsik.getInstance();
     console.log(korD);
+    console.log(korD["treeMap"].children);
+    console.log(korD.simpleView());
     debugger;
 
 }

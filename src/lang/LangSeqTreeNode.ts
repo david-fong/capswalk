@@ -26,13 +26,12 @@ type BalanceSchemeSorterMap<T> = ReadonlyMap<BalancingScheme, (a: T, b: T) => nu
  * The enclosing {@link Lang} object has no concept of `LangChar` weights.
  * All it has is the interfaces provided by the hit-count getter methods.
  */
-export class LangSeqTreeNode {
+export class LangSeqTreeNode<ROOT extends boolean = false> {
 
-    public readonly sequence:   Lang.Seq;
+    public readonly sequence:   ROOT extends true ? "" : Lang.Seq;
     public readonly characters: ReadonlyArray<WeightedLangChar>; // Frozen.
-
-    public readonly parent:     LangSeqTreeNode | undefined; // `undefined` for root node.
-    public readonly children:   Array<LangSeqTreeNode>; // Empty for leaf nodes. Frozen.
+    public readonly parent:     ROOT extends true ? undefined : LangSeqTreeNode;
+    public readonly children:   Array<LangSeqTreeNode>; // Frozen.
 
     private hitCount: number;
     private weightedHitCount: number;
@@ -45,11 +44,11 @@ export class LangSeqTreeNode {
      * @param forwardDict - 
      * @returns The root node of a new tree map.
      */
-    public static CREATE_TREE_MAP(forwardDict: Lang.CharSeqPair.WeightedForwardMap): LangSeqTreeNode {
+    public static CREATE_TREE_MAP(forwardDict: Lang.CharSeqPair.WeightedForwardMap): LangSeqTreeNode<true> {
         // Reverse the map:
         const reverseDict: Map<Lang.Seq, Array<WeightedLangChar>> = new Map();
         for (const char in forwardDict) {
-            const seq: Lang.Seq = forwardDict[char].seq;
+            const seq = forwardDict[char].seq;
             const weightedChar = new WeightedLangChar(
                 char, forwardDict[char].weight,
             );
@@ -62,41 +61,39 @@ export class LangSeqTreeNode {
         }
         // Add mappings in ascending order of sequence length:
         // (this is so that no merging of branches needs to be done)
-        const rootNode: LangSeqTreeNode = new LangSeqTreeNode(undefined, "", []);
+        const rootNode = new LangSeqTreeNode.Root();
         Array.from(reverseDict)
           //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
             .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
             .forEach((mapping) => {
                 rootNode.addCharMapping(...mapping);
-            }, this);
+            });
         rootNode.finalize();
         return rootNode;
     }
 
-    private constructor(
-        parent: LangSeqTreeNode | undefined,
-        sequence: Lang.Seq,
-        characters: ReadonlyArray<WeightedLangChar>,
+    protected constructor(
+        parent:     LangSeqTreeNode<ROOT>["parent"],
+        sequence:   LangSeqTreeNode<ROOT>["sequence"],
+        characters: ROOT extends true ? readonly [] : ReadonlyArray<WeightedLangChar>,
     ) {
         this.sequence   = sequence;
-        this.parent     = parent;
         this.characters = characters;
+        this.parent     = parent;
         this.children   = [];
     }
 
     private finalize(): void {
-        if (!(this.parent)) {
-            if (this.sequence.length > 0) {
-                throw new Error("Root node's sequence must be the empty string.");
-            }
-        } else {
-            if (!(this.sequence.startsWith(this.parent.sequence))) {
-                throw new Error("Child node's sequence must start with that of its parent.");
-            }
-        }
+        this.validateConstruction();
         Object.freeze(this.characters);
         Object.freeze(this.children);
         this.children.forEach((child) => child.finalize());
+    }
+
+    protected validateConstruction(): void | never {
+        if (!(this.sequence.startsWith(this.parent!.sequence))) {
+            throw new Error("Child node's sequence must start with that of its parent.");
+        }
     }
 
     public reset(): void {
@@ -111,21 +108,22 @@ export class LangSeqTreeNode {
      * @param seq The typable sequence corrensponding to entries of `chars`.
      * @param chars A collection of unique characters in a written language.
      */
-    private addCharMapping(seq: Lang.Seq, chars: ReadonlyArray<WeightedLangChar>): void {
+    protected addCharMapping(seq: Lang.Seq, chars: ReadonlyArray<WeightedLangChar>): void {
         if (!(Lang.Seq.REGEXP.test(seq))) {
             throw new RangeError(`Mapping-sequence \"${seq}\" did not match the`
                 + ` required regular expression \"${Lang.Seq.REGEXP.source}\".`);
-        } else if (chars.length === 0) {
+        } else if (!chars) {
             throw new Error("Must not make mapping without written characters.");
         }
-        let node: LangSeqTreeNode = this; {
-            let childNode: LangSeqTreeNode | undefined = this;
-            while (childNode !== undefined) {
+        let node: LangSeqTreeNode<any> = this; {
+            let childNode: LangSeqTreeNode<any> | undefined = this;
+            while (childNode) {
                 node = childNode;
-                childNode = node.children.find((child) => seq.startsWith(child.sequence));
+                childNode = childNode.children.find((child) => seq.startsWith(child.sequence));
             }
         }
         if (node.sequence === seq) {
+            // This should never happen.
             throw new Error(`Mappings for all written-characters with a common`
                 + `corresponding typable-sequence should be registered together,`
                 + `but an existing mapping for the sequence \"${seq}\" was found.`
@@ -148,9 +146,6 @@ export class LangSeqTreeNode {
      *      been selected the least according to the specified scheme.
      */
     public chooseOnePair(balancingScheme: BalancingScheme): Lang.CharSeqPair {
-        if (!(this.parent)) {
-            throw new Error("Should never hit on the root.");
-        }
         const weightedChar = this.characters.slice(0)
             .sort(WeightedLangChar.CMP.get(balancingScheme))
             .shift()!;
@@ -197,7 +192,7 @@ export class LangSeqTreeNode {
     public andNonRootParents(): Array<LangSeqTreeNode> {
         const upstreamNodes: Array<LangSeqTreeNode> = [];
 
-        let node: LangSeqTreeNode = this;
+        let node = this as LangSeqTreeNode;
         while (node.parent) {
             upstreamNodes.push(node);
             node = node.parent;
@@ -211,14 +206,26 @@ export class LangSeqTreeNode {
         return leafNodes;
     }
     private recursiveGetLeafNodes(leafNodes: Array<LangSeqTreeNode>): void {
-        if (this.children.length === 0) {
-            leafNodes.push(this);
+        if (this.children) {
+            this.children.forEach((child) => {
+                child.recursiveGetLeafNodes(leafNodes);
+            });
         } else {
-            this.children.forEach((child) => child.recursiveGetLeafNodes(leafNodes));
+            leafNodes.push(this as LangSeqTreeNode);
         }
     }
 
 
+
+    public simpleView(): object {
+        let chars: any = this.children.map((child) => child.simpleView());
+        return {
+            seq: this.sequence,
+            chars: (chars.length === 1) ? chars[0] : chars,
+            hits: this.personalHitCount,
+            kids: this.children,
+        };
+    }
 
     /**
      * @param a - 
@@ -242,6 +249,28 @@ export class LangSeqTreeNode {
         [ BalancingScheme.WEIGHT,((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount), ],
     ]);
 
+}
+
+
+
+export namespace LangSeqTreeNode {
+    export class Root extends LangSeqTreeNode<true> {
+        public constructor() {
+            super(undefined, "", []);
+        }
+        public validateConstruction(): void {
+            // nothing.
+        }
+        public chooseOnePair(balancingScheme: BalancingScheme): never {
+            throw new TypeError("Must never hit on the root.");
+        }
+        protected get personalWeightedHitCount(): never {
+            throw new TypeError("Must never hit on the root.");
+        }
+        public andNonRootParents(): never {
+            throw new TypeError();
+        }
+    }
 }
 
 
@@ -306,6 +335,13 @@ class WeightedLangChar {
     public reset(): void {
         this.hitCount = 0;
         this.weightedHitCount = 0.000;
+    }
+
+    public simpleView(): object {
+        return {
+            char: this.char,
+            hits: this.hitCount,
+        };
     }
 
     /**

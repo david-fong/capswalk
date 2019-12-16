@@ -28,7 +28,7 @@ export abstract class Lang {
     /**
      * A "reverse" map from `LangSeq`s to `LangChar`s.
      */
-    protected readonly treeMap: LangSeqTreeNode;
+    protected readonly treeMap: LangSeqTreeNode<true>;
 
     /**
      * A list of leaf nodes in `treeMap` sorted in ascending order by
@@ -49,6 +49,7 @@ export abstract class Lang {
      *      to sum to a specific value such as 100.
      */
     protected constructor(name: string, forwardDict: Lang.CharSeqPair.WeightedForwardMap) {
+        this.name = name;
         // Write JSON data to my `dict`:
         this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes = this.treeMap.getLeafNodes();
@@ -58,11 +59,12 @@ export abstract class Lang {
         // or variable neighbours through graph structures), then this
         // must change to account for that.
         if (this.leafNodes.length < Defs.MAX_NUM_U2NTS) {
-            throw new Error(`The provided mappings composing the current`
-                + `Lang-under-construction are not sufficient to ensure that`
-                + `a shuffling operation will always be able to find a safe`
-                + `candidate to use as a replacement. Please see the spec`
-                + `for ${Lang.prototype.getNonConflictingChar.name}.`
+            throw new Error(`Found ${this.leafNodes.length}, but at least`
+                + ` ${Defs.MAX_NUM_U2NTS} were required. The provided mappings`
+                + ` composing the current Lang-under-construction are not`
+                + ` sufficient to ensure that a shuffling operation will always`
+                + ` be able to find a safe candidate to use as a replacement.`
+                + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
             );
         }
     }
@@ -180,6 +182,16 @@ export abstract class Lang {
             );
         }
         return nodeToHit.chooseOnePair(balancingScheme);
+    }
+
+    public simpleView(): object {
+        return {
+            name: this.name,
+            // we need to jump through some hoops to get this
+            // without passing it in as a constructor argument ':)
+            desc: (this["constructor"] as object as Lang.Info).getBlurb(),
+            root: this.treeMap.simpleView(),
+        };
     }
 
 }
