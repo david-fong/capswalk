@@ -23,3 +23,5 @@ fi
 # see what else is like this.
 declare -r doneMsg="$(echo -e "\n=== BUILD DONE ===\n")"
 npx webpack --color --build-delimiter="${doneMsg}" --config "${cwd}/../webpack.config.js"
+
+# TODO: check that the html requests all the necessary javascript files.

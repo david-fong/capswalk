@@ -217,7 +217,7 @@ export namespace Player {
          */
         beNiceTo: ReadonlyArray<ID>
 
-        readonly socketId: ID extends SocketId ? SocketId : never;
+        readonly socketId: ID extends SocketId ? SocketId : undefined;
     };
 
 }

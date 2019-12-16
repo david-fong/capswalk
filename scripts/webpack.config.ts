@@ -70,7 +70,6 @@ const BasePlugins: () => Array<Readonly<webpack.Plugin>> = () => { return Array.
 const BaseConfig: () => Require<webpack.Configuration,
 "entry" | "plugins" | "resolve" | "output"> = () => { return {
     mode: "development",
-    target: "node",
     cache: true, // https://webpack.js.org/guides/caching/
     stats: {
         // https://webpack.js.org/configuration/stats/
@@ -90,20 +89,37 @@ const BaseConfig: () => Require<webpack.Configuration,
         ignored: [ "files/**/*.js", "node_modules", ],
     },
     module: {
-        rules: [ // https://webpack.js.org/loaders/
-            {
-                test: /[.]ts$/,
-                use: {
-                    loader: "ts-loader",
-                    options: <tsloader.LoaderOptions>{
-                        transpileOnly: true, // https://github.com/TypeStrong/ts-loader#faster-builds
-                        projectReferences: true,
-                    },
+        // https://webpack.js.org/loaders/
+        // TODO: look into need for html loader
+        rules: [ {
+            test: /[.]ts$/,
+            use: {
+                loader: "ts-loader",
+                options: <tsloader.LoaderOptions>{
+                    transpileOnly: true, // https://github.com/TypeStrong/ts-loader#faster-builds
+                    projectReferences: true,
                 },
-                exclude: /node_modules/,
             },
-            // TODO: look into need for html loader
-        ],
+            exclude: /node_modules/,
+        }, ],
+    },
+    optimization: {
+        runtimeChunk: {
+            name: (entrypoint) => `${entrypoint.name}/runtime`,
+        },
+        //mergeDuplicateChunks: true,
+        splitChunks: {
+            chunks: "initial",
+            minChunks: 2,
+            // cacheGroups: {
+            //     basecode: {
+            //         filename: "[name]/base.js",
+            //         chunks: "initial",
+            //         test: /[\\/]src[\\/]base[\\/]/,
+            //         minChunks: 2,
+            //     },
+            // },
+        },
     },
     output: {
         path: path.resolve(PROJECT_ROOT, "dist"),
@@ -111,6 +127,8 @@ const BaseConfig: () => Require<webpack.Configuration,
         sourcePrefix: WATERMARK,
     },
 }; };
+
+
 
 
 
@@ -123,6 +141,7 @@ const BaseConfig: () => Require<webpack.Configuration,
  */
 const webBundleConfig = BaseConfig(); {
     const config = webBundleConfig;
+    config.name = "src-web"
     config.target = "web";
     config.externals = [ "socket.io-client", ];
     (<const>[ /* TODO: "homepage", */ "offline", "client", ]).forEach((name) => {
@@ -133,12 +152,19 @@ const webBundleConfig = BaseConfig(); {
                 template: "./src/base/index.html",
                 filename: `${name}/index.html`,
                 // inject:
-                chunks: [ name, /*`${name}_body`,*/ ],
-                hash: true,
+                chunks: [
+                    name,
+                    `${name}/runtime`, // see BaseConfig.optimization.runtime
+                    "client~offline", // see Baseconfig.optimization.splitChunks
+                    /*`${name}_body`,*/ // for plugin (plugin currently excluded)
+                ],
+                //hash: true,
             })
         );
     });
 }
+
+
 
 /**
  * ## Basic node configuration:
@@ -159,6 +185,7 @@ const NODE_CONFIG = (config): void => {
  */
 const nodeBundleConfig = BaseConfig(); {
     const config = nodeBundleConfig;
+    config.name = "src-node"
     NODE_CONFIG(config);
     (<const>[ "server", ]).forEach((name) => {
         config.entry[name] = `./src/${name}/index.ts`;
@@ -174,6 +201,7 @@ const nodeBundleConfig = BaseConfig(); {
  */
 const testBundleConfig = BaseConfig(); {
     const config = testBundleConfig;
+    config.name = "test";
     NODE_CONFIG(config);
     config.output.path = path.resolve(PROJECT_ROOT, "dist", "test");
     (<const>[ "lang", ]).forEach((name) => {
