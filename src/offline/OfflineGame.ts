@@ -23,6 +23,13 @@ export class OfflineGame extends Game {
     protected settings: LocalGameSettings;
 
     /**
+     * @override
+     */
+    public get gameType(): Game.Type {
+        return Game.Type.OFFLINE;
+    }
+
+    /**
      * _Calls reset recursively for this entire composition._
      * 
      * @param desc - 

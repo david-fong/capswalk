@@ -1,7 +1,7 @@
-import { Player } from "src/base/player/Player";
-import { EventRecordEntry } from "src/events/EventRecordEntry";
+import { Player } from "base/player/Player";
+import { EventRecordEntry } from "events/EventRecordEntry";
 
-export { EventRecordEntry } from "src/events/EventRecordEntry";
+export { EventRecordEntry } from "events/EventRecordEntry";
 
 export interface PlayerGeneratedRequest extends EventRecordEntry {
 

@@ -3,7 +3,7 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "project": [
-            "./tsconfig.json",
+            "./**/tsconfig.json",
             "./scripts/webpack.tsconfig.json"
         ],
         "sourceType": "module",

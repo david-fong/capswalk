@@ -29,6 +29,13 @@ export class ClientGame extends Game {
 
     public readonly socket: SocketIOClient.Socket;
 
+    /**
+     * @override
+     */
+    public get gameType(): Game.Type {
+        return Game.Type.CLIENT;
+    }
+
 
 
     /**

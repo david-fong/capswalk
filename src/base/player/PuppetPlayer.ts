@@ -1,6 +1,6 @@
-import { Tile } from "src/base/Tile";
-import { Game } from "src/base/Game";
-import { Player} from "src/base/player/Player";
+import { Tile } from "base/Tile";
+import { Game } from "base/Game";
+import { Player} from "base/player/Player";
 
 
 /**

@@ -1,10 +1,9 @@
-import { BarePos } from "src/Pos";
-import { Pos, Tile } from "src/base/Tile";
-import { Game } from "src/base/Game";
-import { ClientGame } from "src/client/ClientGame";
-import { Player } from "src/base/player/Player";
-import { ArtificialPlayerTypes as Types } from "src/base/player/artificials/Chaser";
-import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
+import { BarePos } from "base/Pos";
+import { Pos, Tile } from "base/Tile";
+import { Game } from "base/Game";
+import { Player } from "base/player/Player";
+import { ArtificialPlayerTypes as Types } from "base/player/artificials/Chaser";
+import { PlayerMovementEvent } from "events/PlayerMovementEvent";
 
 /**
  * Unlike {@link HumanPlayer}s, these are not guided by human input.
@@ -41,7 +40,7 @@ export abstract class ArtificialPlayer extends Player {
                 + ` less than ${Player.OperatorClass.HUMAN_CLASS}.`
             );
         }
-        if (game instanceof ClientGame) {
+        if (game.gameType === Game.Type.CLIENT) {
             throw new TypeError("ClientGames should be using PuppetPlayers instead.");
         }
     }

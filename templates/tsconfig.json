@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        // Project References:
+        "composite": true,
+        "tsBuildInfoFile": ".tsbuildinfo",
+        "declaration": true,
+
+        // Project Structure:
+        "moduleResolution": "node",
+
+        // Language Settings:
+        "target": "es5",
+        "lib": [ "es6", "dom", "es2019.array" ],
+        "module": "ES6",
+
+        // Emit Flags:
+        "sourceMap": true,
+        "removeComments": true,
+        "alwaysStrict": true,
+
+        // Console Output:
+        "pretty": true,
+        "extendedDiagnostics": true,
+
+        // Grammar Checking:
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "noImplicitReturns": true,
+        "strictBindCallApply": true
+    },
+    "files": []
+}

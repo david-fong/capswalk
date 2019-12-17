@@ -1,5 +1,5 @@
-import { Defs } from "src/Defs";
-import { LangSeqTreeNode, BalancingScheme } from "src/lang/LangSeqTreeNode";
+import { Defs } from "base/Defs";
+import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
 
 
 /**

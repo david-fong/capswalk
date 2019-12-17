@@ -1,7 +1,7 @@
-import { Lang } from "src/lang/Lang";
-import { BarePos, Tile } from "src/base/Tile";
-import { Player } from "src/base/player/Player";
-import { EventRecordEntry, PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
+import { Lang } from "lang/Lang";
+import { BarePos, Tile } from "base/Tile";
+import { Player } from "base/player/Player";
+import { EventRecordEntry, PlayerGeneratedRequest } from "events/PlayerGeneratedRequest";
 
 /**
  * ## One Fantastic Nightmare of a Problem to Solve

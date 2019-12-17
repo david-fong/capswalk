@@ -31,6 +31,13 @@ export class ServerGame extends Game {
 
     protected readonly playerIdToSocketMap: ReadonlyMap<Player.Id, io.Socket>;
 
+    /**
+     * @override
+     */
+    public get gameType(): Game.Type {
+        return Game.Type.SERVER;
+    }
+
 
 
     /**

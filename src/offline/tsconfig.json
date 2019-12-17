@@ -1,0 +1,10 @@
+{
+    "extends": "../../scripts/template.tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "..",
+        "outDir": "../../dist",
+    },
+    "include": [
+        "./**/*",
+    ],
+}

@@ -1,8 +1,8 @@
-import { Lang } from "src/lang/Lang";
-import { Pos, BarePos } from "src/Pos";
-import { PlayerSkeleton, Player } from "src/base/player/Player";
+import { Lang } from "lang/Lang";
+import { Pos, BarePos } from "base/Pos";
+import { PlayerSkeleton, Player } from "base/player/Player";
 
-export { Pos, BarePos } from "src/Pos";
+export { Pos, BarePos } from "base/Pos";
 
 /**
  * 

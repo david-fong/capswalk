@@ -1,4 +1,4 @@
-import { Game } from "src/base/Game";
+import { Game } from "base/Game";
 
 /**
  * 

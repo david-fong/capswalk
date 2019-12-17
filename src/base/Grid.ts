@@ -1,6 +1,6 @@
-import { HtmlIdHooks } from "src/Defs";
-import { BarePos, Tile } from "src/base/Tile";
-import { VisibleTile } from "src/base/VisibleTile";
+import { HtmlIdHooks } from "base/Defs";
+import { BarePos, Tile } from "base/Tile";
+import { VisibleTile } from "base/VisibleTile";
 
 
 

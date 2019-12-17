@@ -1,47 +1,12 @@
 {
+    "extends": "./templates/tsconfig.json",
     "compilerOptions": {
-        // Language settings:
-        "target": "es5",
-        "lib": ["es6", "dom", "es2019.array",],
-        "module": "ES6",
-        "moduleResolution": "node", // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/23649#issuecomment-424355987
-
-        // Project directory structure:
-        // typescript looks for non-relative imports first relative to
-        // the base url, then, since we specified "moduleResolution":
-        // "node", it will follow node's resolution strategy.
-        "rootDir": ".",
         "baseUrl": ".",
         "outDir": "./dist",
-        //"paths": {},
-
-        // Types:
-        // "declaration": true,
-        // "declarationDir": "./dist/types",
-        // "typeRoots": ["./dist/types", "./node_modules/@types"],
-
-        // Emit flags:
-        "sourceMap": true,
-        "removeComments": true,
-        "alwaysStrict": true,
-
-        // Console output:
-        "pretty": true,
-        "extendedDiagnostics": true,
-
-        // Parsing rules:
-        "strictNullChecks": true,
-        "strictFunctionTypes": true,
-        "noImplicitReturns": true,
-        "strictBindCallApply": true,
-        //"strictPropertyInitialization": true,
-
-        // Javascript handling:
-        //"allowJs": true,
-        //"checkJs": true,
     },
-    "include": [
-        "src/",
-        "test/",
+
+    "references": [
+        { "path": "src", },
+        { "path": "test", },
     ],
 }

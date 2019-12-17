@@ -1,7 +1,7 @@
-import { Pos } from "src/Pos";
-import { Game } from "src/base/Game";
-import { Player } from "src/base/player/Player";
-import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
+import { Pos } from "base/Pos";
+import { Game } from "base/Game";
+import { Player } from "base/player/Player";
+import { ArtificialPlayer } from "base/player/ArtificialPlayer";
 
 
 /**

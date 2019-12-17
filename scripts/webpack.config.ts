@@ -149,7 +149,7 @@ const webBundleConfig = BaseConfig(); {
         // config.entry[`${name}_body`] = `./src/${name}/body.html`;
         config.plugins.push(
             new HtmlPlugin({
-                template: "./src/base/index.html",
+                template: "./templates/index.html",
                 filename: `${name}/index.html`,
                 // inject:
                 chunks: [

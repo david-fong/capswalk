@@ -1,21 +1,19 @@
-import { Modify } from "src/TypeUtils";
+import { Lang } from "lang/Lang";
+import { BalancingScheme } from "lang/LangSeqTreeNode";
+import { BarePos, Tile } from "base/Tile";
+import { Grid } from "base/Grid";
 
-import { Lang } from "src/lang/Lang";
-import { BalancingScheme } from "src/lang/LangSeqTreeNode";
-import { BarePos, Tile } from "src/base/Tile";
-import { Grid } from "src/base/Grid";
+import { Player } from "base/player/Player";
+import { PuppetPlayer } from "base/player/PuppetPlayer";
+import { HumanPlayer } from "base/player/HumanPlayer";
+import { ArtificialPlayer } from "base/player/ArtificialPlayer";
 
-import { Player } from "src/base/player/Player";
-import { PuppetPlayer } from "src/base/player/PuppetPlayer";
-import { HumanPlayer } from "src/base/player/HumanPlayer";
-import { ArtificialPlayer } from "src/base/player/ArtificialPlayer";
+import { PlayerGeneratedRequest } from "events/PlayerGeneratedRequest";
+import { PlayerMovementEvent } from "events/PlayerMovementEvent";
+import { Bubble } from "events/Bubble";
+import { EventRecordEntry } from "events/EventRecordEntry";
 
-import { PlayerGeneratedRequest } from "src/events/PlayerGeneratedRequest";
-import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
-import { Bubble } from "src/events/Bubble";
-import { EventRecordEntry } from "src/events/EventRecordEntry";
-
-export { Grid } from "src/base/Grid";
+export { Grid } from "base/Grid";
 
 
 /**
@@ -81,6 +79,8 @@ export abstract class Game extends Grid {
     private readonly allHumanPlayers: ReadonlyArray<Player>;
 
     private readonly allArtifPlayers: ReadonlyArray<Player>;
+
+    public abstract get gameType(): Game.Type;
 
 
 
@@ -673,6 +673,12 @@ export abstract class Game extends Grid {
 
 
 export namespace Game {
+
+    export enum Type {
+        OFFLINE,
+        SERVER,
+        CLIENT,
+    }
 
     /**
      * 

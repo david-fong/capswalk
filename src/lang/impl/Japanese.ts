@@ -1,4 +1,4 @@
-import { Lang } from "src/lang/Lang";
+import { Lang } from "lang/Lang";
 
 
 /**

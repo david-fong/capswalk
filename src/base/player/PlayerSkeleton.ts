@@ -1,7 +1,6 @@
-import { Tile } from "src/base/Tile";
-import { Game } from "src/base/Game";
-import { ClientGame } from "src/client/ClientGame";
-import { Player } from "src/base/player/Player";
+import { Tile } from "base/Tile";
+import { Game } from "base/Game";
+import { Player } from "base/player/Player";
 
 
 /**
@@ -103,7 +102,7 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
     public moveTo(dest: Tile): void {
         // Evict self from current `Tile`.
         if (this.hostTile.occupantId !== this.idNumber) {
-            if (!(this.game instanceof ClientGame)) {
+            if (this.game.gameType !== Game.Type.CLIENT) {
                 // Should never happen.
                 throw new Error("Linkage between player and occupied tile disagrees.");
             }
@@ -117,7 +116,7 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
         }
         // Occupy the destination `Tile.
         if (dest.isOccupied()) {
-            if (!(this.game instanceof ClientGame)) {
+            if (this.game.gameType !== Game.Type.CLIENT) {
                 // Should never happen because the Game Manager
                 // rejects requests to move onto an occupied `Tile`.
                 throw new Error("Only one player can occupy a tile at a time.");
