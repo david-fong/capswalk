@@ -1,11 +1,17 @@
+// Since the parent template and this one don't have a "files" or an
+// "includes" field, all the files in the folder containing the concrete
+// config will be part of its reference group.
+//
+// Note that the fields are not actually taken in a strictly dumb
+// fashion. According to vscode, "rootDir" is used relative to this
+// file and not the concrete config files, although the final value
+// is the same.
+// TODO: make each concrete config be like the lang/ one.
 {
     "extends": "../../templates/tsconfig.json",
     "compilerOptions": {
         "baseUrl": "..",
         "rootDir": "..",
-        "outDir": "../../dist",
+        "outDir": "../../dist/src",
     },
-    "include": [
-        "./**/*",
-    ],
 }

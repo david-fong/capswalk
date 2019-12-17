@@ -1,12 +1,5 @@
 {
-    "extends": "../../templates/tsconfig.json",
-    "compilerOptions": {
-        "baseUrl": "..",
-        "outDir": "../../dist",
-    },
-    "include": [
-        "./**/*",
-    ],
+    "extends": "../templates/tsconfig.json",
     "references": [
         { "path": "../base", },
     ],

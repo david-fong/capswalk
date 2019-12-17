@@ -83,7 +83,7 @@ const BaseConfig: () => Require<webpack.Configuration,
     plugins: BasePlugins(),
     resolve: {
         extensions: [ ".ts", ], // ".json", ".tsx",
-        modules: [ PROJECT_ROOT, ], // match tsconfig.baseUrl
+        modules: [ path.resolve(PROJECT_ROOT, "src"), ], // match tsconfig.baseUrl
     },
     watchOptions: {
         ignored: [ "files/**/*.js", "node_modules", ],
@@ -202,6 +202,10 @@ const nodeBundleConfig = BaseConfig(); {
 const testBundleConfig = BaseConfig(); {
     const config = testBundleConfig;
     config.name = "test";
+    config.resolve.modules = [
+        path.resolve(PROJECT_ROOT, "test"),
+        PROJECT_ROOT,
+    ];
     NODE_CONFIG(config);
     config.output.path = path.resolve(PROJECT_ROOT, "dist", "test");
     (<const>[ "lang", ]).forEach((name) => {

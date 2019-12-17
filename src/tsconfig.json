@@ -2,9 +2,9 @@
     "extends": "../templates/tsconfig.json",
     "compilerOptions": {
         "baseUrl": ".",
-        "outDir": "../dist",
-        "tsBuildInfoFile": ".tsbuildinfo"
+        "outDir": "../dist/src",
     },
+    "files": [],
     "references": [
         { "path": "base", },
         { "path": "offline", },

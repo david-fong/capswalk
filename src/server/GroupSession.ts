@@ -1,10 +1,10 @@
 import * as io from "socket.io";
 
-import { Grid, Game } from "src/base/Game";
-import { ServerGame } from "src/server/ServerGame";
-import { Player } from "src/base/player/Player";
+import { Grid, Game } from "base/Game";
+import { ServerGame } from "server/ServerGame";
+import { Player } from "base/player/Player";
 
-export { ServerGame } from "src/server/ServerGame";
+export { ServerGame } from "server/ServerGame";
 
 
 /**

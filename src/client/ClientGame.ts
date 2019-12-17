@@ -1,17 +1,17 @@
 import * as io from "socket.io-client";
 
-import { BarePos } from "src/Pos";
-import { VisibleTile } from "src/base/VisibleTile";
-import { LocalGameSettings } from "src/settings/GameSettings";
-import { Grid, Game } from "src/base/Game";
+import { BarePos } from "base/Pos";
+import { VisibleTile } from "base/VisibleTile";
+import { LocalGameSettings } from "settings/GameSettings";
+import { Grid, Game } from "base/Game";
 
-import { Player } from "src/base/player/Player";
-import { PuppetPlayer } from "src/base/player/PuppetPlayer";
-import { HumanPlayer } from "src/base/player/HumanPlayer";
-import { OnlineHumanPlayer } from "src/client/OnlineHumanPlayer";
+import { Player } from "base/player/Player";
+import { PuppetPlayer } from "base/player/PuppetPlayer";
+import { HumanPlayer } from "base/player/HumanPlayer";
+import { OnlineHumanPlayer } from "client/OnlineHumanPlayer";
 
-import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
-import { Bubble } from "src/events/Bubble";
+import { PlayerMovementEvent } from "events/PlayerMovementEvent";
+import { Bubble } from "events/Bubble";
 
 /**
  * 

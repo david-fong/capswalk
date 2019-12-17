@@ -1,14 +1,5 @@
 {
-    "extends": "../../templates/tsconfig.json",
-    "compilerOptions": {
-        "baseUrl": "..",
-        "rootDir": "..",
-        "outDir": "../../dist",
-        "tsBuildInfoFile": ".tsbuildinfo"
-    },
-    "include": [
-        "./**/*",
-    ],
+    "extends": "../templates/tsconfig.json",
     "references": [
         { "path": "../events", },
         { "path": "../lang", },

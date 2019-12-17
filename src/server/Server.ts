@@ -3,8 +3,8 @@ import * as http    from "http";
 import * as app     from "express";
 import * as io      from "socket.io";
 
-import { Defs } from "src/Defs";
-import { GroupSession } from "src/server/GroupSession";
+import { Defs } from "base/Defs";
+import { GroupSession } from "server/GroupSession";
 
 
 /**

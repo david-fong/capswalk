@@ -2,7 +2,6 @@
     "compilerOptions": {
         // Project References:
         "composite": true,
-        "tsBuildInfoFile": ".tsbuildinfo",
         "declaration": true,
 
         // Project Structure:
@@ -28,5 +27,4 @@
         "noImplicitReturns": true,
         "strictBindCallApply": true,
     },
-    "files": [],
 }

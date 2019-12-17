@@ -2,12 +2,9 @@
     "extends": "../templates/tsconfig.json",
     "compilerOptions": {
         "baseUrl": "..",
-        "outDir": "../dist",
-        "tsBuildInfoFile": ".tsbuildinfo",
+        "outDir": "../dist/test",
     },
-    "include": [
-        "./**/*",
-    ],
+    "files": [],
     "references": [
         { "path": "../src", },
     ],

@@ -7,7 +7,7 @@ There's nothing to show yet! But, you can try [**`an older, working version` ðŸ‘
 >
 > Learning is hard, and that's what makes the process of doing it frustrating. I can vouch for that by nearly every commit in this repository. But I can also say from other past experiences that the difficulty in tackling something new and unfamiliar is what makes its eventual fruit so sweet to enjoy.
 >
-> If I want to get across one message through this project, it is to _be kind to beginners_- whether that is another person or ourself. When I get frustrated learning something, I find myself needing to mentally recite that _"I'm not stupid- I'm just learning"_.
+> If I want to get across one message through this project, it is to _be kind to beginners_- whether that is to another person or to yourself. When I get frustrated learning something, I find myself needing to mentally recite that _"I'm not stupid- I'm just learning"_.
 >
 > People only get good at things by perseverance. I think it's good to remember that for ourselves: Ask a musician to play their instrument flipped, or a person to type on a different keyboard layout than the one they're used to, or ask a driver to drive with their steering flipped. Ask someone to try playing this game (I'm shameless- I know).
 >
