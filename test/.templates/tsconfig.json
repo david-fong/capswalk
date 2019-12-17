@@ -1,0 +1,9 @@
+// Copied from /src/.templates/tsconfig.json.
+{
+    "extends": "../../.templates/tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "..",
+        "rootDir": "..",
+        "outDir": "../../dist/src",
+    },
+}

@@ -6,9 +6,11 @@
 // fashion. According to vscode, "rootDir" is used relative to this
 // file and not the concrete config files, although the final value
 // is the same.
-// TODO: make each concrete config be like the lang/ one.
+//
+// If general changes are made to this file, make similar changes to
+// /test/.templates/tsconfig.json, which is essentially a copy of this.
 {
-    "extends": "../../templates/tsconfig.json",
+    "extends": "../../.templates/tsconfig.json",
     "compilerOptions": {
         "baseUrl": "..",
         "rootDir": "..",
