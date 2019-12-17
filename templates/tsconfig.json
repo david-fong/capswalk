@@ -26,7 +26,7 @@
         "strictNullChecks": true,
         "strictFunctionTypes": true,
         "noImplicitReturns": true,
-        "strictBindCallApply": true
+        "strictBindCallApply": true,
     },
-    "files": []
+    "files": [],
 }

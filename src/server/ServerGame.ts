@@ -1,17 +1,15 @@
 import * as io from "socket.io";
 import { setTimeout } from "timers";
 
-import { Modify, Require } from "src/TypeUtils";
+import { BarePos } from "base/Pos";
+import { Tile } from "base/Tile";
+import { Game } from "base/Game";
+import { GroupSession } from "server/GroupSession";
+import { Player } from "base/player/Player";
 
-import { BarePos } from "src/Pos";
-import { Tile } from "src/base/Tile";
-import { Game } from "src/base/Game";
-import { GroupSession } from "src/server/GroupSession";
-import { Player } from "src/base/player/Player";
-
-import { EventRecordEntry } from "src/events/EventRecordEntry";
-import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
-import { Bubble } from "src/events/Bubble";
+import { EventRecordEntry } from "events/EventRecordEntry";
+import { PlayerMovementEvent } from "events/PlayerMovementEvent";
+import { Bubble } from "events/Bubble";
 
 
 /**

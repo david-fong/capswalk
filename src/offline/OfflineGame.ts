@@ -1,11 +1,11 @@
-import { BarePos } from "src/Pos";
-import { VisibleTile } from "src/base/VisibleTile";
-import { Game } from "src/base/Game";
-import { LocalGameSettings } from "src/settings/GameSettings";
+import { BarePos } from "base/Pos";
+import { VisibleTile } from "base/VisibleTile";
+import { Game } from "base/Game";
+import { LocalGameSettings } from "settings/GameSettings";
 
-import { Player } from "src/base/player/Player";
-import { HumanPlayer } from "src/base/player/HumanPlayer";
-import { OfflineHumanPlayer } from "src/offline/OfflineHumanPlayer";
+import { Player } from "base/player/Player";
+import { HumanPlayer } from "base/player/HumanPlayer";
+import { OfflineHumanPlayer } from "offline/OfflineHumanPlayer";
 
 
 /**

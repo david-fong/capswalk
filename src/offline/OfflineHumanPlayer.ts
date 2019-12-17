@@ -1,8 +1,8 @@
-import { Tile } from "src/base/Tile";
-import { OfflineGame } from "src/offline/OfflineGame";
-import { HumanPlayer } from "src/base/player/HumanPlayer";
-import { Player } from "src/base/player/Player";
-import { PlayerMovementEvent } from "src/events/PlayerMovementEvent";
+import { Tile } from "base/Tile";
+import { OfflineGame } from "offline/OfflineGame";
+import { HumanPlayer } from "base/player/HumanPlayer";
+import { Player } from "base/player/Player";
+import { PlayerMovementEvent } from "events/PlayerMovementEvent";
 
 /**
  * 

@@ -1,10 +1,14 @@
 {
-    "extends": "../../scripts/template.tsconfig.json",
+    "extends": "../../templates/tsconfig.json",
     "compilerOptions": {
         "baseUrl": "..",
         "outDir": "../../dist",
     },
     "include": [
         "./**/*",
+    ],
+    "references": [
+        { "path": "../base", },
+        { "path": "../events", },
     ],
 }

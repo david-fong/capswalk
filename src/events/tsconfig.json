@@ -10,5 +10,5 @@
     "references": [
         { "path": "../base", },
         { "path": "../lang", },
-    ]
+    ],
 }

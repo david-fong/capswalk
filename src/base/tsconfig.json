@@ -4,6 +4,7 @@
         "baseUrl": "..",
         "rootDir": "..",
         "outDir": "../../dist",
+        "tsBuildInfoFile": ".tsbuildinfo"
     },
     "include": [
         "./**/*",
@@ -12,5 +13,5 @@
         { "path": "../events", },
         { "path": "../lang", },
         { "path": "../settings", },
-    ]
+    ],
 }

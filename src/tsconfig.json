@@ -3,6 +3,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "outDir": "../dist",
+        "tsBuildInfoFile": ".tsbuildinfo"
     },
     "references": [
         { "path": "base", },
@@ -12,5 +13,5 @@
         { "path": "events", },
         { "path": "lang", },
         { "path": "settings", },
-    ]
+    ],
 }
