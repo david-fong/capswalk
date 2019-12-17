@@ -4,5 +4,6 @@
 /assets/
 /dist/
 /scripts/
+!/scripts/webpack.config.ts
 *~
 *.md

@@ -7,7 +7,7 @@ declare -r cwd="$(dirname "${BASH_SOURCE[0]}")"
 # convert the Typescript version of the config to Javascript.
 if [[ "$@" =~ '-t' ]]
 then
-    time npx tsc --project "${cwd}/webpack.tsconfig.jsonc"
+    time npx tsc --project "${cwd}/webpack.tsconfig.json"
     echo 'built the webpack config'
     echo
 else
