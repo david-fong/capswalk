@@ -2,7 +2,7 @@
     "compilerOptions": {
         // Project References:
         "composite": true,
-        "declaration": true,
+        //"declaration": true,
 
         // Project Structure:
         "moduleResolution": "node",

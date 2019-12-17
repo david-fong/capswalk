@@ -5,8 +5,34 @@
         "outDir": "./dist",
     },
 
+    "files": [],
     "references": [
         { "path": "src", },
         { "path": "test", },
     ],
 }
+// I have to tell a story:
+//
+// For the past six days, I've been voraciously reading documentation
+// on configuring WebPack and trying it out, and then I went down a new
+// rabbit hole with Project References in TypeScript. As I tore things
+// up to try it and get something working, I realized that since it
+// would require emitting and using type declaration files, I would
+// need to update those every time I made a change and needed it else-
+// where. Either that would mean setting up a watcher, or adding a step
+// to my most basic development process. This was vexing, and I assumed
+// the message in the TypeScript documentation on developing ways to
+// circumvent this wouldn't be a blessing I would enjoy in the lifetime
+// of this project.
+//
+// Today on December 17th, 2019, Vscode released an update. I installed
+// it, and skimmed the change log, and jumped to the JS/TS section, got
+// led to a big external document, realized it was about a new version
+// of TypeScript, started skimming, finished, and was about to close it
+// when a heading on Project References caught my eye. It was the very
+// thing I had been holding a last thread of hope for. I had only just
+// ten minutes ago completed a first-run of emitting declaration files
+// for my project sources.
+//
+// It feels like Christmas came early this year.
+// https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#build-free-editing-with-project-references
