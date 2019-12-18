@@ -11,8 +11,5 @@
         { "path": "offline", },
         { "path": "server", },
         { "path": "client", },
-        { "path": "events", },
-        { "path": "lang", },
-        { "path": "settings", },
     ],
 }

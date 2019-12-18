@@ -1,6 +1,7 @@
 {
     "extends": "../.templates/tsconfig.json",
     "references": [
-        { "path": "../base", },
+        { "path": "../base/settings", },
+        { "path": "../base/game", },
     ],
 }

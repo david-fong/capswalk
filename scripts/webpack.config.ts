@@ -103,6 +103,9 @@ const BaseConfig: () => Require<webpack.Configuration,
                     transpileOnly: true, // https://github.com/TypeStrong/ts-loader#faster-builds
                     projectReferences: true,
                     //onlyCompileBundledFiles: true,
+                    compilerOptions: {
+                        emitDeclarationOnly: true,
+                    },
                 },
             },
             exclude: /node_modules/,
