@@ -105,15 +105,15 @@ export abstract class Game extends Grid {
         // must change to account for that.
         // TODO: make this static information so the UI can grey out incompatible
         // lang / floor-tiling combinations. Ie. move this check to the UI code.
-        if (this.lang.numLeaves < this.MAX_NUM_U2NTS) {
-            throw new Error(`Found ${this.lang.numLeaves}, but at least`
-                + ` ${this.MAX_NUM_U2NTS} were required. The provided mappings`
-                + ` composing the current Lang-under-construction are not`
-                + ` sufficient to ensure that a shuffling operation will always`
-                + ` be able to find a safe candidate to use as a replacement.`
-                + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
-            );
-        }
+        // if (this.lang.numLeaves < this.MAX_NUM_U2NTS) {
+        //     throw new Error(`Found ${this.lang.numLeaves}, but at least`
+        //         + ` ${this.MAX_NUM_U2NTS} were required. The provided mappings`
+        //         + ` composing the current Lang-under-construction are not`
+        //         + ` sufficient to ensure that a shuffling operation will always`
+        //         + ` be able to find a safe candidate to use as a replacement.`
+        //         + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
+        //     );
+        // }
         this.langBalancingScheme = desc.langBalancingScheme;
         this.eventRecord = [];
 

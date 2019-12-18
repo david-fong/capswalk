@@ -21,7 +21,7 @@ fi
 # interesting note: if you export an array of configs, the
 # stats.color argument is ignored... I haven't fiddled to
 # see what else is like this.
-declare -r doneMsg="$(echo -e "\n=== BUILD DONE ===\n")"
-npx webpack --color --build-delimiter="${doneMsg}" --config "${cwd}/../webpack.config.js"
+declare -r doneMsg="$(echo -e "\n\n\n=== BUILD DONE ===\n\n\n")"
+time npx webpack --color --build-delimiter="${doneMsg}" --config "${cwd}/../webpack.config.js"
 
 # TODO: check that the html requests all the necessary javascript files.
