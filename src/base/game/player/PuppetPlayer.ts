@@ -1,6 +1,6 @@
-import { Tile } from "floor/Tile";
-import { Game } from "game/Game";
-import { Player} from "game/player/Player";
+import { Tile } from "../floor/Tile";
+import { Game } from "../Game";
+import { Player} from "./Player";
 
 
 /**

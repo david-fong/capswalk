@@ -43,6 +43,10 @@ const BasePlugins: () => Array<Readonly<webpack.Plugin>> = () => { return Array.
             (moduleName || "").replace(PROJECT_ROOT, "...").replace(PROJECT_ROOT, "..."),
         );
     }),
+    // new webpack.WatchIgnorePlugin([
+    //     /\.js$/,
+    //     /\.d\.ts$/,
+    // ]),
 ); };
 
 /**
@@ -83,7 +87,7 @@ const BaseConfig: () => Require<webpack.Configuration,
     plugins: BasePlugins(),
     resolve: {
         extensions: [ ".ts", ], // ".json", ".tsx",
-        modules: [ path.resolve(PROJECT_ROOT, "src"), ], // match tsconfig.baseUrl
+        modules: [ path.resolve(PROJECT_ROOT, "src", "base"), ], // match tsconfig.baseUrl
     },
     watchOptions: {
         ignored: [ "files/**/*.js", "node_modules", ],
@@ -105,9 +109,9 @@ const BaseConfig: () => Require<webpack.Configuration,
         }, ],
     },
     optimization: {
-        runtimeChunk: {
-            name: (entrypoint) => `${entrypoint.name}/runtime`,
-        },
+        // runtimeChunk: {
+        //     name: (entrypoint) => `${entrypoint.name}/runtime`,
+        // },
         //mergeDuplicateChunks: true,
         splitChunks: {
             chunks: "initial",
@@ -145,6 +149,7 @@ const webBundleConfig = BaseConfig(); {
     config.name = "src-web";
     config.target = "web";
     config.externals = [ "socket.io-client", ];
+
     (<const>[ /* TODO: "homepage", */ "offline", "client", ]).forEach((name) => {
         config.entry[name] = `./src/${name}/index.ts`;
         // config.entry[`${name}_body`] = `./src/${name}/body.html`;

@@ -1,19 +1,19 @@
 import { Lang } from "lang/Lang";
 import { BalancingScheme } from "lang/LangSeqTreeNode";
-import { BarePos, Tile } from "floor/Tile";
-import { Grid } from "floor/Grid";
+import { BarePos, Tile } from "./floor/Tile";
+import { Grid } from "./floor/Grid";
 
-import { Player } from "game/player/Player";
-import { PuppetPlayer } from "game/player/PuppetPlayer";
-import { HumanPlayer } from "game/player/HumanPlayer";
-import { ArtificialPlayer } from "game/player/ArtificialPlayer";
+import { Player } from "./player/Player";
+import { PuppetPlayer } from "./player/PuppetPlayer";
+import { HumanPlayer } from "./player/HumanPlayer";
+import { ArtificialPlayer } from "./player/ArtificialPlayer";
 
-import { PlayerGeneratedRequest } from "events/PlayerGeneratedRequest";
-import { PlayerMovementEvent } from "events/PlayerMovementEvent";
-import { Bubble } from "events/Bubble";
-import { EventRecordEntry } from "events/EventRecordEntry";
+import { PlayerGeneratedRequest } from "./events/EventRecordEntry";
+import { PlayerMovementEvent } from "./events/PlayerMovementEvent";
+import { Bubble } from "./events/Bubble";
+import { EventRecordEntry } from "./events/EventRecordEntry";
 
-export { Grid } from "floor/Grid";
+export { Grid } from "./floor/Grid";
 
 
 /**
@@ -98,6 +98,22 @@ export abstract class Game extends Grid {
 
         // TODO: set default language (must be done before call to reset):
         //this.lang = import(desc.languageName);
+
+        // NOTE: This is implementation specific. If the code is ever
+        // made to handle more complex connections (Ex. hexagon tiling
+        // or variable neighbours through graph structures), then this
+        // must change to account for that.
+        // TODO: make this static information so the UI can grey out incompatible
+        // lang / floor-tiling combinations. Ie. move this check to the UI code.
+        if (this.lang.numLeaves < this.MAX_NUM_U2NTS) {
+            throw new Error(`Found ${this.lang.numLeaves}, but at least`
+                + ` ${this.MAX_NUM_U2NTS} were required. The provided mappings`
+                + ` composing the current Lang-under-construction are not`
+                + ` sufficient to ensure that a shuffling operation will always`
+                + ` be able to find a safe candidate to use as a replacement.`
+                + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
+            );
+        }
         this.langBalancingScheme = desc.langBalancingScheme;
         this.eventRecord = [];
 

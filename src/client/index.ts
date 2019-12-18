@@ -1,4 +1,4 @@
-import { ClientGame } from "client/ClientGame";
+import { ClientGame } from "./ClientGame";
 
 const game = new ClientGame(undefined!, undefined!);
 game.reset();

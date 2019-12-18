@@ -1,4 +1,3 @@
-import { Defs } from "base/Defs";
 import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
 
 
@@ -37,6 +36,8 @@ export abstract class Lang {
      */
     protected readonly leafNodes: Array<LangSeqTreeNode>;
 
+    public get numLeaves(): number { return this.leafNodes.length; }
+
 
 
     /**
@@ -50,23 +51,8 @@ export abstract class Lang {
      */
     protected constructor(name: string, forwardDict: Lang.CharSeqPair.WeightedForwardMap) {
         this.name = name;
-        // Write JSON data to my `dict`:
         this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes = this.treeMap.getLeafNodes();
-
-        // NOTE: This is implementation specific. If the code is ever
-        // made to handle more complex connections (Ex. hexagon tiling
-        // or variable neighbours through graph structures), then this
-        // must change to account for that.
-        if (this.leafNodes.length < Defs.MAX_NUM_U2NTS) {
-            throw new Error(`Found ${this.leafNodes.length}, but at least`
-                + ` ${Defs.MAX_NUM_U2NTS} were required. The provided mappings`
-                + ` composing the current Lang-under-construction are not`
-                + ` sufficient to ensure that a shuffling operation will always`
-                + ` be able to find a safe candidate to use as a replacement.`
-                + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
-            );
-        }
     }
 
     public reset(): void {

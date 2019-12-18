@@ -1,7 +1,33 @@
-import { Player } from "game/player/Player";
-import { EventRecordEntry } from "events/EventRecordEntry";
+import { Player } from "../player/Player";
 
-export { EventRecordEntry } from "events/EventRecordEntry";
+
+/**
+ * 
+ */
+export interface EventRecordEntry {
+
+    /**
+     * A positive, integer-valued identifier for an event. 
+     * 
+     * Must be unique in its context.
+     * 
+     * The request-maker should not set this field.
+     * 
+     * The request validator should respond with this value either set
+     * to a valid value as described above, or leave it as {@link REJECT}.
+     */
+    eventId: number;
+
+}
+
+/**
+ * https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-namespaces-with-classes-functions-and-enums
+ */
+export namespace EventRecordEntry {
+
+    export const REJECT = -1;
+
+}
 
 export interface PlayerGeneratedRequest extends EventRecordEntry {
 
@@ -50,4 +76,3 @@ export interface PlayerGeneratedRequest extends EventRecordEntry {
     lastAcceptedRequestId: number;
 
 };
-

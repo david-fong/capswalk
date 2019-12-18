@@ -1,9 +1,9 @@
-import { BarePos } from "floor/Pos";
-import { Pos, Tile } from "floor/Tile";
-import { Game } from "game/Game";
-import { Player } from "game/player/Player";
-import { ArtificialPlayerTypes as Types } from "game/player/artificials/Chaser";
-import { PlayerMovementEvent } from "events/PlayerMovementEvent";
+import { BarePos } from "../floor/Pos";
+import { Pos, Tile } from "../floor/Tile";
+import { Game } from "../Game";
+import { Player } from "./Player";
+import { ArtificialPlayerTypes as Types } from "../player/artificials/Chaser";
+import { PlayerMovementEvent } from "../events/PlayerMovementEvent";
 
 /**
  * Unlike {@link HumanPlayer}s, these are not guided by human input.

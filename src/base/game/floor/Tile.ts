@@ -1,12 +1,9 @@
-import { Lang } from "lang/Lang"; // TODO: look into using triple-slash reference for this
-import { Pos, BarePos } from "floor/Pos";
-import { PlayerSkeleton, Player } from "game/player/Player"; // TODO: also this
+import { Lang } from "lang/Lang";
+import { Pos, BarePos } from "./Pos";
+import { PlayerSkeleton, Player } from "../player/Player";
 
-export { Pos, BarePos } from "floor/Pos";
+export { Pos, BarePos } from "./Pos";
 
-// TODO: is it possible to use declaration merging to define Player.Id in here?
-// we could put some basic type definitions in a base/defs/ project and then use module augmentation...
-// also, how about we move PlayerSkeleton.VisibleState to here?
 
 /**
  * 
@@ -84,7 +81,7 @@ export class Tile {
     }
 
     public evictOccupant(): void {
-        this._occupantId = Player.Id.NULL;
+        this.setOccupant(PlayerSkeleton.VisibleState.NULL);
     }
 
     public get occupantId(): Player.Id {

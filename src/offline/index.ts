@@ -1,6 +1,6 @@
-import { OfflineGame } from "offline/OfflineGame";
+import { OfflineGame } from "./OfflineGame";
 import { BalancingScheme } from "lang/LangSeqTreeNode";
-import { Player } from "base/player/Player";
+import { Player } from "game/player/Player";
 
 const game = new OfflineGame({
     gridDimensions: {

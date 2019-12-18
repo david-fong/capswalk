@@ -1,8 +1,8 @@
-import { Tile } from "base/Tile";
-import { ClientGame } from "client/ClientGame";
-import { Player } from "base/player/Player";
-import { HumanPlayer } from "base/player/HumanPlayer";
-import { PlayerMovementEvent } from "events/PlayerMovementEvent";
+import { Tile } from "game/floor/Tile";
+import { ClientGame } from "./ClientGame";
+import { Player } from "game/player/Player";
+import { HumanPlayer } from "game/player/HumanPlayer";
+import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 
 
 /**

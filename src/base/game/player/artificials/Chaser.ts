@@ -1,7 +1,7 @@
-import { Pos } from "floor/Pos";
-import { Game } from "game/Game";
-import { Player } from "game/player/Player";
-import { ArtificialPlayer } from "game/player/ArtificialPlayer";
+import { Pos } from "../../floor/Pos";
+import { Game } from "../../Game";
+import { Player } from "../Player";
+import { ArtificialPlayer } from "../ArtificialPlayer";
 
 
 /**

@@ -1,5 +1,5 @@
-import { BarePos, Tile } from "floor/Tile";
-import { VisibleTile } from "floor/VisibleTile";
+import { BarePos, Tile } from "./Tile";
+import { VisibleTile } from "./VisibleTile";
 
 
 

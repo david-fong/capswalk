@@ -2,6 +2,5 @@
     "extends": "../.templates/tsconfig.json",
     "references": [
         { "path": "../base", },
-        { "path": "../events", },
     ],
 }

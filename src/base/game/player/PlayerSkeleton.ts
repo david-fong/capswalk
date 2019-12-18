@@ -1,6 +1,6 @@
-import { Tile } from "floor/Tile";
-import { Game } from "game/Game";
-import { Player } from "game/player/Player";
+import { Tile } from "../floor/Tile";
+import { Game } from "../Game";
+import { Player } from "./Player";
 
 
 /**
@@ -112,7 +112,7 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
         }
         else {
             // Move off of current host `Tile`:
-            this._hostTile.evictOccupant();
+            this._hostTile.setOccupant;
         }
         // Occupy the destination `Tile.
         if (dest.isOccupied()) {

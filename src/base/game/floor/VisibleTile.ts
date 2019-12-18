@@ -1,6 +1,6 @@
 import { Lang } from "lang/Lang";
-import { Tile, BarePos } from "floor/Tile";
-import { PlayerSkeleton, Player } from "game/player/Player";
+import { Tile, BarePos } from "./Tile";
+import { PlayerSkeleton, Player } from "../player/Player";
 
 
 /**
@@ -63,6 +63,9 @@ export class VisibleTile extends Tile {
 
 
 
+    /**
+     * @override
+     */
     public setOccupant(playerDesc: PlayerSkeleton.VisibleState): void {
         super.setOccupant(playerDesc);
         // TODO: set some dataset thing to make player face layer visible.
@@ -75,11 +78,17 @@ export class VisibleTile extends Tile {
         }
     }
 
+    /**
+     * @override
+     */
     public set scoreValue(score: number) {
         this._scoreValue = score;
         this.tileCellElem.dataset[VisibleTile.DataSetHooks.SCORE_VALUE] = score.toString();
     }
 
+    /**
+     * @override
+     */
     public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
         super.setLangCharSeq(charSeqPair);
         this.langCharDivElem.innerText = this.langChar;

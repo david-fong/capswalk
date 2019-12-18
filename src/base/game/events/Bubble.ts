@@ -1,5 +1,5 @@
-import { Player } from "player/Player";
-import { EventRecordEntry, PlayerGeneratedRequest } from "events/PlayerGeneratedRequest";
+import { Player } from "../player/Player";
+import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
 
 /**
  * # The Object of the Game

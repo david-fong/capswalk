@@ -3,7 +3,7 @@ import * as http    from "http";
 import * as app     from "express";
 import * as io      from "socket.io";
 
-import { GroupSession } from "server/GroupSession";
+import { GroupSession } from "./GroupSession";
 
 
 /**
