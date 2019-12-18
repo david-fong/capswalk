@@ -1,9 +1,9 @@
-import { Pos, Tile } from "base/Tile";
-import { Game } from "base/Game";
+import { Pos, Tile } from "floor/Tile";
+import { Game } from "game/Game";
 import { PlayerMovementEvent } from "events/PlayerMovementEvent";
-import { PlayerSkeleton } from "base/player/PlayerSkeleton";
+import { PlayerSkeleton } from "game/player/PlayerSkeleton";
 
-export { PlayerSkeleton } from "base/player/PlayerSkeleton";
+export { PlayerSkeleton } from "game/player/PlayerSkeleton";
 
 
 /**

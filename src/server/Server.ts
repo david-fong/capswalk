@@ -3,7 +3,6 @@ import * as http    from "http";
 import * as app     from "express";
 import * as io      from "socket.io";
 
-import { Defs } from "base/Defs";
 import { GroupSession } from "server/GroupSession";
 
 
@@ -29,7 +28,7 @@ export class Server {
      * @param port - The port number on which to host the Server.
      *          Defaults to {@link Defs.SERVER_PORT}.
      */
-    public constructor(host: string, port: number = Defs.SERVER_PORT) {
+    public constructor(host: string, port: number = Server.DEFAULT_PORT) {
         this.app    = app();
         this.http   = http.createServer({}, this.app);
         this.io     = io(this.http);
@@ -111,6 +110,8 @@ export class Server {
 
 
 export namespace Server {
+
+    export const DEFAULT_PORT = <const>8080;
 
     /**
      * Paths to pages on the site:

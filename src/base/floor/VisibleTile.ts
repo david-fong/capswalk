@@ -1,6 +1,6 @@
 import { Lang } from "lang/Lang";
-import { Tile, BarePos } from "base/Tile";
-import { PlayerSkeleton, Player } from "base/player/Player";
+import { Tile, BarePos } from "floor/Tile";
+import { PlayerSkeleton, Player } from "game/player/Player";
 
 
 /**

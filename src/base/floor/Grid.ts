@@ -1,6 +1,5 @@
-import { HtmlIdHooks } from "base/Defs";
-import { BarePos, Tile } from "base/Tile";
-import { VisibleTile } from "base/VisibleTile";
+import { BarePos, Tile } from "floor/Tile";
+import { VisibleTile } from "floor/VisibleTile";
 
 
 
@@ -55,7 +54,7 @@ export abstract class Grid {
      */
     public constructor(
         dimensions: Grid.DimensionDesc,
-        domGridHtmlIdHook = HtmlIdHooks.GRID
+        domGridHtmlIdHook = Grid.HTML_ID_HOOK,
     ) {
         if (!dimensions.width) {
             dimensions.width = dimensions.height;
@@ -172,6 +171,11 @@ export abstract class Grid {
 
 
 export namespace Grid {
+
+    /**
+     * Should only have one child: the main game grid's display.
+     */
+    export const HTML_ID_HOOK = "game-grid-host";
 
     /**
      * Values do not _need_ to be in range or integers. Cleaning to handle

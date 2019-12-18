@@ -1,8 +1,10 @@
 {
     "extends": "../.templates/tsconfig.json",
+    "files": [],
     "references": [
-        { "path": "../events", },
-        { "path": "../lang", },
-        { "path": "../settings", },
+        { "path": "floor", },
+        { "path": "events", },
+        { "path": "lang", },
+        { "path": "game", },
     ],
 }

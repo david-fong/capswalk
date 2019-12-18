@@ -1,19 +1,19 @@
 import { Lang } from "lang/Lang";
 import { BalancingScheme } from "lang/LangSeqTreeNode";
-import { BarePos, Tile } from "base/Tile";
-import { Grid } from "base/Grid";
+import { BarePos, Tile } from "floor/Tile";
+import { Grid } from "floor/Grid";
 
-import { Player } from "base/player/Player";
-import { PuppetPlayer } from "base/player/PuppetPlayer";
-import { HumanPlayer } from "base/player/HumanPlayer";
-import { ArtificialPlayer } from "base/player/ArtificialPlayer";
+import { Player } from "game/player/Player";
+import { PuppetPlayer } from "game/player/PuppetPlayer";
+import { HumanPlayer } from "game/player/HumanPlayer";
+import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
 import { PlayerGeneratedRequest } from "events/PlayerGeneratedRequest";
 import { PlayerMovementEvent } from "events/PlayerMovementEvent";
 import { Bubble } from "events/Bubble";
 import { EventRecordEntry } from "events/EventRecordEntry";
 
-export { Grid } from "base/Grid";
+export { Grid } from "floor/Grid";
 
 
 /**

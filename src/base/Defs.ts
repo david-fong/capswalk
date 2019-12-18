@@ -10,23 +10,4 @@ export namespace Defs {
      */
     export const MAX_NUM_U2NTS = (((2*2) + 1) ** 2) - 1;
 
-    /**
-     * The port that the {@link Server} will listen on.
-     */
-    export const SERVER_PORT = 8080;
-
-}
-
-
-export namespace HtmlIdHooks {
-
-    /**
-     * Should only have one child: the main game grid's display.
-     */
-    export const GRID = "game-grid-host";
-
-}
-
-export namespace HtmlClassHooks {
-
 }

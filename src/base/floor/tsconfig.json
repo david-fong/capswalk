@@ -1,0 +1,4 @@
+{
+    "extends": "../.templates/tsconfig.json",
+    "references": [],
+}

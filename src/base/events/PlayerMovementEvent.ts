@@ -1,6 +1,6 @@
 import { Lang } from "lang/Lang";
-import { BarePos, Tile } from "base/Tile";
-import { Player } from "base/player/Player";
+import { BarePos, Tile } from "floor/Tile";
+import { Player } from "game/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "events/PlayerGeneratedRequest";
 
 /**

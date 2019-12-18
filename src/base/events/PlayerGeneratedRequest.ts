@@ -1,4 +1,4 @@
-import { Player } from "base/player/Player";
+import { Player } from "game/player/Player";
 import { EventRecordEntry } from "events/EventRecordEntry";
 
 export { EventRecordEntry } from "events/EventRecordEntry";

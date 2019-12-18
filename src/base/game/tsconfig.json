@@ -1,0 +1,9 @@
+{
+    "extends": "../.templates/tsconfig.json",
+    "references": [
+        { "path": "../floor"    },
+        { "path": "../events"   },
+        { "path": "../settings" },
+        { "path": "../lang"     },
+    ]
+}

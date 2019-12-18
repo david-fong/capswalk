@@ -1,8 +1,8 @@
-import { BarePos } from "base/Pos";
-import { Pos, Tile } from "base/Tile";
-import { Game } from "base/Game";
-import { Player } from "base/player/Player";
-import { ArtificialPlayerTypes as Types } from "base/player/artificials/Chaser";
+import { BarePos } from "floor/Pos";
+import { Pos, Tile } from "floor/Tile";
+import { Game } from "game/Game";
+import { Player } from "game/player/Player";
+import { ArtificialPlayerTypes as Types } from "game/player/artificials/Chaser";
 import { PlayerMovementEvent } from "events/PlayerMovementEvent";
 
 /**

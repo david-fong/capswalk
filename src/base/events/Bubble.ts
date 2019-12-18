@@ -1,4 +1,4 @@
-import { Player } from "base/player/Player";
+import { Player } from "player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "events/PlayerGeneratedRequest";
 
 /**

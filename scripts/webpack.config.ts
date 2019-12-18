@@ -142,7 +142,7 @@ const BaseConfig: () => Require<webpack.Configuration,
  */
 const webBundleConfig = BaseConfig(); {
     const config = webBundleConfig;
-    config.name = "src-web"
+    config.name = "src-web";
     config.target = "web";
     config.externals = [ "socket.io-client", ];
     (<const>[ /* TODO: "homepage", */ "offline", "client", ]).forEach((name) => {
@@ -173,6 +173,8 @@ const webBundleConfig = BaseConfig(); {
  * - `target: "node"`. This should mean that node modules are not bundled.
  * - `resolve.modules.push("node_modules")`
  * - `externals: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))`
+ * 
+ * @param config - 
  */
 const NODE_CONFIG = (config): void => {
     config.target = "node";
@@ -186,7 +188,7 @@ const NODE_CONFIG = (config): void => {
  */
 const nodeBundleConfig = BaseConfig(); {
     const config = nodeBundleConfig;
-    config.name = "src-node"
+    config.name = "src-node";
     NODE_CONFIG(config);
     (<const>[ "server", ]).forEach((name) => {
         config.entry[name] = `./src/${name}/index.ts`;
