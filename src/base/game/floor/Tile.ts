@@ -1,6 +1,6 @@
 import { Lang } from "lang/Lang";
 import { Pos, BarePos } from "./Pos";
-import { PlayerSkeleton, Player } from "../player/Player";
+import { PlayerSkeleton, Player } from "game/player/Player";
 
 export { Pos, BarePos } from "./Pos";
 
