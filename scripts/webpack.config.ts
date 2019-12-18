@@ -34,7 +34,10 @@ const WATERMARK = "/**\n * " + [
     "https://github.com/david-fong/SnaKey-NTS",
 ].join("\n * ") + "\n */";
 
-const BasePlugins: () => Array<Readonly<webpack.Plugin>> = () => { return Array.of(
+/**
+ * 
+ */
+const BASE_PLUGINS: ReadonlyArray<Readonly<webpack.Plugin>> = [
     new webpack.ProgressPlugin((pct, msg, moduleProgress?, activeModules?, moduleName?) => {
         console.log(
             `[${Math.floor(pct * 100).toString().padStart(3)}% ]`,
@@ -47,7 +50,30 @@ const BasePlugins: () => Array<Readonly<webpack.Plugin>> = () => { return Array.
     //     /\.js$/,
     //     /\.d\.ts$/,
     // ]),
-); };
+];
+
+/**
+ * https://webpack.js.org/loaders/
+ */
+const MODULE_RULES: Array<webpack.RuleSetRule> = [
+    {
+        test: /[.]ts$/,
+        use: {
+            loader: "ts-loader",
+            options: <tsloader.LoaderOptions>{
+                projectReferences: true,
+                compilerOptions: {
+                    emitDeclarationOnly: true,
+                },
+                // https://github.com/TypeStrong/ts-loader#faster-builds
+                transpileOnly: true,
+                experimentalWatchApi: true,
+            },
+        },
+        exclude: /node_modules/,
+    },
+    // TODO: look into need for html loader
+];
 
 /**
  * # Base Config
@@ -74,7 +100,9 @@ const BasePlugins: () => Array<Readonly<webpack.Plugin>> = () => { return Array.
 const BaseConfig: () => Require<webpack.Configuration,
 "entry" | "plugins" | "resolve" | "output"> = () => { return {
     mode: "development",
-    cache: true, // https://webpack.js.org/guides/caching/
+    // https://webpack.js.org/guides/caching/
+    // https://webpack.js.org/configuration/other-options/#cache
+    cache: true,
     stats: {
         // https://webpack.js.org/configuration/stats/
         cached: false,
@@ -84,32 +112,16 @@ const BaseConfig: () => Require<webpack.Configuration,
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
     entry: { /* Left to each branch config */ },
     devtool: "source-map",
-    plugins: BasePlugins(),
+    plugins: [ ...BASE_PLUGINS, ],
     resolve: {
         extensions: [ ".ts", ], // ".json", ".tsx",
         modules: [ path.resolve(PROJECT_ROOT, "src", "base"), ], // match tsconfig.baseUrl
     },
     watchOptions: {
-        ignored: [ "files/**/*.js", "node_modules", ],
+        ignored: [ "node_modules", ],
     },
     module: {
-        // https://webpack.js.org/loaders/
-        // TODO: look into need for html loader
-        rules: [ {
-            test: /[.]ts$/,
-            use: {
-                loader: "ts-loader",
-                options: <tsloader.LoaderOptions>{
-                    transpileOnly: true, // https://github.com/TypeStrong/ts-loader#faster-builds
-                    projectReferences: true,
-                    //onlyCompileBundledFiles: true,
-                    compilerOptions: {
-                        emitDeclarationOnly: true,
-                    },
-                },
-            },
-            exclude: /node_modules/,
-        }, ],
+        rules: MODULE_RULES,
     },
     optimization: {
         // runtimeChunk: {
@@ -133,6 +145,7 @@ const BaseConfig: () => Require<webpack.Configuration,
         path: path.resolve(PROJECT_ROOT, "dist"),
         filename: "[name]/index.js",
         sourcePrefix: WATERMARK,
+        pathinfo: false, // don't need it. small performance gain.
     },
 }; };
 
