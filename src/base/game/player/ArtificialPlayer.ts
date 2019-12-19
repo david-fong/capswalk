@@ -20,7 +20,7 @@ import { Chaser } from "./artificials/Chaser";
 // then add this to the above documentation.
 export abstract class ArtificialPlayer extends Player {
 
-    protected scheduledMovementCallbackId: number | NodeJS.Timeout;
+    private scheduledMovementCallbackId: number | NodeJS.Timeout;
 
     /**
      * See {@link ArtificialPlayer.of} for the public constructor interface.

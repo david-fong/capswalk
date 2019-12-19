@@ -14,7 +14,7 @@ export class OnlineHumanPlayer extends HumanPlayer {
     /**
      * @override
      */
-    public readonly game: ClientGame;
+    public declare readonly game: ClientGame;
 
 
 

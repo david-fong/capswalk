@@ -51,7 +51,7 @@ export abstract class HumanPlayer extends Player {
     public processClientInput(event: KeyboardEvent): void {
         if (false) {
             ;
-        } else if (!(this.requestInFlight)) {
+        } else if (!this.requestInFlight) {
             // Only process movement-type input if the last request got
             // acknowledged by the Game Manager and the game is not paused.
             // TODO: check if game is paused? This means we either need to

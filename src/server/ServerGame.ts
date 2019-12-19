@@ -25,7 +25,7 @@ export class ServerGame extends Game {
     /**
      * @override The Server copy has no Operator.
      */
-    public readonly operator: undefined;
+    public declare readonly operator: undefined;
 
     protected readonly playerIdToSocketMap: ReadonlyMap<Player.Id, io.Socket>;
 

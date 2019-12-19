@@ -16,9 +16,9 @@ import { OfflineHumanPlayer } from "./OfflineHumanPlayer";
 export class OfflineGame extends Game {
 
     /**
-     * The Operator is always defined for a {@link OfflineGame}.
+     * @override The Operator is always defined for a {@link OfflineGame}.
      */
-    public readonly operator: HumanPlayer | undefined;
+    public declare readonly operator: HumanPlayer;
 
     protected settings: LocalGameSettings;
 

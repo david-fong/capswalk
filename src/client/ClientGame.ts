@@ -21,9 +21,9 @@ import { Bubble } from "game/events/Bubble";
 export class ClientGame extends Game {
 
     /**
-     * The Operator is always defined for a {@link ClientGame}.
+     * @override The Operator is always defined for a {@link ClientGame}.
      */
-    public readonly operator: HumanPlayer;
+    public declare readonly operator: HumanPlayer;
 
     protected settings: LocalGameSettings;
 

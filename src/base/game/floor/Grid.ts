@@ -33,7 +33,7 @@ export abstract class Grid {
      * all  the contents of {@link Grid#grid}. Otherwise, this field is set
      * to be `undefined`.
      */
-    protected readonly domGrid?: HTMLTableElement;
+    private readonly domGrid?: HTMLTableElement;
 
     public abstract createTile(pos: BarePos): Tile;
 
