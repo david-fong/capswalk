@@ -64,6 +64,7 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [
                 projectReferences: true,
                 compilerOptions: {
                     emitDeclarationOnly: true,
+                    //noEmit: true,
                 },
                 // https://github.com/TypeStrong/ts-loader#faster-builds
                 transpileOnly: true,
@@ -130,13 +131,13 @@ const BaseConfig: () => Require<webpack.Configuration,
         //mergeDuplicateChunks: true,
         splitChunks: {
             chunks: "initial",
-            minChunks: 2,
+            minChunks: 1,
             // cacheGroups: {
             //     basecode: {
+            //         test: /[\\/]src[\\/]base[\\/]/,
             //         filename: "[name]/base.js",
             //         chunks: "initial",
-            //         test: /[\\/]src[\\/]base[\\/]/,
-            //         minChunks: 2,
+            //         minChunks: 1,
             //     },
             // },
         },
@@ -169,20 +170,21 @@ const webBundleConfig = BaseConfig(); {
     (<const>[ /* TODO: "homepage", */ "offline", "client", ]).forEach((name) => {
         config.entry[name] = `./src/${name}/index.ts`;
         // config.entry[`${name}_body`] = `./src/${name}/body.html`;
-        config.plugins.push(
-            new HtmlPlugin({
-                template: "./.templates/index.html",
-                filename: `${name}/index.html`,
-                // inject:
-                chunks: [
-                    name,
-                    `${name}/runtime`, // see BaseConfig.optimization.runtime
-                    "client~offline", // see Baseconfig.optimization.splitChunks
-                    /*`${name}_body`,*/ // for plugin (plugin currently excluded)
-                ],
-                //hash: true,
-            })
-        );
+        // TODO: enable the below when we actually get to testing it
+        // config.plugins.push(
+        //     new HtmlPlugin({
+        //         template: "./.templates/index.html",
+        //         filename: `${name}/index.html`,
+        //         // inject:
+        //         chunks: [
+        //             name,
+        //             `${name}/runtime`, // see BaseConfig.optimization.runtime
+        //             "client~offline", // see Baseconfig.optimization.splitChunks
+        //             /*`${name}_body`,*/ // for plugin (plugin currently excluded)
+        //         ],
+        //         //hash: true,
+        //     })
+        // );
     });
 }
 
