@@ -136,7 +136,7 @@ export class GroupSession {
             operatorIndex: undefined,
             playerDescs: Object.values(this.sockets).map((socket) => { // TODO: add those for artificial players.
                 return {
-                    operatorClass: Player.OperatorClass.HUMAN,
+                    operatorClass: Player.Operator.HUMAN,
                     idNumber: undefined,
                     username: socket.username!, // checked above.
                     beNiceTo: Array.from(socket.beNiceTo),

@@ -167,13 +167,12 @@ export namespace Player {
      * An integer value.
      * 
      * Each implementation of the {@link ArtificialPlayer} class must
-     * define a unique, hard-coded value that is strictly greater than
-     * {@link Player.OperatorClass.HUMAN}.
+     * have an entry here.
      * 
-     * {@link Player.OperatorClass.HUMAN} is reserved for human-operated
-     * players.
+     * Make sure not to define any overlapping value mappings. It seems
+     * TypeScript doesn't statically check for that.
      */
-    export const enum OperatorClass {
+    export const enum Operator {
         HUMAN = 0,
         CHASER,
     }
@@ -199,7 +198,7 @@ export namespace Player {
      */
     export type CtorArgs<ID_TYPE extends Player.Id | SocketId = Player.Id> = {
 
-        readonly operatorClass: OperatorClass;
+        readonly operatorClass: Operator;
 
         /**
          * Initially `undefined` for server and offline games. It will

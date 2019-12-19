@@ -11,7 +11,7 @@ const game = new OfflineGame({
     playerDescs: [
         {
             beNiceTo: [],
-            operatorClass: Player.OperatorClass.HUMAN,
+            operatorClass: Player.Operator.HUMAN,
             username: "hello world",
             idNumber: undefined,
             socketId: undefined,

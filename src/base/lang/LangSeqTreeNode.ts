@@ -12,7 +12,7 @@ export const enum BalancingScheme {
     WEIGHT  = "WEIGHT",
 }
 export namespace BalancingScheme {
-    export type SorterMap<T> = ReadonlyMap<BalancingScheme, (a: T, b: T) => number>;
+    export type SorterMap<T> = Readonly<Record<BalancingScheme, (a: T, b: T) => number>>;
 }
 
 
@@ -151,7 +151,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      */
     public chooseOnePair(balancingScheme: BalancingScheme): Lang.CharSeqPair {
         const weightedChar = this.characters.slice(0)
-            .sort(WeightedLangChar.CMP.get(balancingScheme))
+            .sort(WeightedLangChar.CMP[balancingScheme])
             .shift()!;
         const pair: Lang.CharSeqPair = {
             char: weightedChar.char,
@@ -237,22 +237,22 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @param b - 
      * @returns - 
      */
-    public static readonly LEAF_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = new Map([
-        [ BalancingScheme.SEQ,   ((a, b) => a.hitCount - b.hitCount), ],
-        [ BalancingScheme.CHAR,  ((a, b) => a.hitCount - b.hitCount), ],
-        [ BalancingScheme.WEIGHT,((a, b) => a.weightedHitCount - b.weightedHitCount), ],
-    ]);
+    public static readonly LEAF_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = Object.freeze({
+        [ BalancingScheme.SEQ ]:    ((a, b) => a.hitCount - b.hitCount),
+        [ BalancingScheme.CHAR ]:   ((a, b) => a.hitCount - b.hitCount),
+        [ BalancingScheme.WEIGHT ]: ((a, b) => a.weightedHitCount - b.weightedHitCount),
+    });
 
     /**
      * @param a - 
      * @param b - 
      * @returns - 
      */
-    public static readonly PATH_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = new Map([
-        [ BalancingScheme.SEQ,   ((a, b) => a.personalHitCount - b.personalHitCount), ],
-        [ BalancingScheme.CHAR,  ((a, b) => a.averageCharHitCount - b.averageCharHitCount), ],
-        [ BalancingScheme.WEIGHT,((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount), ],
-    ]);
+    public static readonly PATH_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = Object.freeze({
+        [ BalancingScheme.SEQ ]:    ((a, b) => a.personalHitCount - b.personalHitCount),
+        [ BalancingScheme.CHAR ]:   ((a, b) => a.averageCharHitCount - b.averageCharHitCount),
+        [ BalancingScheme.WEIGHT ]: ((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount),
+    });
 
 }
 
@@ -360,9 +360,9 @@ class WeightedLangChar {
      * @param b - 
      * @returns - 
      */
-    public static readonly CMP: BalancingScheme.SorterMap<WeightedLangChar> = new Map([
-        [ BalancingScheme.SEQ,   (a, b) => a.hitCount - b.hitCount, ], // design choice.
-        [ BalancingScheme.CHAR,  (a, b) => a.hitCount - b.hitCount, ],
-        [ BalancingScheme.WEIGHT,(a, b) => a.weightedHitCount - b.weightedHitCount, ],
-    ]);
+    public static readonly CMP: BalancingScheme.SorterMap<WeightedLangChar> = Object.freeze({
+        [ BalancingScheme.SEQ ]:    (a, b) => a.hitCount - b.hitCount, // design choice.
+        [ BalancingScheme.CHAR ]:   (a, b) => a.hitCount - b.hitCount,
+        [ BalancingScheme.WEIGHT ]: (a, b) => a.weightedHitCount - b.weightedHitCount,
+    });
 };

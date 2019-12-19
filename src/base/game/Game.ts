@@ -184,11 +184,11 @@ export abstract class Game extends Grid {
         const socketIdToPlayerIdMap: Record<string, Player.Id> = {};
         playerDescs.forEach((playerDesc) => {
             // First pass - Assign Player ID's:
-            if (playerDesc.operatorClass > Player.OperatorClass.HUMAN) {
+            if (playerDesc.operatorClass < Player.Operator.HUMAN) {
                 throw new RangeError("Invalid operator class.");
             }
             // Allocate a player ID.
-            playerDesc.idNumber = (playerDesc.operatorClass === Player.OperatorClass.HUMAN)
+            playerDesc.idNumber = (playerDesc.operatorClass === Player.Operator.HUMAN)
                 ? +(1 + allHumanPlayers.length) + Player.Id.NULL
                 : -(1 + allArtifPlayers.length) + Player.Id.NULL;
             if (playerDesc.socketId) {
@@ -207,7 +207,7 @@ export abstract class Game extends Grid {
             // the player ID's ahve now been successfully assigned.
             const id = playerDesc.idNumber!;
             if (index === operatorIndex) {
-                if (playerDesc.operatorClass !== Player.OperatorClass.HUMAN) {
+                if (playerDesc.operatorClass !== Player.Operator.HUMAN) {
                     throw new TypeError("Operator must be of the human-operated class.");
                 }
                 // Found the operator. Note: this will never happen for
@@ -215,7 +215,7 @@ export abstract class Game extends Grid {
                 operator = this.createOperatorPlayer(playerDesc);
                 allHumanPlayers[id] = operator;
             } else {
-                if (playerDesc.operatorClass === Player.OperatorClass.HUMAN) {
+                if (playerDesc.operatorClass === Player.Operator.HUMAN) {
                     // Human-operated players (except for the operator)
                     // are represented by a `PuppetPlayer`-type object.
                     allHumanPlayers[id] = new PuppetPlayer(this, playerDesc);

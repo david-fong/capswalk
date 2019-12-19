@@ -126,7 +126,7 @@ export abstract class Lang {
         // the ancestors or descendants of avoid-nodes are avoid-nodes.
 
         // Start by sorting according to the desired balancing scheme:
-        this.leafNodes.sort(LangSeqTreeNode.LEAF_CMP.get(balancingScheme));
+        this.leafNodes.sort(LangSeqTreeNode.LEAF_CMP[balancingScheme]);
 
         let nodeToHit: LangSeqTreeNode | null = null;
         for (const leaf of this.leafNodes) {
@@ -155,7 +155,7 @@ export abstract class Lang {
             if (upstreamNodes.length) {
                 // Found a non-conflicting upstream node.
                 // Find the node with the lowest personal hit-count:
-                upstreamNodes.sort(LangSeqTreeNode.PATH_CMP.get(balancingScheme));
+                upstreamNodes.sort(LangSeqTreeNode.PATH_CMP[balancingScheme]);
                 nodeToHit = upstreamNodes[0];
                 break;
             }

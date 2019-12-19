@@ -143,13 +143,10 @@ export abstract class ArtificialPlayer extends Player {
 
 export namespace ArtificialPlayer {
 
-    const Constructors = Object.freeze(<const>{
-        [Player.OperatorClass.CHASER]: Chaser,
-    });
-    Constructors as (Readonly<Record<
-        Exclude<Player.OperatorClass, Player.OperatorClass.HUMAN>,
-        typeof ArtificialPlayer
-    >>); // Type Assertion.
+    type ArtifEnum = Exclude<Player.Operator, Player.Operator.HUMAN>;
+    const Constructors = Object.freeze({
+        [Player.Operator.CHASER]: Chaser,
+    }) as Readonly<Record<ArtifEnum, typeof ArtificialPlayer>>; // Type Assertion.
 
     export const of = (game: Readonly<Game>, desc: Readonly<Player.CtorArgs>): ArtificialPlayer => {
         return new (Constructors[desc.operatorClass])(game, desc);
