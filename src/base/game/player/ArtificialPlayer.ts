@@ -1,5 +1,5 @@
-import { BarePos } from "game/floor/Pos";
-import { Pos, Tile } from "game/floor/Tile";
+import { BarePos } from "floor/Pos";
+import { Pos, Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";

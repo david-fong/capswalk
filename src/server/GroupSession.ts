@@ -1,6 +1,7 @@
 import * as io from "socket.io";
 
-import { Grid, Game } from "game/Game";
+import { Grid } from "floor/Grid";
+import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 import { Player } from "game/player/Player";
 

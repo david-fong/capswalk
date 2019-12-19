@@ -1,6 +1,6 @@
-import { Lang } from "lang/Lang";
+import { Lang as LangTypeDefs, PlayerSkeleton, Player } from "typedefs/TypeDefs";
+
 import { Pos, BarePos } from "./Pos";
-import { PlayerSkeleton, Player } from "game/player/Player";
 
 export { Pos, BarePos } from "./Pos";
 
@@ -19,8 +19,8 @@ export class Tile {
     protected _occupantId: Player.Id;
     protected _scoreValue: number;
 
-    protected _langChar: Lang.Char;
-    protected _langSeq:  Lang.Seq;
+    protected _langChar: LangTypeDefs.Char;
+    protected _langSeq:  LangTypeDefs.Seq;
 
     /**
      * The number of times this `Tile` was occupied since the last
@@ -54,7 +54,7 @@ export class Tile {
         // reset sequence when shuffling tiles. This also done here
         // because all `charSeqPair`s in tiles must be cleared before
         // shuffling since initially, nothing needs to be avoided.
-        this.setLangCharSeq(Lang.CharSeqPair.NULL);
+        this.setLangCharSeq(LangTypeDefs.CharSeqPair.NULL);
     }
 
 
@@ -70,6 +70,11 @@ export class Tile {
 
 
 
+    /**
+     * Any overrides must make a supercall to this implementation.
+     * 
+     * @param playerDesc - 
+     */
     public setOccupant(playerDesc: PlayerSkeleton.VisibleState): void {
         this._occupantId = playerDesc.idNumber;
     }
@@ -102,16 +107,16 @@ export class Tile {
     /**
      * @override
      */
-    public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
+    public setLangCharSeq(charSeqPair: LangTypeDefs.CharSeqPair): void {
         this._langChar = charSeqPair.char;
         this._langSeq  = charSeqPair.seq;
     }
 
-    public get langChar(): Lang.Char {
+    public get langChar(): LangTypeDefs.Char {
         return this._langChar;
     }
 
-    public get langSeq(): Lang.Seq {
+    public get langSeq(): LangTypeDefs.Seq {
         return this._langSeq;
     }
 

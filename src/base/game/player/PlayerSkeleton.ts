@@ -1,4 +1,6 @@
-import { Tile } from "game/floor/Tile";
+import { Player as PlayerTypeDefs, PlayerSkeleton as PlayerSkeletonTypeDefs } from "typedefs/TypeDefs";
+
+import { Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
 
@@ -9,8 +11,10 @@ import { Player } from "./Player";
  * the interface to any such operations. Also bootstraps the `benchTile`
  * field as a {@link Tile} reserved for this {@link Player}, and the one
  * it occupies after a reset operation.
+ * 
+ * @extends PlayerTypeDefs to intake its namespace exports.
  */
-export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
+export class PlayerSkeleton extends PlayerTypeDefs implements PlayerSkeletonTypeDefs.VisibleState {
 
     /**
      * The game object that this player belongs to.
@@ -39,6 +43,7 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
 
 
     protected constructor(game: Game, idNumber: Player.Id) {
+        super();
         if (Math.trunc(this.idNumber) !== this.idNumber) {
             throw new RangeError("Player ID's must be integer values.");
         }
@@ -78,7 +83,7 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
         return this._hostTile;
     }
 
-    public get visibleState(): PlayerSkeleton.VisibleState {
+    public get visibleState(): PlayerSkeletonTypeDefs.VisibleState {
         return {
             idNumber: this.idNumber,
             isDowned: this.isDowned,
@@ -184,40 +189,6 @@ export class PlayerSkeleton implements PlayerSkeleton.VisibleState {
     }
     public set percentBubbleCharge(bubbleCharge: number) {
         this._percentBubbleCharge = bubbleCharge;
-    }
-
-}
-
-
-
-export namespace PlayerSkeleton {
-
-    /**
-     * Information used by a {@link VisibleTile} to decide how to
-     * render the specified player. See {@link VisibleTile#occupantId}.
-     * 
-     * All fields are readonly.
-     */
-    export type VisibleState = Readonly<{
-        idNumber:   Player.Id;
-        isDowned:   boolean;
-        isFrozen:   boolean;
-        isBubbling: boolean;
-        percentBubbleCharge: number;
-    }>;
-
-    export namespace VisibleState {
-        /**
-         * Use for Tile-occupant eviction.
-         */
-        export const NULL = Object.freeze(<const>{
-            idNumber:   Player.Id.NULL,
-            isDowned:   false,
-            isFrozen:   false,
-            isBubbling: false,
-            percentBubbleCharge: 0,
-        });
-        NULL as VisibleState;
     }
 
 }

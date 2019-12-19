@@ -2,8 +2,10 @@
     "extends": "../.templates/tsconfig.json",
     "files": [],
     "references": [
+        { "path": "typedefs", },
         { "path": "settings", },
         { "path": "lang", },
+        { "path": "floor", },
         { "path": "game", },
     ],
 }

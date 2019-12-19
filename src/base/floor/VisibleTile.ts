@@ -1,6 +1,6 @@
-import { Lang } from "lang/Lang";
+import { Lang as LangTypeDefs, PlayerSkeleton, Player } from "typedefs/TypeDefs";
+
 import { Tile, BarePos } from "./Tile";
-import { PlayerSkeleton, Player } from "game/player/Player";
 
 
 /**
@@ -89,7 +89,7 @@ export class VisibleTile extends Tile {
     /**
      * @override
      */
-    public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
+    public setLangCharSeq(charSeqPair: LangTypeDefs.CharSeqPair): void {
         super.setLangCharSeq(charSeqPair);
         this.langCharDivElem.innerText = this.langChar;
         this.langSeqDivElem.innerText  = this.langSeq;

@@ -1,4 +1,6 @@
-import { Pos, Tile } from "game/floor/Tile";
+import { Player as PlayerTypeDefs } from "typedefs/TypeDefs";
+
+import { Pos, Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 import { PlayerSkeleton } from "./PlayerSkeleton";
@@ -142,8 +144,9 @@ export abstract class Player extends PlayerSkeleton {
 }
 
 
-
 export namespace Player {
+
+    export type SocketId = string;
 
     /**
      * An **integer value** used to uniquely identify `Player`s in the
@@ -157,11 +160,7 @@ export namespace Player {
      * value {@link Player.Id.NULL} is reserved to indicate that a
      * {@link Tile} is unoccupied.
      */
-    export type Id = number;
-    export namespace Id {
-        export const NULL = 0;
-    }
-    export type SocketId = string;
+    export declare type Id = PlayerTypeDefs.Id;
 
     /**
      * An integer value.

@@ -1,8 +1,8 @@
 import * as io from "socket.io";
 import { setTimeout } from "timers";
 
-import { BarePos } from "game/floor/Pos";
-import { Tile } from "game/floor/Tile";
+import { BarePos } from "floor/Pos";
+import { Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { GroupSession } from "./GroupSession";
 import { Player } from "game/player/Player";

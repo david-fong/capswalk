@@ -1,4 +1,4 @@
-import { Tile } from "game/floor/Tile";
+import { Tile } from "floor/Tile";
 import { OfflineGame } from "./OfflineGame";
 import { HumanPlayer } from "game/player/HumanPlayer";
 import { Player } from "game/player/Player";

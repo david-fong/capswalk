@@ -2,9 +2,25 @@
     "root": true,
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
+        //"tsconfigRootDir": "./base",
+        // Note that we need to reference root configs only
+        // or else eslint will get confused and go into an
+        // infinite loop. :(
         "project": [
-            "./**/tsconfig.json",
-            "./scripts/webpack.tsconfig.json"
+            // webpack:
+            "./scripts/webpack.tsconfig.json",
+            // basecode:
+            "./src/base/typedefs/tsconfig.json",
+            "./src/base/settings/tsconfig.json",
+            "./src/base/lang/tsconfig.json",
+            "./src/base/floor/tsconfig.json",
+            "./src/base/game/tsconfig.json",
+            // concrete implementations:
+            "./src/offline/tsconfig.json",
+            "./src/server/tsconfig.json",
+            "./src/client/tsconfig.json",
+            // tests:
+            "./test/lang/tsconfig.json"
         ],
         "sourceType": "module",
         "extraFileExtensions": [

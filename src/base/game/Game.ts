@@ -1,7 +1,8 @@
 import { Lang } from "lang/Lang";
 import { BalancingScheme } from "lang/LangSeqTreeNode";
-import { BarePos, Tile } from "./floor/Tile";
-import { Grid } from "./floor/Grid";
+
+import { BarePos, Tile } from "floor/Tile";
+import { Grid } from "floor/Grid";
 
 import { Player } from "./player/Player";
 import { PuppetPlayer } from "./player/PuppetPlayer";
@@ -12,8 +13,6 @@ import { PlayerGeneratedRequest } from "./events/EventRecordEntry";
 import { PlayerMovementEvent } from "./events/PlayerMovementEvent";
 import { Bubble } from "./events/Bubble";
 import { EventRecordEntry } from "./events/EventRecordEntry";
-
-export { Grid } from "./floor/Grid";
 
 
 /**

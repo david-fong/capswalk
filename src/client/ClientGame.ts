@@ -1,9 +1,10 @@
 import * as io from "socket.io-client";
 
-import { BarePos } from "game/floor/Pos";
-import { VisibleTile } from "game/floor/VisibleTile";
+import { BarePos } from "floor/Pos";
+import { VisibleTile } from "floor/VisibleTile";
 import { LocalGameSettings } from "settings/GameSettings";
-import { Grid, Game } from "game/Game";
+import { Grid } from "floor/Grid";
+import { Game } from "game/Game";
 
 import { Player } from "game/player/Player";
 import { PuppetPlayer } from "game/player/PuppetPlayer";

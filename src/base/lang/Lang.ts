@@ -1,3 +1,5 @@
+import { Lang as LangTypeDefs } from "typedefs/TypeDefs";
+
 import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
 
 
@@ -17,7 +19,7 @@ import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
  * See the `readme` for this folder for information on writing
  * implementations of this singleton-style class.
  */
-export abstract class Lang {
+export abstract class Lang extends LangTypeDefs {
 
     /**
      * The name of this language.
@@ -50,6 +52,7 @@ export abstract class Lang {
      *      to sum to a specific value such as 100.
      */
     protected constructor(name: string, forwardDict: Lang.CharSeqPair.WeightedForwardMap) {
+        super();
         this.name = name;
         this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes = this.treeMap.getLeafNodes();
@@ -197,7 +200,7 @@ export namespace Lang {
      * character. It is completely unique in its language, and has a
      * single corresponding sequence (string) typeable on a keyboard.
      */
-    export type Char = string;
+    export type Char = LangTypeDefs.Char;
 
     /**
      * A sequence of characters each matching {@link SEQ_REGEXP}
@@ -205,7 +208,7 @@ export namespace Lang {
      * and a `LangChar`. The immediate interface is through the `Lang`
      * implementation's {@link Lang#remapKey} method.
      */
-    export type Seq = string;
+    export type Seq = LangTypeDefs.Seq;
     export namespace Seq {
         /**
          * The choice of this pattern is not out of necessity, but following
@@ -223,21 +226,8 @@ export namespace Lang {
      * A key-value pair containing a `LangChar` and its corresponding
      * `LangSeq`.
      */
-    export type CharSeqPair = Readonly<{
-        char: Lang.Char,
-        seq:  Lang.Seq,
-    }>;
+    export type CharSeqPair = LangTypeDefs.CharSeqPair;
     export namespace CharSeqPair {
-        /**
-         * Used to clear the {@link CharSeqPair} in a {@link Tile} during
-         * a {@link Game} reset before grid-wide shuffling, or before a
-         * single shuffling operation on the {@link Tile} to be shuffled.
-         */
-        export const NULL = Object.freeze(<const>{
-            char: "",
-            seq:  "",
-        });
-
         /**
          * A map from written characters to their corresponding typable
          * keyboard sequence and relative spawn weight.

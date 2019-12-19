@@ -11,10 +11,13 @@
 // /test/.templates/tsconfig.json, which is essentially a copy of this.
 //
 // Note that the baseUrl is set to the "base/" folder. This is because
-// The other src/* subprojects only reference externals under that, so
-// this will reduce on unnecessary visual clutter. This means that all
+// The other src/* subprojects only reference externals under the base.
+// This will reduce on unnecessary visual clutter. This means that all
 // the non-base src/* subprojects should use relative imports for their
-// own internals. This is also reflected in the WebPack config.
+// own internals only. This is also reflected in the WebPack config.
+// This makes it feel as though the "offline", "server" and "client"
+// folders were under the "base" folder from the standpoint of someone
+// writing and maintaining imports.
 {
     "extends": "../../.templates/tsconfig.json",
     "compilerOptions": {

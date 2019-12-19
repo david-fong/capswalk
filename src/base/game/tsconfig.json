@@ -1,7 +1,9 @@
 {
     "extends": "../.templates/tsconfig.json",
     "references": [
+        { "path": "../typedefs", },
         { "path": "../settings", },
         { "path": "../lang", },
+        { "path": "../floor", },
     ]
 }

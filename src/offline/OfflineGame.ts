@@ -1,5 +1,5 @@
-import { BarePos } from "game/floor/Pos";
-import { VisibleTile } from "game/floor/VisibleTile";
+import { BarePos } from "floor/Pos";
+import { VisibleTile } from "floor/VisibleTile";
 import { Game } from "game/Game";
 import { LocalGameSettings } from "settings/GameSettings";
 

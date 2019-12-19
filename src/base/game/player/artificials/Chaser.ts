@@ -1,4 +1,4 @@
-import { Pos } from "game/floor/Pos";
+import { Pos } from "floor/Pos";
 import { Game } from "game/Game";
 import { Player } from "game/player/Player";
 import { ArtificialPlayer } from "../ArtificialPlayer";
