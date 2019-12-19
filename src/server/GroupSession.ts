@@ -136,7 +136,7 @@ export class GroupSession {
             operatorIndex: undefined,
             playerDescs: Object.values(this.sockets).map((socket) => { // TODO: add those for artificial players.
                 return {
-                    operatorClass: Player.OperatorClass.HUMAN_CLASS,
+                    operatorClass: Player.OperatorClass.HUMAN,
                     idNumber: undefined,
                     username: socket.username!, // checked above.
                     beNiceTo: Array.from(socket.beNiceTo),
@@ -178,8 +178,8 @@ export namespace GroupSession {
     /**
      * 
      */
-    export namespace RoomNames {
-        export const MAIN = "main";
+    export const enum RoomNames {
+        MAIN = "main",
     }
 
 

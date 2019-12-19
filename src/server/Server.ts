@@ -127,9 +127,9 @@ export namespace Server {
     /**
      * 
      */
-    export namespace SocketIoNamespaces {
-        export const GROUP_JOINER   = "/groups";
-        export const GROUP_LOBBY    = "/groups";
+    export const enum SocketIoNamespaces {
+        GROUP_JOINER   = "/groups",
+        GROUP_LOBBY    = "/groups",
     }
 
     /**

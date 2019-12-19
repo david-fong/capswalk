@@ -25,15 +25,15 @@ export abstract class Grid {
      * their corresponding fields, containing `Tile` objects with `pos`
      * fields allowing indexing to themselves. Uses row-major ordering.
      */
-    protected readonly grid: ReadonlyArray<ReadonlyArray<Tile>>;
+    private readonly grid: ReadonlyArray<ReadonlyArray<Tile>>;
 
     /**
      * If {@link Grid#createTile} returns an instance of {@link VisibleTile},
      * then this field is initialized with an HTML table element containing
      * all  the contents of {@link Grid#grid}. Otherwise, this field is set
-     * to be `null`.
+     * to be `undefined`.
      */
-    protected readonly domGrid: HTMLTableElement | null;
+    protected readonly domGrid?: HTMLTableElement;
 
     public abstract createTile(pos: BarePos): Tile;
 
@@ -89,16 +89,11 @@ export abstract class Grid {
         // (skip this step if my tiles are not displayed in a browser window)
         if (this.createTile({ x: 0, y: 0, }) instanceof VisibleTile) {
             this.domGrid = new HTMLTableElement();
-            const tBody: HTMLTableSectionElement = this.domGrid.createTBody();
+            const tBody = this.domGrid.createTBody();
             for (const row of this.grid) {
-                const rowElem: HTMLTableRowElement = tBody.insertRow();
+                const rowElem  = tBody.insertRow();
                 for (const tile of row) {
-                    if (tile instanceof VisibleTile) {
-                        rowElem.appendChild(tile.tileCellElem);
-                    } else {
-                        // Should never reach here.
-                        throw new TypeError("Expected a VisibleTile.");
-                    }
+                    rowElem.appendChild((tile as VisibleTile).tileCellElem);
                 }
             }
             const carrier = document.getElementById(domGridHtmlIdHook);
@@ -107,10 +102,11 @@ export abstract class Grid {
                     + `to an existing html element.`
                 );
             }
+            // remove all child elements and then 
             carrier.childNodes.forEach((node) => carrier.removeChild(node));
             carrier.appendChild(this.domGrid);
         } else {
-            this.domGrid = null;
+            this.domGrid = undefined;
         }
     }
 
@@ -118,7 +114,7 @@ export abstract class Grid {
      * Calls {@link Tile#reset} for each {@link Tile} in this `Grid`.
      */
     public reset(): void {
-        this.grid.forEach((row) => row.forEach((tile) => tile.reset()));
+        this.forEachTile((tile) => tile.reset());
     }
 
 
@@ -141,13 +137,13 @@ export abstract class Grid {
 
     public getNeighbouringTiles(pos: BarePos, radius: number = 1): Array<Tile> {
         return this.grid.slice(
-                // filter for included rows:
-                Math.max(0, pos.y - radius),
-                Math.min(this.height, pos.y + radius + 1),
+            // filter for included rows:
+            Math.max(0, pos.y - radius),
+            Math.min(this.height, pos.y + radius + 1),
         ).flatMap((tile) => tile.slice(
-                // filter for included slices of rows (columns):
-                Math.max(0, pos.x - radius,
-                Math.min(this.width, pos.x + radius + 1)),
+            // filter for included slices of rows (columns):
+            Math.max(0, pos.x - radius,
+            Math.min(this.width, pos.x + radius + 1)),
         ));
     }
 
@@ -164,6 +160,12 @@ export abstract class Grid {
      */
     public getUNT(pos: BarePos, radius: number = 1): Array<Tile> {
         return this.getNeighbouringTiles(pos, radius).filter((tile) => !(tile.isOccupied()));
+    }
+
+    public forEachTile(consumer: (tile: Tile) => void, thisArg: object = this): void {
+        this.grid.forEach((row) => row.forEach((tile) => {
+            consumer(tile);
+        }, thisArg), thisArg);
     }
 
 }

@@ -8,30 +8,24 @@ import { ArtificialPlayer } from "../ArtificialPlayer";
  * 
  * @extends ArtificialPlayer
  */
-export namespace ArtificialPlayerTypes {
+export class Chaser extends ArtificialPlayer {
 
-    export class Chaser extends ArtificialPlayer {
+    protected constructor(game: Game, desc: Player.CtorArgs) {
+        super(game, desc);
+    }
 
-        public static readonly TEAM_NUMBER = -1;
+    /**
+     * @override
+     */
+    protected computeDesiredDestination(): Pos {
+        return undefined!; // this.game.allHumanPlayers; // TODO
+    }
 
-        protected constructor(game: Game, desc: Player.CtorArgs) {
-            super(game, desc);
-        }
-
-        /**
-         * @override
-         */
-        protected computeDesiredDestination(): Pos {
-            return undefined!; // this.game.allHumanPlayers; // TODO
-        }
-
-        /**
-         * @override
-         */
-        protected computeNextMovementTimer(): number {
-            return undefined!; // TODO
-        }
-
+    /**
+     * @override
+     */
+    protected computeNextMovementTimer(): number {
+        return undefined!; // TODO
     }
 
 }

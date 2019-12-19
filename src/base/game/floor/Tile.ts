@@ -29,8 +29,6 @@ export class Tile {
      * will drop requests for movements made by players who made the
      * request at a time when they had not yet received information
      * related to the game-state in affected-zones of their request.
-     * 
-     * TODO: should there be another such counter for scoreValue updates?
      */
     public numTimesOccupied: number;
 
@@ -102,7 +100,7 @@ export class Tile {
 
 
     /**
-     * @param charSeqPair - May be undefined. If so, no changes take place.
+     * @override
      */
     public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
         this._langChar = charSeqPair.char;

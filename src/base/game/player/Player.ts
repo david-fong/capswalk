@@ -167,15 +167,15 @@ export namespace Player {
      * An integer value.
      * 
      * Each implementation of the {@link ArtificialPlayer} class must
-     * define a unique, hard-coded value that is strictly less than
-     * {@link Player.OperatorClass.HUMAN_CLASS}.
+     * define a unique, hard-coded value that is strictly greater than
+     * {@link Player.OperatorClass.HUMAN}.
      * 
-     * {@link Player.OperatorClass.HUMAN_CLASS} is reserved for human-
-     * operated players.
+     * {@link Player.OperatorClass.HUMAN} is reserved for human-operated
+     * players.
      */
-    export type OperatorClass = number;
-    export namespace OperatorClass {
-        export const HUMAN_CLASS = 0;
+    export const enum OperatorClass {
+        HUMAN = 0,
+        CHASER,
     }
 
     export type Username = string;
@@ -197,7 +197,7 @@ export namespace Player {
      * Server should pass ID = Player.SocketId
      * Client should keep default of Player.Id
      */
-    export type CtorArgs<ID extends Player.Id | SocketId = Player.Id> = {
+    export type CtorArgs<ID_TYPE extends Player.Id | SocketId = Player.Id> = {
 
         readonly operatorClass: OperatorClass;
 
@@ -205,7 +205,7 @@ export namespace Player {
          * Initially `undefined` for server and offline games. It will
          * already be defined for a client game by the server.
          */
-        idNumber: ID extends Player.Id ? (Player.Id | undefined) : undefined;
+        idNumber: ID_TYPE extends Player.Id ? (Player.Id | undefined) : undefined;
 
         readonly username: Username;
 
@@ -215,9 +215,9 @@ export namespace Player {
          * **Important**: The builder of this field must enforce that
          * entries are unique (that there are no duplicates).
          */
-        beNiceTo: ReadonlyArray<ID>
+        beNiceTo: ReadonlyArray<ID_TYPE>
 
-        readonly socketId: ID extends SocketId ? SocketId : undefined;
+        readonly socketId: ID_TYPE extends SocketId ? SocketId : undefined;
     };
 
 }

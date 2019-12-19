@@ -6,11 +6,14 @@ import { Lang } from "lang/Lang";
  * of the selection of a result based on the results of all previous
  * selections.
  */
-export enum BalancingScheme {
-    SEQ, CHAR, WEIGHT,
+export const enum BalancingScheme {
+    SEQ     = "SEQ",
+    CHAR    = "CHAR",
+    WEIGHT  = "WEIGHT",
 }
-
-type BalanceSchemeSorterMap<T> = ReadonlyMap<BalancingScheme, (a: T, b: T) => number>;
+export namespace BalancingScheme {
+    export type SorterMap<T> = ReadonlyMap<BalancingScheme, (a: T, b: T) => number>;
+}
 
 
 
@@ -234,7 +237,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @param b - 
      * @returns - 
      */
-    public static readonly LEAF_CMP: BalanceSchemeSorterMap<LangSeqTreeNode> = new Map([
+    public static readonly LEAF_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = new Map([
         [ BalancingScheme.SEQ,   ((a, b) => a.hitCount - b.hitCount), ],
         [ BalancingScheme.CHAR,  ((a, b) => a.hitCount - b.hitCount), ],
         [ BalancingScheme.WEIGHT,((a, b) => a.weightedHitCount - b.weightedHitCount), ],
@@ -245,7 +248,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @param b - 
      * @returns - 
      */
-    public static readonly PATH_CMP: BalanceSchemeSorterMap<LangSeqTreeNode> = new Map([
+    public static readonly PATH_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = new Map([
         [ BalancingScheme.SEQ,   ((a, b) => a.personalHitCount - b.personalHitCount), ],
         [ BalancingScheme.CHAR,  ((a, b) => a.averageCharHitCount - b.averageCharHitCount), ],
         [ BalancingScheme.WEIGHT,((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount), ],
@@ -357,7 +360,7 @@ class WeightedLangChar {
      * @param b - 
      * @returns - 
      */
-    public static readonly CMP: BalanceSchemeSorterMap<WeightedLangChar> = new Map([
+    public static readonly CMP: BalancingScheme.SorterMap<WeightedLangChar> = new Map([
         [ BalancingScheme.SEQ,   (a, b) => a.hitCount - b.hitCount, ], // design choice.
         [ BalancingScheme.CHAR,  (a, b) => a.hitCount - b.hitCount, ],
         [ BalancingScheme.WEIGHT,(a, b) => a.weightedHitCount - b.weightedHitCount, ],

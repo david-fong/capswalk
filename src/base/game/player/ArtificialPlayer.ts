@@ -2,8 +2,10 @@ import { BarePos } from "game/floor/Pos";
 import { Pos, Tile } from "game/floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
-import { ArtificialPlayerTypes as Types } from "game/player/artificials/Chaser";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
+
+import { Chaser } from "./artificials/Chaser";
+
 
 /**
  * Unlike {@link HumanPlayer}s, these are not guided by human input.
@@ -32,12 +34,6 @@ export abstract class ArtificialPlayer extends Player {
             throw new RangeError(`The ID number for a human-operated player`
                 + ` must be strictly lesser than ${Player.Id.NULL}, but we`
                 + ` were passed the value \"${this.idNumber}\".`
-            );
-        }
-        if (desc.operatorClass >= Player.OperatorClass.HUMAN_CLASS) {
-            throw new RangeError(`The static constant defining the team`
-                + ` number for an artificial player type must be strictly`
-                + ` less than ${Player.OperatorClass.HUMAN_CLASS}.`
             );
         }
         if (game.gameType === Game.Type.CLIENT) {
@@ -147,18 +143,16 @@ export abstract class ArtificialPlayer extends Player {
 
 export namespace ArtificialPlayer {
 
-    const Constructors = new Map<Player.OperatorClass, Function>([
-        [ Types.Chaser.TEAM_NUMBER, Types.Chaser.prototype.constructor, ],
-    ]);
+    const Constructors = Object.freeze(<const>{
+        [Player.OperatorClass.CHASER]: Chaser,
+    });
+    Constructors as (Readonly<Record<
+        Exclude<Player.OperatorClass, Player.OperatorClass.HUMAN>,
+        typeof ArtificialPlayer
+    >>); // Type Assertion.
 
-    export const of = (game: Game, desc: Player.CtorArgs): ArtificialPlayer => {
-        const typeId: Player.OperatorClass = desc.operatorClass;
-        if (!(Constructors.has(typeId))) {
-            throw new RangeError(`No artificial player type with the type-id`
-                + ` \"${typeId}\" exists.`
-            );
-        }
-        return new ((Constructors.get(typeId) as Function)(game, desc));
+    export const of = (game: Readonly<Game>, desc: Readonly<Player.CtorArgs>): ArtificialPlayer => {
+        return new (Constructors[desc.operatorClass])(game, desc);
     };
 
 }

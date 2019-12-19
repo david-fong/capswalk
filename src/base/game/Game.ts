@@ -68,7 +68,7 @@ export abstract class Game extends Grid {
     /**
      * Set to `undefined` for {@link ServerGame}.
      */
-    public readonly operator: HumanPlayer | undefined;
+    public readonly operator?: HumanPlayer;
 
     /**
      * Does not use the HumanPlayer type annotation. This is to
@@ -148,9 +148,7 @@ export abstract class Game extends Grid {
         this.lang.reset();
 
         // Shuffle everything:
-        this.grid.forEach((row) => row.forEach((tile) => {
-            this.shuffleLangCharSeqAt(tile);
-        }, this), this);
+        this.forEachTile(this.shuffleLangCharSeqAt, this);
 
         this.allHumanPlayers.forEach((player) => player.reset());
         this.allArtifPlayers.forEach((player) => player.reset());
@@ -186,11 +184,11 @@ export abstract class Game extends Grid {
         const socketIdToPlayerIdMap: Record<string, Player.Id> = {};
         playerDescs.forEach((playerDesc) => {
             // First pass - Assign Player ID's:
-            if (playerDesc.operatorClass > Player.OperatorClass.HUMAN_CLASS) {
+            if (playerDesc.operatorClass > Player.OperatorClass.HUMAN) {
                 throw new RangeError("Invalid operator class.");
             }
             // Allocate a player ID.
-            playerDesc.idNumber = (playerDesc.operatorClass === Player.OperatorClass.HUMAN_CLASS)
+            playerDesc.idNumber = (playerDesc.operatorClass === Player.OperatorClass.HUMAN)
                 ? +(1 + allHumanPlayers.length) + Player.Id.NULL
                 : -(1 + allArtifPlayers.length) + Player.Id.NULL;
             if (playerDesc.socketId) {
@@ -209,7 +207,7 @@ export abstract class Game extends Grid {
             // the player ID's ahve now been successfully assigned.
             const id = playerDesc.idNumber!;
             if (index === operatorIndex) {
-                if (playerDesc.operatorClass !== Player.OperatorClass.HUMAN_CLASS) {
+                if (playerDesc.operatorClass !== Player.OperatorClass.HUMAN) {
                     throw new TypeError("Operator must be of the human-operated class.");
                 }
                 // Found the operator. Note: this will never happen for
@@ -217,7 +215,7 @@ export abstract class Game extends Grid {
                 operator = this.createOperatorPlayer(playerDesc);
                 allHumanPlayers[id] = operator;
             } else {
-                if (playerDesc.operatorClass === Player.OperatorClass.HUMAN_CLASS) {
+                if (playerDesc.operatorClass === Player.OperatorClass.HUMAN) {
                     // Human-operated players (except for the operator)
                     // are represented by a `PuppetPlayer`-type object.
                     allHumanPlayers[id] = new PuppetPlayer(this, playerDesc);
@@ -239,7 +237,8 @@ export abstract class Game extends Grid {
     /**
      * Called automatically in the constructor for this class. This
      * method should not add the produced player to the game's
-     * {@link Game#allHumanPlayers} array.
+     * {@link Game#allHumanPlayers} array or set the game's
+     * {@link Game#operator}.
      * 
      */
     protected abstract createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer;
@@ -699,7 +698,7 @@ export namespace Game {
     /**
      * 
      */
-    export type CtorArgs<ID extends Player.Id | string = Player.Id> = {
+    export type CtorArgs<ID_TYPE extends Player.Id | string = Player.Id> = {
 
         readonly gridDimensions: Readonly<Grid.DimensionDesc>;
 
@@ -714,7 +713,7 @@ export namespace Game {
          */
         operatorIndex?: number;
 
-        readonly playerDescs: ReadonlyArray<Player.CtorArgs<ID>>;
+        readonly playerDescs: ReadonlyArray<Player.CtorArgs<ID_TYPE>>;
     };
     export namespace CtorArgs {
 
