@@ -8,7 +8,10 @@ import { VisibleTile } from "./VisibleTile";
  * Provides basic management of The basic 2-dimensional-array-like
  * structure containing {@link Tile}s.
  */
-export abstract class Grid<B extends Coord.Bare.Impl> {
+export abstract class Grid<
+    S extends Coord.System,
+    B extends typeof Coord.BareImpl[S] = typeof Coord.BareImpl[S],
+> {
 
     /**
      * Bounds are inclusive. Ie. the specified values are _just_ allowed.
@@ -26,7 +29,7 @@ export abstract class Grid<B extends Coord.Bare.Impl> {
      * their corresponding fields, containing `Tile` objects with `pos`
      * fields allowing indexing to themselves. Uses row-major ordering.
      */
-    private readonly grid: ReadonlyArray<ReadonlyArray<Tile<B>>>;
+    private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
 
     /**
      * If {@link Grid#createTile} returns an instance of {@link VisibleTile},
@@ -36,7 +39,7 @@ export abstract class Grid<B extends Coord.Bare.Impl> {
      */
     private readonly domGrid?: HTMLTableElement;
 
-    public abstract createTile(pos: B): Tile<B>;
+    public abstract createTile(desc: B): Tile<S>;
 
 
 
@@ -75,11 +78,11 @@ export abstract class Grid<B extends Coord.Bare.Impl> {
             Grid.SIZE_LIMITS.width.max,
         ));
 
-        const grid: Array<ReadonlyArray<Tile<B>>> = [];
+        const grid: Array<ReadonlyArray<Tile<S>>> = [];
         for (let row = 0; row < this.height; row++) {
-            const newRow: Array<Tile<B>> = [];
+            const newRow: Array<Tile<S>> = [];
             for (let col = 0; col < this.width; col++) {
-                const newTile: Tile<B> = this.createTile({ x: col, y: row, });
+                const newTile: Tile<S> = this.createTile({ x: col, y: row, });
                 newRow.push(newTile);
             }
             grid.push(newRow);
@@ -94,7 +97,7 @@ export abstract class Grid<B extends Coord.Bare.Impl> {
             for (const row of this.grid) {
                 const rowElem  = tBody.insertRow();
                 for (const tile of row) {
-                    rowElem.appendChild((tile as VisibleTile<B>).tileCellElem);
+                    rowElem.appendChild((tile as VisibleTile<S>).tileCellElem);
                 }
             }
             const carrier = document.getElementById(domGridHtmlIdHook);
@@ -127,7 +130,7 @@ export abstract class Grid<B extends Coord.Bare.Impl> {
      * @param pos - Must be within the bounds of this `Grid`.
      * @throws `RangeError` if `pos` is not in the bounds of this `Grid`.
      */
-    public getTileAt(pos: B): Tile<B> {
+    public getTileAt(pos: B): Tile<S> {
         if (pos.x < 0 || pos.x >= this.width ||
             pos.y < 0 || pos.y >= this.height
         ) {
@@ -136,7 +139,7 @@ export abstract class Grid<B extends Coord.Bare.Impl> {
         return this.grid[pos.x][pos.y];
     }
 
-    public getNeighbouringTiles(pos: B, radius: number = 1): Array<Tile<B>> {
+    public getNeighbouringTiles(pos: B, radius: number = 1): Array<Tile<S>> {
         return this.grid.slice(
             // filter for included rows:
             Math.max(0, pos.y - radius),
@@ -159,11 +162,11 @@ export abstract class Grid<B extends Coord.Bare.Impl> {
      * @param radius - An inclusive bound on the {@link Pos#infNorm} filter.
      *      Defaults to `1`.
      */
-    public getUNT(pos: B, radius: number = 1): Array<Tile<B>> {
+    public getUNT(pos: B, radius: number = 1): Array<Tile<S>> {
         return this.getNeighbouringTiles(pos, radius).filter((tile) => !(tile.isOccupied()));
     }
 
-    public forEachTile(consumer: (tile: Tile<B>) => void, thisArg: object = this): void {
+    public forEachTile(consumer: (tile: Tile<S>) => void, thisArg: object = this): void {
         this.grid.forEach((row) => row.forEach((tile) => {
             consumer(tile);
         }, thisArg), thisArg);

@@ -8,10 +8,10 @@ type CorB<S extends Coord.System, B = typeof Coord.BareImpl[S]> = B | Coord<S>;
 /**
  * Immutable. All `Pos` objects returned by operations are new objects.
  * 
- * @param B - The shape of a bare instance. Change to `extends Impl` if
- *      needed.
+ * @param B - The shape of a bare instance.
  * @param C - Use this as the type for "`other`" function arguments-
- *      don't use this for function return-types.
+ *      don't use this for function return-types. Here as a brevity
+ *      / convenience tool.
  */
 export abstract class Coord<
     S extends Coord.System,
@@ -33,7 +33,7 @@ export abstract class Coord<
      * all instance fields found in an upward prototype traversal of
      * the `this` object.
      */
-    public getBareBones(): B {
+    public getBareView(): B {
         return Object.freeze(Object.assign(Object.create(null), this));
     }
 
@@ -151,6 +151,16 @@ export namespace Coord {
     // the subclasses do that, and cool but contextually undesirable
     // things happen if we try to do the same thing as their parent.
     export type BareType = { [dimension: string]: number, };
+
+    export type ImplType = { Bare: Coord.BareType, } &
+        (<S extends Coord.System>(desc: typeof Coord.BareImpl[S]) => Coord<S>);
+
+    // TODO: phase this out: replace with map to class literals asserted to be
+    // of `ImplType`. append `.Bare` to all accurances of previous usage.
+    // rename to "Constructors". Delete `BareType` and use its value directly
+    // in `ImplType`.
+    // hmm... never mind. `ImplType` uses `BareImpl`. it is better to keep this
+    // and make the constructors map a separate thing then.
     export const BareImpl: Readonly<Record<Coord.System, Coord.BareType>>
     = Object.freeze(<const>{
         [ System.EUCLID2 ]: Euclid2.Coord.Bare,

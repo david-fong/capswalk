@@ -19,14 +19,14 @@ import { Tile } from "./Tile";
  * 
  * @extends Tile
  */
-export class VisibleTile<B extends Coord.Bare.Impl> extends Tile<B> {
+export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     public  readonly tileCellElem:      HTMLTableCellElement;
     private readonly playerDivElem:     HTMLDivElement;
     private readonly langCharDivElem:   HTMLDivElement;
     private readonly langSeqDivElem:    HTMLDivElement;
 
-    public constructor(pos: B) {
+    public constructor(pos: typeof Coord.BareImpl[S]) {
         super(pos);
 
         const tCell: HTMLTableCellElement = new HTMLTableCellElement();
