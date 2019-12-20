@@ -174,13 +174,13 @@ export abstract class Lang extends LangTypeDefs {
     }
 
     public simpleView(): object {
-        return {
+        return Object.assign(Object.create(null), {
             name: this.name,
             // we need to jump through some hoops to get this
             // without passing it in as a constructor argument ':)
             desc: (this["constructor"] as object as Lang.Info).getBlurb(),
             root: this.treeMap.simpleView(),
-        };
+        });
     }
 
 }

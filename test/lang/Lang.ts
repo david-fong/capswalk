@@ -1,8 +1,6 @@
-import { English } from "src/base/lang/impl/English";
-import { Japanese } from "src/base/lang/impl/Japanese";
-import { Korean } from "src/base/lang/impl/Korean";
-
-export { Korean } from "src/base/lang/impl/Korean";
+import { English } from "base/lang/impl/English";
+import { Japanese } from "base/lang/impl/Japanese";
+import { Korean } from "base/lang/impl/Korean";
 
 
 export namespace Lang {

@@ -1,3 +1,6 @@
 {
     "extends": "../.templates/tsconfig.json",
+    "references": [
+        { "path": "../../src/base/lang", },
+    ],
 }

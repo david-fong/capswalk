@@ -223,13 +223,13 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
 
     public simpleView(): object {
         let chars = this.characters.map((char) => char.simpleView());
-        return {
+        return Object.assign(Object.create(null), {
             seq: this.sequence,
             chars: (chars.length === 1) ? chars[0] : chars,
             hits: this.personalHitCount,
             kids: this.children.map((child) => child.simpleView()),
             __proto__: undefined,
-        };
+        });
     }
 
     /**
@@ -349,10 +349,10 @@ class WeightedLangChar {
     }
 
     public simpleView(): object {
-        return {
+        return Object.assign(Object.create(null), {
             char: this.char,
             hits: this.hitCount,
-        };
+        });
     }
 
     /**

@@ -32,6 +32,8 @@ Project references do multiple things: They allow you to enforce stronger modula
 
 The mechanics are not incredibly intuitive, and it may take significant effort to set up for the first time or migrate to. As an absolute beginner, I can say that it has been pretty frustrating, but not unreasonable, and has actually made me improve the way I structure my project.
 
+Note: the "references" field will not be inherited from a parent configuration file.
+
 When using nested project sub-projects with ESLint, make sure to ignore the pattern `tsconfig.json` in your `:/.eslintignore`, and reference only all of the leaf configurations in the root `eslintrc`.
 
 ## Useful Commands for Config Debug

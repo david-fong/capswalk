@@ -229,7 +229,8 @@ const testBundleConfig = BaseConfig(); {
     const config = testBundleConfig;
     config.name = "test";
     config.resolve.modules = [
-        path.resolve(PROJECT_ROOT, "test"),
+        path.resolve(PROJECT_ROOT, "src", "base"),
+        path.resolve(PROJECT_ROOT, "src"),
         PROJECT_ROOT,
     ];
     NODE_CONFIG(config);

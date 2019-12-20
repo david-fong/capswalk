@@ -1,1 +1,1 @@
-import "test/lang/Lang";
+import "./Lang";
