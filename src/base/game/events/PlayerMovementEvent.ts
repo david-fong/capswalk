@@ -141,7 +141,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
     ) {
         this.playerId = playerId;
         this.lastAcceptedRequestId  = lastAccpectedRequestId;
-        this.destPos = destTile.pos.asBarePos();
+        this.destPos = destTile.pos.getBareBones();
         this.destNumTimesOccupied = destTile.numTimesOccupied;
     }
 

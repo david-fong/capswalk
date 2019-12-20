@@ -1,4 +1,4 @@
-import { Pos } from "floor/Pos";
+import { Coord } from "floor/Coord";
 import { Game } from "game/Game";
 import { Player } from "game/player/Player";
 import { ArtificialPlayer } from "../ArtificialPlayer";
@@ -17,7 +17,7 @@ export class Chaser extends ArtificialPlayer {
     /**
      * @override
      */
-    protected computeDesiredDestination(): Pos {
+    protected computeDesiredDestination(): Coord {
         return undefined!; // this.game.allHumanPlayers; // TODO
     }
 

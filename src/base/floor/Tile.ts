@@ -1,8 +1,8 @@
-import { Lang as LangTypeDefs, PlayerSkeleton, Player } from "typedefs/TypeDefs";
+import { Lang, PlayerSkeleton, Player } from "typedefs/TypeDefs";
 
-import { Pos, BarePos } from "./Pos";
+import { Coord } from "./Coord";
 
-export { Pos, BarePos } from "./Pos";
+export { Coord } from "./Coord";
 
 
 /**
@@ -12,15 +12,15 @@ export { Pos, BarePos } from "./Pos";
  * no knowledge of their context. Their internals are all managed by
  * their host {@link Game} object through method calls.
  */
-export class Tile {
+export class Tile<B extends Coord.Bare.Impl> {
 
-    public readonly pos: Pos;
+    public readonly pos: Coord<B>;
 
     protected _occupantId: Player.Id;
     protected _scoreValue: number;
 
-    protected _langChar: LangTypeDefs.Char;
-    protected _langSeq:  LangTypeDefs.Seq;
+    protected _langChar: Lang.Char;
+    protected _langSeq:  Lang.Seq;
 
     /**
      * The number of times this `Tile` was occupied since the last
@@ -35,11 +35,11 @@ export class Tile {
     /**
      * _Does not call reset._
      * 
-     * @param pos - 
+     * @param coordDesc - 
      * @throws `TypeError` if `x` or `y` are not integer values.
      */
-    public constructor(pos: BarePos) {
-        this.pos = Pos.ofBarePos(pos);
+    public constructor(coordDesc: B) {
+        this.pos = Coord.from(B, pos);
         if (!(this.pos.equals(this.pos.round()))) {
             throw new TypeError("Tile position coordinates must be integers.");
         }
@@ -54,7 +54,7 @@ export class Tile {
         // reset sequence when shuffling tiles. This also done here
         // because all `charSeqPair`s in tiles must be cleared before
         // shuffling since initially, nothing needs to be avoided.
-        this.setLangCharSeq(LangTypeDefs.CharSeqPair.NULL);
+        this.setLangCharSeq(Lang.CharSeqPair.NULL);
     }
 
 
@@ -107,16 +107,16 @@ export class Tile {
     /**
      * @override
      */
-    public setLangCharSeq(charSeqPair: LangTypeDefs.CharSeqPair): void {
+    public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
         this._langChar = charSeqPair.char;
         this._langSeq  = charSeqPair.seq;
     }
 
-    public get langChar(): LangTypeDefs.Char {
+    public get langChar(): Lang.Char {
         return this._langChar;
     }
 
-    public get langSeq(): LangTypeDefs.Seq {
+    public get langSeq(): Lang.Seq {
         return this._langSeq;
     }
 

@@ -1,6 +1,6 @@
 import { Player as PlayerTypeDefs } from "typedefs/TypeDefs";
 
-import { Pos, Tile } from "floor/Tile";
+import { Coord, Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 import { PlayerSkeleton } from "./PlayerSkeleton";
@@ -17,7 +17,7 @@ export abstract class Player extends PlayerSkeleton {
      * The `x` and `y` coordinates could be any arbitrary value as long
      * as they are outside the range of valid {@link Grid} dimensions.
      */
-    public static readonly BENCH_POS: Pos = new Pos(Infinity, Infinity);
+    public static readonly BENCH_POS: Coord = new Coord(Infinity, Infinity);
 
 
     public readonly username: Player.Username;
@@ -123,7 +123,7 @@ export abstract class Player extends PlayerSkeleton {
 
 
 
-    public get pos(): Pos {
+    public get pos(): Coord {
         return this.hostTile.pos;
     }
 

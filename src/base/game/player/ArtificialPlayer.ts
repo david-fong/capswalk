@@ -1,5 +1,5 @@
-import { BarePos } from "floor/Pos";
-import { Pos, Tile } from "floor/Tile";
+import { BarePos } from "floor/Coord";
+import { Coord, Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
@@ -48,7 +48,7 @@ export abstract class ArtificialPlayer extends Player {
      * movement request. Pos may contain non-integer coordinate values,
      * and it does not have to be inside the bounds of the {@link Grid}.
      */
-    protected abstract computeDesiredDestination(): Pos;
+    protected abstract computeDesiredDestination(): Coord;
 
     protected abstract computeNextMovementTimer(): number;
 
