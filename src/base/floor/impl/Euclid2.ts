@@ -44,13 +44,6 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public originTwoNorm(): number {
-            return Math.sqrt((this.x ** 2) + (this.y ** 2));
-        }
-
-        /**
-         * @override
-         */
         public originInfNorm(): number {
             return Math.max(Math.abs(this.x), Math.abs(this.y));
         }

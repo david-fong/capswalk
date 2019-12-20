@@ -1,4 +1,4 @@
-import { Euclid2 } from "floor/impl/Euclid";
+import { Euclid2 } from "floor/impl/Euclid2";
 import { Beehive } from "floor/impl/Beehive";
 
 
@@ -74,10 +74,10 @@ export abstract class Coord<
      * @param other - The norm is taken relative to `other`.
      * @returns The square root of the square of each coordinate.
      */
-    public twoNorm(other: C): number {
-        return this.sub(other).originTwoNorm();
-    }
-    public abstract originTwoNorm(): number;
+    // public twoNorm(other: C): number {
+    //     return this.sub(other).originTwoNorm();
+    // }
+    // public abstract originTwoNorm(): number;
 
     /**
      * 
