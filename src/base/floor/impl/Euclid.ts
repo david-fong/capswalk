@@ -5,10 +5,17 @@ export namespace Euclid2 {
 
     type B = Coord.Bare;
 
-    export class Coord extends AbstractCoord<B> implements B {
+    export class Coord extends AbstractCoord<AbstractCoord.System.EUCLID2> implements B {
 
-        public declare readonly x: number;
-        public declare readonly y: number;
+        public readonly x: number;
+        public readonly y: number;
+
+        public constructor(desc: B) {
+            super(desc);
+            this.x = desc.x;
+            this.y = desc.y;
+            Object.freeze(this);
+        }
 
         /**
          * @override
@@ -37,21 +44,21 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public originalTwoNorm(): number {
+        public originTwoNorm(): number {
             return Math.sqrt((this.x ** 2) + (this.y ** 2));
         }
 
         /**
          * @override
          */
-        public originalInfNorm(): number {
+        public originInfNorm(): number {
             return Math.max(Math.abs(this.x), Math.abs(this.y));
         }
 
         /**
          * @override
          */
-        public originalAxialAlignment(): number {
+        public originAxialAlignment(): number {
             return Math.abs(Math.abs(this.x) - Math.abs(this.y))
                 / (Math.abs(this.x) + Math.abs(this.y));
         }
@@ -88,10 +95,18 @@ export namespace Euclid2 {
     }
 
     export namespace Coord {
+        // for local use:
         export type Bare = Readonly<{
             x: number;
             y: number;
         }>;
+        // for Coord module:
+        export namespace Bare {
+            export const x: number = undefined!;
+            export const y: number = undefined!;
+        }
+        // magical paranoid consistency:
+        Bare as Bare;
     }
 
 

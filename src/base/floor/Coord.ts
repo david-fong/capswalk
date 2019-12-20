@@ -2,29 +2,30 @@ import { Euclid2 } from "floor/impl/Euclid";
 import { Beehive } from "floor/impl/Beehive";
 
 
+// helper for brevity trick. needed to break generic circular default.
+type CorB<S extends Coord.System, B = typeof Coord.BareImpl[S]> = B | Coord<S>;
+
 /**
- * A position in 2-dimensional space. Values may be non-integer values.
- * 
  * Immutable. All `Pos` objects returned by operations are new objects.
- * 
- * Norm accessors measure distance from the origin (0, 0).
  * 
  * @param B - The shape of a bare instance. Change to `extends Impl` if
  *      needed.
+ * @param C - Use this as the type for "`other`" function arguments-
+ *      don't use this for function return-types.
  */
-export abstract class Coord<B extends Coord.Bare.Impl> {
+export abstract class Coord<
+    S extends Coord.System,
+    B extends typeof Coord.BareImpl[S] = typeof Coord.BareImpl[S],
+    C extends CorB<S> = CorB<S>
+> {
 
     /**
-     * **Important:** Implementations should not define a constructor.
+     * This does nothing. Subclass constructors should copy in the
+     * fields specified by `desc` and end with a self-freezing call.
      * 
-     * Freezes `this`.
-     * 
-     * @param desc -
+     * @param desc - Untouched. Here as a reminder of what is needed.
      */
-    protected constructor(desc: B) {
-        Object.assign(this, desc);
-        Object.freeze(this);
-    }
+    protected constructor(desc: C) {}
 
     /**
      * @returns
@@ -33,28 +34,32 @@ export abstract class Coord<B extends Coord.Bare.Impl> {
      * the `this` object.
      */
     public getBareBones(): B {
-        return Object.assign(Object.create(null), this);
+        return Object.freeze(Object.assign(Object.create(null), this));
     }
 
 
 
-    public abstract equals(other: B): boolean;
+    public abstract equals(other: C): boolean;
 
     /**
      * For discrete-coordinate-based systems, this is used to round
      * non-discrete coordinates to discrete ones.
      */
-    public abstract round(): Coord<B>;
+    public abstract round(): Coord<S>;
 
 
 
     /**
      * Also known as the "manhattan norm".
      * 
+     * TODO: document: what is this used for?
+     * 
+     * _Do not override this._
+     * 
      * @param other - The norm is taken relative to `other`.
      * @returns The sum of the absolute values of each coordinate.
      */
-    public oneNorm(other: B): number {
+    public oneNorm(other: C): number {
         return this.sub(other).originOneNorm();
     }
     public abstract originOneNorm(): number;
@@ -62,22 +67,31 @@ export abstract class Coord<B extends Coord.Bare.Impl> {
     /**
      * Diagonal distance in 2D / hypotenuse.
      * 
+     * TODO: This is not used. please do not use this.
+     * 
+     * _Do not override this_
+     * 
      * @param other - The norm is taken relative to `other`.
      * @returns The square root of the square of each coordinate.
      */
-    public twoNorm(other: B): number {
-        return this.sub(other).originalTwoNorm();
+    public twoNorm(other: C): number {
+        return this.sub(other).originTwoNorm();
     }
-    public abstract originalTwoNorm(): number;
+    public abstract originTwoNorm(): number;
 
     /**
+     * 
+     * TODO: document: what is this used for?
+     * 
+     * _Do not override this._
+     * 
      * @param other - The norm is taken relative to `other`.
      * @returns The length of the longest dimension.
      */
-    public infNorm(other: B): number {
-        return this.sub(other).originalInfNorm();
+    public infNorm(other: C): number {
+        return this.sub(other).originInfNorm();
     }
-    public abstract originalInfNorm(): number;
+    public abstract originInfNorm(): number;
 
     /**
      * @returns A number in the range (0, 1). `One` means the x and y
@@ -94,18 +108,18 @@ export abstract class Coord<B extends Coord.Bare.Impl> {
      * 
      * @param other - The alignment is taken relative to `other`.
      */
-    public axialAlignment(other: B): number {
-        return this.sub(other).originalAxialAlignment();
+    public axialAlignment(other: C): number {
+        return this.sub(other).originAxialAlignment();
     }
-    public abstract originalAxialAlignment(): number;
+    public abstract originAxialAlignment(): number;
 
 
 
-    public abstract add(other: B): Coord<B>;
+    public abstract add(other: C): Coord<S>;
 
-    public abstract sub(other: B): Coord<B>;
+    public abstract sub(other: C): Coord<S>;
 
-    public abstract mul(scalar: number): Coord<B>;
+    public abstract mul(scalar: number): Coord<S>;
 
 
 
@@ -129,9 +143,17 @@ export abstract class Coord<B extends Coord.Bare.Impl> {
 
 
 export namespace Coord {
-    export namespace Bare {
-        export type Impl
-            = Euclid2.Coord.Bare
-            | Beehive.Coord.Bare;
+    export const enum System {
+        EUCLID2 = "EUCLID2",
+        BEEHIVE = "BEEHIVE",
     }
+    // Note: not using declaration merging here for "Bare" because
+    // the subclasses do that, and cool but contextually undesirable
+    // things happen if we try to do the same thing as their parent.
+    export type BareType = { [dimension: string]: number, };
+    export const BareImpl: Readonly<Record<Coord.System, Coord.BareType>>
+    = Object.freeze(<const>{
+        [ System.EUCLID2 ]: Euclid2.Coord.Bare,
+        [ System.BEEHIVE ]: Beehive.Coord.Bare,
+    });
 }

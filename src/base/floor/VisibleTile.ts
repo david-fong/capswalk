@@ -1,6 +1,7 @@
 import { Lang as LangTypeDefs, PlayerSkeleton, Player } from "typedefs/TypeDefs";
 
-import { Tile, BarePos } from "./Tile";
+import { Coord } from "floor/Coord";
+import { Tile } from "./Tile";
 
 
 /**
@@ -18,14 +19,14 @@ import { Tile, BarePos } from "./Tile";
  * 
  * @extends Tile
  */
-export class VisibleTile extends Tile {
+export class VisibleTile<B extends Coord.Bare.Impl> extends Tile<B> {
 
     public  readonly tileCellElem:      HTMLTableCellElement;
     private readonly playerDivElem:     HTMLDivElement;
     private readonly langCharDivElem:   HTMLDivElement;
     private readonly langSeqDivElem:    HTMLDivElement;
 
-    public constructor(pos: BarePos) {
+    public constructor(pos: B) {
         super(pos);
 
         const tCell: HTMLTableCellElement = new HTMLTableCellElement();

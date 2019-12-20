@@ -22,20 +22,30 @@ export namespace Beehive {
 
     type B = Coord.Bare;
 
-    export class Coord extends AbstractCoord<B> implements B {
+    export class Coord extends AbstractCoord<AbstractCoord.System.BEEHIVE> implements B {
 
-        public declare readonly dash:  number;
-        public declare readonly slash: number;
+        /**
+         * # 🕒 3'o'clock direction
+         */
+        public readonly dash: number;
+
+        /**
+         * # 🕔 5'o'clock direction
+         */
+        public readonly bash: number;
 
         public constructor(desc: B) {
             super(desc);
+            this.dash  = desc.dash;
+            this.bash = desc.bash;
+            Object.freeze(this);
         }
 
         /**
          * @override
          */
         public equals(other: B): boolean {
-            return (this.dash === other.dash) && (this.slash === other.slash);
+            return (this.dash === other.dash) && (this.bash === other.bash);
         }
 
         /**
@@ -44,8 +54,8 @@ export namespace Beehive {
         public round(): Coord {
             // TODO: is this correct? I don't think so...
             return new Coord({
-                dash:  Math.round(this.dash),
-                slash: Math.round(this.slash),
+                dash: Math.round(this.dash),
+                bash: Math.round(this.bash),
             });
         }
 
@@ -59,21 +69,21 @@ export namespace Beehive {
         /**
          * @override
          */
-        public originalTwoNorm(): number {
+        public originTwoNorm(): number {
             return Math.sqrt((this.x ** 2) + (this.y ** 2));
         }
 
         /**
          * @override
          */
-        public originalInfNorm(): number {
+        public originInfNorm(): number {
             return Math.max(Math.abs(this.x), Math.abs(this.y));
         }
 
         /**
          * @override
          */
-        public originalAxialAlignment(): number {
+        public originAxialAlignment(): number {
             return Math.abs(Math.abs(this.x) - Math.abs(this.y))
                 / (Math.abs(this.x) + Math.abs(this.y));
         }
@@ -103,17 +113,25 @@ export namespace Beehive {
          */
         public mul(scalar: number): Coord {
             return new Coord({
-                x: scalar * this.x,
-                y: scalar * this.y,
+                dash: scalar * this.dash,
+                bash: scalar * this.bash,
             });
         }
     }
 
     export namespace Coord {
+        // for local use:
         export type Bare = Readonly<{
-            dash:  number;
-            slash: number;
+            dash: number;
+            bash: number;
         }>;
+        // for Coord module:
+        export namespace Bare {
+            export const dash: number = undefined!;
+            export const bash: number = undefined!;
+        }
+        // magical paranoid consistency:
+        Bare as Bare;
     }
 
 
