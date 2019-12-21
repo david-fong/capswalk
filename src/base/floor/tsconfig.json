@@ -1,6 +1,6 @@
 {
     "extends": "../.templates/tsconfig.json",
     "references": [
-        { "path": "../typedefs", },
+        { "path": "../utils", },
     ],
 }

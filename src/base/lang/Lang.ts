@@ -1,4 +1,4 @@
-import { Lang as LangTypeDefs } from "typedefs/TypeDefs";
+import { Lang as LangTypeDefs } from "utils/TypeDefs";
 
 import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
 

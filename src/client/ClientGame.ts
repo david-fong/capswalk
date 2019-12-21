@@ -94,7 +94,7 @@ export class ClientGame<S extends Coord.System> extends Game<S> {
      * @override
      */
     public createTile(desc: Coord.Bare<S>): VisibleTile<S> {
-        return new VisibleTile(this.coordSys, desc);
+        return new VisibleTile<S>(this.coordSys, desc);
     }
 
     /**

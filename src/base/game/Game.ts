@@ -536,7 +536,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
         const jumpNeighbours: Array<Player<S>> = [ bubbler, ]; {
             // Note: Actually used as a stack. It doesn't matter.
             const neighbourQueue = [ bubbler, ];
-            while (neighbourQueue.length > 0) {
+            while (neighbourQueue.length) {
                 const neighbour = neighbourQueue.pop()!;
                 neighbour.getNeighbours().filter((jumpPlayer) => {
                     // Filter out neighbours that we have already processed:
@@ -642,7 +642,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * @param dest - 
      * @param playerId - IMPORTANT: Must be a valid player.
      */
-    public getBenchableTileAt(dest: Coord.Bare<S>, playerId: Player.Id): Tile<S> {
+    public getBenchableTileAt(dest: Coord.Ish<S>, playerId: Player.Id): Tile<S> {
         return ((Player.BENCH_POS[this.coordSys].equals(dest))
             ? this.getPlayerById(playerId).benchTile
             : this.getTileAt(dest)
@@ -676,7 +676,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * @param pos - 
      * @param radius - defaults to one.
      */
-    public getNeighbours(pos: Coord.Bare<S>, radius: number = 1): Array<Player<S>> {
+    public getNeighbours(pos: Coord.Ish<S>, radius: number = 1): Array<Player<S>> {
         return this.getNeighbouringTiles(pos, radius)
             .filter((tile) => tile.isOccupied)
             .map((tile) => this.getPlayerById(tile.occupantId));

@@ -112,7 +112,7 @@ export class ServerGame<S extends Coord.System> extends Game<S> {
      * @override
      */
     public createTile(desc: Coord.Bare<S>): Tile<S> {
-        return new Tile(this.coordSys, desc);
+        return new Tile<S>(this.coordSys, desc);
     }
 
     /**

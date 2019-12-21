@@ -20,7 +20,7 @@ export { ServerGame } from "./ServerGame";
 export class GroupSession {
 
     public readonly namespace: io.Namespace;
-    protected currentGame: ServerGame<any> | undefined;
+    protected currentGame?: ServerGame<any>;
     protected sessionHost: io.Socket;
 
     private readonly initialTtlTimeout: NodeJS.Timeout;
@@ -128,11 +128,12 @@ export class GroupSession {
     ): Readonly<Game.CtorArgs.FailureReasons> | undefined {
         const failureReasons: Partial<Game.CtorArgs.FailureReasons> = {};
         failureReasons.undefinedUsername = Object.values(this.sockets)
-            .filter((socket) => !(socket.username))
+            .filter((socket) => !socket.username)
             .map((socket) => socket.id);
-        if (failureReasons.undefinedUsername) {
+        if (failureReasons.undefinedUsername.length) {
             return failureReasons;
         }
+        //const noProto = <T>(obj: T): T => Object.assign(Object.create(null), obj);
         this.currentGame = new ServerGame<any>(this, {
             coordSys,
             gridDimensions,

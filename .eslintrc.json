@@ -10,7 +10,7 @@
             // webpack:
             "./scripts/webpack.tsconfig.json",
             // basecode:
-            "./src/base/typedefs/tsconfig.json",
+            "./src/base/utils/tsconfig.json",
             "./src/base/settings/tsconfig.json",
             "./src/base/lang/tsconfig.json",
             "./src/base/floor/tsconfig.json",
