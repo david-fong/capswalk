@@ -11,13 +11,7 @@ export { PlayerSkeleton } from "./PlayerSkeleton";
 /**
  * 
  */
-export abstract class Player extends PlayerSkeleton {
-
-    /**
-     * The `x` and `y` coordinates could be any arbitrary value as long
-     * as they are outside the range of valid {@link Grid} dimensions.
-     */
-    public static readonly BENCH_POS: Coord = new Coord(Infinity, Infinity);
+export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
 
     public readonly username: Player.Username;
@@ -60,7 +54,7 @@ export abstract class Player extends PlayerSkeleton {
 
 
 
-    public constructor(game: Game, desc: Readonly<Player.CtorArgs>) {
+    public constructor(game: Game<S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc.idNumber!);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {
@@ -89,7 +83,7 @@ export abstract class Player extends PlayerSkeleton {
      * 
      * @param dest - 
      */
-    protected makeMovementRequest(dest: Tile): void {
+    protected makeMovementRequest(dest: Tile<S>): void {
         if (this.requestInFlight) {
             throw new Error("Only one request should ever be in flight at a time.");
         }
@@ -112,7 +106,7 @@ export abstract class Player extends PlayerSkeleton {
      * 
      * @throws `Error` if `dest` is occupied by another `Player`.
      */
-    protected abstract abstractMakeMovementRequest(dest: Tile): void;
+    protected abstract abstractMakeMovementRequest(dest: Tile<S>): void;
 
     /**
      * Conveniece method.
@@ -123,21 +117,21 @@ export abstract class Player extends PlayerSkeleton {
 
 
 
-    public get pos(): Coord {
+    public get pos(): Coord<S> {
         return this.hostTile.pos;
     }
 
 
 
-    public getNeighbouringTiles(radius: number = 1): Array<Tile> {
+    public getNeighbouringTiles(radius: number = 1): Array<Tile<S>> {
         return this.game.getNeighbouringTiles(this.pos, radius);
     }
 
-    public getUNT(radius: number = 1): Array<Tile> {
+    public getUNT(radius: number = 1): Array<Tile<S>> {
         return this.game.getUNT(this.pos, radius);
     }
 
-    public getNeighbours(radius: number = 1): Array<Player> {
+    public getNeighbours(radius: number = 1): Array<Player<S>> {
         return this.game.getNeighbours(this.pos, radius);
     }
 

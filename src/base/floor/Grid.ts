@@ -39,7 +39,7 @@ export abstract class Grid<
      */
     private readonly domGrid?: HTMLTableElement;
 
-    public abstract createTile(desc: B): Tile<S>;
+    public abstract createTile(coordSys: S, desc: B): Tile<S>;
 
 
 
@@ -50,6 +50,7 @@ export abstract class Grid<
      * 
      * _Does not call reset._
      * 
+     * @param coordSys -
      * @param dimensions - 
      * @param domGridHtmlIdHook - The identifier for the HTML element
      *      for this new grid to attach its {@link Grid#domGrid} to
@@ -57,6 +58,7 @@ export abstract class Grid<
      *      are kicked out. Must refer to an existing element.
      */
     public constructor(
+        coordSys: S,
         dimensions: Grid.DimensionDesc,
         domGridHtmlIdHook = Grid.HTML_ID_HOOK,
     ) {
@@ -82,7 +84,7 @@ export abstract class Grid<
         for (let row = 0; row < this.height; row++) {
             const newRow: Array<Tile<S>> = [];
             for (let col = 0; col < this.width; col++) {
-                const newTile: Tile<S> = this.createTile({ x: col, y: row, });
+                const newTile: Tile<S> = this.createTile(coordSys, { x: col, y: row, });
                 newRow.push(newTile);
             }
             grid.push(newRow);
@@ -91,7 +93,7 @@ export abstract class Grid<
 
         // Create and populate the HTML table element field:
         // (skip this step if my tiles are not displayed in a browser window)
-        if (this.createTile({ x: 0, y: 0, }) instanceof VisibleTile) {
+        if (this.createTile(coordSys, { x: 0, y: 0, }) instanceof VisibleTile) {
             this.domGrid = new HTMLTableElement();
             const tBody = this.domGrid.createTBody();
             for (const row of this.grid) {

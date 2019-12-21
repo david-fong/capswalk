@@ -1,7 +1,7 @@
 import { Lang } from "lang/Lang";
 import { BalancingScheme } from "lang/LangSeqTreeNode";
 
-import { BarePos, Tile } from "floor/Tile";
+import { BarePos, Tile, Coord } from "floor/Tile";
 import { Grid } from "floor/Grid";
 
 import { Player } from "./player/Player";
@@ -37,7 +37,7 @@ import { EventRecordEntry } from "./events/EventRecordEntry";
  * 
  * @extends Grid
  */
-export abstract class Game extends Grid {
+export abstract class Game<S extends Coord.System> extends Grid<S> {
 
     public readonly lang: Lang;
 
@@ -92,8 +92,8 @@ export abstract class Game extends Grid {
      * 
      * @override
      */
-    public constructor(desc: Game.CtorArgs<any>) {
-        super(desc.gridDimensions);
+    public constructor(desc: Game.CtorArgs<S, any>) {
+        super(desc.coordSys, desc.gridDimensions);
 
         // TODO: set default language (must be done before call to reset):
         //this.lang = import(desc.languageName);
@@ -200,7 +200,7 @@ export abstract class Game extends Grid {
                 return socketIdToPlayerIdMap[socketId];
             });
         });
-        (playerDescs as Game.CtorArgs<Player.Id>["playerDescs"]).forEach((playerDesc, index) => {
+        (playerDescs as Game.CtorArgs<S, Player.Id>["playerDescs"]).forEach((playerDesc, index) => {
             // Third pass - Create the Players:
             // Note above redundant `<Player.Id>` as a reminder that
             // the player ID's ahve now been successfully assigned.
@@ -697,7 +697,9 @@ export namespace Game {
     /**
      * 
      */
-    export type CtorArgs<ID_TYPE extends Player.Id | string = Player.Id> = {
+    export type CtorArgs<S extends Coord.System, ID_TYPE extends Player.Id | Player.SocketId = Player.Id> = {
+
+        readonly coordSys: S;
 
         readonly gridDimensions: Readonly<Grid.DimensionDesc>;
 
@@ -722,7 +724,7 @@ export namespace Game {
          * Not used here, but used in {@link GroupSession#createGameInstance}.
          */
         export type FailureReasons = Partial<{
-            undefinedUsername: Array<string>; // socket ID's
+            undefinedUsername: Array<Player.SocketId>; // socket ID's
         }>;
     }
 

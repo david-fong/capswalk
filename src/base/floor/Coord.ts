@@ -2,16 +2,20 @@ import { Euclid2 } from "floor/impl/Euclid2";
 import { Beehive } from "floor/impl/Beehive";
 
 
-// helper for brevity trick. needed to break generic circular default.
+// Helper for brevity trick. needed to break generic circular default.
 type CorB<S extends Coord.System, B = typeof Coord.BareImpl[S]> = B | Coord<S>;
 
 /**
- * Immutable. All `Pos` objects returned by operations are new objects.
+ * Immutable. All `Coord` objects returned by operations are new objects.
  * 
- * @param B - The shape of a bare instance.
- * @param C - Use this as the type for "`other`" function arguments-
+ * @template S - An enum identifying the unique implementation class.
+ * @template B - The shape of a bare instance. For internal convenience.
+ *      You can pass something in, but there is nothing to gain from it.
+ * @template C - Use this as the type for "`other`" function arguments.
  *      don't use this for function return-types. Here as a brevity
- *      / convenience tool.
+ *      / convenience tool. Like as for `B`, don't pass anything in.
+ *      We need this because TypeScript won't let us tell it that it
+ *      implements its own bare-type.
  */
 export abstract class Coord<
     S extends Coord.System,

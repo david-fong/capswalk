@@ -1,6 +1,6 @@
 import { Player as PlayerTypeDefs, PlayerSkeleton as PlayerSkeletonTypeDefs } from "typedefs/TypeDefs";
 
-import { Tile } from "floor/Tile";
+import { Tile, Coord } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
 
@@ -14,24 +14,33 @@ import { Player } from "./Player";
  * 
  * @extends PlayerTypeDefs to intake its namespace exports.
  */
-export class PlayerSkeleton extends PlayerTypeDefs implements PlayerSkeletonTypeDefs.VisibleState {
+export class PlayerSkeleton<S extends Coord.System>
+    extends PlayerTypeDefs
+    implements PlayerSkeletonTypeDefs.VisibleState {
+
+    /**
+     * The `x` and `y` coordinates could be any arbitrary value as long
+     * as they are outside the range of valid {@link Grid} dimensions.
+     */
+    // TODO: turn into a map from Coord.System to respective constants.
+    public static readonly BENCH_POS: Coord<S> = new Coord(Infinity, Infinity);
 
     /**
      * The game object that this player belongs to.
      */
-    public readonly game: Game;
+    public readonly game: Game<S>;
 
     /**
      * @see PlayerId
      */
     public readonly idNumber: Player.Id;
 
-    private _hostTile: Tile;
+    private _hostTile: Tile<S>;
 
     /**
      * A {@link Tile} that can only be occupied by this `Player`.
      */
-    public readonly benchTile: Tile;
+    public readonly benchTile: Tile<S>;
 
     private _score:         number;
     private _stockpile:     number;
@@ -42,7 +51,7 @@ export class PlayerSkeleton extends PlayerTypeDefs implements PlayerSkeletonType
 
 
 
-    protected constructor(game: Game, idNumber: Player.Id) {
+    protected constructor(game: Game<S>, idNumber: Player.Id) {
         super();
         if (Math.trunc(this.idNumber) !== this.idNumber) {
             throw new RangeError("Player ID's must be integer values.");
@@ -52,7 +61,7 @@ export class PlayerSkeleton extends PlayerTypeDefs implements PlayerSkeletonType
         }
         this.game = game;
         this.idNumber = idNumber;
-        this.benchTile = this.game.createTile(Player.BENCH_POS);
+        this.benchTile = this.game.createTile(Player.BENCH_POS); // TODO: make grid have public getter for coordSys
     }
 
     /**
@@ -79,7 +88,7 @@ export class PlayerSkeleton extends PlayerTypeDefs implements PlayerSkeletonType
 
 
 
-    public get hostTile(): Tile {
+    public get hostTile(): Tile<S> {
         return this._hostTile;
     }
 
@@ -104,7 +113,7 @@ export class PlayerSkeleton extends PlayerTypeDefs implements PlayerSkeletonType
      *
      * @param dest -
      */
-    public moveTo(dest: Tile): void {
+    public moveTo(dest: Tile<S>): void {
         // Evict self from current `Tile`.
         if (this.hostTile.occupantId !== this.idNumber) {
             if (this.game.gameType !== Game.Type.CLIENT) {

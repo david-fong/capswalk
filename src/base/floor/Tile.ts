@@ -38,11 +38,12 @@ export class Tile<
     /**
      * _Does not call reset._
      * 
+     * @param coordSys -
      * @param coordDesc - 
      * @throws `TypeError` if `x` or `y` are not integer values.
      */
-    public constructor(coordDesc: B) {
-        this.pos = Coord.Constructors[S](B, pos);
+    public constructor(coordSys: S, coordDesc: B) {
+        this.pos = Coord.Constructors[coordSys](coordDesc);
         if (!(this.pos.equals(this.pos.round()))) {
             throw new TypeError("Tile position coordinates must be integers.");
         }
