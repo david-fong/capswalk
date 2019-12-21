@@ -1,7 +1,7 @@
 import * as io from "socket.io";
 import { setTimeout } from "timers";
 
-import { BarePos } from "floor/Pos";
+import { Coord } from "floor/Coord";
 import { Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { GroupSession } from "./GroupSession";
@@ -18,7 +18,7 @@ import { Bubble } from "game/events/Bubble";
  * 
  * @extends Game
  */
-export class ServerGame extends Game {
+export class ServerGame<S extends Coord.System> extends Game<S> {
 
     public readonly namespace: io.Namespace;
 
@@ -50,7 +50,7 @@ export class ServerGame extends Game {
      */
     public constructor(
         session: GroupSession,
-        desc: Game.CtorArgs<Player.SocketId>,
+        desc: Game.CtorArgs<S, Player.SocketId>,
     ) {
         super(desc);
         // Setup the map from player ID's to socket ID's:
@@ -111,14 +111,14 @@ export class ServerGame extends Game {
     /**
      * @override
      */
-    public createTile(pos: BarePos): Tile {
-        return new Tile(pos);
+    public createTile(desc: Coord.Bare<S>): Tile<S> {
+        return new Tile(this.coordSys, desc);
     }
 
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.CtorArgs): never {
+    protected createOperatorPlayer(desc: Player.CtorArgs<Player.SocketId>): never {
         throw new TypeError("This should never be called for a ServerGame.");
     }
 

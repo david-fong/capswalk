@@ -113,18 +113,10 @@ export namespace Beehive {
     }
 
     export namespace Coord {
-        // for local use:
         export type Bare = Readonly<{
             dash: number;
             bash: number;
         }>;
-        // for Coord module:
-        export namespace Bare {
-            export const dash: number = undefined!;
-            export const bash: number = undefined!;
-        }
-        // magical paranoid consistency:
-        Bare as Bare;
     }
 
 

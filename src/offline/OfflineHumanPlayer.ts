@@ -1,4 +1,4 @@
-import { Tile } from "floor/Tile";
+import { Tile, Coord } from "floor/Tile";
 import { OfflineGame } from "./OfflineGame";
 import { HumanPlayer } from "game/player/HumanPlayer";
 import { Player } from "game/player/Player";
@@ -9,9 +9,9 @@ import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
  * 
  * @extends HumanPlayer
  */
-export class OfflineHumanPlayer extends HumanPlayer {
+export class OfflineHumanPlayer<S extends Coord.System> extends HumanPlayer<S> {
 
-    public constructor(game: OfflineGame, desc: Player.CtorArgs) {
+    public constructor(game: OfflineGame<S>, desc: Player.CtorArgs) {
         super(game, desc);
     }
 
@@ -24,7 +24,7 @@ export class OfflineHumanPlayer extends HumanPlayer {
      * 
      * @override {@link Player#makeMovementRequest}
      */
-    public abstractMakeMovementRequest(dest: Tile): void {
+    public abstractMakeMovementRequest(dest: Tile<S>): void {
         this.game.processMoveRequest(
             new PlayerMovementEvent(
                 this.idNumber,

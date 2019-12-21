@@ -88,18 +88,10 @@ export namespace Euclid2 {
     }
 
     export namespace Coord {
-        // for local use:
         export type Bare = Readonly<{
             x: number;
             y: number;
         }>;
-        // for Coord module:
-        export namespace Bare {
-            export const x: number = undefined!;
-            export const y: number = undefined!;
-        }
-        // magical paranoid consistency:
-        Bare as Bare;
     }
 
 

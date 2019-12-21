@@ -1,4 +1,4 @@
-import { BarePos } from "floor/Pos";
+import { Coord } from "floor/Coord";
 import { VisibleTile } from "floor/VisibleTile";
 import { Game } from "game/Game";
 import { LocalGameSettings } from "settings/GameSettings";
@@ -13,12 +13,12 @@ import { OfflineHumanPlayer } from "./OfflineHumanPlayer";
  * 
  * @extends Game
  */
-export class OfflineGame extends Game {
+export class OfflineGame<S extends Coord.System> extends Game<S> {
 
     /**
      * @override The Operator is always defined for a {@link OfflineGame}.
      */
-    public declare readonly operator: HumanPlayer;
+    public declare readonly operator: HumanPlayer<S>;
 
     protected settings: LocalGameSettings;
 
@@ -34,7 +34,7 @@ export class OfflineGame extends Game {
      * 
      * @param desc - 
      */
-    public constructor(desc: Game.CtorArgs) {
+    public constructor(desc: Game.CtorArgs<S>) {
         super(desc);
         if (!this.operator) {
             throw new Error("The Operator for a ClientGame should be defined.");
@@ -47,15 +47,15 @@ export class OfflineGame extends Game {
     /**
      * @override
      */
-    public createTile(pos: BarePos): VisibleTile {
-        return new VisibleTile(pos);
+    public createTile(desc: Coord.Bare<S>): VisibleTile<S> {
+        return new VisibleTile(this.coordSys, desc);
     }
 
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer {
-        return new OfflineHumanPlayer(this, desc);
+    protected createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer<S> {
+        return new OfflineHumanPlayer<S>(this, desc);
     }
 
 

@@ -1,4 +1,3 @@
-import { BarePos } from "floor/Coord";
 import { Coord, Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
@@ -18,7 +17,7 @@ import { Chaser } from "./artificials/Chaser";
  */
 // TODO: if add abstract method hooks for events like player "collision",
 // then add this to the above documentation.
-export abstract class ArtificialPlayer extends Player {
+export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S> {
 
     private scheduledMovementCallbackId: number | NodeJS.Timeout;
 
@@ -28,7 +27,7 @@ export abstract class ArtificialPlayer extends Player {
      * @param game - 
      * @param desc - 
      */
-    protected constructor(game: Game, desc: Player.CtorArgs) {
+    protected constructor(game: Game<S>, desc: Player.CtorArgs) {
         super(game, desc);
         if (this.idNumber >= 0) {
             throw new RangeError(`The ID number for a human-operated player`
@@ -48,7 +47,7 @@ export abstract class ArtificialPlayer extends Player {
      * movement request. Pos may contain non-integer coordinate values,
      * and it does not have to be inside the bounds of the {@link Grid}.
      */
-    protected abstract computeDesiredDestination(): Coord;
+    protected abstract computeDesiredDestination(): Coord<S>;
 
     protected abstract computeNextMovementTimer(): number;
 
@@ -70,8 +69,8 @@ export abstract class ArtificialPlayer extends Player {
      *      of the {@link Game}'s grid, or have integer-valued x and y
      *      coordinates.
      */
-    private getUntToward(intendedDest: BarePos): Tile {
-        const options: Array<Tile> = this.getUNT();
+    private getUntToward(intendedDest: BarePos): Tile<S> {
+        const options: Array<Tile<S>> = this.getUNT();
         if (!(options.includes(this.hostTile))) {
             // This should never happen. It is here as a reminder.
             throw new Error("Caller code didn't break the upward occupancy link.");
@@ -127,7 +126,7 @@ export abstract class ArtificialPlayer extends Player {
      * 
      * @override
      */
-    protected abstractMakeMovementRequest(dest: Tile): void {
+    protected abstractMakeMovementRequest(dest: Tile<S>): void {
         this.game.processMoveRequest(
             new PlayerMovementEvent(
                 this.idNumber,
@@ -143,13 +142,18 @@ export abstract class ArtificialPlayer extends Player {
 
 export namespace ArtificialPlayer {
 
-    type ArtifEnum = Exclude<Player.Operator, Player.Operator.HUMAN>;
     const Constructors = Object.freeze({
-        [Player.Operator.CHASER]: Chaser,
-    }) as Readonly<Record<ArtifEnum, typeof ArtificialPlayer>>; // Type Assertion.
+        [ Player.Operator.CHASER ]: Chaser,
+    }) as Readonly<Record<
+        Exclude<Player.Operator, Player.Operator.HUMAN>,
+        typeof ArtificialPlayer
+    >>; // Type Assertion.
 
-    export const of = (game: Readonly<Game>, desc: Readonly<Player.CtorArgs>): ArtificialPlayer => {
-        return new (Constructors[desc.operatorClass])(game, desc);
+    export const of = <S extends Coord.System>(
+        game: Readonly<Game<S>>,
+        playerDesc: Readonly<Player.CtorArgs>
+    ): ArtificialPlayer<S> => {
+        return new (Constructors[playerDesc.operatorClass])(game, playerDesc);
     };
 
 }

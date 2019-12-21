@@ -2,9 +2,6 @@ import { Euclid2 } from "floor/impl/Euclid2";
 import { Beehive } from "floor/impl/Beehive";
 
 
-// Helper for brevity trick. needed to break generic circular default.
-type CorB<S extends Coord.System, B = typeof Coord.BareImpl[S]> = B | Coord<S>;
-
 /**
  * Immutable. All `Coord` objects returned by operations are new objects.
  * 
@@ -19,8 +16,7 @@ type CorB<S extends Coord.System, B = typeof Coord.BareImpl[S]> = B | Coord<S>;
  */
 export abstract class Coord<
     S extends Coord.System,
-    B extends typeof Coord.BareImpl[S] = typeof Coord.BareImpl[S],
-    C extends CorB<S> = CorB<S>
+    B extends Coord.Bare<S> = Coord.Bare<S>,
 > {
 
     /**
@@ -29,7 +25,7 @@ export abstract class Coord<
      * 
      * @param desc - Untouched. Here as a reminder of what is needed.
      */
-    protected constructor(desc: C) {}
+    protected constructor(desc: Coord.Ish) {}
 
     /**
      * @returns
@@ -43,7 +39,7 @@ export abstract class Coord<
 
 
 
-    public abstract equals(other: C): boolean;
+    public abstract equals(other: Coord.Ish<S>): boolean;
 
     /**
      * For discrete-coordinate-based systems, this is used to round
@@ -63,7 +59,7 @@ export abstract class Coord<
      * @param other - The norm is taken relative to `other`.
      * @returns The sum of the absolute values of each coordinate.
      */
-    public oneNorm(other: C): number {
+    public oneNorm(other: Coord.Ish<S>): number {
         return this.sub(other).originOneNorm();
     }
     public abstract originOneNorm(): number;
@@ -92,7 +88,7 @@ export abstract class Coord<
      * @param other - The norm is taken relative to `other`.
      * @returns The length of the longest dimension.
      */
-    public infNorm(other: C): number {
+    public infNorm(other: Coord.Ish<S>): number {
         return this.sub(other).originInfNorm();
     }
     public abstract originInfNorm(): number;
@@ -112,16 +108,16 @@ export abstract class Coord<
      * 
      * @param other - The alignment is taken relative to `other`.
      */
-    public axialAlignment(other: C): number {
+    public axialAlignment(other: Coord.Ish<S>): number {
         return this.sub(other).originAxialAlignment();
     }
     public abstract originAxialAlignment(): number;
 
 
 
-    public abstract add(other: C): Coord<S>;
+    public abstract add(other: Coord.Ish<S>): Coord<S>;
 
-    public abstract sub(other: C): Coord<S>;
+    public abstract sub(other: Coord.Ish<S>): Coord<S>;
 
     public abstract mul(scalar: number): Coord<S>;
 
@@ -147,6 +143,7 @@ export abstract class Coord<
 
 
 export namespace Coord {
+
     export const enum System {
         EUCLID2 = "EUCLID2",
         BEEHIVE = "BEEHIVE",
@@ -154,20 +151,24 @@ export namespace Coord {
     // Note: not using declaration merging here for "Bare" because
     // the subclasses do that, and cool but contextually undesirable
     // things happen if we try to do the same thing as their parent.
-    export type BareType = { [dimension: string]: number, };
+    type BareType = { [dimension: string]: number, };
 
-    export type ImplType = { Bare: Coord.BareType, } &
-        (<S extends Coord.System>(desc: typeof Coord.BareImpl[S]) => Coord<S>);
+    export type ImplType = { Bare: BareType, } &
+        (<S extends Coord.System>(desc: Bare<S>) => Coord<S>);
 
-    // TODO: phase this out: replace with map to class literals asserted to be
-    // of `ImplType`. append `.Bare` to all accurances of previous usage.
-    // rename to "Constructors". Delete `BareType` and use its value directly
-    // in `ImplType`.
-    // hmm... never mind. `ImplType` uses `BareImpl`. it is better to keep this
-    // and make the constructors map a separate thing then.
-    export const BareImpl: Readonly<Record<Coord.System, Coord.BareType>>
-    = Object.freeze(<const>{
-        [ System.EUCLID2 ]: Euclid2.Coord.Bare,
-        [ System.BEEHIVE ]: Beehive.Coord.Bare,
-    });
+    export type Bare<S extends System>
+        = S extends System.EUCLID2 ? Euclid2.Coord.Bare
+        : S extends System.BEEHIVE ? Beehive.Coord.Bare
+        : never;
+
+    /**
+     * Use this to specify the type for function arguments that are
+     * able to take a bare coordinate, but will also take a non-bare
+     * input from the same coordinate system.
+     * 
+     * Unfortunately, TypeScript will not allow me to say that Coord
+     * extends the bare coordinate type of its own coordinate system
+     * by using the generic `Bare<S>` syntax. 
+     */
+    export type Ish<S extends System> = Bare<S> | Coord<S>;
 }

@@ -3,15 +3,11 @@ import { Tile } from "./Tile";
 import { VisibleTile } from "./VisibleTile";
 
 
-
 /**
  * Provides basic management of The basic 2-dimensional-array-like
  * structure containing {@link Tile}s.
  */
-export abstract class Grid<
-    S extends Coord.System,
-    B extends typeof Coord.BareImpl[S] = typeof Coord.BareImpl[S],
-> {
+export abstract class Grid<S extends Coord.System> {
 
     /**
      * Bounds are inclusive. Ie. the specified values are _just_ allowed.
@@ -20,6 +16,8 @@ export abstract class Grid<
         height: Object.freeze(<const>{ min: 10, max: 50, }),
         width:  Object.freeze(<const>{ min: 10, max: 50, }),
     });
+
+    public readonly coordSys: S;
 
     public readonly height: number;
     public readonly width:  number;
@@ -39,7 +37,7 @@ export abstract class Grid<
      */
     private readonly domGrid?: HTMLTableElement;
 
-    public abstract createTile(coordSys: S, desc: B): Tile<S>;
+    public abstract createTile(desc: Coord.Bare<S>): Tile<S>;
 
 
 
@@ -62,6 +60,7 @@ export abstract class Grid<
         dimensions: Grid.DimensionDesc,
         domGridHtmlIdHook = Grid.HTML_ID_HOOK,
     ) {
+        this.coordSys = coordSys;
         if (!dimensions.width) {
             dimensions.width = dimensions.height;
         }
@@ -84,7 +83,7 @@ export abstract class Grid<
         for (let row = 0; row < this.height; row++) {
             const newRow: Array<Tile<S>> = [];
             for (let col = 0; col < this.width; col++) {
-                const newTile: Tile<S> = this.createTile(coordSys, { x: col, y: row, });
+                const newTile: Tile<S> = this.createTile({ x: col, y: row, });
                 newRow.push(newTile);
             }
             grid.push(newRow);
@@ -93,7 +92,7 @@ export abstract class Grid<
 
         // Create and populate the HTML table element field:
         // (skip this step if my tiles are not displayed in a browser window)
-        if (this.createTile(coordSys, { x: 0, y: 0, }) instanceof VisibleTile) {
+        if (this.createTile({ x: 0, y: 0, }) instanceof VisibleTile) {
             this.domGrid = new HTMLTableElement();
             const tBody = this.domGrid.createTBody();
             for (const row of this.grid) {
@@ -132,7 +131,7 @@ export abstract class Grid<
      * @param pos - Must be within the bounds of this `Grid`.
      * @throws `RangeError` if `pos` is not in the bounds of this `Grid`.
      */
-    public getTileAt(pos: B): Tile<S> {
+    public getTileAt(pos: Coord.Ish<S>): Tile<S> {
         if (pos.x < 0 || pos.x >= this.width ||
             pos.y < 0 || pos.y >= this.height
         ) {
@@ -141,7 +140,7 @@ export abstract class Grid<
         return this.grid[pos.x][pos.y];
     }
 
-    public getNeighbouringTiles(pos: B, radius: number = 1): Array<Tile<S>> {
+    public getNeighbouringTiles(pos: Coord.Ish<S>, radius: number = 1): Array<Tile<S>> {
         return this.grid.slice(
             // filter for included rows:
             Math.max(0, pos.y - radius),
@@ -164,7 +163,7 @@ export abstract class Grid<
      * @param radius - An inclusive bound on the {@link Pos#infNorm} filter.
      *      Defaults to `1`.
      */
-    public getUNT(pos: B, radius: number = 1): Array<Tile<S>> {
+    public getUNT(pos: Coord.Ish<S>, radius: number = 1): Array<Tile<S>> {
         return this.getNeighbouringTiles(pos, radius).filter((tile) => !(tile.isOccupied()));
     }
 

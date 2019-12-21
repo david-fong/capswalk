@@ -1,7 +1,7 @@
 import { Lang } from "lang/Lang";
 import { BalancingScheme } from "lang/LangSeqTreeNode";
 
-import { BarePos, Tile, Coord } from "floor/Tile";
+import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
 
 import { Player } from "./player/Player";
@@ -75,9 +75,9 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * unique properties of a {@link HumanPlayer} over a regular
      * {@link Player}.
      */
-    private readonly allHumanPlayers: ReadonlyArray<Player>;
+    private readonly allHumanPlayers: ReadonlyArray<Player<S>>;
 
-    private readonly allArtifPlayers: ReadonlyArray<Player>;
+    private readonly allArtifPlayers: ReadonlyArray<Player<S>>;
 
     public abstract get gameType(): Game.Type;
 
@@ -169,16 +169,16 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * @returns A bundle of the constructed players.
      */
     private createPlayers(
-        playerDescs: Game.CtorArgs<any>["playerDescs"],
+        playerDescs: Game.CtorArgs<S, any>["playerDescs"],
         operatorIndex?: number
     ): {
-        operator?: HumanPlayer,
-        allHumanPlayers: ReadonlyArray<Player>,
-        allArtifPlayers: ReadonlyArray<Player>,
+        operator?: HumanPlayer<S>,
+        allHumanPlayers: ReadonlyArray<Player<S>>,
+        allArtifPlayers: ReadonlyArray<Player<S>>,
     } {
-        let operator: HumanPlayer | undefined = undefined;
-        const allHumanPlayers: Array<Player> = [];
-        const allArtifPlayers: Array<Player> = [];
+        let operator: HumanPlayer<S> | undefined = undefined;
+        const allHumanPlayers: Array<Player<S>> = [];
+        const allArtifPlayers: Array<Player<S>> = [];
 
         const socketIdToPlayerIdMap: Record<string, Player.Id> = {};
         playerDescs.forEach((playerDesc) => {
@@ -240,7 +240,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * {@link Game#operator}.
      * 
      */
-    protected abstract createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer;
+    protected abstract createOperatorPlayer(desc: Player.CtorArgs<any>): HumanPlayer<S>;
 
     /**
      * @returns An {@link ArtificialPlayer} of the specified type.
@@ -250,7 +250,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      */
     protected createArtifPlayer(
         desc: Player.CtorArgs,
-    ): PuppetPlayer | ArtificialPlayer {
+    ): PuppetPlayer<S> | ArtificialPlayer<S> {
         return ArtificialPlayer.of(this, desc);
     }
 
@@ -266,7 +266,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * @returns A {@link LangCharSeqPair} that can be used as a replacement
      *      for that currently being used by `tile`.
      */
-    private shuffleLangCharSeqAt(tile: Tile): Lang.CharSeqPair {
+    private shuffleLangCharSeqAt(tile: Tile<S>): Lang.CharSeqPair {
         // Clear values for the target tile so its current (to-be-
         // previous) values don't get unnecessarily avoided.
         tile.setLangCharSeq(Lang.CharSeqPair.NULL);
@@ -288,7 +288,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      *      acknowledgement for the previous request, or if the given
      *      ID does not belong to any existing player.
      */
-    private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player | null {
+    private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player<S> | null { // TODO: no null please
         const player = this.getPlayerById(desc.playerId);
          if (player.isBubbling) {
             // The specified player does not exist or is bubbling.
@@ -335,7 +335,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
             this.processMoveExecute(desc);
             return;
         }
-        const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
+        const dest: Tile<S> = this.getBenchableTileAt(desc.destPos, desc.playerId);
         if (dest.isOccupied() ||
             dest.numTimesOccupied !== desc.destNumTimesOccupied) {
             // The check concerning the destination `Tile`'s occupancy
@@ -396,7 +396,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      */
     public processMoveExecute(desc: Readonly<PlayerMovementEvent>): void {
         const player = this.getPlayerById(desc.playerId);
-        const dest: Tile = this.getBenchableTileAt(desc.destPos, desc.playerId);
+        const dest: Tile<S> = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const executeBasicTileUpdates = (): void => {
             // The `LangCharSeqPair` shuffle changes must take effect
             // before updating the operator's seqBuffer if need be.
@@ -531,9 +531,9 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * 
      * @param bubbler - 
      */
-    private processBubblePopRequest(bubbler: Player): void {
+    private processBubblePopRequest(bubbler: Player<S>): void {
         // First, get the range of covered tiles.
-        const jumpNeighbours: Array<Player> = [ bubbler, ]; {
+        const jumpNeighbours: Array<Player<S>> = [ bubbler, ]; {
             // Note: Actually used as a stack. It doesn't matter.
             const neighbourQueue = [ bubbler, ];
             while (neighbourQueue.length > 0) {
@@ -606,7 +606,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * @param player - 
      * @param duration - 
      */
-    protected freezePlayer(player: Player, duration: number): void { }
+    protected freezePlayer(player: Player<S>, duration: number): void { }
 
 
 
@@ -642,9 +642,9 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * @param dest - 
      * @param playerId - IMPORTANT: Must be a valid player.
      */
-    public getBenchableTileAt(dest: BarePos, playerId: Player.Id): Tile {
-        return ((Player.BENCH_POS.equals(dest))
-            ? (this.getPlayerById(playerId)).benchTile
+    public getBenchableTileAt(dest: Coord.Bare<S>, playerId: Player.Id): Tile<S> {
+        return ((Player.BENCH_POS[this.coordSys].equals(dest))
+            ? this.getPlayerById(playerId).benchTile
             : this.getTileAt(dest)
         );
     }
@@ -654,11 +654,11 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * @returns The {@link Player} with ID `playerId`.
      * @throws RangeError if the specified {@link Player} doesn't exist.
      */
-    protected getPlayerById(playerId: Player.Id): Player {
+    protected getPlayerById(playerId: Player.Id): Player<S> {
         if (playerId === Player.Id.NULL) {
             throw new RangeError(`The ID \"${Player.Id.NULL}\" is reserved to mean \"no player\".`);
         }
-        const player: Player = ((playerId < Player.Id.NULL)
+        const player: Player<S> = ((playerId < Player.Id.NULL)
             ? this.allArtifPlayers[(-playerId) - 1]
             : this.allHumanPlayers[(+playerId) - 1]
         );
@@ -676,7 +676,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * @param pos - 
      * @param radius - defaults to one.
      */
-    public getNeighbours(pos: BarePos, radius: number = 1): Array<Player> {
+    public getNeighbours(pos: Coord.Bare<S>, radius: number = 1): Array<Player<S>> {
         return this.getNeighbouringTiles(pos, radius)
             .filter((tile) => tile.isOccupied)
             .map((tile) => this.getPlayerById(tile.occupantId));

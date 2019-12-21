@@ -26,7 +26,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     private readonly langCharDivElem:   HTMLDivElement;
     private readonly langSeqDivElem:    HTMLDivElement;
 
-    public constructor(coordSys: S, coordDesc: typeof Coord.BareImpl[S]) {
+    public constructor(coordSys: S, coordDesc: Coord.Bare<S>) {
         super(coordSys, coordDesc);
 
         const tCell: HTMLTableCellElement = new HTMLTableCellElement();

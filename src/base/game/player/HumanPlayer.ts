@@ -1,5 +1,5 @@
 import { Lang } from "lang/Lang";
-import { Tile } from "floor/Tile";
+import { Tile, Coord } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
 
@@ -10,7 +10,7 @@ import { Player } from "./Player";
  * 
  * @extends Player
  */
-export abstract class HumanPlayer extends Player {
+export abstract class HumanPlayer<S extends Coord.System> extends Player<S> {
 
     /**
      * Invariant: always matches the prefix of the {@link LangSeq} of
@@ -18,7 +18,7 @@ export abstract class HumanPlayer extends Player {
      */
     private _seqBuffer: Lang.Seq;
 
-    public constructor(game: Game, desc: Player.CtorArgs) {
+    public constructor(game: Game<S>, desc: Player.CtorArgs) {
         super(game, desc);
         if (this.idNumber <= 0) {
             throw new RangeError(`The ID number for a human-operated player`
@@ -73,7 +73,7 @@ export abstract class HumanPlayer extends Player {
      *      to maintain its invariant.
      */
     public seqBufferAcceptKey(key: string | null): void {
-        const unoccupiedNeighbouringTiles: Array<Tile> = this.getUNT();
+        const unoccupiedNeighbouringTiles: Array<Tile<S>> = this.getUNT();
         if (unoccupiedNeighbouringTiles.length === 0) {
             // Every neighbouring `Tile` is occupied!
             // In this case, no movement is possible.
@@ -100,7 +100,7 @@ export abstract class HumanPlayer extends Player {
         ) {
             // look for the longest suffixing substring of `newSeqBuffer`
             // that is a prefixing substring of any UNT's.
-            const matchletTiles: ReadonlyArray<Tile> = unoccupiedNeighbouringTiles
+            const matchletTiles: ReadonlyArray<Tile<S>> = unoccupiedNeighbouringTiles
                     .filter((tile) => tile.langSeq.startsWith(newSeqBuffer));
             if (matchletTiles.length > 0) {
                 // Found a suffix of newSeqBuffer that prefixes a UNT's
@@ -137,7 +137,7 @@ export abstract class HumanPlayer extends Player {
      * 
      * @override
      */
-    public moveTo(dest: Tile): void {
+    public moveTo(dest: Tile<S>): void {
         // Clear my `seqBuffer` first:
         this._seqBuffer = "";
         super.moveTo(dest);

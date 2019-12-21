@@ -12,10 +12,7 @@ export { Coord } from "./Coord";
  * no knowledge of their context. Their internals are all managed by
  * their host {@link Game} object through method calls.
  */
-export class Tile<
-    S extends Coord.System,
-    B extends typeof Coord.BareImpl[S] = typeof Coord.BareImpl[S],
-> {
+export class Tile<S extends Coord.System> {
 
     public readonly pos: Coord<S>;
 
@@ -42,7 +39,7 @@ export class Tile<
      * @param coordDesc - 
      * @throws `TypeError` if `x` or `y` are not integer values.
      */
-    public constructor(coordSys: S, coordDesc: B) {
+    public constructor(coordSys: S, coordDesc: Coord.Bare<S>) {
         this.pos = Coord.Constructors[coordSys](coordDesc);
         if (!(this.pos.equals(this.pos.round()))) {
             throw new TypeError("Tile position coordinates must be integers.");

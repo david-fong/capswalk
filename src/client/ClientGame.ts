@@ -1,6 +1,6 @@
 import * as io from "socket.io-client";
 
-import { BarePos } from "floor/Pos";
+import { Coord } from "floor/Coord";
 import { VisibleTile } from "floor/VisibleTile";
 import { LocalGameSettings } from "settings/GameSettings";
 import { Grid } from "floor/Grid";
@@ -19,12 +19,12 @@ import { Bubble } from "game/events/Bubble";
  * 
  * @extends Game
  */
-export class ClientGame extends Game {
+export class ClientGame<S extends Coord.System> extends Game<S> {
 
     /**
      * @override The Operator is always defined for a {@link ClientGame}.
      */
-    public declare readonly operator: HumanPlayer;
+    public declare readonly operator: HumanPlayer<S>;
 
     protected settings: LocalGameSettings;
 
@@ -48,7 +48,7 @@ export class ClientGame extends Game {
      */
     public constructor(
         socket: SocketIOClient.Socket,
-        desc: Game.CtorArgs,
+        desc: Game.CtorArgs<S>,
     ) {
         super(desc);
         if (!this.operator) {
@@ -93,21 +93,21 @@ export class ClientGame extends Game {
     /**
      * @override
      */
-    public createTile(pos: BarePos): VisibleTile {
-        return new VisibleTile(pos);
+    public createTile(desc: Coord.Bare<S>): VisibleTile<S> {
+        return new VisibleTile(this.coordSys, desc);
     }
 
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer {
+    protected createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer<S> {
         return new OnlineHumanPlayer(this, desc);
     }
 
     /**
      * @override
      */
-    protected createArtifPlayer(desc: Player.CtorArgs): PuppetPlayer {
+    protected createArtifPlayer(desc: Player.CtorArgs): PuppetPlayer<S> {
         return new PuppetPlayer(this, desc);
     }
 
