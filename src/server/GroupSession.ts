@@ -4,6 +4,7 @@ import { Grid } from "floor/Grid";
 import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 import { Player } from "game/player/Player";
+import { Coord } from "floor/Tile";
 
 export { ServerGame } from "./ServerGame";
 
@@ -19,7 +20,7 @@ export { ServerGame } from "./ServerGame";
 export class GroupSession {
 
     public readonly namespace: io.Namespace;
-    protected currentGame: ServerGame | undefined;
+    protected currentGame: ServerGame<any> | undefined;
     protected sessionHost: io.Socket;
 
     private readonly initialTtlTimeout: NodeJS.Timeout;
@@ -117,11 +118,13 @@ export class GroupSession {
      * the Game constructor, which will in turn pass this information
      * to each client.
      * 
-     * @param gridDimensions - 
+     * @param coordSys -
+     * @param gridDimensions -
      * @returns false if the passed arguments were incomplete or invalid.
      */
     private createGameInstance(
-        gridDimensions: Grid.DimensionDesc
+        coordSys: Coord.System,
+        gridDimensions: Grid.DimensionDesc,
     ): Readonly<Game.CtorArgs.FailureReasons> | undefined {
         const failureReasons: Partial<Game.CtorArgs.FailureReasons> = {};
         failureReasons.undefinedUsername = Object.values(this.sockets)
@@ -130,7 +133,8 @@ export class GroupSession {
         if (failureReasons.undefinedUsername) {
             return failureReasons;
         }
-        this.currentGame = new ServerGame(this, {
+        this.currentGame = new ServerGame<any>(this, {
+            coordSys,
             gridDimensions,
             languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.
             langBalancingScheme: undefined!, // TODO

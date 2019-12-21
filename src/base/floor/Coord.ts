@@ -6,18 +6,8 @@ import { Beehive } from "floor/impl/Beehive";
  * Immutable. All `Coord` objects returned by operations are new objects.
  * 
  * @template S - An enum identifying the unique implementation class.
- * @template B - The shape of a bare instance. For internal convenience.
- *      You can pass something in, but there is nothing to gain from it.
- * @template C - Use this as the type for "`other`" function arguments.
- *      don't use this for function return-types. Here as a brevity
- *      / convenience tool. Like as for `B`, don't pass anything in.
- *      We need this because TypeScript won't let us tell it that it
- *      implements its own bare-type.
  */
-export abstract class Coord<
-    S extends Coord.System,
-    B extends Coord.Bare<S> = Coord.Bare<S>,
-> {
+export abstract class Coord<S extends Coord.System> {
 
     /**
      * This does nothing. Subclass constructors should copy in the
@@ -25,7 +15,7 @@ export abstract class Coord<
      * 
      * @param desc - Untouched. Here as a reminder of what is needed.
      */
-    protected constructor(desc: Coord.Ish) {}
+    protected constructor(desc: Coord.Ish<S>) {}
 
     /**
      * @returns
@@ -33,7 +23,7 @@ export abstract class Coord<
      * all instance fields found in an upward prototype traversal of
      * the `this` object.
      */
-    public getBareView(): B {
+    public getBareView(): Coord.Bare<S> {
         return Object.freeze(Object.assign(Object.create(null), this));
     }
 

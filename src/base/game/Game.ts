@@ -67,7 +67,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
     /**
      * Set to `undefined` for {@link ServerGame}.
      */
-    public readonly operator?: HumanPlayer;
+    public readonly operator?: HumanPlayer<S>;
 
     /**
      * Does not use the HumanPlayer type annotation. This is to
