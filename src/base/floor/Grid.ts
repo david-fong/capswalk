@@ -1,6 +1,7 @@
-import { Coord } from "floor/Coord";
+import { Coord } from "./Coord";
 import { Tile } from "./Tile";
 import { VisibleTile } from "./VisibleTile";
+import { Euclid2 } from "floor/impl/Euclid2";
 
 
 /**
@@ -12,22 +13,9 @@ export abstract class Grid<S extends Coord.System> {
     /**
      * Bounds are inclusive. Ie. the specified values are _just_ allowed.
      */
-    public static readonly SIZE_LIMITS = Object.freeze({
-        height: Object.freeze(<const>{ min: 10, max: 50, }),
-        width:  Object.freeze(<const>{ min: 10, max: 50, }),
-    });
+    public abstract GET_SIZE_LIMITS(): Grid.DimensionBounds<S>;
 
     public readonly coordSys: S;
-
-    public readonly height: number;
-    public readonly width:  number;
-
-    /**
-     * A 2-dimensional rectangular array with height and width following
-     * their corresponding fields, containing `Tile` objects with `pos`
-     * fields allowing indexing to themselves. Uses row-major ordering.
-     */
-    private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
 
     /**
      * If {@link Grid#createTile} returns an instance of {@link VisibleTile},
@@ -37,11 +25,14 @@ export abstract class Grid<S extends Coord.System> {
      */
     private readonly domGrid?: HTMLTableElement;
 
-    public abstract createTile(desc: Coord.Bare<S>): Tile<S>;
+    public abstract createTile(desc: Coord.Ish<S>): Tile<S>;
 
 
 
     /**
+     * **Important:** Each implementation's constructor must start
+     * with a call to the super constructor
+     * 
      * If requested dimensions are outside the limits requested by this
      * class, they will be truncated before being used. No error will
      * be thrown.
@@ -55,9 +46,9 @@ export abstract class Grid<S extends Coord.System> {
      *      (if it exists). Any existing children of the hook-element
      *      are kicked out. Must refer to an existing element.
      */
-    public constructor(
+    protected constructor(
         coordSys: S,
-        dimensions: Grid.DimensionDesc,
+        dimensions: Grid.Dimensions<S>,
         domGridHtmlIdHook = Grid.HTML_ID_HOOK,
     ) {
         this.coordSys = coordSys;
@@ -128,29 +119,13 @@ export abstract class Grid<S extends Coord.System> {
      * @returns The {@link Tile} at the position in this `Grid` specified
      * by `pos`.
      * 
-     * @param pos - Must be within the bounds of this `Grid`.
+     * @param coord - Must be within the bounds of this `Grid`.
+     * @param radius - Defaults to `1`.
      * @throws `RangeError` if `pos` is not in the bounds of this `Grid`.
      */
-    public getTileAt(pos: Coord.Ish<S>): Tile<S> {
-        if (pos.x < 0 || pos.x >= this.width ||
-            pos.y < 0 || pos.y >= this.height
-        ) {
-            throw new RangeError("Argument \"pos\" is outside the bounds of this Grid.");
-        }
-        return this.grid[pos.x][pos.y];
-    }
+    public abstract getTileAt(coord: Coord.Ish<S>): Tile<S>;
 
-    public getNeighbouringTiles(pos: Coord.Ish<S>, radius: number = 1): Array<Tile<S>> {
-        return this.grid.slice(
-            // filter for included rows:
-            Math.max(0, pos.y - radius),
-            Math.min(this.height, pos.y + radius + 1),
-        ).flatMap((tile) => tile.slice(
-            // filter for included slices of rows (columns):
-            Math.max(0, pos.x - radius,
-            Math.min(this.width, pos.x + radius + 1)),
-        ));
-    }
+    public abstract getNeighbouringTiles(coord: Coord.Ish<S>, radius?: number): Array<Tile<S>>;
 
     /**
      * @returns A collection of all "Unoccupied Neighbouring Tiles"
@@ -159,19 +134,15 @@ export abstract class Grid<S extends Coord.System> {
      * filtered out of the returned array. The {@link Tile} at `pos`
      * is included if it is unoccupied.
      * 
-     * @param pos - The center / origin position-locator to search around.
+     * @param coord - The center / origin position-locator to search around.
      * @param radius - An inclusive bound on the {@link Pos#infNorm} filter.
      *      Defaults to `1`.
      */
-    public getUNT(pos: Coord.Ish<S>, radius: number = 1): Array<Tile<S>> {
-        return this.getNeighbouringTiles(pos, radius).filter((tile) => !(tile.isOccupied()));
+    public getUNT(coord: Coord.Ish<S>, radius: number = 1): Array<Tile<S>> {
+        return this.getNeighbouringTiles(coord, radius).filter((tile) => !(tile.isOccupied()));
     }
 
-    public forEachTile(consumer: (tile: Tile<S>) => void, thisArg: object = this): void {
-        this.grid.forEach((row) => row.forEach((tile) => {
-            consumer(tile);
-        }, thisArg), thisArg);
-    }
+    public abstract forEachTile(consumer: (tile: Tile<S>) => void, thisArg?: object): void;
 
 }
 
@@ -188,9 +159,15 @@ export namespace Grid {
      * Values do not _need_ to be in range or integers. Cleaning to handle
      * such values is performed by the {@link Grid} constructor.
      */
-    export type DimensionDesc = {
-        height: number,
-        width?: number,
+    export type Dimensions<S extends Coord.System>
+        = S extends Coord.System.EUCLID2 ? Euclid2.Grid.Dimensions
+        : never;
+
+    export type DimensionBounds<S extends Coord.System> = {
+        [ P in keyof Required<Dimensions<S>> ]: Readonly<{
+            min: number;
+            max: number;
+        }>;
     };
 
 }

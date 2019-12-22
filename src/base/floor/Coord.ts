@@ -138,18 +138,33 @@ export namespace Coord {
         EUCLID2 = "EUCLID2",
         BEEHIVE = "BEEHIVE",
     }
-    // Note: not using declaration merging here for "Bare" because
-    // the subclasses do that, and cool but contextually undesirable
-    // things happen if we try to do the same thing as their parent.
-    type BareType = { [dimension: string]: number, };
-
-    export type ImplType = { Bare: BareType, } &
-        (<S extends Coord.System>(desc: Bare<S>) => Coord<S>);
 
     export type Bare<S extends System>
         = S extends System.EUCLID2 ? Euclid2.Coord.Bare
         : S extends System.BEEHIVE ? Beehive.Coord.Bare
         : never;
+
+    const Constructors = Object.freeze(<const>{
+        [ System.EUCLID2 ]: Euclid2.Coord,
+        [ System.BEEHIVE ]: Beehive.Coord,
+    }) as Readonly<Record<System, typeof Coord>>;
+
+    // Note: The below exports do not require any modificaions with
+    // the additions of new coordinate systems.
+
+    /**
+     * @returns
+     * A coordinate of the specified system according to the given
+     * arguments. The mapping in `Constructors` is not statically
+     * checked here because I can't get that to work, so just make
+     * sure to sanity check that it works at runtime.
+     * 
+     * @param coordSys -
+     * @param desc -
+     */
+    export const of = <S extends System>(coordSys: S, desc: Ish<S>): Coord<S> => {
+        return new (Constructors[coordSys] as any)(desc);
+    };
 
     /**
      * Use this to specify the type for function arguments that are

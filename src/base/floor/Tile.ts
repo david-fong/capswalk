@@ -40,7 +40,7 @@ export class Tile<S extends Coord.System> {
      * @throws `TypeError` if `x` or `y` are not integer values.
      */
     public constructor(coordSys: S, coordDesc: Coord.Bare<S>) {
-        this.pos = Coord.Constructors[coordSys](coordDesc);
+        this.pos = Coord.of(coordSys, coordDesc);
         if (!(this.pos.equals(this.pos.round()))) {
             throw new TypeError("Tile position coordinates must be integers.");
         }
