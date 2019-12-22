@@ -186,10 +186,13 @@ export namespace Player {
     }
 
     /**
-     * Server should pass ID = Player.SocketId
-     * Client should keep default of Player.Id
+     * # Player Constructor Arguments
+     * 
+     * @template ID
+     * Server should pass ID = Player.SocketId.
+     * Client should keep default of Player.Id.
      */
-    export type CtorArgs<ID_TYPE extends Player.Id | SocketId = Player.Id> = {
+    export type CtorArgs<ID extends Player.Id | SocketId = Player.Id> = {
 
         readonly operatorClass: Operator;
 
@@ -197,7 +200,7 @@ export namespace Player {
          * Initially `undefined` for server and offline games. It will
          * already be defined for a client game by the server.
          */
-        idNumber: ID_TYPE extends Player.Id ? (Player.Id | undefined) : undefined;
+        idNumber: ID extends Player.Id ? (Player.Id | undefined) : undefined;
 
         readonly username: Username;
 
@@ -207,9 +210,9 @@ export namespace Player {
          * **Important**: The builder of this field must enforce that
          * entries are unique (that there are no duplicates).
          */
-        beNiceTo: ReadonlyArray<ID_TYPE>
+        beNiceTo: ReadonlyArray<ID>
 
-        readonly socketId: ID_TYPE extends SocketId ? SocketId : undefined;
+        readonly socketId: ID extends SocketId ? SocketId : undefined;
     };
 
 }

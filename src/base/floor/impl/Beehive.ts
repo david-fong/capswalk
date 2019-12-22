@@ -63,22 +63,21 @@ export namespace Beehive {
          * @override
          */
         public originOneNorm(): number {
-            return Math.abs(this.x) + Math.abs(this.y);
+            return 0; // TODO
         }
 
         /**
          * @override
          */
         public originInfNorm(): number {
-            return Math.max(Math.abs(this.x), Math.abs(this.y));
+            return 0; // TODO
         }
 
         /**
          * @override
          */
         public originAxialAlignment(): number {
-            return Math.abs(Math.abs(this.x) - Math.abs(this.y))
-                / (Math.abs(this.x) + Math.abs(this.y));
+            return 0; // TODO
         }
 
         /**
@@ -86,8 +85,8 @@ export namespace Beehive {
          */
         public add(other: B): Coord {
             return new Coord({
-                x: this.x + other.x,
-                y: this.y + other.y,
+                dash: this.dash + other.dash,
+                bash: this.bash + other.bash,
             });
         }
 
@@ -96,8 +95,8 @@ export namespace Beehive {
          */
         public sub(other: B): Coord {
             return new Coord({
-                x: this.x - other.x,
-                y: this.y - other.y,
+                dash: this.dash - other.dash,
+                bash: this.bash - other.bash,
             });
         }
 

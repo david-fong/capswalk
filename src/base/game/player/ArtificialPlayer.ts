@@ -69,7 +69,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      *      of the {@link Game}'s grid, or have integer-valued x and y
      *      coordinates.
      */
-    private getUntToward(intendedDest: BarePos): Tile<S> {
+    private getUntToward(intendedDest: Coord.Ish<S>): Tile<S> {
         const options: Array<Tile<S>> = this.getUNT();
         if (!(options.includes(this.hostTile))) {
             // This should never happen. It is here as a reminder.
@@ -102,10 +102,10 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
         }
         // Choose one of the most favorable using some randomness
         // weighted to follow a straight-looking path of movement.
-        if (options[0].pos.x === 0 || options[0].pos.y === 0) {
+        if (options[0].pos.x - this.pos.x === 0 || options[0].pos.y - this.pos.y === 0) {
             // (the axial option (if it exists) should be the first
             // due to the previous sort's tie-breaker.
-            if (this.pos.axialAlignment(intendedDest) - 0.5 > 0.0) {
+            if (this.pos.axialAlignment(intendedDest.sub(this.pos)) - 0.5 > 0.0) {
                 // The path to the intended destination is aligned more
                 // with the x or y axis than they are with those axes
                 // rotated 45 degrees.
@@ -142,7 +142,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
 export namespace ArtificialPlayer {
 
-    const Constructors = Object.freeze({
+    const Constructors = Object.freeze(<const>{
         [ Player.Operator.CHASER ]: Chaser,
     }) as Readonly<Record<
         Exclude<Player.Operator, Player.Operator.HUMAN>,
@@ -151,7 +151,7 @@ export namespace ArtificialPlayer {
 
     export const of = <S extends Coord.System>(
         game: Readonly<Game<S>>,
-        playerDesc: Readonly<Player.CtorArgs>
+        playerDesc: Readonly<Player.CtorArgs>,
     ): ArtificialPlayer<S> => {
         return new (Constructors[playerDesc.operatorClass])(game, playerDesc);
     };

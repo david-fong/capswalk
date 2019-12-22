@@ -288,13 +288,13 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      *      acknowledgement for the previous request, or if the given
      *      ID does not belong to any existing player.
      */
-    private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player<S> | null { // TODO: no null please
+    private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player<S> | undefined {
         const player = this.getPlayerById(desc.playerId);
          if (player.isBubbling) {
             // The specified player does not exist or is bubbling.
             // This is _not_ the same as if the requester has their
             // movement frozen.
-            return null;
+            return undefined;
 
         } else if (desc.lastAcceptedRequestId !== player.lastAcceptedRequestId) {
             throw new RangeError((desc.lastAcceptedRequestId < player.lastAcceptedRequestId)
@@ -688,20 +688,31 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
 
 export namespace Game {
 
-    export enum Type {
-        OFFLINE,
-        SERVER,
-        CLIENT,
+    export const enum Type {
+        OFFLINE = "OFFLINE",
+        SERVER  = "SERVER",
+        CLIENT  = "CLIENT",
     }
 
     /**
+     * # Game Constructor Arguments
      * 
+     * @template S
+     * The coordinate system to use. The literal value must also be
+     * passed as the field {@link CtorArgs#coordSys}.
+     * 
+     * @template ID
+     * The current type of Player ID's. Player ID's are assigned by
+     * the `Game` constructor of the Game Manager. On the client side
+     * of an online game, these will have been assigned by the server,
+     * so it should use the default type parameter. The server should
+     * use the string-type since it initially only knows socket ID's.
      */
-    export type CtorArgs<S extends Coord.System, ID_TYPE extends Player.Id | Player.SocketId = Player.Id> = {
+    export type CtorArgs<S extends Coord.System, ID extends Player.Id | Player.SocketId = Player.Id> = {
 
         readonly coordSys: S;
 
-        readonly gridDimensions: Readonly<Grid.DimensionDesc>;
+        readonly gridDimensions: Grid.Dimensions<S>;
 
         readonly languageName: typeof Lang.Modules.NAMES[number];
 
@@ -714,8 +725,9 @@ export namespace Game {
          */
         operatorIndex?: number;
 
-        readonly playerDescs: ReadonlyArray<Player.CtorArgs<ID_TYPE>>;
+        readonly playerDescs: ReadonlyArray<Player.CtorArgs<ID>>;
     };
+
     export namespace CtorArgs {
 
         export const EVENT_NAME = "game-create";
