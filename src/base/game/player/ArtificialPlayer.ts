@@ -81,17 +81,17 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
         }
         options.sort((tileA, TileB) => {
             // Break (some) ties by one-norm:
-            return tileA.pos.oneNorm(intendedDest) - TileB.pos.oneNorm(intendedDest);
+            return tileA.coord.oneNorm(intendedDest) - TileB.coord.oneNorm(intendedDest);
         }).sort((tileA, TileB) => {
             // Break (some) ties by one-norm:
-            return tileA.pos.infNorm(intendedDest) - TileB.pos.infNorm(intendedDest);
+            return tileA.coord.infNorm(intendedDest) - TileB.coord.infNorm(intendedDest);
         });
         // Filter out options that are not equally favorable as the
         // most favorable option. I think this is the best method:
         // Note: it is safe to start at index `1` because of the
         // above short-circuit if `options.length === 1`.
         for (let i = 1; i < options.length; i++) {
-            if (options[i].pos.infNorm(intendedDest) > options[0].pos.infNorm(intendedDest)) {
+            if (options[i].coord.infNorm(intendedDest) > options[0].coord.infNorm(intendedDest)) {
                 options.splice(i);
                 break;
             }
@@ -102,10 +102,10 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
         }
         // Choose one of the most favorable using some randomness
         // weighted to follow a straight-looking path of movement.
-        if (options[0].pos.x - this.pos.x === 0 || options[0].pos.y - this.pos.y === 0) {
+        if (options[0].coord.x - this.coord.x === 0 || options[0].coord.y - this.coord.y === 0) {
             // (the axial option (if it exists) should be the first
             // due to the previous sort's tie-breaker.
-            if (this.pos.axialAlignment(intendedDest.sub(this.pos)) - 0.5 > 0.0) {
+            if (this.coord.axialAlignment(intendedDest.sub(this.coord)) - 0.5 > 0.0) {
                 // The path to the intended destination is aligned more
                 // with the x or y axis than they are with those axes
                 // rotated 45 degrees.

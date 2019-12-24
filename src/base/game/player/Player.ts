@@ -39,8 +39,9 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      *   not nice to it.
      * 
      * These are fixed once the enclosing Game has been constructed.
-     * To change these values, a new Game must be constructed.
      */
+    // TODO: how about a rule that no more than ~75% of the players
+    // may be nice to you? (don't count self, and round down)
     public readonly beNiceTo: ReadonlyArray<Player.Id>;
 
     public lastAcceptedRequestId: number;
@@ -102,14 +103,14 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * Request should call functions with a flow that either short-
      * circuits, or terminates with a call to {@link Player#moveTo}.
      * 
-     * @param dest - 
+     * @param dest -
      * 
      * @throws `Error` if `dest` is occupied by another `Player`.
      */
     protected abstract abstractMakeMovementRequest(dest: Tile<S>): void;
 
     /**
-     * Conveniece method.
+     * Convenience method.
      */
     public bench(): void {
         this.makeMovementRequest(this.benchTile);
@@ -117,25 +118,26 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
 
 
-    public get pos(): Coord<S> {
-        return this.hostTile.pos;
+    public get coord(): Coord<S> {
+        return this.hostTile.coord;
     }
 
 
 
     public getNeighbouringTiles(radius: number = 1): Array<Tile<S>> {
-        return this.game.getNeighbouringTiles(this.pos, radius);
+        return this.game.grid.getNeighbouringTiles(this.coord, radius);
     }
 
     public getUNT(radius: number = 1): Array<Tile<S>> {
-        return this.game.getUNT(this.pos, radius);
+        return this.game.grid.getUNT(this.coord, radius);
     }
 
     public getNeighbours(radius: number = 1): Array<Player<S>> {
-        return this.game.getNeighbours(this.pos, radius);
+        return this.game.getNeighbours(this.coord, radius);
     }
 
 }
+
 
 
 export namespace Player {

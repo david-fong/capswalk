@@ -6,15 +6,20 @@ export { Coord } from "./Coord";
 
 
 /**
+ * # The Tile Class
  * 
- * 
- * As an implementation choice, `Tile`s are dumb. That is, they have
+ * As an implementation choice, tiles are dumb. That is, they have
  * no knowledge of their context. Their internals are all managed by
- * their host {@link Game} object through method calls.
+ * their host {@link Game} through method calls.
+ * 
+ * From a caller's point of view, extending classes should have am
+ * identical constructor signature as that of this base class. This
+ * can be done by a type assertion statement: `<extension class> as
+ * typeof Tile`.
  */
 export class Tile<S extends Coord.System> {
 
-    public readonly pos: Coord<S>;
+    public readonly coord: Coord<S>;
 
     protected _occupantId: Player.Id;
     protected _scoreValue: number;
@@ -35,20 +40,19 @@ export class Tile<S extends Coord.System> {
     /**
      * _Does not call reset._
      * 
-     * @param coordSys -
-     * @param coordDesc - 
+     * @param coord - 
      * @throws `TypeError` if `x` or `y` are not integer values.
      */
-    public constructor(coordSys: S, coordDesc: Coord.Bare<S>) {
-        this.pos = Coord.of(coordSys, coordDesc);
-        if (!(this.pos.equals(this.pos.round()))) {
+    public constructor(coord: Coord<S>) {
+        this.coord = coord;
+        if (!(this.coord.equals(this.coord.round()))) {
             throw new TypeError("Tile position coordinates must be integers.");
         }
     }
 
     public reset(): void {
         this.evictOccupant();
-        this.numTimesOccupied = 1;
+        this.numTimesOccupied = 0;
         this.scoreValue = 0;
 
         // Note that this is also redone done as part of the game's
@@ -121,4 +125,12 @@ export class Tile<S extends Coord.System> {
         return this._langSeq;
     }
 
+}
+// If this errs, then the type alias must be updated.
+Tile as Tile.ConstructorType<any>;
+
+
+
+export namespace Tile {
+    export type ConstructorType<S extends Coord.System> = { new(coord: Coord<S>): Tile<S> };
 }

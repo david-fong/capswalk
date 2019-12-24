@@ -50,7 +50,7 @@ export class ClientGame<S extends Coord.System> extends Game<S> {
         socket: SocketIOClient.Socket,
         desc: Game.CtorArgs<S>,
     ) {
-        super(desc);
+        super(desc, VisibleTile);
         if (!this.operator) {
             throw new Error("The Operator for a ClientGame should be defined.");
         }
@@ -88,13 +88,6 @@ export class ClientGame<S extends Coord.System> extends Game<S> {
         //     Game.StateDump.EVENT_NAME,
         //     () => {},
         // );
-    }
-
-    /**
-     * @override
-     */
-    public createTile(desc: Coord.Bare<S>): VisibleTile<S> {
-        return new VisibleTile<S>(this.coordSys, desc);
     }
 
     /**

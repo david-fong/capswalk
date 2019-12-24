@@ -52,7 +52,7 @@ export class ServerGame<S extends Coord.System> extends Game<S> {
         session: GroupSession,
         desc: Game.CtorArgs<S, Player.SocketId>,
     ) {
-        super(desc);
+        super(desc, Tile);
         // Setup the map from player ID's to socket ID's:
         // This is used to send messages to players by their player ID.
         const playerIdToSocketMap: Map<Player.Id, io.Socket> = new Map();
@@ -106,13 +106,6 @@ export class ServerGame<S extends Coord.System> extends Game<S> {
         // and wait for each of their acks before starting to
         // actually process their movement requests and making
         // any artificial players start moving.
-    }
-
-    /**
-     * @override
-     */
-    public createTile(desc: Coord.Bare<S>): Tile<S> {
-        return new Tile<S>(this.coordSys, desc);
     }
 
     /**

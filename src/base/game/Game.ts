@@ -34,10 +34,13 @@ import { EventRecordEntry } from "./events/EventRecordEntry";
  * - Offline and Server games maintain and control the master-game-state.
  * - Offline and Client games display the game-state to an operator via browser and HTML.
  * - Client  and Server games use network operations to communicate.
- * 
- * @extends Grid
  */
-export abstract class Game<S extends Coord.System> extends Grid<S> {
+export abstract class Game<S extends Coord.System> {
+
+    /**
+     * Contains all non-bench tiles in this game.
+     */
+    public readonly grid: Grid<S>;
 
     public readonly lang: Lang;
 
@@ -90,10 +93,11 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
      * 
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
      * 
-     * @override
+     * @param desc -
+     * @param tileClass -
      */
-    public constructor(desc: Game.CtorArgs<S, any>) {
-        super(desc.coordSys, desc.gridDimensions);
+    public constructor(desc: Game.CtorArgs<S, any>, tileClass: Tile.ConstructorType<S>) {
+        this.grid = Grid.of(desc.coordSys, desc.gridDimensions, tileClass);
 
         // TODO: set default language (must be done before call to reset):
         //this.lang = import(desc.languageName);
@@ -244,7 +248,6 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
 
     /**
      * @returns An {@link ArtificialPlayer} of the specified type.
-     * This is overridden in {@link ClientGame} to throw an error.
      * 
      * @param desc - 
      */
@@ -271,7 +274,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
         // previous) values don't get unnecessarily avoided.
         tile.setLangCharSeq(Lang.CharSeqPair.NULL);
         return this.lang.getNonConflictingChar(
-            this.getNeighbouringTiles(tile.pos)
+            this.getNeighbouringTiles(tile.coord)
                 .map((tile) => tile.langSeq)
                 .filter((seq) => seq), // no falsy values.
             this.langBalancingScheme,
@@ -407,7 +410,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
             // Refresh the operator's `seqBuffer`:
             if (this.operator && // Ignore if ServerGame
                 player.idNumber !== this.operator.idNumber &&
-                dest.pos.infNorm(this.operator.pos) === 1) {
+                dest.coord.infNorm(this.operator.coord) === 1) {
                 // Do this if moving into the vicinity of the operator
                 // and the requester is not the operator. This operation
                 // is necessary to maintain the `seqBuffer` invariant.
@@ -613,10 +616,13 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
     /**
      * Basically does `this.eventRecord[id] = desc;` with value checking.
      * 
-     * @param desc - 
-     * @throws TypeError if the event ID indicates a rejected request,
-     *      RangeError if it is not a positive integer, and Error if
-     *      another event was already recorded with the same ID.
+     * @param desc -
+     * 
+     * @throws
+     * In the given order of priority:
+     * - TypeError if the event ID indicates a rejected request
+     * - RangeError if it is not a positive integer
+     * - Error if another event was already recorded with the same ID.
      */
     private recordEvent(desc: EventRecordEntry): void {
         const id = desc.eventId;
@@ -645,7 +651,7 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
     public getBenchableTileAt(dest: Coord.Ish<S>, playerId: Player.Id): Tile<S> {
         return ((Player.BENCH_POS[this.coordSys].equals(dest))
             ? this.getPlayerById(playerId).benchTile
-            : this.getTileAt(dest)
+            : this.grid.getTileAt(dest)
         );
     }
 
@@ -670,14 +676,14 @@ export abstract class Game<S extends Coord.System> extends Grid<S> {
     }
 
     /**
-     * @returns All {@link Player}s within a `radius` infinity-norm of
-     *      `pos`.
+     * @returns
+     * All {@link Player}s within a `radius` infinity-norm of `pos`.
      * 
-     * @param pos - 
+     * @param coord - 
      * @param radius - defaults to one.
      */
-    public getNeighbours(pos: Coord.Ish<S>, radius: number = 1): Array<Player<S>> {
-        return this.getNeighbouringTiles(pos, radius)
+    public getNeighbours(coord: Coord.Ish<S>, radius: number = 1): Array<Player<S>> {
+        return this.grid.getNeighbouringTiles(coord, radius)
             .filter((tile) => tile.isOccupied)
             .map((tile) => this.getPlayerById(tile.occupantId));
     }

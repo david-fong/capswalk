@@ -151,26 +151,13 @@ export namespace Coord {
     const Constructors = Object.freeze(<const>{
         [ System.EUCLID2 ]: Euclid2.Coord,
         [ System.BEEHIVE ]: Beehive.Coord,
-    }) as Readonly<Record<System, typeof Coord>>;
+    });
+    Constructors as Readonly<Record<System, typeof Coord>>;
 
     // ==============================================================
     // Note: The below exports do not require any modificaions with
     // the additions of new coordinate systems.
     // ==============================================================
-
-    /**
-     * @returns
-     * A coordinate of the specified system according to the given
-     * arguments. The mapping in `Constructors` is not statically
-     * checked here because I can't get that to work, so just make
-     * sure to sanity check that it works at runtime.
-     * 
-     * @param coordSys -
-     * @param desc -
-     */
-    export const of = <S extends System>(coordSys: S, desc: Ish<S>): Coord<S> => {
-        return new (Constructors[coordSys] as any)(desc);
-    };
 
     /**
      * Use this to specify the type for function arguments that are

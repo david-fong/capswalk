@@ -26,8 +26,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     private readonly langCharDivElem:   HTMLDivElement;
     private readonly langSeqDivElem:    HTMLDivElement;
 
-    public constructor(coordSys: S, coordDesc: Coord.Bare<S>) {
-        super(coordSys, coordDesc);
+    public constructor(coordDesc: Coord<S>) {
+        super(coordDesc);
 
         const tCell: HTMLTableCellElement = new HTMLTableCellElement();
         {
@@ -97,6 +97,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     }
 
 }
+// Assert that this extension's constructor has a compatible signature:
+VisibleTile as typeof Tile;
 
 
 

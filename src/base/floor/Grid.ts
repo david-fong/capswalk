@@ -6,53 +6,25 @@ import { Beehive } from "./impl/Beehive";
 
 
 /**
- * Provides basic management of The basic 2-dimensional-array-like
- * structure containing {@link Tile}s.
+ * A Collection of Tiles.
  */
 export abstract class Grid<S extends Coord.System> {
 
     /**
      * Bounds are inclusive. Ie. the specified values are _just_ allowed.
+     * 
+     * Bounds must be strictly positive.
      */
     public abstract GET_SIZE_LIMITS(): Grid.DimensionBounds<S>;
 
-    public readonly coordSys: S;
-
-    /**
-     * If {@link Grid#createTile} returns an instance of {@link VisibleTile},
-     * then this field is initialized with an HTML table element containing
-     * all  the contents of {@link Grid#grid}. Otherwise, this field is set
-     * to be `undefined`.
-     */
-    private readonly domGrid?: HTMLTableElement;
-
-    public abstract createTile(desc: Coord.Ish<S>): Tile<S>;
-
 
 
     /**
-     * **Important:** Each implementation's constructor must start
-     * with a call to the super constructor
-     * 
-     * If requested dimensions are outside the limits requested by this
-     * class, they will be truncated before being used. No error will
-     * be thrown.
-     * 
      * _Does not call reset._
      * 
-     * @param coordSys -
-     * @param dimensions - 
-     * @param domGridHtmlIdHook - The identifier for the HTML element
-     *      for this new grid to attach its {@link Grid#domGrid} to
-     *      (if it exists). Any existing children of the hook-element
-     *      are kicked out. Must refer to an existing element.
+     * @param desc -
      */
-    protected constructor(
-        coordSys: S,
-        dimensions: Grid.Dimensions<S>,
-        domGridHtmlIdHook = Grid.HTML_ID_HOOK,
-    ) {
-        this.coordSys = coordSys;
+    protected constructor(desc: Grid.CtorArgs<S>) {
         if (!dimensions.width) {
             dimensions.width = dimensions.height;
         }
@@ -71,22 +43,11 @@ export abstract class Grid<S extends Coord.System> {
             Grid.SIZE_LIMITS.width.max,
         ));
 
-        const grid: Array<ReadonlyArray<Tile<S>>> = [];
-        for (let row = 0; row < this.height; row++) {
-            const newRow: Array<Tile<S>> = [];
-            for (let col = 0; col < this.width; col++) {
-                const newTile: Tile<S> = this.createTile({ x: col, y: row, });
-                newRow.push(newTile);
-            }
-            grid.push(newRow);
-        }
-        this.grid = grid;
-
         // Create and populate the HTML table element field:
         // (skip this step if my tiles are not displayed in a browser window)
-        if (this.createTile({ x: 0, y: 0, }) instanceof VisibleTile) {
-            this.domGrid = new HTMLTableElement();
-            const tBody = this.domGrid.createTBody();
+        if (new desc.tileClass({ x: 0, y: 0, }) instanceof VisibleTile) {
+            const domGrid = new HTMLTableElement();
+            const tBody = domGrid.createTBody();
             for (const row of this.grid) {
                 const rowElem  = tBody.insertRow();
                 for (const tile of row) {
@@ -101,9 +62,7 @@ export abstract class Grid<S extends Coord.System> {
             }
             // remove all child elements and then 
             carrier.childNodes.forEach((node) => carrier.removeChild(node));
-            carrier.appendChild(this.domGrid);
-        } else {
-            this.domGrid = undefined;
+            carrier.appendChild(domGrid);
         }
     }
 
@@ -155,11 +114,10 @@ export namespace Grid {
     /**
      * Should only have one child: the main game grid's display.
      */
-    export const HTML_ID_HOOK = "game-grid-host";
+    export const DEFAULT_HTML_ID_HOOK = "game-grid-host";
 
     /**
-     * Values do not _need_ to be in range or integers. Cleaning to handle
-     * such values is performed by the {@link Grid} constructor.
+     * Values do not _need_ to be in range or integers.
      */
     export type Dimensions<S extends Coord.System>
         = S extends Coord.System.EUCLID2 ? Euclid2.Grid.Dimensions
@@ -169,12 +127,22 @@ export namespace Grid {
     const Constructors = Object.freeze(<const>{
         [ Coord.System.EUCLID2 ]: Euclid2.Grid,
         [ Coord.System.BEEHIVE ]: Beehive.Grid,
-    }) as Readonly<Record<Coord.System, typeof Grid>>;
+    });
+    // Will err if the extension's constructor is not compatible.
+    Constructors as Readonly<{[S in Coord.System]: ConstructorType<S>;}>;
 
     // ==============================================================
     // Note: The below exports do not require any modificaions with
     // the additions of new coordinate systems.
     // ==============================================================
+
+    type ConstructorType<S extends Coord.System> = { new(desc: CtorArgs<S>): Grid<S> };
+
+    export type CtorArgs<S extends Coord.System> = {
+        dimensions: Dimensions<S>;
+        tileClass: Tile.ConstructorType<S>;
+        domGridHtmlIdHook?: string;
+    };
 
     /**
      * @returns
@@ -184,22 +152,18 @@ export namespace Grid {
      * sure to sanity check that it works at runtime.
      * 
      * @param coordSys -
-     * @param dimensions -
-     * @param domGridHtmlIdHook -
+     * @param ctorArgs -
      */
-    export const of = <S extends Coord.System>(
-        coordSys: S,
-        dimensions: Grid.Dimensions<S>,
-        domGridHtmlIdHook = Grid.HTML_ID_HOOK,
-    ): Grid<S> => {
-        return new (Constructors[coordSys] as any)(coordSys, dimensions, domGridHtmlIdHook);
+    export const of = <S extends Coord.System>(coordSys: S, ctorArgs: CtorArgs<S>): Grid<S> => {
+        const ctor = (Constructors)[coordSys] as unknown as ConstructorType<S>;
+        return new (ctor)(ctorArgs);
     };
 
-    export type DimensionBounds<S extends Coord.System> = {
+    export type DimensionBounds<S extends Coord.System> = Readonly<{
         [ P in keyof Required<Dimensions<S>> ]: Readonly<{
             min: number;
             max: number;
         }>;
-    };
+    }>;
 
 }

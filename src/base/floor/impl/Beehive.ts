@@ -129,7 +129,18 @@ export namespace Beehive {
     /**
      * # Beehive Grid
      */
-    export abstract class Grid extends AbstractGrid<S> {
+    export class Grid extends AbstractGrid<S> {
+
+        /**
+         * @override
+         */
+        public GET_SIZE_LIMITS(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
+        private static readonly SIZE_LIMITS = Object.freeze({
+            dash:    Object.freeze(<const>{ min: 10, max: 50, }),
+            bslash:  Object.freeze(<const>{ min: 10, max: 50, }),
+            fslash:  Object.freeze(<const>{ min: 10, max: 50, }),
+        });
+
         //
         /**
          * A 2-dimensional rectangular array with height and width following
@@ -138,12 +149,12 @@ export namespace Beehive {
          */
         private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
 
-        protected constructor(
-            coordSys: S,
-            dimensions: Grid.Dimensions,
-            domGridHtmlIdHook = Grid.HTML_ID_HOOK,
-        ) {
-            super(coordSys, dimensions, domGridHtmlIdHook);
+        /**
+         * @override
+         */
+        // TODO:
+        public constructor(desc: AbstractGrid.CtorArgs<S>) {
+            super(desc);
         }
 
 
@@ -183,8 +194,8 @@ export namespace Beehive {
     export namespace Grid {
         export type Dimensions = {
             dash: number;
-            bslash: number;
-            fslash: number;
+            bslash?: number;
+            fslash?: number;
         };
     }
 

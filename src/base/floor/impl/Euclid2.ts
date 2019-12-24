@@ -108,8 +108,12 @@ export namespace Euclid2 {
     /**
      * # Euclid2 Grid
      */
-    export abstract class Grid extends AbstractGrid<S> {
+    export class Grid extends AbstractGrid<S> {
 
+        /**
+         * @override
+         */
+        public GET_SIZE_LIMITS(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
             height: Object.freeze(<const>{ min: 10, max: 50, }),
             width:  Object.freeze(<const>{ min: 10, max: 50, }),
@@ -125,12 +129,22 @@ export namespace Euclid2 {
          */
         private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
 
-        protected constructor(
-            coordSys: S,
-            dimensions: Grid.Dimensions,
-            domGridHtmlIdHook = Grid.HTML_ID_HOOK,
-        ) {
-            super(coordSys, dimensions, domGridHtmlIdHook);
+        /**
+         * @override
+         */
+        public constructor(desc: AbstractGrid.CtorArgs<S>) {
+            super(desc);
+
+            const grid: Array<ReadonlyArray<Tile<S>>> = [];
+            for (let row = 0; row < this.height; row++) {
+                const newRow: Array<Tile<S>> = [];
+                for (let col = 0; col < this.width; col++) {
+                    const newTile = new desc.tileClass(new Coord({ x: col, y: row, }));
+                    newRow.push(newTile);
+                }
+                grid.push(newRow);
+            }
+            this.grid = grid;
         }
 
 
