@@ -15,14 +15,19 @@ export abstract class Coord<S extends Coord.System> {
      * 
      * @param desc - Untouched. Here as a reminder of what is needed.
      */
-    protected constructor(desc: Coord.Ish<S>) {}
+    protected constructor(desc: Coord.Ish<S>) {
+        desc;
+    }
 
     /**
      * @returns
      * By default, this returns a completely plain object containing
      * all instance fields found in an upward prototype traversal of
      * the `this` object.
+     * 
+     * **Important:** For a bench-tile, this must return {@link Coord.BENCH}.
      */
+    // TODO: make bench return the BENCH_COORD constant.
     public getBareView(): Coord.Bare<S> {
         return Object.freeze(Object.assign(Object.create(null), this));
     }
@@ -138,6 +143,12 @@ export abstract class Coord<S extends Coord.System> {
  */
 export namespace Coord {
 
+    /**
+     * The coordinate-system-agnostic identifier for any player's
+     * bench tile.
+     */
+    export const BENCH = <const>"BENCH_COORD";
+
     export const enum System {
         EUCLID2 = "EUCLID2",
         BEEHIVE = "BEEHIVE",
@@ -148,11 +159,25 @@ export namespace Coord {
         : S extends System.BEEHIVE ? Beehive.Coord.Bare
         : never;
 
+    // NOTE: we no longer have an absolute need for this. Grid
+    // implementations are responsible to use their own Coord
+    // constructors.
     const Constructors = Object.freeze(<const>{
         [ System.EUCLID2 ]: Euclid2.Coord,
         [ System.BEEHIVE ]: Beehive.Coord,
     });
-    Constructors as Readonly<Record<System, typeof Coord>>;
+    /**
+     * Will err if:
+     * - the coordinate systems between mappings don't match.
+     * - the extension's constructor signature is not compatible
+     *   with that of the generic abstract base class.
+     * - the extension is not type compatible as its `Bare` type.
+     */
+    const __ctorMapTypeAssertion__ = (): void => {
+        Constructors as Readonly<{
+            [S in System]: {new(desc: Coord.Bare<S>): Coord.Bare<S> & Coord<S>}
+        }>;
+    };
 
     // ==============================================================
     // Note: The below exports do not require any modificaions with
@@ -164,9 +189,11 @@ export namespace Coord {
      * able to take a bare coordinate, but will also take a non-bare
      * input from the same coordinate system.
      * 
-     * Unfortunately, TypeScript will not allow me to say that Coord
+     * TypeScript will not allow me to say that the Coord base class
      * extends the bare coordinate type of its own coordinate system
-     * by using the generic `Bare<S>` syntax. 
+     * by using the generic `Bare<S>` syntax. While I was initially
+     * annoyed, I have actually found this to be beneficial in small
+     * ways.
      */
     export type Ish<S extends System> = Bare<S> | Coord<S>;
 

@@ -132,5 +132,8 @@ Tile as Tile.ConstructorType<any>;
 
 
 export namespace Tile {
-    export type ConstructorType<S extends Coord.System> = { new(coord: Coord<S>): Tile<S> };
+    export type ConstructorType<S extends Coord.System> = {
+        new(coord: Coord<S>): Tile<S>;
+        createBench(): Tile<S>;
+    };
 }

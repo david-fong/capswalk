@@ -19,13 +19,6 @@ export class PlayerSkeleton<S extends Coord.System>
     implements PlayerSkeletonTypeDefs.VisibleState {
 
     /**
-     * The `x` and `y` coordinates could be any arbitrary value as long
-     * as they are outside the range of valid {@link Grid} dimensions.
-     */
-    // TODO: turn into a map from Coord.System to respective constants.
-    public static readonly BENCH_POS: Readonly<Record<Coord.System, Coord>> = new Coord(Infinity, Infinity);
-
-    /**
      * The game object that this player belongs to.
      */
     public readonly game: Game<S>;
@@ -61,7 +54,7 @@ export class PlayerSkeleton<S extends Coord.System>
         }
         this.game = game;
         this.idNumber = idNumber;
-        this.benchTile = this.game.createTile(this.BENCH_POS); // TODO: make grid have public getter for coordSys
+        this.benchTile = this.game.tileClass.createBench();
     }
 
     /**

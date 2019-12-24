@@ -42,6 +42,8 @@ export abstract class Game<S extends Coord.System> {
      */
     public readonly grid: Grid<S>;
 
+    public readonly tileClass: Tile.ConstructorType<S>;
+
     public readonly lang: Lang;
 
     /**
@@ -97,7 +99,11 @@ export abstract class Game<S extends Coord.System> {
      * @param tileClass -
      */
     public constructor(desc: Game.CtorArgs<S, any>, tileClass: Tile.ConstructorType<S>) {
-        this.grid = Grid.of(desc.coordSys, desc.gridDimensions, tileClass);
+        this.tileClass = tileClass;
+        this.grid = Grid.of(desc.coordSys, {
+            dimensions: desc.gridDimensions,
+            tileClass: this.tileClass,
+        });
 
         // TODO: set default language (must be done before call to reset):
         //this.lang = import(desc.languageName);
@@ -128,6 +134,7 @@ export abstract class Game<S extends Coord.System> {
 
         // Check to make sure that none of the players are invincible:
         // (this happens if a player is "subscribed" to every team number)
+        // @see Player#beNiceTo
         {
             ;
         }
@@ -140,7 +147,7 @@ export abstract class Game<S extends Coord.System> {
      * @override {@link Grid#reset}
      */
     public reset(): void {
-        super.reset();
+        this.grid.reset();
 
         // Clear the event record:
         this.eventRecord.splice(0);
@@ -151,7 +158,7 @@ export abstract class Game<S extends Coord.System> {
         this.lang.reset();
 
         // Shuffle everything:
-        this.forEachTile(this.shuffleLangCharSeqAt, this);
+        this.grid.forEachTile(this.shuffleLangCharSeqAt, this);
 
         this.allHumanPlayers.forEach((player) => player.reset());
         this.allArtifPlayers.forEach((player) => player.reset());
@@ -260,21 +267,33 @@ export abstract class Game<S extends Coord.System> {
 
 
     /**
-     * Helper for {@link Game#processMoveRequest}. Does execute usage
-     * of the returned values, which is expected to be done externally.
-     * However, this method will nullify the existing values at `tile`.
+     * Helper for {@link Game#processMoveRequest}.
      * 
-     * @param tile - The {@link Tile} to shuffle their {@link LangChar}-
-     *      {@link LangSeq} pair for.
-     * @returns A {@link LangCharSeqPair} that can be used as a replacement
-     *      for that currently being used by `tile`.
+     * **Important:** Does not consume
+     * the returned values, which is expected to be done externally.
+     * Nullifies the existing values at `tile`.
+     * 
+     * @param targetTile
+     * The {@link Tile} to shuffle their {@link Lang.CharSeqPair}
+     * pair for.
+     * 
+     * @returns
+     * A {@link Lang.CharSeqPair} that can be used as a replacement
+     * for that currently being used by `tile`.
      */
-    private shuffleLangCharSeqAt(tile: Tile<S>): Lang.CharSeqPair {
-        // Clear values for the target tile so its current (to-be-
-        // previous) values don't get unnecessarily avoided.
-        tile.setLangCharSeq(Lang.CharSeqPair.NULL);
+    private shuffleLangCharSeqAt(targetTile: Tile<S>): Lang.CharSeqPair {
+        // TODO: first of all, this should have been specifying the
+        // radius argument to be 2. Second, it technically should
+        // not even be specifying the radius as two: it should take
+        // the set of of all tiles a player can reach from tiles by
+        // which a player can reach `targetTile`. This would properly
+        // handle directed-graph-type coordinate systems.
+
+        // First, clear values for the target tile so its current
+        // (to-be-previous) values don't get unnecessarily avoided.
+        targetTile.setLangCharSeq(Lang.CharSeqPair.NULL);
         return this.lang.getNonConflictingChar(
-            this.getNeighbouringTiles(tile.coord)
+            this.grid.getNeighbouringTiles(targetTile.coord)
                 .map((tile) => tile.langSeq)
                 .filter((seq) => seq), // no falsy values.
             this.langBalancingScheme,
@@ -331,7 +350,7 @@ export abstract class Game<S extends Coord.System> {
      *      from their copy of the game-state at the time of the request.
      *      Is modified to describe changes to be made.
      */
-    public processMoveRequest(desc: PlayerMovementEvent): void {
+    public processMoveRequest(desc: PlayerMovementEvent<S>): void {
         const player = this.checkIncomingPlayerRequestId(desc);
         if (!player) {
             // Player is still bubbling. Reject the request:
@@ -397,7 +416,7 @@ export abstract class Game<S extends Coord.System> {
      * @param desc - A descriptor for all changes mandated by the
      *      player-movement event.
      */
-    public processMoveExecute(desc: Readonly<PlayerMovementEvent>): void {
+    public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         const player = this.getPlayerById(desc.playerId);
         const dest: Tile<S> = this.getBenchableTileAt(desc.destPos, desc.playerId);
         const executeBasicTileUpdates = (): void => {
@@ -444,7 +463,7 @@ export abstract class Game<S extends Coord.System> {
             // the response's id is unchanged. No need to assign it
             // into this local copy of the last accepted request.
             if (desc.eventId !== EventRecordEntry.REJECT) {
-                throw new Error("This should never happen.");
+                throw new Error("This never happens.");
             }
             return;
 
@@ -648,11 +667,10 @@ export abstract class Game<S extends Coord.System> {
      * @param dest - 
      * @param playerId - IMPORTANT: Must be a valid player.
      */
-    public getBenchableTileAt(dest: Coord.Ish<S>, playerId: Player.Id): Tile<S> {
-        return ((Player.BENCH_POS[this.coordSys].equals(dest))
+    public getBenchableTileAt(dest: Coord.Ish<S> | typeof Coord.BENCH, playerId: Player.Id): Tile<S> {
+        return (dest === Coord.BENCH)
             ? this.getPlayerById(playerId).benchTile
-            : this.grid.getTileAt(dest)
-        );
+            : this.grid.getTileAt(dest);
     }
 
     /**

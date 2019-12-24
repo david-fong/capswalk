@@ -132,7 +132,7 @@ export namespace Bubble {
      * 
      * @param player - 
      */
-    export const computeTimerDuration = (player: Player): Readonly<{
+    export const computeTimerDuration = (player: Player<any>): Readonly<{
         value: number,
         percentCharged: number,
         performedConstrain: boolean,

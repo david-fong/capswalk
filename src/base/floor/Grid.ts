@@ -6,6 +6,8 @@ import { Beehive } from "./impl/Beehive";
 
 
 /**
+ * # 🗺 The Grid Class
+ * 
  * A Collection of Tiles.
  */
 export abstract class Grid<S extends Coord.System> {
@@ -54,9 +56,9 @@ export abstract class Grid<S extends Coord.System> {
                     rowElem.appendChild((tile as VisibleTile<S>).tileCellElem);
                 }
             }
-            const carrier = document.getElementById(domGridHtmlIdHook);
+            const carrier = document.getElementById(desc.domGridHtmlIdHook);
             if (!carrier) {
-                throw new RangeError(`The ID \"${domGridHtmlIdHook}\" did not refer`
+                throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\" did not refer`
                     + `to an existing html element.`
                 );
             }
@@ -89,11 +91,12 @@ export abstract class Grid<S extends Coord.System> {
     public abstract getNeighbouringTiles(coord: Coord.Ish<S>, radius?: number): Array<Tile<S>>;
 
     /**
-     * @returns A collection of all "Unoccupied Neighbouring Tiles"
-     * within `radius` of `coord` according to {@link Pos#infNorm}.
-     * {@link Tile}s for which {@link Tile#isOccupied} is `true` are
-     * filtered out of the returned array. The {@link Tile} at `coord`
-     * is included if it is unoccupied.
+     * @returns
+     * A collection of all "Unoccupied Neighbouring Tiles" within
+     * `radius` of `coord` according to {@link Pos#infNorm}. Tiles
+     * for which {@link Tile#isOccupied} is `true` are filtered out
+     * of the returned collection. The Tile at `coord` is included
+     * if it is unoccupied at the time of the function call.
      * 
      * @param coord - The center / origin position-locator to search around.
      * @param radius - An inclusive bound on the {@link Pos#infNorm} filter.
@@ -109,6 +112,9 @@ export abstract class Grid<S extends Coord.System> {
 
 
 
+/**
+ * 
+ */
 export namespace Grid {
 
     /**
@@ -128,8 +134,15 @@ export namespace Grid {
         [ Coord.System.EUCLID2 ]: Euclid2.Grid,
         [ Coord.System.BEEHIVE ]: Beehive.Grid,
     });
-    // Will err if the extension's constructor is not compatible.
-    Constructors as Readonly<{[S in Coord.System]: ConstructorType<S>;}>;
+    /**
+     * Will err if:
+     * - the coordinate systems between mappings don't match.
+     * - the extension's constructor signature is not compatible
+     *   with that of the generic abstract base class.
+     */
+    const __ctorMapTypeAssertion__ = (): void => {
+        Constructors as Readonly<{[S in Coord.System]: ConstructorType<S>;}>;
+    };
 
     // ==============================================================
     // Note: The below exports do not require any modificaions with
@@ -146,16 +159,15 @@ export namespace Grid {
 
     /**
      * @returns
-     * A Grid of the specified system according to the given
-     * arguments. The mapping in `Constructors` is not statically
-     * checked here because I can't get that to work, so just make
-     * sure to sanity check that it works at runtime.
+     * A Grid of the specified system according to the given arguments.
      * 
      * @param coordSys -
      * @param ctorArgs -
      */
     export const of = <S extends Coord.System>(coordSys: S, ctorArgs: CtorArgs<S>): Grid<S> => {
-        const ctor = (Constructors)[coordSys] as unknown as ConstructorType<S>;
+        // Note: For some reason TypeScript is unhappy here about the
+        // `GET_SIZE_LIMITS` method so we have to cast to unknown first. :/
+        const ctor = Constructors[coordSys] as unknown as ConstructorType<S>;
         return new (ctor)(ctorArgs);
     };
 

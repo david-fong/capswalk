@@ -1,5 +1,5 @@
 import { Lang } from "lang/Lang";
-import { BarePos, Tile } from "floor/Tile";
+import { Coord, Tile } from "floor/Tile";
 import { Player } from "game/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
 
@@ -72,7 +72,7 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
  * 
  * 
  */
-export class PlayerMovementEvent implements PlayerGeneratedRequest {
+export class PlayerMovementEvent<S extends Coord.System> implements PlayerGeneratedRequest {
 
     public static readonly EVENT_NAME = "player-movement";
 
@@ -107,7 +107,7 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
      */
     public playerStockpile?: number = undefined;
 
-    public readonly destPos: BarePos;
+    public readonly destPos: Coord.Bare<S> | typeof Coord.BENCH;
 
     /**
      * The requester should set this field to the highest value they
@@ -137,11 +137,11 @@ export class PlayerMovementEvent implements PlayerGeneratedRequest {
     public constructor(
         playerId: Player.Id,
         lastAccpectedRequestId: number,
-        destTile: Tile,
+        destTile: Tile<S>,
     ) {
         this.playerId = playerId;
         this.lastAcceptedRequestId  = lastAccpectedRequestId;
-        this.destPos = destTile.pos.getBareBones();
+        this.destPos = destTile.coord.getBareView();
         this.destNumTimesOccupied = destTile.numTimesOccupied;
     }
 
