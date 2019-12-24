@@ -84,9 +84,10 @@ export abstract class Coord<S extends Coord.System> {
     public abstract originInfNorm(): number;
 
     /**
-     * @returns A number in the range (0, 1). `One` means the x and y
-     *      coordinates align to the x or y axis, and `Zero` means they
-     *      are plus or minus 45 degrees from the x or y axis.
+     * @returns
+     * A number in the range (0, 1). `One` means the x and y coordinates
+     * align to the x or y axis, and `Zero` means they are plus or minus
+     * 45 degrees from the x or y axis.
      * 
      * You can try this yourself in [Desmos](https://www.desmos.com/calculator)
      * by pasting in the below code segment and adding a slider for `a`
@@ -132,6 +133,9 @@ export abstract class Coord<S extends Coord.System> {
 
 
 
+/**
+ * 
+ */
 export namespace Coord {
 
     export const enum System {
@@ -149,8 +153,10 @@ export namespace Coord {
         [ System.BEEHIVE ]: Beehive.Coord,
     }) as Readonly<Record<System, typeof Coord>>;
 
+    // ==============================================================
     // Note: The below exports do not require any modificaions with
     // the additions of new coordinate systems.
+    // ==============================================================
 
     /**
      * @returns
@@ -176,4 +182,5 @@ export namespace Coord {
      * by using the generic `Bare<S>` syntax. 
      */
     export type Ish<S extends System> = Bare<S> | Coord<S>;
+
 }

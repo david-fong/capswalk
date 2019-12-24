@@ -12,7 +12,7 @@ export namespace Euclid2 {
     type S = AbstractCoord.System.EUCLID2;
 
     /**
-     * 
+     * # Euclid2 Coord
      */
     export class Coord extends AbstractCoord<S> implements B {
 
@@ -106,7 +106,7 @@ export namespace Euclid2 {
 
 
     /**
-     * 
+     * # Euclid2 Grid
      */
     export abstract class Grid extends AbstractGrid<S> {
 
@@ -127,10 +127,10 @@ export namespace Euclid2 {
 
         protected constructor(
             coordSys: S,
-            dimensions: Grid.Dimensions<S>,
+            dimensions: Grid.Dimensions,
             domGridHtmlIdHook = Grid.HTML_ID_HOOK,
         ) {
-            super();
+            super(coordSys, dimensions, domGridHtmlIdHook);
         }
 
 
@@ -173,12 +173,10 @@ export namespace Euclid2 {
     }
 
     export namespace Grid {
-
         export type Dimensions = {
             height: number,
             width?: number,
         };
-
     }
 
 }

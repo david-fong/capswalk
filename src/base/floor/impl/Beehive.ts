@@ -1,4 +1,6 @@
 import { Coord as AbstractCoord } from "../Coord";
+import { Tile } from "../Tile";
+import { Grid as AbstractGrid } from "../Grid";
 
 
 /**
@@ -21,8 +23,12 @@ import { Coord as AbstractCoord } from "../Coord";
 export namespace Beehive {
 
     type B = Coord.Bare;
+    type S = AbstractCoord.System.BEEHIVE;
 
-    export class Coord extends AbstractCoord<AbstractCoord.System.BEEHIVE> implements B {
+    /**
+     * # Beehive Coord
+     */
+    export class Coord extends AbstractCoord<S> implements B {
 
         /**
          * # 🕒 3'o'clock direction
@@ -120,8 +126,66 @@ export namespace Beehive {
 
 
 
-    export class Grid {
+    /**
+     * # Beehive Grid
+     */
+    export abstract class Grid extends AbstractGrid<S> {
         //
+        /**
+         * A 2-dimensional rectangular array with height and width following
+         * their corresponding fields, containing `Tile` objects with `pos`
+         * fields allowing indexing to themselves. Uses row-major ordering.
+         */
+        private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
+
+        protected constructor(
+            coordSys: S,
+            dimensions: Grid.Dimensions,
+            domGridHtmlIdHook = Grid.HTML_ID_HOOK,
+        ) {
+            super(coordSys, dimensions, domGridHtmlIdHook);
+        }
+
+
+        /**
+         * @override
+         */
+        public getTileAt(coord: B): Tile<S> {
+            return undefined!;
+        }
+
+        /**
+         * @override
+         */
+        public getNeighbouringTiles(coord: B, radius: number = 1): Array<Tile<S>> {
+            return undefined!;
+            // return this.grid.slice(
+            //     // filter for included rows:
+            //     Math.max(0, pos.y - radius),
+            //     Math.min(this.height, pos.y + radius + 1),
+            // ).flatMap((tile) => tile.slice(
+            //     // filter for included slices of rows (columns):
+            //     Math.max(0, pos.x - radius,
+            //     Math.min(this.width, pos.x + radius + 1)),
+            // ));
+        }
+
+        /**
+         * @override
+         */
+        public forEachTile(consumer: (tile: Tile<S>) => void, thisArg: object = this): void {
+            this.grid.forEach((row) => row.forEach((tile) => {
+                consumer(tile);
+            }, thisArg), thisArg);
+        }
+    }
+
+    export namespace Grid {
+        export type Dimensions = {
+            dash: number;
+            bslash: number;
+            fslash: number;
+        };
     }
 
 }

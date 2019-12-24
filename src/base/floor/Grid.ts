@@ -1,7 +1,8 @@
 import { Coord } from "./Coord";
 import { Tile } from "./Tile";
 import { VisibleTile } from "./VisibleTile";
-import { Euclid2 } from "floor/impl/Euclid2";
+import { Euclid2 } from "./impl/Euclid2";
+import { Beehive } from "./impl/Beehive";
 
 
 /**
@@ -116,12 +117,13 @@ export abstract class Grid<S extends Coord.System> {
 
 
     /**
-     * @returns The {@link Tile} at the position in this `Grid` specified
-     * by `pos`.
+     * @returns
+     * The {@link Tile} at the position in this `Grid` specified by
+     * `coord`.
      * 
      * @param coord - Must be within the bounds of this `Grid`.
      * @param radius - Defaults to `1`.
-     * @throws `RangeError` if `pos` is not in the bounds of this `Grid`.
+     * @throws `RangeError` if `coord` is not in the bounds of this `Grid`.
      */
     public abstract getTileAt(coord: Coord.Ish<S>): Tile<S>;
 
@@ -129,9 +131,9 @@ export abstract class Grid<S extends Coord.System> {
 
     /**
      * @returns A collection of all "Unoccupied Neighbouring Tiles"
-     * within `radius` of `pos` according to {@link Pos#infNorm}.
+     * within `radius` of `coord` according to {@link Pos#infNorm}.
      * {@link Tile}s for which {@link Tile#isOccupied} is `true` are
-     * filtered out of the returned array. The {@link Tile} at `pos`
+     * filtered out of the returned array. The {@link Tile} at `coord`
      * is included if it is unoccupied.
      * 
      * @param coord - The center / origin position-locator to search around.
@@ -161,7 +163,37 @@ export namespace Grid {
      */
     export type Dimensions<S extends Coord.System>
         = S extends Coord.System.EUCLID2 ? Euclid2.Grid.Dimensions
+        : S extends Coord.System.BEEHIVE ? Beehive.Grid.Dimensions
         : never;
+
+    const Constructors = Object.freeze(<const>{
+        [ Coord.System.EUCLID2 ]: Euclid2.Grid,
+        [ Coord.System.BEEHIVE ]: Beehive.Grid,
+    }) as Readonly<Record<Coord.System, typeof Grid>>;
+
+    // ==============================================================
+    // Note: The below exports do not require any modificaions with
+    // the additions of new coordinate systems.
+    // ==============================================================
+
+    /**
+     * @returns
+     * A Grid of the specified system according to the given
+     * arguments. The mapping in `Constructors` is not statically
+     * checked here because I can't get that to work, so just make
+     * sure to sanity check that it works at runtime.
+     * 
+     * @param coordSys -
+     * @param dimensions -
+     * @param domGridHtmlIdHook -
+     */
+    export const of = <S extends Coord.System>(
+        coordSys: S,
+        dimensions: Grid.Dimensions<S>,
+        domGridHtmlIdHook = Grid.HTML_ID_HOOK,
+    ): Grid<S> => {
+        return new (Constructors[coordSys] as any)(coordSys, dimensions, domGridHtmlIdHook);
+    };
 
     export type DimensionBounds<S extends Coord.System> = {
         [ P in keyof Required<Dimensions<S>> ]: Readonly<{
