@@ -107,7 +107,7 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
      */
     public playerStockpile?: number = undefined;
 
-    public readonly destPos: Coord.Bare<S> | typeof Coord.BENCH;
+    public readonly destCoord: Coord.Ish<S> | typeof Coord.BENCH;
 
     /**
      * The requester should set this field to the highest value they
@@ -140,8 +140,8 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
         destTile: Tile<S>,
     ) {
         this.playerId = playerId;
-        this.lastAcceptedRequestId  = lastAccpectedRequestId;
-        this.destPos = destTile.coord.getBareView();
+        this.lastAcceptedRequestId = lastAccpectedRequestId;
+        this.destCoord = destTile.coord; // TODO: make benchTiles pass special string for this
         this.destNumTimesOccupied = destTile.numTimesOccupied;
     }
 

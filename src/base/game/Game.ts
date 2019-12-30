@@ -357,7 +357,7 @@ export abstract class Game<S extends Coord.System> {
             this.processMoveExecute(desc);
             return;
         }
-        const dest: Tile<S> = this.getBenchableTileAt(desc.destPos, desc.playerId);
+        const dest: Tile<S> = this.getBenchableTileAt(desc.destCoord, desc.playerId);
         if (dest.isOccupied() ||
             dest.numTimesOccupied !== desc.destNumTimesOccupied) {
             // The check concerning the destination `Tile`'s occupancy
@@ -418,17 +418,19 @@ export abstract class Game<S extends Coord.System> {
      */
     public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         const player = this.getPlayerById(desc.playerId);
-        const dest: Tile<S> = this.getBenchableTileAt(desc.destPos, desc.playerId);
+        const dest = this.getBenchableTileAt(desc.destCoord, desc.playerId);
         const executeBasicTileUpdates = (): void => {
             // The `LangCharSeqPair` shuffle changes must take effect
             // before updating the operator's seqBuffer if need be.
             if (dest !== player.benchTile && desc.newCharSeqPair) {
                 // Don't change this value for bench tiles:
+                // TODO: this conditional execution feels to complicated.
+                //  can we move the complication somewhere else more sensible?
                 dest.setLangCharSeq(desc.newCharSeqPair);
             }
             // Refresh the operator's `seqBuffer`:
             if (this.operator && // Ignore if ServerGame
-                player.idNumber !== this.operator.idNumber &&
+                player !== this.operator &&
                 dest.coord.infNorm(this.operator.coord) === 1) {
                 // Do this if moving into the vicinity of the operator
                 // and the requester is not the operator. This operation
@@ -438,9 +440,13 @@ export abstract class Game<S extends Coord.System> {
             dest.numTimesOccupied = desc.destNumTimesOccupied;
         };
 
-        const playerLagState = desc.lastAcceptedRequestId - player.lastAcceptedRequestId;
-        if ((playerLagState > 1) ||
-            (dest.numTimesOccupied > desc.destNumTimesOccupied)) {
+        const clientEventLag = desc.lastAcceptedRequestId - player.lastAcceptedRequestId;
+        if (clientEventLag > 1) {
+            if (player === this.operator) {
+                throw new Error("Operator will never receive their own updates"
+                    + " late because they only ever have one unacknowledged"
+                    + " in-flight request.");
+            }
             // We have received even more recent updates already. This update
             // arrived out of order. The `Tile` occupancy counter should still
             // be updated if increasing, which will happen if this is an older
@@ -458,17 +464,15 @@ export abstract class Game<S extends Coord.System> {
         // then the below line should be the only change made by this call.
         player.requestInFlight = false;
 
-        if (playerLagState === 0) {
-            // The request was rejected by the Game Manager. That is,
-            // the response's id is unchanged. No need to assign it
-            // into this local copy of the last accepted request.
-            if (desc.eventId !== EventRecordEntry.REJECT) {
-                throw new Error("This never happens.");
-            }
+        if (desc.eventId !== EventRecordEntry.REJECT) {
+            // ie. clientEventLag === 0 ||
+            // dest.numTimesOccupied > desc.destNumTimesOccupied
             return;
 
-        } else if (playerLagState === 1) {
-            this.recordEvent(desc); // Record the event.
+        } else if ((player === this.operator)
+            ? (clientEventLag === 1)
+            : (clientEventLag <= 1)) {
+            this.recordEvent(desc);
             executeBasicTileUpdates();
             // If using relative values (which we are not), the below
             // should happen regardless of the order of receipt.
@@ -480,7 +484,8 @@ export abstract class Game<S extends Coord.System> {
             player.lastAcceptedRequestId = desc.lastAcceptedRequestId;
 
         } else {
-            throw new RangeError("The client seems to have tampered with their request counter.");
+            throw new RangeError("Apparant negative lag. The operator may"
+                + " somehow have tampered with their request counter.");
         }
     }
 
@@ -495,7 +500,7 @@ export abstract class Game<S extends Coord.System> {
      */
     public processBubbleMakeRequest(desc: Bubble.MakeEvent): void {
         // TODO:
-        // if successful, make sure to lower the (score? and) stockpile fields.
+        // if successful, make sure to lower the stockpile field.
         // make an abstract method in the HumanPlayer class called in the top-
         // level input processor for it to trigger this event.
         const bubbler = this.checkIncomingPlayerRequestId(desc);
