@@ -27,23 +27,6 @@ export abstract class Grid<S extends Coord.System> {
      * @param desc -
      */
     protected constructor(desc: Grid.CtorArgs<S>) {
-        if (!dimensions.width) {
-            dimensions.width = dimensions.height;
-        }
-        this.height = Math.round(Math.min(
-            Math.max(
-                dimensions.height,
-                Grid.SIZE_LIMITS.height.min,
-            ),
-            Grid.SIZE_LIMITS.height.max,
-        ));
-        this.width = Math.round(Math.min(
-            Math.max(
-                dimensions.width,
-                Grid.SIZE_LIMITS.width.min,
-            ),
-            Grid.SIZE_LIMITS.width.max,
-        ));
 
         // Create and populate the HTML table element field:
         // (skip this step if my tiles are not displayed in a browser window)
@@ -80,7 +63,8 @@ export abstract class Grid<S extends Coord.System> {
     /**
      * @returns
      * The {@link Tile} at the position in this `Grid` specified by
-     * `coord`.
+     * `coord`. This cannot be used for player bench tiles (which
+     * already have the public access modifier).
      * 
      * @param coord - Must be within the bounds of this `Grid`.
      * @param radius - Defaults to `1`.
@@ -141,11 +125,11 @@ export namespace Grid {
      *   with that of the generic abstract base class.
      */
     const __ctorMapTypeAssertion__ = (): void => {
-        Constructors as Readonly<{[S in Coord.System]: ConstructorType<S>;}>;
+        Constructors as Readonly<{[S in Coord.System]: ConstructorType<S>}>;
     };
 
     // ==============================================================
-    // Note: The below exports do not require any modificaions with
+    // Note: The below exports do not require any modifications with
     // the additions of new coordinate systems.
     // ==============================================================
 
@@ -172,7 +156,7 @@ export namespace Grid {
     };
 
     export type DimensionBounds<S extends Coord.System> = Readonly<{
-        [ P in keyof Required<Dimensions<S>> ]: Readonly<{
+        [ P in keyof Dimensions<S> ]: Readonly<{
             min: number;
             max: number;
         }>;

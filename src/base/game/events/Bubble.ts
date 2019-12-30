@@ -1,5 +1,6 @@
 import { Player } from "game/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
+import { Coord } from "floor/Tile";
 
 /**
  * # The Object of the Game
@@ -102,10 +103,11 @@ export namespace Bubble {
     const MAX_TIMER_DURATION = 10_000;
 
     /**
-     * @returns A positive real number representing how long it should
-     * take for a new bubble made by the specified {@link Player} to pop
-     * at the current time and under the current circumstances. Units
-     * are in milliseconds.
+     * @returns
+     * A positive real number representing how long it should take for
+     * a new bubble made by the specified {@link Player} to pop at the
+     * current time and under the current circumstances. Units are in
+     * milliseconds.
      * 
      * The `percentCharged` field is an integer value out of 100%, and
      * is returned to make visual indications of how "dangerous" a player
@@ -132,7 +134,7 @@ export namespace Bubble {
      * 
      * @param player - 
      */
-    export const computeTimerDuration = (player: Player<any>): Readonly<{
+    export const computeTimerDuration = <S extends Coord.System>(player: Player<S>): Readonly<{
         value: number,
         percentCharged: number,
         performedConstrain: boolean,

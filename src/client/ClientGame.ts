@@ -122,7 +122,7 @@ export class ClientGame<S extends Coord.System> extends Game<S> {
      * @override
      * @throws `TypeError` Unconditionally.
      */
-    public processMoveRequest(desc: PlayerMovementEvent): never {
+    public processMoveRequest(desc: PlayerMovementEvent<S>): never {
         throw new TypeError("This operation unsupported for the ClientGame class.");
     }
 

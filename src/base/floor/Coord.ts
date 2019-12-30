@@ -16,20 +16,7 @@ export abstract class Coord<S extends Coord.System> {
      * @param desc - Untouched. Here as a reminder of what is needed.
      */
     protected constructor(desc: Coord.Ish<S>) {
-        desc;
-    }
-
-    /**
-     * @returns
-     * By default, this returns a completely plain object containing
-     * all instance fields found in an upward prototype traversal of
-     * the `this` object.
-     * 
-     * **Important:** For a bench-tile, this must return {@link Coord.BENCH}.
-     */
-    // TODO: make bench return the BENCH_COORD constant.
-    public getBareView(): Coord.Bare<S> {
-        return Object.freeze(Object.assign(Object.create(null), this));
+        desc; // prevent warning about unused parameter.
     }
 
 
@@ -47,42 +34,25 @@ export abstract class Coord<S extends Coord.System> {
     /**
      * Also known as the "manhattan norm".
      * 
-     * TODO: document: what is this used for?
-     * 
      * _Do not override this._
      * 
      * @param other - The norm is taken relative to `other`.
      * @returns The sum of the absolute values of each coordinate.
      */
+    // TODO: document: what is this used for?
     public oneNorm(other: Coord.Ish<S>): number {
         return this.sub(other).originOneNorm();
     }
     public abstract originOneNorm(): number;
 
     /**
-     * Diagonal distance in 2D / hypotenuse.
-     * 
-     * TODO: This is not used. please do not use this.
-     * 
-     * _Do not override this_
-     * 
-     * @param other - The norm is taken relative to `other`.
-     * @returns The square root of the square of each coordinate.
-     */
-    // public twoNorm(other: C): number {
-    //     return this.sub(other).originTwoNorm();
-    // }
-    // public abstract originTwoNorm(): number;
-
-    /**
-     * 
-     * TODO: document: what is this used for?
      * 
      * _Do not override this._
      * 
      * @param other - The norm is taken relative to `other`.
      * @returns The length of the longest dimension.
      */
+    // TODO: document: what is this used for?
     public infNorm(other: Coord.Ish<S>): number {
         return this.sub(other).originInfNorm();
     }
