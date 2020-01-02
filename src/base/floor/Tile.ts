@@ -15,11 +15,11 @@ export { Coord } from "./Coord";
  * From a caller's point of view, extending classes should have am
  * identical constructor signature as that of this base class. This
  * can be done by a type assertion statement: `<extension class> as
- * typeof Tile`.
+ * Tile.ConstructorType<any>`.
  */
 export class Tile<S extends Coord.System> {
 
-    public readonly coord: Coord<S>;
+    public readonly coord: Coord<S>; // TODO: change this to allow the bench string.
 
     protected _occupantId: Player.Id;
     protected _scoreValue: number;
@@ -45,9 +45,6 @@ export class Tile<S extends Coord.System> {
      */
     public constructor(coord: Coord<S>) {
         this.coord = coord;
-        if (!(this.coord.equals(this.coord.round()))) {
-            throw new TypeError("Tile position coordinates must be integers.");
-        }
     }
 
     public reset(): void {
@@ -132,8 +129,30 @@ Tile as Tile.ConstructorType<any>;
 
 
 export namespace Tile {
+
     export type ConstructorType<S extends Coord.System> = {
         new(coord: Coord<S>): Tile<S>;
+
+        /**
+         * Create a Tile for use as a player's bench. The coordinate
+         * specifier field for the returned instance must equal the
+         * special string constant reserved to denote a player's bench.
+         * 
+         * Note: Because of namespace merging and how extension-class
+         * literals inherit static-type fields of their parent, unless
+         * this is redefined in a child class, that child class will
+         * inherit the first implementation defined by their parents.
+         */
         createBench(): Tile<S>;
     };
+
+    export const createBench = <S extends Coord.System>(): Tile<S> => {
+        return new BenchImpl();
+    };
+
+    class BenchImpl<S extends Coord.System> extends Tile<S> {
+        public constructor() {
+            super(Coord.BENCH);
+        }
+    }
 }

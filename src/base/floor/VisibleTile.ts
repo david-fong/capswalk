@@ -98,7 +98,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
 }
 // Assert that this extension's constructor has a compatible signature:
-VisibleTile as typeof Tile;
+VisibleTile as Tile.ConstructorType<any>;
 
 
 
@@ -118,4 +118,16 @@ export namespace VisibleTile {
         SCORE_VALUE: <const>"scoreValue",
     });
 
+    /**
+     * @override
+     */
+    export const createBench = <S extends Coord.System>(): Tile<S> => {
+        return new BenchImpl();
+    };
+
+    class BenchImpl<S extends Coord.System> extends Tile<S> {
+        public constructor() {
+            super(Coord.BENCH);
+        }
+    }
 }

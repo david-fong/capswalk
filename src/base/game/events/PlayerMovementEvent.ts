@@ -107,7 +107,7 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
      */
     public playerStockpile?: number = undefined;
 
-    public readonly destCoord: Coord.Ish<S> | typeof Coord.BENCH;
+    public readonly destCoord: Coord.Bare<S> | typeof Coord.BENCH;
 
     /**
      * The requester should set this field to the highest value they

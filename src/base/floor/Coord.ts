@@ -165,6 +165,10 @@ export namespace Coord {
      * annoyed, I have actually found this to be beneficial in small
      * ways.
      */
+    // TODO: we may be able to get rid of this if we change all call
+    // sites to pass in something of a new type "Bare.Full<S>" which
+    // uses a type intersection of Coord<S> and Coord.Bare<S>. The
+    // above type assertion is already checking for something like this.
     export type Ish<S extends System> = Bare<S> | Coord<S>;
 
 }

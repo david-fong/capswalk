@@ -27,6 +27,9 @@ export abstract class Grid<S extends Coord.System> {
      * @param desc -
      */
     protected constructor(desc: Grid.CtorArgs<S>) {
+        if (!desc.domGridHtmlIdHook) {
+            desc.domGridHtmlIdHook = Grid.DEFAULT_HTML_ID_HOOK;
+        }
 
         // Create and populate the HTML table element field:
         // (skip this step if my tiles are not displayed in a browser window)
@@ -41,8 +44,8 @@ export abstract class Grid<S extends Coord.System> {
             }
             const carrier = document.getElementById(desc.domGridHtmlIdHook);
             if (!carrier) {
-                throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\" did not refer`
-                    + `to an existing html element.`
+                throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\"`
+                    + ` did not refer to an existing html element.`
                 );
             }
             // remove all child elements and then 
