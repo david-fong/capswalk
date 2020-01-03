@@ -1,6 +1,7 @@
 import { Coord } from "./Coord";
 import { Tile } from "./Tile";
 import { VisibleTile } from "./VisibleTile";
+
 import { Euclid2 } from "./impl/Euclid2";
 import { Beehive } from "./impl/Beehive";
 
@@ -108,6 +109,8 @@ export namespace Grid {
      * Should only have one child: the main game grid's display.
      */
     export const DEFAULT_HTML_ID_HOOK = "game-grid-host";
+
+    // ==============================================================
 
     /**
      * Values do not _need_ to be in range or integers.

@@ -108,7 +108,7 @@ export namespace Euclid2 {
     /**
      * # Euclid2 Grid
      */
-    export class Grid extends AbstractGrid<S> {
+    export class Grid extends AbstractGrid<S> implements Required<Grid.Dimensions> {
 
         /**
          * @override
@@ -134,6 +134,8 @@ export namespace Euclid2 {
          */
         public constructor(desc: AbstractGrid.CtorArgs<S>) {
             super(desc);
+            this.height = desc.dimensions.height;
+            this.width  = desc.dimensions.width ?? desc.dimensions.height;
 
             const grid: Array<ReadonlyArray<Tile<S>>> = [];
             for (let row = 0; row < this.height; row++) {
@@ -187,6 +189,9 @@ export namespace Euclid2 {
     }
 
     export namespace Grid {
+        /**
+         * If `width` is not specified, `height` is taken as its default value.
+         */
         export type Dimensions = {
             height: number,
             width?: number,
@@ -194,20 +199,3 @@ export namespace Euclid2 {
     }
 
 }
-
-
-export type Test = {
-    test: number;
-} & Test.Abstract;
-
-export namespace Test {
-    export const abc = 123;
-    export class Abstract {
-        public def?: Test;
-    }
-}
-
-const t: Test = {
-    test: 1,
-    def: {test:2,},
-};

@@ -1,10 +1,11 @@
-import { Euclid2 } from "floor/impl/Euclid2";
-import { Beehive } from "floor/impl/Beehive";
+import { Euclid2 } from "./impl/Euclid2";
+import { Beehive } from "./impl/Beehive";
 
 
+/**
+ * 
+ */
 export type Coord<S extends Coord.System> = Coord.Bare<S> & Coord.Abstract<S>;
-
-
 
 /**
  * 
@@ -16,6 +17,8 @@ export namespace Coord {
      * bench tile.
      */
     export const BENCH = <const>"BENCH_COORD";
+
+    // ==============================================================
 
     export const enum System {
         EUCLID2 = "EUCLID2",
@@ -29,7 +32,8 @@ export namespace Coord {
 
     // NOTE: we no longer have an absolute need for this. Grid
     // implementations are responsible to use their own Coord
-    // constructors.
+    // constructors. It may have use for testing purposes, though.
+    // if so, please redefine the factory / producer `Coord.of`.
     const Constructors = Object.freeze(<const>{
         [ System.EUCLID2 ]: Euclid2.Coord,
         [ System.BEEHIVE ]: Beehive.Coord,
@@ -155,22 +159,5 @@ export namespace Coord {
         // }
 
     }
-
-    /**
-     * Use this to specify the type for function arguments that are
-     * able to take a bare coordinate, but will also take a non-bare
-     * input from the same coordinate system.
-     * 
-     * TypeScript will not allow me to say that the Coord base class
-     * extends the bare coordinate type of its own coordinate system
-     * by using the generic `Bare<S>` syntax. While I was initially
-     * annoyed, I have actually found this to be beneficial in small
-     * ways.
-     */
-    // TODO: we may be able to get rid of this if we change all call
-    // sites to pass in something of a new type "Bare.Full<S>" which
-    // uses a type intersection of Coord<S> and Coord.Bare<S>. The
-    // above type assertion is already checking for something like this.
-    export type Ish<S extends System> = Bare<S> | Coord<S>;
 
 }

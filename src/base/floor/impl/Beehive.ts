@@ -1,4 +1,4 @@
-import { Coord as AbstractCoord } from "../Coord";
+import { Coord as BaseCoord } from "../Coord";
 import { Tile } from "../Tile";
 import { Grid as AbstractGrid } from "../Grid";
 
@@ -23,12 +23,12 @@ import { Grid as AbstractGrid } from "../Grid";
 export namespace Beehive {
 
     type B = Coord.Bare;
-    type S = AbstractCoord.System.BEEHIVE;
+    type S = BaseCoord.System.BEEHIVE;
 
     /**
      * # Beehive Coord
      */
-    export class Coord extends AbstractCoord<S> implements B {
+    export class Coord extends BaseCoord.Abstract<S> implements B {
 
         /**
          * # 🕒 3'o'clock direction
@@ -129,7 +129,11 @@ export namespace Beehive {
     /**
      * # Beehive Grid
      */
-    export class Grid extends AbstractGrid<S> {
+    export class Grid extends AbstractGrid<S> implements Required<Grid.Dimensions> {
+
+        public readonly dash: number;
+        public readonly bslash: number;
+        public readonly fslash: number;
 
         /**
          * @override
@@ -152,9 +156,13 @@ export namespace Beehive {
         /**
          * @override
          */
-        // TODO:
         public constructor(desc: AbstractGrid.CtorArgs<S>) {
             super(desc);
+            this.dash = desc.dimensions.dash;
+            this.bslash = desc.dimensions.bslash ?? desc.dimensions.dash;
+            this.fslash = desc.dimensions.fslash ?? desc.dimensions.dash;
+
+            // TODO: initialize `grid`.
         }
 
 
@@ -192,6 +200,9 @@ export namespace Beehive {
     }
 
     export namespace Grid {
+        /**
+         * If `bslash` or `fslash` are not specified, they default to `dash`.
+         */
         export type Dimensions = {
             dash: number;
             bslash?: number;
