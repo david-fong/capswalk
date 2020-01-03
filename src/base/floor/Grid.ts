@@ -67,15 +67,15 @@ export abstract class Grid<S extends Coord.System> {
      * @returns
      * The {@link Tile} at the position in this `Grid` specified by
      * `coord`. This cannot be used for player bench tiles (which
-     * already have the public access modifier).
+     * already have the public access modifier via the player object).
      * 
      * @param coord - Must be within the bounds of this `Grid`.
      * @param radius - Defaults to `1`.
      * @throws `RangeError` if `coord` is not in the bounds of this `Grid`.
      */
-    public abstract getTileAt(coord: Coord.Ish<S>): Tile<S>;
+    public abstract getTileAt(coord: Coord.Bare<S>): Tile<S>;
 
-    public abstract getNeighbouringTiles(coord: Coord.Ish<S>, radius?: number): Array<Tile<S>>;
+    public abstract getNeighbouringTiles(coord: Coord.Bare<S>, radius?: number): Array<Tile<S>>;
 
     /**
      * @returns
@@ -89,7 +89,7 @@ export abstract class Grid<S extends Coord.System> {
      * @param radius - An inclusive bound on the {@link Pos#infNorm} filter.
      *      Defaults to `1`.
      */
-    public getUNT(coord: Coord.Ish<S>, radius: number = 1): Array<Tile<S>> {
+    public getUNT(coord: Coord.Bare<S>, radius: number = 1): Array<Tile<S>> {
         return this.getNeighbouringTiles(coord, radius).filter((tile) => !(tile.isOccupied()));
     }
 

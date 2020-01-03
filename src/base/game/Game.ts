@@ -672,7 +672,7 @@ export abstract class Game<S extends Coord.System> {
      * @param dest - 
      * @param playerId - IMPORTANT: Must be a valid player.
      */
-    public getBenchableTileAt(dest: Coord.Ish<S> | typeof Coord.BENCH, playerId: Player.Id): Tile<S> {
+    public getBenchableTileAt(dest: Coord.Bare<S> | typeof Coord.BENCH, playerId: Player.Id): Tile<S> {
         return (dest === Coord.BENCH)
             ? this.getPlayerById(playerId).benchTile
             : this.grid.getTileAt(dest);
@@ -705,7 +705,7 @@ export abstract class Game<S extends Coord.System> {
      * @param coord - 
      * @param radius - defaults to one.
      */
-    public getNeighbours(coord: Coord.Ish<S>, radius: number = 1): Array<Player<S>> {
+    public getNeighbours(coord: Coord.Bare<S>, radius: number = 1): Array<Player<S>> {
         return this.grid.getNeighbouringTiles(coord, radius)
             .filter((tile) => tile.isOccupied)
             .map((tile) => this.getPlayerById(tile.occupantId));

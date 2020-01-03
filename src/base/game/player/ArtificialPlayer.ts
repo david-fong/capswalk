@@ -69,7 +69,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      *      of the {@link Game}'s grid, or have integer-valued x and y
      *      coordinates.
      */
-    private getUntToward(intendedDest: Coord.Ish<S>): Tile<S> {
+    private getUntToward(intendedDest: Coord.Bare<S>): Tile<S> {
         const options: Array<Tile<S>> = this.getUNT();
         if (!(options.includes(this.hostTile))) {
             // This should never happen. It is here as a reminder.

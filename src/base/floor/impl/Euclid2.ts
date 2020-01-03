@@ -1,4 +1,4 @@
-import { Coord as AbstractCoord } from "../Coord";
+import { Coord as BaseCoord } from "../Coord";
 import { Tile } from "../Tile";
 import { Grid as AbstractGrid } from "../Grid";
 
@@ -9,12 +9,12 @@ import { Grid as AbstractGrid } from "../Grid";
 export namespace Euclid2 {
 
     type B = Coord.Bare;
-    type S = AbstractCoord.System.EUCLID2;
+    type S = BaseCoord.System.EUCLID2;
 
     /**
      * # Euclid2 Coord
      */
-    export class Coord extends AbstractCoord<S> implements B {
+    export class Coord extends BaseCoord.Abstract<S> implements B {
 
         public readonly x: number;
         public readonly y: number;
@@ -194,3 +194,20 @@ export namespace Euclid2 {
     }
 
 }
+
+
+export type Test = {
+    test: number;
+} & Test.Abstract;
+
+export namespace Test {
+    export const abc = 123;
+    export class Abstract {
+        public def?: Test;
+    }
+}
+
+const t: Test = {
+    test: 1,
+    def: {test:2,},
+};
