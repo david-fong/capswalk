@@ -357,9 +357,9 @@ export abstract class Game<S extends Coord.System> {
             this.processMoveExecute(desc);
             return;
         }
-        const dest: Tile<S> = this.getBenchableTileAt(desc.destCoord, desc.playerId);
+        const dest: Tile<S> = this.getBenchableTileAt(desc.dest.coord, desc.playerId);
         if (dest.isOccupied() ||
-            dest.numTimesOccupied !== desc.destNumTimesOccupied) {
+            dest.numTimesOccupied !== desc.dest.numTimesOccupied) {
             // The check concerning the destination `Tile`'s occupancy
             // counter is not absolutely necessary. It does not enforce
             // stronger invariant-keeping consistency, but it does enforce
@@ -374,7 +374,7 @@ export abstract class Game<S extends Coord.System> {
          * Set response fields according to spec in `PlayerMovementEvent`:
          */
         desc.lastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
-        desc.destNumTimesOccupied  = (1 + dest.numTimesOccupied);
+        desc.dest.numTimesOccupied = (1 + dest.numTimesOccupied);
 
         const bubbleDesc = Bubble.computeTimerDuration(player);
         // This allows the player's stockpile to increase if its
@@ -386,7 +386,7 @@ export abstract class Game<S extends Coord.System> {
             bubblePercentCharged: bubbleDesc.percentCharged,
         };
 
-        desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
+        desc.dest.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
 
         // We are all go! Do it.
         desc.eventId = this.eventRecord.length;
@@ -420,16 +420,16 @@ export abstract class Game<S extends Coord.System> {
      */
     public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         const player = this.getPlayerById(desc.playerId);
-        const dest = this.getBenchableTileAt(desc.destCoord, desc.playerId);
+        const dest = this.getBenchableTileAt(desc.dest.coord, desc.playerId);
         const executeBasicTileUpdates = (): void => {
             // The `LangCharSeqPair` shuffle changes must take effect
             // before updating the operator's seqBuffer if need be.
-            if (dest !== player.benchTile && desc.newCharSeqPair) {
+            if (dest !== player.benchTile && desc.dest.newCharSeqPair) {
                 // Don't change this value for bench tiles:
-                // TODO: this conditional execution feels to complicated.
-                //  can we move the complication somewhere else more sensible?
-                //  move it to shuffleLangCharSeqAt
-                dest.setLangCharSeq(desc.newCharSeqPair);
+                // TODO: this conditional execution feels too complicated.
+                //  can we move the complication somewhere else less cluttered?
+                //  yes: move it to shuffleLangCharSeqAt please
+                dest.setLangCharSeq(desc.dest.newCharSeqPair);
             }
             // Refresh the operator's `seqBuffer`:
             if (this.operator && // Ignore if ServerGame
@@ -442,7 +442,7 @@ export abstract class Game<S extends Coord.System> {
                 // is necessary to maintain the `seqBuffer` invariant.
                 this.operator.seqBufferAcceptKey(null);
             }
-            dest.numTimesOccupied = desc.destNumTimesOccupied;
+            dest.numTimesOccupied = desc.dest.numTimesOccupied;
             dest.scoreValue = 0;
         };
 
@@ -458,7 +458,7 @@ export abstract class Game<S extends Coord.System> {
             // be updated if increasing, which will happen if this is an older
             // player movement. The rest of the event's effects can be ignored
             // as move operations for `Player`s are transitive in nature.
-            if (dest.numTimesOccupied < desc.destNumTimesOccupied) {
+            if (dest.numTimesOccupied < desc.dest.numTimesOccupied) {
                 executeBasicTileUpdates();
             }
             return;

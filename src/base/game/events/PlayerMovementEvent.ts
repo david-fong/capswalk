@@ -114,32 +114,34 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
         bubblePercentCharged: number;
     } = undefined;
 
-    public readonly destCoord: Coord.Bare<S> | typeof Coord.BENCH;
+    public dest: {
+        coord: Coord.Bare<S> | typeof Coord.BENCH;
 
-    /**
-     * The requester should set this field to the highest value they
-     * received from any previous responses from the server. In normal
-     * cases (no message reordering), this should be equal to the last
-     * value seen in the response from the server.
-     * 
-     * The server should respond with the increment of this value. A
-     * movement event causes a shuffle-in at the destination position,
-     * which can affect whether another player intending to move to
-     * the same position can do so. For this reason, the server should
-     * reject requests where the requester has not received changes
-     * involving a shuffle-in at their desired destination. This is
-     * not mandatory, but preferred behaviour.
-     */
-    public destNumTimesOccupied: number;
+        /**
+         * The requester should set this field to the highest value they
+         * received from any previous responses from the server. In normal
+         * cases (no message reordering), this should be equal to the last
+         * value seen in the response from the server.
+         * 
+         * The server should respond with the increment of this value. A
+         * movement event causes a shuffle-in at the destination position,
+         * which can affect whether another player intending to move to
+         * the same position can do so. For this reason, the server should
+         * reject requests where the requester has not received changes
+         * involving a shuffle-in at their desired destination. This is
+         * not mandatory, but preferred behaviour.
+         */
+        numTimesOccupied: number;
 
-    /**
-     * Any value assigned by the requester to this field should be
-     * ignored by the server.
-     * 
-     * The server must set this to describe the new values to be
-     * shuffled-in to the destination tile.
-     */
-    public newCharSeqPair?: Lang.CharSeqPair = undefined;
+        /**
+         * Any value assigned by the requester to this field should be
+         * ignored by the server.
+         * 
+         * The server must set this to describe the new values to be
+         * shuffled-in to the destination tile.
+         */
+        newCharSeqPair?: Lang.CharSeqPair;
+    };
 
     public constructor(
         playerId: Player.Id,
@@ -148,8 +150,11 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
     ) {
         this.playerId = playerId;
         this.lastAcceptedRequestId = lastAcceptedRequestId;
-        this.destCoord = destTile.coord; // TODO: make benchTiles pass special string for this
-        this.destNumTimesOccupied = destTile.numTimesOccupied;
+        this.dest = {
+            coord: destTile.coord, // TODO: make benchTiles pass special string for this
+            numTimesOccupied: destTile.numTimesOccupied,
+            newCharSeqPair: undefined,
+        };
     }
 
 }
