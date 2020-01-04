@@ -3,8 +3,6 @@
 
 There's nothing to show yet! But, you can try [**`an older, working version` 👈**](https://david-fong.github.io/SnaKey-JS/ "*boop*")
 
-> `<Begin Preamble>`
->
 > Learning is hard, and that's what makes the process of doing it frustrating. I can vouch for that by nearly every commit in this repository. But I can also say from other past experiences that the difficulty in tackling something new and unfamiliar is what makes its eventual fruit so sweet to enjoy.
 >
 > If I want to get across one message through this project, it is to _be kind to beginners_- whether that is to another person or to yourself. When I get frustrated learning something, I find myself needing to mentally recite that _"I'm not stupid- I'm just learning"_.
@@ -12,8 +10,6 @@ There's nothing to show yet! But, you can try [**`an older, working version` �
 > People only get good at things by perseverance. I think it's good to remember that for ourselves: Ask a musician to play their instrument flipped, or a person to type on a different keyboard layout than the one they're used to, or ask a driver to drive with their steering flipped. Ask someone to try playing this game (I'm shameless- I know).
 >
 > Learning is difficult. It just is. But we overcome it.
->
-> `<End Preamble>`
 
 At its core, SnaKey is a typing game where you move around by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character marked by the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese Hiragana, you would type the keyboard sequence "no" to move onto an adjacent tile marked by the written character "の". It's easier done than said.
 
@@ -32,8 +28,6 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
   - [Bundling Constructor Arguments as Objects](#-bundling-constructor-arguments-as-objects)
   - [Type Aliases and Declaration Merging](#-type-aliases-and-declaration-merging)
 - [Language Representation](#language-representation)
-  - [Language Size Requirements](#language-size-requirements)
-  - [Effective Shuffling With Trees](#effective-shuffling-with-trees)
 
 ---
 
@@ -65,7 +59,7 @@ This is a non-technical section to reflect on my previous work on this project, 
 
 <img src="assets/images/snakey_version1.PNG" align="left" width="300" />
 
-I wrote the bulk of [the first version of this game](https://github.com/david-fong/SnaKey) in the February of 2018 using Python. At the time, I had pretty much just finished [learning Python over the Winter break](https://github.com/david-fong/Tetris), and I wanted to do something original with it. I came up with the start of an idea spinning off of the classic snake game, with a twist on the movement mechanic: to move by typing. In this version, there were color themes, basic language support (Japanese Hiragana and Katakana), and basic computer-opponents.
+I wrote the bulk of [the first version of this game](https://github.com/david-fong/SnaKey) in the February of 2019 using Python. At the time, I had pretty much just finished [learning Python over the Winter break](https://github.com/david-fong/Tetris), and I wanted to do something original with it. I came up with the start of an idea spinning off of the classic snake game, with a twist on the movement mechanic: to move by typing. In this version, there were color themes, basic language support (Japanese Hiragana and Katakana), and basic computer-opponents.
 
 The idea of adding different languages came because I was taking a beginners' class in Japanese, and needed to learn its two basic alphabets. I really enjoyed that class- not just because I was interested in the content, but also because the professor was a kind person and a good teacher. Helping people practice recognizing characters from other languages has become a big motivator for my continued work on this game- for a significant part due to the positive experience I had learning Japanese at the beginners' level.
 
@@ -77,7 +71,7 @@ A major theme for this version was baseline design. I came up with a representat
 
 I finished that version, and excitedly showed my friends and my Japanese prof. Some were pretty enthusiastic about it. My prof was interested, but didn't have Python. I realized that accessibility was a big limiting factor with the first version. So out of a desire to change that, I started reading about how basic webpages are built up using HTML, JavaScript, and CSS, and I slowly worked on porting the game to be hosted on the web via GitHub-Pages as [the second version of this game](https://github.com/david-fong/SnaKey-JS).
 
-In this version, which I wrote the bulk of in March of 2018, I wrote everything using NotePad++, and used pure HTML, Javascript, and CSS. Looking back, I think this really set me up with a good foundational understanding of how vanilla javascript works, as opposed to what might have been the case if I started looking at various frameworks and transpiling languages right away. It has also made me appreciate the value of strong typing, and choosing conventions for things such as naming. Javascript is really so slack when it comes to such basic things that it's easy to write things that don't read well or make much sense.
+In this version, which I wrote the bulk of in March of 2019, I wrote everything using NotePad++, and used pure HTML, Javascript, and CSS. Looking back, I think this really set me up with a good foundational understanding of how vanilla javascript works, as opposed to what might have been the case if I started looking at various frameworks and transpiling languages right away. It has also made me appreciate the value of strong typing, and choosing conventions for things such as naming. Javascript is really so slack when it comes to such basic things that it's easy to write things that don't read well or make much sense.
 
 Learning was a major theme of my work in this version. Unlike the first version where I had already learned the basics of the language and how it runs, here I was learning from scratch all over again. The majority of my efforts went to learning how to port over the behaviour of the previous version by reading documentation on the interfaces to javascript's basic data structures, manipulating the browser DOM, and working with CSS. I found [w3c schools](https://www.w3schools.com/) and [MDN web docs](https://developer.mozilla.org/en-US/) to be great learning resources. In this version, there were very few changes to the game's underlying representation, objectives, and mechanics.
 
@@ -131,7 +125,7 @@ This basically nullifies any problems with function signature bloat. Compared to
 
 #### 🧘‍♂️ Flexibility
 
-It makes constructor signatures incredibly malleable. If I need to add, remove, or change the type of an argument, I can simply modify the object bundle and the relevant handler code, and leave the rest of the constructors of extending classes untouched. I discovered this out of need: If you traverse [the entire `Player` class tree](src/base/player), there are at least eight constructors, and therefore at least the same number of sites where such constructors are called. Could you solve this particular issue by using a good IDE? Yes. But reduced reliance on an IDE for refactoring means less hassle; Not all IDE's are good at function signature refactoring, especially when it comes to [the duck-typing model](https://en.wikipedia.org/wiki/Duck_typing).
+It makes constructor signatures incredibly malleable. If I need to add, remove, or change the type of an argument, I can simply modify the object bundle and the relevant handler code, and leave the rest of the uctors of extending classes untouched. I discovered this out of need: If you traverse [the entire `Player` class tree](src/base/player), there are at least eight constructors, and therefore at least the same number of sites where such constructors are called. Could you solve this particular issue by using a good IDE? Yes. But reduced reliance on an IDE for refactoring means less hassle; Not all IDE's are good at function signature refactoring, especially when it comes to [the duck-typing model](https://en.wikipedia.org/wiki/Duck_typing).
 
 #### 📛 Explicit Argument Mapping
 
