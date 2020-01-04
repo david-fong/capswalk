@@ -14,15 +14,6 @@ import { Beehive } from "./impl/Beehive";
 export abstract class Grid<S extends Coord.System> {
 
     /**
-     * Bounds are inclusive. Ie. the specified values are _just_ allowed.
-     * 
-     * Bounds must be strictly positive.
-     */
-    public abstract GET_SIZE_LIMITS(): Grid.DimensionBounds<S>;
-
-
-
-    /**
      * _Does not call reset._
      * 
      * @param desc -
@@ -139,7 +130,29 @@ export namespace Grid {
     // the additions of new coordinate systems.
     // ==============================================================
 
-    type ConstructorType<S extends Coord.System> = { new(desc: CtorArgs<S>): Grid<S> };
+    interface ConstructorType<S extends Coord.System> {
+        new(desc: CtorArgs<S>): Grid<S>;
+
+        /**
+         * @returns
+         * From the caller's point of view, the ambiguity floor is
+         * the minimum (inclusive) number of leaf nodes a language
+         * must have to be playable with this coordinate system's grid.
+         * From the specification's point of view, it is the promised
+         * maximum size of a set `U` for any tile `t` in the grid
+         * where `U` contains all tiles that a player could directly
+         * move to from any tiles `in the set U'`, where `U'` contains
+         * all tiles `t'` from which a player could move directly to
+         * `t`, with the exception that `U` excludes `t`.
+         */
+        // TODO: write a test that checks that this holds for each implementation
+        getAmbiguityThreshold(): number;
+
+        /**
+         * @see Grid.DimensionBounds
+         */
+        getSizeLimits(): Grid.DimensionBounds<S>;
+    };
 
     export type CtorArgs<S extends Coord.System> = {
         dimensions: Dimensions<S>;
@@ -161,6 +174,11 @@ export namespace Grid {
         return new (ctor)(ctorArgs);
     };
 
+    /**
+     * Bounds are inclusive. Ie. the specified values are _just_ allowed.
+     * 
+     * Bounds must be strictly positive.
+     */
     export type DimensionBounds<S extends Coord.System> = Readonly<{
         [ P in keyof Dimensions<S> ]: Readonly<{
             min: number;

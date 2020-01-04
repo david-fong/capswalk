@@ -131,19 +131,26 @@ export namespace Beehive {
      */
     export class Grid extends AbstractGrid<S> implements Required<Grid.Dimensions> {
 
-        public readonly dash: number;
-        public readonly bslash: number;
-        public readonly fslash: number;
+        /**
+         * @override
+         */
+        public static getAmbiguityThreshold(): 18 {
+            return 18;
+        }
 
         /**
          * @override
          */
-        public GET_SIZE_LIMITS(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
+        public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
             dash:    Object.freeze(<const>{ min: 10, max: 50, }),
             bslash:  Object.freeze(<const>{ min: 10, max: 50, }),
             fslash:  Object.freeze(<const>{ min: 10, max: 50, }),
         });
+
+        public readonly dash: number;
+        public readonly bslash: number;
+        public readonly fslash: number;
 
         //
         /**

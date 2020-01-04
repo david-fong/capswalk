@@ -113,7 +113,14 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public GET_SIZE_LIMITS(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
+        public static getAmbiguityThreshold(): 24 {
+            return 24;
+        }
+
+        /**
+         * @override
+         */
+        public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
             height: Object.freeze(<const>{ min: 10, max: 50, }),
             width:  Object.freeze(<const>{ min: 10, max: 50, }),
