@@ -25,7 +25,21 @@ export interface EventRecordEntry {
  */
 export namespace EventRecordEntry {
 
+    /**
+     * The Game Manager should assign this value to the `eventId` field
+     * of a request-type event to signal if a request has been rejected.
+     * It is convenient to use as a default value.
+     */
     export const REJECT = -1;
+
+    /**
+     * Use for conditional fields.
+     */
+    // TODO: use this. may need to change event defs to be non-classes.
+    export const enum ReqExec {
+        REQUEST = "request",
+        EXECUTE = "execute",
+    }
 
 }
 

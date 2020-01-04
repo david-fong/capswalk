@@ -156,7 +156,7 @@ export namespace Bubble {
             value = MAX_TIMER_DURATION;
             performedConstrain = true;
         }
-        const percentCharged = ((100)
+        const percentCharged = Math.round((100)
             * (value - MIN_TIMER_DURATION)
             / (MAX_TIMER_DURATION - MIN_TIMER_DURATION)
         );

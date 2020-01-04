@@ -87,6 +87,9 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
 
     public readonly playerId: Player.Id;
 
+    /**
+     * @see Player#lastAcceptedRequestId
+     */
     public lastAcceptedRequestId: number;
 
     /**
@@ -106,6 +109,8 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
      * stockpile.
      */
     public playerStockpile?: number = undefined;
+
+    // TODO: add field playerBubblePercentCharged
 
     public readonly destCoord: Coord.Bare<S> | typeof Coord.BENCH;
 
@@ -136,11 +141,11 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
 
     public constructor(
         playerId: Player.Id,
-        lastAccpectedRequestId: number,
+        lastAcceptedRequestId: number,
         destTile: Tile<S>,
     ) {
         this.playerId = playerId;
-        this.lastAcceptedRequestId = lastAccpectedRequestId;
+        this.lastAcceptedRequestId = lastAcceptedRequestId;
         this.destCoord = destTile.coord; // TODO: make benchTiles pass special string for this
         this.destNumTimesOccupied = destTile.numTimesOccupied;
     }
