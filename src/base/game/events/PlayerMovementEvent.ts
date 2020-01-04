@@ -92,25 +92,27 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
      */
     public lastAcceptedRequestId: number;
 
-    /**
-     * Any value assigned by the requester to this field should be
-     * ignored by the server.
-     * 
-     * The server should respond with the new value of the requester's
-     * score.
-     */
-    public playerScore?: number = undefined;
+    public score?: {
+        /**
+         * Any value assigned by the requester to this field should be
+         * ignored by the server.
+         * 
+         * The server should respond with the new value of the requester's
+         * score.
+         */
+        value: number;
 
-    /**
-     * Any value assigned by the requester to this field should be
-     * ignored by the server.
-     * 
-     * The server should respond with the new value of the requester's
-     * stockpile.
-     */
-    public playerStockpile?: number = undefined;
+        /**
+         * Any value assigned by the requester to this field should be
+         * ignored by the server.
+         * 
+         * The server should respond with the new value of the requester's
+         * stockpile.
+         */
+        stockpile: number;
 
-    // TODO: add field playerBubblePercentCharged
+        bubblePercentCharged: number;
+    } = undefined;
 
     public readonly destCoord: Coord.Bare<S> | typeof Coord.BENCH;
 

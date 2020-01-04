@@ -376,13 +376,15 @@ export abstract class Game<S extends Coord.System> {
         desc.lastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
         desc.destNumTimesOccupied  = (1 + dest.numTimesOccupied);
 
-        desc.playerScore = (player.score + dest.scoreValue);
-        if (Bubble.computeTimerDuration(player).performedConstrain) {
-            // This allows the player's stockpile to increase if its
-            // original stockpile value is not such that its calculated
-            // timer is outside the required range.
-            desc.playerStockpile = (player.stockpile + dest.scoreValue);
-        }
+        const bubbleDesc = Bubble.computeTimerDuration(player);
+        // This allows the player's stockpile to increase if its
+        // original stockpile value is not such that its calculated
+        // timer is outside the required range.
+        desc.score = {
+            value: player.score + dest.scoreValue,
+            stockpile: player.stockpile + (bubbleDesc.performedConstrain ? 0 : dest.scoreValue),
+            bubblePercentCharged: bubbleDesc.percentCharged,
+        };
 
         desc.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
 
@@ -426,11 +428,14 @@ export abstract class Game<S extends Coord.System> {
                 // Don't change this value for bench tiles:
                 // TODO: this conditional execution feels to complicated.
                 //  can we move the complication somewhere else more sensible?
+                //  move it to shuffleLangCharSeqAt
                 dest.setLangCharSeq(desc.newCharSeqPair);
             }
             // Refresh the operator's `seqBuffer`:
             if (this.operator && // Ignore if ServerGame
                 player !== this.operator &&
+                dest !== player.benchTile &&
+                this.operator.hostTile !== this.operator.benchTile &&
                 dest.coord.infNorm(this.operator.coord) === 1) {
                 // Do this if moving into the vicinity of the operator
                 // and the requester is not the operator. This operation
@@ -438,6 +443,7 @@ export abstract class Game<S extends Coord.System> {
                 this.operator.seqBufferAcceptKey(null);
             }
             dest.numTimesOccupied = desc.destNumTimesOccupied;
+            dest.scoreValue = 0;
         };
 
         const clientEventLag = desc.lastAcceptedRequestId - player.lastAcceptedRequestId;
@@ -476,8 +482,9 @@ export abstract class Game<S extends Coord.System> {
             executeBasicTileUpdates();
             // If using relative values (which we are not), the below
             // should happen regardless of the order of receipt.
-            player.score = desc.playerScore!;
-            player.stockpile = desc.playerStockpile!;
+            player.score = desc.score!.value;
+            player.stockpile = desc.score!.stockpile;
+            player.percentBubbleCharge = desc.score!.bubblePercentCharged;
 
             player.moveTo(dest);
             // Below is computationally the same as "(player.lastAcceptedRequestId)++"
@@ -668,9 +675,11 @@ export abstract class Game<S extends Coord.System> {
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
 
     /**
-     * @returns The tile at `dest`, or the specified player's {@link Player#benchTile}
-     * @param dest - 
-     * @param playerId - IMPORTANT: Must be a valid player.
+     * @returns
+     * The tile at `dest`, or the specified player's{@link Player#benchTile}.
+     * 
+     * @param dest -
+     * @param playerId -
      */
     public getBenchableTileAt(dest: Coord.Bare<S> | typeof Coord.BENCH, playerId: Player.Id): Tile<S> {
         return (dest === Coord.BENCH)
