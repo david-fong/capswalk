@@ -84,7 +84,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * 
      * @param dest - 
      */
-    protected makeMovementRequest(dest: Tile<S>): void {
+    protected makeMovementRequest(dest: Tile<S, any>): void {
         if (this.requestInFlight) {
             throw new Error("Only one request should ever be in flight at a time.");
         }
@@ -104,16 +104,18 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * circuits, or terminates with a call to {@link Player#moveTo}.
      * 
      * @param dest -
-     * 
-     * @throws `Error` if `dest` is occupied by another `Player`.
      */
-    protected abstract abstractMakeMovementRequest(dest: Tile<S>): void;
+    protected abstract abstractMakeMovementRequest(dest: Tile<S,any>): void;
 
     /**
      * Convenience method.
      */
     public bench(): void {
         this.makeMovementRequest(this.benchTile);
+    }
+
+    public get isBenched(): boolean {
+        return this.hostTile === this.benchTile;
     }
 
 
@@ -124,14 +126,29 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
 
 
-    public getNeighbouringTiles(radius: number = 1): Array<Tile<S>> {
+    /**
+     * @param radius -
+     * @returns -
+     * @throws Error if called while benched.
+     */
+    public getNeighbouringTiles(radius: number = 1): Array<Tile<S, typeof Player.Id.NULL>> {
         return this.game.grid.getNeighbouringTiles(this.coord, radius);
     }
 
-    public getUNT(radius: number = 1): Array<Tile<S>> {
+    /**
+     * @param radius -
+     * @returns -
+     * @throws Error if called while benched.
+     */
+    public getUNT(radius: number = 1): Array<Tile<S, typeof Player.Id.NULL>> {
         return this.game.grid.getUNT(this.coord, radius);
     }
 
+    /**
+     * @param radius -
+     * @returns -
+     * @throws Error if called while benched.
+     */
     public getNeighbours(radius: number = 1): Array<Player<S>> {
         return this.game.getNeighbours(this.coord, radius);
     }

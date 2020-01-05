@@ -16,16 +16,28 @@ export { Coord } from "./Coord";
  * identical constructor signature as that of this base class. This
  * can be done by a type assertion statement: `<extension class> as
  * Tile.ConstructorType<any>`.
+ * 
+ * @template S
+ * The coordinate system enum for this tile's coordinate.
+ * 
+ * @template O
+ * The id of the only player allowed to occupy this tile, or the value
+ * Player.Id.NULL, indicating that any player may occupy this tile.
  */
-export class Tile<S extends Coord.System> {
+// TODO: change O to have enum with entries GRID and BENCH. using
+//  their player id doesn't work because you can't make a type that
+//  is numbers excluding certain numbers.
+export class Tile<S extends Coord.System, O extends Player.Id> {
 
-    public readonly coord: Coord<S>; // TODO: change this to allow the bench string.
-
-    protected _occupantId: Player.Id;
-    protected _scoreValue: number;
+    public readonly coord: O extends typeof Player.Id.NULL ? Coord<S> : typeof Coord.BENCH;
+    public readonly designatedOccupant: O;
+    protected _occupantId: O extends typeof Player.Id.NULL
+        ? Player.Id // Any player can occupy this tile.
+        : O | typeof Player.Id.NULL;
 
     protected _langChar: Lang.Char;
     protected _langSeq:  Lang.Seq;
+    protected _scoreValue: number;
 
     /**
      * The number of times this `Tile` was occupied since the last
@@ -40,11 +52,12 @@ export class Tile<S extends Coord.System> {
     /**
      * _Does not call reset._
      * 
-     * @param coord - 
-     * @throws `TypeError` if `x` or `y` are not integer values.
+     * @param coord -
+     * @param designatedOccupant - See the documentation for the type parameter, `O`.
      */
-    public constructor(coord: Coord<S>) {
+    public constructor(coord: Tile<S,O>["coord"], designatedOccupant: O) {
         this.coord = coord;
+        this.designatedOccupant = designatedOccupant;
     }
 
     public reset(): void {
@@ -58,8 +71,6 @@ export class Tile<S extends Coord.System> {
         // shuffling since initially, nothing needs to be avoided.
         this.setLangCharSeq(Lang.CharSeqPair.NULL);
     }
-
-
 
     /**
      * Called, for example, when a {@link Player} on this `Tile` provides
@@ -75,13 +86,17 @@ export class Tile<S extends Coord.System> {
     /**
      * Any overrides must make a supercall to this implementation.
      * 
-     * @param playerDesc - 
+     * @param playerDesc -
      */
     public setOccupant(playerDesc: PlayerSkeleton.VisibleState): void {
-        this._occupantId = playerDesc.idNumber;
+        if (this._occupantId !== Player.Id.NULL && playerDesc.idNumber !== this.designatedOccupant) {
+            throw new RangeError(`Only the player with the player ID`
+                + ` \"${this.designatedOccupant}\" may occupy this tile.`);
+        }
+        this._occupantId = playerDesc.idNumber as Tile<S,O>["_occupantId"];
     }
 
-    public isOccupied(): boolean {
+    public get isOccupied(): boolean {
         return this.occupantId !== Player.Id.NULL;
     }
 
@@ -103,9 +118,6 @@ export class Tile<S extends Coord.System> {
         this._scoreValue = score;
     }
 
-
-
-
     /**
      * @override
      */
@@ -123,36 +135,16 @@ export class Tile<S extends Coord.System> {
     }
 
 }
-// If this errs, then the type alias must be updated.
-Tile as Tile.ConstructorType<any>;
+// If this errs when changing the constructor signature, then
+// the type definition being asserted should be updated to match.
+Tile as Tile.ConstructorType<any, any>;
 
 
 
 export namespace Tile {
 
-    export type ConstructorType<S extends Coord.System> = {
-        new(coord: Coord<S>): Tile<S>;
-
-        /**
-         * Create a Tile for use as a player's bench. The coordinate
-         * specifier field for the returned instance must equal the
-         * special string constant reserved to denote a player's bench.
-         * 
-         * Note: Because of namespace merging and how extension-class
-         * literals inherit static-type fields of their parent, unless
-         * this is redefined in a child class, that child class will
-         * inherit the first implementation defined by their parents.
-         */
-        createBench(): Tile<S>;
+    export type ConstructorType<S extends Coord.System, P extends Player.Id> = {
+        new(coord: Tile<S,P>["coord"], designatedOccupant: P): Tile<S,P>;
     };
 
-    export const createBench = <S extends Coord.System>(): Tile<S> => {
-        return new BenchImpl();
-    };
-
-    class BenchImpl<S extends Coord.System> extends Tile<S> {
-        public constructor() {
-            super(Coord.BENCH);
-        }
-    }
 }

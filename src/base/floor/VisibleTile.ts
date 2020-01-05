@@ -19,15 +19,15 @@ import { Tile } from "./Tile";
  * 
  * @extends Tile
  */
-export class VisibleTile<S extends Coord.System> extends Tile<S> {
+export class VisibleTile<S extends Coord.System, O extends Player.Id> extends Tile<S,O> {
 
     public  readonly tileCellElem:      HTMLTableCellElement;
     private readonly playerDivElem:     HTMLDivElement;
     private readonly langCharDivElem:   HTMLDivElement;
     private readonly langSeqDivElem:    HTMLDivElement;
 
-    public constructor(coordDesc: Coord<S>) {
-        super(coordDesc);
+    public constructor(coordDesc: Tile<S,O>["coord"], designatedOccupant: O) {
+        super(coordDesc, designatedOccupant);
 
         const tCell: HTMLTableCellElement = new HTMLTableCellElement();
         {
@@ -98,7 +98,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
 }
 // Assert that this extension's constructor has a compatible signature:
-VisibleTile as Tile.ConstructorType<any>;
+VisibleTile as Tile.ConstructorType<any, any>;
 
 
 
@@ -118,16 +118,4 @@ export namespace VisibleTile {
         SCORE_VALUE: <const>"scoreValue",
     });
 
-    /**
-     * @override
-     */
-    export const createBench = <S extends Coord.System>(): Tile<S> => {
-        return new BenchImpl();
-    };
-
-    class BenchImpl<S extends Coord.System> extends Tile<S> {
-        public constructor() {
-            super(Coord.BENCH);
-        }
-    }
 }

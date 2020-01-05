@@ -26,14 +26,14 @@ export class PlayerSkeleton<S extends Coord.System>
     /**
      * @see PlayerId
      */
-    public readonly idNumber: Player.Id;
+    public readonly idNumber: Exclude<Player.Id, typeof Player.Id.NULL>;
 
-    private _hostTile: Tile<S>;
+    private _hostTile: Tile<S, any>;
 
     /**
      * A {@link Tile} that can only be occupied by this `Player`.
      */
-    public readonly benchTile: Tile<S>;
+    public readonly benchTile: Tile<S, Exclude<Player.Id, typeof Player.Id.NULL>>;
 
     private _score:         number;
     private _stockpile:     number;
@@ -54,7 +54,7 @@ export class PlayerSkeleton<S extends Coord.System>
         }
         this.game = game;
         this.idNumber = idNumber;
-        this.benchTile = this.game.tileClass.createBench();
+        this.benchTile = new this.game.tileClass(Coord.BENCH, this.idNumber);
     }
 
     /**
@@ -81,7 +81,7 @@ export class PlayerSkeleton<S extends Coord.System>
 
 
 
-    public get hostTile(): Tile<S> {
+    public get hostTile(): Tile<S, any> {
         return this._hostTile;
     }
 
@@ -106,7 +106,7 @@ export class PlayerSkeleton<S extends Coord.System>
      *
      * @param dest -
      */
-    public moveTo(dest: Tile<S>): void {
+    public moveTo(dest: Tile<S, any>): void {
         // Evict self from current `Tile`.
         if (this.hostTile.occupantId !== this.idNumber) {
             if (this.game.gameType !== Game.Type.CLIENT) {
@@ -122,7 +122,7 @@ export class PlayerSkeleton<S extends Coord.System>
             this.hostTile.evictOccupant();
         }
         // Occupy the destination `Tile.
-        if (dest.isOccupied()) {
+        if (dest.isOccupied) {
             if (this.game.gameType !== Game.Type.CLIENT) {
                 // Should never happen because the Game Manager
                 // rejects requests to move onto an occupied `Tile`.

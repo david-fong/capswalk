@@ -42,7 +42,7 @@ export abstract class Game<S extends Coord.System> {
      */
     public readonly grid: Grid<S>;
 
-    public readonly tileClass: Tile.ConstructorType<S>;
+    public readonly tileClass: Tile.ConstructorType<S, any>;
 
     public readonly lang: Lang;
 
@@ -98,7 +98,7 @@ export abstract class Game<S extends Coord.System> {
      * @param desc -
      * @param tileClass -
      */
-    public constructor(desc: Game.CtorArgs<S, any>, tileClass: Tile.ConstructorType<S>) {
+    public constructor(desc: Game.CtorArgs<S, any>, tileClass: Tile.ConstructorType<S, any>) {
         this.tileClass = tileClass;
         this.grid = Grid.of(desc.coordSys, {
             dimensions: desc.gridDimensions,
@@ -133,7 +133,6 @@ export abstract class Game<S extends Coord.System> {
         this.allArtifPlayers = playerBundle.allArtifPlayers;
 
         // Check to make sure that none of the players are invincible:
-        // (this happens if a player is "subscribed" to every team number)
         // @see Player#beNiceTo
         {
             ;
@@ -281,7 +280,7 @@ export abstract class Game<S extends Coord.System> {
      * A {@link Lang.CharSeqPair} that can be used as a replacement
      * for that currently being used by `tile`.
      */
-    private shuffleLangCharSeqAt(targetTile: Tile<S>): Lang.CharSeqPair {
+    private shuffleLangCharSeqAt(targetTile: Tile<S, typeof Player.Id.NULL>): Lang.CharSeqPair {
         // TODO: first of all, this should have been specifying the
         // radius argument to be 2. Second, it technically should
         // not even be specifying the radius as two: it should take
@@ -357,8 +356,8 @@ export abstract class Game<S extends Coord.System> {
             this.processMoveExecute(desc);
             return;
         }
-        const dest: Tile<S> = this.getBenchableTileAt(desc.dest.coord, desc.playerId);
-        if (dest.isOccupied() ||
+        const dest: Tile<S, any> = this.getBenchableTileAt(desc.dest.coord, desc.playerId);
+        if (dest.isOccupied ||
             dest.numTimesOccupied !== desc.dest.numTimesOccupied) {
             // The check concerning the destination `Tile`'s occupancy
             // counter is not absolutely necessary. It does not enforce
@@ -424,18 +423,18 @@ export abstract class Game<S extends Coord.System> {
         const executeBasicTileUpdates = (): void => {
             // The `LangCharSeqPair` shuffle changes must take effect
             // before updating the operator's seqBuffer if need be.
-            if (dest !== player.benchTile && desc.dest.newCharSeqPair) {
+            if (dest !== player.benchTile) {
                 // Don't change this value for bench tiles:
                 // TODO: this conditional execution feels too complicated.
                 //  can we move the complication somewhere else less cluttered?
                 //  yes: move it to shuffleLangCharSeqAt please
-                dest.setLangCharSeq(desc.dest.newCharSeqPair);
+                dest.setLangCharSeq(desc.dest.newCharSeqPair!);
             }
             // Refresh the operator's `seqBuffer`:
             if (this.operator && // Ignore if ServerGame
                 player !== this.operator &&
                 dest !== player.benchTile &&
-                this.operator.hostTile !== this.operator.benchTile &&
+                !this.operator.isBenched &&
                 dest.coord.infNorm(this.operator.coord) === 1) {
                 // Do this if moving into the vicinity of the operator
                 // and the requester is not the operator. This operation
@@ -681,7 +680,7 @@ export abstract class Game<S extends Coord.System> {
      * @param dest -
      * @param playerId -
      */
-    public getBenchableTileAt(dest: Coord.Bare<S> | typeof Coord.BENCH, playerId: Player.Id): Tile<S> {
+    public getBenchableTileAt(dest: Coord.Bare<S> | typeof Coord.BENCH, playerId: Player.Id): Tile<S, any> {
         return (dest === Coord.BENCH)
             ? this.getPlayerById(playerId).benchTile
             : this.grid.getTileAt(dest);
