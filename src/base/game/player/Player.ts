@@ -219,7 +219,7 @@ export namespace Player {
          * Initially `undefined` for server and offline games. It will
          * already be defined for a client game by the server.
          */
-        idNumber: ID extends Player.Id ? (Player.Id | undefined) : undefined;
+        idNumber: ID extends Player.Id ? Player.Id : undefined;
 
         readonly username: Username;
 
@@ -231,7 +231,7 @@ export namespace Player {
          */
         beNiceTo: ReadonlyArray<ID>
 
-        readonly socketId: ID extends SocketId ? SocketId : undefined;
+        readonly socketId: SocketId;
     };
 
 }

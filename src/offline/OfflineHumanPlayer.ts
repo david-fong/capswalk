@@ -9,7 +9,7 @@ import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
  * 
  * @extends HumanPlayer
  */
-export class OfflineHumanPlayer<S extends Coord.System> extends HumanPlayer<S> {
+export class OfflineHumanPlayer<S extends Coord.System.GridCapable> extends HumanPlayer<S> {
 
     public constructor(game: OfflineGame<S>, desc: Player.CtorArgs) {
         super(game, desc);
@@ -24,7 +24,7 @@ export class OfflineHumanPlayer<S extends Coord.System> extends HumanPlayer<S> {
      * 
      * @override {@link Player#makeMovementRequest}
      */
-    public abstractMakeMovementRequest(dest: Tile<S>): void {
+    public abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void {
         this.game.processMoveRequest(
             new PlayerMovementEvent(
                 this.idNumber,

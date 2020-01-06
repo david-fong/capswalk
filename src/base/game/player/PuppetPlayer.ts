@@ -11,16 +11,16 @@ import { Player} from "./Player";
  * - All game implementations use this for non-operator human players.
  * - Client games use this in place of artificial players.
  */
-export class PuppetPlayer<S extends Coord.System> extends Player<S> {
+export class PuppetPlayer<S extends Coord.System.GridCapable> extends Player<S> {
 
-    public constructor(game: Game<S>, desc: Player.CtorArgs) {
+    public constructor(game: Game<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
     }
 
     /**
      * @override
      */
-    protected abstractMakeMovementRequest(dest: Tile<S>): never {
+    protected abstractMakeMovementRequest(dest: Player<S>["hostTile"]): never {
         throw new TypeError("This operation is unsupported for this implementation.");
     }
 

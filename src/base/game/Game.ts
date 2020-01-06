@@ -84,7 +84,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
 
     private readonly allArtifPlayers: ReadonlyArray<Player<S>>;
 
-    public abstract get gameType(): G;
+    public readonly gameType: G;
 
 
 
@@ -99,6 +99,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      * @param tileClass -
      */
     public constructor(desc: Game.CtorArgs<G,S>, tileClass: Tile.ConstructorType<S>) {
+        this.gameType = desc.gameType;
         this.tileClass = tileClass;
         this.grid = Grid.of(desc.coordSys, {
             dimensions: desc.gridDimensions,
@@ -127,7 +128,22 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         this.eventRecord = [];
 
         // Construct players:
-        const playerBundle = this.createPlayers(desc.playerDescs, desc.operatorIndex);
+        let playerBundle: ReturnType<Game<any,S>["createPlayers"]>;
+        switch (this.gameType) {
+            case Game.Type.OFFLINE:
+            case Game.Type.SERVER:
+                type descType = Game.CtorArgs<Game.Type.OFFLINE | Game.Type.SERVER, S>;
+                playerBundle = this.createPlayers(
+                    (desc as descType).playerDescs,
+                    (desc as descType).operatorIndex,
+                );
+                break;
+            case Game.Type.CLIENT:
+                playerBundle = undefined!;
+                break;
+            default:
+                throw Error("never");
+        }
         this.operator = playerBundle.operator;
         this.allHumanPlayers = playerBundle.allHumanPlayers;
         this.allArtifPlayers = playerBundle.allArtifPlayers;
@@ -178,35 +194,36 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      * @param operatorIndex - 
      * @returns A bundle of the constructed players.
      */
-    private createPlayers(
+    private createPlayers<G extends Game.Type.OFFLINE | Game.Type.SERVER>(
         playerDescs: Game.CtorArgs<G,S>["playerDescs"],
-        operatorIndex?: number
+        operatorIndex: Game.CtorArgs<G,S>["operatorIndex"],
     ): {
         operator: Game<G,S>["operator"],
         allHumanPlayers: ReadonlyArray<Player<S>>,
         allArtifPlayers: ReadonlyArray<Player<S>>,
     } {
-        let operator: HumanPlayer<S> | undefined = undefined;
+        let operator: ReturnType<Game<G,S>["createPlayers"]>["operator"];
         const allHumanPlayers: Array<Player<S>> = [];
         const allArtifPlayers: Array<Player<S>> = [];
 
-        const socketIdToPlayerIdMap: Record<string, Player.Id> = {};
+        const socketIdToPlayerIdMap: Record<Player.SocketId, Player.Id> = {};
         playerDescs.forEach((playerDesc) => {
             // First pass - Assign Player ID's:
             if (playerDesc.operatorClass < Player.Operator.HUMAN) {
                 throw new RangeError("Invalid operator class.");
             }
             // Allocate a player ID.
-            playerDesc.idNumber = (playerDesc.operatorClass === Player.Operator.HUMAN)
+            const assignedId = (playerDesc.operatorClass === Player.Operator.HUMAN)
                 ? +(1 + allHumanPlayers.length) + Player.Id.NULL
                 : -(1 + allArtifPlayers.length) + Player.Id.NULL;
+            ((playerDesc).idNumber as Player.Id) = assignedId;
             if (playerDesc.socketId) {
-                socketIdToPlayerIdMap[playerDesc.socketId] = playerDesc.idNumber;
+                socketIdToPlayerIdMap[playerDesc.socketId] = assignedId;
             }
         });
         playerDescs.forEach((playerDesc) => {
             // Second pass - map any socket ID's in `beNiceTo` to player ID's:
-            playerDesc.beNiceTo = playerDesc.beNiceTo.map((socketId) => {
+            (playerDesc as Player.CtorArgs<Player.Id>).beNiceTo = playerDesc.beNiceTo.map((socketId) => {
                 return socketIdToPlayerIdMap[socketId];
             });
         });
@@ -752,6 +769,7 @@ export namespace Game {
         S extends Coord.System.GridCapable,
     > = {
 
+        readonly gameType: G;
         readonly coordSys: S;
 
         readonly gridDimensions: Grid.Dimensions<S>;
@@ -765,10 +783,10 @@ export namespace Game {
          * 
          * This should be set to `undefined for a {@link ServerGame}.
          */
-        operatorIndex?: number;
+        operatorIndex: G extends Game.Type.SERVER ? undefined : number;
 
         readonly playerDescs: ReadonlyArray<Player.CtorArgs<
-            G extends Game.Type.SERVER ? Player.SocketId : Player.Id
+            G extends Game.Type.OFFLINE | Game.Type.SERVER ? Player.SocketId : Player.Id
         >>;
     };
 

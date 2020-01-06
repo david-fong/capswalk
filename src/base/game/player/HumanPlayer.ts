@@ -10,7 +10,7 @@ import { Player } from "./Player";
  * 
  * @extends Player
  */
-export abstract class HumanPlayer<S extends Coord.System> extends Player<S> {
+export abstract class HumanPlayer<S extends Coord.System.GridCapable> extends Player<S> {
 
     /**
      * Invariant: always matches the prefix of the {@link LangSeq} of
@@ -18,7 +18,7 @@ export abstract class HumanPlayer<S extends Coord.System> extends Player<S> {
      */
     private _seqBuffer: Lang.Seq;
 
-    public constructor(game: Game<S>, desc: Player.CtorArgs) {
+    public constructor(game: Game<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
         if (this.idNumber <= 0) {
             throw new RangeError(`The ID number for a human-operated player`
@@ -137,7 +137,7 @@ export abstract class HumanPlayer<S extends Coord.System> extends Player<S> {
      * 
      * @override
      */
-    public moveTo(dest: Tile<S>): void {
+    public moveTo(dest: Player<S>["hostTile"]): void {
         // Clear my `seqBuffer` first:
         this._seqBuffer = "";
         super.moveTo(dest);

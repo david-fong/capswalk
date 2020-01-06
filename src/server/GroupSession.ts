@@ -26,7 +26,6 @@ export class GroupSession {
     private readonly initialTtlTimeout: NodeJS.Timeout;
     private readonly deleteExternalRefs: VoidFunction;
 
-
     /**
      * 
      * @param namespace - 
@@ -122,9 +121,9 @@ export class GroupSession {
      * @param gridDimensions -
      * @returns false if the passed arguments were incomplete or invalid.
      */
-    private createGameInstance(
-        coordSys: Coord.System,
-        gridDimensions: Grid.DimensionDesc,
+    private createGameInstance<S extends Coord.System.GridCapable>(
+        coordSys: S,
+        gridDimensions: Grid.Dimensions<S>,
     ): Readonly<Game.CtorArgs.FailureReasons> | undefined {
         const failureReasons: Partial<Game.CtorArgs.FailureReasons> = {};
         failureReasons.undefinedUsername = Object.values(this.sockets)
@@ -134,7 +133,8 @@ export class GroupSession {
             return failureReasons;
         }
         //const noProto = <T>(obj: T): T => Object.assign(Object.create(null), obj);
-        this.currentGame = new ServerGame<any>(this, {
+        this.currentGame = new ServerGame<S>(this, {
+            gameType: Game.Type.SERVER,
             coordSys,
             gridDimensions,
             languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.

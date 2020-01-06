@@ -9,7 +9,7 @@ import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
  * 
  * @extends HumanPlayer
  */
-export class OnlineHumanPlayer<S extends Coord.System> extends HumanPlayer<S> {
+export class OnlineHumanPlayer<S extends Coord.System.GridCapable> extends HumanPlayer<S> {
 
     /**
      * @override
@@ -30,7 +30,7 @@ export class OnlineHumanPlayer<S extends Coord.System> extends HumanPlayer<S> {
     /**
      * @override
      */
-    public abstractMakeMovementRequest(dest: Tile<S>): void {
+    public abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void {
         // ServerGame handles with processMoveRequest.
         // Arguments must follow that function signature.
         this.game.socket.emit(

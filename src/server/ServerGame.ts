@@ -12,13 +12,15 @@ import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 import { Bubble } from "game/events/Bubble";
 
 
+type G = Game.Type.SERVER;
+
 /**
  * Handles game-related events and attaches listeners to each client
  * socket.
  * 
  * @extends Game
  */
-export class ServerGame<S extends Coord.System> extends Game<S> {
+export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
 
     public readonly namespace: io.Namespace;
 
@@ -32,7 +34,7 @@ export class ServerGame<S extends Coord.System> extends Game<S> {
     /**
      * @override
      */
-    public get gameType(): Game.Type {
+    public get gameType(): G {
         return Game.Type.SERVER;
     }
 
@@ -50,7 +52,7 @@ export class ServerGame<S extends Coord.System> extends Game<S> {
      */
     public constructor(
         session: GroupSession,
-        desc: Game.CtorArgs<S, Player.SocketId>,
+        desc: Game.CtorArgs<G,S>,
     ) {
         super(desc, Tile);
         // Setup the map from player ID's to socket ID's:
@@ -128,7 +130,7 @@ export class ServerGame<S extends Coord.System> extends Game<S> {
     /**
      * @override
      */
-    public processMoveExecute(desc: Readonly<PlayerMovementEvent>): void {
+    public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         super.processMoveExecute(desc);
 
         if (desc.eventId === EventRecordEntry.REJECT) {
