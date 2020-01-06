@@ -1,3 +1,5 @@
+import { Player } from "utils/TypeDefs";
+
 import { Euclid2 } from "./impl/Euclid2";
 import { Beehive } from "./impl/Beehive";
 
@@ -12,49 +14,28 @@ export type Coord<S extends Coord.System> = Coord.Bare<S> & Coord.Abstract<S>;
  */
 export namespace Coord {
 
-    /**
-     * The coordinate-system-agnostic identifier for any player's
-     * bench tile.
-     */
-    export const BENCH = <const>"BENCH_COORD";
-
-    // ==============================================================
-
     export const enum System {
+        __BENCH = "__BENCH",
         EUCLID2 = "EUCLID2",
         BEEHIVE = "BEEHIVE",
     }
 
     export type Bare<S extends System>
-        = S extends System.EUCLID2 ? Euclid2.Coord.Bare
+        = Readonly<S extends System.__BENCH ? { readonly playerId: Player.Id; }
+        : S extends System.EUCLID2 ? Euclid2.Coord.Bare
         : S extends System.BEEHIVE ? Beehive.Coord.Bare
-        : never;
-
-    // NOTE: we no longer have an absolute need for this. Grid
-    // implementations are responsible to use their own Coord
-    // constructors. It may have use for testing purposes, though.
-    // if so, please redefine the factory / producer `Coord.of`.
-    const Constructors = Object.freeze(<const>{
-        [ System.EUCLID2 ]: Euclid2.Coord,
-        [ System.BEEHIVE ]: Beehive.Coord,
-    });
-    /**
-     * Will err if:
-     * - the coordinate systems between mappings don't match.
-     * - the extension's constructor signature is not compatible
-     *   with that of the generic abstract base class.
-     * - the extension is not type compatible as its `Bare` type.
-     */
-    const __ctorMapTypeAssertion__ = (): void => {
-        Constructors as Readonly<{
-            [S in System]: {new(desc: Coord.Bare<S>): Coord<S>}
-        }>;
-    };
+        : never>;
 
     // ==============================================================
     // Note: The below exports do not require any modificaions with
     // the additions of new coordinate systems.
     // ==============================================================
+
+    export namespace System {
+        export type GridCapable = Exclude<Coord.System, Coord.System.__BENCH>;
+    }
+
+
 
     /**
      * Immutable. All `Coord` objects returned by operations are new objects.

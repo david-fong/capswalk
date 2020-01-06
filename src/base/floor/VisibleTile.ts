@@ -19,15 +19,15 @@ import { Tile } from "./Tile";
  * 
  * @extends Tile
  */
-export class VisibleTile<S extends Coord.System, O extends Player.Id> extends Tile<S,O> {
+export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     public  readonly tileCellElem:      HTMLTableCellElement;
     private readonly playerDivElem:     HTMLDivElement;
     private readonly langCharDivElem:   HTMLDivElement;
     private readonly langSeqDivElem:    HTMLDivElement;
 
-    public constructor(coordDesc: Tile<S,O>["coord"], designatedOccupant: O) {
-        super(coordDesc, designatedOccupant);
+    public constructor(coordDesc: Tile<S>["coord"]) {
+        super(coordDesc);
 
         const tCell: HTMLTableCellElement = new HTMLTableCellElement();
         {
@@ -98,7 +98,7 @@ export class VisibleTile<S extends Coord.System, O extends Player.Id> extends Ti
 
 }
 // Assert that this extension's constructor has a compatible signature:
-VisibleTile as Tile.ConstructorType<any, any>;
+VisibleTile as Tile.ConstructorType<any>;
 
 
 

@@ -3,6 +3,7 @@ import { Player as PlayerTypeDefs, PlayerSkeleton as PlayerSkeletonTypeDefs } fr
 import { Tile, Coord } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
+import { Grid } from "floor/Grid";
 
 
 /**
@@ -14,26 +15,26 @@ import { Player } from "./Player";
  * 
  * @extends PlayerTypeDefs to intake its namespace exports.
  */
-export class PlayerSkeleton<S extends Coord.System>
+export class PlayerSkeleton<S extends Coord.System.GridCapable>
     extends PlayerTypeDefs
     implements PlayerSkeletonTypeDefs.VisibleState {
 
     /**
      * The game object that this player belongs to.
      */
-    public readonly game: Game<S>;
+    public readonly game: Game<any,S>;
 
     /**
      * @see PlayerId
      */
     public readonly idNumber: Exclude<Player.Id, typeof Player.Id.NULL>;
 
-    private _hostTile: Tile<S, any>;
+    private _hostTile: Tile<S | Coord.System.__BENCH>;
 
     /**
      * A {@link Tile} that can only be occupied by this `Player`.
      */
-    public readonly benchTile: Tile<S, Exclude<Player.Id, typeof Player.Id.NULL>>;
+    public readonly benchTile: Tile<Coord.System.__BENCH>;
 
     private _score:         number;
     private _stockpile:     number;
@@ -44,7 +45,7 @@ export class PlayerSkeleton<S extends Coord.System>
 
 
 
-    protected constructor(game: Game<S>, idNumber: Player.Id) {
+    protected constructor(game: Game<any,S>, idNumber: Player.Id) {
         super();
         if (Math.trunc(this.idNumber) !== this.idNumber) {
             throw new RangeError("Player ID's must be integer values.");
@@ -54,7 +55,7 @@ export class PlayerSkeleton<S extends Coord.System>
         }
         this.game = game;
         this.idNumber = idNumber;
-        this.benchTile = new this.game.tileClass(Coord.BENCH, this.idNumber);
+        this.benchTile = new Tile<Coord.System.__BENCH>({ playerId: this.idNumber; });
     }
 
     /**
@@ -81,7 +82,7 @@ export class PlayerSkeleton<S extends Coord.System>
 
 
 
-    public get hostTile(): Tile<S, any> {
+    public get hostTile(): PlayerSkeleton<S>["_hostTile"] {
         return this._hostTile;
     }
 
@@ -106,7 +107,7 @@ export class PlayerSkeleton<S extends Coord.System>
      *
      * @param dest -
      */
-    public moveTo(dest: Tile<S, any>): void {
+    public moveTo(dest: Tile<S | Coord.System.__BENCH>): void {
         // Evict self from current `Tile`.
         if (this.hostTile.occupantId !== this.idNumber) {
             if (this.game.gameType !== Game.Type.CLIENT) {
@@ -164,6 +165,9 @@ export class PlayerSkeleton<S extends Coord.System>
     }
 
 
+
+    // NOTE: these are actually probably going to be useful
+    // for hooks of sound effects.
 
     public get isDowned(): boolean {
         return this._isDowned;

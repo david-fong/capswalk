@@ -35,14 +35,14 @@ import { EventRecordEntry } from "./events/EventRecordEntry";
  * - Offline and Client games display the game-state to an operator via browser and HTML.
  * - Client  and Server games use network operations to communicate.
  */
-export abstract class Game<S extends Coord.System> {
+export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapable> {
 
     /**
      * Contains all non-bench tiles in this game.
      */
     public readonly grid: Grid<S>;
 
-    public readonly tileClass: Tile.ConstructorType<S, any>;
+    public readonly tileClass: Tile.ConstructorType<S>;
 
     public readonly lang: Lang;
 
@@ -70,9 +70,9 @@ export abstract class Game<S extends Coord.System> {
     private readonly eventRecord: Array<Readonly<EventRecordEntry>>;
 
     /**
-     * Set to `undefined` for {@link ServerGame}.
+     * 
      */
-    public readonly operator?: HumanPlayer<S>;
+    public readonly operator: G extends Game.Type.SERVER ? undefined : HumanPlayer<S>;
 
     /**
      * Does not use the HumanPlayer type annotation. This is to
@@ -84,7 +84,7 @@ export abstract class Game<S extends Coord.System> {
 
     private readonly allArtifPlayers: ReadonlyArray<Player<S>>;
 
-    public abstract get gameType(): Game.Type;
+    public abstract get gameType(): G;
 
 
 
@@ -98,7 +98,7 @@ export abstract class Game<S extends Coord.System> {
      * @param desc -
      * @param tileClass -
      */
-    public constructor(desc: Game.CtorArgs<S, any>, tileClass: Tile.ConstructorType<S, any>) {
+    public constructor(desc: Game.CtorArgs<G,S>, tileClass: Tile.ConstructorType<S>) {
         this.tileClass = tileClass;
         this.grid = Grid.of(desc.coordSys, {
             dimensions: desc.gridDimensions,
@@ -179,10 +179,10 @@ export abstract class Game<S extends Coord.System> {
      * @returns A bundle of the constructed players.
      */
     private createPlayers(
-        playerDescs: Game.CtorArgs<S, any>["playerDescs"],
+        playerDescs: Game.CtorArgs<G,S>["playerDescs"],
         operatorIndex?: number
     ): {
-        operator?: HumanPlayer<S>,
+        operator: Game<G,S>["operator"],
         allHumanPlayers: ReadonlyArray<Player<S>>,
         allArtifPlayers: ReadonlyArray<Player<S>>,
     } {
@@ -210,7 +210,7 @@ export abstract class Game<S extends Coord.System> {
                 return socketIdToPlayerIdMap[socketId];
             });
         });
-        (playerDescs as Game.CtorArgs<S, Player.Id>["playerDescs"]).forEach((playerDesc, index) => {
+        (playerDescs as ReadonlyArray<Player.CtorArgs<Player.Id>>).forEach((playerDesc, index) => {
             // Third pass - Create the Players:
             // Note above redundant `<Player.Id>` as a reminder that
             // the player ID's ahve now been successfully assigned.
@@ -280,7 +280,7 @@ export abstract class Game<S extends Coord.System> {
      * A {@link Lang.CharSeqPair} that can be used as a replacement
      * for that currently being used by `tile`.
      */
-    private shuffleLangCharSeqAt(targetTile: Tile<S, typeof Player.Id.NULL>): Lang.CharSeqPair {
+    private shuffleLangCharSeqAt(targetTile: Tile<S>): Lang.CharSeqPair {
         // TODO: first of all, this should have been specifying the
         // radius argument to be 2. Second, it technically should
         // not even be specifying the radius as two: it should take
@@ -356,7 +356,7 @@ export abstract class Game<S extends Coord.System> {
             this.processMoveExecute(desc);
             return;
         }
-        const dest: Tile<S, any> = this.getBenchableTileAt(desc.dest.coord, desc.playerId);
+        const dest: Tile<S> = this.getBenchableTileAt(desc.dest.coord);
         if (dest.isOccupied ||
             dest.numTimesOccupied !== desc.dest.numTimesOccupied) {
             // The check concerning the destination `Tile`'s occupancy
@@ -419,7 +419,7 @@ export abstract class Game<S extends Coord.System> {
      */
     public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         const player = this.getPlayerById(desc.playerId);
-        const dest = this.getBenchableTileAt(desc.dest.coord, desc.playerId);
+        const dest = this.getBenchableTileAt(desc.dest.coord);
         const executeBasicTileUpdates = (): void => {
             // The `LangCharSeqPair` shuffle changes must take effect
             // before updating the operator's seqBuffer if need be.
@@ -678,11 +678,12 @@ export abstract class Game<S extends Coord.System> {
      * The tile at `dest`, or the specified player's{@link Player#benchTile}.
      * 
      * @param dest -
-     * @param playerId -
      */
-    public getBenchableTileAt(dest: Coord.Bare<S> | typeof Coord.BENCH, playerId: Player.Id): Tile<S, any> {
-        return (dest === Coord.BENCH)
-            ? this.getPlayerById(playerId).benchTile
+    public getBenchableTileAt(
+        dest: Coord.Bare<S> & Partial<Coord<Coord.System.__BENCH>>,
+    ): Tile<S | Coord.System.__BENCH> {
+        return (dest.playerId !== undefined)
+            ? this.getPlayerById(dest.playerId).benchTile
             : this.grid.getTileAt(dest);
     }
 
@@ -745,7 +746,11 @@ export namespace Game {
      * so it should use the default type parameter. The server should
      * use the string-type since it initially only knows socket ID's.
      */
-    export type CtorArgs<S extends Coord.System, ID extends Player.Id | Player.SocketId = Player.Id> = {
+    // TODO: get rid of type param "ID" and use "G" for game type instead.
+    export type CtorArgs<
+        G extends Game.Type,
+        S extends Coord.System.GridCapable,
+    > = {
 
         readonly coordSys: S;
 
@@ -762,7 +767,9 @@ export namespace Game {
          */
         operatorIndex?: number;
 
-        readonly playerDescs: ReadonlyArray<Player.CtorArgs<ID>>;
+        readonly playerDescs: ReadonlyArray<Player.CtorArgs<
+            G extends Game.Type.SERVER ? Player.SocketId : Player.Id
+        >>;
     };
 
     export namespace CtorArgs {

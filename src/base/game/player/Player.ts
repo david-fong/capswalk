@@ -11,7 +11,7 @@ export { PlayerSkeleton } from "./PlayerSkeleton";
 /**
  * 
  */
-export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
+export abstract class Player<S extends Coord.System.GridCapable> extends PlayerSkeleton<S> {
 
 
     public readonly username: Player.Username;
@@ -55,7 +55,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
 
 
-    public constructor(game: Game<S>, desc: Readonly<Player.CtorArgs>) {
+    public constructor(game: Game<any,S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc.idNumber!);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {
@@ -84,7 +84,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * 
      * @param dest - 
      */
-    protected makeMovementRequest(dest: Tile<S, any>): void {
+    protected makeMovementRequest(dest: Player<S>["hostTile"]): void {
         if (this.requestInFlight) {
             throw new Error("Only one request should ever be in flight at a time.");
         }
@@ -105,7 +105,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * 
      * @param dest -
      */
-    protected abstract abstractMakeMovementRequest(dest: Tile<S,any>): void;
+    protected abstract abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void;
 
     /**
      * Convenience method.
@@ -120,7 +120,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
 
 
-    public get coord(): Coord<S> {
+    public get coord(): Player<S>["hostTile"]["coord"] {
         return this.hostTile.coord;
     }
 
@@ -131,7 +131,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * @returns -
      * @throws Error if called while benched.
      */
-    public getNeighbouringTiles(radius: number = 1): Array<Tile<S, typeof Player.Id.NULL>> {
+    public getNeighbouringTiles(radius: number = 1): Array<Tile<S>> {
         return this.game.grid.getNeighbouringTiles(this.coord, radius);
     }
 
@@ -140,7 +140,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * @returns -
      * @throws Error if called while benched.
      */
-    public getUNT(radius: number = 1): Array<Tile<S, typeof Player.Id.NULL>> {
+    public getUNT(radius: number = 1): Array<Tile<S>> {
         return this.game.grid.getUNT(this.coord, radius);
     }
 

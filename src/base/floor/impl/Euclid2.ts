@@ -14,7 +14,7 @@ export namespace Euclid2 {
     /**
      * # Euclid2 Coord
      */
-    export class Coord extends BaseCoord.Abstract<S> implements B {
+    class Coord extends BaseCoord.Abstract<S> implements B {
 
         public readonly x: number;
         public readonly y: number;

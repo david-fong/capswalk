@@ -15,7 +15,7 @@ type NullPid = typeof Player.Id.NULL;
  * 
  * A Collection of Tiles.
  */
-export abstract class Grid<S extends Coord.System> {
+export abstract class Grid<S extends Coord.System.GridCapable> {
 
     /**
      * _Does not call reset._
@@ -35,7 +35,7 @@ export abstract class Grid<S extends Coord.System> {
             for (const row of this.grid) {
                 const rowElem  = tBody.insertRow();
                 for (const tile of row) {
-                    rowElem.appendChild((tile as VisibleTile<S, typeof Player.Id.NULL>).tileCellElem);
+                    rowElem.appendChild((tile as VisibleTile<S>).tileCellElem);
                 }
             }
             const carrier = document.getElementById(desc.domGridHtmlIdHook);
@@ -69,9 +69,9 @@ export abstract class Grid<S extends Coord.System> {
      * @param radius - Defaults to `1`.
      * @throws `RangeError` if `coord` is not in the bounds of this `Grid`.
      */
-    public abstract getTileAt(coord: Coord.Bare<S>): Tile<S, NullPid>;
+    public abstract getTileAt(coord: Coord.Bare<S>): Tile<S>;
 
-    public abstract getNeighbouringTiles(coord: Coord.Bare<S>, radius?: number): Array<Tile<S, NullPid>>;
+    public abstract getNeighbouringTiles(coord: Coord.Bare<S>, radius?: number): Array<Tile<S>>;
 
     /**
      * @returns
@@ -85,11 +85,11 @@ export abstract class Grid<S extends Coord.System> {
      * @param radius - An inclusive bound on the {@link Pos#infNorm} filter.
      *      Defaults to `1`.
      */
-    public getUNT(coord: Coord.Bare<S>, radius: number = 1): Array<Tile<S, NullPid>> {
+    public getUNT(coord: Coord.Bare<S>, radius: number = 1): Array<Tile<S>> {
         return this.getNeighbouringTiles(coord, radius).filter((tile) => !tile.isOccupied);
     }
 
-    public abstract forEachTile(consumer: (tile: Tile<S, NullPid>) => void, thisArg?: object): void;
+    public abstract forEachTile(consumer: (tile: Tile<S>) => void, thisArg?: object): void;
 
 }
 
@@ -110,7 +110,7 @@ export namespace Grid {
     /**
      * Values do not _need_ to be in range or integers.
      */
-    export type Dimensions<S extends Coord.System>
+    export type Dimensions<S extends Coord.System.GridCapable>
         = S extends Coord.System.EUCLID2 ? Euclid2.Grid.Dimensions
         : S extends Coord.System.BEEHIVE ? Beehive.Grid.Dimensions
         : never;
@@ -126,7 +126,9 @@ export namespace Grid {
      *   with that of the generic abstract base class.
      */
     const __ctorMapTypeAssertion__ = (): void => {
-        Constructors as Readonly<{[S in Coord.System]: ConstructorType<S>}>;
+        Constructors as Readonly<{
+            [S in Coord.System.GridCapable]: ConstructorType<S>;
+        }>;
     };
 
     // ==============================================================
@@ -134,7 +136,13 @@ export namespace Grid {
     // the additions of new coordinate systems.
     // ==============================================================
 
-    interface ConstructorType<S extends Coord.System> {
+    export type CtorArgs<S extends Coord.System.GridCapable> = {
+        dimensions: Dimensions<S>;
+        tileClass: Tile.ConstructorType<S>;
+        domGridHtmlIdHook?: string;
+    };
+
+    interface ConstructorType<S extends Coord.System.GridCapable> {
         new(desc: CtorArgs<S>): Grid<S>;
 
         /**
@@ -158,12 +166,6 @@ export namespace Grid {
         getSizeLimits(): Grid.DimensionBounds<S>;
     };
 
-    export type CtorArgs<S extends Coord.System> = {
-        dimensions: Dimensions<S>;
-        tileClass: Tile.ConstructorType<S, any>;
-        domGridHtmlIdHook?: string;
-    };
-
     /**
      * @returns
      * A Grid of the specified system according to the given arguments.
@@ -171,7 +173,7 @@ export namespace Grid {
      * @param coordSys -
      * @param ctorArgs -
      */
-    export const of = <S extends Coord.System>(coordSys: S, ctorArgs: CtorArgs<S>): Grid<S> => {
+    export const of = <S extends Coord.System.GridCapable>(coordSys: S, ctorArgs: CtorArgs<S>): Grid<S> => {
         // Note: For some reason TypeScript is unhappy here about the
         // `GET_SIZE_LIMITS` method so we have to cast to unknown first. :/
         const ctor = Constructors[coordSys] as unknown as ConstructorType<S>;
@@ -183,7 +185,7 @@ export namespace Grid {
      * 
      * Bounds must be strictly positive.
      */
-    export type DimensionBounds<S extends Coord.System> = Readonly<{
+    export type DimensionBounds<S extends Coord.System.GridCapable> = Readonly<{
         [ P in keyof Dimensions<S> ]: Readonly<{
             min: number;
             max: number;

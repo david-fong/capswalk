@@ -8,12 +8,14 @@ import { HumanPlayer } from "game/player/HumanPlayer";
 import { OfflineHumanPlayer } from "./OfflineHumanPlayer";
 
 
+type G = Game.Type.OFFLINE;
+
 /**
  * 
  * 
  * @extends Game
  */
-export class OfflineGame<S extends Coord.System> extends Game<S> {
+export class OfflineGame<S extends Coord.System.GridCapable> extends Game<G,S> {
 
     /**
      * @override The Operator is always defined for a {@link OfflineGame}.
@@ -25,7 +27,7 @@ export class OfflineGame<S extends Coord.System> extends Game<S> {
     /**
      * @override
      */
-    public get gameType(): Game.Type {
+    public get gameType(): G {
         return Game.Type.OFFLINE;
     }
 
@@ -34,7 +36,7 @@ export class OfflineGame<S extends Coord.System> extends Game<S> {
      * 
      * @param desc - 
      */
-    public constructor(desc: Game.CtorArgs<S>) {
+    public constructor(desc: Game.CtorArgs<G,S>) {
         super(desc, VisibleTile);
         if (!this.operator) {
             throw new Error("The Operator for a ClientGame should be defined.");

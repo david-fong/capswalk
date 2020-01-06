@@ -19,21 +19,11 @@ export { Coord } from "./Coord";
  * 
  * @template S
  * The coordinate system enum for this tile's coordinate.
- * 
- * @template O
- * The id of the only player allowed to occupy this tile, or the value
- * Player.Id.NULL, indicating that any player may occupy this tile.
  */
-// TODO: change O to have enum with entries GRID and BENCH. using
-//  their player id doesn't work because you can't make a type that
-//  is numbers excluding certain numbers.
-export class Tile<S extends Coord.System, O extends Player.Id> {
+export class Tile<S extends Coord.System> {
 
-    public readonly coord: O extends typeof Player.Id.NULL ? Coord<S> : typeof Coord.BENCH;
-    public readonly designatedOccupant: O;
-    protected _occupantId: O extends typeof Player.Id.NULL
-        ? Player.Id // Any player can occupy this tile.
-        : O | typeof Player.Id.NULL;
+    public readonly coord: Coord<S>;
+    protected _occupantId: Player.Id;
 
     protected _langChar: Lang.Char;
     protected _langSeq:  Lang.Seq;
@@ -53,11 +43,9 @@ export class Tile<S extends Coord.System, O extends Player.Id> {
      * _Does not call reset._
      * 
      * @param coord -
-     * @param designatedOccupant - See the documentation for the type parameter, `O`.
      */
-    public constructor(coord: Tile<S,O>["coord"], designatedOccupant: O) {
+    public constructor(coord: Coord<S>) {
         this.coord = coord;
-        this.designatedOccupant = designatedOccupant;
     }
 
     public reset(): void {
@@ -89,11 +77,12 @@ export class Tile<S extends Coord.System, O extends Player.Id> {
      * @param playerDesc -
      */
     public setOccupant(playerDesc: PlayerSkeleton.VisibleState): void {
-        if (this._occupantId !== Player.Id.NULL && playerDesc.idNumber !== this.designatedOccupant) {
-            throw new RangeError(`Only the player with the player ID`
-                + ` \"${this.designatedOccupant}\" may occupy this tile.`);
+        const benchOwner = (this.coord as Coord<Coord.System.__BENCH>).playerId;
+        if (benchOwner && playerDesc.idNumber !== benchOwner) {
+            throw new RangeError(`Only the player with ID`
+                + ` \"${benchOwner}\" can occupy this tile.`);
         }
-        this._occupantId = playerDesc.idNumber as Tile<S,O>["_occupantId"];
+        this._occupantId = playerDesc.idNumber;
     }
 
     public get isOccupied(): boolean {
@@ -137,14 +126,14 @@ export class Tile<S extends Coord.System, O extends Player.Id> {
 }
 // If this errs when changing the constructor signature, then
 // the type definition being asserted should be updated to match.
-Tile as Tile.ConstructorType<any, any>;
+Tile as Tile.ConstructorType<any>;
 
 
 
 export namespace Tile {
 
-    export type ConstructorType<S extends Coord.System, P extends Player.Id> = {
-        new(coord: Tile<S,P>["coord"], designatedOccupant: P): Tile<S,P>;
+    export type ConstructorType<S extends Coord.System> = {
+        new(coord: Tile<S>["coord"]): Tile<S>;
     };
 
 }

@@ -17,7 +17,7 @@ import { Chaser } from "./artificials/Chaser";
  */
 // TODO: if add abstract method hooks for events like player "collision",
 // then add this to the above documentation.
-export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S> {
+export abstract class ArtificialPlayer<S extends Coord.System.GridCapable> extends Player<S> {
 
     private scheduledMovementCallbackId: number | NodeJS.Timeout;
 
@@ -69,6 +69,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      *      of the {@link Game}'s grid, or have integer-valued x and y
      *      coordinates.
      */
+    // TODO: make this an abstract method of the grid class.
     private getUntToward(intendedDest: Coord.Bare<S>): Tile<S> {
         const options: Array<Tile<S>> = this.getUNT();
         if (!(options.includes(this.hostTile))) {

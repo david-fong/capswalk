@@ -28,7 +28,7 @@ export namespace Beehive {
     /**
      * # Beehive Coord
      */
-    export class Coord extends BaseCoord.Abstract<S> implements B {
+    class Coord extends BaseCoord.Abstract<S> implements B {
 
         /**
          * # 🕒 3'o'clock direction

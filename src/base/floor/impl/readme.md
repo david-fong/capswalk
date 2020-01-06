@@ -9,7 +9,7 @@ If the coordinate system of a new implementation is given some name `<sys_name>`
 
 First, a new, unique enum entry for the new coordinate system must be defined in [Coord.System](../Coord.ts). This is the basis of how the rest of the codebase is able to refer to a coordinate system in a generic fashion.
 
-**In `SysName.ts`**
+**In `SysName.ts`** - Note that the Coord implementation does not need to be exported.
 
 ```typescript
 import { Coord as BaseCoord } from "../Coord";
@@ -20,7 +20,7 @@ export namespace SysName {
     type S = BaseCoord.System.SYSNAME;
 
     // optional documentation
-    export class Coord extends BaseCoord.Abstract<S> implements B {
+    class Coord extends BaseCoord.Abstract<S> implements B {
         // field declarations
         public constructor(desc: B) {
             super(desc);

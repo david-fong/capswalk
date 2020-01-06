@@ -14,12 +14,15 @@ import { OnlineHumanPlayer } from "./OnlineHumanPlayer";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 import { Bubble } from "game/events/Bubble";
 
+
+type G = Game.Type.CLIENT;
+
 /**
  * 
  * 
  * @extends Game
  */
-export class ClientGame<S extends Coord.System> extends Game<S> {
+export class ClientGame<S extends Coord.System.GridCapable> extends Game<G,S> {
 
     /**
      * @override The Operator is always defined for a {@link ClientGame}.
@@ -33,7 +36,7 @@ export class ClientGame<S extends Coord.System> extends Game<S> {
     /**
      * @override
      */
-    public get gameType(): Game.Type {
+    public get gameType(): G {
         return Game.Type.CLIENT;
     }
 
@@ -48,7 +51,7 @@ export class ClientGame<S extends Coord.System> extends Game<S> {
      */
     public constructor(
         socket: SocketIOClient.Socket,
-        desc: Game.CtorArgs<S>,
+        desc: Game.CtorArgs<G,S>,
     ) {
         super(desc, VisibleTile);
         if (!this.operator) {
