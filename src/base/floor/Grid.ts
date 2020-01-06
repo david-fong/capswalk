@@ -1,5 +1,3 @@
-import { Player } from "utils/TypeDefs";
-
 import { Coord } from "./Coord";
 import { Tile } from "./Tile";
 import { VisibleTile } from "./VisibleTile";
@@ -7,8 +5,6 @@ import { VisibleTile } from "./VisibleTile";
 import { Euclid2 } from "./impl/Euclid2";
 import { Beehive } from "./impl/Beehive";
 
-
-type NullPid = typeof Player.Id.NULL;
 
 /**
  * # 🗺 The Grid Class
@@ -90,6 +86,27 @@ export abstract class Grid<S extends Coord.System.GridCapable> {
     }
 
     public abstract forEachTile(consumer: (tile: Tile<S>) => void, thisArg?: object): void;
+
+    /**
+     * @returns
+     * One of the closest unoccupied neighbouring tiles toward the
+     * direction of `intendedDest`. When possible, ties are encouraged
+     * to be broken in such a way that imitates movement in a straight
+     * path (visually speaking).
+     * 
+     * **Important:** The caller must first break the upward occupancy
+     * link by calling `this.hostTile.evictOccupant();` This is so that
+     * the current position of this `ArtificialPlayer` will always be
+     * an option when everything adjacent to it is occupied.
+     * 
+     * @param sourceCoord
+     * The coordinate from which to find the next hop.
+     * 
+     * @param intendedDest
+     * Does not need to be within the boundaries of the {@link Game}'s
+     * grid, or have integer-valued coordinate values.
+     */
+   public abstract getUntToward(sourceCoord: Coord<S>, intendedDest: Coord<S>): Tile<S>;
 
 }
 

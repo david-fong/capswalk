@@ -172,15 +172,15 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public getNeighbouringTiles(pos: B, radius: number = 1): Array<Tile<S>> {
+        public getNeighbouringTiles(coord: B, radius: number = 1): Array<Tile<S>> {
             return this.grid.slice(
                 // filter for included rows:
-                Math.max(0, pos.y - radius),
-                Math.min(this.height, pos.y + radius + 1),
+                Math.max(0, coord.y - radius),
+                Math.min(this.height, coord.y + radius + 1),
             ).flatMap((tile) => tile.slice(
                 // filter for included slices of rows (columns):
-                Math.max(0, pos.x - radius,
-                Math.min(this.width, pos.x + radius + 1)),
+                Math.max(0, coord.x - radius,
+                Math.min(this.width, coord.x + radius + 1)),
             ));
         }
 
@@ -191,6 +191,60 @@ export namespace Euclid2 {
             this.grid.forEach((row) => row.forEach((tile) => {
                 consumer(tile);
             }, thisArg), thisArg);
+        }
+
+        /**
+         * @override
+         */
+        // TODO: make this an abstract method of the grid class.
+        public getUntToward(sourceCoord: Coord, intendedDest: B): Tile<S> {
+            const options: Array<Tile<S>> = this.getUNT();
+            if (!(options.includes(this.hostTile))) {
+                // This should never happen. It is here as a reminder.
+                throw new Error("Caller code didn't break the upward occupancy link.");
+            }
+            if (options.length === 1) {
+                // Minor optimization:
+                return options[0];
+            }
+            options.sort((tileA, TileB) => {
+                // Break (some) ties by one-norm:
+                return tileA.coord.oneNorm(intendedDest) - TileB.coord.oneNorm(intendedDest);
+            }).sort((tileA, TileB) => {
+                // Break (some) ties by one-norm:
+                return tileA.coord.infNorm(intendedDest) - TileB.coord.infNorm(intendedDest);
+            });
+            // Filter out options that are not equally favorable as the
+            // most favorable option. I think this is the best method:
+            // Note: it is safe to start at index `1` because of the
+            // above short-circuit if `options.length === 1`.
+            for (let i = 1; i < options.length; i++) {
+                if (options[i].coord.infNorm(intendedDest) > options[0].coord.infNorm(intendedDest)) {
+                    options.splice(i);
+                    break;
+                }
+            }
+            if (options.length === 1) {
+                // Minor optimization:
+                return options[0];
+            }
+            // Choose one of the most favorable using some randomness
+            // weighted to follow a straight-looking path of movement.
+            if (options[0].coord.x - this.coord.x === 0 || options[0].coord.y - this.coord.y === 0) {
+                // (the axial option (if it exists) should be the first
+                // due to the previous sort's tie-breaker.
+                if (this.coord.axialAlignment(intendedDest.sub(this.coord)) - 0.5 > 0.0) {
+                    // The path to the intended destination is aligned more
+                    // with the x or y axis than they are with those axes
+                    // rotated 45 degrees.
+                    return options[0];
+                } else {
+                    // Ignore the axial option in further computations:
+                    options.shift();
+                }
+            }
+            // Choose a random non-axial option:
+            return options[Math.floor(options.length * Math.random())];
         }
 
     }

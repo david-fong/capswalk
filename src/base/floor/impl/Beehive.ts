@@ -152,12 +152,10 @@ export namespace Beehive {
         public readonly bslash: number;
         public readonly fslash: number;
 
-        //
         /**
-         * A 2-dimensional rectangular array with height and width following
-         * their corresponding fields, containing `Tile` objects with `pos`
-         * fields allowing indexing to themselves. Uses row-major ordering.
+         * 
          */
+        // TODO: determine spec for indexing
         private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
 
         /**
@@ -185,15 +183,6 @@ export namespace Beehive {
          */
         public getNeighbouringTiles(coord: B, radius: number = 1): Array<Tile<S>> {
             return undefined!;
-            // return this.grid.slice(
-            //     // filter for included rows:
-            //     Math.max(0, pos.y - radius),
-            //     Math.min(this.height, pos.y + radius + 1),
-            // ).flatMap((tile) => tile.slice(
-            //     // filter for included slices of rows (columns):
-            //     Math.max(0, pos.x - radius,
-            //     Math.min(this.width, pos.x + radius + 1)),
-            // ));
         }
 
         /**
@@ -203,6 +192,13 @@ export namespace Beehive {
             this.grid.forEach((row) => row.forEach((tile) => {
                 consumer(tile);
             }, thisArg), thisArg);
+        }
+
+        /**
+         * @override
+         */
+        public getUntToward(sourceCoord: Coord, intendedDest: B): Tile<S> {
+            return undefined!;
         }
     }
 
