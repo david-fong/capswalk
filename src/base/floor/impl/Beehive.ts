@@ -143,9 +143,9 @@ export namespace Beehive {
          */
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
-            dash:    Object.freeze(<const>{ min: 10, max: 50, }),
-            bslash:  Object.freeze(<const>{ min: 10, max: 50, }),
-            fslash:  Object.freeze(<const>{ min: 10, max: 50, }),
+            dash:    Object.freeze({ min: 10, max: 50, }),
+            bslash:  Object.freeze({ min: 10, max: 50, }),
+            fslash:  Object.freeze({ min: 10, max: 50, }),
         });
 
         public readonly dash: number;
@@ -181,7 +181,7 @@ export namespace Beehive {
         /**
          * @override
          */
-        public getNeighbouringTiles(coord: B, radius: number = 1): Array<Tile<S>> {
+        protected abstractGetNeighbouringTiles(coord: B, radius: number = 1): Array<Tile<S>> {
             return undefined!;
         }
 
@@ -199,6 +199,15 @@ export namespace Beehive {
          */
         public getUntToward(sourceCoord: Coord, intendedDest: B): Tile<S> {
             return undefined!;
+        }
+
+
+
+        /**
+         * @override
+         */
+        public static random(bounds: AbstractGrid.DimensionBounds<S>): Coord {
+            return new Coord(undefined!);
         }
     }
 

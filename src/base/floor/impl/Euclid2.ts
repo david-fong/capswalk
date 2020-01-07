@@ -8,7 +8,6 @@ import { Grid as AbstractGrid } from "../Grid";
  */
 export namespace Euclid2 {
 
-    type B = Coord.Bare;
     type S = BaseCoord.System.EUCLID2;
 
     /**
@@ -19,7 +18,7 @@ export namespace Euclid2 {
         public readonly x: number;
         public readonly y: number;
 
-        public constructor(desc: B) {
+        public constructor(desc: Coord.Bare) {
             super(desc);
             this.x = desc.x;
             this.y = desc.y;
@@ -29,7 +28,7 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public equals(other: B): boolean {
+        public equals(other: Coord.Bare): boolean {
             return (this.x === other.x) && (this.y === other.y);
         }
 
@@ -43,6 +42,21 @@ export namespace Euclid2 {
             });
         }
 
+
+
+        /**
+         * Also known as the "manhattan norm".
+         * 
+         * _Do not override this._
+         * 
+         * @param other - The norm is taken relative to `other`.
+         * @returns The sum of the absolute values of each coordinate.
+         */
+        // TODO: document: what is this used for?
+        public oneNorm(other: Coord.Bare): number {
+            return this.sub(other).originOneNorm();
+        }
+
         /**
          * @override
          */
@@ -51,15 +65,41 @@ export namespace Euclid2 {
         }
 
         /**
-         * @override
+         * 
+         * _Do not override this._
+         * 
+         * @param other - The norm is taken relative to `other`.
+         * @returns The length of the longest dimension.
          */
+        // TODO: document: what is this used for?
+        public infNorm(other: Coord.Bare): number {
+            return this.sub(other).originInfNorm();
+        }
+
         public originInfNorm(): number {
             return Math.max(Math.abs(this.x), Math.abs(this.y));
         }
 
         /**
-         * @override
+         * @returns
+         * A number in the range (0, 1). `One` means the x and y coordinates
+         * align to the x or y axis, and `Zero` means they are plus or minus
+         * 45 degrees from the x or y axis.
+         * 
+         * You can try this yourself in [Desmos](https://www.desmos.com/calculator)
+         * by pasting in the below code segment and adding a slider for `a`
+         * for continuous values between zero and one.
+         * 
+         * ```latex
+         * \frac{\left|\left|x\right|-\left|y\right|\right|}{\left|x\right|+\left|y\right|}=a
+         * ```
+         * 
+         * @param other - The alignment is taken relative to `other`.
          */
+        public axialAlignment(other: Coord.Bare): number {
+            return this.sub(other).originAxialAlignment();
+        }
+
         public originAxialAlignment(): number {
             return Math.abs(Math.abs(this.x) - Math.abs(this.y))
                 / (Math.abs(this.x) + Math.abs(this.y));
@@ -68,7 +108,7 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public add(other: B): Coord {
+        public add(other: Coord.Bare): Coord {
             return new Coord({
                 x: this.x + other.x,
                 y: this.y + other.y,
@@ -78,7 +118,7 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public sub(other: B): Coord {
+        public sub(other: Coord.Bare): Coord {
             return new Coord({
                 x: this.x - other.x,
                 y: this.y - other.y,
@@ -122,8 +162,8 @@ export namespace Euclid2 {
          */
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
-            height: Object.freeze(<const>{ min: 10, max: 50, }),
-            width:  Object.freeze(<const>{ min: 10, max: 50, }),
+            height: Object.freeze({ min: 10, max: 50, }),
+            width:  Object.freeze({ min: 10, max: 50, }),
         });
 
         public readonly height: number;
@@ -160,7 +200,7 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public getTileAt(coord: B): Tile<S> {
+        public getTileAt(coord: Coord.Bare): Tile<S> {
             if (coord.x < 0 || coord.x >= this.width ||
                 coord.y < 0 || coord.y >= this.height
             ) {
@@ -172,7 +212,7 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public getNeighbouringTiles(coord: B, radius: number = 1): Array<Tile<S>> {
+        protected abstractGetNeighbouringTiles(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             return this.grid.slice(
                 // filter for included rows:
                 Math.max(0, coord.y - radius),
@@ -196,8 +236,7 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        // TODO: make this an abstract method of the grid class.
-        public getUntToward(sourceCoord: Coord, intendedDest: B): Tile<S> {
+        public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
             const options: Array<Tile<S>> = this.getUNT();
             if (!(options.includes(this.hostTile))) {
                 // This should never happen. It is here as a reminder.
@@ -245,6 +284,15 @@ export namespace Euclid2 {
             }
             // Choose a random non-axial option:
             return options[Math.floor(options.length * Math.random())];
+        }
+
+
+
+        /**
+         * @override
+         */
+        public static random(bounds: AbstractGrid.DimensionBounds<S>): Coord {
+            return new Coord(undefined!);
         }
 
     }

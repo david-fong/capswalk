@@ -28,6 +28,13 @@ export namespace SysName {
             Object.freeze(this);
         }
         // abstract method implementations
+
+        /**
+         * @override
+         */
+        public static random(bounds: AbstractGrid.DimensionBounds<S>): Coord {
+            return new Coord(undefined!);
+        }
     }
     export namespace Coord {
         export type Bare = Readonly<{
@@ -60,9 +67,15 @@ export namespace SysName {
         /**
          * @override
          */
+        public static getAmbiguityThreshold(): <value> {
+            return <value>;
+        }
+        /**
+         * @override
+         */
         public GET_SIZE_LIMITS(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
-            // fields from dimension type, except mapped to a range description.
+            // fields from dimension type, except mapped to a frozen range description.
         });
         // field declarations
         // constructor

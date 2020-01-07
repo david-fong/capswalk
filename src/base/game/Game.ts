@@ -189,13 +189,13 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
          * @inheritdoc
          * NOTE: this doc is just here to satisfy some linting warning condition.
          */
-        function __assert(desc: Game.CtorArgs<any,S>, gameType: Game.Type):
+        function __assert(desc: Game.CtorArgs<any,S>):
             asserts desc is Readonly<Game.CtorArgs<Game.Type.Manager, S>> {
-            if (gameType === Game.Type.CLIENT) {
+            if (desc.gameType === Game.Type.CLIENT) {
                 throw new TypeError("This must be overriden for an online-client implementation.");
             }
         };
-        __assert(desc, this.gameType);
+        __assert(desc);
         const allHumanPlayers: Array<Player<S>> = [];
         const allArtifPlayers: Array<Player<S>> = [];
 
@@ -285,7 +285,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      * A {@link Lang.CharSeqPair} that can be used as a replacement
      * for that currently being used by `tile`.
      */
-    private shuffleLangCharSeqAt(targetTile: Tile<S>): Lang.CharSeqPair {
+    public shuffleLangCharSeqAt(targetTile: Tile<S | Coord.System.__BENCH>): Lang.CharSeqPair {
         // TODO: first of all, this should have been specifying the
         // radius argument to be 2. Second, it technically should
         // not even be specifying the radius as two: it should take
@@ -296,12 +296,22 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         // First, clear values for the target tile so its current
         // (to-be-previous) values don't get unnecessarily avoided.
         targetTile.setLangCharSeq(Lang.CharSeqPair.NULL);
-        return this.lang.getNonConflictingChar(
-            this.grid.getNeighbouringTiles(targetTile.coord)
-                .map((tile) => tile.langSeq)
-                .filter((seq) => seq), // no falsy values.
-            this.langBalancingScheme,
-        );
+
+        const benchOwnerId = (targetTile as Tile<Coord.System.__BENCH>).coord.playerId;
+        if (benchOwnerId !== undefined) {
+            const benchOwner = this.getPlayerById(benchOwnerId);
+            return {
+                char: benchOwner.idNumber.toString(),
+                seq: benchOwner.username,
+            };
+        } else {
+            return this.lang.getNonConflictingChar(
+                this.grid.getNeighbouringTiles((targetTile as Tile<S>).coord)
+                    .map((tile) => tile.langSeq)
+                    .filter((seq) => seq), // no falsy values.
+                this.langBalancingScheme,
+            );
+        }
     }
 
     /**
@@ -354,14 +364,14 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      *      from their copy of the game-state at the time of the request.
      *      Is modified to describe changes to be made.
      */
-    public processMoveRequest(desc: PlayerMovementEvent<S>): void {
+    public processMoveRequest(desc: PlayerMovementEvent<S> & Partial<PlayerMovementEvent<Coord.System.__BENCH>>): void {
         const player = this.checkIncomingPlayerRequestId(desc);
         if (!player) {
             // Player is still bubbling. Reject the request:
             this.processMoveExecute(desc);
             return;
         }
-        const dest: Tile<S> = this.getBenchableTileAt(desc.dest.coord);
+        const dest = this.getBenchableTileAt(desc.dest.coord);
         if (dest.isOccupied ||
             dest.numTimesOccupied !== desc.dest.numTimesOccupied) {
             // The check concerning the destination `Tile`'s occupancy
@@ -422,25 +432,17 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      * @param desc - A descriptor for all changes mandated by the
      *      player-movement event.
      */
-    public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
+    public processMoveExecute(desc: Readonly<PlayerMovementEvent<S | Coord.System.__BENCH>>): void {
         const player = this.getPlayerById(desc.playerId);
         const dest = this.getBenchableTileAt(desc.dest.coord);
         const executeBasicTileUpdates = (): void => {
             // The `LangCharSeqPair` shuffle changes must take effect
             // before updating the operator's seqBuffer if need be.
-            if (dest !== player.benchTile) {
-                // Don't change this value for bench tiles:
-                // TODO: this conditional execution feels too complicated.
-                //  can we move the complication somewhere else less cluttered?
-                //  yes: move it to shuffleLangCharSeqAt please
-                dest.setLangCharSeq(desc.dest.newCharSeqPair!);
-            }
+            dest.setLangCharSeq(desc.dest.newCharSeqPair!);
             // Refresh the operator's `seqBuffer`:
             if (this.operator && // Ignore if ServerGame
                 player !== this.operator &&
-                dest !== player.benchTile &&
-                !this.operator.isBenched &&
-                dest.coord.infNorm(this.operator.coord) === 1) {
+                !(this.grid.getNeighbouringTiles(this.operator.coord).includes(dest as Tile<S>))) {
                 // Do this if moving into the vicinity of the operator
                 // and the requester is not the operator. This operation
                 // is necessary to maintain the `seqBuffer` invariant.
@@ -674,7 +676,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         this.eventRecord[id] = desc;
     }
 
-    public abstract setTimeout(callback: Function, millis: number, ...args: any[]): number | NodeJS.Timeout;
+    public abstract setTimeout(callback: Function, millis: number, ...args: any[]): G extends Game.Type.SERVER ? NodeJS.Timeout : number;
 
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
 
@@ -685,11 +687,11 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      * @param dest -
      */
     public getBenchableTileAt(
-        dest: Coord.Bare<S> & Partial<Coord<Coord.System.__BENCH>>,
+        dest: Coord.Bare<S | Coord.System.__BENCH>,
     ): Tile<S | Coord.System.__BENCH> {
-        return (dest.playerId !== undefined)
-            ? this.getPlayerById(dest.playerId).benchTile
-            : this.grid.getTileAt(dest);
+        return ((dest as Coord.Bare<Coord.System.__BENCH>).playerId !== undefined)
+            ? this.getPlayerById((dest as Coord.Bare<Coord.System.__BENCH>).playerId).benchTile
+            : this.grid.getTileAt(dest as Coord.Bare<S>);
     }
 
     /**

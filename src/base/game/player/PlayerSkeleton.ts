@@ -3,7 +3,7 @@ import { Player as PlayerTypeDefs, PlayerSkeleton as PlayerSkeletonTypeDefs } fr
 import { Tile, Coord } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
-import { Grid } from "floor/Grid";
+import { __Bench } from "floor/impl/__Bench";
 
 
 /**
@@ -55,7 +55,9 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
         }
         this.game = game;
         this.idNumber = idNumber;
-        this.benchTile = new Tile<Coord.System.__BENCH>({ playerId: this.idNumber; });
+        this.benchTile = new Tile<Coord.System.__BENCH>(
+            new __Bench.Coord({ playerId: this.idNumber, }),
+        );
     }
 
     /**
@@ -65,11 +67,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
      */
     protected reset(): void {
         this.benchTile.reset();
-        this.benchTile.setLangCharSeq({
-            // These values are not functional.
-            char: this.idNumber.toString(),
-            seq: this.idNumber.toString(),
-        });
+        this.benchTile.setLangCharSeq(this.game.shuffleLangCharSeqAt(this.benchTile));
         this._hostTile = this.benchTile;
         this.score = 0;
         this.stockpile = 0;

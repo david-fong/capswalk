@@ -67,7 +67,27 @@ export abstract class Grid<S extends Coord.System.GridCapable> {
      */
     public abstract getTileAt(coord: Coord.Bare<S>): Tile<S>;
 
-    public abstract getNeighbouringTiles(coord: Coord.Bare<S>, radius?: number): Array<Tile<S>>;
+    /**
+     * @returns
+     * All tiles that can be moved to from `coord` using no more than
+     * `radius` discrete movement actions. If the coordinate is for a
+     * bench tile, then an empty array is returned.
+     * 
+     * @param coord -
+     * @param radius -
+     */
+    public getNeighbouringTiles(coord: Coord.Bare<S | Coord.System.__BENCH>, radius: number = 1): Array<Tile<S>> {
+        if ((coord as Coord.Bare<Coord.System.__BENCH>).playerId !== undefined) {
+            // TODO / NOTE: pretty much doing this because I don't want to
+            //  bother with figuring out a way to get access to the player's
+            //  bench tile in this scope. If we find a need for that, then change this.
+            return [];
+        } else {
+            return this.abstractGetNeighbouringTiles(coord as Coord.Bare<S>, radius);
+        }
+    }
+
+    protected abstract abstractGetNeighbouringTiles(coord: Coord.Bare<S>, radius: number): Array<Tile<S>>;
 
     /**
      * @returns
@@ -132,21 +152,12 @@ export namespace Grid {
         : S extends Coord.System.BEEHIVE ? Beehive.Grid.Dimensions
         : never;
 
-    const Constructors = Object.freeze(<const>{
+    const Constructors = Object.freeze({
         [ Coord.System.EUCLID2 ]: Euclid2.Grid,
         [ Coord.System.BEEHIVE ]: Beehive.Grid,
-    });
-    /**
-     * Will err if:
-     * - the coordinate systems between mappings don't match.
-     * - the extension's constructor signature is not compatible
-     *   with that of the generic abstract base class.
-     */
-    const __ctorMapTypeAssertion__ = (): void => {
-        Constructors as Readonly<{
-            [S in Coord.System.GridCapable]: ConstructorType<S>;
-        }>;
-    };
+    }) as Readonly<{
+        [S in Coord.System.GridCapable]: ConstructorType<S>;
+    }>;
 
     // ==============================================================
     // Note: The below exports do not require any modifications with
@@ -181,6 +192,16 @@ export namespace Grid {
          * @see Grid.DimensionBounds
          */
         getSizeLimits(): Grid.DimensionBounds<S>;
+
+        /**
+         * @returns
+         * A coordinate with random, integer-valued fields within the
+         * specified upper limits
+         * 
+         * @param boundX An exclusive bound on x-coordinate.
+         * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to `boundX`.
+         */
+        random(bounds: DimensionBounds<S>): Coord<S>;
     };
 
     /**
@@ -191,16 +212,14 @@ export namespace Grid {
      * @param ctorArgs -
      */
     export const of = <S extends Coord.System.GridCapable>(coordSys: S, ctorArgs: CtorArgs<S>): Grid<S> => {
-        // Note: For some reason TypeScript is unhappy here about the
-        // `GET_SIZE_LIMITS` method so we have to cast to unknown first. :/
-        const ctor = Constructors[coordSys] as unknown as ConstructorType<S>;
-        return new (ctor)(ctorArgs);
+        // Note: For some reason TypeScript can't figure out the type here.
+        return new (Constructors[coordSys] as unknown as ConstructorType<S>)(ctorArgs);
     };
 
     /**
      * Bounds are inclusive. Ie. the specified values are _just_ allowed.
      * 
-     * Bounds must be strictly positive.
+     * Upper and lower bounds must be strictly positive integer values.
      */
     export type DimensionBounds<S extends Coord.System.GridCapable> = Readonly<{
         [ P in keyof Dimensions<S> ]: Readonly<{
