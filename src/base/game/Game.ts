@@ -128,25 +128,25 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         this.eventRecord = [];
 
         // Construct players:
-        let playerBundle: ReturnType<Game<any,S>["createPlayers"]>;
+        let playerBundle: ReturnType<Game<G,S>["createPlayers"]>;
         switch (this.gameType) {
             case Game.Type.OFFLINE:
             case Game.Type.SERVER:
-                type descType = Game.CtorArgs<Game.Type.OFFLINE | Game.Type.SERVER, S>;
-                playerBundle = this.createPlayers(
-                    (desc as descType).playerDescs,
-                    (desc as descType).operatorIndex,
-                );
+                playerBundle = this.createPlayers(desc);
                 break;
             case Game.Type.CLIENT:
-                playerBundle = undefined!;
+                playerBundle = undefined!; // TODO... just get rid of switch statement and override in client impl.
                 break;
             default:
                 throw Error("never");
         }
-        this.operator = playerBundle.operator;
         this.allHumanPlayers = playerBundle.allHumanPlayers;
         this.allArtifPlayers = playerBundle.allArtifPlayers;
+        if (desc.operatorIndex) {
+            // sheesh...
+            (this.operator as HumanPlayer<S>) =
+                this.getPlayerById(desc.operatorIndex!) as HumanPlayer<S>;
+        }
 
         // Check to make sure that none of the players are invincible:
         // @see Player#beNiceTo
@@ -190,24 +190,31 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      * 
      * Assigns player ID's.
      * 
-     * @param playerDescs - 
-     * @param operatorIndex - 
+     * @param desc -
      * @returns A bundle of the constructed players.
      */
-    private createPlayers<G extends Game.Type.OFFLINE | Game.Type.SERVER>(
-        playerDescs: Game.CtorArgs<G,S>["playerDescs"],
-        operatorIndex: Game.CtorArgs<G,S>["operatorIndex"],
+    private createPlayers(
+        desc: Readonly<Game.CtorArgs<any,S>>,
     ): {
-        operator: Game<G,S>["operator"],
         allHumanPlayers: ReadonlyArray<Player<S>>,
         allArtifPlayers: ReadonlyArray<Player<S>>,
     } {
-        let operator: ReturnType<Game<G,S>["createPlayers"]>["operator"];
+        /**
+         * @inheritdoc
+         * NOTE: this doc is just here to satisfy some linting warning condition.
+         */
+        function __assert(desc: Game.CtorArgs<any,S>):
+            asserts desc is Readonly<Game.CtorArgs<Exclude<Game.Type, Game.Type.CLIENT>, S>>{
+            if (desc.gameType === Game.Type.CLIENT) {
+                throw new TypeError("This must be overriden for an online-client implementation.");
+            }
+        };
+        __assert(desc);
         const allHumanPlayers: Array<Player<S>> = [];
         const allArtifPlayers: Array<Player<S>> = [];
 
         const socketIdToPlayerIdMap: Record<Player.SocketId, Player.Id> = {};
-        playerDescs.forEach((playerDesc) => {
+        desc.playerDescs.forEach((playerDesc) => {
             // First pass - Assign Player ID's:
             if (playerDesc.operatorClass < Player.Operator.HUMAN) {
                 throw new RangeError("Invalid operator class.");
@@ -216,30 +223,29 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
             const assignedId = (playerDesc.operatorClass === Player.Operator.HUMAN)
                 ? +(1 + allHumanPlayers.length) + Player.Id.NULL
                 : -(1 + allArtifPlayers.length) + Player.Id.NULL;
-            ((playerDesc).idNumber as Player.Id) = assignedId;
+            (playerDesc as unknown as Player.CtorArgs<Player.Id>).idNumber = assignedId;
             if (playerDesc.socketId) {
                 socketIdToPlayerIdMap[playerDesc.socketId] = assignedId;
             }
         });
-        playerDescs.forEach((playerDesc) => {
+        desc.playerDescs.forEach((playerDesc) => {
             // Second pass - map any socket ID's in `beNiceTo` to player ID's:
-            (playerDesc as Player.CtorArgs<Player.Id>).beNiceTo = playerDesc.beNiceTo.map((socketId) => {
+            (playerDesc as unknown as Player.CtorArgs<Player.Id>).beNiceTo = playerDesc.beNiceTo.map((socketId) => {
                 return socketIdToPlayerIdMap[socketId];
             });
         });
-        (playerDescs as ReadonlyArray<Player.CtorArgs<Player.Id>>).forEach((playerDesc, index) => {
+        (desc.playerDescs as unknown as ReadonlyArray<Player.CtorArgs<Player.Id>>).forEach((playerDesc, index) => {
             // Third pass - Create the Players:
-            // Note above redundant `<Player.Id>` as a reminder that
-            // the player ID's ahve now been successfully assigned.
-            const id = playerDesc.idNumber!;
-            if (index === operatorIndex) {
+            const id = playerDesc.idNumber;
+            if (index === desc.operatorIndex) {
                 if (playerDesc.operatorClass !== Player.Operator.HUMAN) {
                     throw new TypeError("Operator must be of the human-operated class.");
+                } else if (this.gameType === Game.Type.SERVER) {
+                    throw new TypeError("The operator is not defined on the server side.");
                 }
                 // Found the operator. Note: this will never happen for
                 // a ServerGame instance, which sets this to `undefined`.
-                operator = this.createOperatorPlayer(playerDesc);
-                allHumanPlayers[id] = operator;
+                allHumanPlayers[id] = this.createOperatorPlayer(playerDesc);
             } else {
                 if (playerDesc.operatorClass === Player.Operator.HUMAN) {
                     // Human-operated players (except for the operator)
@@ -254,7 +260,6 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
             }
         });
         return {
-            operator,
             allHumanPlayers,
             allArtifPlayers,
         };
@@ -763,32 +768,25 @@ export namespace Game {
      * so it should use the default type parameter. The server should
      * use the string-type since it initially only knows socket ID's.
      */
-    // TODO: get rid of type param "ID" and use "G" for game type instead.
     export type CtorArgs<
         G extends Game.Type,
         S extends Coord.System.GridCapable,
-    > = {
+    > = Readonly<{
+        gameType: G;
+        coordSys: S;
 
-        readonly gameType: G;
-        readonly coordSys: S;
-
-        readonly gridDimensions: Grid.Dimensions<S>;
-
-        readonly languageName: typeof Lang.Modules.NAMES[number];
-
-        readonly langBalancingScheme: BalancingScheme;
+        gridDimensions: Grid.Dimensions<S>;
+        languageName: typeof Lang.Modules.NAMES[number];
+        langBalancingScheme: BalancingScheme;
 
         /**
          * The index in `playerDescs` of the operator's ctor args.
-         * 
-         * This should be set to `undefined for a {@link ServerGame}.
          */
         operatorIndex: G extends Game.Type.SERVER ? undefined : number;
-
-        readonly playerDescs: ReadonlyArray<Player.CtorArgs<
+        playerDescs: ReadonlyArray<Player.CtorArgs<
             G extends Game.Type.OFFLINE | Game.Type.SERVER ? Player.SocketId : Player.Id
         >>;
-    };
+    }>;
 
     export namespace CtorArgs {
 

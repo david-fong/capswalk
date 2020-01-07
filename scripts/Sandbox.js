@@ -10,6 +10,8 @@ class A {
 }
 class B extends A {
     a = 2;
+    b = 3;
+    c() { return this.a + this.b; }
 }
 b = new B();
 log(b.A);
@@ -71,4 +73,24 @@ if (!a.a) log("good")
 if (!a.b) log("good")
 if (!a.c) log("bad")
 a = undefined
+
+// how to get object with no proto or methods- only instance fields?
+console.log(new B())
+b = new B();
+console.log(Object.assign(Object.create(null), b)) // this is what I want. no methods included
+delete b.__proto__; // this doesn't do anything
+console.log(b)
+
+// how does the "in" keyword work?
+_in = { prop: true }
+console.log("prop" in _in) // true
+_in.prop = false;
+console.log("prop" in _in) // true
+_in.prop = undefined;
+console.log("prop" in _in) // true O_o
+delete _in.prop;
+console.log("prop" in _in) // false
+
+
+debugger
 

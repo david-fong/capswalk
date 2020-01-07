@@ -54,7 +54,19 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
         session: GroupSession,
         desc: Game.CtorArgs<G,S>,
     ) {
+        // Start with a call to the super constructor:
         super(desc, Tile);
+        /**
+         * @inheritdoc
+         * NOTE: this doc is just here to satisfy some linting warning condition.
+         */
+        function __assert(desc: Game.CtorArgs<any,S>):
+            asserts desc is Readonly<Game.CtorArgs<Game.Type.CLIENT, S>>{
+            // doesn't actually do any assertion :P
+            (desc.gameType as Game.Type) = Game.Type.CLIENT;
+        };
+        __assert(desc);
+
         // Setup the map from player ID's to socket ID's:
         // This is used to send messages to players by their player ID.
         const playerIdToSocketMap: Map<Player.Id, io.Socket> = new Map();
@@ -88,13 +100,17 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
         });
 
         // Pass on Game constructor arguments to each client:
-        desc.playerDescs.forEach((playerDesc) => {
-            desc.operatorIndex = playerDesc.idNumber;
-            this.namespace.sockets[playerDesc.socketId].emit(
-                Game.CtorArgs.EVENT_NAME,
-                desc,
-            );
-        }, this);
+        (desc.playerDescs as unknown as ReadonlyArray<Player.CtorArgs<Player.Id>>)
+            .filter((playerDesc) => playerDesc.operatorClass === Player.Operator.HUMAN)
+            .forEach((playerDesc) => {
+                (desc.operatorIndex as unknown as Player.Id) = playerDesc.idNumber;
+                this.namespace.sockets[playerDesc.socketId].emit(
+                    Game.CtorArgs.EVENT_NAME,
+                    desc,
+                );
+            },
+            this,
+        );
 
         this.reset();
     }
