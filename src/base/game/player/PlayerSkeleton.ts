@@ -27,7 +27,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
     /**
      * @see PlayerId
      */
-    public readonly idNumber: Exclude<Player.Id, typeof Player.Id.NULL>;
+    public readonly idNumber: Player.Id;
 
     private _hostTile: Tile<S | Coord.System.__BENCH>;
 

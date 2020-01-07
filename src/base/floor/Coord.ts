@@ -35,6 +35,16 @@ export namespace Coord {
         export type GridCapable = Exclude<Coord.System, Coord.System.__BENCH>;
     }
 
+    /**
+     * @param coord -
+     */
+    export function assertNotBench<S extends Coord.System.GridCapable>(
+        coord: Coord<S | Coord.System.__BENCH>): asserts coord is Coord<S> {
+        if ((coord as Coord.Bare<Coord.System.__BENCH>).playerId !== undefined) {
+            throw new TypeError("Failed assertion: coord must not be from the bench system.");
+        }
+    }
+
 
 
     /**

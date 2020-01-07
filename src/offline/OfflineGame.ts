@@ -17,19 +17,9 @@ type G = Game.Type.OFFLINE;
  */
 export class OfflineGame<S extends Coord.System.GridCapable> extends Game<G,S> {
 
-    /**
-     * @override The Operator is always defined for a {@link OfflineGame}.
-     */
-    public declare readonly operator: HumanPlayer<S>;
-
     protected settings: LocalGameSettings;
 
-    /**
-     * @override
-     */
-    public get gameType(): G {
-        return Game.Type.OFFLINE;
-    }
+
 
     /**
      * _Calls reset recursively for this entire composition._

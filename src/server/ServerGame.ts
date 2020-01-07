@@ -24,19 +24,7 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
 
     public readonly namespace: io.Namespace;
 
-    /**
-     * @override The Server copy has no Operator.
-     */
-    public declare readonly operator: undefined;
-
     protected readonly playerIdToSocketMap: ReadonlyMap<Player.Id, io.Socket>;
-
-    /**
-     * @override
-     */
-    public get gameType(): G {
-        return Game.Type.SERVER;
-    }
 
 
 

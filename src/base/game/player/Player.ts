@@ -132,6 +132,7 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
      * @throws Error if called while benched.
      */
     public getNeighbouringTiles(radius: number = 1): Array<Tile<S>> {
+        Coord.assertNotBench(this.coord);
         return this.game.grid.getNeighbouringTiles(this.coord, radius);
     }
 
@@ -141,6 +142,7 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
      * @throws Error if called while benched.
      */
     public getUNT(radius: number = 1): Array<Tile<S>> {
+        Coord.assertNotBench(this.coord);
         return this.game.grid.getUNT(this.coord, radius);
     }
 
@@ -150,6 +152,7 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
      * @throws Error if called while benched.
      */
     public getNeighbours(radius: number = 1): Array<Player<S>> {
+        Coord.assertNotBench(this.coord);
         return this.game.getNeighbours(this.coord, radius);
     }
 
@@ -176,16 +179,11 @@ export namespace Player {
     export declare type Id = PlayerTypeDefs.Id;
 
     /**
-     * An integer value.
-     * 
      * Each implementation of the {@link ArtificialPlayer} class must
-     * have an entry here.
-     * 
-     * Make sure not to define any overlapping value mappings. It seems
-     * TypeScript doesn't statically check for that.
+     * have an entry here. Do not set explicit values.
      */
-    export const enum Operator {
-        HUMAN = 0,
+    export enum Operator {
+        HUMAN,
         CHASER,
     }
 

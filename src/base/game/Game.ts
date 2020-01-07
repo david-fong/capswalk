@@ -37,6 +37,8 @@ import { EventRecordEntry } from "./events/EventRecordEntry";
  */
 export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapable> {
 
+    public readonly gameType: G;
+
     /**
      * Contains all non-bench tiles in this game.
      */
@@ -52,7 +54,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      * to the balancing behaviour. Making it fixed for the lifetime of
      * a `Game` is a choice I made in order to make the user experience
      * more simple. It's one less thing they'll see in the in-game UI,
-     * and I don't think they'd feel it were missing.
+     * and I don't think they'd feel as if it were missing.
      */
     protected readonly langBalancingScheme: BalancingScheme;
 
@@ -70,11 +72,6 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
     private readonly eventRecord: Array<Readonly<EventRecordEntry>>;
 
     /**
-     * 
-     */
-    public readonly operator: G extends Game.Type.SERVER ? undefined : HumanPlayer<S>;
-
-    /**
      * Does not use the HumanPlayer type annotation. This is to
      * indicate that a `Game` does not explicitly care about the
      * unique properties of a {@link HumanPlayer} over a regular
@@ -84,7 +81,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
 
     private readonly allArtifPlayers: ReadonlyArray<Player<S>>;
 
-    public readonly gameType: G;
+    public readonly operator: G extends Game.Type.SERVER ? undefined : HumanPlayer<S>;
 
 
 
@@ -128,18 +125,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         this.eventRecord = [];
 
         // Construct players:
-        let playerBundle: ReturnType<Game<G,S>["createPlayers"]>;
-        switch (this.gameType) {
-            case Game.Type.OFFLINE:
-            case Game.Type.SERVER:
-                playerBundle = this.createPlayers(desc);
-                break;
-            case Game.Type.CLIENT:
-                playerBundle = undefined!; // TODO... just get rid of switch statement and override in client impl.
-                break;
-            default:
-                throw Error("never");
-        }
+        const playerBundle = this.createPlayers(desc);
         this.allHumanPlayers = playerBundle.allHumanPlayers;
         this.allArtifPlayers = playerBundle.allArtifPlayers;
         if (desc.operatorIndex) {
@@ -203,23 +189,19 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
          * @inheritdoc
          * NOTE: this doc is just here to satisfy some linting warning condition.
          */
-        function __assert(desc: Game.CtorArgs<any,S>):
-            asserts desc is Readonly<Game.CtorArgs<Exclude<Game.Type, Game.Type.CLIENT>, S>>{
-            if (desc.gameType === Game.Type.CLIENT) {
+        function __assert(desc: Game.CtorArgs<any,S>, gameType: Game.Type):
+            asserts desc is Readonly<Game.CtorArgs<Game.Type.Manager, S>> {
+            if (gameType === Game.Type.CLIENT) {
                 throw new TypeError("This must be overriden for an online-client implementation.");
             }
         };
-        __assert(desc);
+        __assert(desc, this.gameType);
         const allHumanPlayers: Array<Player<S>> = [];
         const allArtifPlayers: Array<Player<S>> = [];
 
         const socketIdToPlayerIdMap: Record<Player.SocketId, Player.Id> = {};
         desc.playerDescs.forEach((playerDesc) => {
             // First pass - Assign Player ID's:
-            if (playerDesc.operatorClass < Player.Operator.HUMAN) {
-                throw new RangeError("Invalid operator class.");
-            }
-            // Allocate a player ID.
             const assignedId = (playerDesc.operatorClass === Player.Operator.HUMAN)
                 ? +(1 + allHumanPlayers.length) + Player.Id.NULL
                 : -(1 + allArtifPlayers.length) + Player.Id.NULL;
@@ -230,7 +212,8 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         });
         desc.playerDescs.forEach((playerDesc) => {
             // Second pass - map any socket ID's in `beNiceTo` to player ID's:
-            (playerDesc as unknown as Player.CtorArgs<Player.Id>).beNiceTo = playerDesc.beNiceTo.map((socketId) => {
+            (playerDesc as unknown as Player.CtorArgs<Player.Id>).beNiceTo
+            = playerDesc.beNiceTo.map((socketId) => {
                 return socketIdToPlayerIdMap[socketId];
             });
         });
@@ -277,7 +260,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
     /**
      * @returns An {@link ArtificialPlayer} of the specified type.
      * 
-     * @param desc - 
+     * @param desc -
      */
     protected createArtifPlayer(
         desc: Player.CtorArgs,
@@ -753,6 +736,9 @@ export namespace Game {
         SERVER  = "SERVER",
         CLIENT  = "CLIENT",
     }
+    export namespace Type {
+        export type Manager = Type.OFFLINE | Type.SERVER;
+    }
 
     /**
      * # Game Constructor Arguments
@@ -784,7 +770,7 @@ export namespace Game {
          */
         operatorIndex: G extends Game.Type.SERVER ? undefined : number;
         playerDescs: ReadonlyArray<Player.CtorArgs<
-            G extends Game.Type.OFFLINE | Game.Type.SERVER ? Player.SocketId : Player.Id
+            G extends Game.Type.Manager ? Player.SocketId : Player.Id
         >>;
     }>;
 

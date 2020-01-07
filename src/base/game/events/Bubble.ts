@@ -134,7 +134,7 @@ export namespace Bubble {
      * 
      * @param player - 
      */
-    export const computeTimerDuration = <S extends Coord.System>(player: Player<S>): Readonly<{
+    export const computeTimerDuration = <S extends Coord.System.GridCapable>(player: Player<S>): Readonly<{
         value: number,
         percentCharged: number,
         performedConstrain: boolean,

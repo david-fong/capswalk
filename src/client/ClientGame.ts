@@ -24,21 +24,9 @@ type G = Game.Type.CLIENT;
  */
 export class ClientGame<S extends Coord.System.GridCapable> extends Game<G,S> {
 
-    /**
-     * @override The Operator is always defined for a {@link ClientGame}.
-     */
-    public declare readonly operator: HumanPlayer<S>;
-
     protected settings: LocalGameSettings;
 
     public readonly socket: SocketIOClient.Socket;
-
-    /**
-     * @override
-     */
-    public get gameType(): G {
-        return Game.Type.CLIENT;
-    }
 
 
 
