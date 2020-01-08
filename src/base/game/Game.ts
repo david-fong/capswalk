@@ -39,11 +39,6 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
 
     public readonly gameType: G;
 
-    /**
-     * Contains all non-bench tiles in this game.
-     */
-    public readonly grid: Grid<S>;
-
     public readonly tileClass: Tile.ConstructorType<S>;
 
     public readonly lang: Lang;
@@ -59,17 +54,9 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
     protected readonly langBalancingScheme: BalancingScheme;
 
     /**
-     * All copies of the game should contain identical entries. That
-     * in a {@link ClientGame} may at any instant be missing trailing
-     * entries, or contain some trailing holes, but such gaps should
-     * eventually be filled to match those in the Game Manager.
-     * 
-     * Do not modify this directly. To register an accepted event,
-     * call the {@link Game#recordEvent} method, passing it the event
-     * descriptor. To get a new event ID, just take the current length
-     * of this array.
+     * Contains all non-bench tiles in this game.
      */
-    private readonly eventRecord: Array<Readonly<EventRecordEntry>>;
+    public readonly grid: Grid<S>;
 
     /**
      * Does not use the HumanPlayer type annotation. This is to
@@ -82,6 +69,19 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
     private readonly allArtifPlayers: ReadonlyArray<Player<S>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : HumanPlayer<S>;
+
+    /**
+     * All copies of the game should contain identical entries. That
+     * in a {@link ClientGame} may at any instant be missing trailing
+     * entries, or contain some trailing holes, but such gaps should
+     * eventually be filled to match those in the Game Manager.
+     * 
+     * Do not modify this directly. To register an accepted event,
+     * call the {@link Game#recordEvent} method, passing it the event
+     * descriptor. To get a new event ID, just take the current length
+     * of this array.
+     */
+    private readonly eventRecord: Array<Readonly<EventRecordEntry>>;
 
 
 
@@ -442,7 +442,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
             // Refresh the operator's `seqBuffer`:
             if (this.operator && // Ignore if ServerGame
                 player !== this.operator &&
-                !(this.grid.getNeighbouringTiles(this.operator.coord).includes(dest as Tile<S>))) {
+                !(this.grid.getTileSourcesTo(this.operator.coord).includes(dest as Tile<S>))) {
                 // Do this if moving into the vicinity of the operator
                 // and the requester is not the operator. This operation
                 // is necessary to maintain the `seqBuffer` invariant.

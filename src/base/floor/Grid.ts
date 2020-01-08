@@ -53,6 +53,16 @@ export abstract class Grid<S extends Coord.System.GridCapable> {
         this.forEachTile((tile) => tile.reset());
     }
 
+    /**
+     * Performs simple checks that the grid is playable.
+     * 
+     * - Each tile in the grid has a non-self destination (coord#equals).
+     * - (compute-heavyish): Each tile follows Impl.getAmbiguityThreshold
+     */
+    protected check(): void {
+        // Check that 
+    }
+
 
 
     /**
@@ -76,18 +86,20 @@ export abstract class Grid<S extends Coord.System.GridCapable> {
      * @param coord -
      * @param radius -
      */
-    public getNeighbouringTiles(coord: Coord.Bare<S | Coord.System.__BENCH>, radius: number = 1): Array<Tile<S>> {
+    public getTileDestsFrom(coord: Coord.Bare<S | Coord.System.__BENCH>, radius: number = 1): Array<Tile<S>> {
         if ((coord as Coord.Bare<Coord.System.__BENCH>).playerId !== undefined) {
             // TODO / NOTE: pretty much doing this because I don't want to
             //  bother with figuring out a way to get access to the player's
             //  bench tile in this scope. If we find a need for that, then change this.
             return [];
         } else {
-            return this.abstractGetNeighbouringTiles(coord as Coord.Bare<S>, radius);
+            return this.abstractGetTileDestsFrom(coord as Coord.Bare<S>, radius);
         }
     }
 
-    protected abstract abstractGetNeighbouringTiles(coord: Coord.Bare<S>, radius: number): Array<Tile<S>>;
+    // TODO: add corresponding methods for "SourcesTo"
+
+    protected abstract abstractGetTileDestsFrom(coord: Coord.Bare<S>, radius: number): Array<Tile<S>>;
 
     /**
      * @returns
@@ -102,7 +114,7 @@ export abstract class Grid<S extends Coord.System.GridCapable> {
      *      Defaults to `1`.
      */
     public getUNT(coord: Coord.Bare<S>, radius: number = 1): Array<Tile<S>> {
-        return this.getNeighbouringTiles(coord, radius).filter((tile) => !tile.isOccupied);
+        return this.getTileDestsFrom(coord, radius).filter((tile) => !tile.isOccupied);
     }
 
     public abstract forEachTile(consumer: (tile: Tile<S>) => void, thisArg?: object): void;
@@ -171,7 +183,11 @@ export namespace Grid {
     };
 
     interface ConstructorType<S extends Coord.System.GridCapable> {
-        new(desc: CtorArgs<S>): Grid<S>;
+
+        /**
+         * Constructor
+         */
+        new(desc: CtorArgs<S>): Grid<S> & Required<Grid.Dimensions<S>>;
 
         /**
          * @returns

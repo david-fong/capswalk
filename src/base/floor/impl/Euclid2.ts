@@ -13,7 +13,7 @@ export namespace Euclid2 {
     /**
      * # Euclid2 Coord
      */
-    class Coord extends BaseCoord.Abstract<S> implements B {
+    export class Coord extends BaseCoord.Abstract.Mathy<S> implements Coord.Bare {
 
         public readonly x: number;
         public readonly y: number;
@@ -212,7 +212,7 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        protected abstractGetNeighbouringTiles(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
+        protected abstractGetTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             return this.grid.slice(
                 // filter for included rows:
                 Math.max(0, coord.y - radius),
@@ -237,8 +237,8 @@ export namespace Euclid2 {
          * @override
          */
         public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
-            const options: Array<Tile<S>> = this.getUNT();
-            if (!(options.includes(this.hostTile))) {
+            const options: Array<Tile<S>> = this.getUNT(sourceCoord);
+            if (!(options.some((tile) => tile.coord.equals(sourceCoord)))) {
                 // This should never happen. It is here as a reminder.
                 throw new Error("Caller code didn't break the upward occupancy link.");
             }
@@ -269,10 +269,10 @@ export namespace Euclid2 {
             }
             // Choose one of the most favorable using some randomness
             // weighted to follow a straight-looking path of movement.
-            if (options[0].coord.x - this.coord.x === 0 || options[0].coord.y - this.coord.y === 0) {
+            if (options[0].coord.x - sourceCoord.x === 0 || options[0].coord.y - sourceCoord.y === 0) {
                 // (the axial option (if it exists) should be the first
                 // due to the previous sort's tie-breaker.
-                if (this.coord.axialAlignment(intendedDest.sub(this.coord)) - 0.5 > 0.0) {
+                if (sourceCoord.axialAlignment(intendedDest.sub(sourceCoord)) - 0.5 > 0.0) {
                     // The path to the intended destination is aligned more
                     // with the x or y axis than they are with those axes
                     // rotated 45 degrees.

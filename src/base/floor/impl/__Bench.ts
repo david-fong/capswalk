@@ -6,22 +6,27 @@ import { Coord as BaseCoord } from "../Coord";
  * 
  */
 export namespace __Bench {
-    type B = Coord.Bare;
+
     type S = BaseCoord.System.__BENCH;
 
     /**
-     * NOTE: unlike other implementations, this one's class literal
-     * is exported. This is because it needs to be instantiated
-     * directly.
+     * 
      */
-    export class Coord extends BaseCoord.Abstract<S> implements B {
+    export class Coord extends BaseCoord.Abstract<S> implements Coord.Bare {
 
         public readonly playerId: Player.Id;
 
-        public constructor(desc: B) {
+        public constructor(desc: Coord.Bare) {
             super(desc);
             this.playerId = desc.playerId;
             Object.freeze(this);
+        }
+
+        /**
+         * @override
+         */
+        public equals(other: Coord.Bare): boolean {
+            return (this.playerId === other.playerId);
         }
 
     }

@@ -131,16 +131,6 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
      * @returns -
      * @throws Error if called while benched.
      */
-    public getNeighbouringTiles(radius: number = 1): Array<Tile<S>> {
-        Coord.assertNotBench(this.coord);
-        return this.game.grid.getNeighbouringTiles(this.coord, radius);
-    }
-
-    /**
-     * @param radius -
-     * @returns -
-     * @throws Error if called while benched.
-     */
     public getUNT(radius: number = 1): Array<Tile<S>> {
         Coord.assertNotBench(this.coord);
         return this.game.grid.getUNT(this.coord, radius);

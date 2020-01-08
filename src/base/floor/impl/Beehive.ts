@@ -22,13 +22,12 @@ import { Grid as AbstractGrid } from "../Grid";
  */
 export namespace Beehive {
 
-    type B = Coord.Bare;
     type S = BaseCoord.System.BEEHIVE;
 
     /**
      * # Beehive Coord
      */
-    class Coord extends BaseCoord.Abstract<S> implements B {
+    export class Coord extends BaseCoord.Abstract.Mathy<S> implements Coord.Bare {
 
         /**
          * # 🕒 3'o'clock direction
@@ -40,7 +39,7 @@ export namespace Beehive {
          */
         public readonly bash: number;
 
-        public constructor(desc: B) {
+        public constructor(desc: Coord.Bare) {
             super(desc);
             this.dash  = desc.dash;
             this.bash = desc.bash;
@@ -50,7 +49,7 @@ export namespace Beehive {
         /**
          * @override
          */
-        public equals(other: B): boolean {
+        public equals(other: Coord.Bare): boolean {
             return (this.dash === other.dash) && (this.bash === other.bash);
         }
 
@@ -68,28 +67,7 @@ export namespace Beehive {
         /**
          * @override
          */
-        public originOneNorm(): number {
-            return 0; // TODO
-        }
-
-        /**
-         * @override
-         */
-        public originInfNorm(): number {
-            return 0; // TODO
-        }
-
-        /**
-         * @override
-         */
-        public originAxialAlignment(): number {
-            return 0; // TODO
-        }
-
-        /**
-         * @override
-         */
-        public add(other: B): Coord {
+        public add(other: Coord.Bare): Coord {
             return new Coord({
                 dash: this.dash + other.dash,
                 bash: this.bash + other.bash,
@@ -99,7 +77,7 @@ export namespace Beehive {
         /**
          * @override
          */
-        public sub(other: B): Coord {
+        public sub(other: Coord.Bare): Coord {
             return new Coord({
                 dash: this.dash - other.dash,
                 bash: this.bash - other.bash,
@@ -174,14 +152,14 @@ export namespace Beehive {
         /**
          * @override
          */
-        public getTileAt(coord: B): Tile<S> {
+        public getTileAt(coord: Coord.Bare): Tile<S> {
             return undefined!;
         }
 
         /**
          * @override
          */
-        protected abstractGetNeighbouringTiles(coord: B, radius: number = 1): Array<Tile<S>> {
+        protected abstractGetTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             return undefined!;
         }
 
@@ -197,7 +175,7 @@ export namespace Beehive {
         /**
          * @override
          */
-        public getUntToward(sourceCoord: Coord, intendedDest: B): Tile<S> {
+        public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
             return undefined!;
         }
 
