@@ -14,7 +14,8 @@
 Session.vim
 
 # vscode
-.vscode/
+/.vscode/**/*
+!/.vscode/settings.json
 *.code-workspace
 
 

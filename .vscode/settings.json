@@ -1,0 +1,24 @@
+{
+    "files.exclude": {
+        // generic excludes:
+        "node_modules/{[^.@]*,}": true,
+
+        // project specific excludes:
+        "package-lock.json": true,
+        "webpack.config.js": true,
+
+        // don't always need this:
+        "node_modules/": true,
+        "{**/.templates/,**/tsconfig.json}": true,
+        //"{**/.eslintrc.*,.eslintignore}": true,
+    },
+    "json.schemas": [
+        {
+            "fileMatch": [ "/**/*tsconfig.json", ],
+            "url": "http://json.schemastore.org/tsconfig"
+        }
+    ],
+    "files.associations": {
+        "TODO": "markdown"
+    }
+}
