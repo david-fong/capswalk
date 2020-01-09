@@ -27,7 +27,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
     /**
      * @see PlayerId
      */
-    public readonly idNumber: Player.Id;
+    public readonly playerId: Player.Id;
 
     private _hostTile: Tile<S | Coord.System.__BENCH>;
 
@@ -47,16 +47,16 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
 
     protected constructor(game: Game<any,S>, idNumber: Player.Id) {
         super();
-        if (Math.trunc(this.idNumber) !== this.idNumber) {
+        if (Math.trunc(idNumber.intraClassId) !== idNumber.intraClassId) {
             throw new RangeError("Player ID's must be integer values.");
         }
-        if (idNumber === Player.Id.NULL) {
-            throw new RangeError(`The ID \"${Player.Id.NULL}\" is reserved to mean \"no player\".`);
+        if (idNumber.intraClassId <= Player.Id.intraClassId.NULL) {
+            throw new RangeError(`The ID \"${Player.Id.intraClassId.NULL}\" is reserved to mean \"no player\".`);
         }
         this.game = game;
-        this.idNumber = idNumber;
+        this.playerId = idNumber;
         this.benchTile = new Tile<Coord.System.__BENCH>(
-            new __Bench.Coord({ playerId: this.idNumber, }),
+            new __Bench.Coord({ playerId: this.playerId, }),
         );
     }
 
@@ -86,7 +86,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
 
     public get visibleState(): PlayerSkeletonTypeDefs.VisibleState {
         return {
-            idNumber: this.idNumber,
+            playerId: this.playerId,
             isDowned: this.isDowned,
             isFrozen: this.isFrozen,
             isBubbling: this.isBubbling,
@@ -107,7 +107,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
      */
     public moveTo(dest: Tile<S | Coord.System.__BENCH>): void {
         // Evict self from current `Tile`.
-        if (this.hostTile.occupantId !== this.idNumber) {
+        if (this.hostTile.occupantId !== this.playerId) {
             if (this.game.gameType !== Game.Type.CLIENT) {
                 // Should never happen.
                 throw new Error("Linkage between player and occupied tile disagrees.");

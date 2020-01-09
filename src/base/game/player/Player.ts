@@ -59,7 +59,7 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
 
 
     public constructor(game: Game<any,S>, desc: Readonly<Player.CtorArgs>) {
-        super(game, desc.idNumber!);
+        super(game, desc.playerId);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {
             throw new RangeError( `Username \"${desc.username}\"`
@@ -135,30 +135,17 @@ export namespace Player {
 
     export type SocketId = string;
 
-    /**
-     * An **integer value** used to uniquely identify `Player`s in the
-     * same {@link Game} together. These are not meaningful to humans
-     * playing the game- rather, they are for internal use. Values are
-     * allocated by the Game Manager during game construction.
-     * 
-     * Values strictly less than {@link Player.Id.NULL} correspond to
-     * {@link ArtificialPlayer}s, and values strictly greater than
-     * {@link Player.Id.NULL} correspond to {@link HumanPlayer}s. The
-     * value {@link Player.Id.NULL} is reserved to indicate that a
-     * {@link Tile} is unoccupied.
-     */
-    export declare type Id = PlayerTypeDefs.Id;
+    export type Operator = PlayerTypeDefs.Operator;
 
     /**
-     * Each implementation of the {@link ArtificialPlayer} class must
-     * have an entry here. Do not set explicit values.
+     * 
      */
-    export enum Operator {
-        HUMAN,
-        CHASER,
-    }
+    export type Id = PlayerTypeDefs.Id;
+
+    export type Bundle<T> = Readonly<Record<Operator, ReadonlyArray<T>>>;
 
     export type Username = string;
+
     export namespace Username {
         /**
          * The choice of this is somewhat arbitrary. This should be enforced
@@ -177,18 +164,11 @@ export namespace Player {
      * # Player Constructor Arguments
      * 
      * @template ID
-     * Server should pass ID = Player.SocketId.
-     * Client should keep default of Player.Id.
+     * Only set to Player.SocketId when the player roster is under construction.
      */
     export type CtorArgs<ID extends Player.Id | SocketId = Player.Id> = {
 
-        readonly operatorClass: Operator;
-
-        /**
-         * Initially `undefined` for server and offline games. It will
-         * already be defined for a client game by the server.
-         */
-        idNumber: ID extends Player.Id ? Player.Id : undefined;
+        readonly playerId: ID extends Player.Id ? Player.Id : never;
 
         readonly username: Username;
 
@@ -200,7 +180,7 @@ export namespace Player {
          */
         beNiceTo: ReadonlyArray<ID>
 
-        readonly socketId: SocketId;
+        readonly socketId: ID extends SocketId ? SocketId : never;
     };
 
 }

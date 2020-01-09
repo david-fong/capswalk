@@ -78,15 +78,15 @@ export class Tile<S extends Coord.System> {
      */
     public setOccupant(playerDesc: PlayerSkeleton.VisibleState): void {
         const benchOwner = (this.coord as Coord<Coord.System.__BENCH>).playerId;
-        if (benchOwner && playerDesc.idNumber !== benchOwner) {
+        if (benchOwner && playerDesc.playerId !== benchOwner) {
             throw new RangeError(`Only the player with ID`
                 + ` \"${benchOwner}\" can occupy this tile.`);
         }
-        this._occupantId = playerDesc.idNumber;
+        this._occupantId = playerDesc.playerId;
     }
 
     public get isOccupied(): boolean {
-        return this.occupantId !== Player.Id.NULL;
+        return this.occupantId.intraClassId !== Player.Id.intraClassId.NULL;
     }
 
     public evictOccupant(): void {

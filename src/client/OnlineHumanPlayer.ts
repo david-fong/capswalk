@@ -36,7 +36,7 @@ export class OnlineHumanPlayer<S extends Coord.System.GridCapable> extends Human
         this.game.socket.emit(
             PlayerMovementEvent.EVENT_NAME,
             new PlayerMovementEvent(
-                this.idNumber,
+                this.playerId,
                 this.lastAcceptedRequestId,
                 dest,
             ),

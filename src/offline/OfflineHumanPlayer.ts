@@ -27,7 +27,7 @@ export class OfflineHumanPlayer<S extends Coord.System.GridCapable> extends Huma
     public abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void {
         this.game.processMoveRequest(
             new PlayerMovementEvent(
-                this.idNumber,
+                this.playerId,
                 this.lastAcceptedRequestId,
                 dest
             ),

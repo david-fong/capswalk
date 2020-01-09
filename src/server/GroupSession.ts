@@ -144,13 +144,14 @@ export class GroupSession {
             languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.
             langBalancingScheme: undefined!, // TODO
             operatorIndex: undefined,
-            playerDescs: Object.values(this.sockets).map((socket) => { // TODO: add those for artificial players.
+
+            // TODO: add descs for artificial players, call some static helper to
+            // finalize playerIds, and map beNiceTo to a format using playerIds.
+            playerDescs: Object.values(this.sockets).map((socket) => {
                 return {
-                    operatorClass: Player.Operator.HUMAN,
-                    idNumber: undefined,
+                    playerId: undefined!, // TODO
                     username: socket.username!, // checked above.
                     beNiceTo: Array.from(socket.beNiceTo),
-                    socketId: socket.id,
                 };
             }),
         });

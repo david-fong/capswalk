@@ -2,12 +2,40 @@
 
 export class Player {}
 export namespace Player {
+
     /**
-     * See the main documentation in game/player/Player
+     * @enum
+     * Each implementation of the {@link ArtificialPlayer} class must
+     * have an entry here.
      */
-    export type Id = number;
+    export type Operator = keyof typeof Operator;
+    export const Operator = Object.freeze(<const>{
+        HUMAN:  "HUMAN",
+        CHASER: "CHASER",
+    });
+    Operator as { [ key in Operator ]: key };
+    /**
+     * @param string -
+     */
+    export function assertIsOperator(string: string): asserts string is Operator {};
+
+    /**
+     * See the main documentation in game/player/Player.
+     */
+    export type Id = {
+        operatorClass: Operator;
+        /**
+         * A positive integer. A value of zero indicates an absence of
+         * a player.
+         */
+        intraClassId: number;
+    };
+
     export namespace Id {
-        export const NULL = 0;
+        export namespace intraClassId {
+            export const NULL = -1;
+            NULL as Player.Id["intraClassId"];
+        }
     }
 }
 
@@ -21,18 +49,22 @@ export namespace PlayerSkeleton {
      * All fields are readonly.
      */
     export type VisibleState = Readonly<{
-        idNumber:   Player.Id;
+        playerId:   Player.Id;
         isDowned:   boolean;
         isFrozen:   boolean;
         isBubbling: boolean;
         percentBubbleCharge: number;
     }>;
+
     export namespace VisibleState {
         /**
          * Use for Tile-occupant eviction.
          */
         export const NULL = Object.freeze(<const>{
-            idNumber:   Player.Id.NULL,
+            playerId: {
+                operatorClass: Player.Operator.HUMAN,
+                intraClassId: Player.Id.intraClassId.NULL,
+            } as Player.Id,
             isDowned:   false,
             isFrozen:   false,
             isBubbling: false,

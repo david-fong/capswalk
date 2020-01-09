@@ -59,14 +59,9 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
     public readonly grid: Grid<S>;
 
     /**
-     * Does not use the HumanPlayer type annotation. This is to
-     * indicate that a `Game` does not explicitly care about the
-     * unique properties of a {@link HumanPlayer} over a regular
-     * {@link Player}.
+     * 
      */
-    private readonly allHumanPlayers: ReadonlyArray<Player<S>>;
-
-    private readonly allArtifPlayers: ReadonlyArray<Player<S>>;
+    private readonly players: Player.Bundle<Player<S>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : HumanPlayer<S>;
 
@@ -125,13 +120,12 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         this.eventRecord = [];
 
         // Construct players:
-        const playerBundle = this.createPlayers(desc);
-        this.allHumanPlayers = playerBundle.allHumanPlayers;
-        this.allArtifPlayers = playerBundle.allArtifPlayers;
+        this.players = this.createPlayers(desc);
         if (desc.operatorIndex) {
-            // sheesh...
-            (this.operator as HumanPlayer<S>) =
-                this.getPlayerById(desc.operatorIndex!) as HumanPlayer<S>;
+            (this.operator as HumanPlayer<S>) = this.getPlayerById({
+                operatorClass: Player.Operator.HUMAN,
+                intraClassId: desc.operatorIndex!,
+            }) as HumanPlayer<S>;
         }
 
         // Check to make sure that none of the players are invincible:
@@ -161,8 +155,11 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         // Shuffle everything:
         this.grid.forEachTile(this.shuffleLangCharSeqAt, this);
 
-        this.allHumanPlayers.forEach((player) => player.reset());
-        this.allArtifPlayers.forEach((player) => player.reset());
+        for (const sameClassPlayers of Object.values(this.players)) {
+            sameClassPlayers.forEach((player) => {
+                player.reset();
+            });
+        }
 
         // TODO: spawn players and targets:
         // While not necessary, targets should be done after players have
@@ -180,11 +177,8 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      * @returns A bundle of the constructed players.
      */
     private createPlayers(
-        desc: Readonly<Game.CtorArgs<any,S>>,
-    ): {
-        allHumanPlayers: ReadonlyArray<Player<S>>,
-        allArtifPlayers: ReadonlyArray<Player<S>>,
-    } {
+        desc: Readonly<Game.CtorArgs<G,S>>,
+    ): Game<G,S>["players"] {
         /**
          * @inheritdoc
          * NOTE: this doc is just here to satisfy some linting warning condition.
@@ -196,56 +190,33 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
             }
         };
         __assert(desc);
-        const allHumanPlayers: Array<Player<S>> = [];
-        const allArtifPlayers: Array<Player<S>> = [];
 
-        const socketIdToPlayerIdMap: Record<Player.SocketId, Player.Id> = {};
-        desc.playerDescs.forEach((playerDesc) => {
-            // First pass - Assign Player ID's:
-            const assignedId = (playerDesc.operatorClass === Player.Operator.HUMAN)
-                ? +(1 + allHumanPlayers.length) + Player.Id.NULL
-                : -(1 + allArtifPlayers.length) + Player.Id.NULL;
-            (playerDesc as unknown as Player.CtorArgs<Player.Id>).idNumber = assignedId;
-            if (playerDesc.socketId) {
-                socketIdToPlayerIdMap[playerDesc.socketId] = assignedId;
-            }
-        });
-        desc.playerDescs.forEach((playerDesc) => {
-            // Second pass - map any socket ID's in `beNiceTo` to player ID's:
-            (playerDesc as unknown as Player.CtorArgs<Player.Id>).beNiceTo
-            = playerDesc.beNiceTo.map((socketId) => {
-                return socketIdToPlayerIdMap[socketId];
-            });
-        });
-        (desc.playerDescs as unknown as ReadonlyArray<Player.CtorArgs<Player.Id>>).forEach((playerDesc, index) => {
-            // Third pass - Create the Players:
-            const id = playerDesc.idNumber;
-            if (index === desc.operatorIndex) {
-                if (playerDesc.operatorClass !== Player.Operator.HUMAN) {
-                    throw new TypeError("Operator must be of the human-operated class.");
-                } else if (this.gameType === Game.Type.SERVER) {
-                    throw new TypeError("The operator is not defined on the server side.");
-                }
-                // Found the operator. Note: this will never happen for
-                // a ServerGame instance, which sets this to `undefined`.
-                allHumanPlayers[id] = this.createOperatorPlayer(playerDesc);
-            } else {
-                if (playerDesc.operatorClass === Player.Operator.HUMAN) {
-                    // Human-operated players (except for the operator)
-                    // are represented by a `PuppetPlayer`-type object.
-                    allHumanPlayers[id] = new PuppetPlayer(this, playerDesc);
+        const players: Partial<Record<Player.Operator, ReadonlyArray<Player<S>>>> = {};
+        for (const [ operatorClass, playersCtorArgs, ] of Object.entries(desc.playerDescs)) {
+            Player.assertIsOperator(operatorClass);
+            players[operatorClass] = playersCtorArgs.map((ctorArgs, index) => {
+                if (operatorClass === Player.Operator.HUMAN) {
+                    if (index === desc.operatorIndex) {
+                        if (this.gameType === Game.Type.SERVER) {
+                            throw new TypeError("The operator is not defined on the server side.");
+                        }
+                        // Found the operator. Note: this will never happen for
+                        // a ServerGame instance, which sets this to `undefined`.
+                        return this.createOperatorPlayer(ctorArgs);
+                    } else {
+                        // Human-operated players (except for the operator)
+                        // are represented by a `PuppetPlayer`-type object.
+                        return new PuppetPlayer(this, ctorArgs);
+                    }
                 } else {
                     // Artificial players' representation depends on the
                     // Game implementation type. We have an abstract method
                     // expressly for that purpose:
-                    allArtifPlayers[id] = this.createArtifPlayer(playerDesc);
+                    return this.createArtifPlayer(ctorArgs);
                 }
-            }
-        });
-        return {
-            allHumanPlayers,
-            allArtifPlayers,
-        };
+            });
+        }
+        return players as Game<G,S>["players"];
     }
 
     /**
@@ -255,7 +226,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      * {@link Game#operator}.
      * 
      */
-    protected abstract createOperatorPlayer(desc: Player.CtorArgs<any>): HumanPlayer<S>;
+    protected abstract createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer<S>;
 
     /**
      * @returns An {@link ArtificialPlayer} of the specified type.
@@ -301,7 +272,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         if (benchOwnerId !== undefined) {
             const benchOwner = this.getPlayerById(benchOwnerId);
             return {
-                char: benchOwner.idNumber.toString(),
+                char: benchOwner.playerId.toString(),
                 seq: benchOwner.username,
             };
         } else {
@@ -591,11 +562,11 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
             jumpNeighbours.shift();
         }
 
-        const desc = new Bubble.PopEvent(bubbler.idNumber);
+        const desc = new Bubble.PopEvent(bubbler.playerId);
 
         desc.playersToDown = jumpNeighbours.filter((player) => {
             return true; // TODO
-        }).map((player) => player.idNumber);
+        }).map((player) => player.playerId);
 
         // desc.playersToRaise  = get in-range    downed players who are     in any of my teams
 
@@ -634,8 +605,8 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         }, this);
 
         // Enact effects on players to freeze:
-        Object.entries(desc.playersToFreeze).forEach(([ enemyId, duration, ]) => {
-            this.freezePlayer(this.getPlayerById(parseInt(enemyId)), duration);
+        desc.playersToFreeze.forEach((freezeDesc) => {
+            this.freezePlayer(this.getPlayerById(freezeDesc.targetId), freezeDesc.freezeDuration);
         }, this);
         return;
     }
@@ -697,21 +668,9 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
     /**
      * @param playerId - The ID of an existing player.
      * @returns The {@link Player} with ID `playerId`.
-     * @throws RangeError if the specified {@link Player} doesn't exist.
      */
     protected getPlayerById(playerId: Player.Id): Player<S> {
-        if (playerId === Player.Id.NULL) {
-            throw new RangeError(`The ID \"${Player.Id.NULL}\" is reserved to mean \"no player\".`);
-        }
-        const player: Player<S> = ((playerId < Player.Id.NULL)
-            ? this.allArtifPlayers[(-playerId) - 1]
-            : this.allHumanPlayers[(+playerId) - 1]
-        );
-        if (!player) {
-            throw new RangeError(`There is no player in this game with id \"${playerId}\".`);
-        } else {
-            return player;
-        }
+        return this.players[playerId.operatorClass][playerId.intraClassId];
     }
 
     /**
@@ -771,9 +730,7 @@ export namespace Game {
          * The index in `playerDescs` of the operator's ctor args.
          */
         operatorIndex: G extends Game.Type.SERVER ? undefined : number;
-        playerDescs: ReadonlyArray<Player.CtorArgs<
-            G extends Game.Type.Manager ? Player.SocketId : Player.Id
-        >>;
+        playerDescs: Player.Bundle<Player.CtorArgs<Player.Id>>;
     }>;
 
     export namespace CtorArgs {

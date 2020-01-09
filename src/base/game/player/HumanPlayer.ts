@@ -18,16 +18,6 @@ export abstract class HumanPlayer<S extends Coord.System.GridCapable> extends Pl
      */
     private _seqBuffer: Lang.Seq;
 
-    public constructor(game: Game<any,S>, desc: Player.CtorArgs) {
-        super(game, desc);
-        if (this.idNumber <= 0) {
-            throw new RangeError(`The ID number for a human-operated player`
-                + ` must be strictly greater than ${Player.Id.NULL}, but we`
-                + ` were passed the value \"${this.idNumber}\".`
-            );
-        }
-    }
-
     /**
      * @override {@link Player#reset}
      */

@@ -18,8 +18,8 @@
      - operator-class-specific unique id.
    - Player.CtorArgs related changes:
      - Game no longer needs to assign player ids.
-     - `operatorClass` field is now implied by dict key.
-     - `idnumber` field is not implied by array index.
+       - `operatorClass` field is now implied by dict key.
+       - `idnumber` field is not implied by array index.
    - Talk about how type-aliasing a primitive made refactoring a type that was all over my project relatively easy to do.
 1. Make grid's tile getters have a method-object nesting: `this.getTile.At`, `this.getTile.[unoccupied|occupied].[destsFrom|SourcesTo]`.
    - Update documentation on what the range of a bubble is and how range-extension works (both look at destFrom).
@@ -33,6 +33,7 @@
 
 ### Low Priority
 
+- Make the main readme file less verbose.
 - Make eslintrc's for impl/ folders saying that they can't import from the impl/ folder they are in.
   - Check if it can detect relative imports. If not, don't do this
 
@@ -66,11 +67,12 @@ https://nodejs.org/api/esm.html#esm_enabling
 https://docs.npmjs.com/files/package.json
 https://www.typescriptlang.org/docs/handbook/modules.html
 https://www.typescriptlang.org/docs/handbook/module-resolution.html
-https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-namespaces-with-classes-functions-and-enums
 
 https://devdocs.io/jsdoc/howto-es2015-classes
 
 https://devdocs.io/dom/audiobuffersourcenode/loop#Example
+
+https://devdocs.io/css/clip-path
 
 https://expressjs.com/en/api.html#app.set
 https://stackoverflow.com/a/38129612/11107541

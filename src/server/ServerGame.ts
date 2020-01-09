@@ -117,7 +117,7 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.CtorArgs<Player.SocketId>): never {
+    protected createOperatorPlayer(desc: Player.CtorArgs): never {
         throw new TypeError("This should never be called for a ServerGame.");
     }
 

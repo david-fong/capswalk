@@ -70,7 +70,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     public setOccupant(playerDesc: PlayerSkeleton.VisibleState): void {
         super.setOccupant(playerDesc);
         // TODO: set some dataset thing to make player face layer visible.
-        if (playerDesc.idNumber === Player.Id.NULL) {
+        if (playerDesc.playerId === Player.Id.intraClassId.NULL) {
             // Eviction-type action:
             ;
         } else {

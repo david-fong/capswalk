@@ -29,12 +29,6 @@ export abstract class ArtificialPlayer<S extends Coord.System.GridCapable> exten
      */
     protected constructor(game: Game<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
-        if (this.idNumber >= 0) {
-            throw new RangeError(`The ID number for a human-operated player`
-                + ` must be strictly lesser than ${Player.Id.NULL}, but we`
-                + ` were passed the value \"${this.idNumber}\".`
-            );
-        }
         if (game.gameType === Game.Type.CLIENT) {
             throw new TypeError("ClientGames should be using PuppetPlayers instead.");
         }
@@ -63,7 +57,7 @@ export abstract class ArtificialPlayer<S extends Coord.System.GridCapable> exten
     protected abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void {
         this.game.processMoveRequest(
             new PlayerMovementEvent(
-                this.idNumber,
+                this.playerId,
                 this.lastAcceptedRequestId,
                 dest,
             ),
