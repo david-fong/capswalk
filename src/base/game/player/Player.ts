@@ -142,7 +142,7 @@ export namespace Player {
      */
     export type Id = PlayerTypeDefs.Id;
 
-    export type Bundle<T> = Readonly<Record<Operator, ReadonlyArray<T>>>;
+    export type Bundle<T> = Record<Operator, ReadonlyArray<T>>;
 
     export type Username = string;
 
@@ -168,7 +168,7 @@ export namespace Player {
      */
     export type CtorArgs<ID extends Player.Id | SocketId = Player.Id> = {
 
-        readonly playerId: ID extends Player.Id ? Player.Id : never;
+        readonly playerId: ID extends Player.Id ? Player.Id : undefined;
 
         readonly username: Username;
 
@@ -180,7 +180,7 @@ export namespace Player {
          */
         beNiceTo: ReadonlyArray<ID>
 
-        readonly socketId: ID extends SocketId ? SocketId : never;
+        readonly socketId: SocketId;
     };
 
 }

@@ -54,20 +54,6 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
             (desc.gameType as Game.Type) = Game.Type.CLIENT;
         };
         __assert(desc);
-
-        // Setup the map from player ID's to socket ID's:
-        // This is used to send messages to players by their player ID.
-        const playerIdToSocketMap: Map<Player.Id, io.Socket> = new Map();
-        for (const playerDesc of desc.playerDescs) {
-            playerIdToSocketMap.set(
-                playerDesc.idNumber!,
-                this.namespace.sockets[playerDesc.socketId],
-            );
-        };
-        this.playerIdToSocketMap = playerIdToSocketMap;
-        if (this.operator) {
-            throw new Error("The Operator for a ServerGame should always be undefined.");
-        }
         this.namespace = session.namespace;
 
         // Attach event listeners / handlers to each socket:
@@ -88,10 +74,9 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
         });
 
         // Pass on Game constructor arguments to each client:
-        (desc.playerDescs as unknown as ReadonlyArray<Player.CtorArgs<Player.Id>>)
-            .filter((playerDesc) => playerDesc.operatorClass === Player.Operator.HUMAN)
+        (desc.playerDescs.HUMAN)
             .forEach((playerDesc) => {
-                (desc.operatorIndex as unknown as Player.Id) = playerDesc.idNumber;
+                (desc.operatorIndex as Player.Id) = playerDesc.playerId;
                 this.namespace.sockets[playerDesc.socketId].emit(
                     Game.CtorArgs.EVENT_NAME,
                     desc,

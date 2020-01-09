@@ -136,7 +136,7 @@ export class GroupSession {
         if (failureReasons.undefinedUsername.length) {
             return failureReasons;
         }
-        //const noProto = <T>(obj: T): T => Object.assign(Object.create(null), obj);
+        // const noProto = <T>(obj: T): T => Object.assign(Object.create(null), obj);
         this.currentGame = new ServerGame<S>(this, {
             gameType: Game.Type.SERVER,
             coordSys,
@@ -145,14 +145,18 @@ export class GroupSession {
             langBalancingScheme: undefined!, // TODO
             operatorIndex: undefined,
 
-            // TODO: add descs for artificial players, call some static helper to
-            // finalize playerIds, and map beNiceTo to a format using playerIds.
-            playerDescs: Object.values(this.sockets).map((socket) => {
-                return {
-                    playerId: undefined!, // TODO
-                    username: socket.username!, // checked above.
-                    beNiceTo: Array.from(socket.beNiceTo),
-                };
+            // TODO: add descs for artificial players, ~call some static helper to
+            // finalize playerIds, and map beNiceTo to a format using playerIds.~
+            playerDescs: Game.CtorArgs.finalizePlayerIds({
+                [ Player.Operator.HUMAN ]: Object.values(this.sockets).map((socket) => {
+                    return {
+                        playerId: undefined,
+                        username: socket.username!, // checked above.
+                        beNiceTo: Array.from(socket.beNiceTo),
+                        socketId: socket.id,
+                    };
+                }),
+                [ Player.Operator.CHASER ]: undefined!,
             }),
         });
         return undefined;

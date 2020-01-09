@@ -61,7 +61,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
     /**
      * 
      */
-    private readonly players: Player.Bundle<Player<S>>;
+    private readonly players: Readonly<Player.Bundle<Player<S>>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : HumanPlayer<S>;
 
@@ -529,6 +529,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         } else {
             bubbler.isBubbling = false;
         }
+        bubbler.hostTile.setOccupant(bubbler);
     }
 
 
@@ -707,13 +708,6 @@ export namespace Game {
      * @template S
      * The coordinate system to use. The literal value must also be
      * passed as the field {@link CtorArgs#coordSys}.
-     * 
-     * @template ID
-     * The current type of Player ID's. Player ID's are assigned by
-     * the `Game` constructor of the Game Manager. On the client side
-     * of an online game, these will have been assigned by the server,
-     * so it should use the default type parameter. The server should
-     * use the string-type since it initially only knows socket ID's.
      */
     export type CtorArgs<
         G extends Game.Type,
@@ -730,12 +724,52 @@ export namespace Game {
          * The index in `playerDescs` of the operator's ctor args.
          */
         operatorIndex: G extends Game.Type.SERVER ? undefined : number;
-        playerDescs: Player.Bundle<Player.CtorArgs<Player.Id>>;
+        playerDescs: Readonly<Player.Bundle<Player.CtorArgs>>;
     }>;
 
     export namespace CtorArgs {
 
         export const EVENT_NAME = "game-create";
+
+        /**
+         * @returns
+         * Used at a point when player descriptions have settled and
+         * no more players will be allowed to join or expected to leave
+         * anymore. This assigns players ID's and translates the team
+         * related fields to be in terms of player ID's rather than
+         * socket IDs.
+         * 
+         * @param playerDescs -
+         */
+        export const finalizePlayerIds = (
+            playerDescs: Readonly<Player.Bundle<Player.CtorArgs<Player.SocketId>>>
+        ): Readonly<Player.Bundle<Player.CtorArgs>> => {
+            type retType = Player.Bundle<Player.CtorArgs>;
+            const socketIdToPlayerIdMap: Record<Player.SocketId, Player.Id> = {};
+            for (const operatorClass in playerDescs) {
+                Player.assertIsOperator(operatorClass);
+                playerDescs[operatorClass].forEach((oldCtorArgs, intraClassId) => {
+                    socketIdToPlayerIdMap[oldCtorArgs.socketId] = {
+                        operatorClass,
+                        intraClassId,
+                    };
+                });
+            }
+            return Object.keys(playerDescs).reduce<retType>(
+                (retValBuild, operatorClass, __currentIndex, __array) => {
+                    Player.assertIsOperator(operatorClass);
+                    retValBuild[operatorClass] = playerDescs[operatorClass].map<Player.CtorArgs>((playerDesc) => {
+                        return {
+                            playerId: socketIdToPlayerIdMap[playerDesc.socketId],
+                            username: playerDesc.username,
+                            beNiceTo: playerDesc.beNiceTo.map((socketId) => socketIdToPlayerIdMap[socketId]),
+                            socketId: playerDesc.socketId,
+                        };
+                    });
+                    return retValBuild;
+                }, {} as retType,
+            );
+        };
 
         /**
          * Not used here, but used in {@link GroupSession#createGameInstance}.
