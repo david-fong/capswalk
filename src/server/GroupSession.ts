@@ -28,12 +28,16 @@ export class GroupSession {
 
     /**
      * 
-     * @param namespace - 
-     * @param deleteExternalRefs - A function that- when called- deletes
-     *      all external references to this newly constructed object
-     *      such that it can be garbage collected.
-     * @param initialTtl - If no sockets connect to this `GameSession`
-     *      in this many seconds, it will close and clean itself up.
+     * @param namespace -
+     * 
+     * @param deleteExternalRefs
+     * A function that- when called- deletes all external references
+     * to this newly constructed object such that it can be garbage
+     * collected.
+     * 
+     * @param initialTtl
+     * If no sockets connect to this `GameSession` in this many seconds,
+     * it will close and clean itself up.
      */
     public constructor(
         namespace: io.Namespace,

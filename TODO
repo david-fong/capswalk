@@ -3,20 +3,36 @@
 
 ## High-level
 
-- Get a basic, working implementation of an offline game.
-- Write the stylesheets + consider SASS.
-- Record music + find out how to play tracks together.
-- Get working bundles for networked games.
+1. Get a basic, working implementation of an offline game.
+1. Write the stylesheets + consider SASS.
+1. Record music + find out how to play tracks together.
+1. Get working bundles for networked games.
 
 ## Concrete TODO's
 
-- Finish implementing __Bench.Coord... what abstract methods in Coord should be moved to implementations and replaced with higher-level abstract methods?
-- Change Game.allHumanPlayers and Game.allArtificialPlayers to a record from operator-classes to a list of players.
-  - This means that the definition of Player.Id must change: a field of operator-class, and a unique id specific to that operator-class.
-    - Talk about how type-aliasing a primitive made refactoring a type that was all over my project relatively easy to do.
-- Make grid's tile getters have a method-object nesting: `this.getTile.At`, `this.getTile.[unoccupied|occupied].[destsFrom|SourcesTo]`
-  - Update documentation on what the range of a bubble is and how range-extension works (both look at destFrom).
-  - Update wording in lang readme to reflect new (and improved) method names.
+### High Priority
+
+1. Change Game.allHumanPlayers and Game.allArtificialPlayers to a record from operator-classes to a list of players.
+   - The definition of Player.Id must change:
+     - operator-class,
+     - operator-class-specific unique id.
+   - Player.CtorArgs related changes:
+     - Game no longer needs to assign player ids.
+     - `operatorClass` field is now implied by dict key.
+     - `idnumber` field is not implied by array index.
+   - Talk about how type-aliasing a primitive made refactoring a type that was all over my project relatively easy to do.
+1. Make grid's tile getters have a method-object nesting: `this.getTile.At`, `this.getTile.[unoccupied|occupied].[destsFrom|SourcesTo]`.
+   - Update documentation on what the range of a bubble is and how range-extension works (both look at destFrom).
+   - Update wording in lang readme to reflect new (and improved) method names.
+1. Make Grid abstract static method to take grid's player descs and produce similar dict containing randomized spawn points.
+1. Split `Game` definition into multiple files.
+   - Rationale: the file is getting big and annoying to scroll through.
+   - Specifically, move event processing / executing method pairs to their own files.
+   - Make sure that they still have regular access to private fields, etc.
+   - Look into using triple-slash directives or module augmentation (see TypeScript docs for both topics)
+
+### Low Priority
+
 - Make eslintrc's for impl/ folders saying that they can't import from the impl/ folder they are in.
   - Check if it can detect relative imports. If not, don't do this
 

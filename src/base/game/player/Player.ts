@@ -16,6 +16,9 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
 
     public readonly username: Player.Username;
 
+    // TODO: add a public instance field to access tiles relative to
+    //  this player's position. See Grid.TileGetter
+
     /**
      * Remember, just like in real life, being nice to someone isn't
      * inherently mutually reciprocal. Just because you choose to go
@@ -122,28 +125,6 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
 
     public get coord(): Player<S>["hostTile"]["coord"] {
         return this.hostTile.coord;
-    }
-
-
-
-    /**
-     * @param radius -
-     * @returns -
-     * @throws Error if called while benched.
-     */
-    public getUNT(radius: number = 1): Array<Tile<S>> {
-        Coord.assertNotBench(this.coord);
-        return this.game.grid.getUNT(this.coord, radius);
-    }
-
-    /**
-     * @param radius -
-     * @returns -
-     * @throws Error if called while benched.
-     */
-    public getNeighbours(radius: number = 1): Array<Player<S>> {
-        Coord.assertNotBench(this.coord);
-        return this.game.getNeighbours(this.coord, radius);
     }
 
 }
