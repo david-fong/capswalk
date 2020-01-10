@@ -3,13 +3,15 @@
 
 There's nothing to show yet! But, you can try [**`an older, working version` 👈**](https://david-fong.github.io/SnaKey-JS/ "*boop*")
 
-> Learning is hard, and that's what makes the process of doing it frustrating. I can vouch for that by nearly every commit in this repository. But I can also say from other past experiences that the difficulty in tackling something new and unfamiliar is what makes its eventual fruit so sweet to enjoy.
+> Learning is hard, and that's what makes the process of doing it frustrating. Think back to the last time you tried to learn something new. Maybe it was a sport, or an instrument, or a kind of food, or a language. I can vouch for that by nearly every commit in this repository. But I can also say from other past experiences that the difficulty in tackling something new and unfamiliar is what makes its eventual fruit so sweet to enjoy.
 >
 > If I want to get across one message through this project, it is to _be kind to beginners_- whether that is to another person or to yourself. When I get frustrated learning something, I find myself needing to mentally recite that _"I'm not stupid- I'm just learning"_.
 >
-> People only get good at things by perseverance. I think it's good to remember that for ourselves: Ask a musician to play their instrument flipped, or a person to type on a different keyboard layout than the one they're used to, or ask a driver to drive with their steering flipped. Ask someone to try playing this game (I'm shameless- I know).
+> People only get good at things by perseverance. I think it's good to remember that for ourselves. Just think how a simple spin on any professional's activity can throw them out of the benefit of their finely tuned habits: Flip a musician's instrument, or a driver's steering, or your own keyboard layout. The massive dexterity gap between our dominant and non-dominant hand is a daily testament of where learning can take us.
 >
 > Learning is difficult. It just is. But we overcome it.
+
+TODO: insert a gif of the gameplay here.
 
 At its core, SnaKey is a typing game where you move around by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character marked by the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese Hiragana, you would type the keyboard sequence "no" to move onto an adjacent tile marked by the written character "の". It's easier done than said.
 
@@ -33,21 +35,17 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
 
 ## My Goals and Why I do This
 
-For me, there are three purposes / goals for my continued work on this project. In order of precedence, they are:
+### 💡 I Love my Idea
 
-### 💡 I have an idea that matters to me
+And I champion it with the pride of a person with eyes never having seen it been done before. It may not have fallen out of the sky and hit me in the head, but [it kind of feels that way](https://www.ted.com/talks/ok_go_how_to_find_a_wonderful_idea). I strive to develop and polish it into something that brings out the aspects of fun and challenge from the process of learning something new.
 
-I like the idea of this game, and I want to champion it. Although it didn't fall out of the sky and hit me in the head, [it kind of feels that way](https://www.ted.com/talks/ok_go_how_to_find_a_wonderful_idea). And while I don't know for a fact whether or not anything exactly like this has ever been made, it gives me the thrill of at least being something that I have never seen anyone do, or been asked to do, and that I am not simultaneously trying to solve separately with more than sixty other people that I see every day. I'll talk more about why this idea matters to me in my reflection on my work in previous versions of this project.
+### 🍏 To Push Myself
 
-### 🍏 I want to learn and push myself
+To make my idea a reality, I need to learn new things: to search for _what I need to learn next_, to learn about existing choices of tools and how to choose one, and then to learn the tool. First it was Python, and then it was vanilla web-development, and now, it's NodeJS, expressJS, SocketIO, VSCode, Typescript, esLint, and WebPack. This is a refreshing change when compared to my experience with learning in school: here, I learn to fill an existing need- I start with a concrete goal in mind.
 
-This is not a pure goal, but one that comes naturally from having one. That is- to achieve my goal of make my idea a reality, I need to learn things. First I need to learn _what I need to learn_ to achieve my goal, and read up on the available choices in order to make a basic, educated decision on what technologies to pursue learning, and then I need to actually learn them. First it was Python, and then it was HTML, Javascript, and CSS, and now, it's NodeJS, expressJS, SocketIO, VSCode, Typescript, esLint, and WebPack.
+### 💼 For the Portfolio
 
-One of the plus sides of pushing myself in this way is that historically, it has always come in handy later in school assignments where I would otherwise be learning these things from scratch. The nicest thing about having a pure goal by far is that it takes a lot of the drag out of learning. One thing I feel a little tired of in my experience with school is how the technical material often seems to creep into the spotlight in the place of pure goals and practical applications. It's refreshing to start with a goal at the forefront of my mind.
-
-### 💼 I want to build up my portfolio
-
-By this, I mean that I aim to make something polished, and something that communicates my journey with the design, as well as the interesting parts of the design itself. This is because I expect that the things I make and learn will not only transfer to some benefit in school-related work, but also in wherever I go during COOP terms and after graduation. While this is the least of my goals, that isn't to say that it doesn't change my approach to my work. The intent I have to share my process and design in addition to the final product gives me the extra motivation to to do things like write good documentation. It's like keeping a house clean so that it's always ready for guests. Whether or not guests ever come, a clean house makes for a good house to live in.
+I aim to make something polished. That includes coding style and design, documentation, modularity, and compilation. I set out and bind myself to write readmes that share the interesting things that I learn and create. For all I know, my eyes may be the only ones that see this effort, but to me it is like keeping a house clean so that it's always ready for guests. Whether or not guests ever come, a clean house makes for a good house to live in.
 
 ---
 
