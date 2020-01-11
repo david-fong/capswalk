@@ -3,7 +3,7 @@
 
 There's nothing to show yet! But, you can try [**`an older, working version` 👈**](https://david-fong.github.io/SnaKey-JS/ "*boop*")
 
-> Learning is hard, and that's what makes the process of doing it frustrating. Think back to the last time you tried to learn something new. Maybe it was a sport, or an instrument, or a kind of food, or a language. I can vouch for that by nearly every commit in this repository. But I can also say from other past experiences that the difficulty in tackling something new and unfamiliar is what makes its eventual fruit so sweet to enjoy.
+> Learning is hard, and that's what makes the process of doing it frustrating. Think back to the last time you tried to learn something new: maybe it was a sport, an instrument, how to make a kind of food, or a language. I for one, think of this project. But I can also say from other past experiences that the difficulty in tackling something new and unfamiliar is what makes its eventual fruit so sweet to enjoy.
 >
 > If I want to get across one message through this project, it is to _be kind to beginners_- whether that is to another person or to yourself. When I get frustrated learning something, I find myself needing to mentally recite that _"I'm not stupid- I'm just learning"_.
 >
@@ -26,7 +26,7 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
   - [Version #2 - Slithering to the Web](#-version-2---slithering-to-the-web)
   - [Version #3 - Snakes With Wings](#-version-3---snakes-with-wings-you-are-here)
 - [Design Challenges & Stepping up my Game](#-design-challenges--stepping-up-my-game "pun intended")
-- [My Joy in TypeScript](#---my-joy-in-typescript)
+- [My Joys in JavaScript and TypeScript](#my-joys-in-javascript-and-typescript)
   - [Bundling Constructor Arguments as Objects](#-bundling-constructor-arguments-as-objects)
   - [Type Aliases and Declaration Merging](#-type-aliases-and-declaration-merging)
 - [Language Representation](#language-representation)
@@ -35,17 +35,11 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
 
 ## My Goals and Why I do This
 
-### 💡 I Love my Idea
-
-And I champion it with the pride of a person with eyes never having seen it been done before. It may not have fallen out of the sky and hit me in the head, but [it kind of feels that way](https://www.ted.com/talks/ok_go_how_to_find_a_wonderful_idea). I strive to develop and polish it into something that brings out the aspects of fun and challenge from the process of learning something new.
-
-### 🍏 To Push Myself
-
-To make my idea a reality, I need to learn new things: to search for _what I need to learn next_, to learn about existing choices of tools and how to choose one, and then to learn the tool. First it was Python, and then it was vanilla web-development, and now, it's NodeJS, expressJS, SocketIO, VSCode, Typescript, esLint, and WebPack. This is a refreshing change when compared to my experience with learning in school: here, I learn to fill an existing need- I start with a concrete goal in mind.
-
-### 💼 For the Portfolio
-
-I aim to make something polished. That includes coding style and design, documentation, modularity, and compilation. I set out and bind myself to write readmes that share the interesting things that I learn and create. For all I know, my eyes may be the only ones that see this effort, but to me it is like keeping a house clean so that it's always ready for guests. Whether or not guests ever come, a clean house makes for a good house to live in.
+|      |                      |
+|:----:|----------------------|
+| 💡<br>I Love my Idea | And I champion it with the pride of a person whose eyes have never seen it done before. It may not have fallen out of the sky and hit me in the head, [but it kind of feels that way](https://www.ted.com/talks/ok_go_how_to_find_a_wonderful_idea). I strive to develop it and polish it into something that brings out the aspects of challenge and hidden fun from the process of learning something new. |
+| 🍏<br>To Push Myself | To make my idea a reality, I need to learn new things: to search for _what_ I need to learn next, to learn about existing choices of tools and how to choose one, and then to learn the tool. First it was Python, and then vanilla web-development, and now, NodeJS, expressJS, SocketIO, VSCode, Typescript, esLint, and WebPack. It's a refreshing change compared to my experience learning in school: here, I start with a concrete goal in mind, and the goal is completely my own. |
+| 💼<br>For the Portfolio | I aim to make something polished. That includes coding style and design, documentation, modularity, and compilation. I set out and bind myself to write readmes that share the interesting things that I learn and create. For all I know, my eyes may be the only ones that see this effort, but to me it is like keeping a house clean so that it's always ready for guests. Whether or not guests ever come, a clean house makes for a good house to live in. |
 
 ---
 
@@ -69,7 +63,7 @@ I really enjoyed designing the game's rules and objectives. I drove the game des
 
 After finishing the first version, I excitedly showed my friends and Japanese prof, and quickly realized that the need to install Python was a severe accessibility hurdle. For that reason, during the following month of March, I learned how basic webpages are built up using HTML, JavaScript, and CSS, and I slowly worked on porting the game to be hosted on GitHub-Pages as [**version two **](https://github.com/david-fong/SnaKey-JS).
 
-I wrote everything using NotePad++, and used pure vanilla HTML, Javascript, and CSS. This helped me build a strong foundational understanding of how the basic technologies work, as opposed to what might have been the case if I started looking at various frameworks and transpiled languages right away. It has also made me appreciate the value of strong typing, and code-style conventions. Javascript is so slack when it comes to such basic things that it's easy to write things that don't read well or make much sense.
+I wrote everything in pure vanilla HTML, Javascript, and CSS (on NotePad++). This helped me build a strong foundational understanding of how the basic technologies work, as opposed to what might have been the case if I started looking at various frameworks and transpiled languages right away. It has also made me appreciate the value of strong typing, and code-style conventions. Javascript is so slack when it comes to such basic things that it's easy to write things that don't read well or make much sense.
 
 In this version, the game's underlying objectives, mechanics, and representation went largely unchanged, since unlike with the previous version where I had already learned the basics of the language and its engine, here I was back at square one. Most of my efforts went to searching through and exploring documentation on javascript's basic data structures, the browser DOM, and CSS. I found [w3c schools](https://www.w3schools.com/) and [MDN web docs](https://developer.mozilla.org/en-US/) to be great learning resources.
 
@@ -107,41 +101,25 @@ Now that we understand why the design requires so much more care in this version
 
 ---
 
-## 🤸‍♂️ My Joy in TypeScript
+## My Joys in JavaScript and TypeScript
 
-In all my experience working with Java (Ie. my first semester of second year uni, my first COOP terms of 4 months, and [in another of my main personal projects](https://github.com/david-fong/UbcCourseSchedulingTool)), The things I have loved most about it are its strong language spec, how strong typing is baked into the grammar, and the resulting ability for good a IDE to make the task of writing code a better experience. That's why as I started breaking into TypeScript and eslint in this project, my heart felt like it was flying.
-
-Here, I want to share ways that I've been leveraging and combining Javascript and TypeScript features to make my code more flexible, organized, and better documented, and what I think those features have over Java. To be clear, I'm not trying to throw dirt at Java. As I said, the whole reason for my love-at-first-sight feeling with TypeScript was that it allowed me to write code like I can in Java. What I'm trying to do here is share things that excite me about TypeScript, and how it adds to my development experience in a way that Java cannot. I could just the same do the reverse, but that's not the point of this section.
+In my experience with Java from school, Co-op, and [my own projects](https://github.com/david-fong/UbcCourseSchedulingTool), the things I have loved most about it are its strong specifications, how strong typing is baked into the grammar, and the resulting ability for good a IDE to make the task of writing code a better experience. That's why as I started breaking into TypeScript and eslint in this project, my heart felt like it was flying. Here, I want to share ways that I've been leveraging and combining Javascript and TypeScript features to make my code more flexible, organized, and better documented.
 
 ### 🍱 Bundling Constructor Arguments as Objects
 
 This is something that can be done in plain Javascript. It serves three purposes:
 
-#### 👣 Footprint Reduction
-
-This basically nullifies any problems with function signature bloat. Compared to Java, creating and defining the shapes of objects in JavaScript is much less verbose, so using this technique is convenient. This comes at the cost of writing more code (specifying field-names in addition to values) when calling constructors, but if a constructor is called seldomly, and the inheritence heirarchy is large with next-to-identical constructor signatures, then you come out on the winning side.
-
-#### 🧘‍♂️ Flexibility
-
-It makes constructor signatures incredibly malleable. If I need to add, remove, or change the type of an argument, I can simply modify the object bundle and the relevant handler code, and leave the rest of the uctors of extending classes untouched. I discovered this out of need: If you traverse [the entire `Player` class tree](src/base/player), there are at least eight constructors, and therefore at least the same number of sites where such constructors are called. Could you solve this particular issue by using a good IDE? Yes. But reduced reliance on an IDE for refactoring means less hassle; Not all IDE's are good at function signature refactoring, especially when it comes to [the duck-typing model](https://en.wikipedia.org/wiki/Duck_typing).
-
-#### 📛 Explicit Argument Mapping
-
-Unlike passing arguments in an argument list, this requires wrapping arguments in an object, where mapping the value from the argument / object-field name is mandatory. This makes it _very_ difficult to pass arguments in "the wrong order", because now order is meaningless. All the cognitive effort is migrated to using good object-field and variable names, which is much more intuitive and robust.
-
----
+|       |               |
+|:-----:|---------------|
+| Footprint Reduction | This nullifies problems with function signature bloat. Defining the shapes of objects and instantiating them is much less verbose in JavaScript than in Java, which makes it conventient and highly practical. |
+| Flexibility | It makes constructor signatures incredibly malleable. If I need to add, remove, or change the type of an argument, I can modify the type definition and the relevant handler code and leave all other function-overrides and call sites untouched. |
+| Explicit Argument Mapping | This makes it _very_ difficult to pass arguments in "the wrong order", because order is meaningless. All the cognitive effort is migrated to using good object-field and variable names, which is more intuitive and robust. |
 
 ### 🧩 Type Aliases and Declaration Merging
 
-Get this- you can type alias a primitive type to give it a name suited to a use-case, and then _document it_. A prime example of the difference this makes in this project is in the `Player.Id` type. It aliases to mean a number. Each player has a unique ID, and there are semantics to value ranges: Strictly negative values are for computer-controlled players, strictly positive values for human-controlled players, and the value zero to indicate that a Tile has no occupant.
+I have found aliasing primitives to be incredibly useful. A prime example is this project's Player.Id type: For one thing, it allows me to document a use-case-specific primitive type so I can get mouseover documentation anywhere it is used, and around January, it made what might have been an incredibly laborious refactoring task almost _easy_ when I changed that definition to be of object-type during an intermediate partial redesign.
 
-#### 🔢 Documenting Primitives
-
-Type Aliases in TypeScript are very much like the `typedef` keyword in C: They allow you to give a type annotation a meaningful name, and to centralize documentation on the semantics of fields and variables of that type. When documenting function arguments, sometimes it is even enough to just let the type annotation do the talking.
-
-#### 📦 "Scoped" TypeDefs and Constants
-
-Using TypeScript's declaration merging capabilities, type declarations can be put under a namespace. Instead of writing `export type PlayerId` outside of a namespace, which pollutes the global type-declaration group and adds to module-import clutter, I can write something like:
+Using TypeScript's declaration merging feature, type declarations can be namespaced: Instead of writing `export type PlayerId` in the global namespace, which pollutes the global type-declaration group and adds to visual clutter with module imports, I can write something like this (an older example):
 
 ```typescript
 // <docuentation>
@@ -159,7 +137,7 @@ export namespace Player {
 }
 ```
 
-The example shows how namespace merging allows you to scope type declarations, and make it look like they declare special constants. With fields like usernames, this can be used to scope regular expression checkers under the type alias. In Java, you can't alias primitive types, [and that's final (🥁)](https://stackoverflow.com/a/28238107/11107541). In C, you can alias anything, but you can't scope type definitions unless you are using C++. In TypeScript, you can do both, and I think that's super cool.
+In Java, you can't alias primitive types, [and that's final 🥁](https://stackoverflow.com/a/28238107/11107541). In C, you can alias anything, but you can only namespace them in C++. The ability to do all this in TypeScript sparks me a lot of joy.
 
 ---
 
