@@ -24,9 +24,6 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
      */
     public readonly game: Game<any,S>;
 
-    /**
-     * @see PlayerId
-     */
     public readonly playerId: Player.Id;
 
     private _hostTile: Tile<S | Coord.System.__BENCH>;
@@ -45,16 +42,13 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
 
 
 
-    protected constructor(game: Game<any,S>, idNumber: Player.Id) {
+    protected constructor(game: Game<any,S>, playerId: Player.Id) {
         super();
-        if (Math.trunc(idNumber.intraClassId) !== idNumber.intraClassId) {
+        if (Math.trunc(playerId.intraClassId) !== playerId.intraClassId) {
             throw new RangeError("Player ID's must be integer values.");
         }
-        if (idNumber.intraClassId <= Player.Id.intraClassId.NULL) {
-            throw new RangeError(`The ID \"${Player.Id.intraClassId.NULL}\" is reserved to mean \"no player\".`);
-        }
         this.game = game;
-        this.playerId = idNumber;
+        this.playerId = playerId;
         this.benchTile = new Tile<Coord.System.__BENCH>(
             new __Bench.Coord({ playerId: this.playerId, }),
         );

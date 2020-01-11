@@ -25,17 +25,17 @@ export namespace Player {
     export type Id = {
         operatorClass: Operator;
         /**
-         * A positive integer. A value of zero indicates an absence of
-         * a player.
+         * A positive integer.
          */
         intraClassId: number;
     };
 
     export namespace Id {
-        export namespace intraClassId {
-            export const NULL = -1;
-            NULL as Player.Id["intraClassId"];
-        }
+        /**
+         * See the main documentation in game/player/Player.
+         */
+        export const NULL = undefined;
+        export type Nullable = Player.Id | typeof Player.Id.NULL;
     }
 }
 
@@ -49,7 +49,7 @@ export namespace PlayerSkeleton {
      * All fields are readonly.
      */
     export type VisibleState = Readonly<{
-        playerId:   Player.Id;
+        playerId:   Player.Id.Nullable;
         isDowned:   boolean;
         isFrozen:   boolean;
         isBubbling: boolean;
@@ -61,10 +61,7 @@ export namespace PlayerSkeleton {
          * Use for Tile-occupant eviction.
          */
         export const NULL = Object.freeze(<const>{
-            playerId: {
-                operatorClass: Player.Operator.HUMAN,
-                intraClassId: Player.Id.intraClassId.NULL,
-            } as Player.Id,
+            playerId:   Player.Id.NULL,
             isDowned:   false,
             isFrozen:   false,
             isBubbling: false,

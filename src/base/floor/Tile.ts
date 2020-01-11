@@ -23,7 +23,7 @@ export { Coord } from "./Coord";
 export class Tile<S extends Coord.System> {
 
     public readonly coord: Coord<S>;
-    protected _occupantId: Player.Id;
+    protected _occupantId: Player.Id.Nullable;
 
     protected _langChar: Lang.Char;
     protected _langSeq:  Lang.Seq;
@@ -86,14 +86,14 @@ export class Tile<S extends Coord.System> {
     }
 
     public get isOccupied(): boolean {
-        return this.occupantId.intraClassId !== Player.Id.intraClassId.NULL;
+        return this.occupantId !== Player.Id.NULL;
     }
 
     public evictOccupant(): void {
         this.setOccupant(PlayerSkeleton.VisibleState.NULL);
     }
 
-    public get occupantId(): Player.Id {
+    public get occupantId(): Player.Id.Nullable {
         return this._occupantId;
     }
 

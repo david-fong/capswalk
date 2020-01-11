@@ -144,11 +144,8 @@ export class GroupSession {
             languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.
             langBalancingScheme: undefined!, // TODO
             operatorIndex: undefined,
-
-            // TODO: add descs for artificial players, ~call some static helper to
-            // finalize playerIds, and map beNiceTo to a format using playerIds.~
             playerDescs: Game.CtorArgs.finalizePlayerIds({
-                [ Player.Operator.HUMAN ]: Object.values(this.sockets).map((socket) => {
+                [Player.Operator.HUMAN]: Object.values(this.sockets).map((socket) => {
                     return {
                         playerId: undefined,
                         username: socket.username!, // checked above.
@@ -156,7 +153,8 @@ export class GroupSession {
                         socketId: socket.id,
                     };
                 }),
-                [ Player.Operator.CHASER ]: undefined!,
+                // TODO: add descs for artificial players,
+                [Player.Operator.CHASER]: undefined!,
             }),
         });
         return undefined;

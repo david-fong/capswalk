@@ -72,7 +72,7 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
  * 
  * 
  */
-export class PlayerMovementEvent<S extends Coord.System> implements PlayerGeneratedRequest {
+export class PlayerMovementEvent<S extends Coord.System.GridCapable> implements PlayerGeneratedRequest {
 
     public static readonly EVENT_NAME = "player-movement";
 
@@ -115,7 +115,7 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
     } = undefined;
 
     public dest: {
-        coord: Coord.Bare<S>;
+        coord: Coord.Bare<S | Coord.System.__BENCH>;
 
         /**
          * The requester should set this field to the highest value they
@@ -146,12 +146,12 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
     public constructor(
         playerId: Player.Id,
         lastAcceptedRequestId: number,
-        destTile: Tile<S>,
+        destTile: Tile<S | Coord.System.__BENCH>,
     ) {
         this.playerId = playerId;
         this.lastAcceptedRequestId = lastAcceptedRequestId;
         this.dest = {
-            coord: destTile.coord, // TODO: make benchTiles pass special string for this
+            coord: destTile.coord as Coord.Bare<S | Coord.System.__BENCH>,
             numTimesOccupied: destTile.numTimesOccupied,
             newCharSeqPair: undefined,
         };

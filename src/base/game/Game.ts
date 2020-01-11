@@ -81,9 +81,9 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
 
 
     /**
-     * _Does not call reset._
+     * Final call site should use `Player.finalizePlayerIds` for convenience.
      * 
-     * Sets the `idNumber` field in each {@link PlayerDesc} in `desc`.
+     * _Does not call reset._
      * 
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
      * 
@@ -194,9 +194,9 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
         const players: Partial<Record<Player.Operator, ReadonlyArray<Player<S>>>> = {};
         for (const [ operatorClass, playersCtorArgs, ] of Object.entries(desc.playerDescs)) {
             Player.assertIsOperator(operatorClass);
-            players[operatorClass] = playersCtorArgs.map((ctorArgs, index) => {
+            players[operatorClass] = playersCtorArgs.map((ctorArgs, intraClassId) => {
                 if (operatorClass === Player.Operator.HUMAN) {
-                    if (index === desc.operatorIndex) {
+                    if (intraClassId === desc.operatorIndex) {
                         if (this.gameType === Game.Type.SERVER) {
                             throw new TypeError("The operator is not defined on the server side.");
                         }
@@ -335,7 +335,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      *      from their copy of the game-state at the time of the request.
      *      Is modified to describe changes to be made.
      */
-    public processMoveRequest(desc: PlayerMovementEvent<S> & Partial<PlayerMovementEvent<Coord.System.__BENCH>>): void {
+    public processMoveRequest(desc: PlayerMovementEvent<S>): void {
         const player = this.checkIncomingPlayerRequestId(desc);
         if (!player) {
             // Player is still bubbling. Reject the request:
@@ -403,7 +403,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
      * @param desc - A descriptor for all changes mandated by the
      *      player-movement event.
      */
-    public processMoveExecute(desc: Readonly<PlayerMovementEvent<S | Coord.System.__BENCH>>): void {
+    public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         const player = this.getPlayerById(desc.playerId);
         const dest = this.getBenchableTileAt(desc.dest.coord);
         const executeBasicTileUpdates = (): void => {
@@ -654,7 +654,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapab
 
     /**
      * @returns
-     * The tile at `dest`, or the specified player's{@link Player#benchTile}.
+     * The tile at `dest`, or the specified player's {@link Player#benchTile}.
      * 
      * @param dest -
      */
@@ -723,53 +723,15 @@ export namespace Game {
         /**
          * The index in `playerDescs` of the operator's ctor args.
          */
-        operatorIndex: G extends Game.Type.SERVER ? undefined : number;
+        operatorIndex: G extends Game.Type.SERVER
+            ? typeof Player.Id.NULL
+            : Player.Id["intraClassId"];
         playerDescs: Readonly<Player.Bundle<Player.CtorArgs>>;
     }>;
 
     export namespace CtorArgs {
 
         export const EVENT_NAME = "game-create";
-
-        /**
-         * @returns
-         * Used at a point when player descriptions have settled and
-         * no more players will be allowed to join or expected to leave
-         * anymore. This assigns players ID's and translates the team
-         * related fields to be in terms of player ID's rather than
-         * socket IDs.
-         * 
-         * @param playerDescs -
-         */
-        export const finalizePlayerIds = (
-            playerDescs: Readonly<Player.Bundle<Player.CtorArgs<Player.SocketId>>>
-        ): Readonly<Player.Bundle<Player.CtorArgs>> => {
-            type retType = Player.Bundle<Player.CtorArgs>;
-            const socketIdToPlayerIdMap: Record<Player.SocketId, Player.Id> = {};
-            for (const operatorClass in playerDescs) {
-                Player.assertIsOperator(operatorClass);
-                playerDescs[operatorClass].forEach((oldCtorArgs, intraClassId) => {
-                    socketIdToPlayerIdMap[oldCtorArgs.socketId] = {
-                        operatorClass,
-                        intraClassId,
-                    };
-                });
-            }
-            return Object.keys(playerDescs).reduce<retType>(
-                (retValBuild, operatorClass, __currentIndex, __array) => {
-                    Player.assertIsOperator(operatorClass);
-                    retValBuild[operatorClass] = playerDescs[operatorClass].map<Player.CtorArgs>((playerDesc) => {
-                        return {
-                            playerId: socketIdToPlayerIdMap[playerDesc.socketId],
-                            username: playerDesc.username,
-                            beNiceTo: playerDesc.beNiceTo.map((socketId) => socketIdToPlayerIdMap[socketId]),
-                            socketId: playerDesc.socketId,
-                        };
-                    });
-                    return retValBuild;
-                }, {} as retType,
-            );
-        };
 
         /**
          * Not used here, but used in {@link GroupSession#createGameInstance}.

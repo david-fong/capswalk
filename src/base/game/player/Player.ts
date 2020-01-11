@@ -98,11 +98,6 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
     /**
      * Sends a descriptor of the movement request to the Game Manager.
      * 
-     * **_Do not call this directly!_** Instead, make a call to the
-     * {@link Player#makeMovementRequest} method, which calls this,
-     * and performs relevant non-implementation-dependant operations
-     * such as book-keeping for spam control.
-     * 
      * Request should call functions with a flow that either short-
      * circuits, or terminates with a call to {@link Player#moveTo}.
      * 
@@ -166,21 +161,66 @@ export namespace Player {
      * @template ID
      * Only set to Player.SocketId when the player roster is under construction.
      */
-    export type CtorArgs<ID extends Player.Id | SocketId = Player.Id> = {
+    export type CtorArgs = CtorArgs.FromGame<Player.Id> & {
+        readonly playerId: Player.Id;
+    };
 
-        readonly playerId: ID extends Player.Id ? Player.Id : undefined;
+    export namespace CtorArgs {
+        export type FromGame<ID extends Player.Id | SocketId = SocketId> = {
 
-        readonly username: Username;
+            readonly username: Username;
+
+            /**
+             * A set of socket ID's. Only defined for non-offline games.
+             * 
+             * **Important**: The builder of this field must enforce that
+             * entries are unique (that there are no duplicates).
+             */
+            readonly beNiceTo: ReadonlyArray<ID>
+
+            readonly socketId: SocketId;
+        };
 
         /**
-         * A set of socket ID's. Only defined for non-offline games.
+         * @returns
+         * Used at a point when player descriptions have settled and
+         * no more players will be allowed to join or expected to leave
+         * anymore. This assigns players ID's and translates the team
+         * related fields to be in terms of player ID's rather than
+         * socket IDs.
          * 
-         * **Important**: The builder of this field must enforce that
-         * entries are unique (that there are no duplicates).
+         * @param playerDescs -
          */
-        beNiceTo: ReadonlyArray<ID>
-
-        readonly socketId: SocketId;
-    };
+        export const finalizePlayerIds = (
+            playerDescs: Readonly<Bundle<CtorArgs.FromGame>>
+        ): Readonly<Bundle<CtorArgs>> => {
+            type retType = Bundle<CtorArgs>;
+            const socketIdToPlayerIdMap: Record<SocketId,Player.Id> = {};
+            for (const operatorClass in playerDescs) {
+                Player.assertIsOperator(operatorClass);
+                playerDescs[operatorClass].forEach((oldCtorArgs, intraClassId) => {
+                    socketIdToPlayerIdMap[oldCtorArgs.socketId] = {
+                        operatorClass,
+                        intraClassId,
+                    };
+                });
+            }
+            return Object.keys(playerDescs).reduce<retType>(
+                (retValBuild, operatorClass, __currentIndex, __array) => {
+                    Player.assertIsOperator(operatorClass);
+                    retValBuild[operatorClass] = playerDescs[operatorClass]
+                    .map<CtorArgs>((playerDesc) => {
+                        return {
+                            playerId: socketIdToPlayerIdMap[playerDesc.socketId],
+                            username: playerDesc.username,
+                            beNiceTo: playerDesc.beNiceTo.map((socketId) => socketIdToPlayerIdMap[socketId]),
+                            socketId: playerDesc.socketId,
+                        };
+                    });
+                    return retValBuild;
+                }, {} as retType,
+            );
+        };
+    }
 
 }
