@@ -126,13 +126,13 @@ export class Tile<S extends Coord.System> {
 }
 // If this errs when changing the constructor signature, then
 // the type definition being asserted should be updated to match.
-Tile as Tile.ConstructorType<any>;
+Tile as Tile.ClassIf<any>;
 
 
 
 export namespace Tile {
 
-    export type ConstructorType<S extends Coord.System> = {
+    export type ClassIf<S extends Coord.System> = {
         new(coord: Tile<S>["coord"]): Tile<S>;
     };
 

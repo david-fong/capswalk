@@ -158,8 +158,10 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
 
 
 
-    // NOTE: these are actually probably going to be useful
-    // for hooks of sound effects.
+    // NOTE: these are actually probably going to be useful for hooks
+    // of sound effects. But it feels awkward that they require a
+    // separate call (this.hostTile.setOccupant(this.visibleState) to
+    // make visible changes ;?
 
     public get isDowned(): boolean {
         return this._isDowned;

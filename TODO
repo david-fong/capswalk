@@ -12,8 +12,6 @@
 
 ### High Priority
 
-1. Change Game.allHumanPlayers and Game.allArtificialPlayers to a record from operator-classes to a list of players.
-   - Define `const Player.Id.NULL = undefined`.
 1. Make grid's tile getters have a method-object nesting: `this.getTile.At`, `this.getTile.[unoccupied|occupied].[destsFrom|SourcesTo]`.
    - See socketIo emit flags api for example api. How to implement:
      - Make interface `TileGetter.CtorArgs<S>` with methods `__getTileDestsFrom` and `__getTileSourcesTo`.
@@ -30,11 +28,6 @@
    - Update wording in lang readme to reflect new (and improved) method names.
      - Was "getNeighbouringTiles" and now use wording "destsFrom" and "sourcesTo".
 1. Make Grid abstract static method to take grid's player descs and produce similar dict containing randomized spawn points.
-1. Split `Game` definition into multiple files.
-   - Rationale: the file is getting big and annoying to scroll through.
-   - Specifically, move event processing / executing method pairs to their own files.
-   - Make sure that they still have regular access to private fields, etc.
-   - Look into using triple-slash directives or module augmentation (see TypeScript docs for both topics)
 1. Write out full specification for what qualifies the end of the game.
    - Challenge: The teaming system (beNiceTo) is complicated.
 

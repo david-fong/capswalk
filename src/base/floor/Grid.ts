@@ -168,7 +168,7 @@ export namespace Grid {
         [ Coord.System.EUCLID2 ]: Euclid2.Grid,
         [ Coord.System.BEEHIVE ]: Beehive.Grid,
     }) as Readonly<{
-        [S in Coord.System.GridCapable]: ConstructorType<S>;
+        [S in Coord.System.GridCapable]: ClassIf<S>;
     }>;
 
     // ==============================================================
@@ -178,11 +178,11 @@ export namespace Grid {
 
     export type CtorArgs<S extends Coord.System.GridCapable> = {
         dimensions: Dimensions<S>;
-        tileClass: Tile.ConstructorType<S>;
+        tileClass: Tile.ClassIf<S>;
         domGridHtmlIdHook?: string;
     };
 
-    interface ConstructorType<S extends Coord.System.GridCapable> {
+    interface ClassIf<S extends Coord.System.GridCapable> {
 
         /**
          * Constructor
@@ -229,7 +229,7 @@ export namespace Grid {
      */
     export const of = <S extends Coord.System.GridCapable>(coordSys: S, ctorArgs: CtorArgs<S>): Grid<S> => {
         // Note: For some reason TypeScript can't figure out the type here.
-        return new (Constructors[coordSys] as unknown as ConstructorType<S>)(ctorArgs);
+        return new (Constructors[coordSys] as unknown as ClassIf<S>)(ctorArgs);
     };
 
     /**

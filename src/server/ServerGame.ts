@@ -160,7 +160,7 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
     /**
      * @override
      */
-    protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
+    public processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
         super.processBubblePopExecute(desc);
 
         if (desc.eventId === EventRecordEntry.REJECT) {

@@ -98,7 +98,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
 }
 // Assert that this extension's constructor has a compatible signature:
-VisibleTile as Tile.ConstructorType<any>;
+VisibleTile as Tile.ClassIf<any>;
 
 
 

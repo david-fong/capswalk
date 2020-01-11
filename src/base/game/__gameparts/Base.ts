@@ -11,16 +11,15 @@ import { ArtificialPlayer } from "../player/ArtificialPlayer";
 
 import { PlayerMovementEvent } from "../events/PlayerMovementEvent";
 import { Bubble } from "../events/Bubble";
-import { EventRecordEntry } from "../events/EventRecordEntry";
 
-import { Game } from "game/Game";
+import { Game } from "../Game";
 
 
-export abstract class _GameBase<G extends Game.Type, S extends Coord.System.GridCapable> {
+export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridCapable> {
 
     public readonly gameType: G;
 
-    public readonly tileClass: Tile.ConstructorType<S>;
+    public readonly tileClass: Tile.ClassIf<S>;
 
     public readonly lang: Lang;
 
@@ -42,22 +41,9 @@ export abstract class _GameBase<G extends Game.Type, S extends Coord.System.Grid
     /**
      * 
      */
-    private readonly players: Readonly<Player.Bundle<Player<S>>>;
+    protected readonly players: Readonly<Player.Bundle<Player<S>>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : HumanPlayer<S>;
-
-    /**
-     * All copies of the game should contain identical entries. That
-     * in a {@link ClientGame} may at any instant be missing trailing
-     * entries, or contain some trailing holes, but such gaps should
-     * eventually be filled to match those in the Game Manager.
-     * 
-     * Do not modify this directly. To register an accepted event,
-     * call the {@link Game#recordEvent} method, passing it the event
-     * descriptor. To get a new event ID, just take the current length
-     * of this array.
-     */
-    private readonly eventRecord: Array<Readonly<EventRecordEntry>>;
 
 
 
@@ -69,7 +55,7 @@ export abstract class _GameBase<G extends Game.Type, S extends Coord.System.Grid
      * @param desc -
      * @param tileClass -
      */
-    public constructor(desc: Game.CtorArgs<G,S>, tileClass: Tile.ConstructorType<S>) {
+    public constructor(desc: Game.CtorArgs<G,S>, tileClass: Tile.ClassIf<S>) {
         this.gameType = desc.gameType;
         this.tileClass = tileClass;
         this.grid = Grid.of(desc.coordSys, {
@@ -96,7 +82,6 @@ export abstract class _GameBase<G extends Game.Type, S extends Coord.System.Grid
         //     );
         // }
         this.langBalancingScheme = desc.langBalancingScheme;
-        this.eventRecord = [];
 
         // Construct players:
         this.players = this.createPlayers(desc);
@@ -122,9 +107,6 @@ export abstract class _GameBase<G extends Game.Type, S extends Coord.System.Grid
      */
     public reset(): void {
         this.grid.reset();
-
-        // Clear the event record:
-        this.eventRecord.splice(0);
 
         // Reset hit-counters in the current language:
         // This must be done before shuffling so that the previous
@@ -298,16 +280,6 @@ export abstract class _GameBase<G extends Game.Type, S extends Coord.System.Grid
 
 
 
-    /**
-     * TODO: make abstract. server manages, client displays, offline does both.
-     * 
-     * @param player - 
-     * @param duration - 
-     */
-    protected freezePlayer(player: Player<S>, duration: number): void { }
-
-
-
     public abstract setTimeout(callback: Function, millis: number, ...args: any[]): G extends Game.Type.SERVER ? NodeJS.Timeout : number;
 
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
@@ -332,19 +304,6 @@ export abstract class _GameBase<G extends Game.Type, S extends Coord.System.Grid
      */
     protected getPlayerById(playerId: Player.Id): Player<S> {
         return this.players[playerId.operatorClass][playerId.intraClassId];
-    }
-
-    /**
-     * @returns
-     * All {@link Player}s within a `radius` infinity-norm of `pos`.
-     * 
-     * @param coord - 
-     * @param radius - defaults to one.
-     */
-    public getNeighbours(coord: Coord.Bare<S>, radius: number = 1): Array<Player<S>> {
-        return this.grid.getNeighbouringTiles(coord, radius)
-            .filter((tile) => tile.isOccupied)
-            .map((tile) => this.getPlayerById(tile.occupantId));
     }
 
 }
