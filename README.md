@@ -25,7 +25,8 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
   - [Version #1 - Born on a Python](#-version-1---born-on-a-python)
   - [Version #2 - Slithering to the Web](#-version-2---slithering-to-the-web)
   - [Version #3 - Snakes With Wings](#-version-3---snakes-with-wings-you-are-here)
-- [Design Challenges & Stepping up my Game](#-design-challenges--stepping-up-my-game "pun intended")
+- [Design Challenges](#-design-challenges)
+- [Stepping Up my Game](#-stepping-up-my-game "pun intended")
 - [My Joys in JavaScript and TypeScript](#my-joys-in-javascript-and-typescript)
   - [Bundling Constructor Arguments as Objects](#-bundling-constructor-arguments-as-objects)
   - [Type Aliases and Declaration Merging](#-type-aliases-and-declaration-merging)
@@ -38,7 +39,7 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
 |      |                      |
 |:----:|----------------------|
 | 💡<br>I Love my Idea | And I champion it with the pride of a person whose eyes have never seen it done before. It may not have fallen out of the sky and hit me in the head, [but it kind of feels that way](https://www.ted.com/talks/ok_go_how_to_find_a_wonderful_idea). I strive to develop it and polish it into something that brings out the aspects of challenge and hidden fun from the process of learning something new. |
-| 🍏<br>To Push Myself | To make my idea a reality, I need to learn new things: to search for _what_ I need to learn next, to learn about existing choices of tools and how to choose one, and then to learn the tool. First it was Python, and then vanilla web-development, and now, NodeJS, expressJS, SocketIO, VSCode, Typescript, esLint, and WebPack. It's a refreshing change compared to my experience learning in school: here, I start with a concrete goal in mind, and the goal is completely my own. |
+| 🍏<br>To Push Myself | To make my idea a reality, I need to learn new things: to search for _what_ I need to learn next, to learn about existing choices of tools and how to choose one, and then to learn the tool. First it was Python, and then vanilla web-development, and now, NodeJS, expressJS, SocketIO, VSCode, Typescript, esLint, and WebPack. It's a refreshing change compared to my experience learning in school: Here, I start with a concrete goal in mind, and the goal was given to me from myself. |
 | 💼<br>For the Portfolio | I aim to make something polished. That includes coding style and design, documentation, modularity, and compilation. I set out and bind myself to write readmes that share the interesting things that I learn and create. For all I know, my eyes may be the only ones that see this effort, but to me it is like keeping a house clean so that it's always ready for guests. Whether or not guests ever come, a clean house makes for a good house to live in. |
 
 ---
@@ -82,14 +83,14 @@ I envision this version to be the last remake- again, not at all because I'm tir
 One of the big design challenges for this project is to give the user the choice between playing on or off-line. I like this challenge because it really demands designing a good function API, and working with inheritence to share as much code as possible. This isn't a trivial task given an overview of what each piece of the picture needs to accomplish:
 
 |                                            | Offline | Server | Client |
-:-------------------------------------------:|:-------:|:------:|:------:|
+|:-------------------------------------------|:-------:|:------:|:------:|
 | Maintain the master copy of the game state | :heavy_check_mark: | :heavy_check_mark: | :heavy_multiplication_x: |
 | Display the game state via the browser DOM | :heavy_check_mark: | :heavy_multiplication_x: | :heavy_check_mark: |
 | Use network operations to exchange events  | :heavy_multiplication_x: | :heavy_check_mark: | :heavy_check_mark: |
 
 This means that the code that receives a request for something like player movement and performs validation must be in a separate function from that which enacts all changes to all parts of the game state that are affected by an acceptance of the request. In addition to that, SocketIO can only guarantee that application messages will arrive in order if the client is using websockets for its underlying transport, which, while common, is not an absolute given, and is indeed not the case before a temporary long-polling connection upgrades to use websockets. This means that these request processing and executing functions must use event-ID systems to handle out-of-order message arrivals.
 
-### 🧗‍♀️ Stepping up my Game (pun intended)
+## 🧗‍♀️ Stepping Up my Game
 
 Now that we understand why the design requires so much more care in this version, we can talk about the solving the problems plaguing the two earlier versions.
 
