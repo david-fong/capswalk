@@ -137,7 +137,11 @@ export namespace Player {
      */
     export type Id = PlayerTypeDefs.Id;
 
-    export type Bundle<T> = Record<Operator, ReadonlyArray<T>>;
+    export type Bundle<T> = Readonly<Bundle.Mutable<T>>;
+
+    export namespace Bundle {
+        export type Mutable<T> = Record<Operator, ReadonlyArray<T>>;
+    }
 
     export type Username = string;
 
@@ -192,9 +196,8 @@ export namespace Player {
          * @param playerDescs -
          */
         export const finalizePlayerIds = (
-            playerDescs: Readonly<Bundle<CtorArgs.FromGame>>
-        ): Readonly<Bundle<CtorArgs>> => {
-            type retType = Bundle<CtorArgs>;
+            playerDescs: Bundle<CtorArgs.FromGame>
+        ): Bundle<CtorArgs> => {
             const socketIdToPlayerIdMap: Record<SocketId,Player.Id> = {};
             for (const operatorClass in playerDescs) {
                 Player.assertIsOperator(operatorClass);
@@ -205,7 +208,7 @@ export namespace Player {
                     };
                 });
             }
-            return Object.keys(playerDescs).reduce<retType>(
+            return Object.keys(playerDescs).reduce<Bundle.Mutable<CtorArgs>>(
                 (retValBuild, operatorClass, __currentIndex, __array) => {
                     Player.assertIsOperator(operatorClass);
                     retValBuild[operatorClass] = playerDescs[operatorClass]
@@ -218,7 +221,7 @@ export namespace Player {
                         };
                     });
                     return retValBuild;
-                }, {} as retType,
+                }, {} as Bundle<CtorArgs>,
             );
         };
     }

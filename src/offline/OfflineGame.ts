@@ -6,6 +6,7 @@ import { LocalGameSettings } from "settings/GameSettings";
 import { Player } from "game/player/Player";
 import { HumanPlayer } from "game/player/HumanPlayer";
 import { OfflineHumanPlayer } from "./OfflineHumanPlayer";
+import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
 
 type G = Game.Type.OFFLINE;
@@ -41,6 +42,13 @@ export class OfflineGame<S extends Coord.System.GridCapable> extends Game<G,S> {
      */
     protected createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer<S> {
         return new OfflineHumanPlayer<S>(this, desc);
+    }
+
+    /**
+     * @override
+     */
+    protected createArtifPlayer(desc: Player.CtorArgs): ArtificialPlayer<S> {
+        return ArtificialPlayer.of(this, desc);
     }
 
 

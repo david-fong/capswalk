@@ -130,11 +130,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System.Gri
         const dest = this.getBenchableTileAt(desc.dest.coord);
         if (dest.isOccupied ||
             dest.numTimesOccupied !== desc.dest.numTimesOccupied) {
-            // The check concerning the destination `Tile`'s occupancy
-            // counter is not absolutely necessary. It does not enforce
-            // stronger invariant-keeping consistency, but it does enforce
-            // stronger client-experience consistency: they cannot move
-            // somewhere where they have not realized the `LangSeq` has
+            // The occupancy counter check is not essential, but it helps
+            // enforce stronger client-experience consistency: they cannot
+            // move somewhere where they have not realized the `LangSeq` has
             // changed.
             this.processMoveExecute(desc);
             return;

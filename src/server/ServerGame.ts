@@ -10,6 +10,7 @@ import { Player } from "game/player/Player";
 import { EventRecordEntry } from "game/events/EventRecordEntry";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 import { Bubble } from "game/events/Bubble";
+import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
 
 type G = Game.Type.SERVER;
@@ -104,6 +105,13 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
      */
     protected createOperatorPlayer(desc: Player.CtorArgs): never {
         throw new TypeError("This should never be called for a ServerGame.");
+    }
+
+    /**
+     * @override
+     */
+    protected createArtifPlayer(desc: Player.CtorArgs): ArtificialPlayer<S> {
+        return ArtificialPlayer.of(this, desc);
     }
 
 
