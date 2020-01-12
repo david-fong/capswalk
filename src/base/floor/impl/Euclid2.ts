@@ -1,5 +1,6 @@
 import { Coord as BaseCoord } from "../Coord";
 import { Tile } from "../Tile";
+import { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
 
 
@@ -287,6 +288,10 @@ export namespace Euclid2 {
         }
 
 
+
+        public static getSpawnCoords(playerIds: Player.Bundle<Player.Id>): Player.Bundle<Coord.Bare> {
+            return undefined!;
+        }
 
         /**
          * @override

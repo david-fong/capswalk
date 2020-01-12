@@ -1,6 +1,6 @@
 
 
-export class Player {}
+export class Player { }
 export namespace Player {
 
     /**
@@ -36,6 +36,12 @@ export namespace Player {
          */
         export const NULL = undefined;
         export type Nullable = Player.Id | typeof Player.Id.NULL;
+    }
+
+    export type Bundle<T> = Readonly<Bundle.Mutable<T>>;
+
+    export namespace Bundle {
+        export type Mutable<T> = Record<Operator, ReadonlyArray<T>>;
     }
 }
 

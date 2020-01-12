@@ -4,6 +4,7 @@ import { VisibleTile } from "./VisibleTile";
 
 import { Euclid2 } from "./impl/Euclid2";
 import { Beehive } from "./impl/Beehive";
+import { Player } from "utils/TypeDefs";
 
 
 /**
@@ -218,6 +219,12 @@ export namespace Grid {
          * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to `boundX`.
          */
         random(bounds: DimensionBounds<S>): Coord<S>;
+
+        /**
+         * 
+         * @param playerIds -
+         */
+        getSpawnCoords(playerIds: Player.Bundle<Player.Id>): Player.Bundle<Coord.Bare<S>>;
     };
 
     /**

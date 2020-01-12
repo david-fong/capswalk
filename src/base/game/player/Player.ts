@@ -20,23 +20,12 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
     //  this player's position. See Grid.TileGetter
 
     /**
-     * Remember, just like in real life, being nice to someone isn't
-     * inherently mutually reciprocal. Just because you choose to go
-     * by rules that make you nice to someone doesn't mean they will
-     * be nice back (and here, the point is that sometimes you give
-     * without expecting nicety in return), and if you slap a nice
-     * person in the face in bad humor, see if they're ever nice to
-     * you again.
+     * As in real life, nicity isn't inherently mutually reciprocal.
      * 
-     * See the {@link Bubble} module documentation for explanations of
-     * the consequences / effects of such a relationship (or lack
-     * thereof) on how those players are intended to interact by the
-     * design of the game's objective and mechanics.
+     * See the {@link Bubble} module documentation.
      * 
-     * It must be checked that in the context of all players in a game,
-     * _at least one_ of the following is true, or else there will be a
-     * player that cannot be permanently downed, and the game cannot
-     * end:
+     * It must be checked that all players _can_ be permanently downed.
+     * At least one of the following must be true:
      * - There exists an artificial player that can down human players.
      * - For every human-operated player, there exists another that is
      *   not nice to it.
@@ -116,8 +105,6 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
         return this.hostTile === this.benchTile;
     }
 
-
-
     public get coord(): Player<S>["hostTile"]["coord"] {
         return this.hostTile.coord;
     }
@@ -137,10 +124,10 @@ export namespace Player {
      */
     export type Id = PlayerTypeDefs.Id;
 
-    export type Bundle<T> = Readonly<Bundle.Mutable<T>>;
+    export type Bundle<T> = PlayerTypeDefs.Bundle<T>;
 
     export namespace Bundle {
-        export type Mutable<T> = Record<Operator, ReadonlyArray<T>>;
+        export type Mutable<T> = PlayerTypeDefs.Bundle.Mutable<T>;
     }
 
     export type Username = string;
@@ -170,6 +157,7 @@ export namespace Player {
     };
 
     export namespace CtorArgs {
+
         export type FromGame<ID extends Player.Id | SocketId = SocketId> = {
 
             readonly username: Username;
@@ -224,6 +212,7 @@ export namespace Player {
                 }, {} as Bundle<CtorArgs>,
             );
         };
+
     }
 
 }
