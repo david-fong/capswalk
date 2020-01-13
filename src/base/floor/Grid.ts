@@ -2,9 +2,10 @@ import { Coord } from "./Coord";
 import { Tile } from "./Tile";
 import { VisibleTile } from "./VisibleTile";
 
+import { Player } from "utils/TypeDefs";
+
 import { Euclid2 } from "./impl/Euclid2";
 import { Beehive } from "./impl/Beehive";
-import { Player } from "utils/TypeDefs";
 
 
 /**
@@ -13,6 +14,10 @@ import { Player } from "utils/TypeDefs";
  * A Collection of Tiles.
  */
 export abstract class Grid<S extends Coord.System.GridCapable> {
+
+    public readonly class: Grid.ClassIf<S>;
+
+    public readonly tiles: TileGetter<S>;
 
     /**
      * _Does not call reset._
@@ -23,6 +28,8 @@ export abstract class Grid<S extends Coord.System.GridCapable> {
         if (!desc.domGridHtmlIdHook) {
             desc.domGridHtmlIdHook = Grid.DEFAULT_HTML_ID_HOOK;
         }
+
+        this.class = Grid.getImplementation(desc.coordSys);
 
         // Create and populate the HTML table element field:
         // (skip this step if my tiles are not displayed in a browser window)
@@ -165,7 +172,7 @@ export namespace Grid {
         : S extends Coord.System.BEEHIVE ? Beehive.Grid.Dimensions
         : never;
 
-    const Constructors = Object.freeze({
+    const Constructors = Object.freeze(<const>{
         [ Coord.System.EUCLID2 ]: Euclid2.Grid,
         [ Coord.System.BEEHIVE ]: Beehive.Grid,
     }) as Readonly<{
@@ -178,17 +185,18 @@ export namespace Grid {
     // ==============================================================
 
     export type CtorArgs<S extends Coord.System.GridCapable> = {
+        coordSys: S;
         dimensions: Dimensions<S>;
         tileClass: Tile.ClassIf<S>;
         domGridHtmlIdHook?: string;
     };
 
-    interface ClassIf<S extends Coord.System.GridCapable> {
+    export interface ClassIf<S extends Coord.System.GridCapable> {
 
         /**
          * Constructor
          */
-        new(desc: CtorArgs<S>): Grid<S> & Required<Grid.Dimensions<S>>;
+        new(desc: CtorArgs<S>): Grid<S> & Required<Dimensions<S>>;
 
         /**
          * @returns
@@ -196,13 +204,10 @@ export namespace Grid {
          * the minimum (inclusive) number of leaf nodes a language
          * must have to be playable with this coordinate system's grid.
          * From the specification's point of view, it is the promised
-         * maximum size of a set `U` for any tile `t` in the grid
-         * where `U` contains all tiles that a player could directly
-         * move to from any tiles `in the set U'`, where `U'` contains
-         * all tiles `t'` from which a player could move directly to
-         * `t`, with the exception that `U` excludes `t`.
+         * maximum size of a set of all destinations from sources to
+         * any tile in the grid, excluding that tile itself.
          */
-        // TODO: write a test that checks that this holds for each implementation
+        // TODO: write a test that checks that this holds for each implementation?
         getAmbiguityThreshold(): number;
 
         /**
@@ -218,25 +223,29 @@ export namespace Grid {
          * @param boundX An exclusive bound on x-coordinate.
          * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to `boundX`.
          */
-        random(bounds: DimensionBounds<S>): Coord<S>;
+        getRandomCoord(bounds: DimensionBounds<S>): Coord<S>;
 
         /**
+         * Return values do not need to be the same for repeated calls
+         * with identical arguments. Must ensure
          * 
-         * @param playerIds -
+         * @param playerCounts -
          */
-        getSpawnCoords(playerIds: Player.Bundle<Player.Id>): Player.Bundle<Coord.Bare<S>>;
+        getSpawnCoords(
+            playerCounts: Readonly<Record<Player.Operator, number>>,
+            bounds: Required<Dimensions<S>>,
+        ): Player.Bundle<Coord.Bare<S>>;
     };
 
     /**
      * @returns
-     * A Grid of the specified system according to the given arguments.
+     * A Grid class for the specified coordinate system.
      * 
      * @param coordSys -
-     * @param ctorArgs -
      */
-    export const of = <S extends Coord.System.GridCapable>(coordSys: S, ctorArgs: CtorArgs<S>): Grid<S> => {
+    export const getImplementation = <S extends Coord.System.GridCapable>(coordSys: S): ClassIf<S> => {
         // Note: For some reason TypeScript can't figure out the type here.
-        return new (Constructors[coordSys] as unknown as ClassIf<S>)(ctorArgs);
+        return Constructors[coordSys] as unknown as ClassIf<S>;
     };
 
     /**

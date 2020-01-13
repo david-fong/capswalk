@@ -28,13 +28,6 @@ export namespace SysName {
             Object.freeze(this);
         }
         // abstract method implementations
-
-        /**
-         * @override
-         */
-        public static random(bounds: AbstractGrid.DimensionBounds<S>): Coord {
-            return new Coord(undefined!);
-        }
     }
     export namespace Coord {
         export type Bare = Readonly<{
@@ -77,16 +70,31 @@ export namespace SysName {
         private static readonly SIZE_LIMITS = Object.freeze({
             // fields from dimension type, except mapped to a frozen range description.
         });
+        /**
+         * @override
+         */
+        public static getSpawnCoords(
+            playerCounts: Readonly<Record<Player.Operator, number>>,
+            bounds: Required<Grid.Dimensions>,
+        ): Player.Bundle<Coord.Bare> {
+            return undefined!;
+        }
+        /**
+         * @override
+         */
+        public static getRandomCoord(bounds: AbstractGrid.DimensionBounds<S>): Coord {
+            return new Coord(undefined!);
+        }
         // field declarations
         // constructor
         // abstract method implementations
-        export namespace Grid {
-            // if any fields are optional, describe how default values are chosen here.
-            export type Dimensions = {
-                // numeric fields.
-                // at least one must be non-optional.
-            };
-        }
+    }
+    export namespace Grid {
+        // if any fields are optional, describe how default values are chosen here.
+        export type Dimensions = {
+            // numeric fields.
+            // at least one must be non-optional.
+        };
     }
 }
 ```

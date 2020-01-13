@@ -181,15 +181,20 @@ export namespace Beehive {
         }
 
 
-
-        public static getSpawnCoords(playerIds: Player.Bundle<Player.Id>): Player.Bundle<Coord.Bare> {
+        /**
+         * @override
+         */
+        public static getSpawnCoords(
+            playerCounts: Readonly<Record<Player.Operator, number>>,
+            bounds: Required<Grid.Dimensions>,
+        ): Player.Bundle<Coord.Bare> {
             return undefined!;
         }
 
         /**
          * @override
          */
-        public static random(bounds: AbstractGrid.DimensionBounds<S>): Coord {
+        public static getRandomCoord(bounds: AbstractGrid.DimensionBounds<S>): Coord {
             return new Coord(undefined!);
         }
     }

@@ -19,12 +19,12 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
     extends PlayerTypeDefs
     implements PlayerSkeletonTypeDefs.VisibleState {
 
+    public readonly playerId: Player.Id;
+
     /**
      * The game object that this player belongs to.
      */
     public readonly game: Game<any,S>;
-
-    public readonly playerId: Player.Id;
 
     private _hostTile: Tile<S | Coord.System.__BENCH>;
 
@@ -47,8 +47,8 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
         if (Math.trunc(playerId.intraClassId) !== playerId.intraClassId) {
             throw new RangeError("Player ID's must be integer values.");
         }
-        this.game = game;
         this.playerId = playerId;
+        this.game = game;
         this.benchTile = new Tile<Coord.System.__BENCH>(
             new __Bench.Coord({ playerId: this.playerId, }),
         );
@@ -58,6 +58,8 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
      * Automatically benches this `Player`.
      *
      * Must be called _after_ the {@link Grid} has been reset.
+     * Does not evict itself from its current host tile (if it
+     * has one). Automatically benches itself.
      */
     protected reset(): void {
         this.benchTile.reset();

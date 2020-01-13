@@ -12,6 +12,9 @@ import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { Game } from "../Game";
 
 
+/**
+ * Foundational parts of a Game that are not related to event handling.
+ */
 export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridCapable> {
 
     public readonly gameType: G;
@@ -55,9 +58,10 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
     public constructor(desc: Game.CtorArgs<G,S>, tileClass: Tile.ClassIf<S>) {
         this.gameType = desc.gameType;
         this.tileClass = tileClass;
-        this.grid = Grid.of(desc.coordSys, {
+        this.grid = new (Grid.getImplementation(desc.coordSys))({
+            coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
-            tileClass: this.tileClass,
+            tileClass:  this.tileClass,
         });
 
         // TODO: set default language (must be done before call to reset):
@@ -107,14 +111,19 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
         // Shuffle everything:
         this.grid.forEachTile(this.shuffleLangCharSeqAt, this);
 
+        const playerCounts = {} as Record<Player.Operator, number>;
+        for (const operatorClass in this.__players) {
+            Player.assertIsOperator(operatorClass);
+            playerCounts[operatorClass] = this.__players[operatorClass].length;
+        }
+        const spawnPoints = this.grid.class.getSpawnCoords(playerCounts, this.grid);
         for (const sameClassPlayers of Object.values(this.__players)) {
             sameClassPlayers.forEach((player) => {
                 player.reset();
             });
         }
 
-        // TODO: spawn players and targets:
-        // While not necessary, targets should be done after players have
+        // TODO: Targets should be done after players have
         // spawned so they do not spawn under players.
     }
 
