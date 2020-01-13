@@ -116,12 +116,18 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
             Player.assertIsOperator(operatorClass);
             playerCounts[operatorClass] = this.__players[operatorClass].length;
         }
-        const spawnPoints = this.grid.class.getSpawnCoords(playerCounts, this.grid);
-        for (const sameClassPlayers of Object.values(this.__players)) {
+        const spawnPoints = this.grid.class.getSpawnCoords(playerCounts, this.grid.dimensions);
+        Object.values(this.__players).forEach((sameClassPlayers) => {
             sameClassPlayers.forEach((player) => {
+                // Reset:
                 player.reset();
+                // Respawn:
+                const spawnCoord = spawnPoints
+                    [player.playerId.operatorClass]
+                    [player.playerId.intraClassId];
+                player.moveTo(this.grid.tiles.at(spawnCoord));
             });
-        }
+        });
 
         // TODO: Targets should be done after players have
         // spawned so they do not spawn under players.
@@ -176,13 +182,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
      * for that currently being used by `tile`.
      */
     public shuffleLangCharSeqAt(targetTile: Tile<S | Coord.System.__BENCH>): Lang.CharSeqPair {
-        // TODO: first of all, this should have been specifying the
-        // radius argument to be 2. Second, it technically should
-        // not even be specifying the radius as two: it should take
-        // the set of of all tiles a player can reach from tiles by
-        // which a player can reach `targetTile`. This would properly
-        // handle directed-graph-type coordinate systems.
-
         // First, clear values for the target tile so its current
         // (to-be-previous) values don't get unnecessarily avoided.
         targetTile.setLangCharSeq(Lang.CharSeqPair.NULL);
@@ -195,8 +194,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
                 seq: benchOwner.username,
             };
         } else {
-            return this.lang.getNonConflictingChar(
-                this.grid.getNeighbouringTiles((targetTile as Tile<S>).coord)
+            const avoid = Array.from(new Set(
+                this.grid.tiles.get.sourcesTo((targetTile as Tile<S>).coord)
+                    .flatMap((sourceToTarget) => this.grid.tiles.get.destsFrom(sourceToTarget.coord))
+            ));
+            return this.lang.getNonConflictingChar(avoid
                     .map((tile) => tile.langSeq)
                     .filter((seq) => seq), // no falsy values.
                 this.langBalancingScheme,

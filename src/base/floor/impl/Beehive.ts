@@ -108,7 +108,7 @@ export namespace Beehive {
     /**
      * # Beehive Grid
      */
-    export class Grid extends AbstractGrid<S> implements Required<Grid.Dimensions> {
+    export class Grid extends AbstractGrid<S> {
 
         /**
          * @override
@@ -127,10 +127,6 @@ export namespace Beehive {
             fslash:  Object.freeze({ min: 10, max: 50, }),
         });
 
-        public readonly dash: number;
-        public readonly bslash: number;
-        public readonly fslash: number;
-
         /**
          * 
          */
@@ -142,9 +138,6 @@ export namespace Beehive {
          */
         public constructor(desc: AbstractGrid.CtorArgs<S>) {
             super(desc);
-            this.dash = desc.dimensions.dash;
-            this.bslash = desc.dimensions.bslash ?? desc.dimensions.dash;
-            this.fslash = desc.dimensions.fslash ?? desc.dimensions.dash;
 
             // TODO: initialize `grid`.
         }
@@ -186,7 +179,7 @@ export namespace Beehive {
          */
         public static getSpawnCoords(
             playerCounts: Readonly<Record<Player.Operator, number>>,
-            bounds: Required<Grid.Dimensions>,
+            dimensions: Grid.Dimensions,
         ): Player.Bundle<Coord.Bare> {
             return undefined!;
         }
@@ -194,19 +187,16 @@ export namespace Beehive {
         /**
          * @override
          */
-        public static getRandomCoord(bounds: AbstractGrid.DimensionBounds<S>): Coord {
+        public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
             return new Coord(undefined!);
         }
     }
 
     export namespace Grid {
-        /**
-         * If `bslash` or `fslash` are not specified, they default to `dash`.
-         */
         export type Dimensions = {
             dash: number;
-            bslash?: number;
-            fslash?: number;
+            bslash: number;
+            fslash: number;
         };
     }
 

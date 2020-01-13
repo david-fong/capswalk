@@ -1,6 +1,7 @@
 import { Coord } from "./Coord";
 import { Tile } from "./Tile";
 import { VisibleTile } from "./VisibleTile";
+import { TileGetter } from "./TileGetter";
 
 import { Player } from "utils/TypeDefs";
 
@@ -19,6 +20,8 @@ export abstract class Grid<S extends Coord.System.GridCapable> {
 
     public readonly tiles: TileGetter<S>;
 
+    public readonly dimensions: Grid.Dimensions<S>;
+
     /**
      * _Does not call reset._
      * 
@@ -30,6 +33,7 @@ export abstract class Grid<S extends Coord.System.GridCapable> {
         }
 
         this.class = Grid.getImplementation(desc.coordSys);
+        this.dimensions = desc.dimensions;
 
         // Create and populate the HTML table element field:
         // (skip this step if my tiles are not displayed in a browser window)
@@ -196,7 +200,7 @@ export namespace Grid {
         /**
          * Constructor
          */
-        new(desc: CtorArgs<S>): Grid<S> & Required<Dimensions<S>>;
+        new(desc: CtorArgs<S>): Grid<S>;
 
         /**
          * @returns
@@ -223,18 +227,20 @@ export namespace Grid {
          * @param boundX An exclusive bound on x-coordinate.
          * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to `boundX`.
          */
-        getRandomCoord(bounds: DimensionBounds<S>): Coord<S>;
+        getRandomCoord(bounds: Dimensions<S>): Coord<S>;
 
         /**
          * Return values do not need to be the same for repeated calls
-         * with identical arguments. Must ensure
+         * with identical arguments. None of the returned coordinates
+         * should be the same.
          * 
          * @param playerCounts -
          */
         getSpawnCoords(
             playerCounts: Readonly<Record<Player.Operator, number>>,
-            bounds: Required<Dimensions<S>>,
+            bounds: Dimensions<S>,
         ): Player.Bundle<Coord.Bare<S>>;
+
     };
 
     /**

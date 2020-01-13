@@ -149,7 +149,7 @@ export namespace Euclid2 {
     /**
      * # Euclid2 Grid
      */
-    export class Grid extends AbstractGrid<S> implements Required<Grid.Dimensions> {
+    export class Grid extends AbstractGrid<S> {
 
         /**
          * @override
@@ -182,8 +182,6 @@ export namespace Euclid2 {
          */
         public constructor(desc: AbstractGrid.CtorArgs<S>) {
             super(desc);
-            this.height = desc.dimensions.height;
-            this.width  = desc.dimensions.width ?? desc.dimensions.height;
 
             const grid: Array<ReadonlyArray<Tile<S>>> = [];
             for (let row = 0; row < this.height; row++) {
@@ -294,7 +292,7 @@ export namespace Euclid2 {
          */
         public static getSpawnCoords(
             playerCounts: Readonly<Record<Player.Operator, number>>,
-            bounds: Required<Grid.Dimensions>,
+            dimensions: Grid.Dimensions,
         ): Player.Bundle<Coord.Bare> {
             return undefined!;
         }
@@ -302,7 +300,7 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public static getRandomCoord(bounds: AbstractGrid.DimensionBounds<S>): Coord {
+        public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
             return new Coord(undefined!);
         }
 
@@ -314,7 +312,7 @@ export namespace Euclid2 {
          */
         export type Dimensions = {
             height: number,
-            width?: number,
+            width:  number,
         };
     }
 
