@@ -125,7 +125,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
                 const spawnCoord = spawnPoints
                     [player.playerId.operatorClass]
                     [player.playerId.intraClassId];
-                player.moveTo(this.grid.tiles.at(spawnCoord));
+                player.moveTo(this.grid.tile.at(spawnCoord));
             });
         });
 
@@ -194,9 +194,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
                 seq: benchOwner.username,
             };
         } else {
-            const avoid = Array.from(new Set(
-                this.grid.tiles.get.sourcesTo((targetTile as Tile<S>).coord)
-                    .flatMap((sourceToTarget) => this.grid.tiles.get.destsFrom(sourceToTarget.coord))
+            const avoid: ReadonlyArray<Tile<S>> = Array.from(new Set(
+                this.grid.tile.sourcesTo((targetTile as Tile<S>).coord).get
+                    .flatMap((sourceToTarget) => this.grid.tile.destsFrom(sourceToTarget.coord).get)
             ));
             return this.lang.getNonConflictingChar(avoid
                     .map((tile) => tile.langSeq)

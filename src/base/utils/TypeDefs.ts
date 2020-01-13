@@ -1,6 +1,6 @@
 
 
-export class Player { }
+export class Player<S> { }
 export namespace Player {
 
     /**

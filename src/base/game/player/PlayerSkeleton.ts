@@ -4,6 +4,7 @@ import { Tile, Coord } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
 import { __Bench } from "floor/impl/__Bench";
+import { __TileGetterParts, TileGetter } from "floor/TileGetter";
 
 
 /**
@@ -16,7 +17,7 @@ import { __Bench } from "floor/impl/__Bench";
  * @extends PlayerTypeDefs to intake its namespace exports.
  */
 export class PlayerSkeleton<S extends Coord.System.GridCapable>
-    extends PlayerTypeDefs
+    extends PlayerTypeDefs<S>
     implements PlayerSkeletonTypeDefs.VisibleState {
 
     public readonly playerId: Player.Id;
@@ -32,6 +33,8 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
      * A {@link Tile} that can only be occupied by this `Player`.
      */
     public readonly benchTile: Tile<Coord.System.__BENCH>;
+
+    public readonly tile: TileGetter<S,[]>;
 
     private _score:         number;
     private _stockpile:     number;
@@ -52,6 +55,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
         this.benchTile = new Tile<Coord.System.__BENCH>(
             new __Bench.Coord({ playerId: this.playerId, }),
         );
+        this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
     }
 
     /**
@@ -75,6 +79,10 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
     }
 
 
+
+    public get coord(): Player<S>["hostTile"]["coord"] {
+        return this.hostTile.coord;
+    }
 
     public get hostTile(): PlayerSkeleton<S>["_hostTile"] {
         return this._hostTile;
@@ -191,6 +199,28 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
     }
     public set percentBubbleCharge(bubbleCharge: number) {
         this._percentBubbleCharge = bubbleCharge;
+    }
+
+    private readonly __tileGetterSource: __TileGetterParts.Source<S,[]> = ;
+
+}
+
+
+
+export namespace PlayerSkeleton {
+
+    export class TileGetterSource<S extends Coord.System.GridCapable> implements __TileGetterParts.Source<S,[]> {
+        
+        public constructor(private readonly player: PlayerSkeleton<S>) { }
+
+        /**
+         * @override
+         */
+        public __getTileAt(): ReadonlyArray<Tile<S>> {
+            return this.player.game.grid.tile.at(this.player.coord);
+        }
+
+        // TODO:
     }
 
 }

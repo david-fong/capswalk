@@ -15,16 +15,6 @@
 1. Make Grid instances have a dimensions field instead of implementing their dimensions type.
 1. Make grid's tile getters have a method-object nesting: `this.getTile.At`, `this.getTile.[unoccupied|occupied].[destsFrom|SourcesTo]`.
    - See socketIo emit flags api for example api. How to implement:
-     - Make interface `TileGetter.CtorArgs<S>` with methods `__getTileDestsFrom` and `__getTileSourcesTo`.
-     - Make the abstract `Grid` class extend the above interface.
-     - Create a class `TileGetter<S>` that takes the above defined ctor args.
-     - Make `Grid` initialize a field `tiles` of type `TileGetter<S>`.
-     - Implementation of `TileGetter`:
-       - Should only have one public method `get`.
-         - Secretly resets the flags from a past call to `get`.
-         - Returns a function flow interface that can
-           - Chain flags that mean output filters to apply on a chain terminator.
-           - Terminate in a call to either `destsFrom(coord)` or `sourcesTo(coord)`.
    - Update documentation on what the range of a bubble is and how range-extension works (both look at destFrom).
    - Update wording in lang readme to reflect new (and improved) method names.
      - Was "getNeighbouringTiles" and now use wording "destsFrom" and "sourcesTo".

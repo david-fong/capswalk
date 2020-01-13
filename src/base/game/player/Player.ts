@@ -46,7 +46,6 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
     public bubbleTimer: number | NodeJS.Timeout;
 
 
-
     public constructor(game: Game<any,S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc.playerId);
 
@@ -103,10 +102,6 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
 
     public get isBenched(): boolean {
         return this.hostTile === this.benchTile;
-    }
-
-    public get coord(): Player<S>["hostTile"]["coord"] {
-        return this.hostTile.coord;
     }
 
 }

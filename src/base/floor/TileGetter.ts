@@ -1,21 +1,37 @@
 import { Coord } from "./Coord";
 import { Tile } from "./Tile";
+import { Player } from "utils/TypeDefs";
 
 
 type CoordSys = Coord.System.GridCapable;
 
-export namespace TileGetterParts {
+export namespace __TileGetterParts {
 
-    export interface Source<S extends CoordSys> {
-        __getTileDestsFrom(coord: Coord.Bare<S>): ReadonlyArray<Tile<S>>;
-        __getTileSourcesTo(coord: Coord.Bare<S>): ReadonlyArray<Tile<S>>;
+    /**
+     * This allows `Source` implementations to accept a coordinate
+     * specifier as an argument, such as is appropriate with a grid,
+     * or to provide that information implicitly inside itself as
+     * part of its spec, as is appropriate with a player.
+     */
+    export type Arguments<S extends CoordSys> = [ Coord.Bare<S>, ] | [];
+
+    export interface Source<S extends CoordSys, A extends Arguments<S>> {
+        __getTileAt(...args: A): Tile<S>;
+        // NOTE: do we need to add an optional argument for range?
+        // If so, document that it must default to `1` if unspecified.
+        __getTileDestsFrom(...args: A): ReadonlyArray<Tile<S>>;
+        __getTileSourcesTo(...args: A): ReadonlyArray<Tile<S>>;
     }
 
+    /**
+     * 
+     */
     export namespace Get {
 
-        export interface Exposer<S extends CoordSys> {
-            get: Exposed<S>;
-            at(coord: Coord.Bare<S>): Tile<S>;
+        export interface Exposer<S extends CoordSys, A extends Arguments<S>> {
+            at(...args: A): Tile<S>;
+            destsFrom(...args: A): Exposed<S>;
+            sourcesTo(...args: A): Exposed<S>;
         }
 
         export interface Exposed<S extends CoordSys> {
@@ -23,44 +39,52 @@ export namespace TileGetterParts {
             unoccupied: Exposed<S>;
 
             // Call-chain-terminators:
-            destsFrom(coord: Coord.Bare<S>): ReadonlyArray<Tile<S>>;
-            sourcesTo(coord: Coord.Bare<S>): ReadonlyArray<Tile<S>>;
+            get: ReadonlyArray<Tile<S>>;
+            occupants: ReadonlyArray<Player<S>>;
         }
     }
 
-    type Filters = {
-        occupancy: Tile.Occupancy;
-    };
+    /**
+     * 
+     */
+    export class _Impl<S extends CoordSys, A extends Arguments<S>> implements Get.Exposer<S,A>, Get.Exposed<S> {
 
-    export class _Impl<S extends CoordSys> implements Get.Exposer<S>, Get.Exposed<S> {
+        protected readonly source: Source<S,A>;
 
-        protected readonly source: Source<S>;
+        protected queryBuild: ReadonlyArray<Tile<S>>;
 
-        protected filters: Filters;
-
-        public constructor(source: Source<S>) {
+        public constructor(source: Source<S,A>) {
             this.source = source;
         }
 
-        public get get(): Get.Exposed<S> {
-            this.filters = Filters.NONE;
+        public at(...args: A): Tile<S> {
+            return this.source.__getTileAt(...args);
+        }
+
+        public destsFrom(...args: A): Get.Exposed<S> {
+            this.queryBuild = this.source.__getTileDestsFrom(...args);
             return this;
         }
-
-        public at(coord: Coord.Bare<S>): Tile<S> {
-            return undefined!;
-        }
-
-        public destsFrom(coord: Coord.Bare<S>): ReadonlyArray<Tile<S>> {
-            return undefined!;
-        }
-        public sourcesTo(coord: Coord.Bare<S>): ReadonlyArray<Tile<S>> {
-            return undefined!;
+        public sourcesTo(...args: A): Get.Exposed<S> {
+            this.queryBuild = this.source.__getTileSourcesTo(...args);
+            return this;
         }
 
         public get unoccupied(): Get.Exposed<S> {
-            this.filters.occupancy = Tile.Occupancy.UNOCCUPIED;
+            this.queryBuild = this.queryBuild.filter((tile) => !tile.isOccupied);
             return this;
+        }
+
+        public get get(): ReadonlyArray<Tile<S>> {
+            const retval = this.queryBuild;
+            delete this.queryBuild;
+            return retval;
+        }
+
+        public get occupants(): ReadonlyArray<Player<S>> {
+            const retval = this.queryBuild.map((tile) => );
+            delete this.queryBuild;
+            return retval;
         }
 
     }
@@ -69,5 +93,14 @@ export namespace TileGetterParts {
 
 
 
-export const TileGetter = TileGetterParts._Impl;
-export type TileGetter<S extends CoordSys> = TileGetterParts.Get.Exposer<S>;
+/**
+ * A utility class to get destinations-to or sources-from a tile at
+ * a specified coordinate. It is recommended to name the calling
+ * variable "tile". A query starts with calling one of the methods
+ * `at`, `destsFrom`, or `sourcesTo`. Optional filtering mutators
+ * can be applied intermediately such as `unoccupied`. The query
+ * ends with one of the getters `occupants` or `get`.
+ */
+export const TileGetter = __TileGetterParts._Impl;
+export type TileGetter<S extends CoordSys, A extends __TileGetterParts.Arguments<S>>
+    = __TileGetterParts.Get.Exposer<S,A>;

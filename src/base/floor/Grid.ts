@@ -18,7 +18,7 @@ export abstract class Grid<S extends Coord.System.GridCapable> {
 
     public readonly class: Grid.ClassIf<S>;
 
-    public readonly tiles: TileGetter<S>;
+    public readonly tile: TileGetter<S,[Coord.Bare<S>]>;
 
     public readonly dimensions: Grid.Dimensions<S>;
 
