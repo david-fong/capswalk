@@ -82,7 +82,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System.Gri
      * - RangeError if it is not a positive integer
      * - Error if another event was already recorded with the same ID.
      */
-    private recordEvent(desc: EventRecordEntry): void {
+    private recordEvent(desc: Readonly<EventRecordEntry>): void {
         const id = desc.eventId;
         if (id === EventRecordEntry.REJECT) {
             throw new TypeError("Do not try to record events for rejected requests.");
@@ -190,13 +190,14 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System.Gri
         const player = this.getPlayerById(desc.playerId);
         const dest = this.getBenchableTileAt(desc.dest.coord);
         const executeBasicTileUpdates = (): void => {
+            this.recordEvent(desc);
             // The `LangCharSeqPair` shuffle changes must take effect
             // before updating the operator's seqBuffer if need be.
             dest.setLangCharSeq(desc.dest.newCharSeqPair!);
             // Refresh the operator's `seqBuffer`:
             if (this.operator && // Ignore if ServerGame
                 player !== this.operator &&
-                !(this.grid.getTileSourcesTo(this.operator.coord).includes(dest as Tile<S>))) {
+                !(this.operator.tile.sourcesTo().get.includes(dest))) {
                 // Do this if moving into the vicinity of the operator
                 // and the requester is not the operator. This operation
                 // is necessary to maintain the `seqBuffer` invariant.
@@ -208,16 +209,12 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System.Gri
 
         const clientEventLag = desc.lastAcceptedRequestId - player.lastAcceptedRequestId;
         if (clientEventLag > 1) {
+            // Out of order receipt: Already received more recent request responses.
             if (player === this.operator) {
                 throw new Error("Operator will never receive their own updates"
-                    + " late because they only ever have one unacknowledged"
+                    + " out of order because they only have one unacknowledged"
                     + " in-flight request.");
             }
-            // We have received even more recent updates already. This update
-            // arrived out of order. The `Tile` occupancy counter should still
-            // be updated if increasing, which will happen if this is an older
-            // player movement. The rest of the event's effects can be ignored
-            // as move operations for `Player`s are transitive in nature.
             if (dest.numTimesOccupied < desc.dest.numTimesOccupied) {
                 executeBasicTileUpdates();
             }
@@ -232,13 +229,12 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System.Gri
 
         if (desc.eventId !== EventRecordEntry.REJECT) {
             // ie. clientEventLag === 0 ||
-            // dest.numTimesOccupied > desc.destNumTimesOccupied
+            // (at Game Manager:) dest.numTimesOccupied > desc.destNumTimesOccupied
             return;
 
         } else if ((player === this.operator)
             ? (clientEventLag === 1)
             : (clientEventLag <= 1)) {
-            this.recordEvent(desc);
             executeBasicTileUpdates();
             // If using relative values (which we are not), the below
             // should happen regardless of the order of receipt.
