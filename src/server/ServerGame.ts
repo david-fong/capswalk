@@ -25,7 +25,7 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
 
     public readonly namespace: io.Namespace;
 
-    protected readonly playerIdToSocketMap: ReadonlyMap<Player.Id, io.Socket>;
+    protected readonly socketBundle: Player.Bundle<io.Socket>;
 
 
 
@@ -36,18 +36,20 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
      * 
      * Broadcasts constructor arguments to all clients.
      * 
-     * @param session - 
-     * @param desc - 
+     * @param namespace -
+     * @param desc -
      */
     public constructor(
-        session: GroupSession,
+        namespace: io.Namespace,
         desc: Game.CtorArgs<G,S>,
     ) {
         // Start with a call to the super constructor:
         super(desc, Tile);
+        this.namespace = namespace;
 
         // Attach event listeners / handlers to each socket:
-        Object.values(session.sockets).forEach((socket: GroupSession.Socket) => {
+        this.__players.HUMAN.map((player) => Player.Bundle.get(this.socketBundle, player.playerId))
+        .forEach((socket) => {
             // Attach the movement request handler:
             socket.removeAllListeners(PlayerMovementEvent.EVENT_NAME);
             socket.on(
@@ -69,22 +71,18 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
          * NOTE: this doc is just here to satisfy some linting warning condition.
          */
         function __assert(desc: Game.CtorArgs<any,S>):
-            asserts desc is Readonly<Game.CtorArgs<Game.Type.CLIENT, S>>{
+            asserts desc is Readonly<Game.CtorArgs<Game.Type.CLIENT, S>> {
             // doesn't actually do any assertion :P
             (desc.gameType as Game.Type) = Game.Type.CLIENT;
         };
-        __assert(desc);
-        this.namespace = session.namespace;
-        (desc.playerDescs.HUMAN)
-            .forEach((playerDesc) => {
-                (desc.operatorIndex as Player.Id) = playerDesc.playerId;
-                this.namespace.sockets[playerDesc.socketId].emit(
-                    Game.CtorArgs.EVENT_NAME,
-                    desc,
-                );
-            },
-            this,
-        );
+        __assert(desc); // TODO: this isn't working :/
+        (desc.playerDescs.HUMAN).forEach((playerDesc) => {
+            (desc.operatorIndex as Player.Id["intraClassId"]) = playerDesc.playerId.intraClassId;
+            Player.Bundle.get(this.socketBundle, playerDesc.playerId).emit(
+                Game.CtorArgs.EVENT_NAME,
+                desc,
+            );
+        }, this);
 
         this.reset();
     }
@@ -132,7 +130,7 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            (this.playerIdToSocketMap.get(desc.playerId)!).emit(
+            Player.Bundle.get(this.socketBundle, desc.playerId).emit(
                 PlayerMovementEvent.EVENT_NAME,
                 desc,
             );
@@ -151,7 +149,7 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            (this.playerIdToSocketMap.get(desc.playerId)!).emit(
+            Player.Bundle.get(this.socketBundle, desc.playerId).emit(
                 Bubble.MakeEvent.EVENT_NAME,
                 desc,
             );

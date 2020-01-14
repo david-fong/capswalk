@@ -42,6 +42,10 @@ export namespace Player {
 
     export namespace Bundle {
         export type Mutable<T> = Record<Operator, ReadonlyArray<T>>;
+
+        export const get = <T>(bundle: Bundle<T>, playerId: Player.Id): T => {
+            return bundle[playerId.operatorClass][playerId.intraClassId];
+        };
     }
 }
 

@@ -137,14 +137,14 @@ export class GroupSession {
             return failureReasons;
         }
         // const noProto = <T>(obj: T): T => Object.assign(Object.create(null), obj);
-        this.currentGame = new ServerGame<S>(this, {
+        this.currentGame = new ServerGame(this.namespace, {
             gameType: Game.Type.SERVER,
             coordSys,
             gridDimensions,
             languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.
             langBalancingScheme: undefined!, // TODO
             operatorIndex: undefined,
-            playerDescs: Game.CtorArgs.finalizePlayerIds({
+            playerDescs: Player.CtorArgs.finalizePlayerIds({
                 [Player.Operator.HUMAN]: Object.values(this.sockets).map((socket) => {
                     return {
                         playerId: undefined,
@@ -175,7 +175,7 @@ export namespace GroupSession {
      * these fields directly onto the socket objects.
      */
     export type Socket = io.Socket & {
-        username: Player.Username;
+        username?: Player.Username;
         beNiceTo: Set<io.Socket["id"]>;
         updateId: number; // initial value = 0
     };

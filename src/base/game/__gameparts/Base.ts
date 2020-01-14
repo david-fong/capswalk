@@ -24,7 +24,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
     public readonly lang: Lang;
 
     /**
-     * NOTE: While this is a field, shuffling operations and the
+     * NOTE: Shuffling operations and the
      * {@link Lang} implementation are able to support mid-game changes
      * to the balancing behaviour. Making it fixed for the lifetime of
      * a `Game` is a choice I made in order to make the user experience
@@ -122,9 +122,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
                 // Reset:
                 player.reset();
                 // Respawn:
-                const spawnCoord = spawnPoints
-                    [player.playerId.operatorClass]
-                    [player.playerId.intraClassId];
+                const spawnCoord = Player.Bundle.get(spawnPoints, player.playerId);
                 player.moveTo(this.grid.tile.at(spawnCoord));
             });
         });
@@ -145,7 +143,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
         if (desc.gameType === Game.Type.CLIENT) {
             throw new TypeError("This must be overriden for an online-client implementation.");
         }
-        const players: Partial<Record<Player.Operator, ReadonlyArray<Player<S>>>> = {};
+        const players = {} as Player.Bundle.Mutable<Player<S>>;
         for (const [ operatorClass, playersCtorArgs, ] of Object.entries(desc.playerDescs)) {
             Player.assertIsOperator(operatorClass);
             players[operatorClass] = playersCtorArgs.map((ctorArgs, intraClassId) => {
