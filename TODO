@@ -12,19 +12,16 @@
 
 ### High Priority
 
-1. Make Grid instances have a dimensions field instead of implementing their dimensions type.
 1. Make grid's tile getters have a method-object nesting: `this.getTile.At`, `this.getTile.[unoccupied|occupied].[destsFrom|SourcesTo]`.
-   - See socketIo emit flags api for example api. How to implement:
    - Update documentation on what the range of a bubble is and how range-extension works (both look at destFrom).
    - Update wording in lang readme to reflect new (and improved) method names.
      - Was "getNeighbouringTiles" and now use wording "destsFrom" and "sourcesTo".
-1. Make Grid abstract static method to take grid's player descs and produce similar dict containing randomized spawn points.
 1. Write out full specification for what qualifies the end of the game.
    - Challenge: The teaming system (beNiceTo) is complicated.
 
 ### Low Priority
 
-- Make the main readme file less verbose.
+- Make the main readme file less verbose [readme](./README.md-stepping-up-my-game).
 - Make eslintrc's for impl/ folders saying that they can't import from the impl/ folder they are in.
   - Check if it can detect relative imports. If not, don't do this
 

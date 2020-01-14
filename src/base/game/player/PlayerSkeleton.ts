@@ -4,7 +4,7 @@ import { Tile, Coord } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
 import { __Bench } from "floor/impl/__Bench";
-import { __TileGetterParts, TileGetter } from "floor/TileGetter";
+import { TileGetter } from "floor/TileGetter";
 
 
 /**
@@ -16,8 +16,7 @@ import { __TileGetterParts, TileGetter } from "floor/TileGetter";
  * 
  * @extends PlayerTypeDefs to intake its namespace exports.
  */
-export class PlayerSkeleton<S extends Coord.System.GridCapable>
-    extends PlayerTypeDefs<S>
+export class PlayerSkeleton<S extends Coord.System.GridCapable> extends PlayerTypeDefs<S>
     implements PlayerSkeletonTypeDefs.VisibleState {
 
     public readonly playerId: Player.Id;
@@ -52,9 +51,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
         }
         this.playerId = playerId;
         this.game = game;
-        this.benchTile = new Tile<Coord.System.__BENCH>(
-            new __Bench.Coord({ playerId: this.playerId, }),
-        );
+        this.benchTile = new Tile(new __Bench.Coord({ playerId: this.playerId, }));
         this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
     }
 
@@ -97,8 +94,6 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
             percentBubbleCharge: this.percentBubbleCharge,
         };
     }
-
-
 
     /**
      * Evicts this `Player` from its last known position (which may be
@@ -201,26 +196,27 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable>
         this._percentBubbleCharge = bubbleCharge;
     }
 
-    private readonly __tileGetterSource: __TileGetterParts.Source<S,[]> = ;
-
 }
 
 
 
 export namespace PlayerSkeleton {
 
-    export class TileGetterSource<S extends Coord.System.GridCapable> implements __TileGetterParts.Source<S,[]> {
-        
+    export class TileGetterSource<S extends Coord.System.GridCapable> implements TileGetter.Source<S,[]> {
+
         public constructor(private readonly player: PlayerSkeleton<S>) { }
 
-        /**
-         * @override
-         */
-        public __getTileAt(): ReadonlyArray<Tile<S>> {
+        public __getTileAt(): Tile<S> {
             return this.player.game.grid.tile.at(this.player.coord);
         }
 
-        // TODO:
+        public __getTileDestsFrom(): ReadonlyArray<Tile<S>> {
+            return this.player.game.grid.tile.destsFrom(this.player.coord);
+        }
+
+        public __getTileSourcesTo(): ReadonlyArray<Tile<S>> {
+            return this.player.game.grid.tile.sourcesTo(this.player.coord);
+        }
     }
 
 }
