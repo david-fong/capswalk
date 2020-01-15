@@ -72,7 +72,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable> extends PlayerTy
         this.isFrozen = false;
         this.isBubbling = false;
         this.percentBubbleCharge = 0;
-        this.hostTile.setOccupant(this.visibleState);
+        this.hostTile.setOccupant(this.visibleState); // (todo) keep
     }
 
 
@@ -140,7 +140,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable> extends PlayerTy
         else {
             // Move to occupy the destination `Tile`:
             this._hostTile = dest;
-            dest.setOccupant(this.visibleState);
+            dest.setOccupant(this.visibleState); // (todo) keep
         }
     }
 

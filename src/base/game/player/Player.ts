@@ -13,11 +13,7 @@ export { PlayerSkeleton } from "./PlayerSkeleton";
  */
 export abstract class Player<S extends Coord.System.GridCapable> extends PlayerSkeleton<S> {
 
-
     public readonly username: Player.Username;
-
-    // TODO: add a public instance field to access tiles relative to
-    //  this player's position. See Grid.TileGetter
 
     /**
      * As in real life, nicity isn't inherently mutually reciprocal.
@@ -110,14 +106,14 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
 
 export namespace Player {
 
-    export type SocketId = string;
-
     export type Operator = PlayerTypeDefs.Operator;
 
     /**
      * 
      */
     export type Id = PlayerTypeDefs.Id;
+
+    export type SocketId = string;
 
     export type Bundle<T> = PlayerTypeDefs.Bundle<T>;
 
@@ -147,26 +143,23 @@ export namespace Player {
      * @template ID
      * Only set to Player.SocketId when the player roster is under construction.
      */
-    export type CtorArgs = CtorArgs.FromGame<Player.Id> & {
+    export type CtorArgs<ID extends Player.Id | SocketId = Player.Id> = {
+
+        readonly username: Username;
+
+        /**
+         * **Important**: The builder of this field must enforce that
+         * entries are unique (that there are no duplicates).
+         */
+        readonly beNiceTo: ReadonlyArray<ID>
+
+        readonly socketId: SocketId;
+
+    } & (ID extends Player.Id ? {
         readonly playerId: Player.Id;
-    };
+    } : {});
 
     export namespace CtorArgs {
-
-        export type FromGame<ID extends Player.Id | SocketId = SocketId> = {
-
-            readonly username: Username;
-
-            /**
-             * A set of socket ID's. Only defined for non-offline games.
-             * 
-             * **Important**: The builder of this field must enforce that
-             * entries are unique (that there are no duplicates).
-             */
-            readonly beNiceTo: ReadonlyArray<ID>
-
-            readonly socketId: SocketId;
-        };
 
         /**
          * @returns
@@ -179,7 +172,7 @@ export namespace Player {
          * @param playerDescs -
          */
         export const finalizePlayerIds = (
-            playerDescs: Bundle<CtorArgs.FromGame>
+            playerDescs: Bundle<CtorArgs<SocketId>>
         ): Bundle<CtorArgs> => {
             const socketIdToPlayerIdMap: Record<SocketId,Player.Id> = {};
             for (const operatorClass in playerDescs) {

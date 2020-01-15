@@ -4,7 +4,6 @@ import { setTimeout } from "timers";
 import { Coord } from "floor/Coord";
 import { Tile } from "floor/Tile";
 import { Game } from "game/Game";
-import { GroupSession } from "./GroupSession";
 import { Player } from "game/player/Player";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
@@ -46,6 +45,8 @@ export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
         // Start with a call to the super constructor:
         super(desc, Tile);
         this.namespace = namespace;
+
+        // TODO: initialize this.socketBundle
 
         // Attach event listeners / handlers to each socket:
         this.__players.HUMAN.map((player) => Player.Bundle.get(this.socketBundle, player.playerId))

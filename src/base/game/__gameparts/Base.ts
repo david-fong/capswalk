@@ -194,7 +194,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
         } else {
             const avoid: ReadonlyArray<Tile<S>> = Array.from(new Set(
                 this.grid.tile.sourcesTo((targetTile as Tile<S>).coord).get
-                    .flatMap((sourceToTarget) => this.grid.tile.destsFrom(sourceToTarget.coord).get)
+                .flatMap((sourceToTarget) => this.grid.tile.destsFrom(sourceToTarget.coord).get)
             ));
             return this.lang.getNonConflictingChar(avoid
                     .map((tile) => tile.langSeq)

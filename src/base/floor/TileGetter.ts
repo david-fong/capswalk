@@ -60,7 +60,7 @@ export namespace TileGetter {
 
         public constructor(protected contents: ReadonlyArray<Tile<S>>) { }
 
-        public get unoccupied(): Query<S> {
+        public get unoccupied(): Omit<Query<S>, "occupants"> {
             this.contents = this.contents.filter((tile) => !tile.isOccupied);
             return this;
         }
@@ -72,7 +72,9 @@ export namespace TileGetter {
         }
 
         public get occupants(): ReadonlyArray<Player<S>> {
-            const retval = this.contents.map((tile) => );
+            const retval = this.contents
+                .filter((tile) => tile.isOccupied)
+                .map((tile) => tile.occupantId);
             delete this.contents;
             return retval;
         }

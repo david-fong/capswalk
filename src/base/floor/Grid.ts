@@ -14,13 +14,13 @@ import { Beehive } from "./impl/Beehive";
  * 
  * A Collection of Tiles.
  */
-export abstract class Grid<S extends Coord.System.GridCapable> {
+export abstract class Grid<S extends Coord.System.GridCapable> implements TileGetter.Source<S,[]> {
 
     public readonly class: Grid.ClassIf<S>;
 
-    public readonly tile: TileGetter<S,[Coord.Bare<S>]>;
-
     public readonly dimensions: Grid.Dimensions<S>;
+
+    public readonly tile: TileGetter<S,[Coord.Bare<S>]>;
 
     /**
      * _Does not call reset._
@@ -34,6 +34,7 @@ export abstract class Grid<S extends Coord.System.GridCapable> {
 
         this.class = Grid.getImplementation(desc.coordSys);
         this.dimensions = desc.dimensions;
+        this.tile = new TileGetter(this);
 
         // Create and populate the HTML table element field:
         // (skip this step if my tiles are not displayed in a browser window)
@@ -238,7 +239,7 @@ export namespace Grid {
          */
         getSpawnCoords(
             playerCounts: Readonly<Record<Player.Operator, number>>,
-            bounds: Dimensions<S>,
+            dimensions: Dimensions<S>,
         ): Player.Bundle<Coord.Bare<S>>;
 
     };

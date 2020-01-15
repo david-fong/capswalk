@@ -308,7 +308,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System.Gri
         } else {
             bubbler.isBubbling = false;
         }
-        bubbler.hostTile.setOccupant(bubbler);
+        bubbler.hostTile.setOccupant(bubbler); // (todo) delete
     }
 
 

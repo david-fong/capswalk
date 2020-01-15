@@ -90,7 +90,7 @@ export class Tile<S extends Coord.System> {
     }
 
     public evictOccupant(): void {
-        this.setOccupant(PlayerSkeleton.VisibleState.NULL);
+        this.setOccupant(PlayerSkeleton.VisibleState.NULL); // (todo) change to set this manually
     }
 
     public get occupantId(): Player.Id.Nullable {
