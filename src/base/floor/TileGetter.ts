@@ -3,7 +3,7 @@ import { Tile } from "./Tile";
 import { Player } from "utils/TypeDefs";
 
 
-type CoordSys = Coord.System.GridCapable;
+type CoordSys = Coord.System;
 
 type Arguments<S extends CoordSys> = [ Coord.Bare<S>, ] | [];
 
@@ -32,11 +32,11 @@ export class TileGetter<S extends CoordSys, A extends Arguments<S>> {
         return this.source.__getTileAt(...args);
     }
 
-    public destsFrom(...args: A): TileGetter.Query<S> {
-        return new TileGetter.Query(this.source.__getTileDestsFrom(...args));
+    public destsFrom(...args: A): Query<S> {
+        return new Query(this.source.__getTileDestsFrom(...args));
     }
-    public sourcesTo(...args: A): TileGetter.Query<S> {
-        return new TileGetter.Query(this.source.__getTileSourcesTo(...args));
+    public sourcesTo(...args: A): Query<S> {
+        return new Query(this.source.__getTileSourcesTo(...args));
     }
 
 }
@@ -49,36 +49,36 @@ export namespace TileGetter {
         __getTileAt(...args: A): Tile<S>;
         // NOTE: do we need to add an optional argument for range?
         // If so, document that it must default to `1` if unspecified.
-        __getTileDestsFrom(...args: A): ReadonlyArray<Tile<S>>;
-        __getTileSourcesTo(...args: A): ReadonlyArray<Tile<S>>;
+        __getTileDestsFrom(...args: A): Array<Tile<S>>;
+        __getTileSourcesTo(...args: A): Array<Tile<S>>;
     }
 
-    /**
-     * 
-     */
-    export class Query<S extends CoordSys> {
+}
 
-        public constructor(protected contents: ReadonlyArray<Tile<S>>) { }
+/**
+ * 
+ */
+class Query<S extends CoordSys> {
 
-        public get unoccupied(): Omit<Query<S>, "occupants"> {
-            this.contents = this.contents.filter((tile) => !tile.isOccupied);
-            return this;
-        }
+    public constructor(protected contents: Array<Tile<S>>) { }
 
-        public get get(): ReadonlyArray<Tile<S>> {
-            const retval = this.contents;
-            delete this.contents;
-            return retval;
-        }
+    public get unoccupied(): Omit<Query<S>, "occupants"> {
+        this.contents = this.contents.filter((tile) => !tile.isOccupied);
+        return this;
+    }
 
-        public get occupants(): ReadonlyArray<Player<S>> {
-            const retval = this.contents
-                .filter((tile) => tile.isOccupied)
-                .map((tile) => tile.occupantId);
-            delete this.contents;
-            return retval;
-        }
+    public get get(): Array<Tile<S>> {
+        const retval = this.contents;
+        delete this.contents;
+        return retval;
+    }
 
+    public get occupants(): Array<Player<S>> {
+        const retval = this.contents
+            .filter((tile) => tile.isOccupied)
+            .map((tile) => tile.occupantId);
+        delete this.contents;
+        return retval;
     }
 
 }

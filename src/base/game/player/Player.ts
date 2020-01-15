@@ -11,7 +11,7 @@ export { PlayerSkeleton } from "./PlayerSkeleton";
 /**
  * 
  */
-export abstract class Player<S extends Coord.System.GridCapable> extends PlayerSkeleton<S> {
+export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
     public readonly username: Player.Username;
 
@@ -55,8 +55,8 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
         this.beNiceTo = desc.beNiceTo;
     }
 
-    public reset(): void {
-        super.reset();
+    public reset(spawnTile: Tile<S>): void {
+        super.reset(spawnTile);
         this.lastAcceptedRequestId = PlayerMovementEvent.INITIAL_REQUEST_ID;
         this.requestInFlight = false;
         this.game.cancelTimeout(this.bubbleTimer);
@@ -88,17 +88,6 @@ export abstract class Player<S extends Coord.System.GridCapable> extends PlayerS
      * @param dest -
      */
     protected abstract abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void;
-
-    /**
-     * Convenience method.
-     */
-    public bench(): void {
-        this.makeMovementRequest(this.benchTile);
-    }
-
-    public get isBenched(): boolean {
-        return this.hostTile === this.benchTile;
-    }
 
 }
 

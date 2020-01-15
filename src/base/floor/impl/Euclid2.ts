@@ -236,7 +236,7 @@ export namespace Euclid2 {
          * @override
          */
         public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
-            const options: Array<Tile<S>> = this.getUNT(sourceCoord);
+            const options = this.tile.destsFrom(sourceCoord).unoccupied.get;
             if (!(options.some((tile) => tile.coord.equals(sourceCoord)))) {
                 // This should never happen. It is here as a reminder.
                 throw new Error("Caller code didn't break the upward occupancy link.");

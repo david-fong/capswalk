@@ -15,7 +15,7 @@ import { Game } from "../Game";
 /**
  * Foundational parts of a Game that are not related to event handling.
  */
-export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridCapable> {
+export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly gameType: G;
 
@@ -120,10 +120,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
         Object.values(this.__players).forEach((sameClassPlayers) => {
             sameClassPlayers.forEach((player) => {
                 // Reset:
-                player.reset();
-                // Respawn:
                 const spawnCoord = Player.Bundle.get(spawnPoints, player.playerId);
-                player.moveTo(this.grid.tile.at(spawnCoord));
+                player.reset(this.grid.tile.at(spawnCoord));
             });
         });
 
@@ -179,29 +177,20 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
      * A {@link Lang.CharSeqPair} that can be used as a replacement
      * for that currently being used by `tile`.
      */
-    public shuffleLangCharSeqAt(targetTile: Tile<S | Coord.System.__BENCH>): Lang.CharSeqPair {
+    public shuffleLangCharSeqAt(targetTile: Tile<S>): Lang.CharSeqPair {
         // First, clear values for the target tile so its current
         // (to-be-previous) values don't get unnecessarily avoided.
         targetTile.setLangCharSeq(Lang.CharSeqPair.NULL);
 
-        const benchOwnerId = (targetTile as Tile<Coord.System.__BENCH>).coord.playerId;
-        if (benchOwnerId !== undefined) {
-            const benchOwner = this.getPlayerById(benchOwnerId);
-            return {
-                char: benchOwner.playerId.toString(),
-                seq: benchOwner.username,
-            };
-        } else {
-            const avoid: ReadonlyArray<Tile<S>> = Array.from(new Set(
-                this.grid.tile.sourcesTo((targetTile as Tile<S>).coord).get
-                .flatMap((sourceToTarget) => this.grid.tile.destsFrom(sourceToTarget.coord).get)
-            ));
-            return this.lang.getNonConflictingChar(avoid
-                    .map((tile) => tile.langSeq)
-                    .filter((seq) => seq), // no falsy values.
-                this.langBalancingScheme,
-            );
-        }
+        const avoid: ReadonlyArray<Tile<S>> = Array.from(new Set(
+            this.grid.tile.sourcesTo((targetTile as Tile<S>).coord).get
+            .flatMap((sourceToTarget) => this.grid.tile.destsFrom(sourceToTarget.coord).get)
+        ));
+        return this.lang.getNonConflictingChar(avoid
+                .map((tile) => tile.langSeq)
+                .filter((seq) => seq), // no falsy values.
+            this.langBalancingScheme,
+        );
     }
 
 
@@ -209,20 +198,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System.GridC
     public abstract setTimeout(callback: Function, millis: number, ...args: any[]): G extends Game.Type.SERVER ? NodeJS.Timeout : number;
 
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
-
-    /**
-     * @returns
-     * The tile at `dest`, or the specified player's {@link Player#benchTile}.
-     * 
-     * @param dest -
-     */
-    public getBenchableTileAt(
-        dest: Coord.Bare<S | Coord.System.__BENCH>,
-    ): Tile<S | Coord.System.__BENCH> {
-        return ((dest as Coord.Bare<Coord.System.__BENCH>).playerId !== undefined)
-            ? this.getPlayerById((dest as Coord.Bare<Coord.System.__BENCH>).playerId).benchTile
-            : this.grid.getTileAt(dest as Coord.Bare<S>);
-    }
 
     /**
      * @param playerId - The ID of an existing player.

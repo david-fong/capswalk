@@ -9,7 +9,7 @@ import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
  * 
  * @extends HumanPlayer
  */
-export class OnlineHumanPlayer<S extends Coord.System.GridCapable> extends HumanPlayer<S> {
+export class OnlineHumanPlayer<S extends Coord.System> extends HumanPlayer<S> {
 
     /**
      * @override

@@ -16,7 +16,7 @@ type G = Game.Type.OFFLINE;
  * 
  * @extends Game
  */
-export class OfflineGame<S extends Coord.System.GridCapable> extends Game<G,S> {
+export class OfflineGame<S extends Coord.System> extends Game<G,S> {
 
     protected settings: LocalGameSettings;
 

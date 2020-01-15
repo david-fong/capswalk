@@ -1,4 +1,4 @@
-import { Coord, Tile } from "floor/Tile";
+import { Coord } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player} from "./Player";
 
@@ -11,7 +11,7 @@ import { Player} from "./Player";
  * - All game implementations use this for non-operator human players.
  * - Client games use this in place of artificial players.
  */
-export class PuppetPlayer<S extends Coord.System.GridCapable> extends Player<S> {
+export class PuppetPlayer<S extends Coord.System> extends Player<S> {
 
     public constructor(game: Game<any,S>, desc: Player.CtorArgs) {
         super(game, desc);

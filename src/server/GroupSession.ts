@@ -125,7 +125,7 @@ export class GroupSession {
      * @param gridDimensions -
      * @returns false if the passed arguments were incomplete or invalid.
      */
-    private createGameInstance<S extends Coord.System.GridCapable>(
+    private createGameInstance<S extends Coord.System>(
         coordSys: S,
         gridDimensions: Grid.Dimensions<S>,
     ): Readonly<Game.CtorArgs.FailureReasons> | undefined {

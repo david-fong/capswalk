@@ -20,7 +20,7 @@ type G = Game.Type.SERVER;
  * 
  * @extends Game
  */
-export class ServerGame<S extends Coord.System.GridCapable> extends Game<G,S> {
+export class ServerGame<S extends Coord.System> extends Game<G,S> {
 
     public readonly namespace: io.Namespace;
 

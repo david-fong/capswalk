@@ -10,7 +10,7 @@ import { Player } from "./Player";
  * 
  * @extends Player
  */
-export abstract class HumanPlayer<S extends Coord.System.GridCapable> extends Player<S> {
+export abstract class HumanPlayer<S extends Coord.System> extends Player<S> {
 
     /**
      * Invariant: always matches the prefix of the {@link LangSeq} of
@@ -21,8 +21,8 @@ export abstract class HumanPlayer<S extends Coord.System.GridCapable> extends Pl
     /**
      * @override {@link Player#reset}
      */
-    public reset(): void {
-        super.reset();
+    public reset(spawnTile: Tile<S>): void {
+        super.reset(spawnTile);
         this._seqBuffer = "";
     }
 
@@ -63,7 +63,7 @@ export abstract class HumanPlayer<S extends Coord.System.GridCapable> extends Pl
      *      to maintain its invariant.
      */
     public seqBufferAcceptKey(key: string | null): void {
-        const unoccupiedNeighbouringTiles: Array<Tile<S>> = this.getUNT();
+        const unoccupiedNeighbouringTiles = this.tile.destsFrom().unoccupied.get;
         if (unoccupiedNeighbouringTiles.length === 0) {
             // Every neighbouring `Tile` is occupied!
             // In this case, no movement is possible.
@@ -103,11 +103,8 @@ export abstract class HumanPlayer<S extends Coord.System.GridCapable> extends Pl
                         // missing incoming updates from the server / Game Manager).
                         this.makeMovementRequest(matchletTiles[0]);
                     } else {
-                        // Refreshing seqBuffer due to external events and found a
-                        // new completion. Probably, another player moved near me,
-                        // and the shuffle-in happened to complete something else
-                        // I was trying to type. In this case, don't try to move.
-                        // Instead, break the loop in a way that clears the seqBuffer.
+                        // External shuffling event created a new completion.
+                        // In this case, don't try to move. Clear the seqBuffer.
                         newSeqBuffer = "";
                     }
                 }

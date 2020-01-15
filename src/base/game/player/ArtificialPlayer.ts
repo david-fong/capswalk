@@ -17,7 +17,7 @@ import { Chaser } from "./artificials/Chaser";
  */
 // TODO: if add abstract method hooks for events like player "collision",
 // then add this to the above documentation.
-export abstract class ArtificialPlayer<S extends Coord.System.GridCapable> extends Player<S> {
+export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S> {
 
     private scheduledMovementCallbackId: number | NodeJS.Timeout;
 
@@ -73,15 +73,15 @@ export namespace ArtificialPlayer {
     const Constructors = Object.freeze(<const>{
         [ Player.Operator.CHASER ]: Chaser,
     }) as Readonly<Record<
-        Exclude<Player.Operator, Player.Operator.HUMAN>,
+        Exclude<Player.Operator, typeof Player.Operator.HUMAN>,
         typeof ArtificialPlayer
     >>; // Type Assertion.
 
-    export const of = <S extends Coord.System.GridCapable>(
+    export const of = <S extends Coord.System>(
         game: Readonly<Game<any,S>>,
         playerDesc: Readonly<Player.CtorArgs>,
     ): ArtificialPlayer<S> => {
-        return new (Constructors[playerDesc.operatorClass])(game, playerDesc);
+        return new (Constructors[playerDesc.playerId.operatorClass])(game, playerDesc);
     };
 
 }

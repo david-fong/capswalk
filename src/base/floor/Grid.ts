@@ -14,7 +14,7 @@ import { Beehive } from "./impl/Beehive";
  * 
  * A Collection of Tiles.
  */
-export abstract class Grid<S extends Coord.System.GridCapable> implements TileGetter.Source<S,[]> {
+export abstract class Grid<S extends Coord.System> implements TileGetter.Source<S,[]> {
 
     public readonly class: Grid.ClassIf<S>;
 
@@ -99,36 +99,13 @@ export abstract class Grid<S extends Coord.System.GridCapable> implements TileGe
      * @param coord -
      * @param radius -
      */
-    public getTileDestsFrom(coord: Coord.Bare<S | Coord.System.__BENCH>, radius: number = 1): Array<Tile<S>> {
-        if ((coord as Coord.Bare<Coord.System.__BENCH>).playerId !== undefined) {
-            // TODO / NOTE: pretty much doing this because I don't want to
-            //  bother with figuring out a way to get access to the player's
-            //  bench tile in this scope. If we find a need for that, then change this.
-            return [];
-        } else {
-            return this.abstractGetTileDestsFrom(coord as Coord.Bare<S>, radius);
-        }
+    public getTileDestsFrom(coord: Coord.Bare<S>, radius: number = 1): Array<Tile<S>> {
+        return this.abstractGetTileDestsFrom(coord as Coord.Bare<S>, radius);
     }
 
     // TODO: add corresponding methods for "SourcesTo"
 
     protected abstract abstractGetTileDestsFrom(coord: Coord.Bare<S>, radius: number): Array<Tile<S>>;
-
-    /**
-     * @returns
-     * A collection of all "Unoccupied Neighbouring Tiles" within
-     * `radius` of `coord` according to {@link Pos#infNorm}. Tiles
-     * for which {@link Tile#isOccupied} is `true` are filtered out
-     * of the returned collection. The Tile at `coord` is included
-     * if it is unoccupied at the time of the function call.
-     * 
-     * @param coord - The center / origin position-locator to search around.
-     * @param radius - An inclusive bound on the {@link Pos#infNorm} filter.
-     *      Defaults to `1`.
-     */
-    public getUNT(coord: Coord.Bare<S>, radius: number = 1): Array<Tile<S>> {
-        return this.getTileDestsFrom(coord, radius).filter((tile) => !tile.isOccupied);
-    }
 
     public abstract forEachTile(consumer: (tile: Tile<S>) => void, thisArg?: object): void;
 
@@ -172,7 +149,7 @@ export namespace Grid {
     /**
      * Values do not _need_ to be in range or integers.
      */
-    export type Dimensions<S extends Coord.System.GridCapable>
+    export type Dimensions<S extends Coord.System>
         = S extends Coord.System.EUCLID2 ? Euclid2.Grid.Dimensions
         : S extends Coord.System.BEEHIVE ? Beehive.Grid.Dimensions
         : never;
@@ -181,7 +158,7 @@ export namespace Grid {
         [ Coord.System.EUCLID2 ]: Euclid2.Grid,
         [ Coord.System.BEEHIVE ]: Beehive.Grid,
     }) as Readonly<{
-        [S in Coord.System.GridCapable]: ClassIf<S>;
+        [S in Coord.System]: ClassIf<S>;
     }>;
 
     // ==============================================================
@@ -189,14 +166,14 @@ export namespace Grid {
     // the additions of new coordinate systems.
     // ==============================================================
 
-    export type CtorArgs<S extends Coord.System.GridCapable> = {
+    export type CtorArgs<S extends Coord.System> = {
         coordSys: S;
         dimensions: Dimensions<S>;
         tileClass: Tile.ClassIf<S>;
         domGridHtmlIdHook?: string;
     };
 
-    export interface ClassIf<S extends Coord.System.GridCapable> {
+    export interface ClassIf<S extends Coord.System> {
 
         /**
          * Constructor
@@ -250,7 +227,7 @@ export namespace Grid {
      * 
      * @param coordSys -
      */
-    export const getImplementation = <S extends Coord.System.GridCapable>(coordSys: S): ClassIf<S> => {
+    export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
         // Note: For some reason TypeScript can't figure out the type here.
         return Constructors[coordSys] as unknown as ClassIf<S>;
     };
@@ -260,7 +237,7 @@ export namespace Grid {
      * 
      * Upper and lower bounds must be strictly positive integer values.
      */
-    export type DimensionBounds<S extends Coord.System.GridCapable> = Readonly<{
+    export type DimensionBounds<S extends Coord.System> = Readonly<{
         [ P in keyof Dimensions<S> ]: Readonly<{
             min: number;
             max: number;

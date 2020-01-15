@@ -30,7 +30,7 @@ import { PuppetPlayer } from "game/player/PuppetPlayer";
  * - Offline and Client games display the game-state to an operator via browser and HTML.
  * - Client  and Server games use network operations to communicate.
  */
-export abstract class Game<G extends Game.Type, S extends Coord.System.GridCapable> extends GameEvents<G,S> {
+export abstract class Game<G extends Game.Type, S extends Coord.System> extends GameEvents<G,S> {
 
     /**
      * @override
@@ -63,7 +63,7 @@ export namespace Game {
      */
     export type CtorArgs<
         G extends Game.Type,
-        S extends Coord.System.GridCapable,
+        S extends Coord.System,
     > = Readonly<{
         gameType: G;
         coordSys: S;

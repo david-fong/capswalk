@@ -22,7 +22,7 @@ type G = Game.Type.CLIENT;
  * 
  * @extends Game
  */
-export class ClientGame<S extends Coord.System.GridCapable> extends Game<G,S> {
+export class ClientGame<S extends Coord.System> extends Game<G,S> {
 
     protected settings: LocalGameSettings;
 

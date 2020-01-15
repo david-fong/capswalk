@@ -9,7 +9,7 @@ import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
  * 
  * @extends HumanPlayer
  */
-export class OfflineHumanPlayer<S extends Coord.System.GridCapable> extends HumanPlayer<S> {
+export class OfflineHumanPlayer<S extends Coord.System> extends HumanPlayer<S> {
 
     public constructor(game: OfflineGame<S>, desc: Player.CtorArgs) {
         super(game, desc);

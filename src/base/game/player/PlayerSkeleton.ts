@@ -16,7 +16,7 @@ import { TileGetter } from "floor/TileGetter";
  * 
  * @extends PlayerTypeDefs to intake its namespace exports.
  */
-export class PlayerSkeleton<S extends Coord.System.GridCapable> extends PlayerTypeDefs<S>
+export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S>
     implements PlayerSkeletonTypeDefs.VisibleState {
 
     public readonly playerId: Player.Id;
@@ -26,12 +26,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable> extends PlayerTy
      */
     public readonly game: Game<any,S>;
 
-    private _hostTile: Tile<S | Coord.System.__BENCH>;
-
-    /**
-     * A {@link Tile} that can only be occupied by this `Player`.
-     */
-    public readonly benchTile: Tile<Coord.System.__BENCH>;
+    private _hostTile: Tile<S>;
 
     public readonly tile: TileGetter<S,[]>;
 
@@ -51,7 +46,6 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable> extends PlayerTy
         }
         this.playerId = playerId;
         this.game = game;
-        this.benchTile = new Tile(new __Bench.Coord({ playerId: this.playerId, }));
         this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
     }
 
@@ -61,11 +55,11 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable> extends PlayerTy
      * Must be called _after_ the {@link Grid} has been reset.
      * Does not evict itself from its current host tile (if it
      * has one). Automatically benches itself.
+     * 
+     * @param spawnTile -
      */
-    protected reset(): void {
-        this.benchTile.reset();
-        this.benchTile.setLangCharSeq(this.game.shuffleLangCharSeqAt(this.benchTile));
-        this._hostTile = this.benchTile;
+    protected reset(spawnTile: Tile<S>): void {
+        this._hostTile = spawnTile;
         this.score = 0;
         this.stockpile = 0;
         this.isDowned = false;
@@ -104,7 +98,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable> extends PlayerTy
      *
      * @param dest -
      */
-    public moveTo(dest: Tile<S | Coord.System.__BENCH>): void {
+    public moveTo(dest: Tile<S>): void {
         // Evict self from current `Tile`.
         if (this.hostTile.occupantId !== this.playerId) {
             if (this.game.gameType !== Game.Type.CLIENT) {
@@ -202,7 +196,7 @@ export class PlayerSkeleton<S extends Coord.System.GridCapable> extends PlayerTy
 
 export namespace PlayerSkeleton {
 
-    export class TileGetterSource<S extends Coord.System.GridCapable> implements TileGetter.Source<S,[]> {
+    export class TileGetterSource<S extends Coord.System> implements TileGetter.Source<S,[]> {
 
         public constructor(private readonly player: PlayerSkeleton<S>) { }
 
@@ -210,12 +204,12 @@ export namespace PlayerSkeleton {
             return this.player.game.grid.tile.at(this.player.coord);
         }
 
-        public __getTileDestsFrom(): ReadonlyArray<Tile<S>> {
-            return this.player.game.grid.tile.destsFrom(this.player.coord);
+        public __getTileDestsFrom(): Array<Tile<S>> {
+            return this.player.game.grid.tile.destsFrom(this.player.coord).get;
         }
 
-        public __getTileSourcesTo(): ReadonlyArray<Tile<S>> {
-            return this.player.game.grid.tile.sourcesTo(this.player.coord);
+        public __getTileSourcesTo(): Array<Tile<S>> {
+            return this.player.game.grid.tile.sourcesTo(this.player.coord).get;
         }
     }
 

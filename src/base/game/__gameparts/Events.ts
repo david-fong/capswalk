@@ -14,7 +14,7 @@ import { Game } from "../Game";
 /**
  * 
  */
-export abstract class GameEvents<G extends Game.Type, S extends Coord.System.GridCapable> extends GameBase<G,S> {
+export abstract class GameEvents<G extends Game.Type, S extends Coord.System> extends GameBase<G,S> {
 
     /**
      * All copies of the game should contain identical entries. That
@@ -127,7 +127,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System.Gri
             this.processMoveExecute(desc);
             return;
         }
-        const dest = this.getBenchableTileAt(desc.dest.coord);
+        const dest = this.grid.tile.at(desc.dest.coord);
         if (dest.isOccupied ||
             dest.numTimesOccupied !== desc.dest.numTimesOccupied) {
             // The occupancy counter check is not essential, but it helps
@@ -188,7 +188,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System.Gri
      */
     public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         const player = this.getPlayerById(desc.playerId);
-        const dest = this.getBenchableTileAt(desc.dest.coord);
+        const dest = this.grid.tile.at(desc.dest.coord);
         const executeBasicTileUpdates = (): void => {
             this.recordEvent(desc);
             // The `LangCharSeqPair` shuffle changes must take effect
@@ -329,7 +329,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System.Gri
             const neighbourQueue = [ bubbler, ];
             while (neighbourQueue.length) {
                 const neighbour = neighbourQueue.pop()!;
-                neighbour.getNeighbours().filter((jumpPlayer) => {
+                neighbour.tile.destsFrom().occupants.filter((jumpPlayer) => {
                     // Filter out neighbours that we have already processed:
                     return !(jumpNeighbours.includes(jumpPlayer))
                         && (true); // TODO: add conditions from the spec here.
