@@ -52,43 +52,43 @@ This is a non-technical section to reflect on my previous work on this project, 
 
 <img src="assets/images/snakey_version1.PNG" align="left" width="300" />
 
-I wrote [**version one**](https://github.com/david-fong/SnaKey) of this game in one week of the February of 2019 using Python. I had just finished [learning Python over the Winter break](https://github.com/david-fong/Tetris), and I wanted to do something original with it. I came up with the start of an idea spinning off of the classic snake game, with a twist on the movement mechanic: to move by typing.
+I wrote [**version one**](https://github.com/david-fong/SnaKey) of this game in one week of the February of 2019 using Python. I had just finished [learning Python](https://github.com/david-fong/Tetris), and I wanted to do something original with it.
 
-I was inspired to add different languages came because I was taking a beginners' class in Japanese, and needed to learn its two basic alphabets. I really enjoyed that class- not just because I was interested in the content, but also because the professor was a kind person and a good teacher. Because of that experience, helping people practice language learning became a significant motivator for my continued work on this game.
+The inspiration to add different languages came from taking a beginners' class in Japanese where I learned its two basic alphabets. I really enjoyed that class- not just for interest in the content, but also because the professor was a kind person and a good teacher. Because of that positive learning experience, helping people practice language learning became a significant motivator for my continued work on this game.
 
-I really enjoyed designing the game's rules and objectives. I drove the game design by the question _"How do I make it fun for a single player to keep moving around?"_. For the main objective, I decided on randomly spawned apples that could be collected for score points. To add a sense of ramping pressure, an enemy chaser, for a sense of competition, an enemy apple collector, and for extra challenge / reward, an enemy that would run away and push back the difficulty ramp whenever caught.
+I drove the game design by the question _"How do I make it fun for a single player to keep moving around?"_. For the main objective, I randomly spawned apples to collect for score points. To add a sense of ramping pressure, an enemy chaser, for a sense of competition, an enemy apple collector, and for extra challenge / reward, an enemy that would run away and push back the difficulty ramp whenever caught.
 
 ### 🕸 Version #2 - Slithering to the Web
 
 <img src="assets/images/snakey_version2_hiragana.PNG" align="left" width="300" />
 
-After finishing the first version, I excitedly showed my friends and Japanese prof, and quickly realized that the need to install Python was a severe accessibility hurdle. For that reason, during the following month of March, I learned how basic webpages are built up using HTML, JavaScript, and CSS, and I slowly worked on porting the game to be hosted on GitHub-Pages as [**version two **](https://github.com/david-fong/SnaKey-JS).
+After finishing the first version, I excitedly showed my friends and Japanese prof, and quickly realized that the need to install Python was a severe accessibility hurdle. For that reason, during the following month of March, I learned how basic webpages are built up using HTML, JavaScript, and CSS, and I slowly worked on porting the game to be hosted on GitHub-Pages as [**version two**](https://github.com/david-fong/SnaKey-JS).
 
-I wrote everything in pure vanilla HTML, Javascript, and CSS (on NotePad++). This helped me build a strong foundational understanding of how the basic technologies work, as opposed to what might have been the case if I started looking at various frameworks and transpiled languages right away. It has also made me appreciate the value of strong typing, and code-style conventions. Javascript is so slack when it comes to such basic things that it's easy to write things that don't read well or make much sense.
+I wrote everything in vanilla HTML, Javascript, and CSS (with hands tied behind my back on NotePad++), which helped me build a strong foundational understanding of how the basic technologies work. It made me appreciate the value of strong typing and code-style conventions and pushed me to later look at TypeScript and EsLint for version three.
 
-In this version, the game's underlying objectives, mechanics, and representation went largely unchanged, since unlike with the previous version where I had already learned the basics of the language and its engine, here I was back at square one. Most of my efforts went to searching through and exploring documentation on javascript's basic data structures, the browser DOM, and CSS. I found [w3c schools](https://www.w3schools.com/) and [MDN web docs](https://developer.mozilla.org/en-US/) to be great learning resources.
+The game's underlying objectives, mechanics, and representation went largely unchanged, since I was back at square one. Most of my efforts went to searching through and exploring documentation on javascript's basic data structures, the browser DOM, and CSS. I found [w3c schools](https://www.w3schools.com/) and the [MDN web docs](https://developer.mozilla.org/en-US/) to be great learning resources.
 
 ### 🌐 Version #3 - Snakes With Wings (You are Here)
 
-This brings us to where we are now: November of 2019 and onward. The goal for this version is to push the game out to the world of internet-enabled multiplayer. Although I've recently gotten comfortable [working in the terminal environment](https://github.com/david-fong/Darcy), I decided to try using VSCode, and so far, I have been incredibly pleased with the results of that decision.
+This brings us to where we are now: November of 2019 and onward. The goal for this version is to implement internet-enabled multiplayer. Although I had recently gotten comfortable [working in a terminal environment](https://github.com/david-fong/Darcy), I decided to try VSCode for the first time, and have been incredibly pleased with the results.
 
-You might think that after making this game twice I'd be tired of it, but that couldn't be further from the truth. For one thing, I see so many opportunities to improve on my previous work. After all, learning has been a major motivation for this project from the start. In each version of this project, I try to make it more and more accessible to people. I for one, cannot wait for the day when I can sit down and play this game together with a group of friends, or perhaps even with complete strangers.
+You might think that after making this game twice I'd be tired of it... but that couldn't be further from the truth! I see so many opportunities to improve on my previous work- to make it more accessible, organized, and more fun. I can't wait for the day when I can sit down and play it with a group of friends, or perhaps even with complete strangers.
 
 ---
 
-## 🛩 Design Challenges & Stepping up my Game
+## 🛩 Design Challenges
 
-I envision this version to be the last remake- again, not at all because I'm tired of it, but because I finally have the tools and know-how to build up a maintainable code base. Both of the previous versions suffered from three main problems- largely due to me being new to the language. Before I can talk about those problems, solving them, and why solving them is necessary for this version, I need to talk about what makes this version so different.
+I envision this version to be the last remake because I finally have the tools and know-how to build up a maintainable code base. Both of the previous versions suffered from three main problems- largely due to me being new to the language. Before I talk about those problems, we need to understand what makes this version so different.
 
-One of the big design challenges for this project is to give the user the choice between playing on or off-line. I like this challenge because it really demands designing a good function API, and working with inheritence to share as much code as possible. This isn't a trivial task given an overview of what each piece of the picture needs to accomplish:
+One of the big design challenges for this project is to allow playing on or off-line. I like this challenge because it really demands designing a good function API and inheritence chain, which isn't a trivial task given an overview of what each piece of the picture needs to accomplish:
 
-|                                            | Offline | Server | Client |
+|                     Task                   | Offline | Server | Client |
 |:-------------------------------------------|:-------:|:------:|:------:|
 | Maintain the master copy of the game state | :heavy_check_mark: | :heavy_check_mark: | :heavy_multiplication_x: |
 | Display the game state via the browser DOM | :heavy_check_mark: | :heavy_multiplication_x: | :heavy_check_mark: |
 | Use network operations to exchange events  | :heavy_multiplication_x: | :heavy_check_mark: | :heavy_check_mark: |
 
-This means that the code that receives a request for something like player movement and performs validation must be in a separate function from that which enacts all changes to all parts of the game state that are affected by an acceptance of the request. In addition to that, SocketIO can only guarantee that application messages will arrive in order if the client is using websockets for its underlying transport, which, while common, is not an absolute given, and is indeed not the case before a temporary long-polling connection upgrades to use websockets. This means that these request processing and executing functions must use event-ID systems to handle out-of-order message arrivals.
+The presence or absence of the network separates the locality / implementation of event lifestages such as request creation, sending, receipt, validation, response, and change enactment. In addition to that, SocketIO can only guarantee that application messages will arrive in order if the client is using websockets for its underlying transport, which, while common, is not an absolute given, and is indeed not the case before a temporary long-polling connection upgrades to use websockets. That is, event handlers require event-ID systems to handle out-of-order message arrivals at the client and server sides.
 
 ## 🧗‍♀️ Stepping Up my Game
 
