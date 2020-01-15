@@ -40,7 +40,7 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
 |:----:|----------------------|
 | 💡<br>I Love my Idea | And I champion it with the pride of a person whose eyes have never seen it done before. It may not have fallen out of the sky and hit me in the head, [but it kind of feels that way](https://www.ted.com/talks/ok_go_how_to_find_a_wonderful_idea). I strive to develop it and polish it into something that brings out the aspects of challenge and hidden fun from the process of learning something new. |
 | 🍏<br>To Push Myself | To make my idea a reality, I need to learn new things: to search for _what_ I need to learn next, to learn about existing choices of tools and how to choose one, and then to learn the tool. First it was Python, and then vanilla web-development, and now, NodeJS, expressJS, SocketIO, VSCode, Typescript, esLint, and WebPack. It's a refreshing change compared to my experience learning in school: Here, I start with a concrete goal in mind, and the goal was given to me from myself. |
-| 💼<br>For the Portfolio | I aim to make something polished. That includes coding style and design, documentation, modularity, and compilation. I set out and bind myself to write readmes that share the interesting things that I learn and create. For all I know, my eyes may be the only ones that see this effort, but to me it is like keeping a house clean so that it's always ready for guests. Whether or not guests ever come, a clean house makes for a good house to live in. |
+| 💼<br>For the Portfolio | I aim to make something polished. That includes coding style and design, documentation, modularity, and compilation. I set out and bind myself to write readmes that share the interesting things that I learn and create. For all I know, my eyes may be the only ones that see these efforts, but to me it is like keeping a house clean so it's always ready for guests: Whether or not guests ever come, a clean house makes for a good house to live in. |
 
 ---
 
@@ -56,17 +56,17 @@ I wrote [**version one**](https://github.com/david-fong/SnaKey) of this game in 
 
 The inspiration to add different languages came from taking a beginners' class in Japanese where I learned its two basic alphabets. I really enjoyed that class- not just for interest in the content, but also because the professor was a kind person and a good teacher. Because of that positive learning experience, helping people practice language learning became a significant motivator for my continued work on this game.
 
-I drove the game design by the question _"How do I make it fun for a single player to keep moving around?"_. For the main objective, I randomly spawned apples to collect for score points. To add a sense of ramping pressure, an enemy chaser, for a sense of competition, an enemy apple collector, and for extra challenge / reward, an enemy that would run away and push back the difficulty ramp whenever caught.
+I designed the game asking the question _"How can I make it fun for a single player to keep moving around?"_. For the main objective, I randomly spawned apples to collect for score points. To add a sense of ramping pressure, an enemy chaser, for a sense of competition, an enemy apple collector, and for extra challenge / reward, an enemy that would run away and push back the difficulty ramp whenever caught.
 
 ### 🕸 Version #2 - Slithering to the Web
 
 <img src="assets/images/snakey_version2_hiragana.PNG" align="left" width="300" />
 
-After finishing the first version, I excitedly showed my friends and Japanese prof, and quickly realized that the need to install Python was a severe accessibility hurdle. For that reason, during the following month of March, I learned how basic webpages are built up using HTML, JavaScript, and CSS, and I slowly worked on porting the game to be hosted on GitHub-Pages as [**version two**](https://github.com/david-fong/SnaKey-JS).
+After finishing the first version, I excitedly showed my friends and Japanese prof, who responded with encouragement and enthusiasm, but also confirmed my fears of its poor accessibility. For that reason, during the following month of March, I learned how basic webpages are built up using HTML, JavaScript, and CSS to port the game to be hosted on GitHub-Pages as [**version two**](https://github.com/david-fong/SnaKey-JS).
 
-I wrote everything in vanilla HTML, Javascript, and CSS (with hands tied behind my back on NotePad++), which helped me build a strong foundational understanding of how the basic technologies work. It made me appreciate the value of strong typing and code-style conventions and pushed me to later look at TypeScript and EsLint for version three.
+I wrote everything (with hands tied behind my back on NotePad++) in vanilla HTML, Javascript, and CSS. This helped me to build a strong foundation on the basic technologies, and to appreciate the value of a good IDE, strong typing, and coding style conventions (which pushed me to look at VsCode, TypeScript, and EsLint in version three).
 
-The game's underlying objectives, mechanics, and representation went largely unchanged, since I was back at square one. Most of my efforts went to searching through and exploring documentation on javascript's basic data structures, the browser DOM, and CSS. I found [w3c schools](https://www.w3schools.com/) and the [MDN web docs](https://developer.mozilla.org/en-US/) to be great learning resources.
+The game's underlying objectives, mechanics, and representation went largely unchanged. Since I was back at square one, most of my efforts went to searching through and exploring documentation on javascript's basic data structures, the browser DOM, and CSS. I found [w3c schools](https://www.w3schools.com/) and the [MDN web docs](https://developer.mozilla.org/en-US/) to be great learning resources.
 
 ### 🌐 Version #3 - Snakes With Wings (You are Here)
 
@@ -104,7 +104,7 @@ Now that we understand why the design requires so much more care in this version
 
 ## My Joys in JavaScript and TypeScript
 
-In my experience with Java from school, Co-op, and [my own projects](https://github.com/david-fong/UbcCourseSchedulingTool), the things I have loved most about it are its strong specifications, how strong typing is baked into the grammar, and the resulting ability for good a IDE to make the task of writing code a better experience. That's why as I started breaking into TypeScript and eslint in this project, my heart felt like it was flying. Here, I want to share ways that I've been leveraging and combining Javascript and TypeScript features to make my code more flexible, organized, and better documented.
+In my experience with Java from Co-op, school, and [my own projects](https://github.com/david-fong/UbcCourseSchedulingTool), the things I have loved most about it are its strong specifications, how strong typing is baked into the grammar, and the resulting ability for good a IDE to make the task of writing code a better experience. That's why as I started breaking into TypeScript in this project, my heart felt like it was flying. Here, I want to share ways that I've been using Javascript and TypeScript to make my code more flexible, organized, and better documented.
 
 ### 🍱 Bundling Constructor Arguments as Objects
 
@@ -112,13 +112,13 @@ This is something that can be done in plain Javascript. It serves three purposes
 
 |       |               |
 |:-----:|---------------|
-| Footprint Reduction | This nullifies problems with function signature bloat. Defining the shapes of objects and instantiating them is much less verbose in JavaScript than in Java, which makes it conventient and highly practical. |
-| Flexibility | It makes constructor signatures incredibly malleable. If I need to add, remove, or change the type of an argument, I can modify the type definition and the relevant handler code and leave all other function-overrides and call sites untouched. |
-| Explicit Argument Mapping | This makes it _very_ difficult to pass arguments in "the wrong order", because order is meaningless. All the cognitive effort is migrated to using good object-field and variable names, which is more intuitive and robust. |
+| Footprint Reduction | Nullifies problems with function signature bloat. Defining the shapes of objects and instantiating them is much less verbose in JavaScript than in Java, which makes it conventient and highly practical. |
+| Flexibile Refactoring | Makes function signatures incredibly malleable. For me, the positive impacts with constructors have been huge. If I need to add, remove, or change the type of an argument, I can modify the type definition and the relevant handler code and leave all other function-overrides and call sites untouched. |
+| Named Parameters | Makes it _very_ difficult to pass arguments in "the wrong order" since order is meaningless. All the cognitive effort is migrated to using good names for variable and object-fields, which is more intuitive and robust. |
 
 ### 🧩 Type Aliases and Declaration Merging
 
-I have found aliasing primitives to be incredibly useful. A prime example is this project's Player.Id type: For one thing, it allows me to document a use-case-specific primitive type so I can get mouseover documentation anywhere it is used, and around January, it made what might have been an incredibly laborious refactoring task almost _easy_ when I changed that definition to be of object-type during an intermediate partial redesign.
+I have found aliasing primitives to be incredibly useful. A prime example is this project's Player.Id type: It allows me to document a use-case-specific primitive so I can get mouseover documentation anywhere it is used, and around January, it made what might have been an incredibly laborious refactoring task _almost easy_ when I changed that definition to be of object-type.
 
 Using TypeScript's declaration merging feature, type declarations can be namespaced: Instead of writing `export type PlayerId` in the global namespace, which pollutes the global type-declaration group and adds to visual clutter with module imports, I can write something like this (an older example):
 
