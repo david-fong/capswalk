@@ -13,11 +13,14 @@
 ### High Priority
 
 1. Make grid's tile getters have a method-object nesting: `this.getTile.At`, `this.getTile.[unoccupied|occupied].[destsFrom|SourcesTo]`.
+   - Pass grid the __players object from game to grid.
+     - Use generics so that it's signature returns a Player type (not the TypeDefs version)
    - Update documentation on what the range of a bubble is and how range-extension works (both look at destFrom).
    - Update wording in lang readme to reflect new (and improved) method names.
      - Was "getNeighbouringTiles" and now use wording "destsFrom" and "sourcesTo".
 1. Write out full specification for what qualifies the end of the game.
    - Challenge: The teaming system (beNiceTo) is complicated.
+   - Add to spec that 
 
 ### Low Priority
 

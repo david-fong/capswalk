@@ -69,7 +69,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * for {@link HumanPlayer}s, and by a periodic callback for
      * {@link ArtificialPlayer}s.
      * 
-     * @param dest - 
+     * @param dest -
      */
     protected makeMovementRequest(dest: Player<S>["hostTile"]): void {
         if (this.requestInFlight) {

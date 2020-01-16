@@ -1,6 +1,5 @@
 import { Euclid2 } from "./impl/Euclid2";
 import { Beehive } from "./impl/Beehive";
-import { __Bench } from "floor/impl/__Bench";
 
 
 /**

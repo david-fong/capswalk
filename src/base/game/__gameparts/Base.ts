@@ -33,14 +33,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      */
     protected readonly langBalancingScheme: BalancingScheme;
 
-    /**
-     * Contains all non-bench tiles in this game.
-     */
     public readonly grid: Grid<S>;
 
-    /**
-     * 
-     */
     protected readonly __players: Player.Bundle<Player<S>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : HumanPlayer<S>;

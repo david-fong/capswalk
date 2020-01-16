@@ -41,11 +41,9 @@ export class TileGetter<S extends CoordSys, A extends Arguments<S>> {
 
 }
 
-
-
 export namespace TileGetter {
 
-    export interface Source<S extends CoordSys, A extends Arguments<S>> {
+    export interface Source<S extends CoordSys, A extends Arguments<S> = [Coord.Bare<S>]> {
         __getTileAt(...args: A): Tile<S>;
         // NOTE: do we need to add an optional argument for range?
         // If so, document that it must default to `1` if unspecified.

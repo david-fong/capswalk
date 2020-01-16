@@ -14,7 +14,7 @@ import { Beehive } from "./impl/Beehive";
  * 
  * A Collection of Tiles.
  */
-export abstract class Grid<S extends Coord.System> implements TileGetter.Source<S,[]> {
+export abstract class Grid<S extends Coord.System> implements TileGetter.Source<S> {
 
     public readonly class: Grid.ClassIf<S>;
 
@@ -78,35 +78,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 
 
 
-    /**
-     * @returns
-     * The {@link Tile} at the position in this `Grid` specified by
-     * `coord`. This cannot be used for player bench tiles (which
-     * already have the public access modifier via the player object).
-     * 
-     * @param coord - Must be within the bounds of this `Grid`.
-     * @param radius - Defaults to `1`.
-     * @throws `RangeError` if `coord` is not in the bounds of this `Grid`.
-     */
-    public abstract getTileAt(coord: Coord.Bare<S>): Tile<S>;
-
-    /**
-     * @returns
-     * All tiles that can be moved to from `coord` using no more than
-     * `radius` discrete movement actions. If the coordinate is for a
-     * bench tile, then an empty array is returned.
-     * 
-     * @param coord -
-     * @param radius -
-     */
-    public getTileDestsFrom(coord: Coord.Bare<S>, radius: number = 1): Array<Tile<S>> {
-        return this.abstractGetTileDestsFrom(coord as Coord.Bare<S>, radius);
-    }
-
-    // TODO: add corresponding methods for "SourcesTo"
-
-    protected abstract abstractGetTileDestsFrom(coord: Coord.Bare<S>, radius: number): Array<Tile<S>>;
-
     public abstract forEachTile(consumer: (tile: Tile<S>) => void, thisArg?: object): void;
 
     /**
@@ -129,6 +100,23 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * grid, or have integer-valued coordinate values.
      */
    public abstract getUntToward(sourceCoord: Coord<S>, intendedDest: Coord<S>): Tile<S>;
+
+
+
+    /**
+     * @override
+     */
+    public abstract __getTileAt(coord: Coord.Bare<S>): Tile<S>;
+
+    /**
+     * @override
+     */
+    public abstract __getTileDestsFrom(coord: Coord.Bare<S>): Array<Tile<S>>;
+
+    /**
+     * @override
+     */
+    public abstract __getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
 
 }
 

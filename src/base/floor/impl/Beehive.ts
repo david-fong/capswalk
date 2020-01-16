@@ -42,7 +42,7 @@ export namespace Beehive {
 
         public constructor(desc: Coord.Bare) {
             super(desc);
-            this.dash  = desc.dash;
+            this.dash = desc.dash;
             this.bash = desc.bash;
             Object.freeze(this);
         }
@@ -142,21 +142,6 @@ export namespace Beehive {
             // TODO: initialize `grid`.
         }
 
-
-        /**
-         * @override
-         */
-        public getTileAt(coord: Coord.Bare): Tile<S> {
-            return undefined!;
-        }
-
-        /**
-         * @override
-         */
-        protected abstractGetTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
-            return undefined!;
-        }
-
         /**
          * @override
          */
@@ -170,6 +155,28 @@ export namespace Beehive {
          * @override
          */
         public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
+            return undefined!;
+        }
+
+
+        /**
+         * @override
+         */
+        public __getTileAt(coord: Coord.Bare): Tile<S> {
+            return undefined!;
+        }
+
+        /**
+         * @override
+         */
+        public __getTileDestsFrom(coord: Coord.Bare): Array<Tile<S>> {
+            return undefined!;
+        }
+
+        /**
+         * @override
+         */
+        public __getTileSourcesTo(coord: Coord.Bare): Array<Tile<S>> {
             return undefined!;
         }
 

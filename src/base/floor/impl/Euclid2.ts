@@ -53,7 +53,6 @@ export namespace Euclid2 {
          * @param other - The norm is taken relative to `other`.
          * @returns The sum of the absolute values of each coordinate.
          */
-        // TODO: document: what is this used for?
         public oneNorm(other: Coord.Bare): number {
             return this.sub(other).originOneNorm();
         }
@@ -72,7 +71,6 @@ export namespace Euclid2 {
          * @param other - The norm is taken relative to `other`.
          * @returns The length of the longest dimension.
          */
-        // TODO: document: what is this used for?
         public infNorm(other: Coord.Bare): number {
             return this.sub(other).originInfNorm();
         }
@@ -195,34 +193,6 @@ export namespace Euclid2 {
             this.grid = grid;
         }
 
-
-        /**
-         * @override
-         */
-        public getTileAt(coord: Coord.Bare): Tile<S> {
-            if (coord.x < 0 || coord.x >= this.width ||
-                coord.y < 0 || coord.y >= this.height
-            ) {
-                throw new RangeError("Argument \"pos\" is outside the bounds of this Grid.");
-            }
-            return this.grid[coord.x][coord.y];
-        }
-
-        /**
-         * @override
-         */
-        protected abstractGetTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
-            return this.grid.slice(
-                // filter for included rows:
-                Math.max(0, coord.y - radius),
-                Math.min(this.height, coord.y + radius + 1),
-            ).flatMap((tile) => tile.slice(
-                // filter for included slices of rows (columns):
-                Math.max(0, coord.x - radius,
-                Math.min(this.width, coord.x + radius + 1)),
-            ));
-        }
-
         /**
          * @override
          */
@@ -285,6 +255,41 @@ export namespace Euclid2 {
             return options[Math.floor(options.length * Math.random())];
         }
 
+
+        /**
+         * @override
+         */
+        public __getTileAt(coord: Coord.Bare): Tile<S> {
+            if (coord.x < 0 || coord.x >= this.width ||
+                coord.y < 0 || coord.y >= this.height
+            ) {
+                throw new RangeError("Argument \"pos\" is outside the bounds of this Grid.");
+            }
+            return this.grid[coord.x][coord.y];
+        }
+
+        /**
+         * @override
+         */
+        public __getTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
+            return this.grid.slice(
+                // filter for included rows:
+                Math.max(0, coord.y - radius),
+                Math.min(this.height, coord.y + radius + 1),
+            ).flatMap((tile) => tile.slice(
+                // filter for included slices of rows (columns):
+                Math.max(0, coord.x - radius,
+                Math.min(this.width, coord.x + radius + 1)),
+            ));
+        }
+
+        /**
+         * @override
+         */
+        public __getTileSourcesTo(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
+            // Same behaviour as getting destinations from `coord`.
+            return this.__getTileDestsFrom(coord, radius);
+        }
 
 
         /**

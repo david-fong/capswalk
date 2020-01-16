@@ -3,16 +3,13 @@ import { Player as PlayerTypeDefs, PlayerSkeleton as PlayerSkeletonTypeDefs } fr
 import { Tile, Coord } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
-import { __Bench } from "floor/impl/__Bench";
 import { TileGetter } from "floor/TileGetter";
 
 
 /**
  * Made to abstract all operations that change the {@link Player#hostTile}
  * field. Enforces / exposes the {@link PlayerSkeleton#moveTo} method as
- * the interface to any such operations. Also bootstraps the `benchTile`
- * field as a {@link Tile} reserved for this {@link Player}, and the one
- * it occupies after a reset operation.
+ * the interface to any such operations.
  * 
  * @extends PlayerTypeDefs to intake its namespace exports.
  */
@@ -50,11 +47,9 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S>
     }
 
     /**
-     * Automatically benches this `Player`.
-     *
      * Must be called _after_ the {@link Grid} has been reset.
      * Does not evict itself from its current host tile (if it
-     * has one). Automatically benches itself.
+     * has one).
      * 
      * @param spawnTile -
      */
