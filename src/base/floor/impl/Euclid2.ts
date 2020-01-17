@@ -4,12 +4,12 @@ import { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
 
 
+type S = BaseCoord.System.EUCLID2;
+
 /**
  * 
  */
 export namespace Euclid2 {
-
-    type S = BaseCoord.System.EUCLID2;
 
     /**
      * # Euclid2 Coord

@@ -77,7 +77,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         // Construct players:
         this.__players = this.createPlayers(desc);
         if (desc.operatorIndex) {
-            (this.operator as HumanPlayer<S>) = this.getPlayerById({
+            (this.operator as HumanPlayer<S>) = this.__players.get({
                 operatorClass: Player.Operator.HUMAN,
                 intraClassId: desc.operatorIndex!,
             }) as HumanPlayer<S>;
@@ -111,11 +111,10 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             playerCounts[operatorClass] = this.__players[operatorClass].length;
         }
         const spawnPoints = this.grid.class.getSpawnCoords(playerCounts, this.grid.dimensions);
-        Object.values(this.__players).forEach((sameClassPlayers) => {
+        this.__players.values.forEach((sameClassPlayers) => {
             sameClassPlayers.forEach((player) => {
                 // Reset:
-                const spawnCoord = Player.Bundle.get(spawnPoints, player.playerId);
-                player.reset(this.grid.tile.at(spawnCoord));
+                player.reset(this.grid.tile.at(spawnPoints.get(player.playerId)));
             });
         });
 
@@ -136,9 +135,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             throw new TypeError("This must be overriden for an online-client implementation.");
         }
         const players = {} as Player.Bundle.Mutable<Player<S>>;
-        for (const [ operatorClass, playersCtorArgs, ] of Object.entries(desc.playerDescs)) {
-            Player.assertIsOperator(operatorClass);
-            players[operatorClass] = playersCtorArgs.map((ctorArgs, intraClassId) => {
+        desc.playerDescs.keys.forEach((operatorClass) => {
+            players[operatorClass] = desc.playerDescs[operatorClass].map((ctorArgs, intraClassId) => {
                 if (operatorClass === Player.Operator.HUMAN) {
                     return (intraClassId === desc.operatorIndex)
                         ? this.createOperatorPlayer(ctorArgs)
@@ -147,7 +145,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
                     return this.createArtifPlayer(ctorArgs);
                 }
             });
-        }
+        });
         return players as Game<G,S>["__players"];
     }
 
@@ -192,13 +190,5 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     public abstract setTimeout(callback: Function, millis: number, ...args: any[]): G extends Game.Type.SERVER ? NodeJS.Timeout : number;
 
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
-
-    /**
-     * @param playerId - The ID of an existing player.
-     * @returns The {@link Player} with ID `playerId`.
-     */
-    protected getPlayerById(playerId: Player.Id): Player<S> {
-        return this.__players[playerId.operatorClass][playerId.intraClassId];
-    }
 
 }

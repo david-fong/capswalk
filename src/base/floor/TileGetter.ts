@@ -31,7 +31,6 @@ export class TileGetter<S extends CoordSys, A extends Arguments<S>> {
     public at(...args: A): Tile<S> {
         return this.source.__getTileAt(...args);
     }
-
     public destsFrom(...args: A): Query<S> {
         return new Query(this.source.__getTileDestsFrom(...args));
     }
@@ -60,22 +59,18 @@ class Query<S extends CoordSys> {
 
     public constructor(protected contents: Array<Tile<S>>) { }
 
-    public get unoccupied(): Omit<Query<S>, "occupants"> {
+    public get occupied(): Omit<Query<S>, "unoccupied"> {
+        this.contents = this.contents.filter((tile) => tile.isOccupied);
+        return this;
+    }
+
+    public get unoccupied(): Omit<Query<S>, "occupied"> {
         this.contents = this.contents.filter((tile) => !tile.isOccupied);
         return this;
     }
 
     public get get(): Array<Tile<S>> {
         const retval = this.contents;
-        delete this.contents;
-        return retval;
-    }
-
-    public get occupants(): Array<Player<S>> {
-        const retval = this.contents
-            .filter((tile) => tile.isOccupied)
-            .map((tile) => tile.occupantId);
-        delete this.contents;
         return retval;
     }
 

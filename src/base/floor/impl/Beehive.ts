@@ -4,6 +4,8 @@ import { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
 
 
+type S = BaseCoord.System.BEEHIVE;
+
 /**
  * # 🐝 BEES !
  * 
@@ -22,8 +24,6 @@ import { Grid as AbstractGrid } from "../Grid";
  * [(bees)](https://giphy.com/gifs/oprah-bees-VhFps32TlNgsg)
  */
 export namespace Beehive {
-
-    type S = BaseCoord.System.BEEHIVE;
 
     /**
      * # Beehive Coord

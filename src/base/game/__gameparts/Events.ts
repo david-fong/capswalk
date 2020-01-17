@@ -53,7 +53,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      *      ID does not belong to any existing player.
      */
     private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player<S> | undefined {
-        const player = this.getPlayerById(desc.playerId);
+        const player = this.__players.get(desc.playerId);
          if (player.isBubbling) {
             // The specified player does not exist or is bubbling.
             // This is _not_ the same as if the requester has their
@@ -187,7 +187,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      *      player-movement event.
      */
     public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
-        const player = this.getPlayerById(desc.playerId);
+        const player = this.__players.get(desc.playerId);
         const dest = this.grid.tile.at(desc.dest.coord);
         const executeBasicTileUpdates = (): void => {
             this.recordEvent(desc);
@@ -298,7 +298,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     public processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
         // TODO:
         // Visually highlight the affected tiles for the specified estimate-duration.
-        const bubbler = this.getPlayerById(desc.playerId);
+        const bubbler = this.__players.get(desc.playerId);
 
         bubbler.requestInFlight = false;
 
@@ -320,7 +320,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * on the way to the Game Manager. Never called externally (hence,
      * the private access modifier).
      * 
-     * @param bubbler - 
+     * @param bubbler -
      */
     private processBubblePopRequest(bubbler: Player<S>): void {
         // First, get the range of covered tiles.
@@ -329,7 +329,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             const neighbourQueue = [ bubbler, ];
             while (neighbourQueue.length) {
                 const neighbour = neighbourQueue.pop()!;
-                neighbour.tile.destsFrom().occupants.filter((jumpPlayer) => {
+                neighbour.tile.destsFrom().occupied.get
+                .map((jumpPlayerTile) => this.__players.get(jumpPlayerTile.occupantId!))
+                .filter((jumpPlayer: Player<S>) => {
                     // Filter out neighbours that we have already processed:
                     return !(jumpNeighbours.includes(jumpPlayer))
                         && (true); // TODO: add conditions from the spec here.
@@ -367,26 +369,26 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // Record the event. No need to check acceptance since this
         // kind of event is made in such a way that it is always accepted.
         this.recordEvent(desc);
-        const bubbler = this.getPlayerById(desc.bubblerId);
+        const bubbler = this.__players.get(desc.bubblerId);
 
         // Lower the "isBubbling" flags for the player:
         bubbler.isBubbling = false;
 
         // Enact effects on supposedly un-downed enemy players:
         desc.playersToDown.forEach((enemyId) => {
-            const enemy = this.getPlayerById(enemyId);
+            const enemy = this.__players.get(enemyId);
             enemy.isDowned = true;
         }, this);
 
         // Enact effects on supposedly downed teammates:
         desc.playersToRaise.forEach((teammateId) => {
-            const teammate = this.getPlayerById(teammateId);
+            const teammate = this.__players.get(teammateId);
             teammate.isDowned = false;
         }, this);
 
         // Enact effects on players to freeze:
         desc.playersToFreeze.forEach((freezeDesc) => {
-            this.freezePlayer(this.getPlayerById(freezeDesc.targetId), freezeDesc.freezeDuration);
+            this.freezePlayer(this.__players.get(freezeDesc.targetId), freezeDesc.freezeDuration);
         }, this);
         return;
     }
@@ -396,6 +398,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * @param duration -
      */
     // TODO: make abstract. server manages, client displays, offline does both.
-    protected freezePlayer(player: Player<S>, duration: number): void;
+    protected freezePlayer(player: Player<S>, duration: number): void { }
 
 }

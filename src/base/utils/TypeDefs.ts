@@ -41,11 +41,32 @@ export namespace Player {
     export type Bundle<T> = Readonly<Bundle.Mutable<T>>;
 
     export namespace Bundle {
-        export type Mutable<T> = Record<Operator, ReadonlyArray<T>>;
 
-        export const get = <T>(bundle: Bundle<T>, playerId: Player.Id): T => {
-            return bundle[playerId.operatorClass][playerId.intraClassId];
-        };
+        export class Mutable<T> implements Record<Operator, ReadonlyArray<T>> {
+
+            declare public HUMAN:  ReadonlyArray<T>;
+            declare public CHASER: ReadonlyArray<T>;
+
+            public constructor(contents: Record<Operator, ReadonlyArray<T>>) {
+                Object.assign(this, contents);
+            }
+
+            public get(playerId: Player.Id): T {
+                return this[playerId.operatorClass][playerId.intraClassId];
+            };
+
+            public get keys(): Array<Operator> {
+                return Object.keys(this) as Array<Operator>;
+            }
+
+            public get values(): Array<ReadonlyArray<T>> {
+                return Object.values(this);
+            }
+
+            public get entries(): Array<[Operator,T]> {
+                return Object.entries(this) as Array<[Operator,T]>;
+            }
+        }
     }
 }
 

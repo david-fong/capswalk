@@ -12,6 +12,7 @@ class B extends A {
     a = 2;
     b = 3;
     c() { return this.a + this.b; }
+    get B() { return this.B }
 }
 b = new B();
 log(b.A);
@@ -91,6 +92,10 @@ console.log("prop" in _in) // true O_o
 delete _in.prop;
 console.log("prop" in _in) // false
 
+// does Object.values() for an instance include its prototypical methods?
+// what about getters?
+console.log(Object.values(new B()))
+// nope nope.
 
 debugger
 
