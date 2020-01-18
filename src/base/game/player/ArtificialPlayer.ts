@@ -71,9 +71,9 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 export namespace ArtificialPlayer {
 
     const Constructors = Object.freeze(<const>{
-        [ Player.Operator.CHASER ]: Chaser,
+        [ Player.Family.CHASER ]: Chaser,
     }) as Readonly<Record<
-        Exclude<Player.Operator, typeof Player.Operator.HUMAN>,
+        Exclude<Player.Family, typeof Player.Family.HUMAN>,
         typeof ArtificialPlayer
     >>; // Type Assertion.
 
@@ -81,7 +81,7 @@ export namespace ArtificialPlayer {
         game: Readonly<Game<any,S>>,
         playerDesc: Readonly<Player.CtorArgs>,
     ): ArtificialPlayer<S> => {
-        return new (Constructors[playerDesc.playerId.operatorClass])(game, playerDesc);
+        return new (Constructors[playerDesc.playerId.family])(game, playerDesc);
     };
 
 }

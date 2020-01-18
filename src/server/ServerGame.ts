@@ -78,7 +78,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
         };
         __assert(desc); // TODO: this isn't working :/
         (desc.playerDescs.HUMAN).forEach((playerDesc) => {
-            (desc.operatorIndex as Player.Id["intraClassId"]) = playerDesc.playerId.intraClassId;
+            (desc.operatorIndex as Player.Id["number"]) = playerDesc.playerId.number;
             this.socketBundle.get(playerDesc.playerId).emit(
                 Game.CtorArgs.EVENT_NAME,
                 desc,

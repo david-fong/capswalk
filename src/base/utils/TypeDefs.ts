@@ -8,26 +8,26 @@ export namespace Player {
      * Each implementation of the {@link ArtificialPlayer} class must
      * have an entry here.
      */
-    export type Operator = keyof typeof Operator;
-    export const Operator = Object.freeze(<const>{
+    export type Family = keyof typeof Family;
+    export const Family = Object.freeze(<const>{
         HUMAN:  "HUMAN",
         CHASER: "CHASER",
     });
-    Operator as { [ key in Operator ]: key };
+    Family as { [ key in Family ]: key };
     /**
      * @param string -
      */
-    export function assertIsOperator(string: string): asserts string is Operator {};
+    export function assertIsOperator(string: string): asserts string is Family {};
 
     /**
      * See the main documentation in game/player/Player.
      */
     export type Id = {
-        operatorClass: Operator;
+        family: Family;
         /**
          * A positive integer.
          */
-        intraClassId: number;
+        number: number;
     };
 
     export namespace Id {
@@ -42,29 +42,29 @@ export namespace Player {
 
     export namespace Bundle {
 
-        export class Mutable<T> implements Record<Operator, ReadonlyArray<T>> {
+        export class Mutable<T> implements Record<Family, ReadonlyArray<T>> {
 
             declare public HUMAN:  ReadonlyArray<T>;
             declare public CHASER: ReadonlyArray<T>;
 
-            public constructor(contents: Record<Operator, ReadonlyArray<T>>) {
+            public constructor(contents: Record<Family, ReadonlyArray<T>>) {
                 Object.assign(this, contents);
             }
 
             public get(playerId: Player.Id): T {
-                return this[playerId.operatorClass][playerId.intraClassId];
+                return this[playerId.family][playerId.number];
             };
 
-            public get keys(): Array<Operator> {
-                return Object.keys(this) as Array<Operator>;
+            public get keys(): Array<Family> {
+                return Object.keys(this) as Array<Family>;
             }
 
             public get values(): Array<ReadonlyArray<T>> {
                 return Object.values(this);
             }
 
-            public get entries(): Array<[Operator,T]> {
-                return Object.entries(this) as Array<[Operator,T]>;
+            public get entries(): Array<[Family,T]> {
+                return Object.entries(this) as Array<[Family,T]>;
             }
         }
     }

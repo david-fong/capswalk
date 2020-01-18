@@ -185,7 +185,7 @@ export namespace Beehive {
          * @override
          */
         public static getSpawnCoords(
-            playerCounts: Readonly<Record<Player.Operator, number>>,
+            playerCounts: Readonly<Record<Player.Family, number>>,
             dimensions: Grid.Dimensions,
         ): Player.Bundle<Coord.Bare> {
             return undefined!;

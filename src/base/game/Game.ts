@@ -77,7 +77,7 @@ export namespace Game {
          */
         operatorIndex: G extends Game.Type.SERVER
             ? typeof Player.Id.NULL
-            : Player.Id["intraClassId"];
+            : Player.Id["number"];
         playerDescs: Player.Bundle<Player.CtorArgs>;
     }>;
 

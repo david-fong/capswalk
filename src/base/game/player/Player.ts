@@ -95,7 +95,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
 export namespace Player {
 
-    export type Operator = PlayerTypeDefs.Operator;
+    export type Family = PlayerTypeDefs.Family;
 
     /**
      * 
@@ -164,20 +164,17 @@ export namespace Player {
             playerDescs: Bundle<CtorArgs<SocketId>>
         ): Bundle<CtorArgs> => {
             const socketIdToPlayerIdMap: Record<SocketId,Player.Id> = {};
-            for (const operatorClass in playerDescs) {
-                Player.assertIsOperator(operatorClass);
-                playerDescs[operatorClass].forEach((oldCtorArgs, intraClassId) => {
+            for (const family of playerDescs.keys) {
+                playerDescs[family].forEach((oldCtorArgs, numberInFamily) => {
                     socketIdToPlayerIdMap[oldCtorArgs.socketId] = {
-                        operatorClass,
-                        intraClassId,
+                        family: family,
+                        number: numberInFamily,
                     };
                 });
             }
-            return Object.keys(playerDescs).reduce<Bundle.Mutable<CtorArgs>>(
-                (retValBuild, operatorClass, __currentIndex, __array) => {
-                    Player.assertIsOperator(operatorClass);
-                    retValBuild[operatorClass] = playerDescs[operatorClass]
-                    .map<CtorArgs>((playerDesc) => {
+            return new Bundle(playerDescs.keys.reduce<Bundle<CtorArgs>["contents"]>(
+                (retValBuild, family) => {
+                    retValBuild[family] = playerDescs[family].map<CtorArgs>((playerDesc) => {
                         return {
                             playerId: socketIdToPlayerIdMap[playerDesc.socketId],
                             username: playerDesc.username,
@@ -187,7 +184,7 @@ export namespace Player {
                     });
                     return retValBuild;
                 }, {} as Bundle<CtorArgs>,
-            );
+            ));
         };
 
     }

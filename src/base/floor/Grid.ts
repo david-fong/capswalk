@@ -203,7 +203,7 @@ export namespace Grid {
          * @param playerCounts -
          */
         getSpawnCoords(
-            playerCounts: Readonly<Record<Player.Operator, number>>,
+            playerCounts: Readonly<Record<Player.Family, number>>,
             dimensions: Dimensions<S>,
         ): Player.Bundle<Coord.Bare<S>>;
 

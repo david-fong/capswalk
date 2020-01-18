@@ -12,9 +12,8 @@ const game = new OfflineGame({
     langBalancingScheme: BalancingScheme.WEIGHT,
     languageName: "English",
     playerDescs: {
-        [Player.Operator.HUMAN]: [{
+        [Player.Family.HUMAN]: [{
             beNiceTo: [],
-            operatorClass: Player.Operator.HUMAN,
             username: "hello world",
             socketId: "todo", // TODO hmm. maybe make some static method to assign unique values based on operator class?
         }, ],

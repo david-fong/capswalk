@@ -78,8 +78,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.__players = this.createPlayers(desc);
         if (desc.operatorIndex) {
             (this.operator as OperatorPlayer<S>) = this.__players.get({
-                operatorClass: Player.Operator.HUMAN,
-                intraClassId: desc.operatorIndex!,
+                family: Player.Family.HUMAN,
+                number: desc.operatorIndex!,
             }) as OperatorPlayer<S>;
         }
 
@@ -105,10 +105,10 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         // Shuffle everything:
         this.grid.forEachTile(this.shuffleLangCharSeqAt, this);
 
-        const playerCounts = {} as Record<Player.Operator, number>;
-        for (const operatorClass in this.__players) {
-            Player.assertIsOperator(operatorClass);
-            playerCounts[operatorClass] = this.__players[operatorClass].length;
+        const playerCounts = {} as Record<Player.Family, number>;
+        for (const family in this.__players) {
+            Player.assertIsOperator(family);
+            playerCounts[family] = this.__players[family].length;
         }
         const spawnPoints = this.grid.class.getSpawnCoords(playerCounts, this.grid.dimensions);
         this.__players.values.forEach((sameClassPlayers) => {
@@ -135,10 +135,10 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             throw new TypeError("This must be overriden for an online-client implementation.");
         }
         const players = {} as Player.Bundle.Mutable<Player<S>>;
-        desc.playerDescs.keys.forEach((operatorClass) => {
-            players[operatorClass] = desc.playerDescs[operatorClass].map((ctorArgs, intraClassId) => {
-                if (operatorClass === Player.Operator.HUMAN) {
-                    return (intraClassId === desc.operatorIndex)
+        desc.playerDescs.keys.forEach((family) => {
+            players[family] = desc.playerDescs[family].map((ctorArgs, numberInFamily) => {
+                if (family === Player.Family.HUMAN) {
+                    return (numberInFamily === desc.operatorIndex)
                         ? this.createOperatorPlayer(ctorArgs)
                         : this.createHumanPlayer(ctorArgs);
                 } else {
