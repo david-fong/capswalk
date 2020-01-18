@@ -49,7 +49,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
         // TODO: initialize this.socketBundle
 
         // Attach event listeners / handlers to each socket:
-        this.__players.HUMAN.map((player) => this.socketBundle.get(player.playerId))
+        this.players.contents.HUMAN.map((player) => this.socketBundle.get(player.playerId))
         .forEach((socket) => {
             // Attach the movement request handler:
             socket.removeAllListeners(PlayerMovementEvent.EVENT_NAME);

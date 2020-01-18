@@ -12,6 +12,8 @@
 
 ### High Priority
 
+1. Make game constructor take bundle with playerDescs of generic arg Player.SocketId.
+   - ~Get rid of Player.Bundle.Mutable. Make Player.Bundle use composition instead of extension.~
 1. Make grid's tile getters have a method-object nesting: `this.getTile.At`, `this.getTile.[unoccupied|occupied].[destsFrom|SourcesTo]`.
    - Update documentation on what the range of a bubble is and how range-extension works (both look at destFrom).
 1. Write out full specification for what qualifies the end of the game.

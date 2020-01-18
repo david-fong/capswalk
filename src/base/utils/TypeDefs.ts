@@ -38,35 +38,33 @@ export namespace Player {
         export type Nullable = Player.Id | typeof Player.Id.NULL;
     }
 
-    export type Bundle<T> = Readonly<Bundle.Mutable<T>>;
+    export class Bundle<T> {
+
+        public readonly contents: Bundle.Contents<T>;
+
+        public constructor(contents: Bundle.Contents<T>) {
+            Object.assign(this, contents);
+        }
+
+        public get(playerId: Player.Id): T {
+            return this[playerId.family][playerId.number];
+        };
+
+        public get keys(): Array<Family> {
+            return Object.keys(this) as Array<Family>;
+        }
+
+        public get values(): Array<ReadonlyArray<T>> {
+            return Object.values(this);
+        }
+
+        public get entries(): Array<[Family,ReadonlyArray<T>]> {
+            return Object.entries(this) as Array<[Family,ReadonlyArray<T>]>;
+        }
+    }
 
     export namespace Bundle {
-
-        export class Mutable<T> implements Record<Family, ReadonlyArray<T>> {
-
-            declare public HUMAN:  ReadonlyArray<T>;
-            declare public CHASER: ReadonlyArray<T>;
-
-            public constructor(contents: Record<Family, ReadonlyArray<T>>) {
-                Object.assign(this, contents);
-            }
-
-            public get(playerId: Player.Id): T {
-                return this[playerId.family][playerId.number];
-            };
-
-            public get keys(): Array<Family> {
-                return Object.keys(this) as Array<Family>;
-            }
-
-            public get values(): Array<ReadonlyArray<T>> {
-                return Object.values(this);
-            }
-
-            public get entries(): Array<[Family,T]> {
-                return Object.entries(this) as Array<[Family,T]>;
-            }
-        }
+        export type Contents<T> = Readonly<Record<Family, ReadonlyArray<T>>>;
     }
 }
 

@@ -4,10 +4,11 @@ import { OfflineGame } from "./OfflineGame";
 import { Player } from "game/player/Player";
 
 // TODO: override ctor args for each impl, and make it so they adapt input to pass to super ctor.
-const game = new OfflineGame({
+const game = new OfflineGame<Coord.System.EUCLID2>({
     coordSys: Coord.System.EUCLID2,
     gridDimensions: {
         height: 20,
+        width:  20,
     },
     langBalancingScheme: BalancingScheme.WEIGHT,
     languageName: "English",

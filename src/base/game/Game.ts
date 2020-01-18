@@ -78,7 +78,7 @@ export namespace Game {
         operatorIndex: G extends Game.Type.SERVER
             ? typeof Player.Id.NULL
             : Player.Id["number"];
-        playerDescs: Player.Bundle<Player.CtorArgs>;
+        playerDescs: Player.Bundle.Contents<Player.CtorArgs>;
     }>;
 
     export namespace CtorArgs {

@@ -107,7 +107,7 @@ export namespace Player {
     export type Bundle<T> = PlayerTypeDefs.Bundle<T>;
 
     export namespace Bundle {
-        export type Mutable<T> = PlayerTypeDefs.Bundle.Mutable<T>;
+        export type Contents<T> = PlayerTypeDefs.Bundle.Contents<T>;
     }
 
     export type Username = string;
@@ -158,23 +158,25 @@ export namespace Player {
          * related fields to be in terms of player ID's rather than
          * socket IDs.
          * 
-         * @param playerDescs -
+         * @param __playerDescs -
          */
         export const finalizePlayerIds = (
-            playerDescs: Bundle<CtorArgs<SocketId>>
+            __playerDescs: Bundle.Contents<CtorArgs<SocketId>>
         ): Bundle<CtorArgs> => {
+            const playerDescs = new Player.Bundle<CtorArgs<SocketId>>(__playerDescs);
             const socketIdToPlayerIdMap: Record<SocketId,Player.Id> = {};
             for (const family of playerDescs.keys) {
-                playerDescs[family].forEach((oldCtorArgs, numberInFamily) => {
+                playerDescs.contents[family].forEach((oldCtorArgs, numberInFamily) => {
                     socketIdToPlayerIdMap[oldCtorArgs.socketId] = {
                         family: family,
                         number: numberInFamily,
                     };
                 });
             }
-            return new Bundle(playerDescs.keys.reduce<Bundle<CtorArgs>["contents"]>(
+            return new Player.Bundle(playerDescs.keys.reduce<Bundle.Contents<CtorArgs>>(
                 (retValBuild, family) => {
-                    retValBuild[family] = playerDescs[family].map<CtorArgs>((playerDesc) => {
+                    (retValBuild[family] as readonly CtorArgs[]) = playerDescs.contents[family]
+                    .map<CtorArgs>((playerDesc) => {
                         return {
                             playerId: socketIdToPlayerIdMap[playerDesc.socketId],
                             username: playerDesc.username,
@@ -183,7 +185,7 @@ export namespace Player {
                         };
                     });
                     return retValBuild;
-                }, {} as Bundle<CtorArgs>,
+                }, {} as Bundle.Contents<CtorArgs>,
             ));
         };
 

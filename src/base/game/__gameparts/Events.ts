@@ -70,7 +70,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      *      ID does not belong to any existing player.
      */
     private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player<S> | undefined {
-        const player = this.__players.get(desc.playerId);
+        const player = this.players.get(desc.playerId);
          if (player.isBubbling) {
             // The specified player does not exist or is bubbling.
             // This is _not_ the same as if the requester has their
@@ -197,7 +197,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      *      player-movement event.
      */
     public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
-        const player = this.__players.get(desc.playerId);
+        const player = this.players.get(desc.playerId);
         const dest = this.grid.tile.at(desc.dest.coord);
         const executeBasicTileUpdates = (): void => {
             this.recordEvent(desc);
@@ -308,7 +308,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     public processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
         // TODO:
         // Visually highlight the affected tiles for the specified estimate-duration.
-        const bubbler = this.__players.get(desc.playerId);
+        const bubbler = this.players.get(desc.playerId);
 
         bubbler.requestInFlight = false;
 
@@ -340,7 +340,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             while (neighbourQueue.length) {
                 const neighbour = neighbourQueue.pop()!;
                 neighbour.tile.destsFrom().occupied.get
-                .map((jumpPlayerTile) => this.__players.get(jumpPlayerTile.occupantId!))
+                .map((jumpPlayerTile) => this.players.get(jumpPlayerTile.occupantId!))
                 .filter((jumpPlayer: Player<S>) => {
                     // Filter out neighbours that we have already processed:
                     return !(jumpNeighbours.includes(jumpPlayer))
@@ -379,26 +379,26 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // Record the event. No need to check acceptance since this
         // kind of event is made in such a way that it is always accepted.
         this.recordEvent(desc);
-        const bubbler = this.__players.get(desc.bubblerId);
+        const bubbler = this.players.get(desc.bubblerId);
 
         // Lower the "isBubbling" flags for the player:
         bubbler.isBubbling = false;
 
         // Enact effects on supposedly un-downed enemy players:
         desc.playersToDown.forEach((enemyId) => {
-            const enemy = this.__players.get(enemyId);
+            const enemy = this.players.get(enemyId);
             enemy.isDowned = true;
         }, this);
 
         // Enact effects on supposedly downed teammates:
         desc.playersToRaise.forEach((teammateId) => {
-            const teammate = this.__players.get(teammateId);
+            const teammate = this.players.get(teammateId);
             teammate.isDowned = false;
         }, this);
 
         // Enact effects on players to freeze:
         desc.playersToFreeze.forEach((freezeDesc) => {
-            this.freezePlayer(this.__players.get(freezeDesc.targetId), freezeDesc.freezeDuration);
+            this.freezePlayer(this.players.get(freezeDesc.targetId), freezeDesc.freezeDuration);
         }, this);
         return;
     }

@@ -35,7 +35,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly grid: Grid<S>;
 
-    protected readonly __players: Player.Bundle<Player<S>>;
+    protected readonly players: Player.Bundle<Player<S>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
 
@@ -75,9 +75,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.langBalancingScheme = desc.langBalancingScheme;
 
         // Construct players:
-        this.__players = this.createPlayers(desc);
+        this.players = this.createPlayers(desc);
         if (desc.operatorIndex) {
-            (this.operator as OperatorPlayer<S>) = this.__players.get({
+            (this.operator as OperatorPlayer<S>) = this.players.get({
                 family: Player.Family.HUMAN,
                 number: desc.operatorIndex!,
             }) as OperatorPlayer<S>;
@@ -105,15 +105,17 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         // Shuffle everything:
         this.grid.forEachTile(this.shuffleLangCharSeqAt, this);
 
-        const playerCounts = {} as Record<Player.Family, number>;
-        for (const family in this.__players) {
-            Player.assertIsOperator(family);
-            playerCounts[family] = this.__players[family].length;
-        }
-        const spawnPoints = this.grid.class.getSpawnCoords(playerCounts, this.grid.dimensions);
-        this.__players.values.forEach((sameClassPlayers) => {
-            sameClassPlayers.forEach((player) => {
-                // Reset:
+        // Reset and spawn players:
+        type FamilySizes = Record<Player.Family, number>;
+        const spawnPoints = this.grid.class.getSpawnCoords(
+            this.players.entries.reduce<FamilySizes>((build, [family, players,]) => {
+                build[family] = players.length;
+                return build;
+            }, {} as FamilySizes),
+            this.grid.dimensions,
+        );
+        this.players.values.forEach((familyMembers) => {
+            familyMembers.forEach((player) => {
                 player.reset(this.grid.tile.at(spawnPoints.get(player.playerId)));
             });
         });
@@ -130,23 +132,26 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * @param desc -
      * @returns A bundle of the constructed players.
      */
-    private createPlayers(desc: Readonly<Game.CtorArgs<G,S>>): Game<G,S>["__players"] {
+    private createPlayers(desc: Readonly<Game.CtorArgs<G,S>>): Game<G,S>["players"] {
         if (desc.gameType === Game.Type.CLIENT) {
             throw new TypeError("This must be overriden for an online-client implementation.");
         }
-        const players = {} as Player.Bundle.Mutable<Player<S>>;
-        desc.playerDescs.keys.forEach((family) => {
-            players[family] = desc.playerDescs[family].map((ctorArgs, numberInFamily) => {
-                if (family === Player.Family.HUMAN) {
-                    return (numberInFamily === desc.operatorIndex)
-                        ? this.createOperatorPlayer(ctorArgs)
-                        : this.createHumanPlayer(ctorArgs);
-                } else {
-                    return this.createArtifPlayer(ctorArgs);
-                }
-            });
-        });
-        return players as Game<G,S>["__players"];
+        type Reduct = Player.Bundle.Contents<Player<S>>;
+        return new Player.Bundle((Object.keys(desc.playerDescs) as Player.Family[])
+            .reduce<Reduct>((build, family) => {
+                (build[family] as ReadonlyArray<Player<S>>) = desc
+                .playerDescs[family].map((ctorArgs, numberInFamily) => {
+                    if (family === Player.Family.HUMAN) {
+                        return (numberInFamily === desc.operatorIndex)
+                            ? this.createOperatorPlayer(ctorArgs)
+                            : this.createHumanPlayer(ctorArgs);
+                    } else {
+                        return this.createArtifPlayer(ctorArgs);
+                    }
+                });
+                return build;
+            }, {} as Reduct)
+        );
     }
 
     protected abstract createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;

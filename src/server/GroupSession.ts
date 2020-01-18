@@ -147,7 +147,6 @@ export class GroupSession {
             playerDescs: Player.CtorArgs.finalizePlayerIds({
                 [Player.Operator.HUMAN]: Object.values(this.sockets).map((socket) => {
                     return {
-                        playerId: undefined,
                         username: socket.username!, // checked above.
                         beNiceTo: Array.from(socket.beNiceTo),
                         socketId: socket.id,
