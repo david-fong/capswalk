@@ -7,7 +7,7 @@ import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 /**
  * 
  * 
- * @extends HumanPlayer
+ * @extends OperatorPlayer
  */
 export class OfflineOperatorPlayer<S extends Coord.System> extends OperatorPlayer<S> {
 

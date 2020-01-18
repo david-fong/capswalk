@@ -14,10 +14,10 @@ import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
  * reverse direction: As a map from typable-key-sequences to sets of
  * corresponding unique characters (no character is mapped by multiple
  * key-sequences). This game does not require support for retreiving
- * the `LangSeq` corresponding to a `LangChar`.
+ * the `Lang.Seq` corresponding to a `LangChar`.
  * 
- * See the `readme` for this folder for information on writing
- * implementations of this singleton-style class.
+ * See the readme in [the implementations folder](./impl/readme.md)
+ * for a guide on writing implementations of this class.
  */
 export abstract class Lang extends LangTypeDefs {
 
@@ -81,7 +81,7 @@ export abstract class Lang extends LangTypeDefs {
      * irrelevant before and after remapping), or be a translation to
      * some character that is relevant to the `Lang` and hand, and that
      * matches against {@link SEQ_REGEXP}. This behaviour is mandated
-     * by {@link HumanPlayer#seqBufferAcceptKey}.
+     * by {@link OperatorPlayer#seqBufferAcceptKey}.
      * 
      * @param input -
      * @returns 
@@ -91,13 +91,14 @@ export abstract class Lang extends LangTypeDefs {
 
 
     /**
-     * @returns a random `LangChar` in this `Lang` whose corresponding
-     * `LangSeq` is not a prefix of any `LangSeq` in `avoid`, and vice
+     * @returns
+     * A random `Lang.Char` in this `Lang` whose corresponding
+     * `Lang.Seq` is not a prefix of any `Lang.Seq` in `avoid`, and vice
      * versa. They may share a common prefix as long as they are both
      * longer in length than the shared prefix, and they are not equal
      * to one another.
      * 
-     * This method is called to shuffle the `LangChar` / `LangSeq` pair
+     * This method is called to shuffle the `Lang.Char` / `Lang.Seq` pair
      * at some {@link Tile} `A`. `avoid` should contain the `LangSeq`s
      * from all {@link Tile}s reachable by a human {@link Player} occupying
      * a {@link Tile} `B` from which they can also reach `A`
@@ -115,8 +116,8 @@ export abstract class Lang extends LangTypeDefs {
      * `(2*2 + 1)^2 - 1 == 24`. Using the English alphabet (26 typable-
      * letters), this requirement is met by a hair.
      * 
-     * @param avoid A collection of `LangSeq`s to avoid conflicts with
-     *      when choosing a `LangChar` to return.
+     * @param avoid A collection of `Lang.Seq`s to avoid conflicts with
+     *      when choosing a `Lang.Char` to return.
      * @param balancingScheme - 
      */
     public getNonConflictingChar(

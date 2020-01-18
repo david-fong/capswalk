@@ -12,7 +12,24 @@ import { Game } from "../Game";
 
 
 /**
+ * All events have two corresponding handler functions taking a
+ * request descriptor object ("desc"):
  * 
+ * ### Request Processor
+ * 
+ * The request processor is only used by the Game Manager. It decides
+ * whether to accept or reject the request based on `desc` and may
+ * throw exceptions on impossible arguments. It should not make any
+ * changes to the game state. Instead, it is responsible to augment
+ * `desc` with information describing what changes to the game state
+ * must be made.
+ * 
+ * ### Request Executor
+ * 
+ * This takes the `desc` augmented by the request processor and enacts
+ * all the described changes upon the game's state. If the Game Manager
+ * is not local to the client (a server process), then this handler is
+ * called at both the server and client.
  */
 export abstract class GameEvents<G extends Game.Type, S extends Coord.System> extends GameBase<G,S> {
 
@@ -24,19 +41,19 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * 
      * Do not modify this directly. To register an accepted event,
      * call the {@link Game#recordEvent} method, passing it the event
-     * descriptor. To get a new event ID, just take the current length
-     * of this array.
+     * descriptor. To create a new event ID at the Game Manager, just
+     * take the current length of this array.
      */
-    protected readonly eventRecord: Array<Readonly<EventRecordEntry>>;
+    private readonly __eventRecord: Array<Readonly<EventRecordEntry>>;
 
     public constructor(desc: Game.CtorArgs<G,S>, tileClass: Tile.ClassIf<S>) {
         super(desc, tileClass);
-        this.eventRecord = [];
+        this.__eventRecord = [];
     }
 
     public reset(): void {
         // Clear the event record:
-        this.eventRecord.splice(0);
+        this.__eventRecord.splice(0);
 
         super.reset();
     }
@@ -88,13 +105,13 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             throw new TypeError("Do not try to record events for rejected requests.");
         } else if (id < 0 || id !== Math.trunc(id)) {
             throw new RangeError("Event ID's must only be assigned positive, integer values.");
-        } else if (this.eventRecord[id]) {
+        } else if (this.__eventRecord[id]) {
             throw new Error("Event ID's must be assigned unique values.");
         }
         // NOTE: If storage becomes a concern with logging events,
         // create a static constant for the record's buffer size,
         // and then here, wrap around.
-        this.eventRecord[id] = desc;
+        this.__eventRecord[id] = desc;
     }
 
 
@@ -102,16 +119,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     /**
      * @see PlayerMovementEvent
      * 
-     * Call for a {@link HumanPlayer} whose {@link HumanPlayer#seqBuffer}
-     * should be that of the {@link Tile} at `dest`. Reject the request
-     * by returning `null` if `dest` is occupied, or if the player
-     * specified by the given id does not exist, or if the requester has
-     * not yet received updates for the destination they requested to
-     * move to, or the requester is still bubbling.
-     * 
-     * Does not actually make any modifications to any part of the game
-     * state, and instead, delegates the execution of all necessitated
-     * changes to {@link Game#processMoveExecute}.
+     * Reject the request if `dest` is occupied, or if the specified
+     * player does not exist, or the client is missing updates for the
+     * destination they requested to move to, or the player is bubbling.
      * 
      * Should never be called by {@link ClientGame}.
      * 
@@ -157,7 +167,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         desc.dest.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
 
         // We are all go! Do it.
-        desc.eventId = this.eventRecord.length;
+        desc.eventId = this.__eventRecord.length;
         this.processMoveExecute(desc);
     }
 
@@ -263,9 +273,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     public processBubbleMakeRequest(desc: Bubble.MakeEvent): void {
         // TODO:
-        // if successful, make sure to lower the stockpile field.
-        // make an abstract method in the HumanPlayer class called in the top-
-        // level input processor for it to trigger this event.
+        // - If successful, make sure to lower the stockpile field.
+        // - Make an abstract method in the OperatorPlayer class called in
+        //   the toplevel input processor for it to trigger this event.
         const bubbler = this.checkIncomingPlayerRequestId(desc);
         if (!bubbler) {
             // Player is still bubbling. Reject the request:
@@ -278,7 +288,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         desc.estimatedTimerDuration = millis;
 
         // We are all go! Do it.
-        desc.eventId = this.eventRecord.length;
+        desc.eventId = this.__eventRecord.length;
         this.processBubbleMakeExecute(desc);
 
         // Schedule the bubble to pop:
@@ -355,7 +365,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // desc.playersToFreeze = get in-range    downed players who are not in any of my teams
 
         // We are all go! Do it.
-        desc.eventId = this.eventRecord.length;
+        desc.eventId = this.__eventRecord.length;
         this.processBubblePopExecute(desc);
     }
 

@@ -8,6 +8,7 @@ import { ArtificialPlayer } from "../ArtificialPlayer";
  * 
  * @extends ArtificialPlayer
  */
+// TODO
 export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 
     protected constructor(game: Game<any,S>, desc: Player.CtorArgs) {
@@ -18,14 +19,15 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
      * @override
      */
     protected computeDesiredDestination(): Coord<S> {
-        return undefined!; // this.game.allHumanPlayers; // TODO
+        //const humans = this.game.__players.HUMAN;
+        return undefined!;
     }
 
     /**
      * @override
      */
     protected computeNextMovementTimer(): number {
-        return undefined!; // TODO
+        return undefined!;
     }
 
 }

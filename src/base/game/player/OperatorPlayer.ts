@@ -4,8 +4,6 @@ import { Player } from "./Player";
 
 
 /**
- * Documentation will refer to the human controlling a {@link HumanPlayer}
- * as its "Operator".
  * 
  * @extends Player
  */
@@ -55,11 +53,11 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
     /**
      * Automaticaly makes a call to make a movement request if the
      * provided `key` completes the `LangSeq` of a UNT. Does not do
-     * any checking regarding {@link HumanPlayer#requestInFlight}.
+     * any checking regarding {@link OperatorPlayer#requestInFlight}.
      * 
      * @param key
      * The pressed typable key as a string. Pass `null` to trigger a
-     * refresh of the {@link HumanPlayer#_seqBuffer} to maintain its
+     * refresh of the {@link OperatorPlayer#_seqBuffer} to maintain its
      * invariant.
      */
     public seqBufferAcceptKey(key: string | null): void {
@@ -108,7 +106,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
     }
 
     /**
-     * Automatically clears the {@link HumanPlayer#seqBuffer}.
+     * Automatically clears the {@link OperatorPlayer#seqBuffer}.
      * 
      * @override
      */

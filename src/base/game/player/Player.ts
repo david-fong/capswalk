@@ -65,8 +65,8 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
 
     /**
-     * Called automatically by {@link HumanPlayer#seqBufferAcceptKey}
-     * for {@link HumanPlayer}s, and by a periodic callback for
+     * Called automatically by {@link OperatorPlayer#seqBufferAcceptKey}
+     * for {@link OperatorPlayer}s, and by a periodic callback for
      * {@link ArtificialPlayer}s.
      * 
      * @param dest -
