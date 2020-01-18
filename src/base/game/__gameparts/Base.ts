@@ -106,12 +106,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.grid.forEachTile(this.shuffleLangCharSeqAt, this);
 
         // Reset and spawn players:
-        type FamilySizes = Record<Player.Family, number>;
         const spawnPoints = this.grid.class.getSpawnCoords(
-            this.players.entries.reduce<FamilySizes>((build, [family, players,]) => {
-                build[family] = players.length;
-                return build;
-            }, {} as FamilySizes),
+            this.players.counts,
             this.grid.dimensions,
         );
         this.players.values.forEach((familyMembers) => {

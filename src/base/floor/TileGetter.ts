@@ -1,6 +1,5 @@
 import { Coord } from "./Coord";
 import { Tile } from "./Tile";
-import { Player } from "utils/TypeDefs";
 
 
 type CoordSys = Coord.System;

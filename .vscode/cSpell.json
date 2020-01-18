@@ -18,12 +18,16 @@
     ],
     "words": [
         "snakey",
-        "desc",
-        "descs",
         "dests",
         "coord",
         "artif",
         "reduct",
+
+        "retval",
+        "spec",
+        "desc",
+        "descs",
+        "elem",
 
         "readmes",
         "API's",
@@ -34,6 +38,8 @@
         "gameplay",
         "lifestages",
         "millis",
-        "requester's"
+        "requester's",
+        "teammate",
+        "teammates"
     ]
 }

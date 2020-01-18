@@ -61,10 +61,21 @@ export namespace Player {
         public get entries(): Array<[Family,ReadonlyArray<T>]> {
             return Object.entries(this) as Array<[Family,ReadonlyArray<T>]>;
         }
+
+        public get counts(): Bundle.Counts {
+            return this.entries.reduce<Record<Player.Family, number>>((build, [family, players,]) => {
+                build[family] = players.length;
+                return build;
+            }, {} as Record<Player.Family, number>);
+        }
     }
 
     export namespace Bundle {
+
         export type Contents<T> = Readonly<Record<Family, ReadonlyArray<T>>>;
+
+        export type Counts = Readonly<Record<Player.Family, number>>;
+
     }
 }
 

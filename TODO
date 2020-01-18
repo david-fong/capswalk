@@ -13,9 +13,9 @@
 ### High Priority
 
 1. Make game constructor take bundle with playerDescs of generic arg Player.SocketId.
-   - ~Get rid of Player.Bundle.Mutable. Make Player.Bundle use composition instead of extension.~
-1. Make grid's tile getters have a method-object nesting: `this.getTile.At`, `this.getTile.[unoccupied|occupied].[destsFrom|SourcesTo]`.
-   - Update documentation on what the range of a bubble is and how range-extension works (both look at destFrom).
+1. Get rid of PlayerSkeleton.VisibleState.
+   - Use dedicated individual player getters instead:
+     - player getters should call corresponding setter in hostTile.
 1. Write out full specification for what qualifies the end of the game.
    - Challenge: The teaming system (beNiceTo) is complicated.
      - Solution / Decision: revert `beNiceTo` system back to the teaming system: Ie. Nicity must be strictly mutual, and be a strict partition of all players.
