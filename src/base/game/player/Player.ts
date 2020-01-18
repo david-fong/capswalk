@@ -166,7 +166,7 @@ export namespace Player {
             const playerDescs = new Player.Bundle<CtorArgs<SocketId>>(__playerDescs);
             const socketIdToPlayerIdMap: Record<SocketId,Player.Id> = {};
             for (const family of playerDescs.keys) {
-                playerDescs.contents[family].forEach((oldCtorArgs, numberInFamily) => {
+                __playerDescs[family].forEach((oldCtorArgs, numberInFamily) => {
                     socketIdToPlayerIdMap[oldCtorArgs.socketId] = {
                         family: family,
                         number: numberInFamily,
@@ -175,7 +175,7 @@ export namespace Player {
             }
             return new Player.Bundle(playerDescs.keys.reduce<Bundle.Contents<CtorArgs>>(
                 (retValBuild, family) => {
-                    (retValBuild[family] as readonly CtorArgs[]) = playerDescs.contents[family]
+                    (retValBuild[family] as readonly CtorArgs[]) = __playerDescs[family]
                     .map<CtorArgs>((playerDesc) => {
                         return {
                             playerId: socketIdToPlayerIdMap[playerDesc.socketId],

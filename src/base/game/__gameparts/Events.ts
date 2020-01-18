@@ -257,7 +257,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             player.lastAcceptedRequestId = desc.lastAcceptedRequestId;
 
         } else {
-            throw new RangeError("Apparant negative lag. The operator may"
+            throw new RangeError("Apparent negative lag. The operator may"
                 + " somehow have tampered with their request counter.");
         }
     }

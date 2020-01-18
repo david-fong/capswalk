@@ -92,7 +92,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     /**
      * Reset the grid and the language hit-counters, performs language
-     * sequence shuffle-ins, respawns players, and spawns in targets.
+     * sequence shuffle-ins, re-spawns players, and spawns in targets.
      */
     public reset(): void {
         this.grid.reset();
@@ -134,7 +134,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      */
     private createPlayers(desc: Readonly<Game.CtorArgs<G,S>>): Game<G,S>["players"] {
         if (desc.gameType === Game.Type.CLIENT) {
-            throw new TypeError("This must be overriden for an online-client implementation.");
+            throw new TypeError("This must be overridden for an online-client implementation.");
         }
         type Reduct = Player.Bundle.Contents<Player<S>>;
         return new Player.Bundle((Object.keys(desc.playerDescs) as Player.Family[])

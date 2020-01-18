@@ -15,10 +15,13 @@
     "json.schemas": [
         {
             "fileMatch": [ "/**/*tsconfig.json", ],
-            "url": "http://json.schemastore.org/tsconfig"
-        }
+            "url": "http://json.schemastore.org/tsconfig",
+        }, {
+            "fileMatch": [ "/**/*cSpell.json", ],
+            "url": "https://raw.githubusercontent.com/streetsidesoftware/cspell/master/cspell.schema.json",
+        },
     ],
     "files.associations": {
-        "TODO": "markdown"
-    }
+        "TODO": "markdown",
+    },
 }

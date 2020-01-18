@@ -54,7 +54,7 @@ This is a non-technical section to reflect on my previous work on this project, 
 
 I wrote [**version one**](https://github.com/david-fong/SnaKey) of this game in one week of the February of 2019 using Python. I had just finished [learning Python](https://github.com/david-fong/Tetris), and I wanted to do something original with it.
 
-The inspiration to add different languages came from taking a beginners' class in Japanese where I learned its two basic alphabets. I really enjoyed that class- not just for interest in the content, but also because the professor was a kind person and a good teacher. Because of that positive learning experience, helping people practice language learning became a significant motivator for my continued work on this game.
+The inspiration to add different languages came from taking a beginners' class in Japanese. I really enjoyed that class- not just for interest in the content, but also because the professor was a kind person and a good teacher. That positive learning experience made helping people practice language-learning become a big push factor for my continuing work.
 
 I designed the game asking the question _"How can I make it fun for a single player to keep moving around?"_. For the main objective, I randomly spawned apples to collect for score points. To add a sense of ramping pressure, an enemy chaser, for a sense of competition, an enemy apple collector, and for extra challenge / reward, an enemy that would run away and push back the difficulty ramp whenever caught.
 
@@ -80,7 +80,7 @@ You might think that after making this game twice I'd be tired of it... but that
 
 I envision this version to be the last remake because I finally have the tools and know-how to build up a maintainable code base. Both of the previous versions suffered from three main problems- largely due to me being new to the language. Before I talk about those problems, we need to understand what makes this version so different.
 
-One of the big design challenges for this project is to allow playing on or off-line. I like this challenge because it really demands designing a good function API and inheritence chain, which isn't a trivial task given an overview of what each piece of the picture needs to accomplish:
+One of the big design challenges for this project is to allow playing on or off-line. I like this challenge because it really demands designing a good function API and inheritance chain, which isn't a trivial task given an overview of what each piece of the picture needs to accomplish:
 
 |                     Task                   | Offline | Server | Client |
 |:-------------------------------------------|:-------:|:------:|:------:|
@@ -112,8 +112,8 @@ This is something that can be done in plain Javascript. It serves three purposes
 
 |       |               |
 |:-----:|---------------|
-| Footprint Reduction | Nullifies problems with function signature bloat. Defining the shapes of objects and instantiating them is much less verbose in JavaScript than in Java, which makes it conventient and highly practical. |
-| Flexibile Refactoring | Makes function signatures incredibly malleable. For me, the positive impacts with constructors have been huge. If I need to add, remove, or change the type of an argument, I can modify the type definition and the relevant handler code and leave all other function-overrides and call sites untouched. |
+| Footprint Reduction | Nullifies problems with function signature bloat. Defining the shapes of objects and instantiating them is much less verbose in JavaScript than in Java, which makes it convenient and highly practical. |
+| Flexible Refactoring | Makes function signatures incredibly malleable. For me, the positive impacts with constructors have been huge. If I need to add, remove, or change the type of an argument, I can modify the type definition and the relevant handler code and leave all other function-overrides and call sites untouched. |
 | Named Parameters | Makes it _very_ difficult to pass arguments in "the wrong order" since order is meaningless. All the cognitive effort is migrated to using good names for variable and object-fields, which is more intuitive and robust. |
 
 ### 🧩 Type Aliases and Declaration Merging
@@ -123,7 +123,7 @@ I have found aliasing primitives to be incredibly useful. A prime example is thi
 Using TypeScript's declaration merging feature, type declarations can be namespaced: Instead of writing `export type PlayerId` in the global namespace, which pollutes the global type-declaration group and adds to visual clutter with module imports, I can write something like this (an older example):
 
 ```typescript
-// <docuentation>
+// <documentation>
 export class Player {
     idNumber: Player.Id;
     <...>
