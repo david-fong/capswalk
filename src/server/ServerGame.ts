@@ -49,7 +49,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
         // TODO: initialize this.socketBundle
 
         // Attach event listeners / handlers to each socket:
-        this.__players.HUMAN.map((player) => Player.Bundle.get(this.socketBundle, player.playerId))
+        this.__players.HUMAN.map((player) => this.socketBundle.get(player.playerId))
         .forEach((socket) => {
             // Attach the movement request handler:
             socket.removeAllListeners(PlayerMovementEvent.EVENT_NAME);
@@ -79,7 +79,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
         __assert(desc); // TODO: this isn't working :/
         (desc.playerDescs.HUMAN).forEach((playerDesc) => {
             (desc.operatorIndex as Player.Id["intraClassId"]) = playerDesc.playerId.intraClassId;
-            Player.Bundle.get(this.socketBundle, playerDesc.playerId).emit(
+            this.socketBundle.get(playerDesc.playerId).emit(
                 Game.CtorArgs.EVENT_NAME,
                 desc,
             );
@@ -131,7 +131,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            Player.Bundle.get(this.socketBundle, desc.playerId).emit(
+            this.socketBundle.get(desc.playerId).emit(
                 PlayerMovementEvent.EVENT_NAME,
                 desc,
             );
@@ -150,7 +150,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
 
         if (desc.eventId === EventRecordEntry.REJECT) {
             // The request was rejected- Notify the requester.
-            Player.Bundle.get(this.socketBundle, desc.playerId).emit(
+            this.socketBundle.get(desc.playerId).emit(
                 Bubble.MakeEvent.EVENT_NAME,
                 desc,
             );

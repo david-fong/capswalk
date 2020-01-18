@@ -1,6 +1,6 @@
 import { Tile, Coord } from "floor/Tile";
 import { OfflineGame } from "./OfflineGame";
-import { HumanPlayer } from "game/player/HumanPlayer";
+import { OperatorPlayer } from "game/player/OperatorPlayer";
 import { Player } from "game/player/Player";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 
@@ -9,7 +9,7 @@ import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
  * 
  * @extends HumanPlayer
  */
-export class OfflineHumanPlayer<S extends Coord.System> extends HumanPlayer<S> {
+export class OfflineOperatorPlayer<S extends Coord.System> extends OperatorPlayer<S> {
 
     public constructor(game: OfflineGame<S>, desc: Player.CtorArgs) {
         super(game, desc);

@@ -8,8 +8,8 @@ import { Game } from "game/Game";
 
 import { Player } from "game/player/Player";
 import { PuppetPlayer } from "game/player/PuppetPlayer";
-import { HumanPlayer } from "game/player/HumanPlayer";
-import { OnlineHumanPlayer } from "./OnlineHumanPlayer";
+import { OperatorPlayer } from "game/player/OperatorPlayer";
+import { OnlineOperatorPlayer } from "./OnlineOperatorPlayer";
 
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 import { Bubble } from "game/events/Bubble";
@@ -84,8 +84,8 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer<S> {
-        return new OnlineHumanPlayer(this, desc);
+    protected createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S> {
+        return new OnlineOperatorPlayer(this, desc);
     }
 
     /**

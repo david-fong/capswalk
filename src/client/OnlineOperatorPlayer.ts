@@ -1,15 +1,15 @@
 import { Tile, Coord } from "floor/Tile";
 import { ClientGame } from "./ClientGame";
 import { Player } from "game/player/Player";
-import { HumanPlayer } from "game/player/HumanPlayer";
+import { OperatorPlayer } from "game/player/OperatorPlayer";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 
 
 /**
  * 
- * @extends HumanPlayer
+ * @extends OperatorPlayer
  */
-export class OnlineHumanPlayer<S extends Coord.System> extends HumanPlayer<S> {
+export class OnlineOperatorPlayer<S extends Coord.System> extends OperatorPlayer<S> {
 
     /**
      * @override

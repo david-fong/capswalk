@@ -197,7 +197,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             // Refresh the operator's `seqBuffer`:
             if (this.operator && // Ignore if ServerGame
                 player !== this.operator &&
-                !(this.operator.tile.sourcesTo().get.includes(dest))) {
+                !(this.operator.tile.destsFrom().get.includes(dest))) {
                 // Do this if moving into the vicinity of the operator
                 // and the requester is not the operator. This operation
                 // is necessary to maintain the `seqBuffer` invariant.

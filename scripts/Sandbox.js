@@ -97,5 +97,9 @@ console.log("prop" in _in) // false
 console.log(Object.values(new B()))
 // nope nope.
 
+// is it okay to pop from an empty array?
+console.log([].pop())
+// yup. it just returns undefined.
+
 debugger
 

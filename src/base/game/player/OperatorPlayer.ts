@@ -1,6 +1,5 @@
 import { Lang } from "lang/Lang";
 import { Tile, Coord } from "floor/Tile";
-import { Game } from "game/Game";
 import { Player } from "./Player";
 
 
@@ -10,7 +9,7 @@ import { Player } from "./Player";
  * 
  * @extends Player
  */
-export abstract class HumanPlayer<S extends Coord.System> extends Player<S> {
+export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     /**
      * Invariant: always matches the prefix of the {@link LangSeq} of
@@ -58,13 +57,14 @@ export abstract class HumanPlayer<S extends Coord.System> extends Player<S> {
      * provided `key` completes the `LangSeq` of a UNT. Does not do
      * any checking regarding {@link HumanPlayer#requestInFlight}.
      * 
-     * @param key - The pressed typable key as a string. Pass `null` to
-     *      trigger a refresh of the {@link HumanPlayer#_seqBuffer}
-     *      to maintain its invariant.
+     * @param key
+     * The pressed typable key as a string. Pass `null` to trigger a
+     * refresh of the {@link HumanPlayer#_seqBuffer} to maintain its
+     * invariant.
      */
     public seqBufferAcceptKey(key: string | null): void {
-        const unoccupiedNeighbouringTiles = this.tile.destsFrom().unoccupied.get;
-        if (unoccupiedNeighbouringTiles.length === 0) {
+        const unts = this.tile.destsFrom().unoccupied.get;
+        if (unts.length === 0) {
             // Every neighbouring `Tile` is occupied!
             // In this case, no movement is possible.
             return;
@@ -79,44 +79,32 @@ export abstract class HumanPlayer<S extends Coord.System> extends Player<S> {
                 );
             }
         } else {
-            key = ""; // Caller intends to refresh seqBuffer invariant.
+            const possibleTarget = unts.find((tile) => tile.langSeq.startsWith(this.seqBuffer));
+            if (!possibleTarget || possibleTarget.langSeq === this.seqBuffer) {
+                this._seqBuffer = "";
+            }
+            return;
         }
 
-        let newSeqBuffer: Lang.Seq;
         for ( // loop through substring start offset of newSeqBuffer:
-            newSeqBuffer = this.seqBuffer + key;
-            newSeqBuffer.length > 0;
+            let newSeqBuffer: Lang.Seq = this.seqBuffer + key;
+            newSeqBuffer.length;
             newSeqBuffer = newSeqBuffer.substring(1)
         ) {
             // look for the longest suffixing substring of `newSeqBuffer`
             // that is a prefixing substring of any UNT's.
-            const matchletTiles: ReadonlyArray<Tile<S>> = unoccupiedNeighbouringTiles
-                    .filter((tile) => tile.langSeq.startsWith(newSeqBuffer));
-            if (matchletTiles.length > 0) {
-                // Found a suffix of newSeqBuffer that prefixes a UNT's
-                // sequence. Update seqBuffer field to use newSeqBuffer:
+            const possibleTarget = unts.find((tile) => tile.langSeq.startsWith(newSeqBuffer));
+            if (possibleTarget) {
                 this._seqBuffer = newSeqBuffer;
-                if (matchletTiles.length === 1 &&
-                    matchletTiles[0].langSeq === newSeqBuffer) {
-                    if (key) {
-                        // Operator typed the `LangSeq` of a UNT (unless they are
-                        // missing incoming updates from the server / Game Manager).
-                        this.makeMovementRequest(matchletTiles[0]);
-                    } else {
-                        // External shuffling event created a new completion.
-                        // In this case, don't try to move. Clear the seqBuffer.
-                        newSeqBuffer = "";
-                    }
+                if (possibleTarget.langSeq === newSeqBuffer) {
+                    this.makeMovementRequest(possibleTarget);
                 }
-                // Stop searching through suffixes of newSeqBuffer:
-                break;
+                return;
             }
         }
-        if (newSeqBuffer.length === 0) {
-            // Operator's new `seqBuffer` didn't match anything.
-            this._seqBuffer = "";
-            this.hostTile.visualBell();
-        }
+        // Operator's new `seqBuffer` didn't match anything.
+        this._seqBuffer = "";
+        this.hostTile.visualBell();
     }
 
     /**

@@ -4,8 +4,8 @@ import { Game } from "game/Game";
 import { LocalGameSettings } from "settings/GameSettings";
 
 import { Player } from "game/player/Player";
-import { HumanPlayer } from "game/player/HumanPlayer";
-import { OfflineHumanPlayer } from "./OfflineHumanPlayer";
+import { OperatorPlayer } from "game/player/OperatorPlayer";
+import { OfflineOperatorPlayer } from "./OfflineOperatorPlayer";
 import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
 
@@ -40,8 +40,8 @@ export class OfflineGame<S extends Coord.System> extends Game<G,S> {
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer<S> {
-        return new OfflineHumanPlayer<S>(this, desc);
+    protected createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S> {
+        return new OfflineOperatorPlayer<S>(this, desc);
     }
 
     /**

@@ -12,11 +12,14 @@
 
 ### High Priority
 
+1. Rename Player.Operator (the enum) and Player.operatorClass (the field) to use the term "family".
+   - Rationale: Avoid confusion with the term "operator".
 1. Make grid's tile getters have a method-object nesting: `this.getTile.At`, `this.getTile.[unoccupied|occupied].[destsFrom|SourcesTo]`.
    - Update documentation on what the range of a bubble is and how range-extension works (both look at destFrom).
 1. Write out full specification for what qualifies the end of the game.
    - Challenge: The teaming system (beNiceTo) is complicated.
-   - Add to spec that 
+     - Solution / Decision: revert `beNiceTo` system back to the teaming system: Ie. Nicity must be strictly mutual, and be a strict partition of all players.
+   - Teams represented as an augmented set of arrays of teamed-players.
 
 ### Low Priority
 

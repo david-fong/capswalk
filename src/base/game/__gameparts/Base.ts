@@ -6,7 +6,7 @@ import { Grid } from "floor/Grid";
 
 import { Player } from "../player/Player";
 import { PuppetPlayer } from "../player/PuppetPlayer";
-import { HumanPlayer } from "../player/HumanPlayer";
+import { OperatorPlayer } from "../player/OperatorPlayer";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 
 import { Game } from "../Game";
@@ -37,7 +37,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     protected readonly __players: Player.Bundle<Player<S>>;
 
-    public readonly operator: G extends Game.Type.SERVER ? undefined : HumanPlayer<S>;
+    public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
 
 
 
@@ -77,10 +77,10 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         // Construct players:
         this.__players = this.createPlayers(desc);
         if (desc.operatorIndex) {
-            (this.operator as HumanPlayer<S>) = this.__players.get({
+            (this.operator as OperatorPlayer<S>) = this.__players.get({
                 operatorClass: Player.Operator.HUMAN,
                 intraClassId: desc.operatorIndex!,
-            }) as HumanPlayer<S>;
+            }) as OperatorPlayer<S>;
         }
 
         // Check to make sure that none of the players are invincible:
@@ -149,7 +149,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         return players as Game<G,S>["__players"];
     }
 
-    protected abstract createOperatorPlayer(desc: Player.CtorArgs): HumanPlayer<S>;
+    protected abstract createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;
     protected abstract createHumanPlayer(desc: Player.CtorArgs): PuppetPlayer<S>;
     protected abstract createArtifPlayer(desc: Player.CtorArgs):
     (G extends Game.Type.Manager ? ArtificialPlayer<S> : PuppetPlayer<S>);
