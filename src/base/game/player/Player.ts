@@ -16,8 +16,6 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     public readonly username: Player.Username;
 
     /**
-     * As in real life, nicity isn't inherently mutually reciprocal.
-     * 
      * See the {@link Bubble} module documentation.
      * 
      * It must be checked that all players _can_ be permanently downed.
@@ -25,11 +23,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * - There exists an artificial player that can down human players.
      * - For every human-operated player, there exists another that is
      *   not nice to it.
-     * 
-     * These are fixed once the enclosing Game has been constructed.
      */
-    // TODO: how about a rule that no more than ~75% of the players
-    // may be nice to you? (don't count self, and round down)
     public readonly beNiceTo: ReadonlyArray<Player.Id>;
 
     public lastAcceptedRequestId: number;
@@ -63,7 +57,6 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     }
 
 
-
     /**
      * Called automatically by {@link OperatorPlayer#seqBufferAcceptKey}
      * for {@link OperatorPlayer}s, and by a periodic callback for
@@ -80,11 +73,6 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     }
 
     /**
-     * Sends a descriptor of the movement request to the Game Manager.
-     * 
-     * Request should call functions with a flow that either short-
-     * circuits, or terminates with a call to {@link Player#moveTo}.
-     * 
      * @param dest -
      */
     protected abstract abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void;

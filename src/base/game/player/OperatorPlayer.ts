@@ -1,7 +1,7 @@
 import { Lang } from "lang/Lang";
 import { Tile, Coord } from "floor/Tile";
-import { Player } from "./Player";
 import { VisibleTile } from "floor/VisibleTile";
+import { Player } from "./Player";
 import { Game } from "game/Game";
 
 
@@ -28,6 +28,8 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
     public constructor(game: Game<any,S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc);
         {
+            // TODO: create a spotlight mask using the below CSS properties:
+            // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
             const pDiv: HTMLDivElement = new HTMLDivElement();
             pDiv.className = VisibleTile.ClassHooks.PLAYER;
             this.playerDivElem = pDiv;
@@ -39,6 +41,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      */
     public reset(spawnTile: Tile<S>): void {
         super.reset(spawnTile);
+        this.hostTile.tileCellElem.appendChild(this.playerDivElem);
         this._seqBuffer = "";
     }
 

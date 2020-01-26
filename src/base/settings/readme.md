@@ -9,7 +9,7 @@
   - how to host LAN party
 - settings:
   for server, this is also the place where people join and leave.
-  [q] means this property is synced in the page url.
+  [q] means this property is synced in the page url's query part.
   - [q] language
   - [q] lang balancing
   - [q] grid dimensions

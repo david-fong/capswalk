@@ -14,6 +14,10 @@ import { Tile } from "./Tile";
  * 3. Language Written Character
  * 4. Language Typable Sequence
  * 
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/z-index
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+ * 
  * Dataset:
  * Top-level layer has property "scoreValue"
  * 
@@ -27,23 +31,22 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
-
-        const tCell: HTMLTableCellElement = new HTMLTableCellElement();
         {
+            const tCell = new HTMLTableCellElement();
             tCell.className = VisibleTile.ClassHooks.TILE;
             {
-                const cDiv: HTMLDivElement = new HTMLDivElement();
+                const cDiv = new HTMLDivElement();
                 cDiv.className = VisibleTile.ClassHooks.LANG_CHAR;
                 tCell.appendChild(cDiv);
                 this.langCharDivElem = cDiv;
             } {
-                const sDiv: HTMLDivElement = new HTMLDivElement();
+                const sDiv = new HTMLDivElement();
                 sDiv.className = VisibleTile.ClassHooks.LANG_SEQ;
                 tCell.appendChild(sDiv);
                 this.langSeqDivElem = sDiv;
             }
+            this.tileCellElem = tCell;
         }
-        this.tileCellElem = tCell;
     }
 
 
@@ -54,21 +57,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         this.tileCellElem; // TODO
     }
 
-
-    /**
-     * @override
-     */
-    public setOccupant(playerDesc: Player.Id): void {
-        super.setOccupant(playerDesc);
-        // TODO: set some dataset thing to make player face layer visible.
-        if (playerDesc === Player.Id.NULL) {
-            // Eviction-type action:
-            ;
-        } else {
-            // Inhabitation-type action:
-            ;
-        }
-    }
 
     /**
      * @override
