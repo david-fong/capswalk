@@ -65,7 +65,6 @@ export namespace Game {
         G extends Game.Type,
         S extends Coord.System,
     > = Readonly<{
-        gameType: G;
         coordSys: S;
 
         gridDimensions: Grid.Dimensions<S>;

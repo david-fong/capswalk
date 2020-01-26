@@ -46,8 +46,12 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     private readonly __eventRecord: Array<Readonly<EventRecordEntry>>;
 
-    public constructor(gameDesc: Game.CtorArgs<G,S>, tileClass: Tile.ClassIf<S>) {
-        super(gameDesc, tileClass);
+    public constructor(
+        gameDesc: Game.CtorArgs<G,S>,
+        gameType: G,
+        tileClass: Tile.ClassIf<S>,
+    ) {
+        super(gameDesc, gameType, tileClass);
         this.__eventRecord = [];
     }
 
@@ -71,7 +75,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player<S> | undefined {
         const player = this.players.get(desc.playerId);
-         if (player.isBubbling) {
+         if (player.status.isBubbling) {
             // The specified player does not exist or is bubbling.
             // This is _not_ the same as if the requester has their
             // movement frozen.
@@ -159,8 +163,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // original stockpile value is not such that its calculated
         // timer is outside the required range.
         desc.score = {
-            value: player.score + dest.scoreValue,
-            stockpile: player.stockpile + (bubbleDesc.performedConstrain ? 0 : dest.scoreValue),
+            value: player.status.score + dest.scoreValue,
+            stockpile: player.status.stockpile + (bubbleDesc.performedConstrain ? 0 : dest.scoreValue),
             bubblePercentCharged: bubbleDesc.percentCharged,
         };
 
@@ -243,9 +247,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             executeBasicTileUpdates();
             // If using relative values (which we are not), the below
             // should happen regardless of the order of receipt.
-            player.score = desc.score!.value;
-            player.stockpile = desc.score!.stockpile;
-            player.percentBubbleCharge = desc.score!.bubblePercentCharged;
+            player.status.score = desc.score!.value;
+            player.status.stockpile = desc.score!.stockpile;
+            player.status.percentBubbleCharge = desc.score!.bubblePercentCharged;
 
             player.moveTo(dest);
             // Below is computationally the same as "(player.lastAcceptedRequestId)++"
@@ -309,9 +313,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
         if (desc.eventId !== EventRecordEntry.REJECT) {
             this.recordEvent(desc); // Record the event.
-            bubbler.isBubbling = true;
+            bubbler.status.isBubbling = true;
         } else {
-            bubbler.isBubbling = false;
+            bubbler.status.isBubbling = false;
         }
     }
 
@@ -376,18 +380,18 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         const bubbler = this.players.get(desc.bubblerId);
 
         // Lower the "isBubbling" flags for the player:
-        bubbler.isBubbling = false;
+        bubbler.status.isBubbling = false;
 
         // Enact effects on supposedly un-downed enemy players:
         desc.playersToDown.forEach((enemyId) => {
             const enemy = this.players.get(enemyId);
-            enemy.isDowned = true;
+            enemy.status.isDowned = true;
         }, this);
 
         // Enact effects on supposedly downed teammates:
         desc.playersToRaise.forEach((teammateId) => {
             const teammate = this.players.get(teammateId);
-            teammate.isDowned = false;
+            teammate.status.isDowned = false;
         }, this);
 
         // Enact effects on players to freeze:

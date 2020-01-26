@@ -47,10 +47,15 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
      * 
      * @param desc -
+     * @param gameType -
      * @param tileClass -
      */
-    public constructor(desc: Game.CtorArgs<G,S>, tileClass: Tile.ClassIf<S>) {
-        this.gameType = desc.gameType;
+    public constructor(
+        desc: Game.CtorArgs<G,S>,
+        gameType: G,
+        tileClass: Tile.ClassIf<S>,
+    ) {
+        this.gameType = gameType;
         this.tileClass = tileClass;
         this.grid = new (Grid.getImplementation(desc.coordSys))({
             coordSys:   desc.coordSys,
@@ -129,7 +134,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * @returns A bundle of the constructed players.
      */
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): Game<G,S>["players"] {
-        if (gameDesc.gameType === Game.Type.CLIENT) {
+        if (this.gameType === Game.Type.CLIENT) {
             throw new TypeError("This must be overridden for an online-client implementation.");
         }
         type Reduct = Player.Bundle.Contents<Player<S>>;

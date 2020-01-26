@@ -138,7 +138,6 @@ export class GroupSession {
         }
         // const noProto = <T>(obj: T): T => Object.assign(Object.create(null), obj);
         this.currentGame = new ServerGame(this.namespace, {
-            gameType: Game.Type.SERVER,
             coordSys,
             gridDimensions,
             languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.

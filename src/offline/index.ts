@@ -12,12 +12,14 @@ const game = new OfflineGame<Coord.System.EUCLID2>({
     },
     langBalancingScheme: BalancingScheme.WEIGHT,
     languageName: "English",
+    operatorIndex: 0,
     playerDescs: {
         [Player.Family.HUMAN]: [{
             beNiceTo: [],
             username: "hello world",
             socketId: "todo", // TODO hmm. maybe make some static method to assign unique values based on operator class?
         }, ],
+        [Player.Family.CHASER]: [],
     },
 });
 game.reset();

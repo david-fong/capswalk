@@ -43,7 +43,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         // Start with a call to the super constructor:
-        super(gameDesc, Tile);
+        super(gameDesc, Game.Type.SERVER, Tile);
         this.namespace = namespace;
 
         // TODO: initialize this.socketBundle

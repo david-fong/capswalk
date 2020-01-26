@@ -41,7 +41,7 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
         socket: SocketIOClient.Socket,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
-        super(gameDesc, VisibleTile);
+        super(gameDesc, Game.Type.CLIENT, VisibleTile);
         if (!this.operator) {
             throw new Error("The Operator for a ClientGame should be defined.");
         }
