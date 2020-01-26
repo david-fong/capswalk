@@ -125,29 +125,30 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     /**
      * Private helper for the constructor.
      * 
-     * @param desc -
+     * @param gameDesc -
      * @returns A bundle of the constructed players.
      */
-    private createPlayers(desc: Readonly<Game.CtorArgs<G,S>>): Game<G,S>["players"] {
-        if (desc.gameType === Game.Type.CLIENT) {
+    private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): Game<G,S>["players"] {
+        if (gameDesc.gameType === Game.Type.CLIENT) {
             throw new TypeError("This must be overridden for an online-client implementation.");
         }
         type Reduct = Player.Bundle.Contents<Player<S>>;
-        return new Player.Bundle((Object.keys(desc.playerDescs) as Player.Family[])
-            .reduce<Reduct>((build, family) => {
-                (build[family] as ReadonlyArray<Player<S>>) = desc
-                .playerDescs[family].map((ctorArgs, numberInFamily) => {
-                    if (family === Player.Family.HUMAN) {
-                        return (numberInFamily === desc.operatorIndex)
-                            ? this.createOperatorPlayer(ctorArgs)
-                            : this.createHumanPlayer(ctorArgs);
-                    } else {
-                        return this.createArtifPlayer(ctorArgs);
-                    }
-                });
-                return build;
-            }, {} as Reduct)
-        );
+        const playerDescs = Player.CtorArgs.finalizePlayerIds(gameDesc.playerDescs);
+        return new Player.Bundle(playerDescs.keys.reduce<Reduct>((build, family) => {
+            // Transform the bundle of player constructor-argument descriptors
+            // into a bundle of corresponding, newly constructed player objects:
+            (build[family] as ReadonlyArray<Player<S>>) = playerDescs.contents[family]
+            .map((ctorArgs, numberInFamily) => {
+                if (family === Player.Family.HUMAN) {
+                    return (numberInFamily === gameDesc.operatorIndex)
+                        ? this.createOperatorPlayer(ctorArgs)
+                        : this.createHumanPlayer(ctorArgs);
+                } else {
+                    return this.createArtifPlayer(ctorArgs);
+                }
+            });
+            return build;
+        }, {} as Reduct));
     }
 
     protected abstract createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;

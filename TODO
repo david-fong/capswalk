@@ -12,18 +12,20 @@
 
 ### High Priority
 
-1. Make game constructor take bundle with playerDescs of generic arg Player.SocketId.
+1. Write out full specification for what qualifies the end of the game.
+   - Solution / Decision: revert `beNiceTo` system back to the teaming system:
+     - Ie. Nicity must be strictly mutual, and be a strict partition of all players.
+   - Teams represented as an augmented set of arrays of teamed-players.
+   - Make playerDowned handler function.
+     - Checks if only one team has any un-downed players remaining.
+       - In that case, the game ends and that remaining team wins.
+1. Fill in implementation of bubble event handler.
 1. Get rid of PlayerSkeleton.VisibleState.
    - Use dedicated individual player getters instead:
      - player getters should call corresponding setter in hostTile.
-1. Write out full specification for what qualifies the end of the game.
-   - Challenge: The teaming system (beNiceTo) is complicated.
-     - Solution / Decision: revert `beNiceTo` system back to the teaming system: Ie. Nicity must be strictly mutual, and be a strict partition of all players.
-   - Teams represented as an augmented set of arrays of teamed-players.
 
 ### Low Priority
 
-- Make the main readme file less verbose [readme](./README.md-stepping-up-my-game).
 - Make eslintrc's for impl/ folders saying that they can't import from the impl/ folder they are in.
   - Check if it can detect relative imports. If not, don't do this
 

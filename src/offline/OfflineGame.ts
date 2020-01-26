@@ -25,12 +25,12 @@ export class OfflineGame<S extends Coord.System> extends Game<G,S> {
     /**
      * _Calls reset recursively for this entire composition._
      * 
-     * @param desc - 
+     * @param gameDesc -
      */
-    public constructor(desc: Game.CtorArgs<G,S>) {
-        super(desc, VisibleTile);
+    public constructor(gameDesc: Game.CtorArgs<G,S>) {
+        super(gameDesc, VisibleTile);
         if (!this.operator) {
-            throw new Error("The Operator for a ClientGame should be defined.");
+            throw new Error("The Operator for an OfflineGame should be defined.");
         }
         this.settings = LocalGameSettings.getInstance();
 

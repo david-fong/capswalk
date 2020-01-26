@@ -3,7 +3,7 @@
 
 There's nothing to show yet! But, you can try [**`an older, working version` 👈**](https://david-fong.github.io/SnaKey-JS/ "*boop*")
 
-> I want you- just for a moment- to think back to your most challenging learning experiences- a time you stepped into waters your were completely unfamiliar with: Maybe it was a sport, an instrument, a language, or how to cook something. I think we can all agree that learning is hard. And that's what makes the process of doing it frustrating. I can vouch for that by this entire project. But I can also say from other past experiences that the difficulty in tackling something new and unfamiliar is what makes its eventual fruit so sweet to enjoy.
+> I want you- just for a moment- to think back to your most challenging learning experience- a time you stepped into waters that you were completely unfamiliar with: Maybe it was to learn a sport, an instrument, a language, or how to cook something. I think we can all agree that learning is hard. And that's what makes the process of doing it frustrating. I can vouch for that by this entire project. But I can also say from other past experiences that the difficulty in tackling something new and unfamiliar is what makes its eventual fruit so sweet to enjoy.
 >
 > If I want to get across one message through this project, it is to _be kind to beginners_- whether that is to another person or to yourself. When I get frustrated learning something, I find myself needing to mentally recite that _"I'm not stupid- I'm just learning"_.
 >
@@ -62,9 +62,9 @@ The inspiration to add different languages came by taking a beginners' class in 
 
 <img src="assets/images/snakey_version2_hiragana.PNG" align="left" width="300" />
 
-After finishing the first version, I excitedly showed my friends and Japanese prof, who responded with encouragement and enthusiasm, but also confirmed my fears of its poor accessibility. For that reason, during the following month, I learned how basic webpages are built up in order to port the game to be hosted on the web as [**version two**](https://github.com/david-fong/SnaKey-JS).
+I excitedly showed version one to my friends and Japanese prof, who responded with enthusiasm and encouragement, and confirmed my fears of poor accessibility. For that reason, over the next month, I learned how to build simple web-pages to port the game to [**version two**](https://github.com/david-fong/SnaKey-JS).
 
-I wrote everything (with hands tied behind my back on NotePad++) in vanilla HTML, Javascript, and CSS. This helped me build a strong foundation, and to appreciate the value of a good IDE, strong typing, and coding style conventions (which pushed me toward VsCode, TypeScript, and EsLint in v3).
+I wrote everything (with hands tied behind my back on NotePad++) in vanilla HTML, Javascript, and CSS. This helped me to build a strong foundation and appreciate the value of a good IDE, strong typing, and style conventions (which pushed me to VsCode, TypeScript, and EsLint in version 3).
 
 The game's objectives, mechanics, and representation went largely unchanged. Being back at square one, most of my efforts went to searching through and exploring documentation on javascript's basic data structures, the browser DOM, and CSS. I found [w3c schools](https://www.w3schools.com/) and the [MDN web docs](https://developer.mozilla.org/en-US/) to be great learning resources.
 
@@ -78,7 +78,7 @@ You might think that after making this game twice I'd be tired of it... but that
 
 ## 🛩 Design Challenges
 
-One of the big design challenges for this project is to allow playing on or off-line. I like this challenge because it really demands designing a good function API and inheritance chain, which isn't a trivial task given an overview of what each piece of the picture needs to accomplish:
+One of the big design challenges for this project is to allow playing on or off-line. I like this challenge because it really demands designing a good function API and inheritance tree, which isn't a trivial task given an overview of what each piece of the picture needs to accomplish:
 
 |                     Task                   | Offline | Server | Client |
 |:-------------------------------------------|:-------:|:------:|:------:|
@@ -94,9 +94,9 @@ Now that we understand why the design requires so much more care in this version
 
 |        Topic        | The What and Why of the Problem | The Solution and its Necessity |
 |:-------------------:|---------------------------------|--------------------------------|
-| 📁<br>Modularity    | | |
-| 🦆<br>Inheritance   | | Here, ideally, there should only be one interface to every class, and concrete implementations should carry as little weight as possible- mainly in how events are handled and how changes are displayed. Typescript enhances the inheritance-grammar of Javascript to the level of Java, for which I am grateful and excited. |
-| 📄<br>Documentation | This was a problem of values rather than language-understanding: At the time, writing documentation didn't feel important since the code was small, and I was using NotePad++ (Ie. no mouseover doc peeking). | As the design becomes more complicated to address new requirements, I have a more critical need to clearly communicate my code's purposes. I thought the solution would be to forcefully document [everything](http://s3.ryanparman.com.s3.amazonaws.com/rage/document_all_the_things.png), but I've found- to my surprise- that for the same goal, it has made a bigger impact to doggedly write better code (more on this in the next section). |
+| 📁<br>Modularity    | | I set out on a quest to optimize compilation time. But after a week of reading [project reference](https://www.typescriptlang.org/docs/handbook/project-references.html) docs, moving folders, and breaking circular references, compilation became \~5% _slower_. Following shock and acceptance, I found a new source of content: as I incrementally increased the granularity of modules, the folder structure became more opinionated _toward_ intuition. My project became much neater. |
+| 🦆<br>Inheritance   | | |
+| 📄<br>Documentation | This was a problem of values rather than knowledge: At the time, writing documentation didn't feel important since the code was small, and I was using NotePad++ (ie. no mouseover doc peeking). | The new requirements introduce new complexities, and with them, a more critical need to clearly communicate my code's purposes. I thought the solution would be to forcefully document [_everything_](http://s3.ryanparman.com.s3.amazonaws.com/rage/document_all_the_things.png), but to my surprise, I found that for the same goal, it made a greater impact to doggedly write better code (see next section). |
 
 ---
 
@@ -111,7 +111,7 @@ This is something that can be done in plain Javascript. It serves three purposes
 |       |               |
 |:-----:|---------------|
 | Footprint Reduction | Nullifies problems with function signature bloat. Defining the shapes of objects and instantiating them is much less verbose in JavaScript than in Java, which makes it convenient and highly practical. |
-| Flexible Refactoring | Makes function signatures incredibly malleable. For me, the positive impacts with constructors have been huge. If I need to add, remove, or change the type of an argument, I can modify the type definition and the relevant handler code and leave all other function-overrides and call sites untouched. |
+| Flexible Refactoring | Makes function signatures incredibly malleable. For me, the positive impacts with constructors have been huge. To add, remove, or change the type of an argument, I can modify the type definition and the relevant handler code, and leave all other overrides and call-sites untouched. |
 | Named Parameters | Makes it _very_ difficult to pass arguments in "the wrong order" since order is meaningless. All the cognitive effort is migrated to using good names for variable and object-fields, which is more intuitive and robust. |
 
 ### 🧩 Type Aliases and Declaration Merging

@@ -76,9 +76,9 @@ export namespace Game {
          * The index in `playerDescs` of the operator's ctor args.
          */
         operatorIndex: G extends Game.Type.SERVER
-            ? typeof Player.Id.NULL
+            ? undefined
             : Player.Id["number"];
-        playerDescs: Player.Bundle.Contents<Player.CtorArgs>;
+        playerDescs: Player.Bundle.Contents<Player.CtorArgs<Player.SocketId>>;
     }>;
 
     export namespace CtorArgs {

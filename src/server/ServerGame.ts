@@ -36,14 +36,14 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
      * Broadcasts constructor arguments to all clients.
      * 
      * @param namespace -
-     * @param desc -
+     * @param gameDesc -
      */
     public constructor(
         namespace: io.Namespace,
-        desc: Game.CtorArgs<G,S>,
+        gameDesc: Game.CtorArgs<G,S>,
     ) {
         // Start with a call to the super constructor:
-        super(desc, Tile);
+        super(gameDesc, Tile);
         this.namespace = namespace;
 
         // TODO: initialize this.socketBundle
@@ -76,12 +76,12 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
             // doesn't actually do any assertion :P
             (desc.gameType as Game.Type) = Game.Type.CLIENT;
         };
-        __assert(desc); // TODO: this isn't working :/
-        (desc.playerDescs.HUMAN).forEach((playerDesc) => {
-            (desc.operatorIndex as Player.Id["number"]) = playerDesc.playerId.number;
-            this.socketBundle.get(playerDesc.playerId).emit(
+        __assert(gameDesc); // TODO: this isn't working :/
+        (this.players.contents.HUMAN).forEach((player) => {
+            (gameDesc.operatorIndex as Player.Id["number"]) = player.playerId.number;
+            this.socketBundle.get(player.playerId).emit(
                 Game.CtorArgs.EVENT_NAME,
-                desc,
+                gameDesc,
             );
         }, this);
 

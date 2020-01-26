@@ -144,8 +144,8 @@ export class GroupSession {
             languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.
             langBalancingScheme: undefined!, // TODO
             operatorIndex: undefined,
-            playerDescs: Player.CtorArgs.finalizePlayerIds({
-                [Player.Operator.HUMAN]: Object.values(this.sockets).map((socket) => {
+            playerDescs: {
+                [Player.Family.HUMAN]: Object.values(this.sockets).map((socket) => {
                     return {
                         username: socket.username!, // checked above.
                         beNiceTo: Array.from(socket.beNiceTo),
@@ -153,8 +153,8 @@ export class GroupSession {
                     };
                 }),
                 // TODO: add descs for artificial players,
-                [Player.Operator.CHASER]: undefined!,
-            }),
+                [Player.Family.CHASER]: undefined!,
+            },
         });
         return undefined;
     }

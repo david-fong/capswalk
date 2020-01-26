@@ -33,15 +33,15 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
     /**
      * _Calls Grid.reset for this composition (bypasses super)._
      * 
-     * @param socket - 
-     * @param desc - This should come from a Server event by the name
-     *      {@link Game.ConstructorArguments.EVENT_NAME}.
+     * @param socket -
+     * @param gameDesc - This should come from a Server event by the name
+     *      {@link Game.CtorArgs.EVENT_NAME}.
      */
     public constructor(
         socket: SocketIOClient.Socket,
-        desc: Game.CtorArgs<G,S>,
+        gameDesc: Game.CtorArgs<G,S>,
     ) {
-        super(desc, VisibleTile);
+        super(gameDesc, VisibleTile);
         if (!this.operator) {
             throw new Error("The Operator for a ClientGame should be defined.");
         }

@@ -46,8 +46,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     private readonly __eventRecord: Array<Readonly<EventRecordEntry>>;
 
-    public constructor(desc: Game.CtorArgs<G,S>, tileClass: Tile.ClassIf<S>) {
-        super(desc, tileClass);
+    public constructor(gameDesc: Game.CtorArgs<G,S>, tileClass: Tile.ClassIf<S>) {
+        super(gameDesc, tileClass);
         this.__eventRecord = [];
     }
 
@@ -180,11 +180,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * Automatically lowers the {@link Player#requestInFlight} field
      * for the requesting `Player` if the arriving event description
      * is the newest one for the specified `Player`.
-     * 
-     * It is essential that for these implementations, this method is
-     * not scheduled for later since it is the "write" stage of that
-     * critical operation. If I am a {@link ServerGame}, also notify
-     * all clients of the movement event.
      * 
      * Updates that are received after others that are more recent and
      * concern the same {@link Tile} are ignored. This is okay since
