@@ -67,7 +67,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     /**
      * @override
      */
-    public setOccupant(playerDesc: PlayerSkeleton.VisibleState): void {
+    public setOccupant(playerDesc: Player.Id): void {
         super.setOccupant(playerDesc);
         // TODO: set some dataset thing to make player face layer visible.
         if (playerDesc === Player.Id.NULL) {
@@ -77,6 +77,15 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             // Inhabitation-type action:
             ;
         }
+    }
+
+    /**
+     * @override
+     */
+    public evictOccupant(): void {
+        super.evictOccupant();
+        // TODO: call other setters that change visual appearance:
+        // clear the visual flags for: bubbling, frozen, downed, percentBubbleCharge
     }
 
     /**

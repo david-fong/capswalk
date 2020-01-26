@@ -1,9 +1,9 @@
-import { Player as PlayerTypeDefs, PlayerSkeleton as PlayerSkeletonTypeDefs } from "utils/TypeDefs";
+import { Player as PlayerTypeDefs } from "utils/TypeDefs";
 
 import { Tile, Coord } from "floor/Tile";
 import { TileGetter } from "floor/TileGetter";
-import { Game } from "game/Game";
 import { Player } from "./Player";
+import { Game } from "game/Game";
 
 
 /**
@@ -13,8 +13,7 @@ import { Player } from "./Player";
  * 
  * @extends PlayerTypeDefs to intake its namespace exports.
  */
-export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S>
-    implements PlayerSkeletonTypeDefs.VisibleState {
+export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
 
     public readonly playerId: Player.Id;
 
@@ -61,7 +60,7 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S>
         this.isFrozen = false;
         this.isBubbling = false;
         this.percentBubbleCharge = 0;
-        this.hostTile.setOccupant(this.visibleState); // (todo) keep
+        this.hostTile.setOccupant(this.playerId);
     }
 
 
@@ -72,16 +71,6 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S>
 
     public get hostTile(): PlayerSkeleton<S>["_hostTile"] {
         return this._hostTile;
-    }
-
-    public get visibleState(): PlayerSkeletonTypeDefs.VisibleState {
-        return {
-            playerId: this.playerId,
-            isDowned: this.isDowned,
-            isFrozen: this.isFrozen,
-            isBubbling: this.isBubbling,
-            percentBubbleCharge: this.percentBubbleCharge,
-        };
     }
 
     /**
@@ -129,7 +118,7 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S>
         else {
             // Move to occupy the destination `Tile`:
             this._hostTile = dest;
-            dest.setOccupant(this.visibleState); // (todo) keep
+            dest.setOccupant(this.playerId);
         }
     }
 
@@ -151,11 +140,6 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S>
     }
 
 
-
-    // NOTE: these are actually probably going to be useful for hooks
-    // of sound effects. But it feels awkward that they require a
-    // separate call (this.hostTile.setOccupant(this.visibleState) to
-    // make visible changes ;?
 
     public get isDowned(): boolean {
         return this._isDowned;

@@ -12,6 +12,14 @@
 
 ### High Priority
 
+1. Make Player class maintain its own html-display element:
+   - Rationale:
+     - Offloads business logic from CSS to Javascript.
+     - Instead of \~6 CSS operations on each of two html elements during each player movement, do one DOM operation.
+   - Procedure:
+     - Remove field `playerDivElem` from `VisibleTile`. Make it instead an argument to `Tile.setOccupant`:
+       - This argument is ignored in base method and consumed in `VisibleTile` where it is simply appended as a child to the `tileCellElem` element field (which automatically removes it from its previous parent in the DOM).
+     - Give `Operator` class the `playerDivElem` field and make it override each of the setters to also modify the CSS attributes of this element (and also write todo comments requesting implementation for them to play sound effects).
 1. Write out full specification for what qualifies the end of the game.
    - Solution / Decision: revert `beNiceTo` system back to the teaming system:
      - Ie. Nicity must be strictly mutual, and be a strict partition of all players.

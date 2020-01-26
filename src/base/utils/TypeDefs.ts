@@ -81,37 +81,6 @@ export namespace Player {
 
 
 
-export namespace PlayerSkeleton {
-    /**
-     * Information used by a {@link VisibleTile} to decide how to
-     * render the specified player. See {@link VisibleTile#occupantId}.
-     * 
-     * All fields are readonly.
-     */
-    export type VisibleState = Readonly<{
-        playerId:   Player.Id.Nullable;
-        isDowned:   boolean;
-        isFrozen:   boolean;
-        isBubbling: boolean;
-        percentBubbleCharge: number;
-    }>;
-
-    export namespace VisibleState {
-        /**
-         * Use for Tile-occupant eviction.
-         */
-        export const NULL = Object.freeze(<const>{
-            playerId:   Player.Id.NULL,
-            isDowned:   false,
-            isFrozen:   false,
-            isBubbling: false,
-            percentBubbleCharge: 0,
-        });
-        NULL as VisibleState;
-    }
-}
-
-
 export class Lang {}
 export namespace Lang {
     /**

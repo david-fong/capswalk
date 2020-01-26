@@ -1,4 +1,4 @@
-import { Lang, PlayerSkeleton, Player } from "utils/TypeDefs";
+import { Lang, Player } from "utils/TypeDefs";
 
 import { Coord } from "./Coord";
 
@@ -23,10 +23,10 @@ export { Coord } from "./Coord";
 export class Tile<S extends Coord.System> {
 
     public readonly coord: Coord<S>;
-    protected _occupantId: Player.Id.Nullable;
+    private _occupantId: Player.Id.Nullable;
 
-    protected _langChar: Lang.Char;
-    protected _langSeq:  Lang.Seq;
+    private _langChar: Lang.Char;
+    private _langSeq:  Lang.Seq;
     protected _scoreValue: number;
 
     /**
@@ -74,10 +74,10 @@ export class Tile<S extends Coord.System> {
     /**
      * Any overrides must make a supercall to this implementation.
      * 
-     * @param playerDesc -
+     * @param playerId -
      */
-    public setOccupant(playerDesc: PlayerSkeleton.VisibleState): void {
-        this._occupantId = playerDesc.playerId;
+    public setOccupant(playerId: Player.Id): void {
+        this._occupantId = playerId;
     }
 
     public get isOccupied(): boolean {
@@ -85,7 +85,7 @@ export class Tile<S extends Coord.System> {
     }
 
     public evictOccupant(): void {
-        this.setOccupant(PlayerSkeleton.VisibleState.NULL); // (todo) change to set this manually
+        this._occupantId = Player.Id.NULL;
     }
 
     public get occupantId(): Player.Id.Nullable {
