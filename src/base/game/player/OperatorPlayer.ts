@@ -1,6 +1,8 @@
 import { Lang } from "lang/Lang";
 import { Tile, Coord } from "floor/Tile";
 import { Player } from "./Player";
+import { VisibleTile } from "floor/VisibleTile";
+import { Game } from "game/Game";
 
 
 /**
@@ -10,10 +12,27 @@ import { Player } from "./Player";
 export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     /**
+     * @override
+     */
+    declare public readonly hostTile: VisibleTile<S>;
+
+    /**
      * Invariant: always matches the prefix of the {@link LangSeq} of
      * an unoccupied neighbouring {@link Tile}.
      */
     private _seqBuffer: Lang.Seq;
+
+    private readonly playerDivElem: HTMLDivElement;
+
+
+    public constructor(game: Game<any,S>, desc: Readonly<Player.CtorArgs>) {
+        super(game, desc);
+        {
+            const pDiv: HTMLDivElement = new HTMLDivElement();
+            pDiv.className = VisibleTile.ClassHooks.PLAYER;
+            this.playerDivElem = pDiv;
+        }
+    }
 
     /**
      * @override {@link Player#reset}
@@ -45,13 +64,13 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
             // add an event to signal pauses to clients (I don't like this
             // because it means delay), or we change this to allow sending
             // requests to the Game Manager even if the game is paused, and
-            // leave it up to the Game Managaer to ignore the request.
+            // leave it up to the Game Manager to ignore the request.
             this.seqBufferAcceptKey(event.key);
         }
     }
 
     /**
-     * Automaticaly makes a call to make a movement request if the
+     * Automatically makes a call to make a movement request if the
      * provided `key` completes the `LangSeq` of a UNT. Does not do
      * any checking regarding {@link OperatorPlayer#requestInFlight}.
      * 
@@ -114,6 +133,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
         // Clear my `seqBuffer` first:
         this._seqBuffer = "";
         super.moveTo(dest);
+        this.hostTile.tileCellElem.appendChild(this.playerDivElem);
     }
 
 

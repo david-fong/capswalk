@@ -1,5 +1,4 @@
-import { Tile, Coord } from "floor/Tile";
-import { OfflineGame } from "./OfflineGame";
+import { Coord } from "floor/Tile";
 import { OperatorPlayer } from "game/player/OperatorPlayer";
 import { Player } from "game/player/Player";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
@@ -11,10 +10,14 @@ import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
  */
 export class OfflineOperatorPlayer<S extends Coord.System> extends OperatorPlayer<S> {
 
-    public constructor(game: OfflineGame<S>, desc: Player.CtorArgs) {
-        super(game, desc);
-    }
-
+    // /**
+    //  * @override
+    //  */
+    // declare public readonly game: OfflineGame<S>;
+    //
+    // public constructor(game: OfflineGame<S>, desc: Player.CtorArgs) {
+    //     super(game, desc);
+    // }
 
 
     /**

@@ -1,4 +1,4 @@
-import { Lang as LangTypeDefs, PlayerSkeleton, Player } from "utils/TypeDefs";
+import { Lang as LangTypeDefs, Player } from "utils/TypeDefs";
 
 import { Coord } from "floor/Coord";
 import { Tile } from "./Tile";
@@ -22,7 +22,6 @@ import { Tile } from "./Tile";
 export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     public  readonly tileCellElem:      HTMLTableCellElement;
-    private readonly playerDivElem:     HTMLDivElement;
     private readonly langCharDivElem:   HTMLDivElement;
     private readonly langSeqDivElem:    HTMLDivElement;
 
@@ -33,11 +32,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         {
             tCell.className = VisibleTile.ClassHooks.TILE;
             {
-                const pDiv: HTMLDivElement = new HTMLDivElement();
-                pDiv.className = VisibleTile.ClassHooks.PLAYER;
-                tCell.appendChild(pDiv);
-                this.playerDivElem = pDiv;
-            } {
                 const cDiv: HTMLDivElement = new HTMLDivElement();
                 cDiv.className = VisibleTile.ClassHooks.LANG_CHAR;
                 tCell.appendChild(cDiv);
@@ -53,15 +47,12 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     }
 
 
-
     /**
      * @override
      */
     public visualBell(): void {
         this.tileCellElem; // TODO
     }
-
-
 
 
     /**
