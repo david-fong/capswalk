@@ -12,13 +12,6 @@
 
 ### High Priority
 
-1. Make Player class maintain its own html-display element:
-   - Rationale:
-     - Offloads business logic from CSS to Javascript.
-     - Instead of \~6 CSS operations on each of two html elements during each player movement, do one DOM operation.
-   - Procedure:
-     - Give `Operator` class the `playerDivElem` field and make it override each of the setters to also modify the CSS attributes of this element (and also write todo comments requesting implementation for them to play sound effects).
-     - wrap up: make sure to include the above rationale statement in the commit message.
 1. Change client-facing multiplayer-game-setup so that first joiner closes then teams are chosen.
    - Rationale: get rid of team specification translation from socketIds to playerIds.
 1. Write out full specification for what qualifies the end of the game.

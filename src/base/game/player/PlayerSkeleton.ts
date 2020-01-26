@@ -26,13 +26,6 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
 
     public readonly tile: TileGetter<S,[]>;
 
-    private _score:         number;
-    private _stockpile:     number;
-    private _isDowned:      boolean;
-    private _isFrozen:      boolean;
-    private _isBubbling:    boolean;
-    private _percentBubbleCharge: number;
-
 
 
     protected constructor(game: Game<any,S>, playerId: Player.Id) {
@@ -54,12 +47,6 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
      */
     protected reset(spawnTile: Tile<S>): void {
         this._hostTile = spawnTile;
-        this.score = 0;
-        this.stockpile = 0;
-        this.isDowned = false;
-        this.isFrozen = false;
-        this.isBubbling = false;
-        this.percentBubbleCharge = 0;
         this.hostTile.setOccupant(this.playerId);
     }
 
@@ -120,53 +107,6 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
             this._hostTile = dest;
             dest.setOccupant(this.playerId);
         }
-    }
-
-
-
-    public get score(): number {
-        return this._score;
-    }
-    public set score(newValue: number) {
-        // TODO: render this in the browser if not a ServerGame
-        this._score = newValue;
-    }
-
-    public get stockpile(): number {
-        return this._stockpile;
-    }
-    public set stockpile(stockpile: number) {
-        this._stockpile = stockpile;
-    }
-
-
-
-    public get isDowned(): boolean {
-        return this._isDowned;
-    }
-    public set isDowned(isDowned: boolean) {
-        this._isDowned = isDowned;
-    }
-
-    public get isFrozen(): boolean {
-        return this._isFrozen;
-    }
-    public set isFrozen(isFrozen: boolean) {
-        this._isFrozen = isFrozen;
-    }
-
-    public get isBubbling(): boolean {
-        return this._isBubbling;
-    }
-    public set isBubbling(isBubbling: boolean) {
-        this._isBubbling = isBubbling;
-    }
-
-    public get percentBubbleCharge(): number {
-        return this._percentBubbleCharge;
-    }
-    public set percentBubbleCharge(bubbleCharge: number) {
-        this._percentBubbleCharge = bubbleCharge;
     }
 
 }

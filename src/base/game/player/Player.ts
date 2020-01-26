@@ -26,6 +26,8 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      */
     public readonly beNiceTo: ReadonlyArray<Player.Id>;
 
+    public readonly status: PlayerStatus;
+
     public lastAcceptedRequestId: number;
 
     public requestInFlight: boolean;
@@ -47,13 +49,19 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         }
         this.username = desc.username;
         this.beNiceTo = desc.beNiceTo;
+        this.status = this.createStatusObj();
     }
 
     public reset(spawnTile: Tile<S>): void {
         super.reset(spawnTile);
+        this.status.reset();
         this.lastAcceptedRequestId = PlayerMovementEvent.INITIAL_REQUEST_ID;
         this.requestInFlight = false;
         this.game.cancelTimeout(this.bubbleTimer);
+    }
+
+    public createStatusObj(): PlayerStatus {
+        return new PlayerStatus();
     }
 
 
@@ -85,9 +93,6 @@ export namespace Player {
 
     export type Family = PlayerTypeDefs.Family;
 
-    /**
-     * 
-     */
     export type Id = PlayerTypeDefs.Id;
 
     export type SocketId = string;
@@ -154,7 +159,7 @@ export namespace Player {
             const playerDescs = new Player.Bundle<CtorArgs<SocketId>>(__playerDescs);
             const socketIdToPlayerIdMap: Record<SocketId,Player.Id> = {};
             for (const family of playerDescs.keys) {
-                __playerDescs[family].forEach((oldCtorArgs, numberInFamily) => {
+                playerDescs.contents[family].forEach((oldCtorArgs, numberInFamily) => {
                     socketIdToPlayerIdMap[oldCtorArgs.socketId] = {
                         family: family,
                         number: numberInFamily,
