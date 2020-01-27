@@ -46,14 +46,14 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * 
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
      * 
-     * @param desc -
      * @param gameType -
      * @param tileClass -
+     * @param desc -
      */
     public constructor(
-        desc: Game.CtorArgs<G,S>,
         gameType: G,
         tileClass: Tile.ClassIf<S>,
+        desc: Game.CtorArgs<G,S>,
     ) {
         this.gameType = gameType;
         this.tileClass = tileClass;

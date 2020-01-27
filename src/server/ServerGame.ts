@@ -43,7 +43,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         // Start with a call to the super constructor:
-        super(gameDesc, Game.Type.SERVER, Tile);
+        super(Game.Type.SERVER, Tile, gameDesc);
         this.namespace = namespace;
 
         // TODO: initialize this.socketBundle
@@ -67,18 +67,8 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
         });
 
         // Pass on Game constructor arguments to each client:
-        /**
-         * @inheritdoc
-         * NOTE: this doc is just here to satisfy some linting warning condition.
-         */
-        function __assert(desc: Game.CtorArgs<any,S>):
-            asserts desc is Readonly<Game.CtorArgs<Game.Type.CLIENT, S>> {
-            // doesn't actually do any assertion :P
-            (desc.gameType as Game.Type) = Game.Type.CLIENT;
-        };
-        __assert(gameDesc); // TODO: this isn't working :/
         (this.players.contents.HUMAN).forEach((player) => {
-            (gameDesc.operatorIndex as Player.Id["number"]) = player.playerId.number;
+            (gameDesc.operatorIndex as unknown as Player.Id["number"]) = player.playerId.number;
             this.socketBundle.get(player.playerId).emit(
                 Game.CtorArgs.EVENT_NAME,
                 gameDesc,

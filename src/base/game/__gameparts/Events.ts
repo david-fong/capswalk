@@ -47,11 +47,11 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     private readonly __eventRecord: Array<Readonly<EventRecordEntry>>;
 
     public constructor(
-        gameDesc: Game.CtorArgs<G,S>,
         gameType: G,
         tileClass: Tile.ClassIf<S>,
+        gameDesc: Game.CtorArgs<G,S>,
     ) {
-        super(gameDesc, gameType, tileClass);
+        super(gameType, tileClass, gameDesc);
         this.__eventRecord = [];
     }
 

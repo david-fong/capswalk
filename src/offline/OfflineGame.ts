@@ -28,7 +28,7 @@ export class OfflineGame<S extends Coord.System> extends Game<G,S> {
      * @param gameDesc -
      */
     public constructor(gameDesc: Game.CtorArgs<G,S>) {
-        super(gameDesc, Game.Type.OFFLINE, VisibleTile);
+        super(Game.Type.OFFLINE, VisibleTile, gameDesc);
         if (!this.operator) {
             throw new Error("The Operator for an OfflineGame should be defined.");
         }
