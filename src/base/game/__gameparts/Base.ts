@@ -39,6 +39,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
 
+    public readonly teams: ReadonlyArray<ReadonlyArray<Player<S>>>;
 
 
     /**
@@ -126,7 +127,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     }
 
 
-
     /**
      * Private helper for the constructor.
      * 
@@ -138,7 +138,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             throw new TypeError("This must be overridden for an online-client implementation.");
         }
         type Reduct = Player.Bundle.Contents<Player<S>>;
-        const playerDescs = Player.CtorArgs.finalizePlayerIds(gameDesc.playerDescs);
+        const playerDescs = Player.CtorArgs.finalizePlayerIds(
+            new Player.Bundle(gameDesc.playerDescs)
+        );
         return new Player.Bundle(playerDescs.keys.reduce<Reduct>((build, family) => {
             // Transform the bundle of player constructor-argument descriptors
             // into a bundle of corresponding, newly constructed player objects:
@@ -162,11 +164,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     (G extends Game.Type.Manager ? ArtificialPlayer<S> : PuppetPlayer<S>);
 
 
-
     /**
      * **Important:** Nullifies the existing values at `tile` and does
      * not consume the returned values, which must be done externally.
-     * 
      * 
      * @param targetTile
      * The {@link Tile} to shuffle their {@link Lang.CharSeqPair}
@@ -193,8 +193,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     }
 
 
-
-    public abstract setTimeout(callback: Function, millis: number, ...args: any[]): G extends Game.Type.SERVER ? NodeJS.Timeout : number;
+    public abstract setTimeout(callback: Function, millis: number, ...args: any[])
+    : G extends Game.Type.SERVER ? NodeJS.Timeout : number;
 
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
 

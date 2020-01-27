@@ -16,15 +16,9 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     public readonly username: Player.Username;
 
     /**
-     * See the {@link Bubble} module documentation.
-     * 
-     * It must be checked that all players _can_ be permanently downed.
-     * At least one of the following must be true:
-     * - There exists an artificial player that can down human players.
-     * - For every human-operated player, there exists another that is
-     *   not nice to it.
+     * Nicity is strictly mutual and partitions all players.
      */
-    public readonly beNiceTo: ReadonlyArray<Player.Id>;
+    public readonly teamId: Player.TeamId;
 
     public readonly status: PlayerStatus;
 
@@ -48,7 +42,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
             );
         }
         this.username = desc.username;
-        this.beNiceTo = desc.beNiceTo;
+        this.teamId = desc.teamId;
         this.status = this.createStatusObj();
     }
 
@@ -95,6 +89,8 @@ export namespace Player {
 
     export type Id = PlayerTypeDefs.Id;
 
+    export type TeamId = number;
+
     export type SocketId = string;
 
     export type Bundle<T> = PlayerTypeDefs.Bundle<T>;
@@ -121,65 +117,47 @@ export namespace Player {
 
     /**
      * # Player Constructor Arguments
-     * 
-     * @template ID
-     * Only set to Player.SocketId when the player roster is under construction.
      */
-    export type CtorArgs<ID extends Player.Id | SocketId = Player.Id> = {
-
-        readonly username: Username;
-
-        /**
-         * **Important**: The builder of this field must enforce that
-         * entries are unique (that there are no duplicates).
-         */
-        readonly beNiceTo: ReadonlyArray<ID>
-
-        readonly socketId: SocketId;
-
-    } & (ID extends Player.Id ? {
+    export type CtorArgs = CtorArgs.PreIdAssignment & {
         readonly playerId: Player.Id;
-    } : {});
+    };
 
     export namespace CtorArgs {
 
+        export type PreIdAssignment = {
+            readonly username: Username;
+            readonly socketId: SocketId;
+            readonly teamId: TeamId;
+        };
+
         /**
          * @returns
-         * Used at a point when player descriptions have settled and
-         * no more players will be allowed to join or expected to leave
-         * anymore. This assigns players ID's and translates the team
-         * related fields to be in terms of player ID's rather than
-         * socket IDs.
+         * Squashes teamId fields to be suitable for array indices.
          * 
-         * @param __playerDescs -
+         * @param playerDescs -
          */
         export const finalizePlayerIds = (
-            __playerDescs: Bundle.Contents<CtorArgs<SocketId>>
+            playerDescs: Bundle<CtorArgs.PreIdAssignment>
         ): Bundle<CtorArgs> => {
-            const playerDescs = new Player.Bundle<CtorArgs<SocketId>>(__playerDescs);
-            const socketIdToPlayerIdMap: Record<SocketId,Player.Id> = {};
-            for (const family of playerDescs.keys) {
-                playerDescs.contents[family].forEach((oldCtorArgs, numberInFamily) => {
-                    socketIdToPlayerIdMap[oldCtorArgs.socketId] = {
+            // Squash `teamId` fields
+            const allTeamIds = playerDescs.values
+                .flatMap((members) => members.map((member) => member.teamId));
+            const teamIdSquasherMap: Record<TeamId, TeamId> = Array.from(new Set(allTeamIds))
+                .reduce((prev, unSquashedId, index) => {
+                    prev[unSquashedId] = index;
+                    return prev;
+                }, {});
+            // Add the `playerId` field to each member descriptor:
+            for (const [ family, familyMembers, ] of playerDescs.entries) {
+                familyMembers.forEach((memberDesc, numberInFamily) => {
+                    (memberDesc.teamId as Player.TeamId) = teamIdSquasherMap[memberDesc.teamId];
+                    ((memberDesc as CtorArgs).playerId as Id) = {
                         family: family,
                         number: numberInFamily,
                     };
                 });
             }
-            return new Player.Bundle(playerDescs.keys.reduce<Bundle.Contents<CtorArgs>>(
-                (retValBuild, family) => {
-                    (retValBuild[family] as readonly CtorArgs[]) = __playerDescs[family]
-                    .map<CtorArgs>((playerDesc) => {
-                        return {
-                            playerId: socketIdToPlayerIdMap[playerDesc.socketId],
-                            username: playerDesc.username,
-                            beNiceTo: playerDesc.beNiceTo.map((socketId) => socketIdToPlayerIdMap[socketId]),
-                            socketId: playerDesc.socketId,
-                        };
-                    });
-                    return retValBuild;
-                }, {} as Bundle.Contents<CtorArgs>,
-            ));
+            return playerDescs as Bundle<CtorArgs>;
         };
 
     }

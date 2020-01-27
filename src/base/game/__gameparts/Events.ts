@@ -195,7 +195,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * @param desc - A descriptor for all changes mandated by the
      *      player-movement event.
      */
-    public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
+    protected processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         const player = this.players.get(desc.playerId);
         const dest = this.grid.tile.at(desc.dest.coord);
         const executeBasicTileUpdates = (): void => {
@@ -304,7 +304,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * 
      * @param desc - 
      */
-    public processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
+    protected processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
         // TODO:
         // Visually highlight the affected tiles for the specified estimate-duration.
         const bubbler = this.players.get(desc.playerId);
@@ -373,7 +373,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * 
      * @param desc - 
      */
-    public processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
+    protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
         // Record the event. No need to check acceptance since this
         // kind of event is made in such a way that it is always accepted.
         this.recordEvent(desc);

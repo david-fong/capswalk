@@ -15,10 +15,8 @@
 1. Change client-facing multiplayer-game-setup so that first joiner closes then teams are chosen.
    - Rationale: get rid of team specification translation from socketIds to playerIds.
 1. Write out full specification for what qualifies the end of the game.
-   - Solution / Decision: revert `beNiceTo` system back to the teaming system:
-     - Ie. Nicity must be strictly mutual, and be a strict partition of all players.
-   - Teams represented as an augmented set of arrays of teamed-players.
-   - Make playerDowned handler function.
+   - ~Solution / Decision: revert `beNiceTo` system back to the teaming system.~
+   - Make `playerDowned` handler function.
      - Checks if only one team has any un-downed players remaining.
        - In that case, the game ends and that remaining team wins.
 1. Fill in implementation of bubble event handler.
@@ -89,3 +87,10 @@ https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
 https://javascript.info/class-inheritance
 https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
 ```
+
+## Things I have Tried that Haven't Worked (and that's okay)
+
+- Tile Benching
+- Being on multiple teams
+- Nicity system instead of teams
+- Using TypeScript's project-references feature to speed up compile time

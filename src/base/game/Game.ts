@@ -1,7 +1,7 @@
 import { Lang } from "lang/Lang";
 import { BalancingScheme } from "lang/LangSeqTreeNode";
 
-import { Coord, Tile } from "floor/Tile";
+import { Coord } from "floor/Tile";
 import { Grid } from "floor/Grid";
 
 import { Player } from "./player/Player";
@@ -77,7 +77,7 @@ export namespace Game {
         operatorIndex: G extends Game.Type.SERVER
             ? undefined
             : Player.Id["number"];
-        playerDescs: Player.Bundle.Contents<Player.CtorArgs<Player.SocketId>>;
+        playerDescs: Player.Bundle.Contents<Player.CtorArgs.PreIdAssignment>;
     }>;
 
     export namespace CtorArgs {
@@ -87,9 +87,10 @@ export namespace Game {
         /**
          * Not used here, but used in {@link GroupSession#createGameInstance}.
          */
-        export type FailureReasons = Partial<{
-            undefinedUsername: Array<Player.SocketId>; // socket ID's
-        }>;
+        export type FailureReasons = {
+            undefinedUsername: ReadonlyArray<Player.SocketId>; // socket ID's
+            undefinedTeamId:   ReadonlyArray<Player.SocketId>;
+        };
     }
 
 }

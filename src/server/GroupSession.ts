@@ -67,7 +67,7 @@ export class GroupSession {
     protected onConnection(socket: GroupSession.Socket): void {
         console.log("A user has connected.");
         socket.join(GroupSession.RoomNames.MAIN);
-        socket.beNiceTo = new Set();
+        socket.teamId = undefined;
         socket.updateId = 0;
 
         if (Object.keys(this.namespace.connected).length === 0) {
@@ -84,9 +84,6 @@ export class GroupSession {
                 // TODO: this seems like a bad decision. What about just broadcasting
                 // that the host player has died, and choose another player to become
                 // the host?
-                Object.values(this.sockets).forEach((otherSocket) => {
-                    otherSocket.beNiceTo.delete(socket.id);
-                });
                 this.terminate();
             }
         });
@@ -129,14 +126,19 @@ export class GroupSession {
         coordSys: S,
         gridDimensions: Grid.Dimensions<S>,
     ): Readonly<Game.CtorArgs.FailureReasons> | undefined {
-        const failureReasons: Partial<Game.CtorArgs.FailureReasons> = {};
-        failureReasons.undefinedUsername = Object.values(this.sockets)
-            .filter((socket) => !socket.username)
-            .map((socket) => socket.id);
-        if (failureReasons.undefinedUsername.length) {
+        const failureReasons: Game.CtorArgs.FailureReasons = {
+            undefinedUsername: Object.values(this.sockets)
+                .filter((socket) => !socket.username)
+                .map((socket) => socket.id),
+            undefinedTeamId: Object.values(this.sockets)
+                .filter((socket) => !socket.teamId)
+                .map((socket) => socket.id),
+        };
+        if (failureReasons.undefinedUsername.length ||
+            failureReasons.undefinedTeamId.length) {
             return failureReasons;
         }
-        // const noProto = <T>(obj: T): T => Object.assign(Object.create(null), obj);
+        // Everything needed to create a game exists. Let's do it!
         this.currentGame = new ServerGame(this.namespace, {
             coordSys,
             gridDimensions,
@@ -147,8 +149,8 @@ export class GroupSession {
                 [Player.Family.HUMAN]: Object.values(this.sockets).map((socket) => {
                     return {
                         username: socket.username!, // checked above.
-                        beNiceTo: Array.from(socket.beNiceTo),
                         socketId: socket.id,
+                        teamId: socket.teamId!,
                     };
                 }),
                 // TODO: add descs for artificial players,
@@ -174,7 +176,7 @@ export namespace GroupSession {
      */
     export type Socket = io.Socket & {
         username?: Player.Username;
-        beNiceTo: Set<io.Socket["id"]>;
+        teamId?: Player.TeamId;
         updateId: number; // initial value = 0
     };
 
