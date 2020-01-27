@@ -20,9 +20,6 @@
      - Checks if only one team has any un-downed players remaining.
        - In that case, the game ends and that remaining team wins.
 1. Fill in implementation of bubble event handler.
-1. Get rid of PlayerSkeleton.VisibleState.
-   - Use dedicated individual player getters instead:
-     - player getters should call corresponding setter in hostTile.
 
 ### Low Priority
 

@@ -23,9 +23,7 @@
             "./test/lang/tsconfig.json"
         ],
         "sourceType": "module",
-        "extraFileExtensions": [
-            ".html"
-        ]
+        "extraFileExtensions": []
     },
     "plugins": [
         "@typescript-eslint",

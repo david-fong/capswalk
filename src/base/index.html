@@ -2,7 +2,7 @@
 
 <html>
     <head>
-        <title>snakey v3</title>
+        <title>SnaKey v3</title>
         <meta name='author'         content='David Fong' />
         <meta name='description'    content='An original game based on the snake game.' />
         <meta name='viewport'       content='width=device-width, initial-scale=1.0' />
@@ -23,7 +23,7 @@
         <script>
             // Disable scroll-down via spacebar:
             window.addEventListener('keydown', (event) => {
-                if (event.keyCode == 32 && event.target == document.body) {
+                if (event.keyCode === 32 && event.target === document.body) {
                     event.preventDefault();
                     return false;
                 }

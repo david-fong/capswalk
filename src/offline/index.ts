@@ -15,7 +15,7 @@ const game = new OfflineGame<Coord.System.EUCLID2>({
     operatorIndex: 0,
     playerDescs: {
         [Player.Family.HUMAN]: [{
-            beNiceTo: [],
+            teamId: 0,
             username: "hello world",
             socketId: "todo", // TODO hmm. maybe make some static method to assign unique values based on operator class?
         }, ],
