@@ -12,8 +12,8 @@ import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 type G = Game.Type.OFFLINE;
 
 /**
- * 
- * 
+ *
+ *
  * @extends Game
  */
 export class OfflineGame<S extends Coord.System> extends Game<G,S> {
@@ -24,7 +24,7 @@ export class OfflineGame<S extends Coord.System> extends Game<G,S> {
 
     /**
      * _Calls reset recursively for this entire composition._
-     * 
+     *
      * @param gameDesc -
      */
     public constructor(gameDesc: Game.CtorArgs<G,S>) {

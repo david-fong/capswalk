@@ -6,8 +6,8 @@ import { Beehive } from "./impl/Beehive";
 
 
 /**
- * 
- * 
+ *
+ *
  * NOTE: As a design choice, this is put in a separate file from the
  * base `Grid` class with a _separate_ dictionary of implementation
  * literals so that the build tooling can infer that this code can

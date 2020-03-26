@@ -7,7 +7,7 @@ import { Grid as AbstractGrid } from "../Grid";
 type S = BaseCoord.System.EUCLID2;
 
 /**
- * 
+ *
  */
 export namespace Euclid2 {
 
@@ -47,9 +47,9 @@ export namespace Euclid2 {
 
         /**
          * Also known as the "manhattan norm".
-         * 
+         *
          * _Do not override this._
-         * 
+         *
          * @param other - The norm is taken relative to `other`.
          * @returns The sum of the absolute values of each coordinate.
          */
@@ -65,9 +65,9 @@ export namespace Euclid2 {
         }
 
         /**
-         * 
+         *
          * _Do not override this._
-         * 
+         *
          * @param other - The norm is taken relative to `other`.
          * @returns The length of the longest dimension.
          */
@@ -84,15 +84,15 @@ export namespace Euclid2 {
          * A number in the range (0, 1). `One` means the x and y coordinates
          * align to the x or y axis, and `Zero` means they are plus or minus
          * 45 degrees from the x or y axis.
-         * 
+         *
          * You can try this yourself in [Desmos](https://www.desmos.com/calculator)
          * by pasting in the below code segment and adding a slider for `a`
          * for continuous values between zero and one.
-         * 
+         *
          * ```latex
          * \frac{\left|\left|x\right|-\left|y\right|\right|}{\left|x\right|+\left|y\right|}=a
          * ```
-         * 
+         *
          * @param other - The alignment is taken relative to `other`.
          */
         public axialAlignment(other: Coord.Bare): number {

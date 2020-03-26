@@ -6,7 +6,7 @@ import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 
 
 /**
- * 
+ *
  * @extends OperatorPlayer
  */
 export class OnlineOperatorPlayer<S extends Coord.System> extends OperatorPlayer<S> {

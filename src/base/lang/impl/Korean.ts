@@ -3,7 +3,7 @@ import { Lang } from "lang/Lang";
 
 /**
  * # Korean
- * 
+ *
  * https://wikipedia.org/wiki/Hangul_consonant_and_vowel_tables#Hangul_syllables
  * https://wikipedia.org/wiki/Korean_language_and_computers#Hangul_in_Unicode
  * https://wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)
@@ -12,7 +12,7 @@ export namespace Korean {
 
     /**
      * # Dubeolsik (3-row layout)
-     * 
+     *
      * https://wikipedia.org/wiki/Keyboard_layout#Dubeolsik
      * https://www.branah.com/korean
      */
@@ -41,7 +41,7 @@ export namespace Korean {
 
         /**
          * Does nothing.
-         * 
+         *
          * @override
          */
         public remapKey(input: string): string {
@@ -76,10 +76,10 @@ export namespace Korean {
 
     /**
      * # Sebeolsik (5-row layout)
-     * 
+     *
      * \*Note: the branah link below is to an earlier version of
      * Sebeolsik, [Sebeolsik 390](https://wikipedia.org/wiki/Keyboard_layout#Sebeolsik_390).
-     * 
+     *
      * https://wikipedia.org/wiki/Keyboard_layout#Sebeolsik_Final
      * https://www.branah.com/sebeolsik
      */
@@ -110,7 +110,7 @@ export namespace Korean {
 
         /**
          * Does nothing.
-         * 
+         *
          * @override
          */
         public remapKey(input: string): string {
@@ -118,7 +118,7 @@ export namespace Korean {
         }
 
         /**
-         * 
+         *
          */
         private static KEYBOARD = Object.freeze(<const>{
             "FINALS": {
@@ -165,7 +165,7 @@ export namespace Korean {
 
     /**
      * # Korean Romanization
-     * 
+     *
      * https://wikipedia.org/wiki/Revised_Romanization_of_Korean#Transcription_rules
      * https://wikipedia.org/wiki/Romanization_of_Korean#Systems
      */
@@ -195,7 +195,7 @@ export namespace Korean {
 
         /**
          * Does nothing.
-         * 
+         *
          * @override
          */
         public remapKey(input: string): string {
@@ -225,7 +225,7 @@ export namespace Korean {
 
     /**
      * Helper for each implementation's constructors.
-     * 
+     *
      * @param seqBuilder - Return a {@link Lang.Seq} based on the three
      *      parts of a syllable (passed in to this as parameters).
      * @returns A transformation of initializer information to a form
@@ -347,7 +347,7 @@ export namespace Korean {
     FINALS as ReadonlyArray<JamoDesc>; // type-check
 
     /**
-     * 
+     *
      */
     const WEIGHTS = {
         "": 1,

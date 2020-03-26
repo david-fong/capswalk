@@ -18,8 +18,8 @@ import { Bubble } from "game/events/Bubble";
 type G = Game.Type.CLIENT;
 
 /**
- * 
- * 
+ *
+ *
  * @extends Game
  */
 export class ClientGame<S extends Coord.System> extends Game<G,S> {
@@ -32,7 +32,7 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
 
     /**
      * _Calls Grid.reset for this composition (bypasses super)._
-     * 
+     *
      * @param socket -
      * @param gameDesc - This should come from a Server event by the name
      *      {@link Game.CtorArgs.EVENT_NAME}.
@@ -109,7 +109,7 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
      * Normally calls {@link Game#processMoveExecute}. However, here,
      * that should be done as a callback to an event created by the
      * server.
-     * 
+     *
      * @override
      * @throws `TypeError` Unconditionally.
      */
@@ -121,7 +121,7 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
      * Normally calls {@link Game#processBubbleMakeExecute}. However,
      * there, that should be done as a callback to an event created by
      * the server.
-     * 
+     *
      * @override
      * @throws `TypeError` Unconditionally.
      */

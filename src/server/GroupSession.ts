@@ -12,7 +12,7 @@ export { ServerGame } from "./ServerGame";
 /**
  * Manages communication between the server, and clients who play in
  * the same game together.
- * 
+ *
  * There is no explicit linking back to the {@link Server}. The only
  * such linkage is from our {@link GroupSession#namespace} to its
  * `io.Server`.
@@ -27,14 +27,14 @@ export class GroupSession {
     private readonly deleteExternalRefs: VoidFunction;
 
     /**
-     * 
+     *
      * @param namespace -
-     * 
+     *
      * @param deleteExternalRefs
      * A function that- when called- deletes all external references
      * to this newly constructed object such that it can be garbage
      * collected.
-     * 
+     *
      * @param initialTtl
      * If no sockets connect to this `GameSession` in this many seconds,
      * it will close and clean itself up.
@@ -61,8 +61,8 @@ export class GroupSession {
     }
 
     /**
-     * 
-     * @param socket - 
+     *
+     * @param socket -
      */
     protected onConnection(socket: GroupSession.Socket): void {
         console.log("A user has connected.");
@@ -117,7 +117,7 @@ export class GroupSession {
      * {@link GroupSession.Socket} and repackages them for passing to
      * the Game constructor, which will in turn pass this information
      * to each client.
-     * 
+     *
      * @param coordSys -
      * @param gridDimensions -
      * @returns false if the passed arguments were incomplete or invalid.
@@ -189,7 +189,7 @@ export namespace GroupSession {
     }
 
     /**
-     * 
+     *
      */
     export const enum RoomNames {
         MAIN = "main",
@@ -197,7 +197,7 @@ export namespace GroupSession {
 
 
     /**
-     * 
+     *
      */
     export class CtorArgs {
 
@@ -209,7 +209,7 @@ export namespace GroupSession {
          * The client should set this to a string to use as a group
          * name. They should try to satisfy {@link SessionName.REGEXP},
          * although that is not manditory.
-         * 
+         *
          * The Server should respond with this field set either to be
          * a Socket.IO namespace based off the client's request that
          * is open for connecting, or to the empty string to indicate
@@ -219,12 +219,12 @@ export namespace GroupSession {
 
         /**
          * The Server should ignore any value set here by the client.
-         * 
+         *
          * The Server should respond to the client setting this value
          * to an approximate number of _seconds_ before the created
          * {@link GroupSession} will decide it was abandoned at birth
          * and get cleaned up (if nobody connects to it in that time).
-         * 
+         *
          * If the request was rejected, the client should ignore any
          * value set here by the Server.
          */

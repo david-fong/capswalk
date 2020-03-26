@@ -6,7 +6,7 @@ import { Player} from "./Player";
 /**
  * The substitute implementation when the enclosing Game-type class
  * does not need to manage the internals of a certain player.
- * 
+ *
  * Specifically,
  * - All game implementations use this for non-operator human players.
  * - Client games use this in place of artificial players.

@@ -2,13 +2,13 @@ import { Lang } from "lang/Lang";
 
 
 /**
- * 
+ *
  */
 export namespace English {
 
     /**
      * # Lowercase (QWERTY)
-     * 
+     *
      * https://wikipedia.org/wiki/Keyboard_layout#QWERTY
      */
     export class Lowercase extends Lang {
@@ -34,7 +34,7 @@ export namespace English {
         // and https://wikipedia.org/wiki/Keyboard_layout#Colemak
         /**
          * Change uppercase input to lowercase for convenience.
-         * 
+         *
          * @override
          */
         public remapKey(input: string): string {
@@ -63,7 +63,7 @@ export namespace English {
 
     /**
      * # Mixed-Case (QWERTY)
-     * 
+     *
      * https://wikipedia.org/wiki/Keyboard_layout#QWERTY
      */
     export class MixedCase extends Lang {
@@ -87,7 +87,7 @@ export namespace English {
 
         /**
          * Nothing.
-         * 
+         *
          * @override
          */
         public remapKey(input: string): string {

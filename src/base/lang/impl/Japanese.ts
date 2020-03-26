@@ -3,7 +3,7 @@ import { Lang } from "lang/Lang";
 
 /**
  * # Japanese
- * 
+ *
  * A namespace grouping implementations of {@link Japanese.Hiragana}
  * and {@link Japanese.Katakana} alphabets.
  */
@@ -37,7 +37,7 @@ export namespace Japanese {
 
         /**
          * Change uppercase input to lowercase for convenience.
-         * 
+         *
          * @override
          */
         public remapKey(input: string): string {
@@ -47,7 +47,7 @@ export namespace Japanese {
         /**
          * Values obtained from page 18 of the below pdf (p.499 of text)
          * https://link.springer.com/content/pdf/10.3758/BF03200819.pdf
-         * 
+         *
          * alternate unused source:
          * https://gawron.sdsu.edu/crypto/japanese_models/hir_freq.html
          * (https://gawron.sdsu.edu/crypto/lectures/hiragana.html)
@@ -168,7 +168,7 @@ export namespace Japanese {
 
         /**
          * Change uppercase input to lowercase for convenience.
-         * 
+         *
          * @override
          */
         public remapKey(input: string): string {

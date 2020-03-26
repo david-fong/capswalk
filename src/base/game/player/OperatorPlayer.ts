@@ -6,7 +6,7 @@ import { Game } from "game/Game";
 
 
 /**
- * 
+ *
  * @extends Player
  */
 export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
@@ -56,7 +56,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      * operation (implementation must not intermediately schedule any
      * other task-relevant callbacks until all critical operations are
      * complete).
-     * 
+     *
      * @param event - The object describing the `KeyboardEvent`.
      */
     public processClientInput(event: KeyboardEvent): void {
@@ -78,7 +78,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      * Automatically makes a call to make a movement request if the
      * provided `key` completes the `LangSeq` of a UNT. Does not do
      * any checking regarding {@link OperatorPlayer#requestInFlight}.
-     * 
+     *
      * @param key
      * The pressed typable key as a string. Pass `null` to trigger a
      * refresh of the {@link OperatorPlayer#_seqBuffer} to maintain its
@@ -131,7 +131,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     /**
      * Automatically clears the {@link OperatorPlayer#seqBuffer}.
-     * 
+     *
      * @override
      */
     public moveTo(dest: Player<S>["hostTile"]): void {

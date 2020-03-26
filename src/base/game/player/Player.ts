@@ -9,7 +9,7 @@ export { PlayerSkeleton } from "./PlayerSkeleton";
 
 
 /**
- * 
+ *
  */
 export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
@@ -63,7 +63,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * Called automatically by {@link OperatorPlayer#seqBufferAcceptKey}
      * for {@link OperatorPlayer}s, and by a periodic callback for
      * {@link ArtificialPlayer}s.
-     * 
+     *
      * @param dest -
      */
     protected makeMovementRequest(dest: Player<S>["hostTile"]): void {
@@ -105,7 +105,7 @@ export namespace Player {
         /**
          * The choice of this is somewhat arbitrary. This should be enforced
          * externally since player descriptors are passed to the constructor.
-         * 
+         *
          * Requirements:
          * - Starts with a letter.
          * - No whitespace except for non-consecutive space characters.
@@ -133,7 +133,7 @@ export namespace Player {
         /**
          * @returns
          * Squashes teamId fields to be suitable for array indices.
-         * 
+         *
          * @param playerDescs -
          */
         export const finalizePlayerIds = (

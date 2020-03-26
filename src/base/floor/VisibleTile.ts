@@ -6,21 +6,21 @@ import { Tile } from "./Tile";
 
 /**
  * Implicitly handles visuals with help from CSS.
- * 
+ *
  * Layers:
  * 0. Invisible cell layer (opaque on visual bell)
  * 1. Empty layer for spotlight mask
  * 2. Player face layer
  * 3. Language Written Character
  * 4. Language Typable Sequence
- * 
+ *
  * https://developer.mozilla.org/en-US/docs/Web/CSS/z-index
  * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index
  * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
- * 
+ *
  * Dataset:
  * Top-level layer has property "scoreValue"
- * 
+ *
  * @extends Tile
  */
 export class VisibleTile<S extends Coord.System> extends Tile<S> {

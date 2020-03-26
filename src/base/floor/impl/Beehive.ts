@@ -8,19 +8,19 @@ type S = BaseCoord.System.BEEHIVE;
 
 /**
  * # 🐝 BEES !
- * 
+ *
  * # 🐝 BEES !
- * 
+ *
  * # 🐝 BEES !
- * 
+ *
  * ```text
  *   ___   ___
  *  //  \_//  \__
  *  \\__/  \__/  \
  *     \\__/ \\__/
  * ```
- * 
- * 
+ *
+ *
  * [(bees)](https://giphy.com/gifs/oprah-bees-VhFps32TlNgsg)
  */
 export namespace Beehive {
@@ -128,7 +128,7 @@ export namespace Beehive {
         });
 
         /**
-         * 
+         *
          */
         // TODO: determine spec for indexing
         private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;

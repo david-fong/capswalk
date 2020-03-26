@@ -11,20 +11,20 @@ import { PuppetPlayer } from "game/player/PuppetPlayer";
 
 
 /**
- * 
- * 
+ *
+ *
  * This class performs the majority of management over {@link Tile}
  * and {@link Player} objects. As a design choice, players can only join
  * a game before it starts, and actions such as changing the language or
  * difficulty require a restart. These actions that require a restart will
  * all be exposed to operators through a pre-game page. Other such actions
  * include: changing teams.
- * 
+ *
  * An overview of subclasses:
  * Both {@link ClientGame} and {@link OfflineGame} use {@link VisualTile}s
  * while {@link ServerGame} uses {@link ServerTile}s. {@link ClientGame}'s
  * record of the state of the game comes completely from {@link ServerGame}.
- * 
+ *
  * There are overlaps between what each implementation needs to do:
  * - Offline and Server games maintain and control the master-game-state.
  * - Offline and Client games display the game-state to an operator via browser and HTML.
@@ -56,7 +56,7 @@ export namespace Game {
 
     /**
      * # Game Constructor Arguments
-     * 
+     *
      * @template S
      * The coordinate system to use. The literal value must also be
      * passed as the field {@link CtorArgs#coordSys}.
@@ -75,7 +75,7 @@ export namespace Game {
          * The index in `playerDescs` of the operator's ctor args.
          */
         operatorIndex: G extends Game.Type.SERVER
-            ? undefined
+            ? never
             : Player.Id["number"];
         playerDescs: Player.Bundle.Contents<Player.CtorArgs.PreIdAssignment>;
     }>;

@@ -7,16 +7,16 @@ export { Coord } from "./Coord";
 
 /**
  * # The Tile Class
- * 
+ *
  * As an implementation choice, tiles are dumb. That is, they have
  * no knowledge of their context. Their internals are all managed by
  * their host {@link Game} through method calls.
- * 
+ *
  * From a caller's point of view, extending classes should have am
  * identical constructor signature as that of this base class. This
  * can be done by a type assertion statement: `<extension class> as
  * Tile.ConstructorType<any>`.
- * 
+ *
  * @template S
  * The coordinate system enum for this tile's coordinate.
  */
@@ -41,7 +41,7 @@ export class Tile<S extends Coord.System> {
 
     /**
      * _Does not call reset._
-     * 
+     *
      * @param coord -
      */
     public constructor(coord: Coord<S>) {
@@ -73,7 +73,7 @@ export class Tile<S extends Coord.System> {
 
     /**
      * Any overrides must make a supercall to this implementation.
-     * 
+     *
      * @param playerId -
      */
     public setOccupant(playerId: Player.Id): void {

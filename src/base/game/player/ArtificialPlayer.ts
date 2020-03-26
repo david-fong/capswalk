@@ -10,9 +10,9 @@ import { Chaser } from "./artificials/Chaser";
  * Unlike {@link HumanPlayer}s, these are not guided by human input.
  * Instead, they are essentially defined by how often they move, and
  * where they decide to move toward each time they move.
- * 
+ *
  * Can be paused and un-paused by the Game Manager.
- * 
+ *
  * @extends Player
  */
 // TODO: if add abstract method hooks for events like player "collision",
@@ -23,9 +23,9 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
     /**
      * See {@link ArtificialPlayer.of} for the public constructor interface.
-     * 
-     * @param game - 
-     * @param desc - 
+     *
+     * @param game -
+     * @param desc -
      */
     protected constructor(game: Game<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
@@ -51,7 +51,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      * Unlike {@link HumanPlayer}s, `ArtificialPlayer`s are managed
      * directly by the Game Manager, so there is no need to make a
      * request via socket.io.
-     * 
+     *
      * @override
      */
     protected abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void {

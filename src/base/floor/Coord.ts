@@ -14,7 +14,7 @@ export type Coord<S extends Coord.System> = (Coord.Bare<S>) &
     );
 
 /**
- * 
+ *
  */
 export namespace Coord {
 
@@ -30,13 +30,13 @@ export namespace Coord {
     );
 
     // ==============================================================
-    // Note: The below exports do not require any modificaions with
+    // Note: The below exports do not require any modifications with
     // the additions of new coordinate systems.
     // ==============================================================
 
     /**
      * Immutable. All `Coord` objects returned by operations are new objects.
-     * 
+     *
      * @template S - An enum identifying the unique implementation class.
      */
     export abstract class Abstract<S extends Coord.System> {
@@ -44,7 +44,7 @@ export namespace Coord {
         /**
          * This does nothing. Subclass constructors should copy in the
          * fields specified by `desc` and end with a self-freezing call.
-         * 
+         *
          * @param desc - Untouched. Here as a reminder of what is needed.
          */
         protected constructor(desc: Coord.Bare<S>) {

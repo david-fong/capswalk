@@ -10,7 +10,7 @@ import { Game } from "game/Game";
  * Made to abstract all operations that change the {@link Player#hostTile}
  * field. Enforces / exposes the {@link PlayerSkeleton#moveTo} method as
  * the interface to any such operations.
- * 
+ *
  * @extends PlayerTypeDefs to intake its namespace exports.
  */
 export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
@@ -42,7 +42,7 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
      * Must be called _after_ the {@link Grid} has been reset.
      * Does not evict itself from its current host tile (if it
      * has one).
-     * 
+     *
      * @param spawnTile -
      */
     protected reset(spawnTile: Tile<S>): void {
@@ -63,7 +63,7 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
     /**
      * Evicts this `Player` from its last known position (which may be
      * lagging behind the state of the master copy of the game.
-     * 
+     *
      * This must be called after all same-event changes pertaining to
      * this player's fields have been enacted.
      *

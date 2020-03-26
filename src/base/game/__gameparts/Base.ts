@@ -44,9 +44,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     /**
      * _Does not call reset._
-     * 
+     *
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
-     * 
+     *
      * @param gameType -
      * @param tileClass -
      * @param desc -
@@ -130,7 +130,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     /**
      * Private helper for the constructor.
-     * 
+     *
      * @param gameDesc -
      * @returns A bundle of the constructed players.
      */
@@ -168,11 +168,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     /**
      * **Important:** Nullifies the existing values at `tile` and does
      * not consume the returned values, which must be done externally.
-     * 
+     *
      * @param targetTile
      * The {@link Tile} to shuffle their {@link Lang.CharSeqPair}
      * pair for.
-     * 
+     *
      * @returns
      * A {@link Lang.CharSeqPair} that can be used as a replacement
      * for that currently being used by `tile`.

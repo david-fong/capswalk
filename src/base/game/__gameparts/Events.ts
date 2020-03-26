@@ -14,18 +14,18 @@ import { Game } from "../Game";
 /**
  * All events have two corresponding handler functions taking a
  * request descriptor object ("desc"):
- * 
+ *
  * ### Request Processor
- * 
+ *
  * The request processor is only used by the Game Manager. It decides
  * whether to accept or reject the request based on `desc` and may
  * throw exceptions on impossible arguments. It should not make any
  * changes to the game state. Instead, it is responsible to augment
  * `desc` with information describing what changes to the game state
  * must be made.
- * 
+ *
  * ### Request Executor
- * 
+ *
  * This takes the `desc` augmented by the request processor and enacts
  * all the described changes upon the game's state. If the Game Manager
  * is not local to the client (a server process), then this handler is
@@ -38,7 +38,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * in a {@link ClientGame} may at any instant be missing trailing
      * entries, or contain some trailing holes, but such gaps should
      * eventually be filled to match those in the Game Manager.
-     * 
+     *
      * Do not modify this directly. To register an accepted event,
      * call the {@link Game#recordEvent} method, passing it the event
      * descriptor. To create a new event ID at the Game Manager, just
@@ -64,8 +64,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
 
     /**
-     * 
-     * @param desc - 
+     *
+     * @param desc -
      * @returns The player specified by the given ID, or a falsy value
      *      if the player is still bubbling, in which case the request
      *      should probably be rejected.
@@ -94,9 +94,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
     /**
      * Basically does `this.eventRecord[id] = desc;` with value checking.
-     * 
+     *
      * @param desc -
-     * 
+     *
      * @throws
      * In the given order of priority:
      * - TypeError if the event ID indicates a rejected request
@@ -122,13 +122,13 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
     /**
      * @see PlayerMovementEvent
-     * 
+     *
      * Reject the request if `dest` is occupied, or if the specified
      * player does not exist, or the client is missing updates for the
      * destination they requested to move to, or the player is bubbling.
-     * 
+     *
      * Should never be called by {@link ClientGame}.
-     * 
+     *
      * @param desc - A descriptor of the request, with fields indicating
      *      the requester's views of critical parts of the game-state
      *      from their copy of the game-state at the time of the request.
@@ -180,18 +180,18 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * {@link Game#processMoveRequest} if I am a {@link ServerGame} or
      * {@link OfflineGame}, or as an event callback if I am a
      * {@link ClientGame}.
-     * 
+     *
      * Automatically lowers the {@link Player#requestInFlight} field
      * for the requesting `Player` if the arriving event description
      * is the newest one for the specified `Player`.
-     * 
+     *
      * Updates that are received after others that are more recent and
      * concern the same {@link Tile} are ignored. This is okay since
      * the only thing that matters about a {@link Tile} to the outside
      * world is its last known state.
-     * 
+     *
      * Updates the event record if the response is accepted.
-     * 
+     *
      * @param desc - A descriptor for all changes mandated by the
      *      player-movement event.
      */
@@ -265,9 +265,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
     /**
      * @see Bubble.MakeEvent
-     * 
+     *
      * Should never be called by {@link ClientGame}.
-     * 
+     *
      * @param desc - Is modified to describe changes to be made.
      */
     public processBubbleMakeRequest(desc: Bubble.MakeEvent): void {
@@ -295,14 +295,14 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     }
 
     /**
-     * 
+     *
      * Automatically lowers the {@link Player#requestInFlight} field
      * for the requesting `Player` ~if the arriving event description
      * is the newest one for the specified `Player`.~
-     * 
+     *
      * Updates the event record if the response is accepted.
-     * 
-     * @param desc - 
+     *
+     * @param desc -
      */
     protected processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
         // TODO:
@@ -327,7 +327,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * Manager. Ie. There will never be any issues due to reordering
      * on the way to the Game Manager. Never called externally (hence,
      * the private access modifier).
-     * 
+     *
      * @param bubbler -
      */
     private processBubblePopRequest(bubbler: Player<S>): void {
@@ -368,10 +368,10 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     }
 
     /**
-     * 
+     *
      * Updates the event record if the response is accepted.
-     * 
-     * @param desc - 
+     *
+     * @param desc -
      */
     protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
         // Record the event. No need to check acceptance since this

@@ -13,15 +13,15 @@ type Arguments<S extends CoordSys> = [ Coord.Bare<S>, ] | [];
  * `at`, `destsFrom`, or `sourcesTo`. Optional filtering mutators
  * can be applied intermediately such as `unoccupied`. The query
  * ends with one of the getters `occupants` or `get`.
- * 
+ *
  * @template S
- * 
+ *
  * @template A
  * This allows `Source` implementations to accept a coordinate
  * specifier as an argument, such as is appropriate with a grid,
  * or to provide that information implicitly inside itself as
  * part of its spec, as is appropriate with a player.
- * 
+ *
  */
 export class TileGetter<S extends CoordSys, A extends Arguments<S>> {
 
@@ -52,7 +52,7 @@ export namespace TileGetter {
 }
 
 /**
- * 
+ *
  */
 class Query<S extends CoordSys> {
 

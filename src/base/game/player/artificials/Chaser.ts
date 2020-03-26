@@ -5,7 +5,7 @@ import { ArtificialPlayer } from "../ArtificialPlayer";
 
 
 /**
- * 
+ *
  * @extends ArtificialPlayer
  */
 // TODO

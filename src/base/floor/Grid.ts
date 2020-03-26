@@ -11,7 +11,7 @@ import { Beehive } from "./impl/Beehive";
 
 /**
  * # 🗺 The Grid Class
- * 
+ *
  * A Collection of Tiles.
  */
 export abstract class Grid<S extends Coord.System> implements TileGetter.Source<S> {
@@ -25,7 +25,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 
     /**
      * _Does not call reset._
-     * 
+     *
      * @param desc -
      */
     protected constructor(desc: Grid.CtorArgs<S>) {
@@ -54,7 +54,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
                     + ` did not refer to an existing html element.`
                 );
             }
-            // remove all child elements and then 
+            // remove all child elements and then
             carrier.childNodes.forEach((node) => carrier.removeChild(node));
             carrier.appendChild(domGrid);
         }
@@ -69,12 +69,12 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 
     /**
      * Performs simple checks that the grid is playable.
-     * 
+     *
      * - Each tile in the grid has a non-self destination (coord#equals).
      * - (compute-heavyish): Each tile follows Impl.getAmbiguityThreshold
      */
     protected check(): void {
-        // Check that 
+        // Check that
     }
 
 
@@ -86,15 +86,15 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * direction of `intendedDest`. When possible, ties are encouraged
      * to be broken in such a way that imitates movement in a straight
      * path (visually speaking).
-     * 
+     *
      * **Important:** The caller must first break the upward occupancy
      * link by calling `this.hostTile.evictOccupant();` This is so that
      * the current position of this `ArtificialPlayer` will always be
      * an option when everything adjacent to it is occupied.
-     * 
+     *
      * @param sourceCoord
      * The coordinate from which to find the next hop.
-     * 
+     *
      * @param intendedDest
      * Does not need to be within the boundaries of the {@link Game}'s
      * grid, or have integer-valued coordinate values.
@@ -122,7 +122,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 
 
 /**
- * 
+ *
  */
 export namespace Grid {
 
@@ -187,7 +187,7 @@ export namespace Grid {
          * @returns
          * A coordinate with random, integer-valued fields within the
          * specified upper limits
-         * 
+         *
          * @param boundX An exclusive bound on x-coordinate.
          * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to `boundX`.
          */
@@ -197,7 +197,7 @@ export namespace Grid {
          * Return values do not need to be the same for repeated calls
          * with identical arguments. None of the returned coordinates
          * should be the same.
-         * 
+         *
          * @param playerCounts -
          */
         getSpawnCoords(
@@ -210,7 +210,7 @@ export namespace Grid {
     /**
      * @returns
      * A Grid class for the specified coordinate system.
-     * 
+     *
      * @param coordSys -
      */
     export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
@@ -220,7 +220,7 @@ export namespace Grid {
 
     /**
      * Bounds are inclusive. Ie. the specified values are _just_ allowed.
-     * 
+     *
      * Upper and lower bounds must be strictly positive integer values.
      */
     export type DimensionBounds<S extends Coord.System> = Readonly<{

@@ -23,7 +23,7 @@ export class Server {
     private readonly allGroupSessions: Map<string, GroupSession>;
 
     /**
-     * 
+     *
      * @param host - The hostname of the server. This may be an IP address.
      * @param port - The port number on which to host the Server.
      *          Defaults to {@link Defs.SERVER_PORT}.
@@ -48,7 +48,7 @@ export class Server {
     /**
      * All connections to the root are assumed to be for the purpose
      * of starting a new session for games.
-     * 
+     *
      * @param socket - The socket from the game host.
      */
     protected onGameHostsConnection(socket: io.Socket): void {
@@ -89,7 +89,7 @@ export class Server {
 
     /**
      * @returns The Socket.IO namespace using the provided `groupName`.
-     * 
+     *
      * @param groupName - A name to give the group. `null` if rejected,
      *      which happens if `groupName` is already taken, or if it
      *      does not match the required regular expression.
@@ -125,7 +125,7 @@ export namespace Server {
     });
 
     /**
-     * 
+     *
      */
     export const enum SocketIoNamespaces {
         GROUP_JOINER   = "/groups",
@@ -135,7 +135,7 @@ export namespace Server {
     /**
      * @returns An array of non-internal IPv4 addresses from any of the
      * local hosts' network interfaces.
-     * 
+     *
      * TODO: change to return a map from each of "public" and "private" to a list of addresses
      * https://en.wikipedia.org/wiki/Private_network
      */

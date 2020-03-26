@@ -17,7 +17,7 @@ type G = Game.Type.SERVER;
 /**
  * Handles game-related events and attaches listeners to each client
  * socket.
- * 
+ *
  * @extends Game
  */
 export class ServerGame<S extends Coord.System> extends Game<G,S> {
@@ -30,11 +30,11 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
 
     /**
      * _Calls reset recursively for this entire composition._
-     * 
+     *
      * Attach listeners for requests to each socket.
-     * 
+     *
      * Broadcasts constructor arguments to all clients.
-     * 
+     *
      * @param namespace -
      * @param gameDesc -
      */

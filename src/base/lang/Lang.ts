@@ -9,13 +9,13 @@ import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
  * (try searching up "Chinese riddle where each syllable is pronounced
  * 'shi'"). A character may have more than one corresponding sequence,
  * representing alternate "spellings" (ways of typing it).
- * 
+ *
  * In the use-case of this game, it is more helpful to think in the
  * reverse direction: As a map from typable-key-sequences to sets of
  * corresponding unique characters (no character is mapped by multiple
  * key-sequences). This game does not require support for retreiving
  * the `Lang.Seq` corresponding to a `LangChar`.
- * 
+ *
  * See the readme in [the implementations folder](./impl/readme.md)
  * for a guide on writing implementations of this class.
  */
@@ -44,8 +44,8 @@ export abstract class Lang extends LangTypeDefs {
 
     /**
      * _Does not call reset._
-     * 
-     * @param name - 
+     *
+     * @param name -
      * @param forwardDict - Weights are _relative_ values handled by
      *      {@link LangSeqTreeNode}, which requires the provided values
      *      to all be strictly positive values. They do not all need
@@ -65,7 +65,7 @@ export abstract class Lang extends LangTypeDefs {
 
 
     /**
-     * 
+     *
      * This can be used, for example, for basic practical purposes like
      * changing all letters to lowercase for the English language, or for
      * more interesting things like mapping halves of the keyboard to a
@@ -73,7 +73,7 @@ export abstract class Lang extends LangTypeDefs {
      * ones in binary. It could even be used for some crazy challenges like
      * remapping the alphabet by barrel-shifting it so that pressing "a"
      * produces "b", and "b" produces "c", and so on.
-     * 
+     *
      * The output should either equal the input (in cases that the input
      * is already relevant to the `Lang` at hand and is intended to be
      * taken as-is (ex. typing "a" produces / corresponds to "a" in
@@ -82,9 +82,9 @@ export abstract class Lang extends LangTypeDefs {
      * some character that is relevant to the `Lang` and hand, and that
      * matches against {@link SEQ_REGEXP}. This behaviour is mandated
      * by {@link OperatorPlayer#seqBufferAcceptKey}.
-     * 
+     *
      * @param input -
-     * @returns 
+     * @returns
      */
     public abstract remapKey(input: string): string;
 
@@ -97,16 +97,16 @@ export abstract class Lang extends LangTypeDefs {
      * versa. They may share a common prefix as long as they are both
      * longer in length than the shared prefix, and they are not equal
      * to one another.
-     * 
+     *
      * This method is called to shuffle the `Lang.Char` / `Lang.Seq` pair
      * at some {@link Tile} `A`. `avoid` should contain the `LangSeq`s
      * from all {@link Tile}s reachable by a human {@link Player} occupying
      * a {@link Tile} `B` from which they can also reach `A`
-     * 
+     *
      * In order for this `Lang` to satisfy these constraints, it must
      * be true that the number of leaf nodes in this tree-structure must
      * `avoid` argument.
-     * 
+     *
      * In this implementation, a human {@link Player} can only reach a
      * {@link Tile} whose {@link Tile#pos} has an `infNorm` of `1` from
      * that of the {@link Tile} they are currently occupying. That is,
@@ -115,10 +115,10 @@ export abstract class Lang extends LangTypeDefs {
      * This means that here, the size of `avoid` is always bounded by
      * `(2*2 + 1)^2 - 1 == 24`. Using the English alphabet (26 typable-
      * letters), this requirement is met by a hair.
-     * 
+     *
      * @param avoid A collection of `Lang.Seq`s to avoid conflicts with
      *      when choosing a `Lang.Char` to return.
-     * @param balancingScheme - 
+     * @param balancingScheme -
      */
     public getNonConflictingChar(
         avoid: ReadonlyArray<Lang.Seq>,
@@ -216,7 +216,7 @@ export namespace Lang {
          * the mindset of spec designers when they mark something as reserved:
          * For the language implementations I have in mind, I don't see the
          * need to include characters other than these.
-         * 
+         *
          * Characters that must never be unmarked as reserved (state reason):
          * (currently none. update as needed)
          */
@@ -232,7 +232,7 @@ export namespace Lang {
         /**
          * A map from written characters to their corresponding typable
          * keyboard sequence and relative spawn weight.
-         * 
+         *
          * Shape that must be passed in to the static tree producer. The
          * `Record` type enforces the invariant that {@link Lang.Char}s are
          * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}.
@@ -251,14 +251,14 @@ export namespace Lang {
         /**
          * All `Lang` implementations should put their module _file_
          * names here so that they can be dynamically loaded later.
-         * 
+         *
          * TODO: use this in the privileged settings.
-         * 
+         *
          * \@ dynamic imports:
          * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
          * https://github.com/tc39/proposal-dynamic-import/#import
          * https://v8.dev/features/dynamic-import
-         * 
+         *
          * Note: Since this language feature isn't yet implemented in any browsers,
          * let's just import everything. It's not fancy, but it works.
          */

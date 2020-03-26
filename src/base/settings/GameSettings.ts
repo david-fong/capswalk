@@ -12,7 +12,7 @@ export abstract class GameSetting {
 /**
  * Follows a singleton pattern since it is bound with parts of the UI
  * and sets up and maintains those elements.
- * 
+ *
  * Non-Privileged (non-global) Settings:
  * - Volume / Mute
  * - Color theme
@@ -42,7 +42,7 @@ export class LocalGameSettings {
 /**
  * Follows a singleton pattern since it is bound with parts of the UI
  * and sets up and maintains those elements.
- * 
+ *
  * Privileged (global) Settings:
  * - Pause button
  * - Restart button

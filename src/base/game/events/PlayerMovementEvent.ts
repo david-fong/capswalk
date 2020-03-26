@@ -5,7 +5,7 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
 
 /**
  * ## One Fantastic Nightmare of a Problem to Solve
- * 
+ *
  * This single methodless class is the ship that carries this project
  * a thousand troubles. Its job is to carry the _bare minimum amount_
  * of information needed to describe a client / operator's request for
@@ -15,7 +15,7 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
  * requester saying that their request was rejected), and must do so in
  * a way that allows the server and clients to infer whether any message
  * reordering occurred.
- * 
+ *
  * This is my first time working with client-server interactions, and
  * I find myself face-to-face with a deliciously maddening problem: A
  * client's game state should, as a general trend, follow in the wake
@@ -25,7 +25,7 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
  * such dumping is not desirable: not only would it lack in elegance,
  * but it would take precious time, possibly enough to leave the dump
  * receiver in the same predicament of having missed updates.
- * 
+ *
  * Game state management has to be robust enough to detect and handle
  * requests that arrive out of order- both at the server side, and at
  * the client side as responses and updates arrive, and to synchronize
@@ -35,9 +35,9 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
  * assume that emits from the server will arrive to the clients in the
  * same order. But, there are no absolute guarantees that clients will
  * support this, so we have to design accordingly.
- * 
+ *
  * ### The Problem in Summary
- * 
+ *
  * - Client copies of the game should lag behind the master copy of
  *   the game state as little as possible with as small of a choking
  *   effect on a client's ability to send requests as possible. This
@@ -56,7 +56,7 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
  *   or throughput of any clients.
  *
  * ### The Dreaded Adversarial Scenario
- * 
+ *
  * ```txt
  * ---------------------------------
  * |  Server copy  |  Client copy  |
@@ -65,12 +65,12 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
  * |       D       |       D       |
  * ---------------------------------
  * ```
- * 
+ *
  * Imagine that a moment in time, on both the server and client copies
  * of the game state, there is a player `p1` on tile `A`, and a player
  * `p2` on tile `D`.
- * 
- * 
+ *
+ *
  */
 export class PlayerMovementEvent<S extends Coord.System> implements PlayerGeneratedRequest {
 
@@ -96,7 +96,7 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
         /**
          * Any value assigned by the requester to this field should be
          * ignored by the server.
-         * 
+         *
          * The server should respond with the new value of the requester's
          * score.
          */
@@ -105,7 +105,7 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
         /**
          * Any value assigned by the requester to this field should be
          * ignored by the server.
-         * 
+         *
          * The server should respond with the new value of the requester's
          * stockpile.
          */
@@ -122,7 +122,7 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
          * received from any previous responses from the server. In normal
          * cases (no message reordering), this should be equal to the last
          * value seen in the response from the server.
-         * 
+         *
          * The server should respond with the increment of this value. A
          * movement event causes a shuffle-in at the destination position,
          * which can affect whether another player intending to move to
@@ -136,7 +136,7 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
         /**
          * Any value assigned by the requester to this field should be
          * ignored by the server.
-         * 
+         *
          * The server must set this to describe the new values to be
          * shuffled-in to the destination tile.
          */

@@ -22,10 +22,10 @@ export namespace BalancingScheme {
  * `characters` collection (with the exception of the root node). The
  * root node should have a falsy parent, and the `empty string` as its
  * `sequence` field, with a correspondingly empty `characters` collection.
- * 
+ *
  * All non-root nodes have a `sequence` that is prefixed by their parent's
  * `sequence`, and a non-empty `characters` collection.
- * 
+ *
  * The enclosing {@link Lang} object has no concept of `LangChar` weights.
  * All it has is the interfaces provided by the hit-count getter methods.
  */
@@ -43,8 +43,8 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
 
     /**
      * _Does not call reset._
-     * 
-     * @param forwardDict - 
+     *
+     * @param forwardDict -
      * @returns The root node of a new tree map.
      */
     public static CREATE_TREE_MAP(forwardDict: Lang.CharSeqPair.WeightedForwardMap): LangSeqTreeNode<true> {
@@ -108,7 +108,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
     }
 
     /**
-     * 
+     *
      * @param seq The typable sequence corrensponding to entries of `chars`.
      * @param chars A collection of unique characters in a written language.
      */
@@ -144,8 +144,8 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * taking the viewpoint of leaf-nodes, so this implementation is
      * geared toward indicating hit-count through leaf-nodes, hence
      * the bubble-down of hit-count incrementation.
-     * 
-     * @param balancingScheme - 
+     *
+     * @param balancingScheme -
      * @returns A character / sequence pair from this node that has
      *      been selected the least according to the specified scheme.
      */
@@ -233,9 +233,9 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
     }
 
     /**
-     * @param a - 
-     * @param b - 
-     * @returns - 
+     * @param a -
+     * @param b -
+     * @returns -
      */
     public static readonly LEAF_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = Object.freeze({
         [ BalancingScheme.SEQ ]:    ((a, b) => a.hitCount - b.hitCount),
@@ -244,9 +244,9 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
     });
 
     /**
-     * @param a - 
-     * @param b - 
-     * @returns - 
+     * @param a -
+     * @param b -
+     * @returns -
      */
     public static readonly PATH_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = Object.freeze({
         [ BalancingScheme.SEQ ]:    ((a, b) => a.personalHitCount - b.personalHitCount),
@@ -291,7 +291,7 @@ export namespace LangSeqTreeNode {
  * a written character to a relative frequency of occurance in samples
  * of writing, and to keep a counter for how many times this character
  * has been shuffled-in in the current game session.
- * 
+ *
  * Not exported.
  */
 class WeightedLangChar {
@@ -303,18 +303,18 @@ class WeightedLangChar {
      * the contextual language. A character with a higher weight, when
      * using the {@link BalancingScheme#WEIGHT} scheme, will have a
      * higher shuffle-in priority than characters with a lower weight.
-     * 
+     *
      * Specifically, using the {@link BalancingScheme#WEIGHT} scheme,
      * a character `cA` with a weight `N` times that of another `cB`
      * will, on average, be returned `N` times more often by the
      * {@link LangSeqTreeNode#chooseOnePair} method than `cB`.
-     * 
+     *
      * This is implemented using counters that last for the lifetime
      * of one game, and increment for a chosen character by the inverse
      * of its weight every time it is chosen. Choosing the character
      * with the lowest such counter at a given time will produce the
      * desired effect:
-     * 
+     *
      * If there are three characters mapped with weights `cA: 1`, `cB:
      * 2`, `cC: 3`, and share no prefixing substrings and we pretend
      * that there are never any sequences to avoid when shuffling in
@@ -356,9 +356,9 @@ class WeightedLangChar {
     }
 
     /**
-     * @param a - 
-     * @param b - 
-     * @returns - 
+     * @param a -
+     * @param b -
+     * @returns -
      */
     public static readonly CMP: BalancingScheme.SorterMap<WeightedLangChar> = Object.freeze({
         [ BalancingScheme.SEQ ]:    (a, b) => a.hitCount - b.hitCount, // design choice.
