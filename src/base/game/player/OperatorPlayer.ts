@@ -41,7 +41,10 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
         this._seqBuffer = "";
     }
 
-    public createStatusObj(): OperatorPlayerStatus {
+    /**
+     * @override
+     */
+    protected createStatusObj(): OperatorPlayerStatus {
         return new OperatorPlayerStatus();
     }
 

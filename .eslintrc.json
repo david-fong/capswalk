@@ -72,7 +72,7 @@
         // typescript linting:
         "@typescript-eslint/explicit-member-accessibility": ["error"],
         "@typescript-eslint/prefer-readonly": ["warn"],
-        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/explicit-function-return-type": "error",
         "@typescript-eslint/no-misused-new": ["error"],
         "@typescript-eslint/adjacent-overload-signatures": ["error"],
         "camelcase": "error",

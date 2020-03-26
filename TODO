@@ -12,6 +12,7 @@
 
 ### High Priority
 
+1. Move HTML setup for VisibleGrid to dedicated extension classes.
 1. Change client-facing multiplayer-game-setup so that first joiner closes then teams are chosen.
    - Rationale: get rid of team specification translation from socketIds to playerIds.
 1. Write out full specification for what qualifies the end of the game.
@@ -23,6 +24,8 @@
 
 ### Low Priority
 
+- Look into switching from JsDoc to TsDoc
+  - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
 - Make eslintrc's for impl/ folders saying that they can't import from the impl/ folder they are in.
   - Check if it can detect relative imports. If not, don't do this
 
@@ -47,6 +50,7 @@
 ## Links I Saved for Later
 
 ```text
+https://nodejs.org/api/https.html
 https://javascript.info/modules-dynamic-imports
 https://stackoverflow.com/questions/45854169/how-can-i-use-an-es6-import-in-node
 https://medium.com/@iamstan/typescript-es-modules-micheal-jackson-2040216be793
@@ -76,6 +80,8 @@ https://martinfowler.com/eaaDev/EventSourcing.html
 https://stackoverflow.com/a/9283222/11107541
 
 https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
+
+Navigator.{keyboard,online,connection,language,languages,battery}
 ```
 
 ## Good Reads

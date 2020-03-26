@@ -22,6 +22,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 
     public readonly tile: TileGetter<S,[Coord.Bare<S>]>;
 
+
     /**
      * _Does not call reset._
      * 
@@ -38,7 +39,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 
         // Create and populate the HTML table element field:
         // (skip this step if my tiles are not displayed in a browser window)
-        if (new desc.tileClass({ x: 0, y: 0, }) instanceof VisibleTile) {
+        if (new this.class({ x: 0, y: 0, }) instanceof VisibleTile) {
             const domGrid = new HTMLTableElement();
             const tBody = domGrid.createTBody();
             for (const row of this.grid) {
@@ -77,7 +78,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
     }
 
 
-
     public abstract forEachTile(consumer: (tile: Tile<S>) => void, thisArg?: object): void;
 
     /**
@@ -100,7 +100,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * grid, or have integer-valued coordinate values.
      */
    public abstract getUntToward(sourceCoord: Coord<S>, intendedDest: Coord<S>): Tile<S>;
-
 
 
     /**
@@ -157,7 +156,6 @@ export namespace Grid {
     export type CtorArgs<S extends Coord.System> = {
         coordSys: S;
         dimensions: Dimensions<S>;
-        tileClass: Tile.ClassIf<S>;
         domGridHtmlIdHook?: string;
     };
 
@@ -217,7 +215,7 @@ export namespace Grid {
      */
     export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
         // Note: For some reason TypeScript can't figure out the type here.
-        return Constructors[coordSys] as unknown as ClassIf<S>;
+        return ((Constructors[coordSys]) as unknown as ClassIf<S>);
     };
 
     /**

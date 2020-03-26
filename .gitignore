@@ -19,4 +19,8 @@ Session.vim
 !/.vscode/cSpell.json
 *.code-workspace
 
+# security
+*.pem
+*.pfx
+*.p12
 

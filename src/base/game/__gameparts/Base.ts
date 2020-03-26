@@ -58,10 +58,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     ) {
         this.gameType = gameType;
         this.tileClass = tileClass;
-        this.grid = new (Grid.getImplementation(desc.coordSys))({
+        this.grid = new (this.__getGridImplementation(desc.coordSys))({
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
-            tileClass:  this.tileClass,
         });
 
         // TODO: set default language (must be done before call to reset):
@@ -125,6 +124,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         // TODO: Targets should be done after players have
         // spawned so they do not spawn under players.
     }
+
+    protected abstract __getGridImplementation(coordSys: S): Grid.ClassIf<S>;
 
 
     /**

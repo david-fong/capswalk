@@ -54,7 +54,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.game.cancelTimeout(this.bubbleTimer);
     }
 
-    public createStatusObj(): PlayerStatus {
+    protected createStatusObj(): PlayerStatus {
         return new PlayerStatus();
     }
 
