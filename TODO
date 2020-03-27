@@ -12,7 +12,10 @@
 
 ### High Priority
 
+1. Use es6 #private syntax for getter-backing fields
+   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
 1. Move HTML setup for VisibleGrid to dedicated extension classes.
+   - Update implementation guide @[`Grid.Visible`](./src/base/floor/impl/readme.md)
 1. Change client-facing multiplayer-game-setup so that first joiner closes then teams are chosen.
    - Rationale: get rid of team specification translation from socketIds to playerIds.
 1. Write out full specification for what qualifies the end of the game.

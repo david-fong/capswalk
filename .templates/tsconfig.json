@@ -8,7 +8,7 @@
         "moduleResolution": "node",
 
         // Language Settings:
-        "target": "es5",
+        "target": "es6",
         "lib": [ "es6", "dom", "es2019.array" ],
         "module": "ES6",
 
