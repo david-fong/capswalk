@@ -159,7 +159,7 @@ export namespace Euclid2 {
         /**
          * @override
          */
-        public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
+        public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
             height: Object.freeze({ min: 10, max: 50, }),
             width:  Object.freeze({ min: 10, max: 50, }),

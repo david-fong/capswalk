@@ -2,7 +2,7 @@ import path = require("path");
 import fs = require("fs");
 
 import webpack = require("webpack");
-import HtmlPlugin = require("html-webpack-plugin");
+//import HtmlPlugin = require("html-webpack-plugin");
 
 // Note: if I ever add this back, I'll need to look into how to make
 // sure it doesn't clean away things from separate configs (See notes
@@ -35,7 +35,7 @@ const WATERMARK = "/**\n * " + [
 ].join("\n * ") + "\n */";
 
 /**
- * 
+ *
  */
 const BASE_PLUGINS: ReadonlyArray<Readonly<webpack.Plugin>> = [
     new webpack.ProgressPlugin((pct, msg, moduleProgress?, activeModules?, moduleName?) => {
@@ -78,24 +78,24 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [
 
 /**
  * # Base Config
- * 
+ *
  * The way my project is set up as a single node package, I need to
  * export an array of configs. Note that I don't bundle any node
  * modules, but if if do, there are tricky things that can be solved
  * by adding `node: { "fs": "empty", "net": "empty", },`
- * 
+ *
  * Everything that builds off of this will need to add the `entry` field.
- * 
+ *
  * **Important**: Make sure all referenced objects are only accessible
  * via pure producers. Otherwise, mutations in one bundle's config will
  * propagate to all the following config definitions.
- * 
+ *
  * ## Help Links
- * 
+ *
  * - https://www.typescriptlang.org/docs/handbook/react-&-webpack.html
  * - https://webpack.js.org/configuration/configuration-languages/#typescript
  * - https://github.com/TypeStrong/ts-loader#loader-options
- * 
+ *
  * @returns A standalone ("deep-copy") basic configuration.
  */
 const BaseConfig: () => Require<webpack.Configuration,
@@ -156,7 +156,7 @@ const BaseConfig: () => Require<webpack.Configuration,
 
 /**
  * ## Web Bundles
- * 
+ *
  * - `target: "web",`. This is implied, but here, explicitness helps me learn.
  * - `externals: [ nodeExternals(), ],` or something like `[ "socket.io-client", ]`
  * - appropriate plugin entries for the index.html file.
@@ -192,12 +192,12 @@ const webBundleConfig = BaseConfig(); {
 
 /**
  * ## Basic node configuration:
- * 
+ *
  * - `target: "node"`. This should mean that node modules are not bundled.
  * - `resolve.modules.push("node_modules")`
  * - `externals: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))`
- * 
- * @param config - 
+ *
+ * @param config -
  */
 const NODE_CONFIG = (config): void => {
     config.target = "node";
@@ -220,9 +220,9 @@ const nodeBundleConfig = BaseConfig(); {
 
 /**
  * ## Test Bundles
- * 
+ *
  * See the node settings.
- * 
+ *
  * Emit all test bundles under a single folder.
  */
 const testBundleConfig = BaseConfig(); {

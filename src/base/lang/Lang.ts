@@ -4,7 +4,7 @@ import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
 
 
 /**
- * A `Lang`(uage) is a map from a collection of unique characters to
+ * A language is a map from a collection of unique characters to
  * corresponding key-sequences. the key-sequences may be non-unique.
  * (try searching up "Chinese riddle where each syllable is pronounced
  * 'shi'"). A character may have more than one corresponding sequence,
@@ -13,7 +13,7 @@ import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
  * In the use-case of this game, it is more helpful to think in the
  * reverse direction: As a map from typable-key-sequences to sets of
  * corresponding unique characters (no character is mapped by multiple
- * key-sequences). This game does not require support for retreiving
+ * key-sequences). This game does not require support for retrieving
  * the `Lang.Seq` corresponding to a `LangChar`.
  *
  * See the readme in [the implementations folder](./impl/readme.md)
@@ -116,8 +116,10 @@ export abstract class Lang extends LangTypeDefs {
      * `(2*2 + 1)^2 - 1 == 24`. Using the English alphabet (26 typable-
      * letters), this requirement is met by a hair.
      *
-     * @param avoid A collection of `Lang.Seq`s to avoid conflicts with
-     *      when choosing a `Lang.Char` to return.
+     * @param avoid
+     * A collection of `Lang.Seq`s to avoid conflicts with when choosing
+     * a `Lang.Char` to return.
+     *
      * @param balancingScheme -
      */
     public getNonConflictingChar(

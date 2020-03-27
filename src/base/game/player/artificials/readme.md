@@ -9,6 +9,7 @@ This is a folder for all implementations of the abstract `ArtificialPlayer` clas
 
 Each implementation must:
 
-- Use the exact same constructor signature as that of their superclass.
+- Set their constructor visibility to `protected`.
+- Use the exact same constructor signature as that of the superclass.
 - Declare an enum entry in [`Player.Operator`](../Player.ts).
-- Map that entry to their constructor in the [`ArtificialPlayers.Constructors` dictionary](../ArtificialPlayer.ts).
+  - Map that entry to their constructor function in [`ArtificialPlayers.Constructors`](../ArtificialPlayer.ts).

@@ -14,10 +14,6 @@ export namespace Player {
         CHASER: "CHASER",
     });
     Family as { [ key in Family ]: key };
-    /**
-     * @param string -
-     */
-    export function assertIsOperator(string: string): asserts string is Family {};
 
     /**
      * See the main documentation in game/player/Player.
@@ -63,10 +59,12 @@ export namespace Player {
         }
 
         public get counts(): Bundle.Counts {
-            return this.entries.reduce<Record<Player.Family, number>>((build, [family, players,]) => {
+            return Object.freeze(this.entries.reduce
+                    <Record<Player.Family, number>>
+                    ((build, [family, players,]) => {
                 build[family] = players.length;
                 return build;
-            }, {} as Record<Player.Family, number>);
+            }, {} as Record<Player.Family, number>));
         }
     }
 

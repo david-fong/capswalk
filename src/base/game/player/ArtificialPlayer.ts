@@ -22,7 +22,8 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
     private scheduledMovementCallbackId: number | NodeJS.Timeout;
 
     /**
-     * See {@link ArtificialPlayer.of} for the public constructor interface.
+     * See {@link ArtificialPlayer.of} for the public constructor
+     * interface.
      *
      * @param game -
      * @param desc -

@@ -129,10 +129,11 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      *
      * Should never be called by {@link ClientGame}.
      *
-     * @param desc - A descriptor of the request, with fields indicating
-     *      the requester's views of critical parts of the game-state
-     *      from their copy of the game-state at the time of the request.
-     *      Is modified to describe changes to be made.
+     * @param desc
+     * A descriptor of the request describing the requester's views
+     * of critical parts of the game-state from their copy of the game
+     * state at the time of the request. Is modified to describe changes
+     * to be made.
      */
     public processMoveRequest(desc: PlayerMovementEvent<S>): void {
         const player = this.checkIncomingPlayerRequestId(desc);
@@ -192,8 +193,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      *
      * Updates the event record if the response is accepted.
      *
-     * @param desc - A descriptor for all changes mandated by the
-     *      player-movement event.
+     * @param desc
+     * A descriptor for all changes mandated by the player-movement event.
      */
     protected processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         const player = this.players.get(desc.playerId);

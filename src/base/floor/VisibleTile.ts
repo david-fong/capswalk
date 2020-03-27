@@ -12,7 +12,7 @@ import { Tile } from "./Tile";
  * 1. Empty layer for spotlight mask
  * 2. Player face layer
  * 3. Language Written Character
- * 4. Language Typable Sequence
+ * 4. Language Type-able Sequence
  *
  * https://developer.mozilla.org/en-US/docs/Web/CSS/z-index
  * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index

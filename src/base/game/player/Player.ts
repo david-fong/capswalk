@@ -97,6 +97,7 @@ export namespace Player {
 
     export namespace Bundle {
         export type Contents<T> = PlayerTypeDefs.Bundle.Contents<T>;
+        export type Counts = PlayerTypeDefs.Bundle.Counts;
     }
 
     export type Username = string;

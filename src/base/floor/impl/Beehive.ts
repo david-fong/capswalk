@@ -120,7 +120,7 @@ export namespace Beehive {
         /**
          * @override
          */
-        public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
+        public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
             dash:    Object.freeze({ min: 10, max: 50, }),
             bslash:  Object.freeze({ min: 10, max: 50, }),

@@ -46,6 +46,7 @@ export class Tile<S extends Coord.System> {
      */
     public constructor(coord: Coord<S>) {
         this.coord = coord;
+        this._occupantId = Player.Id.NULL;
     }
 
     public reset(): void {
