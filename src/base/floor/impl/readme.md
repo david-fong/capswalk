@@ -102,10 +102,10 @@ export namespace SysName {
             // numeric fields.
             // at least one must be non-optional.
         };
-        // TODO @david: this is a stub. please finish this.
         export class Visible extends Grid implements VisibleGrid<S> {
             public constructor(desc: AbstractGrid.CtorArgs<S>) {
                 super(desc);
+                // Set up DOM fields for rendering the grid.
             }
         }
     }

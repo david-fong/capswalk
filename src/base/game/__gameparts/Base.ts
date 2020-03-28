@@ -64,17 +64,17 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         // TODO: set default language (must be done before call to reset):
         //this.lang = import(desc.languageName);
 
-        // TODO: make this static information so the UI can grey out incompatible
-        // lang / floor-tiling combinations. Ie. move this check to the UI code.
-        // if (this.lang.numLeaves < this.MAX_NUM_U2NTS) {
-        //     throw new Error(`Found ${this.lang.numLeaves}, but at least`
-        //         + ` ${this.MAX_NUM_U2NTS} were required. The provided mappings`
-        //         + ` composing the current Lang-under-construction are not`
-        //         + ` sufficient to ensure that a shuffling operation will always`
-        //         + ` be able to find a safe candidate to use as a replacement.`
-        //         + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
-        //     );
-        // }
+        // TODO Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
+        const minLangLeaves = this.grid.static.getAmbiguityThreshold();
+        if (this.lang.numLeaves < minLangLeaves) {
+            throw new Error(`Found ${this.lang.numLeaves} leaves, but at least`
+                + ` ${minLangLeaves} were required. The provided mappings`
+                + ` composing the current Lang-under-construction are not`
+                + ` sufficient to ensure that a shuffling operation will always`
+                + ` be able to find a safe candidate to use as a replacement.`
+                + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
+            );
+        }
         this.langBalancingScheme = desc.langBalancingScheme;
 
         // Construct players:

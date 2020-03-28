@@ -95,7 +95,7 @@ export namespace VisibleTile {
      */
     export const ClassHooks = Object.freeze(<const>{
         TILE:       <const>"tile",
-        PLAYER:     <const>"tile__player",
+        PLAYER:     <const>"tile__player", // TODO this has changed to be a separate block.
         LANG_CHAR:  <const>"tile__char",
         LANG_SEQ:   <const>"tile__seq",
     });

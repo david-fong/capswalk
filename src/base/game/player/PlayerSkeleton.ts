@@ -52,11 +52,11 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
 
 
 
-    public get coord(): Player<S>["hostTile"]["coord"] {
+    public get coord(): Coord<S> {
         return this.hostTile.coord;
     }
 
-    public get hostTile(): PlayerSkeleton<S>["_hostTile"] {
+    public get hostTile(): Tile<S> {
         return this._hostTile;
     }
 

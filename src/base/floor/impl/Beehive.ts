@@ -58,11 +58,21 @@ export namespace Beehive {
          * @override
          */
         public round(): Coord {
-            // TODO: is this correct? I don't think so...
-            return new Coord({
-                dash: Math.round(this.dash),
-                bash: Math.round(this.bash),
-            });
+            // I'm pretty proud of this despite the fact that I don't
+            // think there's anything very impressive about it.
+            const floorDash = Math.floor(this.dash);
+            const floorBash = Math.floor(this.bash);
+            const d = floorDash - this.dash;
+            const b = floorBash - this.bash;
+            if (d > 2 * b) {
+                return new Coord({ dash: floorDash+1, bash: floorBash  , });
+            } else if (d < 0.5 * b) {
+                return new Coord({ dash: floorDash  , bash: floorBash+1, });
+            } else if (Math.min(d, b) > 0.5) {
+                return new Coord({ dash: floorDash+1, bash: floorBash+1, });
+            } else {
+                return new Coord({ dash: floorDash  , bash: floorBash  , });
+            }
         }
 
         /**

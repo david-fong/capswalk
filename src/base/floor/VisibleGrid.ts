@@ -22,10 +22,6 @@ export interface VisibleGrid<S extends Coord.System> extends Grid<S> {
     // TODO is there any common code / interfacing I can put here?
 }
 
-// TODO: make the implementation classes extend their Grids and implement the above interface.
-//  make their constructors call super and set up the visual elements.
-
-
 
 export namespace VisibleGrid {
 
