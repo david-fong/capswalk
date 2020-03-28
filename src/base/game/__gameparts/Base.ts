@@ -19,8 +19,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly gameType: G;
 
-    public readonly tileClass: Tile.ClassIf<S>;
-
     public readonly lang: Lang;
 
     /**
@@ -57,8 +55,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         desc: Game.CtorArgs<G,S>,
     ) {
         this.gameType = gameType;
-        this.tileClass = tileClass;
         this.grid = new (this.__getGridImplementation(desc.coordSys))({
+            tileClass:  tileClass,
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
         });
@@ -111,7 +109,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.grid.forEachTile(this.shuffleLangCharSeqAt, this);
 
         // Reset and spawn players:
-        const spawnPoints = this.grid.class.getSpawnCoords(
+        const spawnPoints = this.grid.static.getSpawnCoords(
             this.players.counts,
             this.grid.dimensions,
         );

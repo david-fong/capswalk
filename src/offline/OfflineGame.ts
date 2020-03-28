@@ -1,5 +1,6 @@
 import { Coord } from "floor/Coord";
 import { VisibleTile } from "floor/VisibleTile";
+import { VisibleGrid } from "floor/VisibleGrid";
 import { Game } from "game/Game";
 import { LocalGameSettings } from "settings/GameSettings";
 
@@ -19,6 +20,13 @@ type G = Game.Type.OFFLINE;
 export class OfflineGame<S extends Coord.System> extends Game<G,S> {
 
     protected settings: LocalGameSettings;
+
+    /**
+     * @override
+     */
+    protected __getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
+        return VisibleGrid.getImplementation(coordSys);
+    }
 
 
 

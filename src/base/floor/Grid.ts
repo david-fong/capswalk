@@ -1,6 +1,4 @@
-import { Coord } from "./Coord";
-import { Tile } from "./Tile";
-import { VisibleTile } from "./VisibleTile";
+import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
 import { Player } from "utils/TypeDefs";
@@ -16,14 +14,19 @@ import { Beehive } from "./impl/Beehive";
  */
 export abstract class Grid<S extends Coord.System> implements TileGetter.Source<S> {
 
-    public readonly class: Grid.ClassIf<S>;
+    public readonly static: Grid.ClassIf<S>;
 
     public readonly dimensions: Grid.Dimensions<S>;
 
     public readonly tile: TileGetter<S,[Coord.Bare<S>]>;
 
+    protected readonly getImplementation = Grid.getImplementation;
+
 
     /**
+     * Protected. See `Grid.getImplementation` for how to access class
+     * literals for construction.
+     *
      * _Does not call reset._
      *
      * @param desc -
@@ -33,31 +36,9 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
             desc.domGridHtmlIdHook = Grid.DEFAULT_HTML_ID_HOOK;
         }
 
-        this.class = Grid.getImplementation(desc.coordSys);
+        this.static = this.getImplementation(desc.coordSys);
         this.dimensions = desc.dimensions;
         this.tile = new TileGetter(this);
-
-        // Create and populate the HTML table element field:
-        // (skip this step if my tiles are not displayed in a browser window)
-        if (new this.class({ x: 0, y: 0, }) instanceof VisibleTile) {
-            const domGrid = new HTMLTableElement();
-            const tBody = domGrid.createTBody();
-            for (const row of this.grid) {
-                const rowElem  = tBody.insertRow();
-                for (const tile of row) {
-                    rowElem.appendChild((tile as VisibleTile<S>).tileCellElem);
-                }
-            }
-            const carrier = document.getElementById(desc.domGridHtmlIdHook);
-            if (!carrier) {
-                throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\"`
-                    + ` did not refer to an existing html element.`
-                );
-            }
-            // remove all child elements and then
-            carrier.childNodes.forEach((node) => carrier.removeChild(node));
-            carrier.appendChild(domGrid);
-        }
     }
 
     /**
@@ -147,6 +128,9 @@ export namespace Grid {
     }) as Readonly<{
         [S in Coord.System]: ClassIf<S>;
     }>;
+    // The above type assertion checks that the implementations are
+    // complete, and casts them to a slightly more general type,
+    // which helps `getImplementation` do its own type assertions.
 
     // ==============================================================
     // Note: The below exports do not require any modifications with
@@ -154,11 +138,15 @@ export namespace Grid {
     // ==============================================================
 
     export type CtorArgs<S extends Coord.System> = {
+        tileClass: Tile.ClassIf<S>;
         coordSys: S;
         dimensions: Dimensions<S>;
         domGridHtmlIdHook?: string;
     };
 
+    /**
+     * Used to simulate abstract static methods.
+     */
     export interface ClassIf<S extends Coord.System> {
 
         /**
@@ -168,12 +156,13 @@ export namespace Grid {
 
         /**
          * @returns
-         * From the caller's point of view, the ambiguity floor is
-         * the minimum (inclusive) number of leaf nodes a language
-         * must have to be playable with this coordinate system's grid.
+         * From the caller's point of view, the ambiguity floor is the
+         * minimum number of leaf nodes a language must have to be
+         * playable with this coordinate system's grid.
+         *
          * From the specification's point of view, it is the promised
-         * maximum size of a set of all destinations from sources to
-         * any tile in the grid, excluding that tile itself.
+         * maximum size- for any tile in the grid- of the set of all
+         * destinations from sources to itself, excluding itself.
          */
         // TODO: write a test that checks that this holds for each implementation?
         getAmbiguityThreshold(): number;
@@ -214,8 +203,11 @@ export namespace Grid {
      * @param coordSys -
      */
     export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
-        // Note: For some reason TypeScript can't figure out the type here.
-        return ((Constructors[coordSys]) as unknown as ClassIf<S>);
+        // Note: At the time of writing this, separating this into
+        // two lines is necessary (otherwise Typescript will feel
+        // overwhelmed)
+        const ctor = Constructors[coordSys];
+        return ctor as ClassIf<S>;
     };
 
     /**

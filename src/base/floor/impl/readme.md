@@ -12,7 +12,7 @@ First, a new, unique enum entry for the new coordinate system must be defined in
 **In `SysName.ts`**
 
 ```typescript
-import { Coord as BaseCoord } from "../Coord";
+import { Coord as BaseCoord } from "../Tile";
 
 // documentation
 export namespace SysName {
@@ -48,7 +48,9 @@ Import your system namespace, and add entries to `Coord` and `Coord.Bare` for th
 
 ```typescript
 // coord-related imports
-import { Tile } from "../Tile";
+import { Coord, Tile } from "../Tile";
+import { VisibleGrid } from "floor/VisibleGrid";
+import { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
 
 // documentation
@@ -66,15 +68,23 @@ export namespace SysName {
         /**
          * @override
          */
-        public GET_SIZE_LIMITS(): AbstractGrid.DimensionBounds<S> { return Grid.SIZE_LIMITS; }
+        public getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
             // fields from dimension type, except mapped to a frozen range description.
         });
+        // field declarations
+        // constructor
+        // abstract method implementations
+
+        // Note: I place the following abstract static methods at the
+        // bottom because they are implementation-heavy and don't
+        // control / describe the behaviour of the implementation at
+        // such a core level.
         /**
          * @override
          */
         public static getSpawnCoords(
-            playerCounts: Readonly<Record<Player.Operator, number>>,
+            playerCounts: Player.Bundle.Counts,
             bounds: Required<Grid.Dimensions>,
         ): Player.Bundle<Coord.Bare> {
             return undefined!;
@@ -82,12 +92,9 @@ export namespace SysName {
         /**
          * @override
          */
-        public static getRandomCoord(bounds: AbstractGrid.DimensionBounds<S>): Coord {
+        public static getRandomCoord(bounds: Grid.Dimensions): Coord {
             return new Coord(undefined!);
         }
-        // field declarations
-        // constructor
-        // abstract method implementations
     }
     export namespace Grid {
         // if any fields are optional, describe how default values are chosen here.
@@ -95,6 +102,12 @@ export namespace SysName {
             // numeric fields.
             // at least one must be non-optional.
         };
+        // TODO @david: this is a stub. please finish this.
+        export class Visible extends Grid implements VisibleGrid<S> {
+            public constructor(desc: AbstractGrid.CtorArgs<S>) {
+                super(desc);
+            }
+        }
     }
 }
 ```

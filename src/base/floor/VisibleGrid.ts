@@ -12,16 +12,18 @@ import { Beehive } from "./impl/Beehive";
  * base `Grid` class with a _separate_ dictionary of implementation
  * literals so that the build tooling can infer that this code can
  * be excluded (tree shaking). The implementations may still go in
- * the same file as their non-visible implementation, since they are
- * separate exports (this can be tree-shaken).
+ * the same file as their non-visible implementation since they are
+ * separate exports (this can be tree-shaken). Specifically, the
+ * _server_ related code will benefit from this choice since it will
+ * not use
  */
-export abstract class VisibleGrid<S extends Coord.System> extends Grid<S> {
+export interface VisibleGrid<S extends Coord.System> extends Grid<S> {
 
-    public constructor(desc: Grid.CtorArgs<S>) {
-        super(desc);
-    }
-
+    // TODO is there any common code / interfacing I can put here?
 }
+
+// TODO: make the implementation classes extend their Grids and implement the above interface.
+//  make their constructors call super and set up the visual elements.
 
 
 
@@ -42,7 +44,6 @@ export namespace VisibleGrid {
     };
 
     export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
-        // Note: For some reason TypeScript can't figure out the type here.
         return ((Constructors[coordSys]) as unknown as ClassIf<S>);
     };
 

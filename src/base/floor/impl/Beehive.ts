@@ -1,6 +1,7 @@
 import { Coord as BaseCoord, Tile } from "../Tile";
 import { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
+import { VisibleGrid } from "floor/VisibleGrid";
 
 
 type S = BaseCoord.System.BEEHIVE;
@@ -204,6 +205,13 @@ export namespace Beehive {
             bslash: number;
             fslash: number;
         };
+
+        export class Visible extends Grid implements VisibleGrid<S> {
+            ;
+            public constructor(desc: AbstractGrid.CtorArgs<S>) {
+                super(desc);
+            }
+        }
     }
 
 }

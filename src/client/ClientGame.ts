@@ -4,6 +4,7 @@ import { Coord } from "floor/Coord";
 import { VisibleTile } from "floor/VisibleTile";
 import { LocalGameSettings } from "settings/GameSettings";
 import { Grid } from "floor/Grid";
+import { VisibleGrid } from "floor/VisibleGrid";
 import { Game } from "game/Game";
 
 import { Player } from "game/player/Player";
@@ -27,6 +28,13 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
     protected settings: LocalGameSettings;
 
     public readonly socket: SocketIOClient.Socket;
+
+    /**
+     * @override
+     */
+    protected __getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
+        return VisibleGrid.getImplementation(coordSys);
+    }
 
 
 

@@ -1,8 +1,8 @@
 import * as io from "socket.io";
 import { setTimeout } from "timers";
 
-import { Coord } from "floor/Coord";
-import { Tile } from "floor/Tile";
+import { Coord, Tile } from "floor/Tile";
+import { Grid } from "floor/Grid";
 import { Game } from "game/Game";
 import { Player } from "game/player/Player";
 
@@ -25,6 +25,13 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
     public readonly namespace: io.Namespace;
 
     protected readonly socketBundle: Player.Bundle<io.Socket>;
+
+    /**
+     * @override
+     */
+    protected __getGridImplementation(coordSys: S): Grid.ClassIf<S> {
+        return Grid.getImplementation(coordSys);
+    }
 
 
 

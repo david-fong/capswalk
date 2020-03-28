@@ -1,4 +1,5 @@
 import { Coord as BaseCoord, Tile } from "../Tile";
+import { VisibleTile } from "floor/VisibleTile";
 import { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
 import { VisibleGrid } from "floor/VisibleGrid";
@@ -173,7 +174,7 @@ export namespace Euclid2 {
          * their corresponding fields, containing `Tile` objects with `pos`
          * fields allowing indexing to themselves. Uses row-major ordering.
          */
-        private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
+        protected readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
 
         /**
          * @override
@@ -222,8 +223,8 @@ export namespace Euclid2 {
                 // Break (some) ties by one-norm:
                 return tileA.coord.infNorm(intendedDest) - TileB.coord.infNorm(intendedDest);
             });
-            // Filter out options that are not equally favorable as the
-            // most favorable option. I think this is the best method:
+            // Filter out options that are not equally favourable as the
+            // most favourable option. I think this is the best method:
             // Note: it is safe to start at index `1` because of the
             // above short-circuit if `options.length === 1`.
             for (let i = 1; i < options.length; i++) {
@@ -236,7 +237,7 @@ export namespace Euclid2 {
                 // Minor optimization:
                 return options[0];
             }
-            // Choose one of the most favorable using some randomness
+            // Choose one of the most favourable using some randomness
             // weighted to follow a straight-looking path of movement.
             if (options[0].coord.x - sourceCoord.x === 0 || options[0].coord.y - sourceCoord.y === 0) {
                 // (the axial option (if it exists) should be the first
@@ -321,7 +322,31 @@ export namespace Euclid2 {
         };
 
         export class Visible extends Grid implements VisibleGrid<S> {
-            ;
+            public constructor(desc: AbstractGrid.CtorArgs<S>) {
+                super(desc);
+                // Create and populate the HTML table element field:
+                // (skip this step if my tiles are not displayed in a browser window)
+                // TODO: fix this to be non-general. this was moved from `Grid::ctor`
+                const domGrid = new HTMLTableElement();
+                const tBody = domGrid.createTBody();
+                for (const row of this.grid) {
+                    const rowElem  = tBody.insertRow();
+                    for (const tile of row) {
+                        rowElem.appendChild((tile as VisibleTile<S>).tileCellElem);
+                    }
+                }
+                const carrier = document.getElementById(
+                    desc.domGridHtmlIdHook || Grid.DEFAULT_HTML_ID_HOOK
+                );
+                if (!carrier) {
+                    throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\"`
+                        + ` did not refer to an existing html element.`
+                    );
+                }
+                // remove all child elements and then append the new grid:
+                carrier.childNodes.forEach((node) => carrier.removeChild(node));
+                carrier.appendChild(domGrid);
+            }
         }
     }
 
