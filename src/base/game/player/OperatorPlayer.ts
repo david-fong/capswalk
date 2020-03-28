@@ -161,7 +161,6 @@ class OperatorPlayerStatus extends PlayerStatus {
     public readonly playerDivElem: HTMLDivElement;
 
     public constructor() {
-        super();
         {
             // TODO: create a spotlight mask using the below CSS properties:
             // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
@@ -169,32 +168,36 @@ class OperatorPlayerStatus extends PlayerStatus {
             pDiv.className = VisibleTile.ClassHooks.PLAYER;
             this.playerDivElem = pDiv;
         }
+        // This must go after the HTML initialization since the setters
+        // called in the super-constructor are overridden here to modify
+        // the same DOM elements referenced by those fields.
+        super();
     }
 
 
     public set score(newValue: number) {
-        this._score = newValue;
+        super.score = newValue;
     }
 
     public set stockpile(stockpile: number) {
-        this._stockpile = stockpile;
+        super.stockpile = stockpile;
     }
 
 
     public set isDowned(isDowned: boolean) {
-        this._isDowned = isDowned;
+        super.isDowned = isDowned;
     }
 
     public set isFrozen(isFrozen: boolean) {
-        this._isFrozen = isFrozen;
+        super.isFrozen = isFrozen;
     }
 
     public set isBubbling(isBubbling: boolean) {
-        this._isBubbling = isBubbling;
+        super.isBubbling = isBubbling;
     }
 
     public set percentBubbleCharge(bubbleCharge: number) {
-        this._percentBubbleCharge = bubbleCharge;
+        super.percentBubbleCharge = bubbleCharge;
     }
 
 }

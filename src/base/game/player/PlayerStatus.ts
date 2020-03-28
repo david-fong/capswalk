@@ -1,16 +1,19 @@
 
 
 /**
- *
+ * This abstracts acts of modification upon a player's state, allowing
+ * extension classes to override setters to perform additional tasks
+ * such as visually rendering updates to this state information in a
+ * web browser, and playing sound effects.
  */
 class PlayerStatus {
 
-    protected _score:       number;
-    protected _stockpile:   number;
-    protected _isDowned:    boolean;
-    protected _isFrozen:    boolean;
-    protected _isBubbling:  boolean;
-    protected _percentBubbleCharge: number;
+    private _score:       number;
+    private _stockpile:   number;
+    private _isDowned:    boolean;
+    private _isFrozen:    boolean;
+    private _isBubbling:  boolean;
+    private _percentBubbleCharge: number;
 
     public reset(): void {
         this.score      = 0;
@@ -26,7 +29,6 @@ class PlayerStatus {
         return this._score;
     }
     public set score(newValue: number) {
-        // TODO: render this in the browser if not a ServerGame
         this._score = newValue;
     }
 
