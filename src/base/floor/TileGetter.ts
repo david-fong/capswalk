@@ -1,5 +1,4 @@
-import { Coord } from "./Coord";
-import { Tile } from "./Tile";
+import { Coord, Tile } from "./Tile";
 
 
 type CoordSys = Coord.System;

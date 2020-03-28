@@ -24,9 +24,12 @@
         "reduct",
         "bubbler",
         "nicity",
+        "typeable",
 
         "retval",
+        "supercall",
         "spec",
+        "dict",
         "desc",
         "descs",
         "elem",

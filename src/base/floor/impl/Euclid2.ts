@@ -1,7 +1,7 @@
-import { Coord as BaseCoord } from "../Coord";
-import { Tile } from "../Tile";
+import { Coord as BaseCoord, Tile } from "../Tile";
 import { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
+import { VisibleGrid } from "floor/VisibleGrid";
 
 
 type S = BaseCoord.System.EUCLID2;
@@ -319,6 +319,10 @@ export namespace Euclid2 {
             height: number,
             width:  number,
         };
+
+        export class Visible extends Grid implements VisibleGrid<S> {
+            ;
+        }
     }
 
 }

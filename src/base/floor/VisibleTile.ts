@@ -1,7 +1,6 @@
 import { Lang as LangTypeDefs, Player } from "utils/TypeDefs";
 
-import { Coord } from "floor/Coord";
-import { Tile } from "./Tile";
+import { Coord, Tile } from "./Tile";
 
 
 /**
@@ -63,8 +62,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public evictOccupant(): void {
         super.evictOccupant();
-        // TODO: call other setters that change visual appearance:
-        // clear the visual flags for: bubbling, frozen, downed, percentBubbleCharge
+        // TODO: call other setters that change visual appearance
     }
 
     /**

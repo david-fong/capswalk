@@ -11,7 +11,7 @@ import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
  * representing alternate "spellings" (ways of typing it).
  *
  * In the use-case of this game, it is more helpful to think in the
- * reverse direction: As a map from typable-key-sequences to sets of
+ * reverse direction: As a map from typeable-key-sequences to sets of
  * corresponding unique characters (no character is mapped by multiple
  * key-sequences). This game does not require support for retrieving
  * the `Lang.Seq` corresponding to a `LangChar`.
@@ -113,7 +113,7 @@ export abstract class Lang extends LangTypeDefs {
      * `avoid` contains `LangSeq`s from all {@link Tile}s with an `infNorm`
      * <= `2` from the {@link Tile} to shuffle (not including itself).
      * This means that here, the size of `avoid` is always bounded by
-     * `(2*2 + 1)^2 - 1 == 24`. Using the English alphabet (26 typable-
+     * `(2*2 + 1)^2 - 1 == 24`. Using the English alphabet (26 typeable-
      * letters), this requirement is met by a hair.
      *
      * @param avoid
@@ -170,7 +170,7 @@ export abstract class Lang extends LangTypeDefs {
             // Should never reach here because there is a check in the
             // constructor checking for this invariant.
             throw new Error(`Invariants guaranteeing that a LangSeq can`
-                + `always be shufled-in were not met.`
+                + `always be shuffled-in were not met.`
             );
         }
         return nodeToHit.chooseOnePair(balancingScheme);
@@ -232,7 +232,7 @@ export namespace Lang {
     export type CharSeqPair = LangTypeDefs.CharSeqPair;
     export namespace CharSeqPair {
         /**
-         * A map from written characters to their corresponding typable
+         * A map from written characters to their corresponding typeable
          * keyboard sequence and relative spawn weight.
          *
          * Shape that must be passed in to the static tree producer. The

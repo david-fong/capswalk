@@ -109,7 +109,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
 
     /**
      *
-     * @param seq The typable sequence corrensponding to entries of `chars`.
+     * @param seq The typeable sequence corresponding to entries of `chars`.
      * @param chars A collection of unique characters in a written language.
      */
     protected addCharMapping(seq: Lang.Seq, chars: ReadonlyArray<WeightedLangChar>): void {
@@ -129,7 +129,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
         if (node.sequence === seq) {
             // This should never happen.
             throw new Error(`Mappings for all written-characters with a common`
-                + `corresponding typable-sequence should be registered together,`
+                + `corresponding typeable-sequence should be registered together,`
                 + `but an existing mapping for the sequence \"${seq}\" was found.`
             );
         }
@@ -287,8 +287,8 @@ export namespace LangSeqTreeNode {
 
 
 /**
- * Has no concept of an associated typable sequence. Used to associate
- * a written character to a relative frequency of occurance in samples
+ * Has no concept of an associated typeable sequence. Used to associate
+ * a written character to a relative frequency of occurrence in samples
  * of writing, and to keep a counter for how many times this character
  * has been shuffled-in in the current game session.
  *
@@ -340,7 +340,7 @@ class WeightedLangChar {
         this.weightInv = 1.000 / weight;
         // The above choice of a numerator is not behaviourally significant.
         // All that is required is that all single-mappings in a `Lang` use
-        // a consistant value.
+        // a consistent value.
     }
 
     public reset(): void {

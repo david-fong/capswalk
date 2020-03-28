@@ -56,6 +56,11 @@ export namespace Coord {
     }
 
     export namespace Abstract {
+        /**
+         * As opposed, for example, to grid systems operating on the
+         * basis of graph connections that cannot be represented by
+         * lattices.
+         */
         export abstract class Mathy<S extends Coord.System> extends Coord.Abstract<S> {
             /**
              * For discrete-coordinate-based systems, this is used to round

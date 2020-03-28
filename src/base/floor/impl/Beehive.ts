@@ -1,5 +1,4 @@
-import { Coord as BaseCoord } from "../Coord";
-import { Tile } from "../Tile";
+import { Coord as BaseCoord, Tile } from "../Tile";
 import { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
 

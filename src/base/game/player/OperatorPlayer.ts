@@ -1,5 +1,5 @@
 import { Lang } from "lang/Lang";
-import { Tile, Coord } from "floor/Tile";
+import { Coord, Tile } from "floor/Tile";
 import { VisibleTile } from "floor/VisibleTile";
 import { Player } from "./Player";
 import { Game } from "game/Game";
