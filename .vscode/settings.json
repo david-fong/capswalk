@@ -1,5 +1,5 @@
 {
-    "eslint.enable": false,
+    "eslint.enable": false, // Re-enable this once typescript's eslint parser can handle #private fields.
     "files.exclude": {
         // generic excludes:
         "node_modules/{[^.@]*,}": true,

@@ -18,35 +18,30 @@
     ],
     "words": [
         "snakey",
-        "dests",
-        "coord",
         "artif",
-        "reduct",
         "bubbler",
-        "nicity",
         "typeable",
 
+        "coord",
+        "dict",
+        "desc", "descs",
+        "dests",
+        "elem",
+        "nsps",
         "retval",
+        "refs",
         "supercall",
         "spec",
-        "dict",
-        "desc",
-        "descs",
-        "elem",
-        "refs",
-        "nsps",
 
-        "readmes",
         "API's",
         "javascript's",
+        "linting",
+        "readmes",
         "websockets",
 
-        "lowercase",
-        "uppercase",
-        "hiragana",
-        "katakana",
-        "dubeolsik",
-        "sebeolsik",
+        "lowercase", "uppercase",
+        "hiragana" , "katakana" ,
+        "dubeolsik", "sebeolsik",
 
         "boop",
         "constraining",
@@ -55,7 +50,6 @@
         "millis",
         "multiplayer",
         "requester's",
-        "teammate",
-        "teammates"
+        "teammate", "teammates"
     ]
 }
