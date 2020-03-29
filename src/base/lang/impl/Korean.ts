@@ -32,11 +32,11 @@ export namespace Korean {
         }
 
         public static getInstance(): Dubeolsik {
-            if (!Dubeolsik.SINGLETON) {
-                Dubeolsik.SINGLETON = new Dubeolsik();
-                delete Dubeolsik.KEYBOARD;
+            if (!this.SINGLETON) {
+                this.SINGLETON = new Dubeolsik();
+                delete this.KEYBOARD;
             }
-            return Dubeolsik.SINGLETON;
+            return this.SINGLETON;
         }
 
         /**
@@ -101,11 +101,11 @@ export namespace Korean {
         }
 
         public static getInstance(): Sebeolsik {
-            if (!Sebeolsik.SINGLETON) {
-                Sebeolsik.SINGLETON = new Sebeolsik();
-                delete Sebeolsik.KEYBOARD;
+            if (!this.SINGLETON) {
+                this.SINGLETON = new Sebeolsik();
+                delete this.KEYBOARD;
             }
-            return Sebeolsik.SINGLETON;
+            return this.SINGLETON;
         }
 
         /**

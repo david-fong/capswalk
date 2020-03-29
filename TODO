@@ -14,6 +14,8 @@
 
 1. Use es6 #private syntax for getter-backing fields
    - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
+   - I'm just going to go ahead and do this now. The tradeoff is that I'll need to turn off eslint :O.
+   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
 1. Move HTML setup for VisibleGrid to dedicated extension classes.
    - Update implementation guide @[`Grid.Visible`](./src/base/floor/impl/readme.md)
 1. Change client-facing multiplayer-game-setup so that first joiner closes then teams are chosen.

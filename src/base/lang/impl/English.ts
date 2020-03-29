@@ -24,10 +24,10 @@ export namespace English {
         }
 
         public static getInstance(): Lowercase {
-            if (!Lowercase.SINGLETON) {
-                Lowercase.SINGLETON  = new Lowercase();
+            if (!this.SINGLETON) {
+                this.SINGLETON  = new Lowercase();
             }
-            return Lowercase.SINGLETON;
+            return this.SINGLETON;
         }
 
         // TODO: see https://wikipedia.org/wiki/Keyboard_layout#Dvorak
@@ -79,10 +79,10 @@ export namespace English {
         }
 
         public static getInstance(): MixedCase {
-            if (!MixedCase.SINGLETON) {
-                MixedCase.SINGLETON  = new MixedCase();
+            if (!this.SINGLETON) {
+                this.SINGLETON  = new MixedCase();
             }
-            return MixedCase.SINGLETON;
+            return this.SINGLETON;
         }
 
         /**

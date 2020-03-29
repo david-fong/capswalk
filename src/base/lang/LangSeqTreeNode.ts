@@ -36,6 +36,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
     public readonly parent:     ROOT extends true ? undefined : LangSeqTreeNode;
     public readonly children:   Array<LangSeqTreeNode>; // Frozen.
 
+    // Use weak privacy here to leave room for testing and debugging by inspection.
     private hitCount: number;
     private weightedHitCount: number;
 

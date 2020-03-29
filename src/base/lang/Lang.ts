@@ -29,14 +29,14 @@ export abstract class Lang extends LangTypeDefs {
     /**
      * A "reverse" map from `LangSeq`s to `LangChar`s.
      */
-    protected readonly treeMap: LangSeqTreeNode<true>;
+    private readonly treeMap: LangSeqTreeNode<true>;
 
     /**
      * A list of leaf nodes in `treeMap` sorted in ascending order by
-     * hit-count. Entries should never be removed or added. They should
+     * hit-count. Entries should never be removed or added. They will
      * always be sorted in ascending order of `tricklingHitCount`.
      */
-    protected readonly leafNodes: Array<LangSeqTreeNode>;
+    private readonly leafNodes: Array<LangSeqTreeNode>;
 
     public get numLeaves(): number { return this.leafNodes.length; }
 
@@ -134,7 +134,7 @@ export abstract class Lang extends LangTypeDefs {
         // Start by sorting according to the desired balancing scheme:
         this.leafNodes.sort(LangSeqTreeNode.LEAF_CMP[balancingScheme]);
 
-        let nodeToHit: LangSeqTreeNode | null = null;
+        let nodeToHit: LangSeqTreeNode | undefined = undefined;
         for (const leaf of this.leafNodes) {
             // Take the next leaf node (don't remove it!), and if none of
             // its parents are avoid-nodes, then, from the set of nodes
@@ -192,6 +192,11 @@ export abstract class Lang extends LangTypeDefs {
 
 export namespace Lang {
 
+    /**
+     * Every constructor function (class literal) implementing the
+     * `Lang` class must implement this interface. Ie. These will be
+     * implemented as static methods.
+     */
     export interface Info {
         getName(): string;
         getBlurb(): string;

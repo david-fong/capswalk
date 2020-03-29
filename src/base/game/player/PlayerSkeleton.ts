@@ -22,7 +22,7 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
      */
     public readonly game: Game<any,S>;
 
-    private _hostTile: Tile<S>;
+    #hostTile: Tile<S>;
 
     public readonly tile: TileGetter<S,[]>;
 
@@ -46,7 +46,7 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
      * @param spawnTile -
      */
     protected reset(spawnTile: Tile<S>): void {
-        this._hostTile = spawnTile;
+        this.#hostTile = spawnTile;
         this.hostTile.setOccupant(this.playerId);
     }
 
@@ -57,7 +57,7 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
     }
 
     public get hostTile(): Tile<S> {
-        return this._hostTile;
+        return this.#hostTile;
     }
 
     /**
@@ -104,7 +104,7 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
         }
         else {
             // Move to occupy the destination `Tile`:
-            this._hostTile = dest;
+            this.#hostTile = dest;
             dest.setOccupant(this.playerId);
         }
     }

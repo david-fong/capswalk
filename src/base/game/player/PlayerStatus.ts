@@ -8,12 +8,12 @@
  */
 class PlayerStatus {
 
-    private _score:       number;
-    private _stockpile:   number;
-    private _isDowned:    boolean;
-    private _isFrozen:    boolean;
-    private _isBubbling:  boolean;
-    private _percentBubbleCharge: number;
+    #score:       number;
+    #stockpile:   number;
+    #isDowned:    boolean;
+    #isFrozen:    boolean;
+    #isBubbling:  boolean;
+    #percentBubbleCharge: number;
 
     public reset(): void {
         this.score      = 0;
@@ -26,46 +26,46 @@ class PlayerStatus {
 
 
     public get score(): number {
-        return this._score;
+        return this.#score;
     }
     public set score(newValue: number) {
-        this._score = newValue;
+        this.#score = newValue;
     }
 
     public get stockpile(): number {
-        return this._stockpile;
+        return this.#stockpile;
     }
     public set stockpile(stockpile: number) {
-        this._stockpile = stockpile;
+        this.#stockpile = stockpile;
     }
 
 
     public get isDowned(): boolean {
-        return this._isDowned;
+        return this.#isDowned;
     }
     public set isDowned(isDowned: boolean) {
-        this._isDowned = isDowned;
+        this.#isDowned = isDowned;
     }
 
     public get isFrozen(): boolean {
-        return this._isFrozen;
+        return this.#isFrozen;
     }
     public set isFrozen(isFrozen: boolean) {
-        this._isFrozen = isFrozen;
+        this.#isFrozen = isFrozen;
     }
 
     public get isBubbling(): boolean {
-        return this._isBubbling;
+        return this.#isBubbling;
     }
     public set isBubbling(isBubbling: boolean) {
-        this._isBubbling = isBubbling;
+        this.#isBubbling = isBubbling;
     }
 
     public get percentBubbleCharge(): number {
-        return this._percentBubbleCharge;
+        return this.#percentBubbleCharge;
     }
     public set percentBubbleCharge(bubbleCharge: number) {
-        this._percentBubbleCharge = bubbleCharge;
+        this.#percentBubbleCharge = bubbleCharge;
     }
 
 }

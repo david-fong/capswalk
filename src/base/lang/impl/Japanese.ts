@@ -28,11 +28,11 @@ export namespace Japanese {
         }
 
         public static getInstance(): Hiragana {
-            if (!Hiragana.SINGLETON) {
-                Hiragana.SINGLETON = new Hiragana();
-                delete Hiragana.INITIALIZER;
+            if (!this.SINGLETON) {
+                this.SINGLETON = new Hiragana();
+                delete this.INITIALIZER;
             }
-            return Hiragana.SINGLETON;
+            return this.SINGLETON;
         }
 
         /**
@@ -159,11 +159,11 @@ export namespace Japanese {
         }
 
         public static getInstance(): Katakana {
-            if (!Katakana.SINGLETON) {
-                Katakana.SINGLETON = new Katakana();
-                delete Katakana.INITIALIZER;
+            if (!this.SINGLETON) {
+                this.SINGLETON = new Katakana();
+                delete this.INITIALIZER;
             }
-            return Katakana.SINGLETON;
+            return this.SINGLETON;
         }
 
         /**

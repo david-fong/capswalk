@@ -41,6 +41,13 @@
         "javascript's",
         "websockets",
 
+        "lowercase",
+        "uppercase",
+        "hiragana",
+        "katakana",
+        "dubeolsik",
+        "sebeolsik",
+
         "boop",
         "constraining",
         "gameplay",

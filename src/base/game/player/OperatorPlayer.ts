@@ -25,7 +25,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      * Invariant: always matches the prefix of the {@link LangSeq} of
      * an unoccupied neighbouring {@link Tile}.
      */
-    private _seqBuffer: Lang.Seq;
+    #seqBuffer: Lang.Seq;
 
 
     public constructor(game: Game<any,S>, desc: Readonly<Player.CtorArgs>) {
@@ -38,7 +38,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
     public reset(spawnTile: Tile<S>): void {
         super.reset(spawnTile);
         this.hostTile.tileCellElem.appendChild(this.status.playerDivElem);
-        this._seqBuffer = "";
+        this.#seqBuffer = "";
     }
 
     /**
@@ -80,7 +80,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      * any checking regarding {@link OperatorPlayer#requestInFlight}.
      *
      * @param key
-     * The pressed typable key as a string. Pass `null` to trigger a
+     * The pressed typeable key as a string. Pass `null` to trigger a
      * refresh of the {@link OperatorPlayer#_seqBuffer} to maintain its
      * invariant.
      */
@@ -103,7 +103,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
         } else {
             const possibleTarget = unts.find((tile) => tile.langSeq.startsWith(this.seqBuffer));
             if (!possibleTarget || possibleTarget.langSeq === this.seqBuffer) {
-                this._seqBuffer = "";
+                this.#seqBuffer = "";
             }
             return;
         }
@@ -117,7 +117,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
             // that is a prefixing substring of any UNT's.
             const possibleTarget = unts.find((tile) => tile.langSeq.startsWith(newSeqBuffer));
             if (possibleTarget) {
-                this._seqBuffer = newSeqBuffer;
+                this.#seqBuffer = newSeqBuffer;
                 if (possibleTarget.langSeq === newSeqBuffer) {
                     this.makeMovementRequest(possibleTarget);
                 }
@@ -125,7 +125,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
             }
         }
         // Operator's new `seqBuffer` didn't match anything.
-        this._seqBuffer = "";
+        this.#seqBuffer = "";
         this.hostTile.visualBell();
     }
 
@@ -136,14 +136,14 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      */
     public moveTo(dest: Player<S>["hostTile"]): void {
         // Clear my `seqBuffer` first:
-        this._seqBuffer = "";
+        this.#seqBuffer = "";
         super.moveTo(dest);
         this.hostTile.tileCellElem.appendChild(this.status.playerDivElem);
     }
 
 
     public get seqBuffer(): Lang.Seq {
-        return this._seqBuffer;
+        return this.#seqBuffer;
     }
 
     public get lang(): Lang {
