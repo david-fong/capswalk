@@ -21,7 +21,7 @@ export interface EventRecordEntry {
 }
 
 /**
- * https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-namespaces-with-classes-functions-and-enums
+ *
  */
 export namespace EventRecordEntry {
 
@@ -31,15 +31,6 @@ export namespace EventRecordEntry {
      * It is convenient to use as a default value.
      */
     export const REJECT = -1;
-
-    /**
-     * Use for conditional fields.
-     */
-    // TODO: use this. may need to change event defs to be non-classes.
-    export const enum ReqExec {
-        REQUEST = "request",
-        EXECUTE = "execute",
-    }
 
 }
 

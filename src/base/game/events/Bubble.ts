@@ -68,7 +68,7 @@ import { Coord } from "floor/Tile";
  *
  * The rationale for expanding ranges is to prevent turtling (Ie. for
  * downed teammates to gather around a non-downed teammate, blocking
- * access and preventing them from any possbility of getting downed).
+ * access and preventing them from any possibility of getting downed).
  * Note that between teammates, an un-downed-player cannot bubble
  * through a downed
  *
@@ -81,7 +81,7 @@ import { Coord } from "floor/Tile";
  * can vary depending on factors that indicate how their team is doing
  * at the moment. The bias goes in a direction to sympathize with teams
  * that are faring poorly, or have a headcount-disadvantage. For more
- * imformation, see {@link computeTimerDuration}.
+ * information, see {@link computeTimerDuration}.
  *
  */
 export namespace Bubble {
