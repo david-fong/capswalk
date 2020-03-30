@@ -322,30 +322,33 @@ export namespace Euclid2 {
         };
 
         export class Visible extends Grid implements VisibleGrid<S> {
+
+            /**
+             * @override
+             */
+            declare protected readonly grid: ReadonlyArray<ReadonlyArray<VisibleTile<S>>>;
+
             public constructor(desc: AbstractGrid.CtorArgs<S>) {
                 super(desc);
-                // Create and populate the HTML table element field:
-                // (skip this step if my tiles are not displayed in a browser window)
-                // TODO: fix this to be non-general. this was moved from `Grid::ctor`
                 const domGrid = new HTMLTableElement();
                 const tBody = domGrid.createTBody();
                 for (const row of this.grid) {
-                    const rowElem  = tBody.insertRow();
+                    const rowElem = tBody.insertRow();
                     for (const tile of row) {
-                        rowElem.appendChild((tile as VisibleTile<S>).tileCellElem);
+                        rowElem.appendChild(tile.tileCellElem);
                     }
                 }
-                const carrier = document.getElementById(
+                const gridParentElement = document.getElementById(
                     desc.domGridHtmlIdHook || Grid.DEFAULT_HTML_ID_HOOK
                 );
-                if (!carrier) {
+                if (!gridParentElement) {
                     throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\"`
                         + ` did not refer to an existing html element.`
                     );
                 }
                 // remove all child elements and then append the new grid:
-                carrier.childNodes.forEach((node) => carrier.removeChild(node));
-                carrier.appendChild(domGrid);
+                gridParentElement.childNodes.forEach((node) => gridParentElement.removeChild(node));
+                gridParentElement.appendChild(domGrid);
             }
         }
     }
