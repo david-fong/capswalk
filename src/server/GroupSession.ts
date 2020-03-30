@@ -1,10 +1,10 @@
 import * as io from "socket.io";
 
-import { Grid } from "floor/Grid";
-import { Game } from "game/Game";
+import type { Coord } from "floor/Tile";
+import type { Grid } from "floor/Grid";
+import type { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 import { Player } from "game/player/Player";
-import { Coord } from "floor/Tile";
 
 export { ServerGame } from "./ServerGame";
 

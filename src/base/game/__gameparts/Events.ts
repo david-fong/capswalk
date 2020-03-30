@@ -1,6 +1,6 @@
-import { Coord, Tile } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 
-import { Player } from "../player/Player";
+import type { Player } from "../player/Player";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerMovementEvent } from "../events/PlayerMovementEvent";

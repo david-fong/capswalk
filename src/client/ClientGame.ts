@@ -1,15 +1,15 @@
 import * as io from "socket.io-client";
 
-import { Coord } from "floor/Coord";
+import type { Coord } from "floor/Coord";
 import { VisibleTile } from "floor/VisibleTile";
 import { LocalGameSettings } from "settings/GameSettings";
 import { Grid } from "floor/Grid";
 import { VisibleGrid } from "floor/VisibleGrid";
 import { Game } from "game/Game";
 
-import { Player } from "game/player/Player";
+import type { Player } from "game/player/Player";
 import { PuppetPlayer } from "game/player/PuppetPlayer";
-import { OperatorPlayer } from "game/player/OperatorPlayer";
+import type { OperatorPlayer } from "game/player/OperatorPlayer";
 import { OnlineOperatorPlayer } from "./OnlineOperatorPlayer";
 
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";

@@ -1,10 +1,10 @@
-import { Lang } from "lang/Lang";
-import { BalancingScheme } from "lang/LangSeqTreeNode";
+import type { Lang } from "lang/Lang";
+import type { BalancingScheme } from "lang/LangSeqTreeNode";
 
-import { Coord } from "floor/Tile";
-import { Grid } from "floor/Grid";
+import type { Coord } from "floor/Tile";
+import type { Grid } from "floor/Grid";
 
-import { Player } from "./player/Player";
+import type { Player } from "./player/Player";
 
 import { GameEvents } from "./__gameparts/Events";
 import { PuppetPlayer } from "game/player/PuppetPlayer";

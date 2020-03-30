@@ -1,6 +1,6 @@
-import { Coord } from "floor/Tile";
-import { ClientGame } from "./ClientGame";
-import { Player } from "game/player/Player";
+import type { Coord } from "floor/Tile";
+import type { ClientGame } from "./ClientGame";
+import type { Player } from "game/player/Player";
 import { OperatorPlayer } from "game/player/OperatorPlayer";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 

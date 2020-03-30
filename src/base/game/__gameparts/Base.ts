@@ -5,9 +5,9 @@ import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
 
 import { Player } from "../player/Player";
-import { PuppetPlayer } from "../player/PuppetPlayer";
-import { OperatorPlayer } from "../player/OperatorPlayer";
-import { ArtificialPlayer } from "../player/ArtificialPlayer";
+import type { PuppetPlayer } from "../player/PuppetPlayer";
+import type { OperatorPlayer } from "../player/OperatorPlayer";
+import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 
 import { Game } from "../Game";
 

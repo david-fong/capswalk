@@ -1,4 +1,4 @@
-import { Player } from "game/player/Player";
+import type { Player } from "game/player/Player";
 
 
 /**

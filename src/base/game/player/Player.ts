@@ -1,10 +1,10 @@
-import { Player as PlayerTypeDefs } from "utils/TypeDefs";
+import type { Player as PlayerTypeDefs } from "utils/TypeDefs";
 
-import { Coord, Tile } from "floor/Tile";
-import { Game } from "game/Game";
+import type { Coord, Tile } from "floor/Tile";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 import { PlayerSkeleton } from "./PlayerSkeleton";
 import { PlayerStatus } from "game/player/PlayerStatus";
+import type { Game } from "game/Game";
 
 export { PlayerSkeleton };
 export { PlayerStatus };

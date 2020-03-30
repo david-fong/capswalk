@@ -17,7 +17,7 @@ export class Server {
 
     /**
      * This is only used to maintain object references so that they are
-     * not garbage-collection elegible. Keys are Socket.IO namespace
+     * not garbage-collection eligible. Keys are Socket.IO namespace
      * names corresponding the the mapped value.
      */
     private readonly allGroupSessions: Map<string, GroupSession>;

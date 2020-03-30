@@ -1,7 +1,7 @@
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
-import { Player } from "utils/TypeDefs";
+import type { Player } from "utils/TypeDefs";
 
 import { Euclid2 } from "./impl/Euclid2";
 import { Beehive } from "./impl/Beehive";

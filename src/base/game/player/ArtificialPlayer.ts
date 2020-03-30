@@ -1,4 +1,4 @@
-import { Coord, Tile } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";

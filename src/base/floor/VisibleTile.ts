@@ -1,5 +1,5 @@
 import { HtmlHooks } from "utils/HtmlHooks";
-import { Lang as LangTypeDefs } from "utils/TypeDefs";
+import type { Lang as LangTypeDefs } from "utils/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
 

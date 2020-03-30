@@ -1,6 +1,6 @@
-import { Player } from "game/player/Player";
+import type { Player } from "game/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
-import { Coord } from "floor/Tile";
+import type { Coord } from "floor/Tile";
 
 /**
  * # The Object of the Game

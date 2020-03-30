@@ -1,5 +1,5 @@
 import { Coord } from "floor/Coord";
-import { Grid } from "floor/Grid";
+import type { Grid } from "floor/Grid";
 
 import { Euclid2 } from "./impl/Euclid2";
 import { Beehive } from "./impl/Beehive";

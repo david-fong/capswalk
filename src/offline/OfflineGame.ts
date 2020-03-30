@@ -1,11 +1,11 @@
-import { Coord } from "floor/Coord";
+import type { Coord } from "floor/Coord";
 import { VisibleTile } from "floor/VisibleTile";
 import { VisibleGrid } from "floor/VisibleGrid";
 import { Game } from "game/Game";
 import { LocalGameSettings } from "settings/GameSettings";
 
-import { Player } from "game/player/Player";
-import { OperatorPlayer } from "game/player/OperatorPlayer";
+import type { Player } from "game/player/Player";
+import type { OperatorPlayer } from "game/player/OperatorPlayer";
 import { OfflineOperatorPlayer } from "./OfflineOperatorPlayer";
 import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 

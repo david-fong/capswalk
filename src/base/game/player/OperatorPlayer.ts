@@ -1,9 +1,9 @@
 import { HtmlHooks } from "../../utils/HtmlHooks";
 import { Lang } from "lang/Lang";
-import { Coord, Tile } from "floor/Tile";
-import { VisibleTile } from "floor/VisibleTile";
+import type { Coord, Tile } from "floor/Tile";
+import type { VisibleTile } from "floor/VisibleTile";
 import { Player, PlayerStatus } from "./Player";
-import { Game } from "game/Game";
+import type { Game } from "game/Game";
 
 
 /**

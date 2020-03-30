@@ -4,7 +4,7 @@ import { setTimeout } from "timers";
 import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
 import { Game } from "game/Game";
-import { Player } from "game/player/Player";
+import type { Player } from "game/player/Player";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";

@@ -1,7 +1,7 @@
 import { Coord as BaseCoord, Tile } from "../Tile";
-import { Player } from "utils/TypeDefs";
+import type { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
-import { VisibleGrid } from "floor/VisibleGrid";
+import type { VisibleGrid } from "../VisibleGrid";
 
 
 type S = BaseCoord.System.BEEHIVE;

@@ -48,10 +48,10 @@ Import your system namespace, and add entries to `Coord` and `Coord.Bare` for th
 
 ```typescript
 // coord-related imports
-import { Coord, Tile } from "../Tile";
-import { VisibleGrid } from "floor/VisibleGrid";
-import { Player } from "utils/TypeDefs";
+import { Coord as BaseCoord, Tile } from "../Tile";
+import type { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
+import type { VisibleGrid } from "../VisibleGrid";
 
 // documentation
 export namespace SysName {

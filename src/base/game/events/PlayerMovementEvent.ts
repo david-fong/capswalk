@@ -1,6 +1,6 @@
-import { Lang } from "lang/Lang";
-import { Coord, Tile } from "floor/Tile";
-import { Player } from "game/player/Player";
+import type { Lang } from "lang/Lang";
+import type { Coord, Tile } from "floor/Tile";
+import type { Player } from "game/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
 
 /**

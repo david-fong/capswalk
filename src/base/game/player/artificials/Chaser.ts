@@ -1,6 +1,6 @@
-import { Coord } from "floor/Coord";
-import { Game } from "game/Game";
-import { Player } from "game/player/Player";
+import type { Coord } from "floor/Coord";
+import type { Game } from "game/Game";
+import type { Player } from "game/player/Player";
 import { ArtificialPlayer } from "../ArtificialPlayer";
 
 

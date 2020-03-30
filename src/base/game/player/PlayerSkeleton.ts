@@ -1,8 +1,8 @@
 import { Player as PlayerTypeDefs } from "utils/TypeDefs";
 
-import { Coord, Tile } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 import { TileGetter } from "floor/TileGetter";
-import { Player } from "./Player";
+import type { Player } from "./Player";
 import { Game } from "game/Game";
 
 
