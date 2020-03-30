@@ -12,7 +12,6 @@
 
 ### High Priority
 
-1. see where I can use ts3.8 `import type`.
 1. Look into switching from JsDoc to TsDoc
    - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
 1. Change client-facing multiplayer-game-setup so that: first, the joiner closes, then teams are chosen.
@@ -23,13 +22,12 @@
      - Checks if only one team has any un-downed players remaining.
        - In that case, the game ends and that remaining team wins.
 1. Fill in implementation of bubble event handler.
-1. Use es6 #private syntax for getter-backing fields
-   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
-   - I'm just going to go ahead and do this now. The tradeoff is that I'll need to turn off eslint :O.
-   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
 
 ### Low Priority
 
+- Use es6 #private syntax for getter-backing fields
+  - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
+   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
 - Make eslintrc's for impl/ folders saying that they can't import from the impl/ folder they are in.
   - Check if it can detect relative imports. If not, don't do this
 

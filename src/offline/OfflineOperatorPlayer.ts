@@ -1,8 +1,8 @@
-import { Coord } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
+import type { Player } from "game/player/Player";
 import { OperatorPlayer } from "game/player/OperatorPlayer";
-import { Player } from "game/player/Player";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
-import { OfflineGame } from "../offline/OfflineGame";
+import type { OfflineGame } from "../offline/OfflineGame";
 
 /**
  *
@@ -28,7 +28,7 @@ export class OfflineOperatorPlayer<S extends Coord.System> extends OperatorPlaye
      *
      * @override {@link Player#makeMovementRequest}
      */
-    public abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void {
+    protected abstractMakeMovementRequest(dest: Tile<S>): void {
         this.game.processMoveRequest(
             new PlayerMovementEvent(
                 this.playerId,

@@ -68,7 +68,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      *
      * @param dest -
      */
-    protected makeMovementRequest(dest: Player<S>["hostTile"]): void {
+    protected makeMovementRequest(dest:Tile<S>): void {
         if (this.requestInFlight) {
             throw new Error("Only one request should ever be in flight at a time.");
         }
@@ -79,7 +79,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     /**
      * @param dest -
      */
-    protected abstract abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void;
+    protected abstract abstractMakeMovementRequest(dest: Tile<S>): void;
 
 }
 
@@ -142,10 +142,12 @@ export namespace Player {
         export const finalizePlayerIds = (
             playerDescs: Bundle<CtorArgs.PreIdAssignment>
         ): Bundle<CtorArgs> => {
-            // Squash `teamId` fields
+            // Map team ID's to consecutive numbers
+            // (to play nice with array representations):
             const allTeamIds = playerDescs.values
                 .flatMap((members) => members.map((member) => member.teamId));
-            const teamIdSquasherMap: Record<TeamId, TeamId> = Array.from(new Set(allTeamIds))
+            const teamIdSquasherMap: Record<TeamId, TeamId>
+                = Array.from(new Set(allTeamIds))
                 .reduce((prev, unSquashedId, index) => {
                     prev[unSquashedId] = index;
                     return prev;
@@ -153,6 +155,7 @@ export namespace Player {
             // Add the `playerId` field to each member descriptor:
             for (const [ family, familyMembers, ] of playerDescs.entries) {
                 familyMembers.forEach((memberDesc, numberInFamily) => {
+                    // Note for below casts: cast-off readonly.
                     (memberDesc.teamId as Player.TeamId) = teamIdSquasherMap[memberDesc.teamId];
                     ((memberDesc as CtorArgs).playerId as Id) = {
                         family: family,

@@ -36,26 +36,27 @@ export namespace Player {
 
     export class Bundle<T> {
 
+        // weakly immutable.
         public readonly contents: Bundle.Contents<T>;
 
         public constructor(contents: Bundle.Contents<T>) {
-            Object.assign(this, contents);
+            this.contents = contents;
         }
 
         public get(playerId: Player.Id): T {
-            return this[playerId.family][playerId.number];
+            return this.contents[playerId.family][playerId.number];
         };
 
         public get keys(): Array<Family> {
-            return Object.keys(this) as Array<Family>;
+            return Object.keys(this.contents) as Array<Family>;
         }
 
         public get values(): Array<ReadonlyArray<T>> {
-            return Object.values(this);
+            return Object.values(this.contents);
         }
 
         public get entries(): Array<[Family,ReadonlyArray<T>]> {
-            return Object.entries(this) as Array<[Family,ReadonlyArray<T>]>;
+            return Object.entries(this.contents) as Array<[Family,ReadonlyArray<T>]>;
         }
 
         public get counts(): Bundle.Counts {
@@ -70,6 +71,12 @@ export namespace Player {
 
     export namespace Bundle {
 
+        /**
+         * (weakly) **Immutable**.
+         *
+         * Entries in each family-array can be modified, but this
+         * object's references to those entries cannot be reassigned.
+         */
         export type Contents<T> = Readonly<Record<Family, ReadonlyArray<T>>>;
 
         export type Counts = Readonly<Record<Player.Family, number>>;

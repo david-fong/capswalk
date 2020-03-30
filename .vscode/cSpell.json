@@ -30,6 +30,7 @@
         "nsps",
         "retval",
         "refs",
+        "retval",
         "supercall",
         "spec",
 
@@ -37,13 +38,13 @@
         "javascript's",
         "linting",
         "readmes",
+        "webpage",
         "websockets",
 
         "lowercase", "uppercase",
         "hiragana" , "katakana" ,
         "dubeolsik", "sebeolsik",
 
-        "boop",
         "constraining",
         "gameplay",
         "lifestages",

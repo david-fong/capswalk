@@ -1,8 +1,8 @@
-import type { Coord } from "floor/Tile";
-import type { ClientGame } from "./ClientGame";
+import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import { OperatorPlayer } from "game/player/OperatorPlayer";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
+import type { ClientGame } from "./ClientGame";
 
 
 /**
@@ -28,7 +28,7 @@ export class OnlineOperatorPlayer<S extends Coord.System> extends OperatorPlayer
     /**
      * @override
      */
-    public abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void {
+    protected abstractMakeMovementRequest(dest: Tile<S>): void {
         // ServerGame handles with processMoveRequest.
         // Arguments must follow that function signature.
         this.game.socket.emit(
