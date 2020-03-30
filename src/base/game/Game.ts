@@ -66,8 +66,8 @@ export namespace Game {
         S extends Coord.System,
     > = Readonly<{
         coordSys: S;
-
         gridDimensions: Grid.Dimensions<S>;
+
         languageName: typeof Lang.Modules.NAMES[number];
         langBalancingScheme: BalancingScheme;
 
@@ -77,7 +77,11 @@ export namespace Game {
         operatorIndex: G extends Game.Type.SERVER
             ? undefined
             : Player.Id["number"];
-        playerDescs: Player.Bundle.Contents<Player.CtorArgs.PreIdAssignment>;
+        playerDescs: Player.Bundle.Contents<(
+            G extends Game.Type.Manager
+            ? Player.CtorArgs.PreIdAssignment
+            : Player.CtorArgs
+        )>;
     }>;
 
     export namespace CtorArgs {

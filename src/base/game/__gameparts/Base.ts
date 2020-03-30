@@ -39,6 +39,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly teams: ReadonlyArray<ReadonlyArray<Player<S>>>;
 
+    #isPaused: boolean; // Always true when the game is over.
+
 
     /**
      * _Does not call reset._
@@ -67,12 +69,12 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         // TODO Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
         const minLangLeaves = this.grid.static.getAmbiguityThreshold();
         if (this.lang.numLeaves < minLangLeaves) {
-            throw new Error(`Found ${this.lang.numLeaves} leaves, but at least`
-                + ` ${minLangLeaves} were required. The provided mappings`
-                + ` composing the current Lang-under-construction are not`
-                + ` sufficient to ensure that a shuffling operation will always`
-                + ` be able to find a safe candidate to use as a replacement.`
-                + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
+            throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
+            + ` least ${minLangLeaves} were required. The provided mappings`
+            + ` composing the current Lang-under-construction are not`
+            + ` sufficient to ensure that a shuffling operation will always`
+            + ` be able to find a safe candidate to use as a replacement.`
+            + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
             );
         }
         this.langBalancingScheme = desc.langBalancingScheme;
@@ -85,12 +87,17 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
                 number: desc.operatorIndex!,
             }) as OperatorPlayer<S>;
         }
+        const teams: Array<Array<Player<S>>> = [];
+        (this.players.values.flat() as ReadonlyArray<Player<S>>).forEach((player) => {
+            if (!teams[player.teamId]) {
+                teams[player.teamId] = [];
+            }
+            teams[player.teamId].push(player);
+        });
+        this.teams = teams;
 
         // Check to make sure that none of the players are invincible:
-        // @see Player#beNiceTo. consider making some static helper method.
-        {
-            ;
-        }
+
     }
 
     /**
@@ -119,31 +126,33 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             });
         });
 
-        // TODO: Targets should be done after players have
-        // spawned so they do not spawn under players.
+        // TODO: Targets should be spawned _after_ players have
+        // spawned so they do not spawn in the same tile as any players.
     }
 
     protected abstract __getGridImplementation(coordSys: S): Grid.ClassIf<S>;
 
 
     /**
-     * Private helper for the constructor.
+     * Private helper for the constructor to create player objects.
+     * This is bypassed in non-game-manager implementations (Ie. In
+     * ClientGame).
      *
      * @param gameDesc -
      * @returns A bundle of the constructed players.
      */
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): Game<G,S>["players"] {
-        if (this.gameType === Game.Type.CLIENT) {
-            throw new TypeError("This must be overridden for an online-client implementation.");
-        }
-        type Reduct = Player.Bundle.Contents<Player<S>>;
-        const playerDescs = Player.CtorArgs.finalizePlayerIds(
-            new Player.Bundle(gameDesc.playerDescs)
-        );
-        return new Player.Bundle(playerDescs.keys.reduce<Reduct>((build, family) => {
+        const playerDescs: Player.Bundle<Player.CtorArgs>
+            = (this.gameType === Game.Type.CLIENT)
+            ? new Player.Bundle(gameDesc.playerDescs as Player.Bundle.Contents<Player.CtorArgs>)
+            : Player.CtorArgs.finalizePlayerIds(new Player.Bundle(gameDesc.playerDescs))
+            ;
+        return new Player.Bundle(playerDescs.keys.reduce
+        <Player.Bundle.Contents<Player<S>>>((build, family) => {
             // Transform the bundle of player constructor-argument descriptors
             // into a bundle of corresponding, newly constructed player objects:
-            (build[family] as ReadonlyArray<Player<S>>) = playerDescs.contents[family]
+            (build[family] as ReadonlyArray<Player<S>>)
+            = playerDescs.contents[family]
             .map((ctorArgs, numberInFamily) => {
                 if (family === Player.Family.HUMAN) {
                     return (numberInFamily === gameDesc.operatorIndex)
@@ -154,7 +163,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
                 }
             });
             return build;
-        }, {} as Reduct));
+        }, {} as Player.Bundle.Contents<Player<S>>));
     }
 
     protected abstract createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;

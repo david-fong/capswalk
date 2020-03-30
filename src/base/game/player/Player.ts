@@ -81,6 +81,10 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      */
     protected abstract abstractMakeMovementRequest(dest: Tile<S>): void;
 
+    public get teammates(): ReadonlyArray<Player<S>> {
+        return this.game.teams[this.teamId];
+    }
+
 }
 
 

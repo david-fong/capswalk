@@ -16,10 +16,10 @@
   - [q] bots
   - [q] bot speed
   - avatar
-  - multiplayer only:
+  - multiplayer-only settings:
     - privileged (can pause)
     - username
-    - team numbers
+    - team number
 - game:
   [c] means this property can be saved as a cookie.
   - [c] color scheme
