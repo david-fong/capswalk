@@ -15,9 +15,9 @@ import webpack = require("webpack");
 // only used for type-hinting.
 // omitted from transpilation output.
 // https://github.com/TypeStrong/ts-loader#loader-options
-import * as tsloader from "ts-loader/dist/interfaces";
+import type * as tsloader from "ts-loader/dist/interfaces";
 
-export type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
+type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
 
 
