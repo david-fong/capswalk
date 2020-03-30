@@ -4,8 +4,10 @@ import { Coord, Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 import { PlayerSkeleton } from "./PlayerSkeleton";
+import { PlayerStatus } from "game/player/PlayerStatus";
 
-export { PlayerSkeleton } from "./PlayerSkeleton";
+export { PlayerSkeleton };
+export { PlayerStatus };
 
 
 /**
@@ -16,7 +18,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     public readonly username: Player.Username;
 
     /**
-     * Nicity is strictly mutual and partitions all players.
+     * Nicety is strictly mutual and partitions all players.
      */
     public readonly teamId: Player.TeamId;
 
@@ -97,7 +99,7 @@ export namespace Player {
 
     export namespace Bundle {
         export type Contents<T> = PlayerTypeDefs.Bundle.Contents<T>;
-        export type Counts = PlayerTypeDefs.Bundle.Counts;
+        export type Counts      = PlayerTypeDefs.Bundle.Counts;
     }
 
     export type Username = string;

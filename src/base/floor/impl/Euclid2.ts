@@ -242,7 +242,7 @@ export namespace Euclid2 {
             if (options[0].coord.x - sourceCoord.x === 0 || options[0].coord.y - sourceCoord.y === 0) {
                 // (the axial option (if it exists) should be the first
                 // due to the previous sort's tie-breaker.
-                if (sourceCoord.axialAlignment(intendedDest.sub(sourceCoord)) - 0.5 > 0.0) {
+                if (sourceCoord.axialAlignment(sourceCoord.sub(intendedDest)) - 0.5 > 0.0) {
                     // The path to the intended destination is aligned more
                     // with the x or y axis than they are with those axes
                     // rotated 45 degrees.

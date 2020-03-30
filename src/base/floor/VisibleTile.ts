@@ -1,4 +1,5 @@
-import { Lang as LangTypeDefs, Player } from "utils/TypeDefs";
+import { HtmlHooks } from "utils/HtmlHooks";
+import { Lang as LangTypeDefs } from "utils/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
 
@@ -32,15 +33,15 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         super(coordDesc);
         {
             const tCell = new HTMLTableCellElement();
-            tCell.className = VisibleTile.ClassHooks.TILE;
+            tCell.className = HtmlHooks.Tile.Class.BASE;
             {
                 const cDiv = new HTMLDivElement();
-                cDiv.className = VisibleTile.ClassHooks.LANG_CHAR;
+                cDiv.className = HtmlHooks.Tile.Class.LANG_CHAR;
                 tCell.appendChild(cDiv);
                 this.langCharDivElem = cDiv;
             } {
                 const sDiv = new HTMLDivElement();
-                sDiv.className = VisibleTile.ClassHooks.LANG_SEQ;
+                sDiv.className = HtmlHooks.Tile.Class.LANG_SEQ;
                 tCell.appendChild(sDiv);
                 this.langSeqDivElem = sDiv;
             }
@@ -70,7 +71,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public set scoreValue(score: number) {
         this._scoreValue = score;
-        this.tileCellElem.dataset[VisibleTile.DataSetHooks.SCORE_VALUE] = score.toString();
+        this.tileCellElem.dataset[HtmlHooks.Tile.DataSet.SCORE_VALUE] = score.toString();
     }
 
     /**
@@ -85,23 +86,3 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 }
 // Assert that this extension's constructor has a compatible signature:
 VisibleTile as Tile.ClassIf<any>;
-
-
-
-export namespace VisibleTile {
-
-    /**
-     * Must be matched exactly in the CSS.
-     */
-    export const ClassHooks = Object.freeze(<const>{
-        TILE:       <const>"tile",
-        PLAYER:     <const>"tile__player", // TODO this has changed to be a separate block.
-        LANG_CHAR:  <const>"tile__char",
-        LANG_SEQ:   <const>"tile__seq",
-    });
-
-    export const DataSetHooks = Object.freeze(<const>{
-        SCORE_VALUE: <const>"scoreValue",
-    });
-
-}

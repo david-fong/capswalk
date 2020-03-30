@@ -1,7 +1,8 @@
+import { HtmlHooks } from "../../utils/HtmlHooks";
 import { Lang } from "lang/Lang";
 import { Coord, Tile } from "floor/Tile";
 import { VisibleTile } from "floor/VisibleTile";
-import { Player } from "./Player";
+import { Player, PlayerStatus } from "./Player";
 import { Game } from "game/Game";
 
 
@@ -161,17 +162,23 @@ class OperatorPlayerStatus extends PlayerStatus {
     public readonly playerDivElem: HTMLDivElement;
 
     public constructor() {
+        super();
         {
             // TODO: create a spotlight mask using the below CSS properties:
             // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
             const pDiv: HTMLDivElement = new HTMLDivElement();
-            pDiv.className = VisibleTile.ClassHooks.PLAYER;
+            pDiv.className = HtmlHooks.Player.Class.BASE;
             this.playerDivElem = pDiv;
         }
-        // This must go after the HTML initialization since the setters
-        // called in the super-constructor are overridden here to modify
-        // the same DOM elements referenced by those fields.
-        super();
+        // Trivially call setters after registering __proto__ (the
+        // super constructor resets fields, but will not render changes
+        // to the UI like this extension class' overridden setters do):
+        this.score      = this.score;
+        this.stockpile  = this.stockpile;
+        this.isDowned   = this.isDowned;
+        this.isFrozen   = this.isFrozen;
+        this.isBubbling = this.isBubbling;
+        this.percentBubbleCharge = this.percentBubbleCharge;
     }
 
 

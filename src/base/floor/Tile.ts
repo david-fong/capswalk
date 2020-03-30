@@ -2,7 +2,7 @@ import { Lang, Player } from "utils/TypeDefs";
 
 import { Coord } from "./Coord";
 
-export { Coord } from "./Coord";
+export { Coord };
 
 
 /**

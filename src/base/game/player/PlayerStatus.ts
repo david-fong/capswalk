@@ -6,7 +6,7 @@
  * such as visually rendering updates to this state information in a
  * web browser, and playing sound effects.
  */
-class PlayerStatus {
+export class PlayerStatus {
 
     #score:       number;
     #stockpile:   number;
