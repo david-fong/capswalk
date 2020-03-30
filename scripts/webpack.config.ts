@@ -73,7 +73,7 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [
         },
         exclude: /node_modules/,
     },
-    // TODO: look into need for html loader
+    // TODO.learn look into need for html loader
 ];
 
 /**
@@ -167,10 +167,10 @@ const webBundleConfig = BaseConfig(); {
     config.target = "web";
     config.externals = [ "socket.io-client", ];
 
-    (<const>[ /* TODO: "homepage", */ "offline", "client", ]).forEach((name) => {
+    (<const>[ /* TODO.build "homepage", */ "offline", "client", ]).forEach((name) => {
         config.entry[name] = `./src/${name}/index.ts`;
         // config.entry[`${name}_body`] = `./src/${name}/body.html`;
-        // TODO: enable the below when we actually get to testing it
+        // TODO.build enable the below when we actually get to testing it
         // config.plugins.push(
         //     new HtmlPlugin({
         //         template: "./.templates/index.html",

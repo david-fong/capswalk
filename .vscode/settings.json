@@ -1,5 +1,4 @@
 {
-    "eslint.enable": false, // Re-enable this once typescript's eslint parser can handle #private fields.
     "files.exclude": {
         // generic excludes:
         "node_modules/{[^.@]*,}": true,
@@ -25,5 +24,19 @@
     "files.associations": {
         "TODO": "markdown",
     },
+
+    "eslint.enable": false, // TODO.build Re-enable this once typescript's eslint parser can handle #private fields.
     "trailing-spaces.trimOnSave": true,
+
+    "todo-tree.filtering.useBuiltInExcludes": "file excludes",
+    "todo-tree.general.statusBar": "total",
+    "todo-tree.general.tags": [
+        "TODO.learn" ,
+        "TODO.design",
+        "TODO.doc"   ,
+        "TODO.impl"  ,
+        "TODO.test"  ,
+        "TODO.build" ,
+        "TODO",
+    ],
 }

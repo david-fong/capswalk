@@ -66,11 +66,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
         } else if (!this.requestInFlight) {
             // Only process movement-type input if the last request got
             // acknowledged by the Game Manager and the game is not paused.
-            // TODO: check if game is paused? This means we either need to
-            // add an event to signal pauses to clients (I don't like this
-            // because it means delay), or we change this to allow sending
-            // requests to the Game Manager even if the game is paused, and
-            // leave it up to the Game Manager to ignore the request.
+            // TODO.impl short circuit if game is paused
             this.seqBufferAcceptKey(event.key);
         }
     }
@@ -155,7 +151,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
 
 
-// TODO: make the overridden setters modify the HTML elements to
+// TODO.impl make the overridden setters modify the HTML elements to
 // visually indicate the changes.
 class OperatorPlayerStatus extends PlayerStatus {
 
@@ -164,7 +160,7 @@ class OperatorPlayerStatus extends PlayerStatus {
     public constructor() {
         super();
         {
-            // TODO: create a spotlight mask using the below CSS properties:
+            // TODO.design create a spotlight mask using the below CSS properties:
             // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
             const pDiv: HTMLDivElement = new HTMLDivElement();
             pDiv.className = HtmlHooks.Player.Class.BASE;

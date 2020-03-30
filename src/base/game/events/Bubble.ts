@@ -146,7 +146,7 @@ export namespace Bubble {
 
         let value: number = 0xdeadbeef;
         let performedConstrain = false;
-        // TODO
+        // TODO.design equation for bubble timer
 
         // Perform cleaning and then return:
         if (value < MIN_TIMER_DURATION) {

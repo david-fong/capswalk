@@ -54,7 +54,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      * @override
      */
     public visualBell(): void {
-        this.tileCellElem; // TODO
+        this.tileCellElem; // TODO.impl
     }
 
 
@@ -63,7 +63,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public evictOccupant(): void {
         super.evictOccupant();
-        // TODO: call other setters that change visual appearance
     }
 
     /**

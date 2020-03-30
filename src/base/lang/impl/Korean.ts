@@ -272,7 +272,7 @@ export namespace Korean {
         { value: "ㅃ", atoms: "ㅂㅂ", roman: "pp", },
         { value: "ㅅ", atoms: "ㅅ",   roman: "s",  },
         { value: "ㅆ", atoms: "ㅅㅅ", roman: "ss", },
-        { value: "ㅇ", atoms: "ㅇ",   roman: "-",  }, // TODO: "-" ? see wikipedia
+        { value: "ㅇ", atoms: "ㅇ",   roman: "-",  }, // TODO.learn "-" ? see wikipedia
         { value: "ㅈ", atoms: "ㅈ",   roman: "j",  },
         { value: "ㅉ", atoms: "ㅈㅈ", roman: "jj", },
         { value: "ㅊ", atoms: "ㅊ",   roman: "ch", },

@@ -9,7 +9,7 @@ import { Lang } from "lang/Lang";
  */
 export namespace Japanese {
 
-    // TODO: https://wikipedia.org/wiki/Keyboard_layout#Japanese
+    // TODO.impl https://wikipedia.org/wiki/Keyboard_layout#Japanese
     // add INITIALIZER entry field "kana", make hiragana a namespace
     // and separate romanization class from kana-keyboard class.
     /**
@@ -24,7 +24,7 @@ export namespace Japanese {
         }
 
         public static getBlurb(): string {
-            return ""; // TODO
+            return ""; // TODO.doc
         }
 
         public static getInstance(): Hiragana {
@@ -67,7 +67,7 @@ export namespace Japanese {
             "て": { seq: "te", weight:  758316, },
             "な": { seq: "na", weight:  720156, },
             "か": { seq: "ka", weight:  537294, },
-          //"っ": { seq: "-",  weight:  467350, }, // TODO
+          //"っ": { seq: "-",  weight:  467350, }, // TODO.design should we somehow incorporate this?
             "れ": { seq: "re", weight:  450805, },
             "ら": { seq: "ra", weight:  42329, },
             "も": { seq: "mo", weight:  396142, },
@@ -155,7 +155,7 @@ export namespace Japanese {
         }
 
         public static getBlurb(): string {
-            return ""; // TODO
+            return ""; // TODO.doc
         }
 
         public static getInstance(): Katakana {
@@ -189,7 +189,7 @@ export namespace Japanese {
             "ラ": { seq: "ra", weight: 117203, },
             "リ": { seq: "ri", weight: 106744, },
             "ク": { seq: "ku", weight:  98209, },
-          //"ッ": { seq: "-",  weight:  86894, }, // TODO
+          //"ッ": { seq: "-",  weight:  86894, }, // TODO.design should we somehow incorporate this?
             "カ": { seq: "ka", weight:  82982, },
             "シ": { seq: "shi",weight:  80626, },
             "タ": { seq: "ta", weight:  75319, },
@@ -266,7 +266,7 @@ export namespace Japanese {
         private constructor() {
             super(
                 Katakana.getName(),
-                Katakana.INITIALIZER, // TODO
+                Katakana.INITIALIZER,
             );
         }
     }

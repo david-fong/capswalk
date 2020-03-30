@@ -19,7 +19,7 @@ import { Beehive } from "./impl/Beehive";
  */
 export interface VisibleGrid<S extends Coord.System> extends Grid<S> {
 
-    // TODO is there any common code / interfacing I can put here?
+    // TODO.design is there any common code / interfacing I can put here?
 }
 
 

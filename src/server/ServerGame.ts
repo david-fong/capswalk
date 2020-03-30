@@ -53,7 +53,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
         super(Game.Type.SERVER, Tile, gameDesc);
         this.namespace = namespace;
 
-        // TODO: initialize this.socketBundle
+        // TODO.impl initialize this.socketBundle
 
         // Attach event listeners / handlers to each socket:
         this.players.contents.HUMAN.map((player) => this.socketBundle.get(player.playerId))
@@ -70,7 +70,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
                 Bubble.MakeEvent.EVENT_NAME,
                 this.processBubbleMakeRequest,
             );
-            // TODO: pause-request handler:
+            // TODO.impl pause-request handler:
         });
 
         // Pass on Game constructor arguments to each client:
@@ -90,8 +90,8 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
      */
     public reset(): void {
         super.reset();
-        // TODO: broadcast a gamestate dump to all clients
-        // and wait for each of their acks before starting to
+        // TODO.design broadcast a game-state dump to all clients
+        // and wait for each of their ACK's before starting to
         // actually process their movement requests and making
         // any artificial players start moving.
     }

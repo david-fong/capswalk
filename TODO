@@ -12,6 +12,7 @@
 
 ### High Priority
 
+1. Organize my TODO items into different tags and tag groups
 1. Look into switching from JsDoc to TsDoc
    - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
 1. Change client-facing multiplayer-game-setup so that: first, the joiner closes, then teams are chosen.

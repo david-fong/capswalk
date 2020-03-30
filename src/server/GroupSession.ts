@@ -75,13 +75,13 @@ export class GroupSession {
             // The first socket becomes the session host.
             clearTimeout(this.initialTtlTimeout);
             this.sessionHost = socket;
-            // TODO: set socket.isPrivileged
+            // TODO.impl set socket.isPrivileged
         }
 
         socket.on("disconnect", (...args: any[]): void => {
             if (socket === this.sessionHost) {
                 // If the host disconnects, end the session.
-                // TODO: this seems like a bad decision. What about just broadcasting
+                // TODO.impl this seems like a bad decision. What about just broadcasting
                 // that the host player has died, and choose another player to become
                 // the host?
                 this.terminate();
@@ -97,7 +97,7 @@ export class GroupSession {
      * - Deletes the only external reference so this can be garbage collected.
      */
     protected terminate(): void {
-        // TODO: notify clients?
+        // TODO.impl notify clients?
         delete this.currentGame;
         const nsps: io.Namespace = this.namespace;
         nsps.removeAllListeners("connect");
@@ -142,8 +142,8 @@ export class GroupSession {
         this.currentGame = new ServerGame(this.namespace, {
             coordSys,
             gridDimensions,
-            languageName: undefined!, // TODO: uncast [!] and fetch language singleton object.
-            langBalancingScheme: undefined!, // TODO
+            languageName: undefined!, // TODO.impl uncast [!] and fetch language singleton object.
+            langBalancingScheme: undefined!, // TODO.impl
             operatorIndex: undefined,
             playerDescs: {
                 [Player.Family.HUMAN]: Object.values(this.sockets).map((socket) => {
@@ -153,7 +153,7 @@ export class GroupSession {
                         teamId: socket.teamId!,
                     };
                 }),
-                // TODO: add descs for artificial players,
+                // TODO.impl add descs for artificial players,
                 [Player.Family.CHASER]: undefined!,
             },
         });

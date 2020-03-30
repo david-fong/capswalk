@@ -63,10 +63,10 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             dimensions: desc.gridDimensions,
         });
 
-        // TODO: set default language (must be done before call to reset):
+        // TODO.design set default language (must be done before call to reset):
         //this.lang = import(desc.languageName);
 
-        // TODO Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
+        // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
         const minLangLeaves = this.grid.static.getAmbiguityThreshold();
         if (this.lang.numLeaves < minLangLeaves) {
             throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
@@ -126,7 +126,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             });
         });
 
-        // TODO: Targets should be spawned _after_ players have
+        // TODO.impl Targets should be spawned _after_ players have
         // spawned so they do not spawn in the same tile as any players.
     }
 

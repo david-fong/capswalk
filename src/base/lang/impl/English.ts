@@ -20,7 +20,7 @@ export namespace English {
         }
 
         public static getBlurb(): string {
-            return ""; // TODO
+            return ""; // TODO.doc
         }
 
         public static getInstance(): Lowercase {
@@ -30,7 +30,7 @@ export namespace English {
             return this.SINGLETON;
         }
 
-        // TODO: see https://wikipedia.org/wiki/Keyboard_layout#Dvorak
+        // TODO.learn see https://wikipedia.org/wiki/Keyboard_layout#Dvorak
         // and https://wikipedia.org/wiki/Keyboard_layout#Colemak
         /**
          * Change uppercase input to lowercase for convenience.
@@ -75,7 +75,7 @@ export namespace English {
         }
 
         public static getBlurb(): string {
-            return ""; // TODO
+            return ""; // TODO.doc
         }
 
         public static getInstance(): MixedCase {

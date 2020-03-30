@@ -164,7 +164,7 @@ export namespace Grid {
          * maximum size- for any tile in the grid- of the set of all
          * destinations from sources to itself, excluding itself.
          */
-        // TODO: write a test that checks that this holds for each implementation?
+        // TODO.test write a test that checks that this holds for each implementation?
         getAmbiguityThreshold(): number;
 
         /**

@@ -11,7 +11,7 @@ There's nothing to show yet! But, you can try [**`an older, working version` üë
 >
 > Learning is difficult. It just is. But we overcome it.
 
-TODO: insert a gif of the gameplay here.
+TODO.doc: insert a gif of the gameplay here.
 
 At its core, SnaKey is a typing game where you move around by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character marked by the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese Hiragana, you would type the keyboard sequence "no" to move onto an adjacent tile marked by the written character "„ÅÆ". It's easier done than said.
 

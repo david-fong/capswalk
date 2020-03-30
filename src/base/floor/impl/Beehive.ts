@@ -140,7 +140,7 @@ export namespace Beehive {
         /**
          *
          */
-        // TODO: determine spec for indexing
+        // TODO.design determine spec for indexing
         private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
 
         /**
@@ -149,7 +149,7 @@ export namespace Beehive {
         public constructor(desc: AbstractGrid.CtorArgs<S>) {
             super(desc);
 
-            // TODO: initialize `grid`.
+            // TODO.impl initialize `grid`.
         }
 
         /**

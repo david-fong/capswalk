@@ -272,7 +272,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * @param desc - Is modified to describe changes to be made.
      */
     public processBubbleMakeRequest(desc: Bubble.MakeEvent): void {
-        // TODO:
+        // TODO.impl
         // - If successful, make sure to lower the stockpile field.
         // - Make an abstract method in the OperatorPlayer class called in
         //   the toplevel input processor for it to trigger this event.
@@ -306,8 +306,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * @param desc -
      */
     protected processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
-        // TODO:
-        // Visually highlight the affected tiles for the specified estimate-duration.
+        // TODO.impl Visually highlight the affected tiles for the specified estimate-duration.
         const bubbler = this.players.get(desc.playerId);
 
         bubbler.requestInFlight = false;
@@ -343,7 +342,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
                 .filter((jumpPlayer: Player<S>) => {
                     // Filter out neighbours that we have already processed:
                     return !(jumpNeighbours.includes(jumpPlayer))
-                        && (true); // TODO: add conditions from the spec here.
+                        && (true); // TODO.impl add conditions from the spec here.
                 }).forEach((jumpPlayer) => {
                     jumpNeighbours.push(jumpPlayer);
                     neighbourQueue.push(jumpPlayer);
@@ -356,7 +355,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         const desc = new Bubble.PopEvent(bubbler.playerId);
 
         desc.playersToDown = jumpNeighbours.filter((player) => {
-            return true; // TODO
+            return true; // TODO.impl
         }).map((player) => player.playerId);
 
         // desc.playersToRaise  = get in-range    downed players who are     in any of my teams
@@ -406,7 +405,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * @param player -
      * @param duration -
      */
-    // TODO: make abstract. server manages, client displays, offline does both.
+    // TODO.impl make abstract. server manages, client displays, offline does both.
     protected freezePlayer(player: Player<S>, duration: number): void { }
 
 }

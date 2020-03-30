@@ -82,7 +82,7 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
         // Bypass my direct parent's reset implementation.
         Grid.prototype.reset.call(this);
 
-        // TODO: Wait for a GameStateDump from the ServerGame. Send ack.
+        // TODO.impl Wait for a GameStateDump from the ServerGame. Send ack.
         // this.socket.once(
         //     Game.StateDump.EVENT_NAME,
         //     () => {},

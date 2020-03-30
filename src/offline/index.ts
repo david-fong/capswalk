@@ -3,7 +3,7 @@ import { BalancingScheme } from "lang/LangSeqTreeNode";
 import { OfflineGame } from "./OfflineGame";
 import { Player } from "game/player/Player";
 
-// TODO: override ctor args for each impl, and make it so they adapt input to pass to super ctor.
+// TODO.design override ctor args for each impl, and make it so they adapt input to pass to super ctor.
 const game = new OfflineGame<Coord.System.EUCLID2>({
     coordSys: Coord.System.EUCLID2,
     gridDimensions: {
@@ -17,7 +17,7 @@ const game = new OfflineGame<Coord.System.EUCLID2>({
         [Player.Family.HUMAN]: [{
             teamId: 0,
             username: "hello world",
-            socketId: "todo", // TODO hmm. maybe make some static method to assign unique values based on operator class?
+            socketId: "todo", // TODO.impl maybe make some static method to assign unique values based on operator class?
         }, ],
         [Player.Family.CHASER]: [],
     },

@@ -63,6 +63,6 @@ export class GlobalGameSettings {
         return GlobalGameSettings.SINGLETON;
     }
 
-    public langBalancingScheme: GameSetting; // TODO: create class and use its type here.
+    public langBalancingScheme: GameSetting; // TODO.impl create class and use its type here.
 
 }

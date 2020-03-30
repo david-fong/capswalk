@@ -15,8 +15,6 @@ import { Chaser } from "./artificials/Chaser";
  *
  * @extends Player
  */
-// TODO: if add abstract method hooks for events like player "collision",
-// then add this to the above documentation.
 export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S> {
 
     private scheduledMovementCallbackId: number | NodeJS.Timeout;
@@ -45,6 +43,8 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
     protected abstract computeDesiredDestination(): Coord<S>;
 
     protected abstract computeNextMovementTimer(): number;
+
+    protected abstract onEnter
 
 
 
