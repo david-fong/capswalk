@@ -8,20 +8,12 @@
  */
 export class PlayerStatus {
 
-    #score:       number;
-    #stockpile:   number;
-    #isDowned:    boolean;
-    #isFrozen:    boolean;
-    #isBubbling:  boolean;
-    #percentBubbleCharge: number;
+    #score: number;
+    #unadjustedStockpile: number;
 
     public reset(): void {
         this.score      = 0;
-        this.stockpile  = 0;
-        this.isDowned   = false;
-        this.isFrozen   = false;
-        this.isBubbling = false;
-        this.percentBubbleCharge = 0;
+        this.unadjustedStockpile  = 0;
     }
 
 
@@ -32,40 +24,15 @@ export class PlayerStatus {
         this.#score = newValue;
     }
 
-    public get stockpile(): number {
-        return this.#stockpile;
+    public get unadjustedStockpile(): number {
+        return this.#unadjustedStockpile;
     }
-    public set stockpile(stockpile: number) {
-        this.#stockpile = stockpile;
+    public set unadjustedStockpile(stockpile: number) {
+        this.#unadjustedStockpile = stockpile;
     }
-
 
     public get isDowned(): boolean {
-        return this.#isDowned;
-    }
-    public set isDowned(isDowned: boolean) {
-        this.#isDowned = isDowned;
-    }
-
-    public get isFrozen(): boolean {
-        return this.#isFrozen;
-    }
-    public set isFrozen(isFrozen: boolean) {
-        this.#isFrozen = isFrozen;
-    }
-
-    public get isBubbling(): boolean {
-        return this.#isBubbling;
-    }
-    public set isBubbling(isBubbling: boolean) {
-        this.#isBubbling = isBubbling;
-    }
-
-    public get percentBubbleCharge(): number {
-        return this.#percentBubbleCharge;
-    }
-    public set percentBubbleCharge(bubbleCharge: number) {
-        this.#percentBubbleCharge = bubbleCharge;
+        return this.unadjustedStockpile < 0.0;
     }
 
 }

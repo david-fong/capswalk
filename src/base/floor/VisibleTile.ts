@@ -70,7 +70,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public set scoreValue(score: number) {
         this._scoreValue = score;
-        this.tileCellElem.dataset[HtmlHooks.Tile.DataSet.SCORE_VALUE] = score.toString();
+        this.tileCellElem.dataset[HtmlHooks.Tile.Dataset.SCORE_VALUE] = score.toString();
     }
 
     /**

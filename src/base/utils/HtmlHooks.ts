@@ -10,7 +10,7 @@ export namespace HtmlHooks {
             LANG_CHAR:  "tile__char",
             LANG_SEQ:   "tile__seq",
         });
-        export const DataSet = Object.freeze(<const>{
+        export const Dataset = Object.freeze(<const>{
             SCORE_VALUE: "scoreValue",
         });
     }
@@ -18,6 +18,9 @@ export namespace HtmlHooks {
     export namespace Player {
         export const Class = Object.freeze(<const>{
             BASE: "player",
+        });
+        export const Dataset = Object.freeze(<const>{
+            IS_DOWNED:  "isDowned"
         });
     }
 

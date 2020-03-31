@@ -87,6 +87,10 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         return this.game.teams[this.teamId];
     }
 
+    public isTeammate(other: Player<S>): boolean {
+        return this.teammates.includes(other);
+    }
+
 }
 
 

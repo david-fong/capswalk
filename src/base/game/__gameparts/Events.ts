@@ -29,6 +29,8 @@ import { GameBase } from "./Base";
  * all the described changes upon the game's state. If the Game Manager
  * is not local to the client (a server process), then this handler is
  * called at both the server and client.
+ *
+ * Updates the event record if the response is accepted.
  */
 export abstract class GameEvents<G extends Game.Type, S extends Coord.System> extends GameBase<G,S> {
 
@@ -74,13 +76,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player<S> | undefined {
         const player = this.players.get(desc.playerId);
-         if (player.status.isBubbling) {
-            // The specified player does not exist or is bubbling.
-            // This is _not_ the same as if the requester has their
-            // movement frozen.
-            return undefined;
-
-        } else if (desc.lastAcceptedRequestId !== player.lastAcceptedRequestId) {
+        if (desc.lastAcceptedRequestId !== player.lastAcceptedRequestId) {
             throw new RangeError((desc.lastAcceptedRequestId < player.lastAcceptedRequestId)
             ? ("Clients should not make requests until they have"
                 + " received my response to their last request.")
@@ -157,17 +153,10 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
          */
         desc.lastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
         desc.dest.numTimesOccupied = (1 + dest.numTimesOccupied);
-
-        const bubbleDesc = Bubble.computeTimerDuration(player);
-        // This allows the player's stockpile to increase if its
-        // original stockpile value is not such that its calculated
-        // timer is outside the required range.
         desc.score = {
-            value: player.status.score + dest.scoreValue,
-            stockpile: player.status.stockpile + (bubbleDesc.performedConstrain ? 0 : dest.scoreValue),
-            bubblePercentCharged: bubbleDesc.percentCharged,
+            value:     player.status.score + dest.scoreValue,
+            stockpile: player.status.unadjustedStockpile + dest.scoreValue,
         };
-
         desc.dest.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
 
         // We are all go! Do it.
@@ -189,8 +178,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * concern the same {@link Tile} are ignored. This is okay since
      * the only thing that matters about a {@link Tile} to the outside
      * world is its last known state.
-     *
-     * Updates the event record if the response is accepted.
      *
      * @param desc
      * A descriptor for all changes mandated by the player-movement event.
@@ -248,8 +235,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             // If using relative values (which we are not), the below
             // should happen regardless of the order of receipt.
             player.status.score = desc.score!.value;
-            player.status.stockpile = desc.score!.stockpile;
-            player.status.percentBubbleCharge = desc.score!.bubblePercentCharged;
+            player.status.unadjustedStockpile = desc.score!.stockpile;
 
             player.moveTo(dest);
             // Below is computationally the same as "(player.lastAcceptedRequestId)++"
@@ -274,33 +260,27 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // TODO.impl
         // - If successful, make sure to lower the stockpile field.
         // - Make an abstract method in the OperatorPlayer class called in
-        //   the toplevel input processor for it to trigger this event.
+        //   the top-level input processor for it to trigger this event.
         const bubbler = this.checkIncomingPlayerRequestId(desc);
         if (!bubbler) {
             // Player is still bubbling. Reject the request:
             this.processBubbleMakeExecute(desc);
             return;
         }
-        const millis = Bubble.computeTimerDuration(bubbler).value;
-
-        desc.lastAcceptedRequestId  = (1 + bubbler.lastAcceptedRequestId);
-        desc.estimatedTimerDuration = millis;
+        desc.lastAcceptedRequestId = (1 + bubbler.lastAcceptedRequestId);
 
         // We are all go! Do it.
         desc.eventId = this.eventRecord.length;
         this.processBubbleMakeExecute(desc);
 
-        // Schedule the bubble to pop:
-        this.setTimeout(this.processBubblePopRequest, millis, bubbler);
+        // Pop:
+        this.processBubblePopRequest(bubbler);
     }
 
     /**
      *
      * Automatically lowers the {@link Player#requestInFlight} field
-     * for the requesting `Player` ~if the arriving event description
-     * is the newest one for the specified `Player`.~
-     *
-     * Updates the event record if the response is accepted.
+     * for the requesting `Player`.
      *
      * @param desc -
      */
@@ -312,9 +292,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
         if (desc.eventId !== EventRecordEntry.EVENT_ID_REJECT) {
             this.recordEvent(desc); // Record the event.
-            bubbler.status.isBubbling = true;
-        } else {
-            bubbler.status.isBubbling = false;
         }
     }
 
@@ -357,27 +334,25 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             return true; // TODO.impl
         }).map((player) => player.playerId);
 
-        // desc.playersToRaise  = get in-range    downed players who are     in any of my teams
+        // desc.playersToRaise = get in-range downed players who are in any of my teams
 
-        // We are all go! Do it.
+        // We are all go! Do it. Note that we still require separation
+        // between request-handling and execution because the server
+        // needs to additionally notify clients of changes to be made.
         desc.eventId = this.eventRecord.length;
         this.processBubblePopExecute(desc);
     }
 
     /**
      *
-     * Updates the event record if the response is accepted.
-     *
      * @param desc -
      */
+    // TODO.impl revamp for bubble mechanic changes.
     protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
         // Record the event. No need to check acceptance since this
         // kind of event is made in such a way that it is always accepted.
         this.recordEvent(desc);
         const bubbler = this.players.get(desc.bubblerId);
-
-        // Lower the "isBubbling" flags for the player:
-        bubbler.status.isBubbling = false;
 
         // Enact effects on supposedly un-downed enemy players:
         desc.playersToDown.forEach((enemyId) => {

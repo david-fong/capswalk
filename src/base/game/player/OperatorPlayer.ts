@@ -174,12 +174,8 @@ class OperatorPlayerStatus extends PlayerStatus {
         // Trivially call setters after registering __proto__ (the
         // super constructor resets fields, but will not render changes
         // to the UI like this extension class' overridden setters do):
-        this.score      = this.score;
-        this.stockpile  = this.stockpile;
-        this.isDowned   = this.isDowned;
-        this.isFrozen   = this.isFrozen;
-        this.isBubbling = this.isBubbling;
-        this.percentBubbleCharge = this.percentBubbleCharge;
+        this.score = this.score;
+        this.unadjustedStockpile  = this.unadjustedStockpile;
     }
 
 
@@ -187,25 +183,9 @@ class OperatorPlayerStatus extends PlayerStatus {
         super.score = newValue;
     }
 
-    public set stockpile(stockpile: number) {
-        super.stockpile = stockpile;
-    }
-
-
-    public set isDowned(isDowned: boolean) {
-        super.isDowned = isDowned;
-    }
-
-    public set isFrozen(isFrozen: boolean) {
-        super.isFrozen = isFrozen;
-    }
-
-    public set isBubbling(isBubbling: boolean) {
-        super.isBubbling = isBubbling;
-    }
-
-    public set percentBubbleCharge(bubbleCharge: number) {
-        super.percentBubbleCharge = bubbleCharge;
+    public set unadjustedStockpile(stockpile: number) {
+        super.unadjustedStockpile = stockpile;
+        this.playerDivElem.dataset[HtmlHooks.Player.Dataset.IS_DOWNED] = this.isDowned;
     }
 
 }
