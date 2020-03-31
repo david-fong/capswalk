@@ -81,11 +81,11 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      * any checking regarding {@link OperatorPlayer#requestInFlight}.
      *
      * @param key
-     * The pressed typeable key as a string. Pass `null` to trigger a
+     * The pressed typeable key as a string. Pass an empty string to trigger a
      * refresh of the {@link OperatorPlayer#_seqBuffer} to maintain its
      * invariant.
      */
-    public seqBufferAcceptKey(key: string | null): void {
+    public seqBufferAcceptKey(key: string | undefined): void {
         const unts = this.tile.destsFrom().unoccupied.get;
         if (unts.length === 0) {
             // Every neighbouring `Tile` is occupied!
@@ -103,7 +103,8 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
             }
         } else {
             const possibleTarget = unts.find((tile) => tile.langSeq.startsWith(this.seqBuffer));
-            if (!possibleTarget || possibleTarget.langSeq === this.seqBuffer) {
+            if (!possibleTarget) {
+                // If the thing I was trying to get to is gone, clear the buffer.
                 this.#seqBuffer = "";
             }
             return;

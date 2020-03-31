@@ -27,7 +27,7 @@
      - When done automatically, stockpiles will be levelled-down enough to cause as many changes in downed-ness as possible by changing other players' stockpiles to zero.
      - If done by pressing space, stockpiles will be levelled further until the space-presser's stockpile is at zero.
      - The player with the highest stockpile upon contact, or the player who pressed space is considered the attacker.
-       - First, for each un-downed enemy (non-teammate) in range, the attacker will subtract that enemy's stockpile +1 from its own, causing that enemy to become downed (stockpile === -1 \< 0) until all enemies are downed, or any further whole-stockpile-subtractions would cause it to become downed.
+       - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's stockpile +1 from its own, causing that enemy to become downed (stockpile === -1 \< 0) until all enemies are downed, or any further whole-stockpile-subtractions would cause it to become downed.
        - If it still has more stockpile, it does something similar for its teammates.
        - TODO consider using a slightly scaled down version of the attacker's stockpile to prevent accumulation of stock-power in the game (otherwise it would never leave the system)
 
@@ -53,11 +53,6 @@
 - Make sound settings stubs for playing music and sound effects.
   - make BGM have a track that varies with lang and different selectable style variations such as jazz cafe/elevator music, fast 13/8.
   - Make movement sound effects able to depend on translated key input like morse sounds.
-
-## Fun Ideas to Explore
-
-- Set a random tile to be marked as occupied by a player. does this mean they can be attacked through that tile without their player pointing to that tile?
-- Make each tile have a list field of "jump-tiles": tiles that cannot be produced by the normal means of using the grid to get adjacent tiles, and that are merged into the pre-occupancy-filter of getUNTs to allow weird jumping / portal-like movement. Would this have to be limited to artificial players because of the rules on langChar shuffle-ins?
 
 ## Links I Saved for Later
 

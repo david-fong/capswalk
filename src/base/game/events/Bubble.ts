@@ -223,16 +223,6 @@ export namespace Bubble {
 
         public playersToRaise: ReadonlyArray<Player.Id>;
 
-        /**
-         * How long to freeze each player. Most will probably be zero.
-         *
-         * Units are same as those in {@link computeTimerDuration}.
-         */
-        public playersToFreeze: ReadonlyArray<Readonly<{
-            targetId: Player.Id;
-            freezeDuration: number;
-        }>>;
-
         public constructor(bubblerId: Player.Id) {
             this.bubblerId = bubblerId;
         }

@@ -43,7 +43,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * descriptor. To create a new event ID at the Game Manager, just
      * take the current length of this array.
      */
-    private readonly __eventRecord: Array<Readonly<EventRecordEntry>>;
+    private readonly eventRecord: Array<Readonly<EventRecordEntry>>;
 
     public constructor(
         gameType: G,
@@ -51,12 +51,12 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(gameType, tileClass, gameDesc);
-        this.__eventRecord = [];
+        this.eventRecord = [];
     }
 
     public reset(): void {
         // Clear the event record:
-        this.__eventRecord.splice(0);
+        this.eventRecord.splice(0);
 
         super.reset();
     }
@@ -82,10 +82,10 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
         } else if (desc.lastAcceptedRequestId !== player.lastAcceptedRequestId) {
             throw new RangeError((desc.lastAcceptedRequestId < player.lastAcceptedRequestId)
-                ? ("Clients should not make requests until they have"
-                    + " received my response to their last request.")
-                : ("Client seems to have incremented the request ID"
-                    + " counter on their own, which is is illegal.")
+            ? ("Clients should not make requests until they have"
+                + " received my response to their last request.")
+            : ("Client seems to have incremented the request ID"
+                + " counter on their own, which is is illegal.")
             );
         }
         return player;
@@ -108,13 +108,13 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             throw new TypeError("Do not try to record events for rejected requests.");
         } else if (id < 0 || id !== Math.trunc(id)) {
             throw new RangeError("Event ID's must only be assigned positive, integer values.");
-        } else if (this.__eventRecord[id]) {
+        } else if (this.eventRecord[id]) {
             throw new Error("Event ID's must be assigned unique values.");
         }
         // NOTE: If storage becomes a concern with logging events,
         // create a static constant for the record's buffer size,
         // and then here, wrap around.
-        this.__eventRecord[id] = desc;
+        this.eventRecord[id] = desc;
     }
 
 
@@ -171,7 +171,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         desc.dest.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
 
         // We are all go! Do it.
-        desc.eventId = this.__eventRecord.length;
+        desc.eventId = this.eventRecord.length;
         this.processMoveExecute(desc);
     }
 
@@ -210,7 +210,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
                 // Do this if moving into the vicinity of the operator
                 // and the requester is not the operator. This operation
                 // is necessary to maintain the `seqBuffer` invariant.
-                this.operator.seqBufferAcceptKey(null);
+                this.operator.seqBufferAcceptKey("");
             }
             dest.numTimesOccupied = desc.dest.numTimesOccupied;
             dest.scoreValue = 0;
@@ -287,7 +287,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         desc.estimatedTimerDuration = millis;
 
         // We are all go! Do it.
-        desc.eventId = this.__eventRecord.length;
+        desc.eventId = this.eventRecord.length;
         this.processBubbleMakeExecute(desc);
 
         // Schedule the bubble to pop:
@@ -359,10 +359,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
         // desc.playersToRaise  = get in-range    downed players who are     in any of my teams
 
-        // desc.playersToFreeze = get in-range    downed players who are not in any of my teams
-
         // We are all go! Do it.
-        desc.eventId = this.__eventRecord.length;
+        desc.eventId = this.eventRecord.length;
         this.processBubblePopExecute(desc);
     }
 
@@ -393,18 +391,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             teammate.status.isDowned = false;
         }, this);
 
-        // Enact effects on players to freeze:
-        desc.playersToFreeze.forEach((freezeDesc) => {
-            this.freezePlayer(this.players.get(freezeDesc.targetId), freezeDesc.freezeDuration);
-        }, this);
         return;
     }
-
-    /**
-     * @param player -
-     * @param duration -
-     */
-    // TODO.impl make abstract. server manages, client displays, offline does both.
-    protected freezePlayer(player: Player<S>, duration: number): void { }
 
 }

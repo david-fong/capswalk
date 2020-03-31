@@ -175,19 +175,22 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         if (this.status !== Game.Status.PAUSED) {
             throw new Error("Can only resume a game that is currently paused.");
         }
-        return this.__abstractStatusBecomePlaying();
+        this.__abstractStatusBecomePlaying();
+        this.#status = Game.Status.PLAYING;
     }
     public statusBecomePaused(): void {
         if (this.status !== Game.Status.PLAYING) {
             throw new Error("Can only pause a game that is currently playing.");
         }
-        return this.__abstractStatusBecomePaused();
+        this.__abstractStatusBecomePaused();
+        this.#status = Game.Status.PAUSED;
     }
     public statusBecomeOver(): void {
         if (this.status !== Game.Status.PLAYING) {
             throw new Error("Can only end a game that is currently playing.");
         }
-        return this.__abstractStatusBecomeOver();
+        this.__abstractStatusBecomeOver();
+        this.#status = Game.Status.OVER;
     }
     // TODO.impl
     protected __abstractStatusBecomePlaying(): void {}
