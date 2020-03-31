@@ -1,10 +1,10 @@
+import type { Coord, Tile } from "floor/Tile";
 import type { Player as PlayerTypeDefs } from "utils/TypeDefs";
 
-import type { Coord, Tile } from "floor/Tile";
 import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
 import { PlayerSkeleton } from "./PlayerSkeleton";
-import { PlayerStatus } from "game/player/PlayerStatus";
-import type { Game } from "game/Game";
+import { PlayerStatus } from "./PlayerStatus";
+import { Game } from "game/Game";
 
 export { PlayerSkeleton };
 export { PlayerStatus };
@@ -17,9 +17,6 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
     public readonly username: Player.Username;
 
-    /**
-     * Nicety is strictly mutual and partitions all players.
-     */
     public readonly teamId: Player.TeamId;
 
     public readonly status: PlayerStatus;
@@ -45,7 +42,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         }
         this.username = desc.username;
         this.teamId = desc.teamId;
-        this.status = this.createStatusObj();
+        this.status = this.__createStatusObj();
     }
 
     public reset(spawnTile: Tile<S>): void {
@@ -56,7 +53,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.game.cancelTimeout(this.bubbleTimer);
     }
 
-    protected createStatusObj(): PlayerStatus {
+    protected __createStatusObj(): PlayerStatus {
         return new PlayerStatus();
     }
 
@@ -64,22 +61,27 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     /**
      * Called automatically by {@link OperatorPlayer#seqBufferAcceptKey}
      * for {@link OperatorPlayer}s, and by a periodic callback for
-     * {@link ArtificialPlayer}s.
+     * {@link ArtificialPlayer}s. Handles behaviour common between all
+     * implementations.
      *
+     * @final
      * @param dest -
+     * @throws Error if the game is over or paused.
      */
     protected makeMovementRequest(dest:Tile<S>): void {
-        if (this.requestInFlight) {
+        if (this.game.status !== Game.Status.PLAYING) {
+            throw new Error("This is not a necessary precondition, but we're doing it anyway.");
+        } else if (this.requestInFlight) {
             throw new Error("Only one request should ever be in flight at a time.");
         }
         this.requestInFlight = true;
-        this.abstractMakeMovementRequest(dest);
+        this.__abstractMakeMovementRequest(dest);
     }
 
     /**
      * @param dest -
      */
-    protected abstract abstractMakeMovementRequest(dest: Tile<S>): void;
+    protected abstract __abstractMakeMovementRequest(dest: Tile<S>): void;
 
     public get teammates(): ReadonlyArray<Player<S>> {
         return this.game.teams[this.teamId];

@@ -48,14 +48,14 @@ export class OfflineGame<S extends Coord.System> extends Game<G,S> {
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S> {
+    protected __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S> {
         return new OfflineOperatorPlayer<S>(this, desc);
     }
 
     /**
      * @override
      */
-    protected createArtifPlayer(desc: Player.CtorArgs): ArtificialPlayer<S> {
+    protected __createArtifPlayer(desc: Player.CtorArgs): ArtificialPlayer<S> {
         return ArtificialPlayer.of(this, desc);
     }
 

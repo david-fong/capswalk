@@ -39,7 +39,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly teams: ReadonlyArray<ReadonlyArray<Player<S>>>;
 
-    #isPaused: boolean; // Always true when the game is over.
+    #status: Game.Status;
 
 
     /**
@@ -95,9 +95,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             teams[player.teamId].push(player);
         });
         this.teams = teams;
-
-        // Check to make sure that none of the players are invincible:
-
     }
 
     /**
@@ -156,20 +153,46 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             .map((ctorArgs, numberInFamily) => {
                 if (family === Player.Family.HUMAN) {
                     return (numberInFamily === gameDesc.operatorIndex)
-                        ? this.createOperatorPlayer(ctorArgs)
-                        : this.createHumanPlayer(ctorArgs);
+                        ? this.__createOperatorPlayer(ctorArgs)
+                        : this.__createHumanPlayer(ctorArgs);
                 } else {
-                    return this.createArtifPlayer(ctorArgs);
+                    return this.__createArtifPlayer(ctorArgs);
                 }
             });
             return build;
         }, {} as Player.Bundle.Contents<Player<S>>));
     }
 
-    protected abstract createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;
-    protected abstract createHumanPlayer(desc: Player.CtorArgs): PuppetPlayer<S>;
-    protected abstract createArtifPlayer(desc: Player.CtorArgs):
+    protected abstract __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;
+    protected abstract __createHumanPlayer(desc: Player.CtorArgs): PuppetPlayer<S>;
+    protected abstract __createArtifPlayer(desc: Player.CtorArgs):
     (G extends Game.Type.Manager ? ArtificialPlayer<S> : PuppetPlayer<S>);
+
+    public get status(): Game.Status {
+        return this.#status;
+    }
+    public statusBecomePlaying(): void {
+        if (this.status !== Game.Status.PAUSED) {
+            throw new Error("Can only resume a game that is currently paused.");
+        }
+        return this.__abstractStatusBecomePlaying();
+    }
+    public statusBecomePaused(): void {
+        if (this.status !== Game.Status.PLAYING) {
+            throw new Error("Can only pause a game that is currently playing.");
+        }
+        return this.__abstractStatusBecomePaused();
+    }
+    public statusBecomeOver(): void {
+        if (this.status !== Game.Status.PLAYING) {
+            throw new Error("Can only end a game that is currently playing.");
+        }
+        return this.__abstractStatusBecomeOver();
+    }
+    // TODO.impl
+    protected __abstractStatusBecomePlaying(): void {}
+    protected __abstractStatusBecomePaused(): void {}
+    protected __abstractStatusBecomeOver(): void {}
 
 
     /**

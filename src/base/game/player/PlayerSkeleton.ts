@@ -13,7 +13,7 @@ import { Game } from "game/Game";
  *
  * @extends PlayerTypeDefs to intake its namespace exports.
  */
-export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
+export abstract class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
 
     public readonly playerId: Player.Id;
 
@@ -58,6 +58,12 @@ export class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
 
     public get hostTile(): Tile<S> {
         return this.#hostTile;
+    }
+
+    // TODO.design Abstract hook called when go near other player.
+    // what qualifies "near"? Need to call this in moveTo.
+    protected onGoBesideOtherPlayer(): void {
+        // Does nothing by default.
     }
 
     /**

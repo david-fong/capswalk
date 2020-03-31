@@ -99,14 +99,14 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.CtorArgs): never {
+    protected __createOperatorPlayer(desc: Player.CtorArgs): never {
         throw new TypeError("This should never be called for a ServerGame.");
     }
 
     /**
      * @override
      */
-    protected createArtifPlayer(desc: Player.CtorArgs): ArtificialPlayer<S> {
+    protected __createArtifPlayer(desc: Player.CtorArgs): ArtificialPlayer<S> {
         return ArtificialPlayer.of(this, desc);
     }
 
@@ -126,7 +126,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
     public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         super.processMoveExecute(desc);
 
-        if (desc.eventId === EventRecordEntry.REJECT) {
+        if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
             this.socketBundle.get(desc.playerId).emit(
                 PlayerMovementEvent.EVENT_NAME,
@@ -145,7 +145,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
     public processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
         super.processBubbleMakeExecute(desc);
 
-        if (desc.eventId === EventRecordEntry.REJECT) {
+        if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
             this.socketBundle.get(desc.playerId).emit(
                 Bubble.MakeEvent.EVENT_NAME,
@@ -167,7 +167,7 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
     public processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
         super.processBubblePopExecute(desc);
 
-        if (desc.eventId === EventRecordEntry.REJECT) {
+        if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             throw new Error("This should never happen.");
         } else {
             // Request was accepted.

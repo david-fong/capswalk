@@ -35,7 +35,7 @@ export abstract class Game<G extends Game.Type, S extends Coord.System> extends 
     /**
      * @override
      */
-    protected createHumanPlayer(desc: Player.CtorArgs): PuppetPlayer<S> {
+    protected __createHumanPlayer(desc: Player.CtorArgs): PuppetPlayer<S> {
         return new PuppetPlayer(this, desc);
     }
 
@@ -95,6 +95,21 @@ export namespace Game {
             undefinedUsername: ReadonlyArray<Player.SocketId>; // socket ID's
             undefinedTeamId:   ReadonlyArray<Player.SocketId>;
         };
+    }
+
+    /**
+     * - **`PLAYING`** can go to:
+     *   - `PAUSED`: when a pause request initiated by a player is accepted.
+     *   - `OVER`:  when certain conditions of players being downed are met.
+     * - **`PAUSED`** can go to:
+     *   - `PLAYING`: similar to PLAYING->PAUSED.
+     * - **`OVER`** can go to:
+     *   - `PLAYING`: via resetting the game.
+     */
+    export const enum Status {
+        PLAYING = "PLAYING",
+        PAUSED  = "PAUSED",
+        OVER    = "OVER",
     }
 
 }

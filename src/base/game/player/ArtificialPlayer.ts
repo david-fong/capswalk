@@ -44,8 +44,6 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
     protected abstract computeNextMovementTimer(): number;
 
-    protected abstract onEnter
-
 
 
     /**
@@ -55,7 +53,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      *
      * @override
      */
-    protected abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void {
+    protected __abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void {
         this.game.processMoveRequest(
             new PlayerMovementEvent(
                 this.playerId,

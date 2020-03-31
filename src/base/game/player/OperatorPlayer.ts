@@ -3,7 +3,7 @@ import { Lang } from "lang/Lang";
 import type { Coord, Tile } from "floor/Tile";
 import type { VisibleTile } from "floor/VisibleTile";
 import { Player, PlayerStatus } from "./Player";
-import type { Game } from "game/Game";
+import { Game } from "game/Game";
 
 
 /**
@@ -45,7 +45,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
-    protected createStatusObj(): OperatorPlayerStatus {
+    protected __createStatusObj(): OperatorPlayerStatus {
         return new OperatorPlayerStatus();
     }
 
@@ -60,14 +60,18 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      *
      * @param event - The object describing the `KeyboardEvent`.
      */
-    public processClientInput(event: KeyboardEvent): void {
+    public processKeyboardInput(event: KeyboardEvent): void {
         if (false) {
-            ;
-        } else if (!this.requestInFlight) {
-            // Only process movement-type input if the last request got
-            // acknowledged by the Game Manager and the game is not paused.
-            // TODO.impl short circuit if game is paused
-            this.seqBufferAcceptKey(event.key);
+
+        // @ Above: Conditional handlers for actions that are valid
+        // even when the game is over or paused.
+        // ==========================================================
+        } else if (this.game.status === Game.Status.PLAYING) {
+            if (!this.requestInFlight) {
+                // Only process movement-type input if the last request got
+                // acknowledged by the Game Manager and the game is playing.
+                this.seqBufferAcceptKey(event.key);
+            }
         }
     }
 

@@ -176,7 +176,7 @@ export namespace Bubble {
 
         public static readonly EVENT_NAME = "bubble-make";
 
-        public eventId: number = EventRecordEntry.REJECT;
+        public eventId: number = EventRecordEntry.EVENT_ID_REJECT;
 
         public readonly playerId: Player.Id;
 

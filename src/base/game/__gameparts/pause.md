@@ -23,7 +23,7 @@ Behaviours dependent on game-state: A game should be automatically un-paused upo
 
 ### Client
 
-- Request vectors (listen for): html button.
+- Request vectors (listen for): html button, keyboard.
 - Cannot enact changes - must go through server.
 - `<network communications here>`
 - Must react at any time to changes to pause-state ruled by server.
@@ -47,3 +47,7 @@ These listener functions must either be bound to an object that gets garbage col
 These changes should be enacted upon changing to the paused state.
 
 The HTML element for the game's grid should be greyed out.
+
+### Enact changes
+
+Player classes are responsible to check whether the game is over or paused- but this is only as a measure to reduce wasted event messaging. The most important thing is that the game manager must either reject or ignore client requests for game-in-session-actions. I need to make a decision on which way to go for that. If I go with ignoring (reduced traffic!), I need to make sure that clients clear all their `requestInFlight` flags when notified of the game becoming un-paused. The fact that players perform the game-over/game-paused checks.

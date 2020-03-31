@@ -79,11 +79,12 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
     /**
      * This is the agreed upon value that both the server and client
      * copies of a game should set as the initial value for request id
-     * counters.
+     * counters. Remember that a request ID is a property of a player,
+     * whereas an event ID is a property tied to a game.
      */
     public static readonly INITIAL_REQUEST_ID = -1;
 
-    public eventId: number = EventRecordEntry.REJECT;
+    public eventId: number = EventRecordEntry.EVENT_ID_REJECT;
 
     public readonly playerId: Player.Id;
 

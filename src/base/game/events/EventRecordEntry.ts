@@ -11,10 +11,8 @@ export interface EventRecordEntry {
      *
      * Must be unique in its context.
      *
-     * The request-maker should not set this field.
-     *
-     * The request validator should respond with this value either set
-     * to a valid value as described above, or leave it as {@link REJECT}.
+     * The request-maker should make the request with this set to.
+     * {@link EVENT_ID_REJECT}.
      */
     eventId: number;
 
@@ -30,7 +28,7 @@ export namespace EventRecordEntry {
      * of a request-type event to signal if a request has been rejected.
      * It is convenient to use as a default value.
      */
-    export const REJECT = -1;
+    export const EVENT_ID_REJECT = -1;
 
 }
 

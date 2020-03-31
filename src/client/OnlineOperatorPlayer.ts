@@ -28,7 +28,7 @@ export class OnlineOperatorPlayer<S extends Coord.System> extends OperatorPlayer
     /**
      * @override
      */
-    protected abstractMakeMovementRequest(dest: Tile<S>): void {
+    protected __abstractMakeMovementRequest(dest: Tile<S>): void {
         // ServerGame handles with processMoveRequest.
         // Arguments must follow that function signature.
         this.game.socket.emit(

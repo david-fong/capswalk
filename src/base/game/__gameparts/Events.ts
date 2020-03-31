@@ -1,6 +1,6 @@
 import type { Coord, Tile } from "floor/Tile";
-
 import type { Player } from "../player/Player";
+import type { Game } from "../Game";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerMovementEvent } from "../events/PlayerMovementEvent";
@@ -8,7 +8,6 @@ import { Bubble } from "../events/Bubble";
 import { EventRecordEntry } from "../events/EventRecordEntry";
 
 import { GameBase } from "./Base";
-import { Game } from "../Game";
 
 
 /**
@@ -105,7 +104,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     private recordEvent(desc: Readonly<EventRecordEntry>): void {
         const id = desc.eventId;
-        if (id === EventRecordEntry.REJECT) {
+        if (id === EventRecordEntry.EVENT_ID_REJECT) {
             throw new TypeError("Do not try to record events for rejected requests.");
         } else if (id < 0 || id !== Math.trunc(id)) {
             throw new RangeError("Event ID's must only be assigned positive, integer values.");
@@ -222,8 +221,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             // Out of order receipt: Already received more recent request responses.
             if (player === this.operator) {
                 throw new Error("Operator will never receive their own updates"
-                    + " out of order because they only have one unacknowledged"
-                    + " in-flight request.");
+                + " out of order because they only have one unacknowledged"
+                + " in-flight request.");
             }
             if (dest.numTimesOccupied < desc.dest.numTimesOccupied) {
                 executeBasicTileUpdates();
@@ -237,7 +236,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // then the below line should be the only change made by this call.
         player.requestInFlight = false;
 
-        if (desc.eventId !== EventRecordEntry.REJECT) {
+        if (desc.eventId !== EventRecordEntry.EVENT_ID_REJECT) {
             // ie. clientEventLag === 0 ||
             // (at Game Manager:) dest.numTimesOccupied > desc.destNumTimesOccupied
             return;
@@ -258,7 +257,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
         } else {
             throw new RangeError("Apparent negative lag. The operator may"
-                + " somehow have tampered with their request counter.");
+            + " somehow have tampered with their request counter.");
         }
     }
 
@@ -311,7 +310,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
         bubbler.requestInFlight = false;
 
-        if (desc.eventId !== EventRecordEntry.REJECT) {
+        if (desc.eventId !== EventRecordEntry.EVENT_ID_REJECT) {
             this.recordEvent(desc); // Record the event.
             bubbler.status.isBubbling = true;
         } else {

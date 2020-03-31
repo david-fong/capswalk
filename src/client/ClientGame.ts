@@ -92,14 +92,14 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
     /**
      * @override
      */
-    protected createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S> {
+    protected __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S> {
         return new OnlineOperatorPlayer(this, desc);
     }
 
     /**
      * @override
      */
-    protected createArtifPlayer(desc: Player.CtorArgs): PuppetPlayer<S> {
+    protected __createArtifPlayer(desc: Player.CtorArgs): PuppetPlayer<S> {
         return new PuppetPlayer(this, desc);
     }
 

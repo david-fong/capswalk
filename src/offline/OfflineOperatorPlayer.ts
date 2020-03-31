@@ -28,7 +28,7 @@ export class OfflineOperatorPlayer<S extends Coord.System> extends OperatorPlaye
      *
      * @override {@link Player#makeMovementRequest}
      */
-    protected abstractMakeMovementRequest(dest: Tile<S>): void {
+    protected __abstractMakeMovementRequest(dest: Tile<S>): void {
         this.game.processMoveRequest(
             new PlayerMovementEvent(
                 this.playerId,
