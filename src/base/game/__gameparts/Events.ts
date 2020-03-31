@@ -307,32 +307,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * @param bubbler -
      */
     private processBubblePopRequest(bubbler: Player<S>): void {
-        // First, get the range of covered tiles.
-        const jumpNeighbours: Array<Player<S>> = [ bubbler, ]; {
-            // Note: Actually used as a stack. It doesn't matter.
-            const neighbourQueue = [ bubbler, ];
-            while (neighbourQueue.length) {
-                const neighbour = neighbourQueue.pop()!;
-                neighbour.tile.destsFrom().occupied.get
-                .map((jumpPlayerTile) => this.players.get(jumpPlayerTile.occupantId!))
-                .filter((jumpPlayer: Player<S>) => {
-                    // Filter out neighbours that we have already processed:
-                    return !(jumpNeighbours.includes(jumpPlayer))
-                        && (true); // TODO.impl add conditions from the spec here.
-                }).forEach((jumpPlayer) => {
-                    jumpNeighbours.push(jumpPlayer);
-                    neighbourQueue.push(jumpPlayer);
-                });
-            }
-            // Last step: remove the first element, which is the bubbler.
-            jumpNeighbours.shift();
-        }
-
         const desc = new Bubble.PopEvent(bubbler.playerId);
 
-        desc.playersToDown = jumpNeighbours.filter((player) => {
-            return true; // TODO.impl
-        }).map((player) => player.playerId);
+        desc.playersToDown = bubbler.tile.destsFrom().occupied.get.map((tile) => tile.occupantId!);
 
         // desc.playersToRaise = get in-range downed players who are in any of my teams
 

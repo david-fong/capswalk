@@ -22,7 +22,7 @@
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism?
    - New mechanics:
-     - Contact can be made through turtle conduits.
+     - Periodic unadjusted stockpile subtraction (kind of like walls closing in on you in battle-royale games)
      - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
      - When done automatically, stockpiles will be levelled-down enough to cause as many changes in downed-ness as possible by changing other players' stockpiles to zero.
      - If done by pressing space, stockpiles will be levelled further until the space-presser's stockpile is at zero.
@@ -104,3 +104,4 @@ https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
 - Being on multiple teams
 - Nicity system instead of teams
 - Using TypeScript's project-references feature to speed up compile time
+- Turtle conduits: They actually aren't foolproof. You can just make a really big turtle wall so there's space between you and who you're trying to protect and then the conduit is broken.
