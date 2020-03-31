@@ -48,9 +48,12 @@
         "constraining",
         "gameplay",
         "lifestages",
+        "lifecycle",
         "millis",
         "multiplayer",
+        "pipelining",
         "requester's",
-        "teammate", "teammates"
+        "teammate", "teammates",
+        "tradeoff"
     ]
 }

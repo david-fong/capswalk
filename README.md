@@ -78,15 +78,7 @@ You might think that after making this game twice I'd be tired of it... but that
 
 ## 🛩 Design Challenges
 
-One of the big design challenges for this project is to allow playing on or off-line. I like this challenge because it really demands designing a good function API and inheritance tree, which isn't a trivial task given an overview of what each piece of the picture needs to accomplish:
-
-|                     Task                   | Offline | Server | Client |
-|:-------------------------------------------|:-------:|:------:|:------:|
-| Maintain the master copy of the game state | :heavy_check_mark: | :heavy_check_mark: | :heavy_multiplication_x: |
-| Display the game state via the browser DOM | :heavy_check_mark: | :heavy_multiplication_x: | :heavy_check_mark: |
-| Use network operations to exchange events  | :heavy_multiplication_x: | :heavy_check_mark: | :heavy_check_mark: |
-
-The presence or absence of the network separates the locality / implementation of event lifestages such as request creation, sending, receipt, validation, response, and change enactment. In addition to that, SocketIO can only guarantee in-order transactions if the client is using websockets for its underlying transport, which- while common- is not a given. Thus, event handlers require event-ID systems to handle out-of-order message arrivals at the client and server sides.
+See [dedicated readme](./src/readme.md).
 
 ## 🧗‍♀️ Stepping Up my Game
 
@@ -136,7 +128,7 @@ export namespace Player {
 }
 ```
 
-In Java, you can't alias primitive types, [and that's final 🥁](https://stackoverflow.com/a/28238107/11107541). In C, you can alias anything, but you can only namespace them in C++. The ability to do all this in TypeScript sparks me a lot of joy.
+In Java, you can't alias primitive types, [and that's final 🥁](https://stackoverflow.com/a/28238107/11107541). In C, you can alias anything, but you can only namespace them in C++ and there's no declaration merging!. The ability to do all this in TypeScript sparks me a lot of joy.
 
 ---
 
