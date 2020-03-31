@@ -78,7 +78,7 @@ You might think that after making this game twice I'd be tired of it... but that
 
 ## 🛩 Design Challenges
 
-See [dedicated readme](./src/readme.md).
+See [dedicated readme](./src/).
 
 ## 🧗‍♀️ Stepping Up my Game
 
