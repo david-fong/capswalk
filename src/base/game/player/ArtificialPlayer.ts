@@ -53,7 +53,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      *
      * @override
      */
-    protected __abstractMakeMovementRequest(dest: Player<S>["hostTile"]): void {
+    protected __abstractMakeMovementRequest(dest: Tile<S>): void {
         this.game.processMoveRequest(
             new PlayerMovementEvent(
                 this.playerId,

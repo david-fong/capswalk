@@ -82,6 +82,8 @@ export namespace Game {
             ? Player.CtorArgs.PreIdAssignment
             : Player.CtorArgs
         )>;
+
+        averageRawHealthOnFloor: Player.Health.Raw;
     }>;
 
     export namespace CtorArgs {

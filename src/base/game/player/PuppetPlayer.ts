@@ -1,4 +1,4 @@
-import type { Coord } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 import type { Game } from "game/Game";
 import { Player} from "./Player";
 
@@ -20,7 +20,7 @@ export class PuppetPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
-    protected __abstractMakeMovementRequest(dest: Player<S>["hostTile"]): never {
+    protected __abstractMakeMovementRequest(dest: Tile<S>): never {
         throw new TypeError("This operation is unsupported for this implementation.");
     }
 

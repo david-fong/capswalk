@@ -1,4 +1,7 @@
+import { Player } from "utils/TypeDefs";
 
+
+type Health = Player.Health.Raw;
 
 /**
  * This abstracts acts of modification upon a player's state, allowing
@@ -8,26 +11,26 @@
  */
 export class PlayerStatus {
 
-    #score: number;
-    #rawHealth: number;
+    #score:     Health;
+    #rawHealth: Health;
 
     public reset(): void {
-        this.score = 0;
+        this.score      = 0;
         this.rawHealth  = 0;
     }
 
 
-    public get score(): number {
+    public get score(): Health {
         return this.#score;
     }
-    public set score(newValue: number) {
+    public set score(newValue: Health) {
         this.#score = newValue;
     }
 
-    public get rawHealth(): number {
+    public get rawHealth(): Health {
         return this.#rawHealth;
     }
-    public set rawHealth(newRawHealth: number) {
+    public set rawHealth(newRawHealth: Health) {
         this.#rawHealth = newRawHealth;
     }
     // TODO.design Equation and architecture for getting/setting adjusted health.

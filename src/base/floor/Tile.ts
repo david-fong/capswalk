@@ -27,7 +27,7 @@ export class Tile<S extends Coord.System> {
 
     private _langChar: Lang.Char;
     private _langSeq:  Lang.Seq;
-    protected _scoreValue: number;
+    protected _scoreValue: Player.Health.Raw;
 
     /**
      * The number of times this `Tile` was occupied since the last
@@ -95,11 +95,11 @@ export class Tile<S extends Coord.System> {
 
 
 
-    public get scoreValue(): number {
+    public get scoreValue(): Player.Health.Raw {
         return this._scoreValue;
     }
 
-    public set scoreValue(score: number) {
+    public set scoreValue(score: Player.Health.Raw) {
         this._scoreValue = score;
     }
 

@@ -99,8 +99,8 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
      * values taken on by the player for these fields.
      */
     public score?: {
-        value: number;
-        rawHealth: number;
+        value:     Player.Health.Raw;
+        rawHealth: Player.Health.Raw;
     } = undefined;
 
     public dest: {

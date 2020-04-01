@@ -179,11 +179,11 @@ class OperatorPlayerStatus extends PlayerStatus {
     }
 
 
-    public set score(newValue: number) {
+    public set score(newValue: Player.Health.Raw) {
         super.score = newValue;
     }
 
-    public set rawHealth(newRawHealth: number) {
+    public set rawHealth(newRawHealth: Player.Health.Raw) {
         super.rawHealth = newRawHealth;
         this.playerDivElem.dataset[HtmlHooks.Player.Dataset.IS_DOWNED] = this.isDowned;
     }

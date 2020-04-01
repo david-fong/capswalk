@@ -21,7 +21,8 @@ export namespace Player {
     export type Id = {
         family: Family;
         /**
-         * A positive integer.
+         * A positive integer used to index into an array of members
+         * of the same Family.
          */
         number: number;
     };
@@ -32,6 +33,17 @@ export namespace Player {
          */
         export const NULL = undefined;
         export type Nullable = Player.Id | typeof Player.Id.NULL;
+    }
+
+    /**
+     * See the main documentation in game/player/Player.
+     */
+    export type Health = number;
+    export namespace Health {
+        /**
+         * See the main documentation in game/player/Player.
+         */
+        export type Raw = number;
     }
 
     export class Bundle<T> {

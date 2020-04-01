@@ -25,11 +25,6 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
     public requestInFlight: boolean;
 
-    /**
-     * Managed externally by the Game Manager. Here for composition.
-     */
-    public bubbleTimer: number | NodeJS.Timeout;
-
 
     public constructor(game: Game<any,S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc.playerId);
@@ -50,7 +45,6 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.status.reset();
         this.lastAcceptedRequestId = PlayerMovementEvent.INITIAL_REQUEST_ID;
         this.requestInFlight = false;
-        this.game.cancelTimeout(this.bubbleTimer);
     }
 
     protected __createStatusObj(): PlayerStatus {
@@ -104,6 +98,22 @@ export namespace Player {
     export type TeamId = number;
 
     export type SocketId = string;
+
+    /**
+     * This is the adjusted form of `Health.Raw`. Done by linear scaling
+     * to account for headcount ratios between teams. It should not be
+     * used as a storage field in any representations or communications.
+     */
+    export type Health = PlayerTypeDefs.Health;
+    export namespace Health {
+        /**
+         * The pure, unadjusted measure of a Player's health. It can
+         * be picked up from the floor where it is randomly spawned by
+         * the game manager. It can be used to attack enemy players, or
+         * to heal teammates.
+         */
+        export type Raw = PlayerTypeDefs.Health.Raw;
+    }
 
     export type Bundle<T> = PlayerTypeDefs.Bundle<T>;
 
