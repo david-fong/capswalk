@@ -331,17 +331,17 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         this.recordEvent(desc);
         const bubbler = this.players.get(desc.bubblerId);
 
-        // Enact effects on supposedly un-downed enemy players:
-        desc.playersToDown.forEach((enemyId) => {
-            const enemy = this.players.get(enemyId);
-            enemy.status.isDowned = true;
-        }, this);
+        // // Enact effects on supposedly un-downed enemy players:
+        // desc.playersToDown.forEach((enemyId) => {
+        //     const enemy = this.players.get(enemyId);
+        //     enemy.status.isDowned = true;
+        // }, this);
 
-        // Enact effects on supposedly downed teammates:
-        desc.playersToRaise.forEach((teammateId) => {
-            const teammate = this.players.get(teammateId);
-            teammate.status.isDowned = false;
-        }, this);
+        // // Enact effects on supposedly downed teammates:
+        // desc.playersToRaise.forEach((teammateId) => {
+        //     const teammate = this.players.get(teammateId);
+        //     teammate.status.isDowned = false;
+        // }, this);
 
         return;
     }

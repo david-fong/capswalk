@@ -9,6 +9,8 @@ While paused, the back-end should reject certain requests like requests for play
 
 At the same time, when paused, the front-end should short-circuit (return immediately) inside certain device-input handlers (which might otherwise send an event request to the game manager) to prevent unnecessary spam to the server.
 
+In order to play nice with any behaviours dependent on how long the game has lasted, such time-tracking fields must account for pause-time by omitting it from duration tracking.
+
 ## Responsibility Overview
 
 Behaviours dependent on game-state: A game should be automatically un-paused upon reset. Requests to pause the game when it is over should be immediately rejected.

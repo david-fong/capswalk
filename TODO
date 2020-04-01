@@ -8,36 +8,30 @@
 1. Record music + find out how to play tracks together.
 1. Get working bundles for networked games.
 
-## Concrete TODO's
+## Concrete TODOs
 
 ### High Priority
 
-1. ~Rename 'stock(pile)' to 'health' wherever referenced.~
-   - Rationale: That's a more accurate description of what it now is.
 1. Change client-facing multiplayer-game-setup so that: first, the joiner closes, then teams are chosen.
    - Rationale: get rid of team specification translation from socketIds to playerIds.
 1. Write out full specification for what qualifies the end of the game.
-   - ~Solution / Decision: revert `beNiceTo` system back to the teaming system.~
    - Make `playerDowned` handler function.
      - Checks if only one team has any un-downed players remaining.
        - In that case, the game ends and that remaining team wins.
 1. Fill in implementation of bubble event handler.
-1. Design decision: Change bubble mechanism?
-   - New mechanics:
-     - Periodic raw health subtraction (kind of like walls closing in on you in battle-royale games)
-     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
-     - When done automatically, health will be levelled-down enough to cause as many changes in downed-ness as possible by changing other players' health to zero.
-     - If done by pressing space, health will be levelled further until the space-presser's health is at zero.
-     - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
-       - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
-       - If it still has more health, it does something similar for its teammates.
-       - TODO consider using a slightly scaled down version of the attacker's health to prevent accumulation of health-points in the game (otherwise it would never leave the system)
+1. Design decision: Change bubble mechanism:
+   - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
+   - When done automatically, health will be levelled-down enough to cause as many changes in downed-ness as possible by changing other players' health to zero.
+   - If done by pressing space, health will be levelled further until the space-presser's health is at zero.
+   - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
+     - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
+     - If it still has more health, it does something similar for its teammates.
 
 ### Low Priority
 
 - Use es6 #private syntax for getter-backing fields
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
-   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
+  - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
 - Make eslintrc's for impl/ folders saying that they can't import from the impl/ folder they are in.
   - Check if it can detect relative imports. If not, don't do this
 - Look into switching from JsDoc to TsDoc
@@ -104,6 +98,6 @@ https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
 
 - Tile Benching
 - Being on multiple teams
-- Nicity system instead of teams
+- Nicety system instead of teams
 - Using TypeScript's project-references feature to speed up compile time
 - Turtle conduits: They actually aren't foolproof. You can just make a really big turtle wall so there's space between you and who you're trying to protect and then the conduit is broken.

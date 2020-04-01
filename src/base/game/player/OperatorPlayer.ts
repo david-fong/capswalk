@@ -185,7 +185,8 @@ class OperatorPlayerStatus extends PlayerStatus {
 
     public set rawHealth(newRawHealth: Player.Health.Raw) {
         super.rawHealth = newRawHealth;
-        this.playerDivElem.dataset[HtmlHooks.Player.Dataset.IS_DOWNED] = this.isDowned;
+        // TODO.design CSS integration for Player.isDowned rendering.
+        // this.playerDivElem.dataset[HtmlHooks.Player.Dataset.IS_DOWNED] = this.isDowned;
     }
 
 }

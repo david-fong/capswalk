@@ -83,7 +83,7 @@ export namespace Game {
             : Player.CtorArgs
         )>;
 
-        averageRawHealthOnFloor: Player.Health.Raw;
+        averageRawHealthOnFloorPerTile: Player.Health.Raw;
     }>;
 
     export namespace CtorArgs {

@@ -174,6 +174,14 @@ export namespace Grid {
 
         /**
          * @returns
+         * The number of Tiles that could fit in a Grid of such bounds.
+         *
+         * @param bounds -
+         */
+        getArea(bounds: Dimensions<S>): number;
+
+        /**
+         * @returns
          * A coordinate with random, integer-valued fields within the
          * specified upper limits
          *

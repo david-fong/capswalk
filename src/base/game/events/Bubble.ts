@@ -4,26 +4,22 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
 /**
  * # The Object of the Game
  *
- * Now that the game is multiplayer-capable, a lot of possibilities
- * have opened up because there is more for the player to interact
- * with.
+ * Be the last surviving team. Players attack members from opposing
+ * teams by equally levelling down each others' (adjusted\*) health.
+ * If all players on a team together have negative health at a single
+ * point in time, they can no longer regain health, and their team is
+ * no longer a candidate for the winning/surviving team, although they
+ * can still continue playing as normal.
  *
- * The object of the game is to be the last team to have all their
- * members downed at the same time. As long as there is one member in
- * a team that has not been taken down, other downed members can still
- * be raised. Downed members can still move and take actions to assist
- * their teammates take down opposing players.
+ * Notice that attacking enemy team members removes "health-energy"
+ * from the system, whereas the spawning of health adds it, and the
+ * transferral of health between teammates results in no net change.
  *
- * To prevent turtling, a periodic event occurs where all players get
- * their unadjusted health lowered by the same amount. An implementation
- * note, this should remove health-points from the game roughly equal
- * to (and maybe slightly less than) how much is added over time.
- *
- * A player's health will be adjusted to sympathize with teams
+ * \* A player's health will be adjusted to sympathize with teams
  * suffering from a headcount-disadvantage. For more information, see
  * {@link PlayerStatus.adjustedStockpile}.
- *
  */
+// TODO.design A way to make turtling unprofitable.
 export namespace Bubble {
 
 

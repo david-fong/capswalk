@@ -204,6 +204,18 @@ export namespace Beehive {
         /**
          * @override
          */
+        public static getArea(dim: Grid.Dimensions): number {
+            const shorterSide = Math.min(dim.fslash, dim.bslash);
+            const longerSide  = Math.max(dim.fslash, dim.bslash);
+            const width = (-1) + dim.dash + shorterSide;
+            let area = 2 * shorterSide * (dim.dash + width);
+            area += (longerSide - shorterSide - 1) * width;
+            return area;
+        }
+
+        /**
+         * @override
+         */
         public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
             return new Coord(undefined!);
         }
@@ -220,6 +232,7 @@ export namespace Beehive {
             ;
             public constructor(desc: AbstractGrid.CtorArgs<S>) {
                 super(desc);
+                // TODO.impl Beehive.Visible constructor.
             }
         }
     }

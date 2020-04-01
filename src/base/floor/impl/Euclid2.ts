@@ -306,6 +306,13 @@ export namespace Euclid2 {
         /**
          * @override
          */
+        public static getArea(dim: Grid.Dimensions): number {
+            return dim.height * dim.width;
+        }
+
+        /**
+         * @override
+         */
         public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
             return new Coord(undefined!);
         }

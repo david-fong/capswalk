@@ -92,6 +92,12 @@ export namespace SysName {
         /**
          * @override
          */
+        public static getArea(dim: Grid.Dimensions): number {
+            return undefined!;
+        }
+        /**
+         * @override
+         */
         public static getRandomCoord(bounds: Grid.Dimensions): Coord {
             return new Coord(undefined!);
         }
