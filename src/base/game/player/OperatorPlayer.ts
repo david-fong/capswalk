@@ -175,7 +175,7 @@ class OperatorPlayerStatus extends PlayerStatus {
         // super constructor resets fields, but will not render changes
         // to the UI like this extension class' overridden setters do):
         this.score = this.score;
-        this.unadjustedStockpile  = this.unadjustedStockpile;
+        this.rawHealth  = this.rawHealth;
     }
 
 
@@ -183,8 +183,8 @@ class OperatorPlayerStatus extends PlayerStatus {
         super.score = newValue;
     }
 
-    public set unadjustedStockpile(stockpile: number) {
-        super.unadjustedStockpile = stockpile;
+    public set rawHealth(newRawHealth: number) {
+        super.rawHealth = newRawHealth;
         this.playerDivElem.dataset[HtmlHooks.Player.Dataset.IS_DOWNED] = this.isDowned;
     }
 

@@ -100,7 +100,7 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
      */
     public score?: {
         value: number;
-        stockpile: number;
+        rawHealth: number;
     } = undefined;
 
     public dest: {

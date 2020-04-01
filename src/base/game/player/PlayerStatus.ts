@@ -9,11 +9,11 @@
 export class PlayerStatus {
 
     #score: number;
-    #unadjustedStockpile: number;
+    #rawHealth: number;
 
     public reset(): void {
-        this.score      = 0;
-        this.unadjustedStockpile  = 0;
+        this.score = 0;
+        this.rawHealth  = 0;
     }
 
 
@@ -24,15 +24,16 @@ export class PlayerStatus {
         this.#score = newValue;
     }
 
-    public get unadjustedStockpile(): number {
-        return this.#unadjustedStockpile;
+    public get rawHealth(): number {
+        return this.#rawHealth;
     }
-    public set unadjustedStockpile(stockpile: number) {
-        this.#unadjustedStockpile = stockpile;
+    public set rawHealth(newRawHealth: number) {
+        this.#rawHealth = newRawHealth;
     }
+    // TODO.design Equation and architecture for getting/setting adjusted health.
 
     public get isDowned(): boolean {
-        return this.unadjustedStockpile < 0.0;
+        return this.rawHealth < 0.0;
     }
 
 }

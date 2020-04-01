@@ -15,12 +15,11 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
  * their teammates take down opposing players.
  *
  * To prevent turtling, a periodic event occurs where all players get
- * their unadjusted stockpiles lowered by the same amount. As an
- * implementation note, this should remove stock-power from the game
- * roughly equal to (and maybe slightly less than) how much is added
- * over time.
+ * their unadjusted health lowered by the same amount. An implementation
+ * note, this should remove health-points from the game roughly equal
+ * to (and maybe slightly less than) how much is added over time.
  *
- * A player's stockpile will be adjusted to sympathize with teams
+ * A player's health will be adjusted to sympathize with teams
  * suffering from a headcount-disadvantage. For more information, see
  * {@link PlayerStatus.adjustedStockpile}.
  *

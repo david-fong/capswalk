@@ -12,6 +12,8 @@
 
 ### High Priority
 
+1. ~Rename 'stock(pile)' to 'health' wherever referenced.~
+   - Rationale: That's a more accurate description of what it now is.
 1. Change client-facing multiplayer-game-setup so that: first, the joiner closes, then teams are chosen.
    - Rationale: get rid of team specification translation from socketIds to playerIds.
 1. Write out full specification for what qualifies the end of the game.
@@ -22,14 +24,14 @@
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism?
    - New mechanics:
-     - Periodic unadjusted stockpile subtraction (kind of like walls closing in on you in battle-royale games)
+     - Periodic raw health subtraction (kind of like walls closing in on you in battle-royale games)
      - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
-     - When done automatically, stockpiles will be levelled-down enough to cause as many changes in downed-ness as possible by changing other players' stockpiles to zero.
-     - If done by pressing space, stockpiles will be levelled further until the space-presser's stockpile is at zero.
-     - The player with the highest stockpile upon contact, or the player who pressed space is considered the attacker.
-       - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's stockpile +1 from its own, causing that enemy to become downed (stockpile === -1 \< 0) until all enemies are downed, or any further whole-stockpile-subtractions would cause it to become downed.
-       - If it still has more stockpile, it does something similar for its teammates.
-       - TODO consider using a slightly scaled down version of the attacker's stockpile to prevent accumulation of stock-power in the game (otherwise it would never leave the system)
+     - When done automatically, health will be levelled-down enough to cause as many changes in downed-ness as possible by changing other players' health to zero.
+     - If done by pressing space, health will be levelled further until the space-presser's health is at zero.
+     - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
+       - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
+       - If it still has more health, it does something similar for its teammates.
+       - TODO consider using a slightly scaled down version of the attacker's health to prevent accumulation of health-points in the game (otherwise it would never leave the system)
 
 ### Low Priority
 

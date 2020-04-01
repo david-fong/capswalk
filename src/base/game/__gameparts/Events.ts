@@ -155,7 +155,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         desc.dest.numTimesOccupied = (1 + dest.numTimesOccupied);
         desc.score = {
             value:     player.status.score + dest.scoreValue,
-            stockpile: player.status.unadjustedStockpile + dest.scoreValue,
+            rawHealth: player.status.rawHealth + dest.scoreValue,
         };
         desc.dest.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
 
@@ -235,7 +235,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             // If using relative values (which we are not), the below
             // should happen regardless of the order of receipt.
             player.status.score = desc.score!.value;
-            player.status.unadjustedStockpile = desc.score!.stockpile;
+            player.status.rawHealth = desc.score!.rawHealth;
 
             player.moveTo(dest);
             // Below is computationally the same as "(player.lastAcceptedRequestId)++"
@@ -258,7 +258,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     public processBubbleMakeRequest(desc: Bubble.MakeEvent): void {
         // TODO.impl
-        // - If successful, make sure to lower the stockpile field.
+        // - If successful, make sure to lower the health field.
         // - Make an abstract method in the OperatorPlayer class called in
         //   the top-level input processor for it to trigger this event.
         const bubbler = this.checkIncomingPlayerRequestId(desc);
