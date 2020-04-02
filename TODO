@@ -12,6 +12,9 @@
 
 ### High Priority
 
+1. Decide: Should I get rid of player classes? (human, chaser, runner, etc)?
+   - It seems like the focus will be on making the old `Chaser` artificial player behave like a human player in that they can be eliminated and act as teammates for human players. The boundary between them has blurred.
+   - But! I still kind of want to have a kind of artificial player that can't be killed in a more "survive for as long as possible" mode (instead of an "eliminate all other teams" mode), which I could implement as a subclass of `Chaser` whose `status` field has its `set rawHealth` to do nothing.
 1. Change client-facing multiplayer-game-setup so that: first, the joiner closes, then teams are chosen.
    - Rationale: get rid of team specification translation from socketIds to playerIds.
 1. Write out full specification for what qualifies the end of the game.

@@ -20,7 +20,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
-    declare public readonly status: OperatorPlayerStatus;
+    declare public readonly status: OperatorPlayerStatus<S>;
 
     /**
      * Invariant: always matches the prefix of the {@link LangSeq} of
@@ -45,8 +45,8 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
-    protected __createStatusObj(): OperatorPlayerStatus {
-        return new OperatorPlayerStatus();
+    protected __createStatusObj(): OperatorPlayerStatus<S> {
+        return new OperatorPlayerStatus(this);
     }
 
 
@@ -96,9 +96,9 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
             key = this.lang.remapKey(key);
             if (!(Lang.Seq.REGEXP.test(key))) {
                 throw new RangeError(`The implementation of input transformation`
-                    + ` in the language \"${this.lang.name}\" did not follow the`
-                    + ` rule of producing output matching the regular expression`
-                    + ` \"${Lang.Seq.REGEXP.source}\".`
+                + ` in the language \"${this.lang.name}\" did not follow the rule`
+                + ` of producing output matching the regular expression`
+                + ` \"${Lang.Seq.REGEXP.source}\".`
                 );
             }
         } else {
@@ -136,7 +136,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      *
      * @override
      */
-    public moveTo(dest: Player<S>["hostTile"]): void {
+    public moveTo(dest: Tile<S>): void {
         // Clear my `seqBuffer` first:
         this.#seqBuffer = "";
         super.moveTo(dest);
@@ -158,12 +158,12 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
 // TODO.impl make the overridden setters modify the HTML elements to
 // visually indicate the changes.
-class OperatorPlayerStatus extends PlayerStatus {
+class OperatorPlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
 
     public readonly playerDivElem: HTMLDivElement;
 
-    public constructor() {
-        super();
+    public constructor(player: Player<S>) {
+        super(player);
         {
             // TODO.design create a spotlight mask using the below CSS properties:
             // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
@@ -175,7 +175,7 @@ class OperatorPlayerStatus extends PlayerStatus {
         // super constructor resets fields, but will not render changes
         // to the UI like this extension class' overridden setters do):
         this.score = this.score;
-        this.rawHealth  = this.rawHealth;
+        this.rawHealth = this.rawHealth;
     }
 
 

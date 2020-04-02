@@ -19,7 +19,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
     public readonly teamId: Player.Team.Id;
 
-    public readonly status: PlayerStatus;
+    public readonly status: PlayerStatus<S>;
 
     public lastAcceptedRequestId: number;
 
@@ -47,8 +47,8 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.requestInFlight = false;
     }
 
-    protected __createStatusObj(): PlayerStatus {
-        return new PlayerStatus();
+    protected __createStatusObj(): PlayerStatus<S> {
+        return new PlayerStatus(this);
     }
 
 
@@ -77,12 +77,12 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      */
     protected abstract __abstractMakeMovementRequest(dest: Tile<S>): void;
 
-    public get teammates(): Player.Team<S> {
+    public get team(): Player.Team<S> {
         return this.game.teams[this.teamId];
     }
 
     public isTeammate(other: Player<S>): boolean {
-        return this.teammates.members.includes(other);
+        return this.team.members.includes(other);
     }
 
 }
