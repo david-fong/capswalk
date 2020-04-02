@@ -35,14 +35,14 @@ export namespace Bubble {
 
         public readonly playerId: Player.Id;
 
-        public lastAcceptedRequestId: number;
+        public playerLastAcceptedRequestId: number;
 
         public constructor(
             playerId: Player.Id,
             lastAcceptedRequestId: number,
         ) {
             this.playerId = playerId;
-            this.lastAcceptedRequestId = lastAcceptedRequestId;
+            this.playerLastAcceptedRequestId = lastAcceptedRequestId;
         }
 
     }

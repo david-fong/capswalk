@@ -92,10 +92,10 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         // Construct players:
         this.players = this.createPlayers(desc);
         if (desc.operatorIndex) {
-            (this.operator as OperatorPlayer<S>) = this.players.get({
+            (this.operator as Player<S>) = this.players.get({
                 family: Player.Family.HUMAN,
                 number: desc.operatorIndex!,
-            }) as OperatorPlayer<S>;
+            });
         }
         const teams: Array<Array<Player<S>>> = [];
         (this.players.values.flat() as ReadonlyArray<Player<S>>).forEach((player) => {

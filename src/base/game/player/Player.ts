@@ -30,9 +30,9 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         super(game, desc.playerId);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {
-            throw new RangeError( `Username \"${desc.username}\"`
-                + ` does not match the required regular expression,`
-                + ` \"${Player.Username.REGEXP.source}\".`
+            throw new RangeError(`Username \"${desc.username}\"`
+            + ` does not match the required regular expression,`
+            + ` \"${Player.Username.REGEXP.source}\".`
             );
         }
         this.username = desc.username;

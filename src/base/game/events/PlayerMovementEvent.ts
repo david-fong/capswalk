@@ -3,38 +3,50 @@ import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
 
+
+export type TileModificationEvent<S extends Coord.System> = {
+    readonly coord: Coord.Bare<S>;
+
+    /**
+     * The requester should set this field to the highest value they
+     * received from any previous responses from the server. In normal
+     * cases (no message reordering), this should be equal to the last
+     * value seen in the response from the server.
+     *
+     * The server should respond with the increment of this value. A
+     * movement event causes a shuffle-in at the destination position,
+     * which can affect whether another player intending to move to
+     * the same position can do so. For this reason, the server should
+     * reject requests where the requester has not received changes
+     * involving a shuffle-in at their desired destination. This is
+     * not mandatory, but preferred behaviour.
+     */
+    numTimesOccupied: number;
+
+    newRawHealthOnFloor?: Player.Health.Raw;
+
+    /**
+     * Any value assigned by the requester to this field should be
+     * ignored by the server.
+     *
+     * The server must set this to describe the new values to be
+     * shuffled-in to the destination tile.
+     */
+    newCharSeqPair?: Lang.CharSeqPair;
+}
+
+
 /**
- * ## One Fantastic Nightmare of a Problem to Solve
+ * ## Player Movement Event
  *
- * This single methodless class is the ship that carries this project
- * a thousand troubles. Its job is to carry the _bare minimum amount_
- * of information needed to describe a client / operator's request for
- * movement to the server, and to broadcast an acceptance of the request
- * to all clients describing all changes to the game state that need to
- * be made in response to that request (or to otherwise reply to the
- * requester saying that their request was rejected), and must do so in
- * a way that allows the server and clients to infer whether any message
- * reordering occurred.
+ * This single method-less class carries the bare-minimum information
+ * needed to describe a client's request for movement to the server,
+ * and to broadcast an acceptance of the request describing all changes
+ * to the game state that must be made (or to otherwise direct-reply
+ * the requester in case of request-rejection).
  *
- * This is my first time working with client-server interactions, and
- * I find myself face-to-face with a deliciously maddening problem: A
- * client's game state should, as a general trend, follow in the wake
- * of changes to the server's master copy of the game's state. At the
- * very beginning of the game, the server broadcasts a dump of the
- * game's initial state to all clients in that game. Afterwards, any
- * such dumping is not desirable: not only would it lack in elegance,
- * but it would take precious time, possibly enough to leave the dump
- * receiver in the same predicament of having missed updates.
- *
- * Game state management has to be robust enough to detect and handle
- * requests that arrive out of order- both at the server side, and at
- * the client side as responses and updates arrive, and to synchronize
- * every possible outcome of what I am calling the _dreaded adversarial
- * scenario_. Using socket.io, if all clients immediately upgrade to
- * use websockets for their underlying transport, then it is safe to
- * assume that emits from the server will arrive to the clients in the
- * same order. But, there are no absolute guarantees that clients will
- * support this, so we have to design accordingly.
+ * It must do so in a way that allows the server and clients to infer
+ * whether any message reordering occurred.
  *
  * ### The Problem in Summary
  *
@@ -47,30 +59,13 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
  *   requests processed.
  * - Nothing should ever happen in the client copies of the game that
  *   doesn't happen in the master copy at the server. Ie. Since game-
- *   state-dumps are out of the question, any corruption / desync of
+ *   state-dumps are out of the question, any corruption / de-sync of
  *   the client's copy of the game is considered fatal and completely
  *   unrecoverable.
  * - As a bonus, it would be nice to bake in a mechanism to prevent
  *   malicious or unintended spam from a trigger-happy client without
  *   excessively / unnecessarily throttling the request-making ability
  *   or throughput of any clients.
- *
- * ### The Dreaded Adversarial Scenario
- *
- * ```txt
- * ---------------------------------
- * |  Server copy  |  Client copy  |
- * |---------------|---------------|
- * |    A  B  C    |    A  B  C    |
- * |       D       |       D       |
- * ---------------------------------
- * ```
- *
- * Imagine that a moment in time, on both the server and client copies
- * of the game state, there is a player `p1` on tile `A`, and a player
- * `p2` on tile `D`.
- *
- *
  */
 export class PlayerMovementEvent<S extends Coord.System> implements PlayerGeneratedRequest {
 
@@ -91,46 +86,19 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
     /**
      * @see Player#lastAcceptedRequestId
      */
-    public lastAcceptedRequestId: number;
+    public playerLastAcceptedRequestId: number;
 
     /**
      * Any value assigned by the requester to this field should be
      * ignored by the server. The server should respond with the new
      * values taken on by the player for these fields.
      */
-    public score?: {
-        value:     Player.Health.Raw;
+    public newPlayerHealth?: {
+        score:     Player.Health.Raw;
         rawHealth: Player.Health.Raw;
     } = undefined;
 
-    public dest: {
-        coord: Coord.Bare<S>;
-
-        /**
-         * The requester should set this field to the highest value they
-         * received from any previous responses from the server. In normal
-         * cases (no message reordering), this should be equal to the last
-         * value seen in the response from the server.
-         *
-         * The server should respond with the increment of this value. A
-         * movement event causes a shuffle-in at the destination position,
-         * which can affect whether another player intending to move to
-         * the same position can do so. For this reason, the server should
-         * reject requests where the requester has not received changes
-         * involving a shuffle-in at their desired destination. This is
-         * not mandatory, but preferred behaviour.
-         */
-        numTimesOccupied: number;
-
-        /**
-         * Any value assigned by the requester to this field should be
-         * ignored by the server.
-         *
-         * The server must set this to describe the new values to be
-         * shuffled-in to the destination tile.
-         */
-        newCharSeqPair?: Lang.CharSeqPair;
-    };
+    public readonly dest: TileModificationEvent<S>;
 
     public constructor(
         playerId: Player.Id,
@@ -138,11 +106,12 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
         destTile: Tile<S>,
     ) {
         this.playerId = playerId;
-        this.lastAcceptedRequestId = lastAcceptedRequestId;
+        this.playerLastAcceptedRequestId = lastAcceptedRequestId;
         this.dest = {
-            coord: destTile.coord,
-            numTimesOccupied: destTile.numTimesOccupied,
-            newCharSeqPair: undefined,
+            coord:              destTile.coord,
+            numTimesOccupied:   destTile.numTimesOccupied,
+            newCharSeqPair:     undefined,
+            newRawHealthOnFloor:undefined,
         };
     }
 

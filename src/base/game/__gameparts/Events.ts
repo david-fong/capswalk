@@ -1,6 +1,6 @@
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "../player/Player";
-import type { Game } from "../Game";
+import { Game } from "../Game";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerMovementEvent } from "../events/PlayerMovementEvent";
@@ -65,19 +65,31 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
 
     /**
+     * Perform checks on an incoming event request for some action that
+     * a player can perform while the game is playing (ie. not paused
+     * or over).
      *
      * @param desc -
-     * @returns The player specified by the given ID, or a falsy value
-     *      if the player is still bubbling, in which case the request
-     *      should probably be rejected.
-     * @throws `RangeError` if the request was made before receiving an
-     *      acknowledgement for the previous request, or if the given
-     *      ID does not belong to any existing player.
+     * @returns
+     * The player specified by the given ID, or undefined if the
+     * game is not playing, in which case the event request should
+     * be rejected.
+     *
+     * @throws
+     * `RangeError` if the request was made before receiving an
+     * acknowledgement for the previous request, or if the given ID
+     * does not belong to any existing player.
      */
-    private checkIncomingPlayerRequestId(desc: PlayerGeneratedRequest): Player<S> | undefined {
+    private managerCheckGamePlayingRequest(desc: PlayerGeneratedRequest): Player<S> | undefined {
+        if (this.status !== Game.Status.PLAYING) {
+            return undefined;
+        }
         const player = this.players.get(desc.playerId);
-        if (desc.lastAcceptedRequestId !== player.lastAcceptedRequestId) {
-            throw new RangeError((desc.lastAcceptedRequestId < player.lastAcceptedRequestId)
+        if (!player) {
+            throw new Error("No such player exists.");
+        }
+        if (desc.playerLastAcceptedRequestId !== player.lastAcceptedRequestId) {
+            throw new RangeError((desc.playerLastAcceptedRequestId < player.lastAcceptedRequestId)
             ? ("Clients should not make requests until they have"
                 + " received my response to their last request.")
             : ("Client seems to have incremented the request ID"
@@ -131,9 +143,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * to be made.
      */
     public processMoveRequest(desc: PlayerMovementEvent<S>): void {
-        const player = this.checkIncomingPlayerRequestId(desc);
+        const player = this.managerCheckGamePlayingRequest(desc);
         if (!player) {
-            // Player is still bubbling. Reject the request:
+            // Reject the request:
             this.processMoveExecute(desc);
             return;
         }
@@ -144,22 +156,24 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             // enforce stronger client-experience consistency: they cannot
             // move somewhere where they have not realized the `LangSeq` has
             // changed.
-            this.processMoveExecute(desc);
+            this.processMoveExecute(desc); // Reject the request.
             return;
         }
 
         /**
          * Set response fields according to spec in `PlayerMovementEvent`:
          */
-        desc.lastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
-        desc.dest.numTimesOccupied = (1 + dest.numTimesOccupied);
-        desc.score = {
-            value:     player.status.score + dest.scoreValue,
+        desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
+        desc.newPlayerHealth = {
+            score:     player.status.score     + dest.scoreValue,
             rawHealth: player.status.rawHealth + dest.scoreValue,
         };
+        desc.dest.numTimesOccupied = (1 + dest.numTimesOccupied);
+        desc.dest.newRawHealthOnFloor = 0;
         desc.dest.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
 
-        // We are all go! Do it.
+        // Accept the request, and trigger calculation
+        // and enactment of the requested changes:
         desc.eventId = this.eventRecord.length;
         this.processMoveExecute(desc);
     }
@@ -203,7 +217,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             dest.scoreValue = 0;
         };
 
-        const clientEventLag = desc.lastAcceptedRequestId - player.lastAcceptedRequestId;
+        const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
         if (clientEventLag > 1) {
             // Out of order receipt: Already received more recent request responses.
             if (player === this.operator) {
@@ -234,12 +248,12 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             executeBasicTileUpdates();
             // If using relative values (which we are not), the below
             // should happen regardless of the order of receipt.
-            player.status.score = desc.score!.value;
-            player.status.rawHealth = desc.score!.rawHealth;
+            player.status.score = desc.newPlayerHealth!.score;
+            player.status.rawHealth = desc.newPlayerHealth!.rawHealth;
 
             player.moveTo(dest);
             // Below is computationally the same as "(player.lastAcceptedRequestId)++"
-            player.lastAcceptedRequestId = desc.lastAcceptedRequestId;
+            player.lastAcceptedRequestId = desc.playerLastAcceptedRequestId;
 
         } else {
             throw new RangeError("Apparent negative lag. The operator may"
@@ -261,13 +275,13 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // - If successful, make sure to lower the health field.
         // - Make an abstract method in the OperatorPlayer class called in
         //   the top-level input processor for it to trigger this event.
-        const bubbler = this.checkIncomingPlayerRequestId(desc);
+        const bubbler = this.managerCheckGamePlayingRequest(desc);
         if (!bubbler) {
-            // Player is still bubbling. Reject the request:
+            // Reject the request:
             this.processBubbleMakeExecute(desc);
             return;
         }
-        desc.lastAcceptedRequestId = (1 + bubbler.lastAcceptedRequestId);
+        desc.playerLastAcceptedRequestId = (1 + bubbler.lastAcceptedRequestId);
 
         // We are all go! Do it.
         desc.eventId = this.eventRecord.length;
@@ -330,18 +344,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // kind of event is made in such a way that it is always accepted.
         this.recordEvent(desc);
         const bubbler = this.players.get(desc.bubblerId);
-
-        // // Enact effects on supposedly un-downed enemy players:
-        // desc.playersToDown.forEach((enemyId) => {
-        //     const enemy = this.players.get(enemyId);
-        //     enemy.status.isDowned = true;
-        // }, this);
-
-        // // Enact effects on supposedly downed teammates:
-        // desc.playersToRaise.forEach((teammateId) => {
-        //     const teammate = this.players.get(teammateId);
-        //     teammate.status.isDowned = false;
-        // }, this);
 
         return;
     }

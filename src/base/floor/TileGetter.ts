@@ -40,6 +40,9 @@ export class TileGetter<S extends CoordSys, A extends Arguments<S>> {
 
 export namespace TileGetter {
 
+    /**
+     * A Tile should always be a source-to and destination-from itself.
+     */
     export interface Source<S extends CoordSys, A extends Arguments<S> = [Coord.Bare<S>]> {
         __getTileAt(...args: A): Tile<S>;
         // NOTE: do we need to add an optional argument for range?

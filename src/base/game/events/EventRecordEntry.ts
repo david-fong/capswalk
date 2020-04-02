@@ -76,6 +76,6 @@ export interface PlayerGeneratedRequest extends EventRecordEntry {
      * In both these cases, the server may throw an assertion error for
      * debugging purposes.
      */
-    lastAcceptedRequestId: number;
+    playerLastAcceptedRequestId: number;
 
 };
