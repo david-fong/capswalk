@@ -165,8 +165,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
          */
         desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
         desc.newPlayerHealth = {
-            score:     player.status.score     + dest.scoreValue,
-            rawHealth: player.status.rawHealth + dest.scoreValue,
+            score:     player.status.score     + dest.rawHealthOnFloor,
+            rawHealth: player.status.rawHealth + dest.rawHealthOnFloor,
         };
         desc.dest.numTimesOccupied = (1 + dest.numTimesOccupied);
         desc.dest.newRawHealthOnFloor = 0;
@@ -198,57 +198,52 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     protected processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
         const player = this.players.get(desc.playerId);
-        const dest = this.grid.tile.at(desc.dest.coord);
+        const dest   = this.grid.tile.at(desc.dest.coord);
+        const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
+
+        if (desc.eventId !== EventRecordEntry.EVENT_ID_REJECT) {
+            // Rejected request. Implies either that: clientEventLag === 0,
+            // or that (at Game Manager): dest.numTimesOccupied > desc.destNumTimesOccupied
+            if (clientEventLag === 1) {
+                player.requestInFlight = false;
+            }
+            return; // Short-circuit!
+        }
+        this.recordEvent(desc);
+
+        // Helper function:
         const executeBasicTileUpdates = (): void => {
-            this.recordEvent(desc);
-            // The `LangCharSeqPair` shuffle changes must take effect
-            // before updating the operator's seqBuffer if need be.
             dest.setLangCharSeq(desc.dest.newCharSeqPair!);
-            // Refresh the operator's `seqBuffer`:
-            if (this.operator && // Ignore if ServerGame
-                player !== this.operator &&
-                !(this.operator.tile.destsFrom().get.includes(dest))) {
-                // Do this if moving into the vicinity of the operator
-                // and the requester is not the operator. This operation
-                // is necessary to maintain the `seqBuffer` invariant.
+            // Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
+            if (this.operator !== undefined && player !== this.operator
+                && !(this.operator.tile.destsFrom().get.includes(dest))) {
+                // ^Do this when non-operator moves into the the operator's vicinity.
                 this.operator.seqBufferAcceptKey("");
             }
             dest.numTimesOccupied = desc.dest.numTimesOccupied;
-            dest.scoreValue = 0;
+            dest.rawHealthOnFloor = desc.dest.newRawHealthOnFloor!;
         };
-
-        const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
         if (clientEventLag > 1) {
             // Out of order receipt: Already received more recent request responses.
             if (player === this.operator) {
-                throw new Error("Operator will never receive their own updates"
-                + " out of order because they only have one unacknowledged"
-                + " in-flight request.");
+                // Operator never receives their own updates out of
+                // order  because they only have one unacknowledged
+                // in-flight request at a time.
+                throw new Error("This never happens. See comment in source.");
             }
             if (dest.numTimesOccupied < desc.dest.numTimesOccupied) {
                 executeBasicTileUpdates();
             }
-            return;
+            return; // Short-circuit!
         }
-
-        // Okay- the response we received is for the specified player's most
-        // recent request pending this acknowledgement. We either got accepted
-        // or rejected now. If the response is a rejection to the operator,
-        // then the below line should be the only change made by this call.
+        // Okay- the response is an acceptance of the specified player's most
+        // recent request pending this acknowledgement.
         player.requestInFlight = false;
-
-        if (desc.eventId !== EventRecordEntry.EVENT_ID_REJECT) {
-            // ie. clientEventLag === 0 ||
-            // (at Game Manager:) dest.numTimesOccupied > desc.destNumTimesOccupied
-            return;
-
-        } else if ((player === this.operator)
+        if ((player === this.operator)
             ? (clientEventLag === 1)
             : (clientEventLag <= 1)) {
             executeBasicTileUpdates();
-            // If using relative values (which we are not), the below
-            // should happen regardless of the order of receipt.
-            player.status.score = desc.newPlayerHealth!.score;
+            player.status.score     = desc.newPlayerHealth!.score;
             player.status.rawHealth = desc.newPlayerHealth!.rawHealth;
 
             player.moveTo(dest);
@@ -256,7 +251,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             player.lastAcceptedRequestId = desc.playerLastAcceptedRequestId;
 
         } else {
-            throw new RangeError("Apparent negative lag. The operator may"
+            throw new Error("Apparent negative lag. The operator may"
             + " somehow have tampered with their request counter.");
         }
     }

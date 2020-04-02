@@ -52,7 +52,7 @@ export class Tile<S extends Coord.System> {
     public reset(): void {
         this.evictOccupant();
         this.numTimesOccupied = 0;
-        this.scoreValue = 0;
+        this.rawHealthOnFloor = 0;
 
         // Note that this is also redone done as part of the game's
         // reset sequence when shuffling tiles. This also done here
@@ -95,11 +95,11 @@ export class Tile<S extends Coord.System> {
 
 
 
-    public get scoreValue(): Player.Health.Raw {
+    public get rawHealthOnFloor(): Player.Health.Raw {
         return this._scoreValue;
     }
 
-    public set scoreValue(score: Player.Health.Raw) {
+    public set rawHealthOnFloor(score: Player.Health.Raw) {
         this._scoreValue = score;
     }
 

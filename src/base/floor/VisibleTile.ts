@@ -68,7 +68,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     /**
      * @override
      */
-    public set scoreValue(score: number) {
+    public set rawHealthOnFloor(score: number) {
         this._scoreValue = score;
         this.tileCellElem.dataset[HtmlHooks.Tile.Dataset.SCORE_VALUE] = score.toString();
     }
