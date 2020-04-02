@@ -101,5 +101,19 @@ console.log(Object.values(new B()))
 console.log([].pop())
 // yup. it just returns undefined.
 
+class ScaledAccessorClass {
+    #internalString = ".initialString";
+    counter = 0;
+    get string() {
+        return this.#internalString + ".getterArtifact" + (this.counter++).toString();
+    }
+    set string(newString) {
+        this.#internalString = newString;
+    }
+}
+const weirdAccessorInstance = new ScaledAccessorClass;
+const accessorPlusEqualsResult = (weirdAccessorInstance).string += ".additionalString";
+console.log(accessorPlusEqualsResult, weirdAccessorInstance.string)
+
 debugger
 

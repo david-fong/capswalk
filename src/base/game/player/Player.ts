@@ -17,7 +17,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
     public readonly username: Player.Username;
 
-    public readonly teamId: Player.TeamId;
+    public readonly teamId: Player.Team.Id;
 
     public readonly status: PlayerStatus;
 
@@ -77,12 +77,12 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      */
     protected abstract __abstractMakeMovementRequest(dest: Tile<S>): void;
 
-    public get teammates(): ReadonlyArray<Player<S>> {
+    public get teammates(): Player.Team<S> {
         return this.game.teams[this.teamId];
     }
 
     public isTeammate(other: Player<S>): boolean {
-        return this.teammates.includes(other);
+        return this.teammates.members.includes(other);
     }
 
 }
@@ -95,7 +95,32 @@ export namespace Player {
 
     export type Id = PlayerTypeDefs.Id;
 
-    export type TeamId = number;
+    export class Team<S extends Coord.System> {
+        public readonly id: Team.Id;
+        public readonly members: ReadonlyArray<Player<S>>;
+        /**
+         * Indicates the order (relative to other teams) in which this
+         * team was to have all its members downed at the same time at
+         * least once. Once a team is soft-eliminated, they can continue
+         * playing as normal, but there is no going back. The game ends
+         * when all teams but one have been soft-eliminated.
+         *
+         * A comparatively smaller value denotes having been soft-
+         * eliminated at an earlier point in the game. The value zero
+         * denotes _not-having-been-soft-eliminated-yet_.
+         */
+        public softEliminationOrder: number;
+        public constructor(teamId: Team.Id, members: ReadonlyArray<Player<S>>) {
+            this.id = teamId;
+            this.members = members;
+        }
+        public reset(): void {
+            this.softEliminationOrder = 0;
+        }
+    }
+    export namespace Team {
+        export type Id = number;
+    }
 
     export type SocketId = string;
 
@@ -150,7 +175,7 @@ export namespace Player {
         export type PreIdAssignment = {
             readonly username: Username;
             readonly socketId: SocketId;
-            readonly teamId: TeamId;
+            readonly teamId: Team.Id;
         };
 
         /**
@@ -166,7 +191,7 @@ export namespace Player {
             // (to play nice with array representations):
             const allTeamIds = playerDescs.values
                 .flatMap((members) => members.map((member) => member.teamId));
-            const teamIdSquasherMap: Record<TeamId, TeamId>
+            const teamIdSquasherMap: Record<Team.Id, Team.Id>
                 = Array.from(new Set(allTeamIds))
                 .reduce((prev, unSquashedId, index) => {
                     prev[unSquashedId] = index;
@@ -176,7 +201,7 @@ export namespace Player {
             for (const [ family, familyMembers, ] of playerDescs.entries) {
                 familyMembers.forEach((memberDesc, numberInFamily) => {
                     // Note for below casts: cast-off readonly.
-                    (memberDesc.teamId as Player.TeamId) = teamIdSquasherMap[memberDesc.teamId];
+                    (memberDesc.teamId as Player.Team.Id) = teamIdSquasherMap[memberDesc.teamId];
                     ((memberDesc as CtorArgs).playerId as Id) = {
                         family: family,
                         number: numberInFamily,

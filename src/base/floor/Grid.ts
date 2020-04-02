@@ -18,6 +18,10 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 
     public readonly dimensions: Grid.Dimensions<S>;
 
+    public get area(): number {
+        return this.static.getArea(this.dimensions);
+    }
+
     public readonly tile: TileGetter<S,[Coord.Bare<S>]>;
 
     protected readonly getImplementation = Grid.getImplementation;

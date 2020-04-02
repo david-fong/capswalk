@@ -139,11 +139,13 @@ export class GroupSession {
             return failureReasons;
         }
         // Everything needed to create a game exists. Let's do it!
+        // TODO.impl Everything with current placeholder of `undefined!`.
         this.currentGame = new ServerGame(this.namespace, {
             coordSys,
             gridDimensions,
-            languageName: undefined!, // TODO.impl uncast [!] and fetch language singleton object.
-            langBalancingScheme: undefined!, // TODO.impl
+            averageRawHealthOnFloorPerTile: undefined!,
+            languageName: undefined!,
+            langBalancingScheme: undefined!,
             operatorIndex: undefined,
             playerDescs: {
                 [Player.Family.HUMAN]: Object.values(this.sockets).map((socket) => {
@@ -153,7 +155,6 @@ export class GroupSession {
                         teamId: socket.teamId!,
                     };
                 }),
-                // TODO.impl add descs for artificial players,
                 [Player.Family.CHASER]: undefined!,
             },
         });
@@ -176,7 +177,7 @@ export namespace GroupSession {
      */
     export type Socket = io.Socket & {
         username?: Player.Username;
-        teamId?: Player.TeamId;
+        teamId?: Player.Team.Id;
         updateId: number; // initial value = 0
     };
 

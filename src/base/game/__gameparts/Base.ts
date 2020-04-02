@@ -9,6 +9,8 @@ import type { PuppetPlayer } from "../player/PuppetPlayer";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 
+import { English } from "lang/impl/English";
+
 import { Game } from "../Game";
 
 
@@ -37,7 +39,13 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
 
-    public readonly teams: ReadonlyArray<ReadonlyArray<Player<S>>>;
+    public readonly averageHealthOnFloor: Player.Health.Raw;
+    private currentHealthOnFloor: Player.Health.Raw; // TODO.impl maintain this field. and use it to spawn in health.
+
+    /**
+     * Indexable by team ID's.
+     */
+    public readonly teams: ReadonlyArray<Player.Team<S>>;
 
     #status: Game.Status;
 
@@ -62,9 +70,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
         });
+        this.averageHealthOnFloor = desc.averageRawHealthOnFloorPerTile * this.grid.area;
 
-        // TODO.design set default language (must be done before call to reset):
-        //this.lang = import(desc.languageName);
+        // TODO.design How to get a Language implementation by name?
+        // Below is a placeholder waiting for the above todo item to be sorted out.
+        this.lang = English.Lowercase.getInstance();
 
         // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
         const minLangLeaves = this.grid.static.getAmbiguityThreshold();
@@ -94,7 +104,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             }
             teams[player.teamId].push(player);
         });
-        this.teams = teams;
+        this.teams = teams.map((teammateArray, teamId) => {
+            return new Player.Team<S>(teamId, teammateArray);
+        });
     }
 
     /**
@@ -103,6 +115,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      */
     public reset(): void {
         this.grid.reset();
+        this.currentHealthOnFloor = 0.0;
 
         // Reset hit-counters in the current language:
         // This must be done before shuffling so that the previous
@@ -113,6 +126,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.grid.forEachTile(this.shuffleLangCharSeqAt, this);
 
         // Reset and spawn players:
+        this.teams.forEach((team) => team.reset());
         const spawnPoints = this.grid.static.getSpawnCoords(
             this.players.counts,
             this.grid.dimensions,
@@ -141,7 +155,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): Game<G,S>["players"] {
         const playerDescs: Player.Bundle<Player.CtorArgs>
             = (this.gameType === Game.Type.CLIENT)
-            ? new Player.Bundle(gameDesc.playerDescs as Player.Bundle.Contents<Player.CtorArgs>)
+            ? new Player.Bundle(gameDesc.playerDescs as Game.CtorArgs<Game.Type.CLIENT,S>["playerDescs"])
             : Player.CtorArgs.finalizePlayerIds(new Player.Bundle(gameDesc.playerDescs))
             ;
         return new Player.Bundle(playerDescs.keys.reduce

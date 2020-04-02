@@ -1,4 +1,4 @@
-import { Server } from "./Server";
+import { SnakeyServer } from "./SnakeyServer";
 
-const server = new Server("localhost");
+const server = new SnakeyServer("localhost");
 console.log(server);

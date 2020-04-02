@@ -10,6 +10,7 @@ const game = new OfflineGame<Coord.System.EUCLID2>({
         height: 20,
         width:  20,
     },
+    averageRawHealthOnFloorPerTile: 1.0 / 70.0,
     langBalancingScheme: BalancingScheme.WEIGHT,
     languageName: "English",
     operatorIndex: 0,

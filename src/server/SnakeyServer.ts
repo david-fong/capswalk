@@ -9,7 +9,7 @@ import { GroupSession } from "./GroupSession";
 /**
  * Creates and performs management operations on {@link ServerGame}s.
  */
-export class Server {
+export class SnakeyServer {
 
     protected readonly http: http.Server;
     protected readonly app:  app.Application;
@@ -28,7 +28,7 @@ export class Server {
      * @param port - The port number on which to host the Server.
      *          Defaults to {@link Defs.SERVER_PORT}.
      */
-    public constructor(host: string, port: number = Server.DEFAULT_PORT) {
+    public constructor(host: string, port: number = SnakeyServer.DEFAULT_PORT) {
         this.app    = app();
         this.http   = http.createServer({}, this.app);
         this.io     = io(this.http);
@@ -41,7 +41,7 @@ export class Server {
             res.sendFile(`${__dirname}/../../index.html`);
         });
 
-        this.io.of(Server.SocketIoNamespaces.GROUP_JOINER)
+        this.io.of(SnakeyServer.SocketIoNamespaces.GROUP_JOINER)
             .on("connection", this.onGameHostsConnection);
     }
 
@@ -98,7 +98,7 @@ export class Server {
         if (!(GroupSession.SessionName.REGEXP.test(groupName))) {
             return null;
         }
-        const sessionName: string = `${Server.SocketIoNamespaces.GROUP_LOBBY}/${groupName}`;
+        const sessionName: string = `${SnakeyServer.SocketIoNamespaces.GROUP_LOBBY}/${groupName}`;
         if (this.allGroupSessions.has(sessionName)) {
             return null;
         }
@@ -109,7 +109,7 @@ export class Server {
 
 
 
-export namespace Server {
+export namespace SnakeyServer {
 
     export const DEFAULT_PORT = <const>8080;
 
