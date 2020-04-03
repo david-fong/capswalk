@@ -99,7 +99,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             });
         }
         const teams: Array<Array<Player<S>>> = [];
-        (this.players.values.flat() as ReadonlyArray<Player<S>>).forEach((player) => {
+        (this.players.flat.forEach((player) => {
             if (!teams[player.teamId]) {
                 teams[player.teamId] = [];
             }
@@ -190,6 +190,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         if (this.status !== Game.Status.PAUSED) {
             throw new Error("Can only resume a game that is currently paused.");
         }
+        this.players.flat.forEach((player) => {
+            player.__abstractNotifyThatGameStatusBecamePlaying();
+        })
         this.__abstractStatusBecomePlaying();
         this.#status = Game.Status.PLAYING;
     }
@@ -197,6 +200,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         if (this.status !== Game.Status.PLAYING) {
             throw new Error("Can only pause a game that is currently playing.");
         }
+        this.players.flat.forEach((player) => {
+            player.__abstractNotifyThatGameStatusBecamePaused();
+        })
         this.__abstractStatusBecomePaused();
         this.#status = Game.Status.PAUSED;
     }
@@ -204,6 +210,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         if (this.status !== Game.Status.PLAYING) {
             throw new Error("Can only end a game that is currently playing.");
         }
+        this.players.flat.forEach((player) => {
+            player.__abstractNotifyThatGameStatusBecameOver();
+        })
         this.__abstractStatusBecomeOver();
         this.#status = Game.Status.OVER;
     }

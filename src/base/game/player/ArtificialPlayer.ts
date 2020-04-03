@@ -42,9 +42,39 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      */
     protected abstract computeDesiredDestination(): Coord<S>;
 
+    /**
+     * Units are in milliseconds.
+     */
     protected abstract computeNextMovementTimer(): number;
 
+    public __abstractNotifyThatGameStatusBecamePlaying(): void {
+        this.movementContinueWithInitialDelay();
+    }
+    public __abstractNotifyThatGameStatusBecamePaused(): void {
+        this.game.cancelTimeout(this.scheduledMovementCallbackId);
+        this.scheduledMovementCallbackId = undefined!;
+    }
+    public __abstractNotifyThatGameStatusBecameOver(): void {
+        this.game.cancelTimeout(this.scheduledMovementCallbackId);
+        this.scheduledMovementCallbackId = undefined!;
+    }
 
+    private movementContinue(): void {
+        this.makeMovementRequest(this.game.grid.getUntToward(
+            this.coord, this.computeDesiredDestination()
+        ));
+        this.movementContinueWithInitialDelay();
+    }
+
+    private movementContinueWithInitialDelay(): void {
+        // Schedule the next movement.
+        this.scheduledMovementCallbackId = this.game.setTimeout(
+            this.movementContinue,
+            this.computeNextMovementTimer(),
+            // * Callback function arguments go here.
+        );
+        return;
+    }
 
     /**
      * Unlike {@link HumanPlayer}s, `ArtificialPlayer`s are managed

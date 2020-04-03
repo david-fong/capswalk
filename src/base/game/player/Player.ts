@@ -51,6 +51,10 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         return new PlayerStatus(this);
     }
 
+    public __abstractNotifyThatGameStatusBecamePlaying(): void {}
+    public __abstractNotifyThatGameStatusBecamePaused():  void {}
+    public __abstractNotifyThatGameStatusBecameOver():    void {}
+
 
     /**
      * Called automatically by {@link OperatorPlayer#seqBufferAcceptKey}

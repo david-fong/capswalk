@@ -71,6 +71,10 @@ export namespace Player {
             return Object.entries(this.contents) as Array<[Family,ReadonlyArray<T>]>;
         }
 
+        public get flat(): ReadonlyArray<T> {
+            return this.values.flat() as ReadonlyArray<T>;
+        }
+
         public get counts(): Bundle.Counts {
             return Object.freeze(this.entries.reduce
                     <Record<Player.Family, number>>
