@@ -37,7 +37,7 @@ export class Tile<S extends Coord.System> {
      * request at a time when they had not yet received information
      * related to the game-state in affected-zones of their request.
      */
-    public numTimesOccupied: number;
+    public lastKnownUpdateId: number;
 
     /**
      * _Does not call reset._
@@ -51,7 +51,7 @@ export class Tile<S extends Coord.System> {
 
     public reset(): void {
         this.evictOccupant();
-        this.numTimesOccupied = 0;
+        this.lastKnownUpdateId = 0;
         this.rawHealthOnFloor = 0;
 
         // Note that this is also redone done as part of the game's

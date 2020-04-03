@@ -12,6 +12,7 @@ import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { English } from "lang/impl/English";
 
 import { Game } from "../Game";
+import { TileModificationEvent } from "game/events/PlayerMovementEvent";
 
 
 /**
@@ -123,7 +124,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.lang.reset();
 
         // Shuffle everything:
-        this.grid.forEachTile(this.shuffleLangCharSeqAt, this);
+        this.grid.forEachTile(this.dryRunShuffleLangCharSeqAt, this);
 
         // Reset and spawn players:
         this.teams.forEach((team) => team.reset());
@@ -224,7 +225,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * A {@link Lang.CharSeqPair} that can be used as a replacement
      * for that currently being used by `tile`.
      */
-    public shuffleLangCharSeqAt(targetTile: Tile<S>): Lang.CharSeqPair {
+    public dryRunShuffleLangCharSeqAt(targetTile: Tile<S>): Lang.CharSeqPair {
         // First, clear values for the target tile so its current
         // (to-be-previous) values don't get unnecessarily avoided.
         targetTile.setLangCharSeq(Lang.CharSeqPair.NULL);
@@ -238,6 +239,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
                 .filter((seq) => seq), // no falsy values.
             this.langBalancingScheme,
         );
+    }
+
+    // TODO.design what arguments must this take?
+    public dryRunSpawnRawHealthOnFloor(): ReadonlyArray<TileModificationEvent<S>> {
+        return undefined!;
     }
 
 

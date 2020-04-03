@@ -3,7 +3,7 @@ import type { Player } from "../player/Player";
 import { Game } from "../Game";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
-import { PlayerMovementEvent } from "../events/PlayerMovementEvent";
+import { PlayerMovementEvent, TileModificationEvent } from "../events/PlayerMovementEvent";
 import { Bubble } from "../events/Bubble";
 import { EventRecordEntry } from "../events/EventRecordEntry";
 
@@ -81,6 +81,11 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * does not belong to any existing player.
      */
     private managerCheckGamePlayingRequest(desc: PlayerGeneratedRequest): Player<S> | undefined {
+        if (this.gameType === Game.Type.CLIENT) {
+            throw new TypeError(""
+            + "This operation is unsupported for"
+            + " non-game-manager implementations.");
+        }
         if (this.status !== Game.Status.PLAYING) {
             return undefined;
         }
@@ -125,6 +130,26 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         this.eventRecord[id] = desc;
     }
 
+    private executeTileModificationsEvent(
+        desc: TileModificationEvent<S>,
+        doCheckOperatorSeqBuffer: boolean = true,
+    ): void {
+        const dest = this.grid.tile.at(desc.coord);
+        if (dest.lastKnownUpdateId < desc.lastKnownUpdateId) {
+            if (desc.newCharSeqPair) {
+                dest.setLangCharSeq(desc.newCharSeqPair);
+                // Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
+                if (doCheckOperatorSeqBuffer && this.operator !== undefined
+                    && !(this.operator.tile.destsFrom().get.includes(dest))) {
+                    // ^Do this when non-operator moves into the the operator's vicinity.
+                    this.operator.seqBufferAcceptKey("");
+                }
+            }
+            dest.lastKnownUpdateId = desc.lastKnownUpdateId;
+            dest.rawHealthOnFloor  = desc.newRawHealthOnFloor!;
+        }
+    }
+
 
 
     /**
@@ -151,7 +176,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         }
         const dest = this.grid.tile.at(desc.dest.coord);
         if (dest.isOccupied ||
-            dest.numTimesOccupied !== desc.dest.numTimesOccupied) {
+            dest.lastKnownUpdateId !== desc.dest.lastKnownUpdateId) {
             // The occupancy counter check is not essential, but it helps
             // enforce stronger client-experience consistency: they cannot
             // move somewhere where they have not realized the `LangSeq` has
@@ -160,17 +185,17 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             return;
         }
 
-        /**
-         * Set response fields according to spec in `PlayerMovementEvent`:
-         */
+        // Set response fields according to spec in `PlayerMovementEvent`:
         desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
         desc.newPlayerHealth = {
             score:     player.status.score     + dest.rawHealthOnFloor,
             rawHealth: player.status.rawHealth + dest.rawHealthOnFloor,
         };
-        desc.dest.numTimesOccupied = (1 + dest.numTimesOccupied);
+        desc.dest.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
         desc.dest.newRawHealthOnFloor = 0;
-        desc.dest.newCharSeqPair = this.shuffleLangCharSeqAt(dest);
+        desc.dest.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
+        // TODO.impl spawn in some new raw health to the floor:
+        desc.tilesWithRawHealthUpdates = this.dryRunSpawnRawHealthOnFloor();
 
         // Accept the request, and trigger calculation
         // and enactment of the requested changes:
@@ -210,30 +235,20 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             return; // Short-circuit!
         }
         this.recordEvent(desc);
+        desc.tilesWithRawHealthUpdates!.forEach((desc) => {
+            this.executeTileModificationsEvent(desc)
+        });
 
-        // Helper function:
-        const executeBasicTileUpdates = (): void => {
-            dest.setLangCharSeq(desc.dest.newCharSeqPair!);
-            // Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
-            if (this.operator !== undefined && player !== this.operator
-                && !(this.operator.tile.destsFrom().get.includes(dest))) {
-                // ^Do this when non-operator moves into the the operator's vicinity.
-                this.operator.seqBufferAcceptKey("");
-            }
-            dest.numTimesOccupied = desc.dest.numTimesOccupied;
-            dest.rawHealthOnFloor = desc.dest.newRawHealthOnFloor!;
-        };
         if (clientEventLag > 1) {
-            // Out of order receipt: Already received more recent request responses.
+            // ===== Out of order receipt (client-side) =====
+            // Already received more recent request responses.
             if (player === this.operator) {
                 // Operator never receives their own updates out of
-                // order  because they only have one unacknowledged
+                // order because they only have one unacknowledged
                 // in-flight request at a time.
                 throw new Error("This never happens. See comment in source.");
             }
-            if (dest.numTimesOccupied < desc.dest.numTimesOccupied) {
-                executeBasicTileUpdates();
-            }
+            this.executeTileModificationsEvent(desc.dest, player !== this.operator);
             return; // Short-circuit!
         }
         // Okay- the response is an acceptance of the specified player's most
@@ -242,7 +257,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         if ((player === this.operator)
             ? (clientEventLag === 1)
             : (clientEventLag <= 1)) {
-            executeBasicTileUpdates();
+            this.executeTileModificationsEvent(desc.dest, player !== this.operator);
             player.status.score     = desc.newPlayerHealth!.score;
             player.status.rawHealth = desc.newPlayerHealth!.rawHealth;
 
@@ -251,8 +266,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             player.lastAcceptedRequestId = desc.playerLastAcceptedRequestId;
 
         } else {
-            throw new Error("Apparent negative lag. The operator may"
-            + " somehow have tampered with their request counter.");
+            // Apparent negative lag. The operator may somehow have
+            // tampered with their player's request counter.
+            throw new Error("This never happens. See comment in source");
         }
     }
 

@@ -21,7 +21,7 @@ export type TileModificationEvent<S extends Coord.System> = {
      * involving a shuffle-in at their desired destination. This is
      * not mandatory, but preferred behaviour.
      */
-    numTimesOccupied: number;
+    lastKnownUpdateId: number;
 
     newRawHealthOnFloor?: Player.Health.Raw;
 
@@ -30,7 +30,8 @@ export type TileModificationEvent<S extends Coord.System> = {
      * ignored by the server.
      *
      * The server must set this to describe the new values to be
-     * shuffled-in to the destination tile.
+     * shuffled-in to the destination tile. It may set the field
+     * to `undefined` if it wants to leave the CSP unchanged.
      */
     newCharSeqPair?: Lang.CharSeqPair;
 }
@@ -100,6 +101,8 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
 
     public readonly dest: TileModificationEvent<S>;
 
+    public tilesWithRawHealthUpdates?: ReadonlyArray<TileModificationEvent<S>> = undefined;
+
     public constructor(
         playerId: Player.Id,
         lastAcceptedRequestId: number,
@@ -109,7 +112,7 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
         this.playerLastAcceptedRequestId = lastAcceptedRequestId;
         this.dest = {
             coord:              destTile.coord,
-            numTimesOccupied:   destTile.numTimesOccupied,
+            lastKnownUpdateId:   destTile.lastKnownUpdateId,
             newCharSeqPair:     undefined,
             newRawHealthOnFloor:undefined,
         };
