@@ -37,39 +37,17 @@ export namespace Bubble {
 
         public playerLastAcceptedRequestId: number;
 
+        public affectedNeighbours?: ReadonlyArray<{
+            readonly playerId: Player.Id;
+            readonly newRawHealth: Player.Health.Raw;
+        }> = undefined;
+
         public constructor(
             playerId: Player.Id,
             lastAcceptedRequestId: number,
         ) {
             this.playerId = playerId;
             this.playerLastAcceptedRequestId = lastAcceptedRequestId;
-        }
-
-    }
-
-
-
-    /**
-     * This descriptor is only ever used to send event information from
-     * the server to clients. Since this event is triggered by the Game
-     * Manager (as a timed callback to a bubble-make request), there is
-     * no exposed method to process a request.
-     */
-    export class PopEvent implements EventRecordEntry {
-
-        public static readonly EVENT_NAME = "bubble-pop";
-
-        // For this class, the request should never get rejected.
-        public eventId: number;
-
-        public bubblerId: Player.Id;
-
-        public playersToDown: ReadonlyArray<Player.Id>;
-
-        public playersToRaise: ReadonlyArray<Player.Id>;
-
-        public constructor(bubblerId: Player.Id) {
-            this.bubblerId = bubblerId;
         }
 
     }

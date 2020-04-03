@@ -1,7 +1,7 @@
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import { OperatorPlayer } from "game/player/OperatorPlayer";
-import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
+import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 import type { ClientGame } from "./ClientGame";
 
 
@@ -32,8 +32,8 @@ export class OnlineOperatorPlayer<S extends Coord.System> extends OperatorPlayer
         // ServerGame handles with processMoveRequest.
         // Arguments must follow that function signature.
         this.game.socket.emit(
-            PlayerMovementEvent.EVENT_NAME,
-            new PlayerMovementEvent(
+            PlayerActionEvent.Movement.EVENT_NAME,
+            new PlayerActionEvent.Movement(
                 this.playerId,
                 this.lastAcceptedRequestId,
                 dest,

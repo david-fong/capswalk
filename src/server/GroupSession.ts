@@ -177,7 +177,7 @@ export namespace GroupSession {
      */
     export type Socket = io.Socket & {
         username?: Player.Username;
-        teamId?: Player.Team.Id;
+        teamId?: Player.Team.Id; // These input values can be messy and non-continuous. They will be cleaned later.
         updateId: number; // initial value = 0
     };
 

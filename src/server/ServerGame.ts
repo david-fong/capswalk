@@ -7,7 +7,7 @@ import { Game } from "game/Game";
 import type { Player } from "game/player/Player";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
-import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
+import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 import { Bubble } from "game/events/Bubble";
 import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
@@ -59,9 +59,9 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
         this.players.contents.HUMAN.map((player) => this.socketBundle.get(player.playerId))
         .forEach((socket) => {
             // Attach the movement request handler:
-            socket.removeAllListeners(PlayerMovementEvent.EVENT_NAME);
+            socket.removeAllListeners(PlayerActionEvent.Movement.EVENT_NAME);
             socket.on(
-                PlayerMovementEvent.EVENT_NAME,
+                PlayerActionEvent.Movement.EVENT_NAME,
                 this.processMoveRequest,
             );
             // Attach the bubble-making request handler:
@@ -123,20 +123,20 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
     /**
      * @override
      */
-    public processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
+    public processMoveExecute(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
         super.processMoveExecute(desc);
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
             this.socketBundle.get(desc.playerId).emit(
-                PlayerMovementEvent.EVENT_NAME,
+                PlayerActionEvent.Movement.EVENT_NAME,
                 desc,
             );
         } else {
             // Request was accepted.
             // Pass on change descriptor to all clients:
             this.namespace.emit(
-                PlayerMovementEvent.EVENT_NAME,
+                PlayerActionEvent.Movement.EVENT_NAME,
                 desc,
             );
         }
@@ -156,24 +156,6 @@ export class ServerGame<S extends Coord.System> extends Game<G,S> {
             // Pass on change descriptor to all clients:
             this.namespace.emit(
                 Bubble.MakeEvent.EVENT_NAME,
-                desc,
-            );
-        }
-    }
-
-    /**
-     * @override
-     */
-    public processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
-        super.processBubblePopExecute(desc);
-
-        if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
-            throw new Error("This should never happen.");
-        } else {
-            // Request was accepted.
-            // Pass on change descriptor to all clients:
-            this.namespace.emit(
-                Bubble.PopEvent.EVENT_NAME,
                 desc,
             );
         }

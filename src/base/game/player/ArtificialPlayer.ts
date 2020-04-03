@@ -1,7 +1,7 @@
 import type { Coord, Tile } from "floor/Tile";
 import { Game } from "game/Game";
 import { Player } from "./Player";
-import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
+import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
 import { Chaser } from "./artificials/Chaser";
 
@@ -85,7 +85,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      */
     protected __abstractMakeMovementRequest(dest: Tile<S>): void {
         this.game.processMoveRequest(
-            new PlayerMovementEvent(
+            new PlayerActionEvent.Movement(
                 this.playerId,
                 this.lastAcceptedRequestId,
                 dest,

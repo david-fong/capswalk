@@ -1,7 +1,7 @@
 import type { Coord, Tile } from "floor/Tile";
 import type { Player as PlayerTypeDefs } from "utils/TypeDefs";
 
-import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
+import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 import { PlayerSkeleton } from "./PlayerSkeleton";
 import { PlayerStatus } from "./PlayerStatus";
 import { Game } from "game/Game";
@@ -43,7 +43,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     public reset(spawnTile: Tile<S>): void {
         super.reset(spawnTile);
         this.status.reset();
-        this.lastAcceptedRequestId = PlayerMovementEvent.INITIAL_REQUEST_ID;
+        this.lastAcceptedRequestId = PlayerActionEvent.Movement.INITIAL_REQUEST_ID;
         this.requestInFlight = false;
     }
 

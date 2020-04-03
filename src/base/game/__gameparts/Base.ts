@@ -12,7 +12,7 @@ import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { English } from "lang/impl/English";
 
 import { Game } from "../Game";
-import { TileModificationEvent } from "game/events/PlayerMovementEvent";
+import { TileModificationEvent } from "game/events/PlayerActionEvent";
 
 
 /**
@@ -99,7 +99,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             });
         }
         const teams: Array<Array<Player<S>>> = [];
-        (this.players.flat.forEach((player) => {
+        this.players.flat.forEach((player) => {
             if (!teams[player.teamId]) {
                 teams[player.teamId] = [];
             }

@@ -3,7 +3,7 @@ import type { Player } from "../player/Player";
 import { Game } from "../Game";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
-import { PlayerMovementEvent, TileModificationEvent } from "../events/PlayerMovementEvent";
+import { PlayerActionEvent, TileModificationEvent } from "../events/PlayerActionEvent";
 import { Bubble } from "../events/Bubble";
 import { EventRecordEntry } from "../events/EventRecordEntry";
 
@@ -167,7 +167,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * state at the time of the request. Is modified to describe changes
      * to be made.
      */
-    public processMoveRequest(desc: PlayerMovementEvent<S>): void {
+    public processMoveRequest(desc: PlayerActionEvent.Movement<S>): void {
         const player = this.managerCheckGamePlayingRequest(desc);
         if (!player) {
             // Reject the request:
@@ -221,7 +221,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * @param desc
      * A descriptor for all changes mandated by the player-movement event.
      */
-    protected processMoveExecute(desc: Readonly<PlayerMovementEvent<S>>): void {
+    protected processMoveExecute(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
         const player = this.players.get(desc.playerId);
         const dest   = this.grid.tile.at(desc.dest.coord);
         const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
@@ -297,9 +297,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // We are all go! Do it.
         desc.eventId = this.eventRecord.length;
         this.processBubbleMakeExecute(desc);
-
-        // Pop:
-        this.processBubblePopRequest(bubbler);
     }
 
     /**
@@ -318,45 +315,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         if (desc.eventId !== EventRecordEntry.EVENT_ID_REJECT) {
             this.recordEvent(desc); // Record the event.
         }
-    }
-
-
-
-    /**
-     * Unlike other request processors, this will never fail since it
-     * is not triggered on the client's side, and instead, by the Game
-     * Manager. Ie. There will never be any issues due to reordering
-     * on the way to the Game Manager. Never called externally (hence,
-     * the private access modifier).
-     *
-     * @param bubbler -
-     */
-    private processBubblePopRequest(bubbler: Player<S>): void {
-        const desc = new Bubble.PopEvent(bubbler.playerId);
-
-        desc.playersToDown = bubbler.tile.destsFrom().occupied.get.map((tile) => tile.occupantId!);
-
-        // desc.playersToRaise = get in-range downed players who are in any of my teams
-
-        // We are all go! Do it. Note that we still require separation
-        // between request-handling and execution because the server
-        // needs to additionally notify clients of changes to be made.
-        desc.eventId = this.eventRecord.length;
-        this.processBubblePopExecute(desc);
-    }
-
-    /**
-     *
-     * @param desc -
-     */
-    // TODO.impl revamp for bubble mechanic changes.
-    protected processBubblePopExecute(desc: Readonly<Bubble.PopEvent>): void {
-        // Record the event. No need to check acceptance since this
-        // kind of event is made in such a way that it is always accepted.
-        this.recordEvent(desc);
-        const bubbler = this.players.get(desc.bubblerId);
-
-        return;
     }
 
 }

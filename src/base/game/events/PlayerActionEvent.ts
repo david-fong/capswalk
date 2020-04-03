@@ -37,6 +37,9 @@ export type TileModificationEvent<S extends Coord.System> = {
 }
 
 
+
+export namespace PlayerActionEvent {
+
 /**
  * ## Player Movement Event
  *
@@ -68,7 +71,7 @@ export type TileModificationEvent<S extends Coord.System> = {
  *   excessively / unnecessarily throttling the request-making ability
  *   or throughput of any clients.
  */
-export class PlayerMovementEvent<S extends Coord.System> implements PlayerGeneratedRequest {
+export class Movement<S extends Coord.System> implements PlayerGeneratedRequest {
 
     public static readonly EVENT_NAME = "player-movement";
 
@@ -117,5 +120,7 @@ export class PlayerMovementEvent<S extends Coord.System> implements PlayerGenera
             newRawHealthOnFloor:undefined,
         };
     }
+
+}
 
 }

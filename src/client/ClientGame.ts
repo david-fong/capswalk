@@ -12,7 +12,7 @@ import { PuppetPlayer } from "game/player/PuppetPlayer";
 import type { OperatorPlayer } from "game/player/OperatorPlayer";
 import { OnlineOperatorPlayer } from "./OnlineOperatorPlayer";
 
-import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
+import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 import { Bubble } from "game/events/Bubble";
 
 
@@ -56,20 +56,15 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
         this.settings = LocalGameSettings.getInstance();
         this.socket = socket;
 
-        this.socket.off(PlayerMovementEvent.EVENT_NAME);
+        this.socket.off(PlayerActionEvent.Movement.EVENT_NAME);
         this.socket.on(
-            PlayerMovementEvent.EVENT_NAME,
+            PlayerActionEvent.Movement.EVENT_NAME,
             this.processMoveExecute
         );
         this.socket.off(Bubble.MakeEvent.EVENT_NAME);
         this.socket.on(
             Bubble.MakeEvent.EVENT_NAME,
             this.processBubbleMakeExecute,
-        );
-        this.socket.off(Bubble.PopEvent.EVENT_NAME);
-        this.socket.on(
-            Bubble.PopEvent.EVENT_NAME,
-            this.processBubblePopExecute,
         );
 
         this.reset();
@@ -121,7 +116,7 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
      * @override
      * @throws `TypeError` Unconditionally.
      */
-    public processMoveRequest(desc: PlayerMovementEvent<S>): never {
+    public processMoveRequest(desc: PlayerActionEvent.Movement<S>): never {
         throw new TypeError("This operation unsupported for the ClientGame class.");
     }
 

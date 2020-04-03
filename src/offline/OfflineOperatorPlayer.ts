@@ -1,7 +1,7 @@
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import { OperatorPlayer } from "game/player/OperatorPlayer";
-import { PlayerMovementEvent } from "game/events/PlayerMovementEvent";
+import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 import type { OfflineGame } from "../offline/OfflineGame";
 
 /**
@@ -30,7 +30,7 @@ export class OfflineOperatorPlayer<S extends Coord.System> extends OperatorPlaye
      */
     protected __abstractMakeMovementRequest(dest: Tile<S>): void {
         this.game.processMoveRequest(
-            new PlayerMovementEvent(
+            new PlayerActionEvent.Movement(
                 this.playerId,
                 this.lastAcceptedRequestId,
                 dest
