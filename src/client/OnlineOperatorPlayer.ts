@@ -32,7 +32,7 @@ export class OnlineOperatorPlayer<S extends Coord.System> extends OperatorPlayer
         // ServerGame handles with processMoveRequest.
         // Arguments must follow that function signature.
         this.game.socket.emit(
-            PlayerActionEvent.Movement.EVENT_NAME,
+            PlayerActionEvent.EVENT_NAME.Movement,
             new PlayerActionEvent.Movement(
                 this.playerId,
                 this.lastAcceptedRequestId,

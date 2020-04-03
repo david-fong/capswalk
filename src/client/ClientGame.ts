@@ -13,7 +13,6 @@ import type { OperatorPlayer } from "game/player/OperatorPlayer";
 import { OnlineOperatorPlayer } from "./OnlineOperatorPlayer";
 
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
-import { Bubble } from "game/events/Bubble";
 
 
 type G = Game.Type.CLIENT;
@@ -56,14 +55,14 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
         this.settings = LocalGameSettings.getInstance();
         this.socket = socket;
 
-        this.socket.off(PlayerActionEvent.Movement.EVENT_NAME);
+        this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);
         this.socket.on(
-            PlayerActionEvent.Movement.EVENT_NAME,
+            PlayerActionEvent.EVENT_NAME.Movement,
             this.processMoveExecute
         );
-        this.socket.off(Bubble.MakeEvent.EVENT_NAME);
+        this.socket.off(PlayerActionEvent.EVENT_NAME.Bubble);
         this.socket.on(
-            Bubble.MakeEvent.EVENT_NAME,
+            PlayerActionEvent.EVENT_NAME.Bubble,
             this.processBubbleMakeExecute,
         );
 
@@ -128,7 +127,7 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
      * @override
      * @throws `TypeError` Unconditionally.
      */
-    public processBubbleMakeRequest(desc: Bubble.MakeEvent): never {
+    public processBubbleMakeRequest(desc: PlayerActionEvent.Bubble): never {
         throw new TypeError("This operation unsupported for the ClientGame class.");
     }
 

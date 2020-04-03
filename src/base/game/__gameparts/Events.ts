@@ -4,7 +4,6 @@ import { Game } from "../Game";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerActionEvent, TileModificationEvent } from "../events/PlayerActionEvent";
-import { Bubble } from "../events/Bubble";
 import { EventRecordEntry } from "../events/EventRecordEntry";
 
 import { GameBase } from "./Base";
@@ -275,13 +274,13 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
 
     /**
-     * @see Bubble.MakeEvent
+     * @see PlayerActionEvent.Bubble
      *
      * Should never be called by {@link ClientGame}.
      *
      * @param desc - Is modified to describe changes to be made.
      */
-    public processBubbleMakeRequest(desc: Bubble.MakeEvent): void {
+    public processBubbleMakeRequest(desc: PlayerActionEvent.Bubble): void {
         // TODO.impl
         // - If successful, make sure to lower the health field.
         // - Make an abstract method in the OperatorPlayer class called in
@@ -306,7 +305,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      *
      * @param desc -
      */
-    protected processBubbleMakeExecute(desc: Readonly<Bubble.MakeEvent>): void {
+    protected processBubbleMakeExecute(desc: Readonly<PlayerActionEvent.Bubble>): void {
         // TODO.impl Visually highlight the affected tiles for the specified estimate-duration.
         const bubbler = this.players.get(desc.playerId);
 

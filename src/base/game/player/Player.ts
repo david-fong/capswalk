@@ -43,7 +43,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     public reset(spawnTile: Tile<S>): void {
         super.reset(spawnTile);
         this.status.reset();
-        this.lastAcceptedRequestId = PlayerActionEvent.Movement.INITIAL_REQUEST_ID;
+        this.lastAcceptedRequestId = PlayerActionEvent.INITIAL_REQUEST_ID;
         this.requestInFlight = false;
     }
 
