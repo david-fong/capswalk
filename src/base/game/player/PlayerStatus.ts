@@ -2,8 +2,6 @@ import type { Coord } from "floor/Tile";
 import { Player } from "./Player";
 
 
-type Health = Player.Health.Raw;
-
 /**
  * This abstracts acts of modification upon a player's state, allowing
  * extension classes to override setters to perform additional tasks
@@ -13,8 +11,8 @@ type Health = Player.Health.Raw;
 export class PlayerStatus<S extends Coord.System> {
 
     protected readonly player: Player<S>; // Circular field reference.
-    #score:     Health;
-    #rawHealth: Health;
+    #score:  Player.Health;
+    #health: Player.Health;
 
     public constructor(player: Player<S>) {
         this.player = player;
@@ -22,22 +20,22 @@ export class PlayerStatus<S extends Coord.System> {
 
     public reset(): void {
         this.score      = 0;
-        this.rawHealth  = 0;
+        this.health  = 0;
     }
 
 
-    public get score(): Health {
+    public get score(): Player.Health {
         return this.#score;
     }
-    public set score(newValue: Health) {
+    public set score(newValue: Player.Health) {
         this.#score = newValue;
     }
 
-    public get rawHealth(): Health {
-        return this.#rawHealth;
+    public get health(): Player.Health {
+        return this.#health;
     }
-    public set rawHealth(newRawHealth: Health) {
-        this.#rawHealth = newRawHealth;
+    public set health(newHealth: Player.Health) {
+        this.#health = newHealth;
         const team = this.player.team;
         if (this.isDowned && team.softEliminationOrder === 0) {
             // Right before this downing event, the team has not been
@@ -62,7 +60,7 @@ export class PlayerStatus<S extends Coord.System> {
     // This should be a getter here. Easy now that I added the circular reference to the Player.
 
     public get isDowned(): boolean {
-        return this.rawHealth < 0.0;
+        return this.health < 0.0;
     }
 
 }

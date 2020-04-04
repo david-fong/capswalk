@@ -23,7 +23,7 @@ export type TileModificationEvent<S extends Coord.System> = {
      */
     lastKnownUpdateId: number;
 
-    newRawHealthOnFloor?: Player.Health.Raw;
+    newFreeHealth?: Player.Health;
 
     /**
      * Any value assigned by the requester to this field should be
@@ -70,7 +70,7 @@ export namespace PlayerActionEvent {
 
         public affectedNeighbours?: ReadonlyArray<{
             readonly playerId: Player.Id;
-            readonly newRawHealth: Player.Health.Raw;
+            readonly newHealth: Player.Health;
         }> = undefined;
 
         public constructor(
@@ -122,13 +122,13 @@ export namespace PlayerActionEvent {
          * values taken on by the player for these fields.
          */
         public newPlayerHealth?: {
-            score:     Player.Health.Raw;
-            rawHealth: Player.Health.Raw;
+            score:     Player.Health;
+            health: Player.Health;
         } = undefined;
 
         public readonly dest: TileModificationEvent<S>;
 
-        public tilesWithRawHealthUpdates?: ReadonlyArray<TileModificationEvent<S>> = undefined;
+        public tilesWithHealthUpdates?: ReadonlyArray<TileModificationEvent<S>> = undefined;
 
         public constructor(
             playerId: Player.Id,
@@ -140,7 +140,7 @@ export namespace PlayerActionEvent {
                 coord:              destTile.coord,
                 lastKnownUpdateId:  destTile.lastKnownUpdateId,
                 newCharSeqPair:     undefined,
-                newRawHealthOnFloor:undefined,
+                newFreeHealth:undefined,
             };
         }
     }

@@ -143,7 +143,7 @@ export class GroupSession {
         this.currentGame = new ServerGame(this.namespace, {
             coordSys,
             gridDimensions,
-            averageRawHealthOnFloorPerTile: undefined!,
+            averageFreeHealthPerTile: undefined!,
             languageName: undefined!,
             langBalancingScheme: undefined!,
             operatorIndex: undefined,

@@ -23,11 +23,10 @@ export { Coord };
 export class Tile<S extends Coord.System> {
 
     public readonly coord: Coord<S>;
-    private _occupantId: Player.Id.Nullable;
-
-    private _langChar: Lang.Char;
-    private _langSeq:  Lang.Seq;
-    protected _scoreValue: Player.Health.Raw;
+    #occupantId: Player.Id.Nullable;
+    #freeHealth: Player.Health;
+    #langChar:  Lang.Char;
+    #langSeq:   Lang.Seq;
 
     /**
      * The number of times this `Tile` was occupied since the last
@@ -46,18 +45,17 @@ export class Tile<S extends Coord.System> {
      */
     public constructor(coord: Coord<S>) {
         this.coord = coord;
-        this._occupantId = Player.Id.NULL;
+        this.#occupantId = Player.Id.NULL;
     }
 
     public reset(): void {
         this.evictOccupant();
         this.lastKnownUpdateId = 0;
-        this.rawHealthOnFloor = 0;
+        this.freeHealth = 0;
 
-        // Note that this is also redone done as part of the game's
-        // reset sequence when shuffling tiles. This also done here
-        // because all `charSeqPair`s in tiles must be cleared before
-        // shuffling since initially, nothing needs to be avoided.
+        // This is also done when shuffling individual tiles throughout
+        // the game, but it is done here since initially, nothing needs
+        // to be avoided because no CSP's have been set yet.
         this.setLangCharSeq(Lang.CharSeqPair.NULL);
     }
 
@@ -78,7 +76,7 @@ export class Tile<S extends Coord.System> {
      * @param playerId -
      */
     public setOccupant(playerId: Player.Id): void {
-        this._occupantId = playerId;
+        this.#occupantId = playerId;
     }
 
     public get isOccupied(): boolean {
@@ -86,37 +84,37 @@ export class Tile<S extends Coord.System> {
     }
 
     public evictOccupant(): void {
-        this._occupantId = Player.Id.NULL;
+        this.#occupantId = Player.Id.NULL;
     }
 
     public get occupantId(): Player.Id.Nullable {
-        return this._occupantId;
+        return this.#occupantId;
     }
 
 
 
-    public get rawHealthOnFloor(): Player.Health.Raw {
-        return this._scoreValue;
+    public get freeHealth(): Player.Health {
+        return this.#freeHealth;
     }
 
-    public set rawHealthOnFloor(score: Player.Health.Raw) {
-        this._scoreValue = score;
+    public set freeHealth(score: Player.Health) {
+        this.#freeHealth = score;
     }
 
     /**
      * @override
      */
     public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
-        this._langChar = charSeqPair.char;
-        this._langSeq  = charSeqPair.seq;
+        this.#langChar = charSeqPair.char;
+        this.#langSeq  = charSeqPair.seq;
     }
 
     public get langChar(): Lang.Char {
-        return this._langChar;
+        return this.#langChar;
     }
 
     public get langSeq(): Lang.Seq {
-        return this._langSeq;
+        return this.#langSeq;
     }
 
 }

@@ -39,12 +39,6 @@ export namespace Player {
      * See the main documentation in game/player/Player.
      */
     export type Health = number;
-    export namespace Health {
-        /**
-         * See the main documentation in game/player/Player.
-         */
-        export type Raw = number;
-    }
 
     export class Bundle<T> {
 

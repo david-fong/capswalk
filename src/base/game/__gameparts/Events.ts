@@ -145,7 +145,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
                 }
             }
             dest.lastKnownUpdateId = desc.lastKnownUpdateId;
-            dest.rawHealthOnFloor  = desc.newRawHealthOnFloor!;
+            this.currentFreeHealth += desc.newFreeHealth! - dest.freeHealth;
+            // TODO.design the above line is not correct if reordering happens :(
+            dest.freeHealth = desc.newFreeHealth!;
         }
     }
 
@@ -187,14 +189,14 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // Set response fields according to spec in `PlayerMovementEvent`:
         desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
         desc.newPlayerHealth = {
-            score:     player.status.score     + dest.rawHealthOnFloor,
-            rawHealth: player.status.rawHealth + dest.rawHealthOnFloor,
+            score:  player.status.score  + dest.freeHealth,
+            health: player.status.health + dest.freeHealth,
         };
         desc.dest.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
-        desc.dest.newRawHealthOnFloor = 0;
+        desc.dest.newFreeHealth = 0;
         desc.dest.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
         // TODO.impl spawn in some new raw health to the floor:
-        desc.tilesWithRawHealthUpdates = this.dryRunSpawnRawHealthOnFloor();
+        desc.tilesWithHealthUpdates = this.dryRunSpawnFreeHealth();
 
         // Accept the request, and trigger calculation
         // and enactment of the requested changes:
@@ -234,7 +236,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             return; // Short-circuit!
         }
         this.recordEvent(desc);
-        desc.tilesWithRawHealthUpdates!.forEach((desc) => {
+        this.executeTileModificationsEvent(desc.dest, player !== this.operator);
+        desc.tilesWithHealthUpdates!.forEach((desc) => {
             this.executeTileModificationsEvent(desc)
         });
 
@@ -247,7 +250,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
                 // in-flight request at a time.
                 throw new Error("This never happens. See comment in source.");
             }
-            this.executeTileModificationsEvent(desc.dest, player !== this.operator);
             return; // Short-circuit!
         }
         // Okay- the response is an acceptance of the specified player's most
@@ -256,9 +258,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         if ((player === this.operator)
             ? (clientEventLag === 1)
             : (clientEventLag <= 1)) {
-            this.executeTileModificationsEvent(desc.dest, player !== this.operator);
             player.status.score     = desc.newPlayerHealth!.score;
-            player.status.rawHealth = desc.newPlayerHealth!.rawHealth;
+            player.status.health = desc.newPlayerHealth!.health;
 
             player.moveTo(dest);
             // Below is computationally the same as "(player.lastAcceptedRequestId)++"

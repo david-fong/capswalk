@@ -175,16 +175,16 @@ class OperatorPlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
         // super constructor resets fields, but will not render changes
         // to the UI like this extension class' overridden setters do):
         this.score = this.score;
-        this.rawHealth = this.rawHealth;
+        this.health = this.health;
     }
 
 
-    public set score(newValue: Player.Health.Raw) {
+    public set score(newValue: Player.Health) {
         super.score = newValue;
     }
 
-    public set rawHealth(newRawHealth: Player.Health.Raw) {
-        super.rawHealth = newRawHealth;
+    public set health(newHealth: Player.Health) {
+        super.health = newHealth;
         // TODO.design CSS integration for Player.isDowned rendering.
         // this.playerDivElem.dataset[HtmlHooks.Player.Dataset.IS_DOWNED] = this.isDowned;
     }

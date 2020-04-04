@@ -40,8 +40,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
 
-    public readonly averageHealthOnFloor: Player.Health.Raw;
-    private currentHealthOnFloor: Player.Health.Raw; // TODO.impl maintain this field. and use it to spawn in health.
+    public readonly averageFreeHealth: Player.Health;
+    protected currentFreeHealth: Player.Health; // TODO.impl maintain this field. and use it to spawn in health.
 
     /**
      * Indexable by team ID's.
@@ -71,7 +71,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
         });
-        this.averageHealthOnFloor = desc.averageRawHealthOnFloorPerTile * this.grid.area;
+        this.averageFreeHealth = desc.averageFreeHealthPerTile * this.grid.area;
 
         // TODO.design How to get a Language implementation by name?
         // Below is a placeholder waiting for the above todo item to be sorted out.
@@ -116,7 +116,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      */
     public reset(): void {
         this.grid.reset();
-        this.currentHealthOnFloor = 0.0;
+        this.currentFreeHealth = 0.0;
 
         // Reset hit-counters in the current language:
         // This must be done before shuffling so that the previous
@@ -251,7 +251,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     }
 
     // TODO.design what arguments must this take?
-    public dryRunSpawnRawHealthOnFloor(): ReadonlyArray<TileModificationEvent<S>> {
+    public dryRunSpawnFreeHealth(): ReadonlyArray<TileModificationEvent<S>> {
         return undefined!;
     }
 

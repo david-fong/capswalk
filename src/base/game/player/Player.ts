@@ -129,20 +129,11 @@ export namespace Player {
     export type SocketId = string;
 
     /**
-     * This is the adjusted form of `Health.Raw`. Done by linear scaling
-     * to account for headcount ratios between teams. It should not be
-     * used as a storage field in any representations or communications.
+     * Health be picked up from the floor where it is randomly spawned
+     * by the game manager. It can be used to attack enemy players, or
+     * to heal teammates.
      */
     export type Health = PlayerTypeDefs.Health;
-    export namespace Health {
-        /**
-         * The pure, unadjusted measure of a Player's health. It can
-         * be picked up from the floor where it is randomly spawned by
-         * the game manager. It can be used to attack enemy players, or
-         * to heal teammates.
-         */
-        export type Raw = PlayerTypeDefs.Health.Raw;
-    }
 
     export type Bundle<T> = PlayerTypeDefs.Bundle<T>;
 
