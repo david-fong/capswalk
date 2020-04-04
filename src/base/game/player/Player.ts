@@ -1,10 +1,12 @@
+import { Game } from "game/Game";
+
 import type { Coord, Tile } from "floor/Tile";
 import type { Player as PlayerTypeDefs } from "utils/TypeDefs";
+import type { GameBase } from "game/__gameparts/Base";
 
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 import { PlayerSkeleton } from "./PlayerSkeleton";
 import { PlayerStatus } from "./PlayerStatus";
-import { Game } from "game/Game";
 
 export { PlayerSkeleton };
 export { PlayerStatus };
@@ -26,7 +28,7 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     public requestInFlight: boolean;
 
 
-    public constructor(game: Game<any,S>, desc: Readonly<Player.CtorArgs>) {
+    public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc.playerId);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {

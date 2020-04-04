@@ -1,6 +1,6 @@
 import type { Coord } from "floor/Coord";
-import type { Game } from "game/Game";
 import type { Player } from "game/player/Player";
+import type { GameManager } from "game/__gameparts/Manager";
 import { ArtificialPlayer } from "../ArtificialPlayer";
 
 
@@ -11,7 +11,7 @@ import { ArtificialPlayer } from "../ArtificialPlayer";
 // TODO.impl
 export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 
-    protected constructor(game: Game<any,S>, desc: Player.CtorArgs) {
+    protected constructor(game: GameManager<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
     }
 

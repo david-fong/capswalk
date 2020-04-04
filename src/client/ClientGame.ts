@@ -1,18 +1,18 @@
 import * as io from "socket.io-client";
 
-import type { Coord } from "floor/Coord";
-import { VisibleTile } from "floor/VisibleTile";
-import { LocalGameSettings } from "settings/GameSettings";
-import { Grid } from "floor/Grid";
-import { VisibleGrid } from "floor/VisibleGrid";
 import { Game } from "game/Game";
 
-import type { Player } from "game/player/Player";
-import { PuppetPlayer } from "game/player/PuppetPlayer";
-import type { OperatorPlayer } from "game/player/OperatorPlayer";
+import { LocalGameSettings }    from "settings/GameSettings";
+import { Coord, VisibleTile }   from "floor/VisibleTile";
+import { VisibleGrid }          from "floor/VisibleGrid";
+
+import type { Player }          from "game/player/Player";
+import type { OperatorPlayer }  from "game/player/OperatorPlayer";
+import { PuppetPlayer }         from "game/player/PuppetPlayer";
 import { OnlineOperatorPlayer } from "./OnlineOperatorPlayer";
 
-import { PlayerActionEvent } from "game/events/PlayerActionEvent";
+import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
+import { GameEvents }           from "game/__gameparts/Events";
 
 
 type G = Game.Type.CLIENT;
@@ -22,7 +22,7 @@ type G = Game.Type.CLIENT;
  *
  * @extends Game
  */
-export class ClientGame<S extends Coord.System> extends Game<G,S> {
+export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
 
     protected settings: LocalGameSettings;
 
@@ -73,8 +73,8 @@ export class ClientGame<S extends Coord.System> extends Game<G,S> {
      * @override
      */
     public reset(): void {
-        // Bypass my direct parent's reset implementation.
-        Grid.prototype.reset.call(this);
+        // TODO.design Bypass my direct parent's reset implementation.
+        // Which parts? This is an old comment from way back when Game extended Grid :P
 
         // TODO.impl Wait for a GameStateDump from the ServerGame. Send ack.
         // this.socket.once(

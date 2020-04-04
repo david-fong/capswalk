@@ -5,14 +5,14 @@ import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
 
 import { Player } from "../player/Player";
-import type { PuppetPlayer } from "../player/PuppetPlayer";
+import { PuppetPlayer } from "../player/PuppetPlayer";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 
 import { English } from "lang/impl/English";
 
-import { Game } from "../Game";
 import { TileModificationEvent } from "game/events/PlayerActionEvent";
+import { Game } from "../Game";
 
 
 /**
@@ -153,7 +153,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * @param gameDesc -
      * @returns A bundle of the constructed players.
      */
-    private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): Game<G,S>["players"] {
+    private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameBase<G,S>["players"] {
         const playerDescs: Player.Bundle<Player.CtorArgs>
             = (this.gameType === Game.Type.CLIENT)
             ? new Player.Bundle(gameDesc.playerDescs as Game.CtorArgs<Game.Type.CLIENT,S>["playerDescs"])
@@ -179,7 +179,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     }
 
     protected abstract __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;
-    protected abstract __createHumanPlayer(desc: Player.CtorArgs): PuppetPlayer<S>;
+    protected __createHumanPlayer(desc: Player.CtorArgs): PuppetPlayer<S> {
+        return new PuppetPlayer(this, desc);
+    }
     protected abstract __createArtifPlayer(desc: Player.CtorArgs):
     (G extends Game.Type.Manager ? ArtificialPlayer<S> : PuppetPlayer<S>);
 

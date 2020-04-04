@@ -3,6 +3,8 @@ import type { Lang as LangTypeDefs } from "utils/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
 
+export { Coord } from "./Tile";
+
 
 /**
  * Implicitly handles visuals with help from CSS.

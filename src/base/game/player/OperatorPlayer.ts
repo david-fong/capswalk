@@ -1,9 +1,12 @@
 import { HtmlHooks } from "../../utils/HtmlHooks";
 import { Lang } from "lang/Lang";
+import { Game } from "game/Game";
+
 import type { Coord, Tile } from "floor/Tile";
 import type { VisibleTile } from "floor/VisibleTile";
+import type { GameBase } from "game/__gameparts/Base";
+
 import { Player, PlayerStatus } from "./Player";
-import { Game } from "game/Game";
 
 
 /**
@@ -29,7 +32,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
     #seqBuffer: Lang.Seq;
 
 
-    public constructor(game: Game<any,S>, desc: Readonly<Player.CtorArgs>) {
+    public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc);
     }
 
@@ -93,10 +96,10 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
             return;
         }
         if (key) {
-            key = this.lang.remapKey(key);
+            key = this.game.lang.remapKey(key);
             if (!(Lang.Seq.REGEXP.test(key))) {
                 throw new RangeError(`The implementation of input transformation`
-                + ` in the language \"${this.lang.name}\" did not follow the rule`
+                + ` in the language \"${this.game.lang.name}\" did not follow the rule`
                 + ` of producing output matching the regular expression`
                 + ` \"${Lang.Seq.REGEXP.source}\".`
                 );
@@ -146,10 +149,6 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     public get seqBuffer(): Lang.Seq {
         return this.#seqBuffer;
-    }
-
-    public get lang(): Lang {
-        return this.game.lang;
     }
 
 }

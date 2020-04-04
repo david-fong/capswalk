@@ -1,9 +1,11 @@
 import { Player as PlayerTypeDefs } from "utils/TypeDefs";
+import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
-import { TileGetter } from "floor/TileGetter";
 import type { Player } from "./Player";
-import { Game } from "game/Game";
+import type { GameBase } from "game/__gameparts/Base";
+
+import { TileGetter } from "floor/TileGetter";
 
 
 /**
@@ -20,7 +22,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends PlayerTypeD
     /**
      * The game object that this player belongs to.
      */
-    public readonly game: Game<any,S>;
+    public readonly game: GameBase<any,S>;
 
     #hostTile: Tile<S>;
 
@@ -28,7 +30,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends PlayerTypeD
 
 
 
-    protected constructor(game: Game<any,S>, playerId: Player.Id) {
+    protected constructor(game: GameBase<any,S>, playerId: Player.Id) {
         super();
         if (Math.trunc(playerId.number) !== playerId.number) {
             throw new RangeError("Player ID's must be integer values.");
@@ -82,9 +84,9 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends PlayerTypeD
                 // Should never happen.
                 throw new Error("Linkage between player and occupied tile disagrees.");
             }
-            // Otherwise, this corner case is guaranteed to follow the events
-            // described in the below comment: at this `ClientGame`, `p2` will
-            // move off of the `Tile` currently occupied by this `Player`.
+            /* Otherwise, this corner case is guaranteed to follow the events
+            described in the below comment: at this `ClientGame`, `p2` will
+            move off of the `Tile` currently occupied by this `Player`. */
         }
         else {
             // Move off of current host `Tile`:
@@ -97,16 +99,16 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends PlayerTypeD
                 // rejects requests to move onto an occupied `Tile`.
                 throw new Error("Only one player can occupy a tile at a time.");
             }
-            // Otherwise, this is actually possible in a variant of the _DAS_
-            // where another `Player` `p2` moves to `B`, I receive that update,
-            // then `p2` makes a request to move to `C`, which the Game Manager
-            // accepts and begins to notify my `ClientGame` of, but between the
-            // time that the GM accepts the request and when I receive the update,
-            // I make a request to move to `B`, which gets accepted by the GM,
-            // and because I might not be using websockets as my underlying
-            // transport, I receive the update for my own request first, which
-            // would appear to my `ClientGame` as if I was moving onto the `Tile`
-            // occupied by `p2`.
+            /* Otherwise, this is actually possible in a variant of the _DAS_
+            where another `Player` `p2` moves to `B`, I receive that update,
+            then `p2` makes a request to move to `C`, which the Game Manager
+            accepts and begins to notify my `ClientGame` of, but between the
+            time that the GM accepts the request and when I receive the update,
+            I make a request to move to `B`, which gets accepted by the GM,
+            and because I might not be using websockets as my underlying
+            transport, I receive the update for my own request first, which
+            would appear to my `ClientGame` as if I was moving onto the `Tile`
+            occupied by `p2`. */
         }
         else {
             // Move to occupy the destination `Tile`:

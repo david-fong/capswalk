@@ -3,46 +3,24 @@ import type { BalancingScheme } from "lang/LangSeqTreeNode";
 
 import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
-
 import type { Player } from "./player/Player";
-
-import { GameEvents } from "./__gameparts/Events";
-import { PuppetPlayer } from "game/player/PuppetPlayer";
 
 
 /**
  *
  *
- * This class performs the majority of management over {@link Tile}
+ * These classes perform the majority of management over {@link Tile}
  * and {@link Player} objects. As a design choice, players can only join
  * a game before it starts, and actions such as changing the language or
  * difficulty require a restart. These actions that require a restart will
  * all be exposed to operators through a pre-game page. Other such actions
  * include: changing teams.
  *
- * An overview of subclasses:
- * Both {@link ClientGame} and {@link OfflineGame} use {@link VisualTile}s
- * while {@link ServerGame} uses {@link ServerTile}s. {@link ClientGame}'s
- * record of the state of the game comes completely from {@link ServerGame}.
- *
  * There are overlaps between what each implementation needs to do:
  * - Offline and Server games maintain and control the master-game-state.
  * - Offline and Client games display the game-state to an operator via browser and HTML.
  * - Client  and Server games use network operations to communicate.
  */
-export abstract class Game<G extends Game.Type, S extends Coord.System> extends GameEvents<G,S> {
-
-    /**
-     * @override
-     */
-    protected __createHumanPlayer(desc: Player.CtorArgs): PuppetPlayer<S> {
-        return new PuppetPlayer(this, desc);
-    }
-
-}
-
-
-
 export namespace Game {
 
     export const enum Type {

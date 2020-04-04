@@ -1,13 +1,16 @@
+import { Game } from "game/Game";
+
 import type { Coord } from "floor/Coord";
 import { VisibleTile } from "floor/VisibleTile";
 import { VisibleGrid } from "floor/VisibleGrid";
-import { Game } from "game/Game";
 import { LocalGameSettings } from "settings/GameSettings";
 
 import type { Player } from "game/player/Player";
 import type { OperatorPlayer } from "game/player/OperatorPlayer";
 import { OfflineOperatorPlayer } from "./OfflineOperatorPlayer";
 import { ArtificialPlayer } from "game/player/ArtificialPlayer";
+
+import { GameManager } from "game/__gameparts/Manager";
 
 
 type G = Game.Type.OFFLINE;
@@ -17,7 +20,7 @@ type G = Game.Type.OFFLINE;
  *
  * @extends Game
  */
-export class OfflineGame<S extends Coord.System> extends Game<G,S> {
+export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
 
     protected settings: LocalGameSettings;
 

@@ -10,6 +10,8 @@ import { EventRecordEntry } from "game/events/EventRecordEntry";
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
+import { GameManager } from "game/__gameparts/Manager";
+
 
 type G = Game.Type.SERVER;
 
@@ -19,7 +21,7 @@ type G = Game.Type.SERVER;
  *
  * @extends Game
  */
-export class ServerGame<S extends Coord.System> extends Game<G,S> {
+export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
     public readonly namespace: io.Namespace;
 

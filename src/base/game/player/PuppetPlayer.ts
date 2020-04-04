@@ -1,5 +1,6 @@
 import type { Coord, Tile } from "floor/Tile";
-import type { Game } from "game/Game";
+import type { GameBase } from "game/__gameparts/Base";
+
 import { Player} from "./Player";
 
 
@@ -13,7 +14,7 @@ import { Player} from "./Player";
  */
 export class PuppetPlayer<S extends Coord.System> extends Player<S> {
 
-    public constructor(game: Game<any,S>, desc: Player.CtorArgs) {
+    public constructor(game: GameBase<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
     }
 

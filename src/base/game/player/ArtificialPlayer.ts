@@ -1,5 +1,7 @@
-import type { Coord, Tile } from "floor/Tile";
 import { Game } from "game/Game";
+import type { Coord, Tile } from "floor/Tile";
+import type { GameManager } from "game/__gameparts/Manager";
+
 import { Player } from "./Player";
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
@@ -17,6 +19,8 @@ import { Chaser } from "./artificials/Chaser";
  */
 export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S> {
 
+    declare public readonly game: GameManager<any,S>;
+
     private scheduledMovementCallbackId: number | NodeJS.Timeout;
 
     /**
@@ -26,7 +30,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      * @param game -
      * @param desc -
      */
-    protected constructor(game: Game<any,S>, desc: Player.CtorArgs) {
+    protected constructor(game: GameManager<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
         if (game.gameType === Game.Type.CLIENT) {
             throw new TypeError("ClientGames should be using PuppetPlayers instead.");
@@ -107,7 +111,7 @@ export namespace ArtificialPlayer {
     >>; // Type Assertion.
 
     export const of = <S extends Coord.System>(
-        game: Readonly<Game<any,S>>,
+        game: Readonly<GameManager<any,S>>,
         playerDesc: Readonly<Player.CtorArgs>,
     ): ArtificialPlayer<S> => {
         return new (Constructors[playerDesc.playerId.family])(game, playerDesc);

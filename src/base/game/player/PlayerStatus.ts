@@ -1,5 +1,5 @@
 import type { Coord } from "floor/Tile";
-import { Player } from "./Player";
+import type { Player } from "./Player";
 
 
 /**
