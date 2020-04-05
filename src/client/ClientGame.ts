@@ -73,8 +73,6 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
      * @override
      */
     public reset(): void {
-        // TODO.design Bypass my direct parent's reset implementation.
-        // Which parts? This is an old comment from way back when Game extended Grid :P
 
         // TODO.impl Wait for a GameStateDump from the ServerGame. Send ack.
         // this.socket.once(

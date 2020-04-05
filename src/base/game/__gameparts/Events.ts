@@ -1,8 +1,6 @@
 import type { Coord, Tile } from "floor/Tile";
-import type { Player } from "../player/Player";
 import { Game } from "../Game";
 
-import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerActionEvent, TileModificationEvent } from "../events/PlayerActionEvent";
 import { EventRecordEntry } from "../events/EventRecordEntry";
 
@@ -62,46 +60,10 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         super.reset();
     }
 
-
-    /**
-     * Perform checks on an incoming event request for some action that
-     * a player can perform while the game is playing (ie. not paused
-     * or over).
-     *
-     * @param desc -
-     * @returns
-     * The player specified by the given ID, or undefined if the
-     * game is not playing, in which case the event request should
-     * be rejected.
-     *
-     * @throws
-     * `RangeError` if the request was made before receiving an
-     * acknowledgement for the previous request, or if the given ID
-     * does not belong to any existing player.
-     */
-    private managerCheckGamePlayingRequest(desc: PlayerGeneratedRequest): Player<S> | undefined {
-        if (this.gameType === Game.Type.CLIENT) {
-            throw new TypeError(""
-            + "This operation is unsupported for"
-            + " non-game-manager implementations.");
-        }
-        if (this.status !== Game.Status.PLAYING) {
-            return undefined;
-        }
-        const player = this.players.get(desc.playerId);
-        if (!player) {
-            throw new Error("No such player exists.");
-        }
-        if (desc.playerLastAcceptedRequestId !== player.lastAcceptedRequestId) {
-            throw new RangeError((desc.playerLastAcceptedRequestId < player.lastAcceptedRequestId)
-            ? ("Clients should not make requests until they have"
-                + " received my response to their last request.")
-            : ("Client seems to have incremented the request ID"
-                + " counter on their own, which is is illegal.")
-            );
-        }
-        return player;
+    protected getNextUnusedEventId(): EventRecordEntry["eventId"] {
+        return this.eventRecord.length;
     }
+
 
     /**
      * Basically does `this.eventRecord[id] = desc;` with value checking.
@@ -129,6 +91,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         this.eventRecord[id] = desc;
     }
 
+
     private executeTileModificationsEvent(
         desc: TileModificationEvent<S>,
         doCheckOperatorSeqBuffer: boolean = true,
@@ -145,63 +108,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
                 }
             }
             dest.lastKnownUpdateId = desc.lastKnownUpdateId;
-            this.currentFreeHealth += desc.newFreeHealth! - dest.freeHealth;
             // TODO.design the above line is not correct if reordering happens :(
             dest.freeHealth = desc.newFreeHealth!;
         }
-    }
-
-
-
-    /**
-     * @see PlayerMovementEvent
-     *
-     * Reject the request if `dest` is occupied, or if the specified
-     * player does not exist, or the client is missing updates for the
-     * destination they requested to move to, or the player is bubbling.
-     *
-     * Should never be called by {@link ClientGame}.
-     *
-     * @param desc
-     * A descriptor of the request describing the requester's views
-     * of critical parts of the game-state from their copy of the game
-     * state at the time of the request. Is modified to describe changes
-     * to be made.
-     */
-    public processMoveRequest(desc: PlayerActionEvent.Movement<S>): void {
-        const player = this.managerCheckGamePlayingRequest(desc);
-        if (!player) {
-            // Reject the request:
-            this.processMoveExecute(desc);
-            return;
-        }
-        const dest = this.grid.tile.at(desc.dest.coord);
-        if (dest.isOccupied ||
-            dest.lastKnownUpdateId !== desc.dest.lastKnownUpdateId) {
-            // The occupancy counter check is not essential, but it helps
-            // enforce stronger client-experience consistency: they cannot
-            // move somewhere where they have not realized the `LangSeq` has
-            // changed.
-            this.processMoveExecute(desc); // Reject the request.
-            return;
-        }
-
-        // Set response fields according to spec in `PlayerMovementEvent`:
-        desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
-        desc.newPlayerHealth = {
-            score:  player.status.score  + dest.freeHealth,
-            health: player.status.health + dest.freeHealth,
-        };
-        desc.dest.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
-        desc.dest.newFreeHealth = 0;
-        desc.dest.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
-        // TODO.impl spawn in some new raw health to the floor:
-        desc.tilesWithHealthUpdates = this.dryRunSpawnFreeHealth();
-
-        // Accept the request, and trigger calculation
-        // and enactment of the requested changes:
-        desc.eventId = this.eventRecord.length;
-        this.processMoveExecute(desc);
     }
 
     /**
@@ -272,32 +181,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         }
     }
 
-
-
-    /**
-     * @see PlayerActionEvent.Bubble
-     *
-     * Should never be called by {@link ClientGame}.
-     *
-     * @param desc - Is modified to describe changes to be made.
-     */
-    public processBubbleMakeRequest(desc: PlayerActionEvent.Bubble): void {
-        // TODO.impl
-        // - If successful, make sure to lower the health field.
-        // - Make an abstract method in the OperatorPlayer class called in
-        //   the top-level input processor for it to trigger this event.
-        const bubbler = this.managerCheckGamePlayingRequest(desc);
-        if (!bubbler) {
-            // Reject the request:
-            this.processBubbleMakeExecute(desc);
-            return;
-        }
-        desc.playerLastAcceptedRequestId = (1 + bubbler.lastAcceptedRequestId);
-
-        // We are all go! Do it.
-        desc.eventId = this.eventRecord.length;
-        this.processBubbleMakeExecute(desc);
-    }
 
     /**
      *

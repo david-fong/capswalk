@@ -1,5 +1,4 @@
 import { Lang } from "lang/Lang";
-import { BalancingScheme } from "lang/LangSeqTreeNode";
 
 import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
@@ -8,8 +7,6 @@ import { Player } from "../player/Player";
 import { PuppetPlayer } from "../player/PuppetPlayer";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { ArtificialPlayer } from "../player/ArtificialPlayer";
-
-import { English } from "lang/impl/English";
 
 import { TileModificationEvent } from "game/events/PlayerActionEvent";
 import { Game } from "../Game";
@@ -22,26 +19,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly gameType: G;
 
-    public readonly lang: Lang;
-
-    /**
-     * NOTE: Shuffling operations and the
-     * {@link Lang} implementation are able to support mid-game changes
-     * to the balancing behaviour. Making it fixed for the lifetime of
-     * a `Game` is a choice I made in order to make the user experience
-     * more simple. It's one less thing they'll see in the in-game UI,
-     * and I don't think they'd feel as if it were missing.
-     */
-    protected readonly langBalancingScheme: BalancingScheme;
-
     public readonly grid: Grid<S>;
 
     protected readonly players: Player.Bundle<Player<S>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
-
-    public readonly averageFreeHealth: Player.Health;
-    protected currentFreeHealth: Player.Health; // TODO.impl maintain this field. and use it to spawn in health.
 
     /**
      * Indexable by team ID's.
@@ -71,24 +53,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
         });
-        this.averageFreeHealth = desc.averageFreeHealthPerTile * this.grid.area;
-
-        // TODO.design How to get a Language implementation by name?
-        // Below is a placeholder waiting for the above todo item to be sorted out.
-        this.lang = English.Lowercase.getInstance();
-
-        // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
-        const minLangLeaves = this.grid.static.getAmbiguityThreshold();
-        if (this.lang.numLeaves < minLangLeaves) {
-            throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
-            + ` least ${minLangLeaves} were required. The provided mappings`
-            + ` composing the current Lang-under-construction are not`
-            + ` sufficient to ensure that a shuffling operation will always`
-            + ` be able to find a safe candidate to use as a replacement.`
-            + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
-            );
-        }
-        this.langBalancingScheme = desc.langBalancingScheme;
 
         // Construct players:
         this.players = this.createPlayers(desc);
@@ -111,35 +75,10 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     }
 
     /**
-     * Reset the grid and the language hit-counters, performs language
-     * sequence shuffle-ins, re-spawns players, and spawns in targets.
+     * Reset the grid.
      */
     public reset(): void {
         this.grid.reset();
-        this.currentFreeHealth = 0.0;
-
-        // Reset hit-counters in the current language:
-        // This must be done before shuffling so that the previous
-        // history of shuffle-ins has no effects on the new pairs.
-        this.lang.reset();
-
-        // Shuffle everything:
-        this.grid.forEachTile(this.dryRunShuffleLangCharSeqAt, this);
-
-        // Reset and spawn players:
-        this.teams.forEach((team) => team.reset());
-        const spawnPoints = this.grid.static.getSpawnCoords(
-            this.players.counts,
-            this.grid.dimensions,
-        );
-        this.players.values.forEach((familyMembers) => {
-            familyMembers.forEach((player) => {
-                player.reset(this.grid.tile.at(spawnPoints.get(player.playerId)));
-            });
-        });
-
-        // TODO.impl Targets should be spawned _after_ players have
-        // spawned so they do not spawn in the same tile as any players.
     }
 
     protected abstract __getGridImplementation(coordSys: S): Grid.ClassIf<S>;
@@ -222,40 +161,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     protected __abstractStatusBecomePlaying(): void {}
     protected __abstractStatusBecomePaused(): void {}
     protected __abstractStatusBecomeOver(): void {}
-
-
-    /**
-     * **Important:** Nullifies the existing values at `tile` and does
-     * not consume the returned values, which must be done externally.
-     *
-     * @param targetTile
-     * The {@link Tile} to shuffle their {@link Lang.CharSeqPair}
-     * pair for.
-     *
-     * @returns
-     * A {@link Lang.CharSeqPair} that can be used as a replacement
-     * for that currently being used by `tile`.
-     */
-    public dryRunShuffleLangCharSeqAt(targetTile: Tile<S>): Lang.CharSeqPair {
-        // First, clear values for the target tile so its current
-        // (to-be-previous) values don't get unnecessarily avoided.
-        targetTile.setLangCharSeq(Lang.CharSeqPair.NULL);
-
-        const avoid: ReadonlyArray<Tile<S>> = Array.from(new Set(
-            this.grid.tile.sourcesTo((targetTile as Tile<S>).coord).get
-            .flatMap((sourceToTarget) => this.grid.tile.destsFrom(sourceToTarget.coord).get)
-        ));
-        return this.lang.getNonConflictingChar(avoid
-                .map((tile) => tile.langSeq)
-                .filter((seq) => seq), // no falsy values.
-            this.langBalancingScheme,
-        );
-    }
-
-    // TODO.design what arguments must this take?
-    public dryRunSpawnFreeHealth(): ReadonlyArray<TileModificationEvent<S>> {
-        return undefined!;
-    }
 
 
     public abstract setTimeout(callback: Function, millis: number, ...args: any[])
