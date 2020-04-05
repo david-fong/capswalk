@@ -1,15 +1,13 @@
-import { Lang } from "lang/Lang";
-
-import { Coord, Tile } from "floor/Tile";
-import { Grid } from "floor/Grid";
+import { Game } from "../Game";
+import type { Coord, Tile } from "floor/Tile";
+import type { Grid } from "floor/Grid";
 
 import { Player } from "../player/Player";
 import { PuppetPlayer } from "../player/PuppetPlayer";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { ArtificialPlayer } from "../player/ArtificialPlayer";
+import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
-import { TileModificationEvent } from "game/events/PlayerActionEvent";
-import { Game } from "../Game";
 
 
 /**
@@ -167,5 +165,12 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     : G extends Game.Type.SERVER ? NodeJS.Timeout : number;
 
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
+
+ /* The implementations are fully defined and publicly exposed by
+    GameManager. These protected declarations higher up the class
+    hierarchy exist to allow ClientGame to override them to send
+    a request to the ServerGame. */
+    protected abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
+    protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
 
 }

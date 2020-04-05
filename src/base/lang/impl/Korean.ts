@@ -44,7 +44,7 @@ export namespace Korean {
          *
          * @override
          */
-        public remapKey(input: string): string {
+        public static remapKey(input: string): string {
             return input;
         }
 
@@ -62,7 +62,7 @@ export namespace Korean {
 
         private constructor() {
             super(
-                Dubeolsik.getName(),
+                Dubeolsik,
                 INITIALIZE((ij, mj, fj) => {
                     const atoms = [ij, mj, fj,].flatMap((jamos) => jamos.atoms.split(""));
                     return atoms.map((atom) => Dubeolsik.KEYBOARD[atom]).join("");
@@ -70,7 +70,7 @@ export namespace Korean {
             );
         }
     }
-    Dubeolsik as Lang.Info;
+    Dubeolsik as Lang.ClassIf;
 
 
 
@@ -113,7 +113,7 @@ export namespace Korean {
          *
          * @override
          */
-        public remapKey(input: string): string {
+        public static remapKey(input: string): string {
             return input;
         }
 
@@ -150,7 +150,7 @@ export namespace Korean {
 
         private constructor() {
             super(
-                Sebeolsik.getName(),
+                Sebeolsik,
                 INITIALIZE((ij, mj, fj) => {
                     return Sebeolsik.KEYBOARD.INITIALS[ij.value]
                         + Sebeolsik.KEYBOARD.MEDIALS[mj.value]
@@ -159,7 +159,7 @@ export namespace Korean {
             );
         }
     }
-    Sebeolsik as Lang.Info;
+    Sebeolsik as Lang.ClassIf;
 
 
 
@@ -198,20 +198,20 @@ export namespace Korean {
          *
          * @override
          */
-        public remapKey(input: string): string {
+        public static remapKey(input: string): string {
             return input;
         }
 
         private constructor() {
             super(
-                Romanization.getName(),
+                Romanization,
                 INITIALIZE((ij, mj, fj) => {
                     return ij.roman + mj.roman + fj.roman;
                 }),
             );
         }
     }
-    Romanization as Lang.Info;
+    Romanization as Lang.ClassIf;
 
 
 

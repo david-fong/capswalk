@@ -75,13 +75,14 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
             throw new Error("Only one request should ever be in flight at a time.");
         }
         this.requestInFlight = true;
-        this.__abstractMakeMovementRequest(dest);
+        this.game.processMoveRequest(
+            new PlayerActionEvent.Movement(
+                this.playerId,
+                this.lastAcceptedRequestId,
+                dest,
+            ),
+        );
     }
-
-    /**
-     * @param dest -
-     */
-    protected abstract __abstractMakeMovementRequest(dest: Tile<S>): void;
 
     public get team(): Player.Team<S> {
         return this.game.teams[this.teamId];

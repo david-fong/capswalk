@@ -96,6 +96,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
             return;
         }
         if (key) {
+            // TODO.design split Lang into frontend and backed parts.
             key = this.game.lang.remapKey(key);
             if (!(Lang.Seq.REGEXP.test(key))) {
                 throw new RangeError(`The implementation of input transformation`

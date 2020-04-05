@@ -22,9 +22,9 @@ import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
 export abstract class Lang extends LangTypeDefs {
 
     /**
-     * The name of this language.
+     * The abstract, static object for this language.
      */
-    public readonly name: string;
+    public readonly static: Lang.ClassIf;
 
     /**
      * A "reverse" map from `LangSeq`s to `LangChar`s.
@@ -51,9 +51,9 @@ export abstract class Lang extends LangTypeDefs {
      *      to all be strictly positive values. They do not all need
      *      to sum to a specific value such as 100.
      */
-    protected constructor(name: string, forwardDict: Lang.CharSeqPair.WeightedForwardMap) {
+    protected constructor(classIf: Lang.ClassIf, forwardDict: Lang.CharSeqPair.WeightedForwardMap) {
         super();
-        this.name = name;
+        this.static = classIf;
         this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes = this.treeMap.getLeafNodes();
     }
@@ -61,33 +61,6 @@ export abstract class Lang extends LangTypeDefs {
     public reset(): void {
         this.treeMap.reset();
     }
-
-
-
-    /**
-     *
-     * This can be used, for example, for basic practical purposes like
-     * changing all letters to lowercase for the English language, or for
-     * more interesting things like mapping halves of the keyboard to a
-     * binary-like value like the dots and dashes in morse, or zeros and
-     * ones in binary. It could even be used for some crazy challenges like
-     * remapping the alphabet by barrel-shifting it so that pressing "a"
-     * produces "b", and "b" produces "c", and so on.
-     *
-     * The output should either equal the input (in cases that the input
-     * is already relevant to the `Lang` at hand and is intended to be
-     * taken as-is (ex. typing "a" produces / corresponds to "a" in
-     * regular English), or in cases where the input is completely
-     * irrelevant before and after remapping), or be a translation to
-     * some character that is relevant to the `Lang` and hand, and that
-     * matches against {@link SEQ_REGEXP}. This behaviour is mandated
-     * by {@link OperatorPlayer#seqBufferAcceptKey}.
-     *
-     * @param input -
-     * @returns
-     */
-    public abstract remapKey(input: string): string;
-
 
 
     /**
@@ -98,20 +71,20 @@ export abstract class Lang extends LangTypeDefs {
      * longer in length than the shared prefix, and they are not equal
      * to one another.
      *
-     * This method is called to shuffle the `Lang.Char` / `Lang.Seq` pair
-     * at some {@link Tile} `A`. `avoid` should contain the `LangSeq`s
-     * from all {@link Tile}s reachable by a human {@link Player} occupying
-     * a {@link Tile} `B` from which they can also reach `A`
+     * This method is called to shuffle the `Lang.Char` / `Lang.Seq`
+     * pair at some Tile `A`. `avoid` should contain the `LangSeq`s
+     * from all Tiles reachable by a human Player occupying a Tile
+     * `B` from which they can also reach `A`
      *
      * In order for this `Lang` to satisfy these constraints, it must
      * be true that the number of leaf nodes in this tree-structure must
      * `avoid` argument.
      *
-     * In this implementation, a human {@link Player} can only reach a
-     * {@link Tile} whose {@link Tile#pos} has an `infNorm` of `1` from
-     * that of the {@link Tile} they are currently occupying. That is,
-     * `avoid` contains `LangSeq`s from all {@link Tile}s with an `infNorm`
-     * <= `2` from the {@link Tile} to shuffle (not including itself).
+     * In this implementation, a human Player can only reach a
+     * Tile whose coord has an `infNorm` of `1` from
+     * that of the Tile they are currently occupying. That is,
+     * `avoid` contains `LangSeq`s from all Tiles with an `infNorm`
+     * <= `2` from the Tile to shuffle (not including itself).
      * This means that here, the size of `avoid` is always bounded by
      * `(2*2 + 1)^2 - 1 == 24`. Using the English alphabet (26 typeable-
      * letters), this requirement is met by a hair.
@@ -178,10 +151,10 @@ export abstract class Lang extends LangTypeDefs {
 
     public simpleView(): object {
         return Object.assign(Object.create(null), {
-            name: this.name,
+            name: this.static.getName,
             // we need to jump through some hoops to get this
             // without passing it in as a constructor argument ':)
-            desc: (this["constructor"] as object as Lang.Info).getBlurb(),
+            desc: (this["constructor"] as object as Lang.ClassIf).getBlurb(),
             root: this.treeMap.simpleView(),
         });
     }
@@ -197,10 +170,33 @@ export namespace Lang {
      * `Lang` class must implement this interface. Ie. These will be
      * implemented as static methods.
      */
-    export interface Info {
+    export interface ClassIf {
         getName(): string;
         getBlurb(): string;
         getInstance(): Lang;
+        /**
+         *
+         * This can be used, for example, for basic practical purposes like
+         * changing all letters to lowercase for the English language, or for
+         * more interesting things like mapping halves of the keyboard to a
+         * binary-like value like the dots and dashes in morse, or zeros and
+         * ones in binary. It could even be used for some crazy challenges like
+         * remapping the alphabet by barrel-shifting it so that pressing "a"
+         * produces "b", and "b" produces "c", and so on.
+         *
+         * The output should either equal the input (in cases that the input
+         * is already relevant to the `Lang` at hand and is intended to be
+         * taken as-is (ex. typing "a" produces / corresponds to "a" in
+         * regular English), or in cases where the input is completely
+         * irrelevant before and after remapping), or be a translation to
+         * some character that is relevant to the `Lang` and hand, and that
+         * matches against {@link SEQ_REGEXP}. This behaviour is mandated
+         * by {@link OperatorPlayer#seqBufferAcceptKey}.
+         *
+         * @param input -
+         * @returns
+         */
+        remapKey(input: string): string;
     };
 
     /**

@@ -21,7 +21,7 @@ export class PuppetPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
-    protected __abstractMakeMovementRequest(dest: Tile<S>): never {
+    protected makeMovementRequest(dest: Tile<S>): never {
         throw new TypeError("This operation is unsupported for this implementation.");
     }
 

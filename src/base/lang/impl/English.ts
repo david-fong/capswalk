@@ -37,27 +37,25 @@ export namespace English {
          *
          * @override
          */
-        public remapKey(input: string): string {
+        public static remapKey(input: string): string {
             return input.toLowerCase();
         }
 
-        private constructor() {
-            super(
-                Lowercase.getName(),
-                Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
-                    (accumulator, current) => {
-                        const char: Lang.Char = current[0];
-                        const seq:  Lang.Seq  = current[0];
-                        const weight: number  = current[1];
-                        accumulator[char] = { seq, weight, };
-                        return accumulator;
-                    },
-                    {},
-                ),
-            );
-        }
+        private constructor() { super(
+            Lowercase,
+            Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
+                (accumulator, current) => {
+                    const char: Lang.Char = current[0];
+                    const seq:  Lang.Seq  = current[0];
+                    const weight: number  = current[1];
+                    accumulator[char] = { seq, weight, };
+                    return accumulator;
+                },
+                {},
+            ),
+        ); }
     }
-    Lowercase as Lang.Info;
+    Lowercase as Lang.ClassIf;
 
 
 
@@ -90,7 +88,7 @@ export namespace English {
          *
          * @override
          */
-        public remapKey(input: string): string {
+        public static remapKey(input: string): string {
             return input;
         }
 
@@ -111,12 +109,12 @@ export namespace English {
             addMappings((cs) => cs.toLowerCase());
             addMappings((cs) => cs.toUpperCase());
             super(
-                MixedCase.getName(),
+                MixedCase,
                 initializer,
             );
         }
     }
-    MixedCase as Lang.Info;
+    MixedCase as Lang.ClassIf;
 
 
 

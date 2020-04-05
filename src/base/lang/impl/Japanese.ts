@@ -40,7 +40,7 @@ export namespace Japanese {
          *
          * @override
          */
-        public remapKey(input: string): string {
+        public static remapKey(input: string): string {
             return input.toLowerCase();
         }
 
@@ -134,12 +134,12 @@ export namespace Japanese {
 
         private constructor() {
             super(
-                Hiragana.getName(),
+                Hiragana,
                 Hiragana.INITIALIZER,
             );
         }
     }
-    Hiragana as Lang.Info;
+    Hiragana as Lang.ClassIf;
 
 
 
@@ -171,7 +171,7 @@ export namespace Japanese {
          *
          * @override
          */
-        public remapKey(input: string): string {
+        public static remapKey(input: string): string {
             return input.toLowerCase();
         }
 
@@ -265,11 +265,11 @@ export namespace Japanese {
 
         private constructor() {
             super(
-                Katakana.getName(),
+                Katakana,
                 Katakana.INITIALIZER,
             );
         }
     }
-    Katakana as Lang.Info;
+    Katakana as Lang.ClassIf;
 
 }

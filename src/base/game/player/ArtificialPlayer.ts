@@ -3,8 +3,6 @@ import type { Coord, Tile } from "floor/Tile";
 import type { GameManager } from "game/__gameparts/Manager";
 
 import { Player } from "./Player";
-import { PlayerActionEvent } from "game/events/PlayerActionEvent";
-
 import { Chaser } from "./artificials/Chaser";
 
 
@@ -78,23 +76,6 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
             // * Callback function arguments go here.
         );
         return;
-    }
-
-    /**
-     * Unlike {@link HumanPlayer}s, `ArtificialPlayer`s are managed
-     * directly by the Game Manager, so there is no need to make a
-     * request via socket.io.
-     *
-     * @override
-     */
-    protected __abstractMakeMovementRequest(dest: Tile<S>): void {
-        this.game.processMoveRequest(
-            new PlayerActionEvent.Movement(
-                this.playerId,
-                this.lastAcceptedRequestId,
-                dest,
-            ),
-        );
     }
 
 }

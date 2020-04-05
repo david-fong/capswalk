@@ -111,10 +111,9 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
      * server.
      *
      * @override
-     * @throws `TypeError` Unconditionally.
      */
-    public processMoveRequest(desc: PlayerActionEvent.Movement<S>): never {
-        throw new TypeError("This operation unsupported for the ClientGame class.");
+    public processMoveRequest(desc: PlayerActionEvent.Movement<S>): void {
+        this.socket.emit(PlayerActionEvent.EVENT_NAME.Movement, desc);
     }
 
     /**
@@ -123,10 +122,9 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
      * the server.
      *
      * @override
-     * @throws `TypeError` Unconditionally.
      */
-    public processBubbleMakeRequest(desc: PlayerActionEvent.Bubble): never {
-        throw new TypeError("This operation unsupported for the ClientGame class.");
+    public processBubbleRequest(desc: PlayerActionEvent.Bubble): void {
+        this.socket.emit(PlayerActionEvent.EVENT_NAME.Bubble, desc);
     }
 
 }

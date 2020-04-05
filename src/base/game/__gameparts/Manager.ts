@@ -128,6 +128,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     // TODO.design what arguments must this take?
     public dryRunSpawnFreeHealth(): ReadonlyArray<TileModificationEvent<S>> {
         return undefined!;
+        // NOTE to self: make sure to update this.currentFreeHealth.
     }
 
 
@@ -179,8 +180,6 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * player does not exist, or the client is missing updates for the
      * destination they requested to move to, or the player is bubbling.
      *
-     * Should never be called by {@link ClientGame}.
-     *
      * @param desc
      * A descriptor of the request describing the requester's views
      * of critical parts of the game-state from their copy of the game
@@ -212,6 +211,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             health: player.status.health + dest.freeHealth,
         };
         desc.dest.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
+        this.currentFreeHealth -= dest.freeHealth;
         desc.dest.newFreeHealth = 0;
         desc.dest.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
         // TODO.impl spawn in some new raw health to the floor:
@@ -226,9 +226,6 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
 
     /**
      * @see PlayerActionEvent.Bubble
-     *
-     * Should never be called by {@link ClientGame}.
-     *
      * @param desc - Is modified to describe changes to be made.
      */
     public processBubbleMakeRequest(desc: PlayerActionEvent.Bubble): void {

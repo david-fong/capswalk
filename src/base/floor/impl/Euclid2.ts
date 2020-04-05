@@ -1,5 +1,5 @@
 import { Coord as BaseCoord, Tile } from "../Tile";
-import { VisibleTile } from "floor/VisibleTile";
+import type { VisibleTile } from "floor/VisibleTile";
 import type { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
 import type { VisibleGrid } from "../VisibleGrid";
