@@ -1,5 +1,6 @@
 import { Game } from "game/Game";
 
+import type { LangFrontend } from "lang/LangFrontend";
 import type { Coord, Tile } from "floor/Tile";
 import type { Player as PlayerTypeDefs } from "utils/TypeDefs";
 import type { GameBase } from "game/__gameparts/Base";
@@ -166,6 +167,7 @@ export namespace Player {
      */
     export type CtorArgs = CtorArgs.PreIdAssignment & {
         readonly playerId: Player.Id;
+        readonly langName: LangFrontend.Names.Key,
     };
 
     export namespace CtorArgs {
@@ -183,7 +185,8 @@ export namespace Player {
          * @param playerDescs -
          */
         export const finalizePlayerIds = (
-            playerDescs: Bundle<CtorArgs.PreIdAssignment>
+            playerDescs: Bundle<CtorArgs.PreIdAssignment>,
+            langName: LangFrontend.Names.Key,
         ): Bundle<CtorArgs> => {
             // Map team ID's to consecutive numbers
             // (to play nice with array representations):
@@ -197,9 +200,19 @@ export namespace Player {
                 }, {});
             // Add the `playerId` field to each member descriptor:
             for (const [ family, familyMembers, ] of playerDescs.entries) {
+                // TODO.design I don't like this. There's so much casting-off of
+                // readonly-ness. It would be nicer to create a new object and copy
+                // in reusable fields from the pre-id-assignment ctorArgs. That would
+                // also solve another thing I don't like about this: It isn't type-
+                // safe. We've basically told the Typescript compiler to believe we
+                // have fully completed the translation, when we might actually not
+                // have, which I might not catch if I'm not careful after modifying
+                // the shape of Player.CtorArgs. This fix may be easier to do after
+                // I get rid of Player.Bundle.
                 familyMembers.forEach((memberDesc, numberInFamily) => {
                     // Note for below casts: cast-off readonly.
                     (memberDesc.teamId as Player.Team.Id) = teamIdSquasherMap[memberDesc.teamId];
+                    ((memberDesc as CtorArgs).langName as LangFrontend.Names.Key) = langName;
                     ((memberDesc as CtorArgs).playerId as Id) = {
                         family: family,
                         number: numberInFamily,

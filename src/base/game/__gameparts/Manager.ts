@@ -149,11 +149,6 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * does not belong to any existing player.
      */
     private managerCheckGamePlayingRequest(desc: PlayerGeneratedRequest): Player<S> | undefined {
-        if (this.gameType === Game.Type.CLIENT) {
-            throw new TypeError(""
-            + "This operation is unsupported for"
-            + " non-game-manager implementations.");
-        }
         if (this.status !== Game.Status.PLAYING) {
             return undefined;
         }
@@ -228,7 +223,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * @see PlayerActionEvent.Bubble
      * @param desc - Is modified to describe changes to be made.
      */
-    public processBubbleMakeRequest(desc: PlayerActionEvent.Bubble): void {
+    public processBubbleRequest(desc: PlayerActionEvent.Bubble): void {
         // TODO.impl
         // - If successful, make sure to lower the health field.
         // - Make an abstract method in the OperatorPlayer class called in
@@ -236,14 +231,14 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         const bubbler = this.managerCheckGamePlayingRequest(desc);
         if (!bubbler) {
             // Reject the request:
-            this.processBubbleMakeExecute(desc);
+            this.processBubbleExecute(desc);
             return;
         }
         desc.playerLastAcceptedRequestId = (1 + bubbler.lastAcceptedRequestId);
 
         // We are all go! Do it.
         desc.eventId = this.getNextUnusedEventId();
-        this.processBubbleMakeExecute(desc);
+        this.processBubbleExecute(desc);
     }
 
 }

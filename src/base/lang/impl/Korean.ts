@@ -1,4 +1,5 @@
 import { Lang } from "lang/Lang";
+import { LangFrontend } from "lang/LangFrontend";
 
 
 /**
@@ -21,7 +22,7 @@ export namespace Korean {
         private static SINGLETON?: Dubeolsik = undefined;
 
         public static getName(): string {
-            return "Korean Dubeolsik (두벌식 키보드)";
+            return LangFrontend.Names.KOREAN__DUBEOLSIK;
         }
 
         public static getBlurb(): string {
@@ -37,15 +38,6 @@ export namespace Korean {
                 delete this.KEYBOARD;
             }
             return this.SINGLETON;
-        }
-
-        /**
-         * Does nothing.
-         *
-         * @override
-         */
-        public static remapKey(input: string): string {
-            return input;
         }
 
         private static KEYBOARD = Object.freeze(<const>{
@@ -88,7 +80,7 @@ export namespace Korean {
         private static SINGLETON?: Sebeolsik = undefined;
 
         public static getName(): string {
-            return "Korean Sebeolsik (세벌식 최종 키보드)";
+            return LangFrontend.Names.KOREAN__SEBEOLSIK;
         }
 
         public static getBlurb(): string {
@@ -106,15 +98,6 @@ export namespace Korean {
                 delete this.KEYBOARD;
             }
             return this.SINGLETON;
-        }
-
-        /**
-         * Does nothing.
-         *
-         * @override
-         */
-        public static remapKey(input: string): string {
-            return input;
         }
 
         /**
@@ -148,16 +131,14 @@ export namespace Korean {
             },
         });
 
-        private constructor() {
-            super(
-                Sebeolsik,
-                INITIALIZE((ij, mj, fj) => {
-                    return Sebeolsik.KEYBOARD.INITIALS[ij.value]
-                        + Sebeolsik.KEYBOARD.MEDIALS[mj.value]
-                        + Sebeolsik.KEYBOARD.FINALS[fj.value];
-                }),
-            );
-        }
+        private constructor() { super(
+            Sebeolsik,
+            INITIALIZE((ij, mj, fj) => {
+                return Sebeolsik.KEYBOARD.INITIALS[ij.value]
+                    + Sebeolsik.KEYBOARD.MEDIALS[mj.value]
+                    + Sebeolsik.KEYBOARD.FINALS[fj.value];
+            }),
+        ); }
     }
     Sebeolsik as Lang.ClassIf;
 
@@ -202,14 +183,12 @@ export namespace Korean {
             return input;
         }
 
-        private constructor() {
-            super(
-                Romanization,
-                INITIALIZE((ij, mj, fj) => {
-                    return ij.roman + mj.roman + fj.roman;
-                }),
-            );
-        }
+        private constructor() { super(
+            Romanization,
+            INITIALIZE((ij, mj, fj) => {
+                return ij.roman + mj.roman + fj.roman;
+            }),
+        ); }
     }
     Romanization as Lang.ClassIf;
 
@@ -349,6 +328,7 @@ export namespace Korean {
     /**
      *
      */
+    // TODO.learn
     const WEIGHTS = {
         "": 1,
     };

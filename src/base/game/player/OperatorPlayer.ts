@@ -7,6 +7,7 @@ import type { VisibleTile } from "floor/VisibleTile";
 import type { GameBase } from "game/__gameparts/Base";
 
 import { Player, PlayerStatus } from "./Player";
+import { LangFrontend } from "lang/LangFrontend";
 
 
 /**
@@ -31,9 +32,14 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      */
     #seqBuffer: Lang.Seq;
 
+    private langRemappingFunc: {(input: string): string};
+
 
     public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc);
+        this.langRemappingFunc = LangFrontend.RemappingFunctions[
+            LangFrontend.Names[desc.langName]
+        ];
     }
 
     /**
@@ -97,10 +103,10 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
         }
         if (key) {
             // TODO.design split Lang into frontend and backed parts.
-            key = this.game.lang.remapKey(key);
+            key = this.langRemappingFunc(key);
             if (!(Lang.Seq.REGEXP.test(key))) {
                 throw new RangeError(`The implementation of input transformation`
-                + ` in the language \"${this.game.lang.name}\" did not follow the rule`
+                + ` in the currently selected language did not follow the rule`
                 + ` of producing output matching the regular expression`
                 + ` \"${Lang.Seq.REGEXP.source}\".`
                 );

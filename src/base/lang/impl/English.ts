@@ -1,4 +1,5 @@
 import { Lang } from "lang/Lang";
+import { LangFrontend } from "lang/LangFrontend";
 
 
 /**
@@ -16,7 +17,7 @@ export namespace English {
         private static SINGLETON?: Lowercase = undefined;
 
         public static getName(): string {
-            return "English Lowercase (QWERTY)";
+            return LangFrontend.Names.ENGLISH__LOWERCASE;
         }
 
         public static getBlurb(): string {
@@ -32,14 +33,6 @@ export namespace English {
 
         // TODO.learn see https://wikipedia.org/wiki/Keyboard_layout#Dvorak
         // and https://wikipedia.org/wiki/Keyboard_layout#Colemak
-        /**
-         * Change uppercase input to lowercase for convenience.
-         *
-         * @override
-         */
-        public static remapKey(input: string): string {
-            return input.toLowerCase();
-        }
 
         private constructor() { super(
             Lowercase,
@@ -69,7 +62,7 @@ export namespace English {
         private static SINGLETON?: MixedCase = undefined;
 
         public static getName(): string {
-            return "English Mixed-Case (QWERTY)";
+            return LangFrontend.Names.ENGLISH__MIXEDCASE;
         }
 
         public static getBlurb(): string {
@@ -81,15 +74,6 @@ export namespace English {
                 this.SINGLETON  = new MixedCase();
             }
             return this.SINGLETON;
-        }
-
-        /**
-         * Nothing.
-         *
-         * @override
-         */
-        public static remapKey(input: string): string {
-            return input;
         }
 
         private constructor() {

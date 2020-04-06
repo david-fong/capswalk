@@ -12,14 +12,6 @@
 
 ### High Priority
 
-1. Move game-manager-only operations and fields out of the reach of non-game-manager implementations.
-   - Rationale: This is _much_ more intuitive than overriding game-manager-only methods in `ClientGame` to throw an exception. That old exception method was also poor in that it couldn't override private methods that were game-manager-only.
-   - ~Make a class `GameManager` that contains all fields and declares all operations that only the GameManager should have or perform. Since it is a superset of `GameEvents`, it should be an extension of that class.~
-     - ~Change usages of the old `Game` type to use the lowest type in the `gameparts` hierarchy that they require.~
-     - ~Move event request processors to the GameManager.~
-   - non-GM does not need parts of the Lang class- Ie. `Lang.getNonConflictingChar`.
-     - But it does need other parts: `Lang.remapKey`.
-     - Solution: split the Lang class into its frontend and backend parts.
 1. For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 1. Decide: Should I get rid of player classes? (human, chaser, runner, etc)?
    - It seems like the focus will be on making the old `Chaser` artificial player behave like a human player in that they can be eliminated and act as teammates for human players. The boundary between them has blurred.
@@ -61,6 +53,9 @@
 ```text
 https://nodejs.org/api/https.html
 https://javascript.info/modules-dynamic-imports
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
+https://github.com/tc39/proposal-dynamic-import/#import
+https://v8.dev/features/dynamic-import
 https://stackoverflow.com/questions/45854169/how-can-i-use-an-es6-import-in-node
 https://medium.com/@iamstan/typescript-es-modules-micheal-jackson-2040216be793
 

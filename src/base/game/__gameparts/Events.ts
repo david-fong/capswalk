@@ -189,7 +189,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      *
      * @param desc -
      */
-    protected processBubbleMakeExecute(desc: Readonly<PlayerActionEvent.Bubble>): void {
+    protected processBubbleExecute(desc: Readonly<PlayerActionEvent.Bubble>): void {
         // TODO.impl Visually highlight the affected tiles for the specified estimate-duration.
         const bubbler = this.players.get(desc.playerId);
 

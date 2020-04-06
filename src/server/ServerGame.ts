@@ -69,7 +69,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
             socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Bubble);
             socket.on(
                 PlayerActionEvent.EVENT_NAME.Bubble,
-                this.processBubbleMakeRequest,
+                this.processBubbleRequest,
             );
             // TODO.impl pause-request handler:
         });
@@ -143,8 +143,8 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         }
     }
 
-    public processBubbleMakeExecute(desc: Readonly<PlayerActionEvent.Bubble>): void {
-        super.processBubbleMakeExecute(desc);
+    public processBubbleExecute(desc: Readonly<PlayerActionEvent.Bubble>): void {
+        super.processBubbleExecute(desc);
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.

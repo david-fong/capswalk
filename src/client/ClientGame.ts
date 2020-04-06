@@ -63,7 +63,7 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
         this.socket.off(PlayerActionEvent.EVENT_NAME.Bubble);
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.Bubble,
-            this.processBubbleMakeExecute,
+            this.processBubbleExecute,
         );
 
         this.reset();

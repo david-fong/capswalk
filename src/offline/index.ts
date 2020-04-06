@@ -12,7 +12,7 @@ const game = new OfflineGame<Coord.System.EUCLID2>({
     },
     averageFreeHealthPerTile: 1.0 / 70.0,
     langBalancingScheme: BalancingScheme.WEIGHT,
-    languageName: "English",
+    languageName: "ENGLISH__LOWERCASE",
     operatorIndex: 0,
     playerDescs: {
         [Player.Family.HUMAN]: [{

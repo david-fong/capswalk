@@ -174,29 +174,6 @@ export namespace Lang {
         getName(): string;
         getBlurb(): string;
         getInstance(): Lang;
-        /**
-         *
-         * This can be used, for example, for basic practical purposes like
-         * changing all letters to lowercase for the English language, or for
-         * more interesting things like mapping halves of the keyboard to a
-         * binary-like value like the dots and dashes in morse, or zeros and
-         * ones in binary. It could even be used for some crazy challenges like
-         * remapping the alphabet by barrel-shifting it so that pressing "a"
-         * produces "b", and "b" produces "c", and so on.
-         *
-         * The output should either equal the input (in cases that the input
-         * is already relevant to the `Lang` at hand and is intended to be
-         * taken as-is (ex. typing "a" produces / corresponds to "a" in
-         * regular English), or in cases where the input is completely
-         * irrelevant before and after remapping), or be a translation to
-         * some character that is relevant to the `Lang` and hand, and that
-         * matches against {@link SEQ_REGEXP}. This behaviour is mandated
-         * by {@link OperatorPlayer#seqBufferAcceptKey}.
-         *
-         * @param input -
-         * @returns
-         */
-        remapKey(input: string): string;
     };
 
     /**
@@ -241,38 +218,6 @@ export namespace Lang {
          * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}.
          */
         export type WeightedForwardMap = Record<Lang.Char, Readonly<{seq: Lang.Seq, weight: number,}>>;
-    }
-
-
-
-    export namespace Modules {
-
-        export const NAMES = Object.freeze(<const>[
-            "English", "Japanese",
-        ]);
-
-        /**
-         * All `Lang` implementations should put their module _file_
-         * names here so that they can be dynamically loaded later.
-         *
-         * TODO: use this in the privileged settings.
-         *
-         * \@ dynamic imports:
-         * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
-         * https://github.com/tc39/proposal-dynamic-import/#import
-         * https://v8.dev/features/dynamic-import
-         *
-         * Note: Since this language feature isn't yet implemented in any browsers,
-         * let's just import everything. It's not fancy, but it works.
-         */
-        export const PATHS = NAMES.reduce<Record<string, string>>((prev, filename) => {
-            // This test is somewhat arbitrary.
-            if (!(/[A-Z][a-zA-Z]*/.test(filename))) {
-                throw new Error(`The filename ${filename} does not match PascalCase.`);
-            }
-            prev[filename] = `src/lang/impl/${filename}`; // file extension is not required (I think).
-            return prev;
-        }, {}) as Record<typeof NAMES[number], string>;
     }
 
 }

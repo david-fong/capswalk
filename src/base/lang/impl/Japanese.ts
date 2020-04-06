@@ -1,4 +1,5 @@
 import { Lang } from "lang/Lang";
+import { LangFrontend } from "lang/LangFrontend";
 
 
 /**
@@ -20,7 +21,7 @@ export namespace Japanese {
         private static SINGLETON?: Hiragana = undefined;
 
         public static getName(): string {
-            return "Japanese Hiragana";
+            return LangFrontend.Names.JAPANESE__HIRAGANA;
         }
 
         public static getBlurb(): string {
@@ -33,15 +34,6 @@ export namespace Japanese {
                 delete this.INITIALIZER;
             }
             return this.SINGLETON;
-        }
-
-        /**
-         * Change uppercase input to lowercase for convenience.
-         *
-         * @override
-         */
-        public static remapKey(input: string): string {
-            return input.toLowerCase();
         }
 
         /**
@@ -151,7 +143,7 @@ export namespace Japanese {
         private static SINGLETON?: Katakana = undefined;
 
         public static getName(): string {
-            return "Japanese Katakana";
+            return LangFrontend.Names.JAPANESE__KATAKANA;
         }
 
         public static getBlurb(): string {
@@ -164,15 +156,6 @@ export namespace Japanese {
                 delete this.INITIALIZER;
             }
             return this.SINGLETON;
-        }
-
-        /**
-         * Change uppercase input to lowercase for convenience.
-         *
-         * @override
-         */
-        public static remapKey(input: string): string {
-            return input.toLowerCase();
         }
 
         /**

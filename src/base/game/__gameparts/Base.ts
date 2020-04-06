@@ -94,7 +94,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         const playerDescs: Player.Bundle<Player.CtorArgs>
             = (this.gameType === Game.Type.CLIENT)
             ? new Player.Bundle(gameDesc.playerDescs as Game.CtorArgs<Game.Type.CLIENT,S>["playerDescs"])
-            : Player.CtorArgs.finalizePlayerIds(new Player.Bundle(gameDesc.playerDescs))
+            : Player.CtorArgs.finalizePlayerIds(new Player.Bundle(gameDesc.playerDescs), gameDesc.languageName)
             ;
         return new Player.Bundle(playerDescs.keys.reduce
         <Player.Bundle.Contents<Player<S>>>((build, family) => {
@@ -170,7 +170,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     GameManager. These protected declarations higher up the class
     hierarchy exist to allow ClientGame to override them to send
     a request to the ServerGame. */
-    protected abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
+    public abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
     protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
 
 }
