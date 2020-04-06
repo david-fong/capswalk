@@ -220,4 +220,9 @@ export namespace Lang {
         export type WeightedForwardMap = Record<Lang.Char, Readonly<{seq: Lang.Seq, weight: number,}>>;
     }
 
+    export namespace Names {
+        export type Key   = LangTypeDefs.Names.Key;
+        export type Value = LangTypeDefs.Names.Value;
+    }
+
 }

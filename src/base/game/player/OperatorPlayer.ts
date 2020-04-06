@@ -7,7 +7,6 @@ import type { VisibleTile } from "floor/VisibleTile";
 import type { GameBase } from "game/__gameparts/Base";
 
 import { Player, PlayerStatus } from "./Player";
-import { LangFrontend } from "lang/LangFrontend";
 
 
 /**
@@ -37,8 +36,8 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc);
-        this.langRemappingFunc = LangFrontend.RemappingFunctions[
-            LangFrontend.Names[desc.langName]
+        this.langRemappingFunc = Lang.RemappingFunctions[
+            Lang.Names[desc.langName]
         ];
     }
 

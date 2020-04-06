@@ -1,5 +1,4 @@
 import type { Lang } from "lang/Lang";
-import type { LangFrontend } from "lang/LangFrontend";
 import type { BalancingScheme } from "lang/LangSeqTreeNode";
 
 import type { Coord } from "floor/Tile";
@@ -47,7 +46,7 @@ export namespace Game {
         coordSys: S;
         gridDimensions: Grid.Dimensions<S>;
 
-        languageName: LangFrontend.Names.Key;
+        languageName: Lang.Names.Key;
         langBalancingScheme: BalancingScheme;
 
         /**

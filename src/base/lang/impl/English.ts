@@ -17,7 +17,7 @@ export namespace English {
         private static SINGLETON?: Lowercase = undefined;
 
         public static getName(): string {
-            return LangFrontend.Names.ENGLISH__LOWERCASE;
+            return Lang.Names.ENGLISH__LOWERCASE;
         }
 
         public static getBlurb(): string {
@@ -62,7 +62,7 @@ export namespace English {
         private static SINGLETON?: MixedCase = undefined;
 
         public static getName(): string {
-            return LangFrontend.Names.ENGLISH__MIXEDCASE;
+            return Lang.Names.ENGLISH__MIXEDCASE;
         }
 
         public static getBlurb(): string {

@@ -1,6 +1,6 @@
 import { Game } from "game/Game";
 
-import type { LangFrontend } from "lang/LangFrontend";
+import type { Lang } from "lang/Lang";
 import type { Coord, Tile } from "floor/Tile";
 import type { Player as PlayerTypeDefs } from "utils/TypeDefs";
 import type { GameBase } from "game/__gameparts/Base";
@@ -167,7 +167,7 @@ export namespace Player {
      */
     export type CtorArgs = CtorArgs.PreIdAssignment & {
         readonly playerId: Player.Id;
-        readonly langName: LangFrontend.Names.Key,
+        readonly langName: Lang.Names.Key,
     };
 
     export namespace CtorArgs {
@@ -186,7 +186,7 @@ export namespace Player {
          */
         export const finalizePlayerIds = (
             playerDescs: Bundle<CtorArgs.PreIdAssignment>,
-            langName: LangFrontend.Names.Key,
+            langName: Lang.Names.Key,
         ): Bundle<CtorArgs> => {
             // Map team ID's to consecutive numbers
             // (to play nice with array representations):
@@ -212,7 +212,7 @@ export namespace Player {
                 familyMembers.forEach((memberDesc, numberInFamily) => {
                     // Note for below casts: cast-off readonly.
                     (memberDesc.teamId as Player.Team.Id) = teamIdSquasherMap[memberDesc.teamId];
-                    ((memberDesc as CtorArgs).langName as LangFrontend.Names.Key) = langName;
+                    ((memberDesc as CtorArgs).langName as Lang.Names.Key) = langName;
                     ((memberDesc as CtorArgs).playerId as Id) = {
                         family: family,
                         number: numberInFamily,

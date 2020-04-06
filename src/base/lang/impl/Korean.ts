@@ -22,7 +22,7 @@ export namespace Korean {
         private static SINGLETON?: Dubeolsik = undefined;
 
         public static getName(): string {
-            return LangFrontend.Names.KOREAN__DUBEOLSIK;
+            return Lang.Names.KOREAN__DUBEOLSIK;
         }
 
         public static getBlurb(): string {
@@ -80,7 +80,7 @@ export namespace Korean {
         private static SINGLETON?: Sebeolsik = undefined;
 
         public static getName(): string {
-            return LangFrontend.Names.KOREAN__SEBEOLSIK;
+            return Lang.Names.KOREAN__SEBEOLSIK;
         }
 
         public static getBlurb(): string {
