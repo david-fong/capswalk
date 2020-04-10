@@ -2,7 +2,7 @@ import path = require("path");
 import fs = require("fs");
 
 import webpack = require("webpack");
-//import HtmlPlugin = require("html-webpack-plugin");
+import HtmlPlugin = require("html-webpack-plugin");
 
 // Note: if I ever add this back, I'll need to look into how to make
 // sure it doesn't clean away things from separate configs (See notes
@@ -12,8 +12,6 @@ import webpack = require("webpack");
 // https://www.npmjs.com/package/webpack-node-externals
 // import nodeExternals = require("webpack-node-externals");
 
-// only used for type-hinting.
-// omitted from transpilation output.
 // https://github.com/TypeStrong/ts-loader#loader-options
 import type * as tsloader from "ts-loader/dist/interfaces";
 
@@ -22,10 +20,15 @@ type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
 
 /**
+ * Externalized definition (for convenience of toggling).
+ */
+const PACK_MODE: webpack.Configuration["mode"] = "development";
+
+/**
  * Relative paths in any config fields will resolve off the parent
- * directory of this file. Note that __dirname is the absolute path
- * of the transpiled module, which is set to be one level above that
- * of this file.
+ * directory of this file. Note the lack of "../" since this file
+ * is configured to send its transpilation output to the root of
+ * this project.
  */
 export const PROJECT_ROOT = __dirname;
 
@@ -100,7 +103,7 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [
  */
 const BaseConfig: () => Require<webpack.Configuration,
 "entry" | "plugins" | "resolve" | "output"> = () => { return {
-    mode: "development",
+    mode: PACK_MODE,
     // https://webpack.js.org/guides/caching/
     // https://webpack.js.org/configuration/other-options/#cache
     cache: true,
@@ -121,32 +124,23 @@ const BaseConfig: () => Require<webpack.Configuration,
     watchOptions: {
         ignored: [ "node_modules", ],
     },
-    module: {
-        rules: MODULE_RULES,
-    },
+    module: { rules: MODULE_RULES, },
     optimization: {
         // runtimeChunk: {
-        //     name: (entrypoint) => `${entrypoint.name}/runtime`,
-        // },
+        //     name: entrypoint => `${entrypoint.name}/runtime`,
+        // } as webpack.Options.RuntimeChunkOptions,
         //mergeDuplicateChunks: true,
         splitChunks: {
             chunks: "initial",
             minChunks: 1,
-            // cacheGroups: {
-            //     basecode: {
-            //         test: /[\\/]src[\\/]base[\\/]/,
-            //         filename: "[name]/base.js",
-            //         chunks: "initial",
-            //         minChunks: 1,
-            //     },
-            // },
         },
     },
     output: {
         path: path.resolve(PROJECT_ROOT, "dist"),
+        publicPath: "dist",
         filename: "[name]/index.js",
         sourcePrefix: WATERMARK,
-        pathinfo: false, // don't need it. small performance gain.
+        pathinfo: false, // don't need it. suppression yields small performance gain.
     },
 }; };
 
@@ -167,24 +161,35 @@ const webBundleConfig = BaseConfig(); {
     config.target = "web";
     config.externals = [ "socket.io-client", ];
 
-    (<const>[ /* TODO.build "homepage", */ "offline", "client", ]).forEach((name) => {
-        config.entry[name] = `./src/${name}/index.ts`;
+    (<const>[ "offline", "client", ]).forEach((entryName) => {
+        config.entry[entryName] = `./src/${entryName}/index.ts`;
         // config.entry[`${name}_body`] = `./src/${name}/body.html`;
-        // TODO.build enable the below when we actually get to testing it
-        // config.plugins.push(
-        //     new HtmlPlugin({
-        //         template: "./.templates/index.html",
-        //         filename: `${name}/index.html`,
-        //         // inject:
-        //         chunks: [
-        //             name,
-        //             `${name}/runtime`, // see BaseConfig.optimization.runtime
-        //             "client~offline", // see Baseconfig.optimization.splitChunks
-        //             /*`${name}_body`,*/ // for plugin (plugin currently excluded)
-        //         ],
-        //         //hash: true,
-        //     })
-        // );
+        config.plugins.push(new HtmlPlugin({
+            template: "./src/base/index.ejs",
+            filename: `${entryName}/index.html`,
+            //favicon: `assets/${name}-favicon.ico`,
+            favicon: `assets/favicon.ico`,
+            base: "../..", // must play nice with path configs.
+            inject: false, // (I specify where each injection goes in the template).
+            chunks: [
+                entryName,
+                //`${name}/runtime`, // see BaseConfig.optimization.runtime
+                "client~offline", // see BaseConfig.optimization.splitChunks
+            ],
+            chunksSortMode: "auto",
+            templateParameters: (compilation, assets, assetTags, options) => { return {
+                compilation,
+                webpackConfig: compilation.options,
+                htmlWebpackPlugin: {
+                    tags: assetTags,
+                    files: assets,
+                    options
+                },
+                "extraScripts": (entryName === "client")
+                    ? [ "/socket.io/socket.io.js", ] : [],
+            }; },
+            //hash: true,
+        }));
     });
 }
 
@@ -199,10 +204,10 @@ const webBundleConfig = BaseConfig(); {
  *
  * @param config -
  */
-const NODE_CONFIG = (config): void => {
+const NODE_CONFIG = (config: ReturnType<typeof BaseConfig>): void => {
     config.target = "node";
     config.resolve.modules!.push("node_modules");
-    config.resolve.extensions.push(".js");
+    config.resolve.extensions!.push(".js");
     config.externals = fs.readdirSync(path.resolve(PROJECT_ROOT, "node_modules"));
 };
 

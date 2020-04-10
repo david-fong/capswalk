@@ -56,7 +56,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      * @override
      */
     public visualBell(): void {
-        this.tileCellElem; // TODO.impl
+        this.tileCellElem; // TODO.impl Use an animation to flash tile element?
     }
 
 

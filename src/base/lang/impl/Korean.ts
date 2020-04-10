@@ -1,5 +1,4 @@
 import { Lang } from "lang/Lang";
-import { LangFrontend } from "lang/LangFrontend";
 
 
 /**

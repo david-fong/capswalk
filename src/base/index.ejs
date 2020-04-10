@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <title>SnaKey v3</title>
@@ -7,10 +6,9 @@
         <meta name='description'    content='An original game based on the snake game.' />
         <meta name='viewport'       content='width=device-width, initial-scale=1.0' />
         <meta charset='UTF-8' /> <!-- make sure languages render -->
-        <link rel='icon' href='assets/favicon.ico' type='image/png'/>
 
-        <script src="/socket.io/socket.io.js"></script>
-        <script type="module" src="src/"></script> <!-- TODO.build -->
+        <%= htmlWebpackPlugin.tags.headTags.join("\n        ") %>
+        <%= extraScripts.map((name) => `<script src="${name}"></script>`).join("\n        ") %>
     </head>
 
 
@@ -18,8 +16,6 @@
         <div id='background'></div>
         <div id='game-grid-host'></div>
 
-
-        <!-- Run Game Code: -->
         <script>
             // Disable scroll-down via spacebar:
             window.addEventListener('keydown', (event) => {
@@ -30,5 +26,6 @@
             });
             // window.onbeforeunload = (event) => '';
         </script>
+        <%= htmlWebpackPlugin.tags.bodyTags.join("\n        ") %>
     </body>
 </html>

@@ -12,10 +12,10 @@
 
 ### High Priority
 
-1. For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 1. Decide: Should I get rid of player classes? (human, chaser, runner, etc)?
    - It seems like the focus will be on making the old `Chaser` artificial player behave like a human player in that they can be eliminated and act as teammates for human players. The boundary between them has blurred.
    - But! I still kind of want to have a kind of artificial player that can't be killed in a more "survive for as long as possible" mode (instead of an "eliminate all other teams" mode), which I could implement as a subclass of `Chaser` whose `status` field has its `set rawHealth` to do nothing.
+     - As an important side-note, if a team is only composed of such players, the game will technically never end unless we add a full check for it in the function that check whether the game should end, or we add a field to the team class on whether it counts toward the check for whether the game should end (a more powerful design at the cost of slightly more complexity).
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
    - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
@@ -27,6 +27,7 @@
 
 ### Low Priority
 
+- For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 - Use es6 #private syntax for getter-backing fields
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
