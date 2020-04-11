@@ -108,7 +108,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
                 }
             }
             dest.lastKnownUpdateId = desc.lastKnownUpdateId;
-            // TODO.design the above line is not correct if reordering happens :(
             dest.freeHealth = desc.newFreeHealth!;
         }
     }

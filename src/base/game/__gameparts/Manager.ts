@@ -58,7 +58,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             + ` composing the current Lang-under-construction are not`
             + ` sufficient to ensure that a shuffling operation will always`
             + ` be able to find a safe candidate to use as a replacement.`
-            + ` Please see the spec for ${Lang.prototype.getNonConflictingChar.name}.`
+            + ` Please see the spec for Lang.getNonConflictingChar.`
             );
         }
         this.langBalancingScheme = desc.langBalancingScheme;

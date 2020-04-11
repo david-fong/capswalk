@@ -55,7 +55,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
         // Construct players:
         this.players = this.createPlayers(desc);
-        if (desc.operatorIndex) {
+        if (desc.operatorIndex !== undefined) {
             (this.operator as Player<S>) = this.players.get({
                 family: Player.Family.HUMAN,
                 number: desc.operatorIndex!,

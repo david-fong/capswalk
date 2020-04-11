@@ -19,7 +19,7 @@ export class PlayerStatus<S extends Coord.System> {
     }
 
     public reset(): void {
-        this.score      = 0;
+        this.score   = 0;
         this.health  = 0;
     }
 

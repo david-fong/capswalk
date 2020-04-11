@@ -142,6 +142,8 @@ export namespace Beehive {
          *
          */
         // TODO.design determine spec for indexing
+        // Then initialize the field in the constructor
+        // Also design HTML representation and initialize in Grid.Visible
         private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
 
         /**
@@ -150,7 +152,7 @@ export namespace Beehive {
         public constructor(desc: AbstractGrid.CtorArgs<S>) {
             super(desc);
 
-            // TODO.impl initialize `grid`.
+            // Initialize `grid`:
         }
 
         /**
@@ -221,7 +223,6 @@ export namespace Beehive {
             return new Coord(undefined!);
         }
     }
-    (AbstractGrid.__Constructors[BaseCoord.System.BEEHIVE] as typeof Grid) = Grid;
 
     export namespace Grid {
         export type Dimensions = {
@@ -234,10 +235,8 @@ export namespace Beehive {
             ;
             public constructor(desc: AbstractGrid.CtorArgs<S>) {
                 super(desc);
-                // TODO.impl Beehive.Visible constructor.
             }
         }
-        (VisibleGrid.__Constructors[BaseCoord.System.BEEHIVE] as typeof Visible) = Visible;
     }
 
 }

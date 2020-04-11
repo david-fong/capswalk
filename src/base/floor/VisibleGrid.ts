@@ -15,8 +15,7 @@ import type { Grid } from "floor/Grid";
  * not use
  */
 export interface VisibleGrid<S extends Coord.System> extends Grid<S> {
-
-    // TODO.design is there any common code / interfacing I should put here?
+    // So far, there's no extra behaviour for this extension.
 }
 
 

@@ -103,7 +103,6 @@ export namespace SysName {
             return new Coord(undefined!);
         }
     }
-    (AbstractGrid.__Constructors[BaseCoord.System.SYSNAME] as typeof Grid) = Grid;
     export namespace Grid {
         // if any fields are optional, describe how default values are chosen here.
         export type Dimensions = {
@@ -116,7 +115,6 @@ export namespace SysName {
                 // Set up DOM fields for rendering the grid.
             }
         }
-        (VisibleGrid.__Constructors[BaseCoord.System.SYSNAME] as typeof Visible) = Visible;
     }
 }
 ```

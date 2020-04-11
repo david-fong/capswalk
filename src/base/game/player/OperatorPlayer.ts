@@ -101,7 +101,6 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
             return;
         }
         if (key) {
-            // TODO.design split Lang into frontend and backed parts.
             key = this.langRemappingFunc(key);
             if (!(Lang.Seq.REGEXP.test(key))) {
                 throw new RangeError(`The implementation of input transformation`
@@ -172,15 +171,10 @@ class OperatorPlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
         {
             // TODO.design create a spotlight mask using the below CSS properties:
             // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
-            const pDiv: HTMLDivElement = new HTMLDivElement();
+            const pDiv: HTMLDivElement = document.createElement("div");
             pDiv.className = HtmlHooks.Player.Class.BASE;
             this.playerDivElem = pDiv;
         }
-        // Trivially call setters after registering __proto__ (the
-        // super constructor resets fields, but will not render changes
-        // to the UI like this extension class' overridden setters do):
-        this.score = this.score;
-        this.health = this.health;
     }
 
 

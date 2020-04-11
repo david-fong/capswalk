@@ -76,7 +76,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
         // Pass on Game constructor arguments to each client:
         (this.players.contents.HUMAN).forEach((player) => {
-            (gameDesc.operatorIndex as unknown as Player.Id["number"]) = player.playerId.number;
+            (gameDesc.operatorIndex! as Player.Id["number"]) = player.playerId.number;
             this.socketBundle.get(player.playerId).emit(
                 Game.CtorArgs.EVENT_NAME,
                 gameDesc,

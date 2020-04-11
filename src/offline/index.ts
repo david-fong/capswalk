@@ -2,6 +2,9 @@ import { Coord } from "floor/Coord";
 import { BalancingScheme } from "lang/LangSeqTreeNode";
 import { OfflineGame } from "./OfflineGame";
 import { Player } from "game/player/Player";
+import { PostInit } from "game/PostInit";
+
+PostInit();
 
 // TODO.design override ctor args for each impl, and make it so they adapt input to pass to super ctor.
 const game = new OfflineGame<Coord.System.EUCLID2>({

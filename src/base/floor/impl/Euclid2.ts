@@ -318,7 +318,6 @@ export namespace Euclid2 {
         }
 
     }
-    (AbstractGrid.__Constructors[BaseCoord.System.EUCLID2] as typeof Grid) = Grid;
 
     export namespace Grid {
         /**
@@ -338,7 +337,7 @@ export namespace Euclid2 {
 
             public constructor(desc: AbstractGrid.CtorArgs<S>) {
                 super(desc);
-                const domGrid = new HTMLTableElement();
+                const domGrid = document.createElement("table");
                 const tBody = domGrid.createTBody();
                 for (const row of this.grid) {
                     const rowElem = tBody.insertRow();
@@ -359,7 +358,6 @@ export namespace Euclid2 {
                 gridParentElement.appendChild(domGrid);
             }
         }
-        (VisibleGrid.__Constructors[BaseCoord.System.EUCLID2] as typeof Visible) = Visible;
     }
 
 }
