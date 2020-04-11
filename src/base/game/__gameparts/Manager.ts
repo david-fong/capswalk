@@ -40,10 +40,10 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      */
     public constructor(
         gameType: G,
-        tileClass: Tile.ClassIf<S>,
+        impl: Game.ImplArgs<S>,
         desc: Game.CtorArgs<G,S>,
     ) {
-        super(gameType, tileClass, desc);
+        super(gameType, impl, desc);
         this.averageFreeHealth = desc.averageFreeHealthPerTile * this.grid.area;
 
         // TODO.design How to get a Language implementation by name?
@@ -242,3 +242,4 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     }
 
 }
+Object.freeze(GameManager.prototype);

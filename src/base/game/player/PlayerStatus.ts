@@ -64,3 +64,4 @@ export class PlayerStatus<S extends Coord.System> {
     }
 
 }
+Object.freeze(PlayerStatus.prototype);

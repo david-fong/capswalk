@@ -1,14 +1,15 @@
 import { Game } from "game/Game";
 
-import type { Coord } from "floor/Coord";
-import { VisibleTile } from "floor/VisibleTile";
-import { VisibleGrid } from "floor/VisibleGrid";
-import { LocalGameSettings } from "settings/GameSettings";
+import { LocalGameSettings }    from "settings/GameSettings";
+import type { Coord }           from "floor/Tile";
+import { VisibleTile }          from "floor/VisibleTile";
+import { VisibleGrid }          from "floor/VisibleGrid";
 
-import type { Player } from "game/player/Player";
-import type { OperatorPlayer } from "game/player/OperatorPlayer";
-import { OfflineOperatorPlayer } from "./OfflineOperatorPlayer";
-import { ArtificialPlayer } from "game/player/ArtificialPlayer";
+import type { Player }          from "game/player/Player";
+import type { OperatorPlayer }  from "game/player/OperatorPlayer";
+import { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
+import { OfflineOperatorPlayer }from "./OfflineOperatorPlayer";
+import { ArtificialPlayer }     from "game/player/ArtificialPlayer";
 
 import { GameManager } from "game/__gameparts/Manager";
 
@@ -39,7 +40,12 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
      * @param gameDesc -
      */
     public constructor(gameDesc: Game.CtorArgs<G,S>) {
-        super(Game.Type.OFFLINE, VisibleTile, gameDesc);
+        super(
+            Game.Type.OFFLINE, {
+            tileClass: VisibleTile,
+            playerStatusCtor: VisiblePlayerStatus,
+            }, gameDesc,
+        );
         if (!this.operator) {
             throw new Error("The Operator for an OfflineGame should be defined.");
         }

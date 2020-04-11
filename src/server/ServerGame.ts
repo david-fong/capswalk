@@ -5,6 +5,7 @@ import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
 import { Game } from "game/Game";
 import type { Player } from "game/player/Player";
+import { PlayerStatus } from "game/player/PlayerStatus";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
@@ -51,7 +52,12 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         // Start with a call to the super constructor:
-        super(Game.Type.SERVER, Tile, gameDesc);
+        super(
+            Game.Type.SERVER, {
+            tileClass: Tile,
+            playerStatusCtor: PlayerStatus,
+            }, gameDesc,
+        );
         this.namespace = namespace;
 
         // TODO.impl initialize this.socketBundle

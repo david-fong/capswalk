@@ -1,4 +1,4 @@
-import type { Coord, Tile } from "floor/Tile";
+import type { Coord } from "floor/Tile";
 import { Game } from "../Game";
 
 import { PlayerActionEvent, TileModificationEvent } from "../events/PlayerActionEvent";
@@ -46,10 +46,10 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
     public constructor(
         gameType: G,
-        tileClass: Tile.ClassIf<S>,
+        impl: Game.ImplArgs<S>,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
-        super(gameType, tileClass, gameDesc);
+        super(gameType, impl, gameDesc);
         this.eventRecord = [];
     }
 
@@ -200,3 +200,4 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     }
 
 }
+Object.freeze(GameEvents.prototype);

@@ -126,6 +126,8 @@ Tile as Tile.ClassIf<any>;
 
 export namespace Tile {
 
+    // NOTE: We need this for type-safety because just using typeof
+    // will not capture information about type arguments.
     export type ClassIf<S extends Coord.System> = {
         new(coord: Tile<S>["coord"]): Tile<S>;
     };

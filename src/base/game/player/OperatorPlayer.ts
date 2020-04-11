@@ -1,12 +1,12 @@
-import { HtmlHooks } from "../../utils/HtmlHooks";
 import { Lang } from "lang/Lang";
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { VisibleTile } from "floor/VisibleTile";
+import type { VisiblePlayerStatus } from "./VisiblePlayerStatus";
 import type { GameBase } from "game/__gameparts/Base";
 
-import { Player, PlayerStatus } from "./Player";
+import { Player } from "./Player";
 
 
 /**
@@ -23,7 +23,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
-    declare public readonly status: OperatorPlayerStatus<S>;
+    declare public readonly status: VisiblePlayerStatus<S>;
 
     /**
      * Invariant: always matches the prefix of the {@link LangSeq} of
@@ -46,15 +46,10 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      */
     public reset(spawnTile: Tile<S>): void {
         super.reset(spawnTile);
+        // This below line must be done because the reset chain does
+        // not contain any calls to Player.moveTo, which updates visuals.
         this.hostTile.tileCellElem.appendChild(this.status.playerDivElem);
         this.#seqBuffer = "";
-    }
-
-    /**
-     * @override
-     */
-    protected __createStatusObj(): OperatorPlayerStatus<S> {
-        return new OperatorPlayerStatus(this);
     }
 
 
@@ -89,9 +84,9 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
      * any checking regarding {@link OperatorPlayer#requestInFlight}.
      *
      * @param key
-     * The pressed typeable key as a string. Pass an empty string to trigger a
-     * refresh of the {@link OperatorPlayer#_seqBuffer} to maintain its
-     * invariant.
+     * The pressed typeable key as a string. Pass an empty string to
+     * trigger a refresh of the {@link OperatorPlayer#_seqBuffer} to
+     * maintain its invariant.
      */
     public seqBufferAcceptKey(key: string | undefined): void {
         const unts = this.tile.destsFrom().unoccupied.get;
@@ -157,36 +152,4 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
     }
 
 }
-
-
-
-// TODO.design Rename to VisiblePlayerStatus and move to own file.
-// TODO.impl make the overridden setters modify the HTML elements to
-// visually indicate the changes.
-class OperatorPlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
-
-    public readonly playerDivElem: HTMLDivElement;
-
-    public constructor(player: Player<S>) {
-        super(player);
-        {
-            // TODO.design create a spotlight mask using the below CSS properties:
-            // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
-            const pDiv: HTMLDivElement = document.createElement("div");
-            pDiv.className = HtmlHooks.Player.Class.BASE;
-            this.playerDivElem = pDiv;
-        }
-    }
-
-
-    public set score(newValue: Player.Health) {
-        super.score = newValue;
-    }
-
-    public set health(newHealth: Player.Health) {
-        super.health = newHealth;
-        // TODO.design CSS integration for Player.isDowned rendering.
-        // this.playerDivElem.dataset[HtmlHooks.Player.Dataset.IS_DOWNED] = this.isDowned;
-    }
-
-}
+Object.freeze(OperatorPlayer.prototype);

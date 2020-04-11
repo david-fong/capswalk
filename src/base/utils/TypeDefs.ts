@@ -93,6 +93,7 @@ export namespace Player {
 
     }
 }
+Object.freeze(Player.prototype);
 
 
 
@@ -178,3 +179,4 @@ export namespace Lang {
         [Names.KOREAN__SEBEOLSIK]:  __RemapTemplates.IDENTITY,
     });
 }
+Object.freeze(Lang.prototype);

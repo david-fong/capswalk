@@ -301,6 +301,11 @@ export namespace Euclid2 {
             dimensions: Grid.Dimensions,
         ): Player.Bundle<Coord.Bare> {
             return undefined!;
+
+            // TODO
+            //
+            //
+            //
         }
 
         /**

@@ -2,7 +2,7 @@ import { Game } from "../Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 
-import { Player } from "../player/Player";
+import { Player, PlayerStatus } from "../player/Player";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
@@ -29,6 +29,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     #status: Game.Status;
 
+    public readonly __playerStatusCtor: typeof PlayerStatus;
+
 
     /**
      * _Does not call reset._
@@ -41,18 +43,19 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      */
     public constructor(
         gameType: G,
-        tileClass: Tile.ClassIf<S>,
+        impl: Game.ImplArgs<S>,
         desc: Game.CtorArgs<G,S>,
     ) {
         this.gameType = gameType;
         const gridClass = this.__getGridImplementation(desc.coordSys);
         this.grid = new (gridClass)({
-            tileClass:  tileClass,
+            tileClass:  impl.tileClass,
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
         });
 
         // Construct players:
+        this.__playerStatusCtor = impl.playerStatusCtor;
         this.players = this.createPlayers(desc);
         if (desc.operatorIndex !== undefined) {
             (this.operator as Player<S>) = this.players.get({
@@ -93,6 +96,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameBase<G,S>["players"] {
         const playerDescs: Player.Bundle<Player.CtorArgs>
             = (this.gameType === Game.Type.CLIENT)
+            // The client receives these descriptors already finalized / cleaned by the server.
             ? new Player.Bundle(gameDesc.playerDescs as Game.CtorArgs<Game.Type.CLIENT,S>["playerDescs"])
             : Player.CtorArgs.finalizePlayerIds(new Player.Bundle(gameDesc.playerDescs), gameDesc.languageName)
             ;
@@ -114,7 +118,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             return build;
         }, {} as Player.Bundle.Contents<Player<S>>));
     }
-
     protected abstract __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;
     protected abstract __createArtifPlayer(desc: Player.CtorArgs):
     (G extends Game.Type.Manager ? ArtificialPlayer<S> : Player<S>);
@@ -170,3 +173,4 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
 
 }
+Object.freeze(GameBase.prototype);

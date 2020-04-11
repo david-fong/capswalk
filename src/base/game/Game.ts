@@ -1,9 +1,9 @@
 import type { Lang } from "lang/Lang";
 import type { BalancingScheme } from "lang/LangSeqTreeNode";
 
-import type { Coord } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
-import type { Player } from "./player/Player";
+import type { Player, PlayerStatus } from "./player/Player";
 
 
 /**
@@ -33,11 +33,22 @@ export namespace Game {
     }
 
     /**
+     * Unlike CtorArgs, these are not passed as no-prototype objects
+     * (possibly over the network) from the game manager to clients.
+     * These are abstract handles to game-implementation-dependant
+     * components.
+     */
+    export type ImplArgs<S extends Coord.System> = {
+        tileClass: Tile.ClassIf<S>,
+        playerStatusCtor: typeof PlayerStatus,
+    };
+
+    /**
      * # Game Constructor Arguments
      *
      * @template S
      * The coordinate system to use. The literal value must also be
-     * passed as the field {@link CtorArgs#coordSys}.
+     * passed as the field `coordSys`.
      */
     export type CtorArgs<
         G extends Game.Type,

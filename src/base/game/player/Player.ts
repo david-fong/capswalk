@@ -40,7 +40,8 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         }
         this.username = desc.username;
         this.teamId = desc.teamId;
-        this.status = this.__createStatusObj();
+        console.log(this.game.__playerStatusCtor);
+        this.status = new (this.game.__playerStatusCtor)(this);
     }
 
     public reset(spawnTile: Tile<S>): void {
@@ -48,12 +49,6 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.status.reset();
         this.lastAcceptedRequestId = PlayerActionEvent.INITIAL_REQUEST_ID;
         this.requestInFlight = false;
-    }
-
-    // TODO.impl This should be decided by the game type.
-    //   See TODO for renaming OperatorPlayerStatus to VisiblePlayerStatus
-    protected __createStatusObj(): PlayerStatus<S> {
-        return new PlayerStatus(this);
     }
 
     public __abstractNotifyThatGameStatusBecamePlaying(): void {}
@@ -227,5 +222,4 @@ export namespace Player {
     }
 
 }
-
 Object.freeze(Player.prototype);

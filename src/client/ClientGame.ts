@@ -8,6 +8,7 @@ import { VisibleGrid }          from "floor/VisibleGrid";
 
 import type { OperatorPlayer }  from "game/player/OperatorPlayer";
 import { Player }               from "game/player/Player";
+import { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
 import { OnlineOperatorPlayer } from "./OnlineOperatorPlayer";
 
 import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
@@ -47,7 +48,12 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
         socket: SocketIOClient.Socket,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
-        super(Game.Type.CLIENT, VisibleTile, gameDesc);
+        super(
+            Game.Type.CLIENT, {
+            tileClass: VisibleTile,
+            playerStatusCtor: VisiblePlayerStatus,
+            }, gameDesc,
+        );
         if (!this.operator) {
             throw new Error("The Operator for a ClientGame should be defined.");
         }

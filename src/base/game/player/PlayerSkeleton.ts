@@ -139,5 +139,8 @@ export namespace PlayerSkeleton {
             return this.player.game.grid.tile.sourcesTo(this.player.coord).get;
         }
     }
+    Object.seal(TileGetterSource.prototype);
 
 }
+
+Object.seal(PlayerSkeleton.prototype);
