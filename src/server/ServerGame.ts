@@ -169,3 +169,4 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
     }
 
 }
+Object.freeze(ServerGame.prototype);

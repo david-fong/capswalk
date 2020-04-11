@@ -6,9 +6,8 @@ import { VisibleTile }          from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
 
 import type { Player }          from "game/player/Player";
-import type { OperatorPlayer }  from "game/player/OperatorPlayer";
+import { OperatorPlayer }       from "game/player/OperatorPlayer";
 import { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
-import { OfflineOperatorPlayer }from "./OfflineOperatorPlayer";
 import { ArtificialPlayer }     from "game/player/ArtificialPlayer";
 
 import { GameManager } from "game/__gameparts/Manager";
@@ -58,7 +57,7 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
      * @override
      */
     protected __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S> {
-        return new OfflineOperatorPlayer<S>(this, desc);
+        return new OperatorPlayer<S>(this, desc);
     }
 
     /**
@@ -79,3 +78,4 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
     }
 
 }
+Object.freeze(OfflineGame.prototype);

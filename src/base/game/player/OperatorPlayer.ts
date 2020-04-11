@@ -13,7 +13,7 @@ import { Player } from "./Player";
  *
  * @extends Player
  */
-export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
+export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     /**
      * @override

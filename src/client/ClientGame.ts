@@ -6,10 +6,9 @@ import { LocalGameSettings }    from "settings/GameSettings";
 import { Coord, VisibleTile }   from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
 
-import type { OperatorPlayer }  from "game/player/OperatorPlayer";
 import { Player }               from "game/player/Player";
+import { OperatorPlayer }       from "game/player/OperatorPlayer";
 import { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
-import { OnlineOperatorPlayer } from "./OnlineOperatorPlayer";
 
 import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
 import { GameEvents }           from "game/__gameparts/Events";
@@ -90,7 +89,7 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
      * @override
      */
     protected __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S> {
-        return new OnlineOperatorPlayer(this, desc);
+        return new OperatorPlayer(this, desc);
     }
 
     /**
@@ -133,3 +132,4 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
     }
 
 }
+Object.freeze(ClientGame.prototype);
