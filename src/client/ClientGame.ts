@@ -6,9 +6,8 @@ import { LocalGameSettings }    from "settings/GameSettings";
 import { Coord, VisibleTile }   from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
 
-import type { Player }          from "game/player/Player";
 import type { OperatorPlayer }  from "game/player/OperatorPlayer";
-import { PuppetPlayer }         from "game/player/PuppetPlayer";
+import { Player }               from "game/player/Player";
 import { OnlineOperatorPlayer } from "./OnlineOperatorPlayer";
 
 import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
@@ -91,8 +90,8 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
     /**
      * @override
      */
-    protected __createArtifPlayer(desc: Player.CtorArgs): PuppetPlayer<S> {
-        return new PuppetPlayer(this, desc);
+    protected __createArtifPlayer(desc: Player.CtorArgs): Player<S> {
+        return new Player(this, desc);
     }
 
 

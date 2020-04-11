@@ -12,6 +12,7 @@
 
 ### High Priority
 
+1. Bug: On Client, all players should have a visible `PlayerStatus` object.
 1. Fix the initialization issue with the Grid registry system (access-before-initialization-error).
 1. Decide: Should I get rid of player classes? (human, chaser, runner, etc)?
    - It seems like the focus will be on making the old `Chaser` artificial player behave like a human player in that they can be eliminated and act as teammates for human players. The boundary between them has blurred.

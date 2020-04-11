@@ -30,7 +30,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
     protected constructor(game: GameManager<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
         if (game.gameType === Game.Type.CLIENT) {
-            throw new TypeError("ClientGames should be using PuppetPlayers instead.");
+            throw new TypeError("ClientGames should be using regular Players instead.");
         }
     }
 

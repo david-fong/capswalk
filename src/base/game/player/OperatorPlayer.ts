@@ -160,6 +160,7 @@ export abstract class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
 
 
+// TODO.design Rename to VisiblePlayerStatus and move to own file.
 // TODO.impl make the overridden setters modify the HTML elements to
 // visually indicate the changes.
 class OperatorPlayerStatus<S extends Coord.System> extends PlayerStatus<S> {

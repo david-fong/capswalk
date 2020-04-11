@@ -3,7 +3,6 @@ import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 
 import { Player } from "../player/Player";
-import { PuppetPlayer } from "../player/PuppetPlayer";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
@@ -107,7 +106,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
                 if (family === Player.Family.HUMAN) {
                     return (numberInFamily === gameDesc.operatorIndex)
                         ? this.__createOperatorPlayer(ctorArgs)
-                        : this.__createHumanPlayer(ctorArgs);
+                        : new Player(this, ctorArgs);
                 } else {
                     return this.__createArtifPlayer(ctorArgs);
                 }
@@ -117,11 +116,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     }
 
     protected abstract __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;
-    protected __createHumanPlayer(desc: Player.CtorArgs): PuppetPlayer<S> {
-        return new PuppetPlayer(this, desc);
-    }
     protected abstract __createArtifPlayer(desc: Player.CtorArgs):
-    (G extends Game.Type.Manager ? ArtificialPlayer<S> : PuppetPlayer<S>);
+    (G extends Game.Type.Manager ? ArtificialPlayer<S> : Player<S>);
 
     public get status(): Game.Status {
         return this.#status;
@@ -156,7 +152,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.__abstractStatusBecomeOver();
         this.#status = Game.Status.OVER;
     }
-    // TODO.impl
     protected __abstractStatusBecomePlaying(): void {}
     protected __abstractStatusBecomePaused(): void {}
     protected __abstractStatusBecomeOver(): void {}

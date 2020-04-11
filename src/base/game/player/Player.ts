@@ -16,7 +16,7 @@ export { PlayerStatus };
 /**
  *
  */
-export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
+export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
     public readonly username: Player.Username;
 
@@ -50,6 +50,8 @@ export abstract class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.requestInFlight = false;
     }
 
+    // TODO.impl This should be decided by the game type.
+    //   See TODO for renaming OperatorPlayerStatus to VisiblePlayerStatus
     protected __createStatusObj(): PlayerStatus<S> {
         return new PlayerStatus(this);
     }
@@ -225,3 +227,5 @@ export namespace Player {
     }
 
 }
+
+Object.freeze(Player.prototype);
