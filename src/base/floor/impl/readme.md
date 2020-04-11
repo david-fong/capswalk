@@ -52,7 +52,7 @@ import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
 import type { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
-import type { VisibleGrid } from "../VisibleGrid";
+import { VisibleGrid } from "../VisibleGrid";
 
 // documentation
 export namespace SysName {
@@ -103,6 +103,7 @@ export namespace SysName {
             return new Coord(undefined!);
         }
     }
+    (AbstractGrid.__Constructors[BaseCoord.System.SYSNAME] as typeof Grid) = Grid;
     export namespace Grid {
         // if any fields are optional, describe how default values are chosen here.
         export type Dimensions = {
@@ -115,10 +116,11 @@ export namespace SysName {
                 // Set up DOM fields for rendering the grid.
             }
         }
+        (VisibleGrid.__Constructors[BaseCoord.System.SYSNAME] as typeof Visible) = Visible;
     }
 }
 ```
 
 **In [`Grid.ts`](../Grid.ts)**
 
-Import your system namespace, and add entries to `Grid.Dimensions` and `Grid.Constructors` for the new coordinate system.
+Import your system namespace, and add an entry to `Grid.Dimensions` for the new coordinate system.

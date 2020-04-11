@@ -2,7 +2,7 @@ import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
 import type { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
-import type { VisibleGrid } from "../VisibleGrid";
+import { VisibleGrid } from "../VisibleGrid";
 
 
 type S = BaseCoord.System.EUCLID2;
@@ -318,6 +318,7 @@ export namespace Euclid2 {
         }
 
     }
+    (AbstractGrid.__Constructors[BaseCoord.System.EUCLID2] as typeof Grid) = Grid;
 
     export namespace Grid {
         /**
@@ -358,6 +359,7 @@ export namespace Euclid2 {
                 gridParentElement.appendChild(domGrid);
             }
         }
+        (VisibleGrid.__Constructors[BaseCoord.System.EUCLID2] as typeof Visible) = Visible;
     }
 
 }

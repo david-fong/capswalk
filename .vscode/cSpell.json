@@ -22,6 +22,7 @@
         "artif",
         "bubbler",
         "gameparts",
+        "sysname",
         "typeable",
 
         "coord",
@@ -35,6 +36,7 @@
         "retval",
         "supercall",
         "spec",
+        "typeof",
 
         "API's",
         "eslintrc's",

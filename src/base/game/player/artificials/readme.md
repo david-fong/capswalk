@@ -12,4 +12,4 @@ Each implementation must:
 - Set their constructor visibility to `protected`.
 - Use the exact same constructor signature as that of the superclass.
 - Declare an enum entry in [`Player.Operator`](../Player.ts).
-  - Map that entry to their constructor function in [`ArtificialPlayers.Constructors`](../ArtificialPlayer.ts).
+  - In their own file, map that entry to their constructor function in the dictionary [`ArtificialPlayers.Constructors`](../ArtificialPlayer.ts).

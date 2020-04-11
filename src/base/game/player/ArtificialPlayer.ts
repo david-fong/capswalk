@@ -3,7 +3,6 @@ import type { Coord, Tile } from "floor/Tile";
 import type { GameManager } from "game/__gameparts/Manager";
 
 import { Player } from "./Player";
-import { Chaser } from "./artificials/Chaser";
 
 
 /**
@@ -84,9 +83,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
 export namespace ArtificialPlayer {
 
-    const Constructors = Object.freeze(<const>{
-        [ Player.Family.CHASER ]: Chaser,
-    }) as Readonly<Record<
+    export const __Constructors = {} as Readonly<Record<
         Exclude<Player.Family, typeof Player.Family.HUMAN>,
         typeof ArtificialPlayer
     >>; // Type Assertion.
@@ -95,7 +92,7 @@ export namespace ArtificialPlayer {
         game: Readonly<GameManager<any,S>>,
         playerDesc: Readonly<Player.CtorArgs>,
     ): ArtificialPlayer<S> => {
-        return new (Constructors[playerDesc.playerId.family])(game, playerDesc);
+        return new (__Constructors[playerDesc.playerId.family])(game, playerDesc);
     };
 
 }

@@ -3,8 +3,8 @@ import { TileGetter } from "./TileGetter";
 
 import type { Player } from "utils/TypeDefs";
 
-import { Euclid2 } from "./impl/Euclid2";
-import { Beehive } from "./impl/Beehive";
+import type { Euclid2 } from "./impl/Euclid2";
+import type { Beehive } from "./impl/Beehive";
 
 
 /**
@@ -126,16 +126,6 @@ export namespace Grid {
         : S extends Coord.System.BEEHIVE ? Beehive.Grid.Dimensions
         : never;
 
-    const Constructors = Object.freeze(<const>{
-        [ Coord.System.EUCLID2 ]: Euclid2.Grid,
-        [ Coord.System.BEEHIVE ]: Beehive.Grid,
-    }) as Readonly<{
-        [S in Coord.System]: ClassIf<S>;
-    }>;
-    // The above type assertion checks that the implementations are
-    // complete, and casts them to a slightly more general type,
-    // which helps `getImplementation` do its own type assertions.
-
     // ==============================================================
     // Note: The below exports do not require any modifications with
     // the additions of new coordinate systems.
@@ -208,6 +198,11 @@ export namespace Grid {
 
     };
 
+    // Each implementation must register itself into this dictionary.
+    export const __Constructors = {} as Readonly<{
+        [S in Coord.System]: ClassIf<S>;
+    }>;
+
     /**
      * @returns
      * A Grid class for the specified coordinate system.
@@ -218,7 +213,8 @@ export namespace Grid {
         // Note: At the time of writing this, separating this into
         // two lines is necessary (otherwise Typescript will feel
         // overwhelmed)
-        const ctor = Constructors[coordSys];
+        const ctor = __Constructors[coordSys];
+        console.log(ctor);
         return ctor as ClassIf<S>;
     };
 

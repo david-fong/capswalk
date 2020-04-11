@@ -2,7 +2,7 @@ import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
 import type { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
-import type { VisibleGrid } from "../VisibleGrid";
+import { VisibleGrid } from "../VisibleGrid";
 
 
 type S = BaseCoord.System.BEEHIVE;
@@ -221,6 +221,7 @@ export namespace Beehive {
             return new Coord(undefined!);
         }
     }
+    (AbstractGrid.__Constructors[BaseCoord.System.BEEHIVE] as typeof Grid) = Grid;
 
     export namespace Grid {
         export type Dimensions = {
@@ -236,6 +237,7 @@ export namespace Beehive {
                 // TODO.impl Beehive.Visible constructor.
             }
         }
+        (VisibleGrid.__Constructors[BaseCoord.System.BEEHIVE] as typeof Visible) = Visible;
     }
 
 }

@@ -1,6 +1,7 @@
 import type { Coord } from "floor/Coord";
-import type { Player } from "game/player/Player";
 import type { GameManager } from "game/__gameparts/Manager";
+
+import { Player } from "game/player/Player";
 import { ArtificialPlayer } from "../ArtificialPlayer";
 
 
@@ -31,3 +32,4 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     }
 
 }
+(ArtificialPlayer.__Constructors[Player.Family.CHASER] as typeof Chaser) = Chaser;

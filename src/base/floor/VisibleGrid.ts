@@ -1,9 +1,6 @@
 import { Coord } from "floor/Coord";
 import type { Grid } from "floor/Grid";
 
-import { Euclid2 } from "./impl/Euclid2";
-import { Beehive } from "./impl/Beehive";
-
 
 /**
  *
@@ -19,18 +16,11 @@ import { Beehive } from "./impl/Beehive";
  */
 export interface VisibleGrid<S extends Coord.System> extends Grid<S> {
 
-    // TODO.design is there any common code / interfacing I can put here?
+    // TODO.design is there any common code / interfacing I should put here?
 }
 
 
 export namespace VisibleGrid {
-
-    const Constructors = Object.freeze(<const>{
-        [ Coord.System.EUCLID2 ]: Euclid2.Grid.Visible,
-        [ Coord.System.BEEHIVE ]: Beehive.Grid.Visible,
-    }) as Readonly<{
-        [S in Coord.System]: ClassIf<S>;
-    }>;
 
     export interface ClassIf<S extends Coord.System> extends Grid.ClassIf<S> {
         /**
@@ -39,8 +29,14 @@ export namespace VisibleGrid {
         new(desc: Grid.CtorArgs<S>): VisibleGrid<S>;
     };
 
+    // Each implementation must register itself into this dictionary.
+    export const __Constructors = {} as Readonly<{
+        [S in Coord.System]: ClassIf<S>;
+    }>;
+
     export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
-        return ((Constructors[coordSys]) as unknown as ClassIf<S>);
+        const ctor = __Constructors[coordSys];
+        return ctor as ClassIf<S>;
     };
 
 }

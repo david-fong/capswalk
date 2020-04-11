@@ -46,7 +46,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         desc: Game.CtorArgs<G,S>,
     ) {
         this.gameType = gameType;
-        this.grid = new (this.__getGridImplementation(desc.coordSys))({
+        const gridClass = this.__getGridImplementation(desc.coordSys);
+        this.grid = new (gridClass)({
             tileClass:  tileClass,
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
