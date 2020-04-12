@@ -56,6 +56,7 @@ export namespace Game {
     > = Readonly<{
         coordSys: S;
         gridDimensions: Grid.Dimensions<S>;
+        gridHtmlIdHook: G extends Game.Type.SERVER ? undefined : string;
 
         languageName: Lang.Names.Key;
         langBalancingScheme: BalancingScheme;

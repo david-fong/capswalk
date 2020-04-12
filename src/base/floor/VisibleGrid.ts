@@ -1,5 +1,8 @@
-import { Coord } from "floor/Coord";
-import type { Grid } from "floor/Grid";
+import type { Coord, Tile } from "floor/Tile";
+import type { Euclid2 } from "./impl/Euclid2";
+import type { Beehive } from "./impl/Beehive";
+
+import { Grid } from "floor/Grid";
 
 
 /**
@@ -29,13 +32,13 @@ export namespace VisibleGrid {
     };
 
     // Each implementation must register itself into this dictionary.
-    export const __Constructors = {} as Readonly<{
-        [S in Coord.System]: ClassIf<S>;
-    }>;
+    export declare const __Constructors: {
+        readonly [ S in Coord.System ]: Grid.ClassIf<S>
+    };
 
     export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
         const ctor = __Constructors[coordSys];
-        return ctor as ClassIf<S>;
+        return ctor as unknown as ClassIf<S>;
     };
 
 }

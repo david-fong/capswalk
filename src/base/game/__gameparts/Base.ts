@@ -49,9 +49,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.gameType = gameType;
         const gridClass = this.__getGridImplementation(desc.coordSys);
         this.grid = new (gridClass)({
+            gridClass:  gridClass,
             tileClass:  impl.tileClass,
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
+            domGridHtmlIdHook: (desc.gridHtmlIdHook || "n/a")!,
         });
 
         // Construct players:

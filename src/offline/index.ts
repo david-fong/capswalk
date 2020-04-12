@@ -1,3 +1,4 @@
+import { HtmlHooks } from "utils/HtmlHooks";
 import { Coord } from "floor/Coord";
 import { BalancingScheme } from "lang/LangSeqTreeNode";
 import { OfflineGame } from "./OfflineGame";
@@ -13,6 +14,7 @@ const game = new OfflineGame<Coord.System.EUCLID2>({
         height: 20,
         width:  20,
     },
+    gridHtmlIdHook: HtmlHooks.Grid.Id.GRID,
     averageFreeHealthPerTile: 1.0 / 70.0,
     langBalancingScheme: BalancingScheme.WEIGHT,
     languageName: "ENGLISH__LOWERCASE",

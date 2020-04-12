@@ -2,7 +2,6 @@ import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
 import type { Player } from "utils/TypeDefs";
-
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
 
@@ -14,6 +13,7 @@ import type { Beehive } from "./impl/Beehive";
  */
 export abstract class Grid<S extends Coord.System> implements TileGetter.Source<S> {
 
+    // A type-annotated alias to this.constructor.
     public readonly static: Grid.ClassIf<S>;
 
     public readonly dimensions: Grid.Dimensions<S>;
@@ -23,8 +23,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
     }
 
     public readonly tile: TileGetter<S,[Coord.Bare<S>]>;
-
-    protected readonly getImplementation = Grid.getImplementation;
 
 
     /**
@@ -36,11 +34,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * @param desc -
      */
     protected constructor(desc: Grid.CtorArgs<S>) {
-        if (!desc.domGridHtmlIdHook) {
-            desc.domGridHtmlIdHook = Grid.DEFAULT_HTML_ID_HOOK;
-        }
-
-        this.static = this.getImplementation(desc.coordSys);
+        this.static = desc.gridClass;
         this.dimensions = desc.dimensions;
         this.tile = new TileGetter(this);
     }
@@ -112,13 +106,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 export namespace Grid {
 
     /**
-     * Should only have one child: the main game grid's display.
-     */
-    export const DEFAULT_HTML_ID_HOOK = "game-grid-host";
-
-    // ==============================================================
-
-    /**
      * Values do not _need_ to be in range or integers.
      */
     export type Dimensions<S extends Coord.System>
@@ -132,10 +119,11 @@ export namespace Grid {
     // ==============================================================
 
     export type CtorArgs<S extends Coord.System> = {
+        gridClass: Grid.ClassIf<S>;
         tileClass: Tile.ClassIf<S>;
         coordSys: S;
         dimensions: Dimensions<S>;
-        domGridHtmlIdHook?: string;
+        domGridHtmlIdHook: string;
     };
 
     /**
@@ -199,9 +187,9 @@ export namespace Grid {
     };
 
     // Each implementation must register itself into this dictionary.
-    export const __Constructors = {} as Readonly<{
-        [S in Coord.System]: ClassIf<S>;
-    }>;
+    export declare const __Constructors: {
+        readonly [ S in Coord.System ]: Grid.ClassIf<S>
+    };
 
     /**
      * @returns
@@ -214,8 +202,7 @@ export namespace Grid {
         // two lines is necessary (otherwise Typescript will feel
         // overwhelmed)
         const ctor = __Constructors[coordSys];
-        console.log(ctor);
-        return ctor as ClassIf<S>;
+        return ctor as unknown as ClassIf<S>;
     };
 
     /**

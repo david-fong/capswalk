@@ -15,6 +15,12 @@ export namespace HtmlHooks {
         });
     }
 
+    export namespace Grid {
+        export const Id = Object.freeze(<const>{
+            GRID:   "game-grid-host",
+        });
+    }
+
     export namespace Player {
         export const Class = Object.freeze(<const>{
             BASE: "player",

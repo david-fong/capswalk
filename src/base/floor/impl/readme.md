@@ -121,4 +121,4 @@ export namespace SysName {
 
 **In [`Grid.ts`](../Grid.ts)**
 
-Import your system namespace, and add an entry to `Grid.Dimensions` for the new coordinate system.
+Import your system namespace, and add an entry to `Grid.Dimensions` for the new coordinate system, and register your grid system in [`PostInit.ts`](/src/base/game/PostInit.ts).
