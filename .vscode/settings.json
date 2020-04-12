@@ -21,9 +21,6 @@
             "url": "https://raw.githubusercontent.com/streetsidesoftware/cspell/master/cspell.schema.json",
         },
     ],
-    "files.associations": {
-        "TODO": "markdown",
-    },
 
     "eslint.enable": false, // TODO.build Re-enable this once typescript's eslint parser can handle #private fields.
     "trailing-spaces.trimOnSave": true,
