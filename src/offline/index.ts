@@ -1,4 +1,4 @@
-import { HtmlHooks }        from "../webui/HtmlHooks";
+import { WebHooks }        from "../webui/WebHooks";
 import { Coord }            from "floor/Tile";
 import { BalancingScheme }  from "lang/LangSeqTreeNode";
 import { OfflineGame }      from "./OfflineGame";
@@ -14,7 +14,7 @@ const game = new OfflineGame<Coord.System.EUCLID2>({
         height: 20,
         width:  20,
     },
-    gridHtmlIdHook: HtmlHooks.Grid.Id.GRID,
+    gridHtmlIdHook: WebHooks.Grid.Id.GRID,
     averageFreeHealthPerTile: 1.0 / 70.0,
     langBalancingScheme: BalancingScheme.WEIGHT,
     languageName: "ENGLISH__LOWERCASE",

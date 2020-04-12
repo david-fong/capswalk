@@ -2,7 +2,7 @@
 /**
  * Must be matched exactly in the html, css, and javascript.
  */
-export namespace HtmlHooks {
+export namespace WebHooks {
 
     export namespace Tile {
         export const Class = Object.freeze(<const>{

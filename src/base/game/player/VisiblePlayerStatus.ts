@@ -1,4 +1,4 @@
-import { HtmlHooks } from "../../../webui/HtmlHooks";
+import { WebHooks } from "../../../webui/WebHooks";
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 import { PlayerStatus } from "./PlayerStatus";
@@ -16,7 +16,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
             // TODO.design create a spotlight mask using the below CSS properties:
             // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
             const pDiv: HTMLDivElement = document.createElement("div");
-            pDiv.className = HtmlHooks.Player.Class.BASE;
+            pDiv.className = WebHooks.Player.Class.BASE;
             this.playerDivElem = pDiv;
         }
     }

@@ -1,4 +1,4 @@
-import { HtmlHooks } from "../../webui/HtmlHooks";
+import { WebHooks } from "../../webui/WebHooks";
 import type { Lang as LangTypeDefs } from "utils/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
@@ -35,15 +35,15 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         super(coordDesc);
         {
             const tCell = new HTMLTableCellElement();
-            tCell.className = HtmlHooks.Tile.Class.BASE;
+            tCell.className = WebHooks.Tile.Class.BASE;
             {
                 const cDiv = new HTMLDivElement();
-                cDiv.className = HtmlHooks.Tile.Class.LANG_CHAR;
+                cDiv.className = WebHooks.Tile.Class.LANG_CHAR;
                 tCell.appendChild(cDiv);
                 this.langCharDivElem = cDiv;
             } {
                 const sDiv = new HTMLDivElement();
-                sDiv.className = HtmlHooks.Tile.Class.LANG_SEQ;
+                sDiv.className = WebHooks.Tile.Class.LANG_SEQ;
                 tCell.appendChild(sDiv);
                 this.langSeqDivElem = sDiv;
             }
@@ -72,7 +72,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public set freeHealth(newHealth: number) {
         super.freeHealth = newHealth;
-        this.tileCellElem.dataset[HtmlHooks.Tile.Dataset.SCORE_VALUE] = newHealth.toString();
+        this.tileCellElem.dataset[WebHooks.Tile.Dataset.SCORE_VALUE] = newHealth.toString();
     }
 
     /**

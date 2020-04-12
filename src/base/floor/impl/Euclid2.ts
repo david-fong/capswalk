@@ -353,7 +353,7 @@ export namespace Euclid2 {
                 const gridParentElement = document.getElementById(desc.domGridHtmlIdHook);
                 if (!gridParentElement) {
                     throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\"`
-                        + ` did not refer to an existing html element.`
+                    + ` did not refer to an existing html element.`
                     );
                 }
                 // remove all child elements and then append the new grid:
