@@ -10,8 +10,8 @@
             // webpack:
             "./scripts/webpack.tsconfig.json",
             // basecode:
+            "./src/webui/tsconfig.json",
             "./src/base/utils/tsconfig.json",
-            "./src/base/settings/tsconfig.json",
             "./src/base/lang/tsconfig.json",
             "./src/base/floor/tsconfig.json",
             "./src/base/game/tsconfig.json",

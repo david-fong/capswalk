@@ -2,7 +2,7 @@
     "extends": "../.templates/tsconfig.json",
     "references": [
         { "path": "../utils", },
-        { "path": "../settings", },
+        { "path": "../../webui", },
         { "path": "../lang", },
         { "path": "../floor", },
     ]

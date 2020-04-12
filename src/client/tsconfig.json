@@ -1,7 +1,7 @@
 {
     "extends": "../.templates/tsconfig.json",
     "references": [
-        { "path": "../base/settings", },
+        { "path": "../webui", },
         { "path": "../base/game", },
     ],
 }

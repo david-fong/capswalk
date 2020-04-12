@@ -3,7 +3,6 @@
     "files": [],
     "references": [
         { "path": "utils", },
-        { "path": "settings", },
         { "path": "lang", },
         { "path": "floor", },
         { "path": "game", },

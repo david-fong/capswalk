@@ -1,4 +1,4 @@
-import { HtmlHooks } from "utils/HtmlHooks";
+import { HtmlHooks } from "../../../webui/HtmlHooks";
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 import { PlayerStatus } from "./PlayerStatus";

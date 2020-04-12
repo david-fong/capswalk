@@ -1,9 +1,9 @@
-import { HtmlHooks } from "utils/HtmlHooks";
-import { Coord } from "floor/Coord";
-import { BalancingScheme } from "lang/LangSeqTreeNode";
-import { OfflineGame } from "./OfflineGame";
-import { Player } from "game/player/Player";
-import { PostInit } from "game/PostInit";
+import { HtmlHooks }        from "../webui/HtmlHooks";
+import { Coord }            from "floor/Tile";
+import { BalancingScheme }  from "lang/LangSeqTreeNode";
+import { OfflineGame }      from "./OfflineGame";
+import { Player }           from "game/player/Player";
+import { PostInit }         from "game/PostInit";
 
 PostInit();
 

@@ -2,7 +2,7 @@ import * as io from "socket.io-client";
 
 import { Game } from "game/Game";
 
-import { LocalGameSettings }    from "settings/GameSettings";
+import { LocalGameSettings }    from "../webui/GameSettings";
 import { Coord, VisibleTile }   from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
 

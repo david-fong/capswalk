@@ -8,6 +8,7 @@
     "files": [],
     "references": [
         { "path": "base", },
+        { "path": "webui", },
         { "path": "offline", },
         { "path": "server", },
         { "path": "client", },

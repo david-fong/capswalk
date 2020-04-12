@@ -1,5 +1,9 @@
 
-# UI by location
+# Web User Interface
+
+As a TypeScript project, this will have minimal dependencies. It will present a bunch of hooks for the rest of the game code to connect itself to. It will mainly be the case that other higher-level projects depend on this one.
+
+## UI by location
 
 - homepage: choose from:
   on mouseover, show description

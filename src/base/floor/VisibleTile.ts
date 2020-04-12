@@ -1,4 +1,4 @@
-import { HtmlHooks } from "utils/HtmlHooks";
+import { HtmlHooks } from "../../webui/HtmlHooks";
 import type { Lang as LangTypeDefs } from "utils/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
