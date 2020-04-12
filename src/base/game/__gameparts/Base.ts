@@ -18,7 +18,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly grid: Grid<S>;
 
-    protected readonly players: Player.Bundle<Player<S>>;
+    protected readonly players: ReadonlyArray<Player<S>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
 
@@ -60,13 +60,12 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.__playerStatusCtor = impl.playerStatusCtor;
         this.players = this.createPlayers(desc);
         if (desc.operatorIndex !== undefined) {
-            (this.operator as Player<S>) = this.players.get({
-                family: Player.Family.HUMAN,
-                number: desc.operatorIndex!,
-            });
+            // Note at above comparison: we must be explicit
+            // since zero is a valid, _falsy_ operatorIndex.
+            (this.operator as Player<S>) = this.players[desc.operatorIndex!];
         }
         const teams: Array<Array<Player<S>>> = [];
-        this.players.flat.forEach((player) => {
+        this.players.forEach((player) => {
             if (!teams[player.teamId]) {
                 teams[player.teamId] = [];
             }
@@ -96,29 +95,21 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * @returns A bundle of the constructed players.
      */
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameBase<G,S>["players"] {
-        const playerDescs: Player.Bundle<Player.CtorArgs>
+        const playerDescs: ReadonlyArray<Player.CtorArgs>
             = (this.gameType === Game.Type.CLIENT)
             // The client receives these descriptors already finalized / cleaned by the server.
-            ? new Player.Bundle(gameDesc.playerDescs as Game.CtorArgs<Game.Type.CLIENT,S>["playerDescs"])
-            : Player.CtorArgs.finalizePlayerIds(new Player.Bundle(gameDesc.playerDescs), gameDesc.languageName)
+            ? gameDesc.playerDescs as Game.CtorArgs<Game.Type.CLIENT,S>["playerDescs"]
+            : Player.CtorArgs.finalize(gameDesc.playerDescs, gameDesc.languageName)
             ;
-        return new Player.Bundle(playerDescs.keys.reduce
-        <Player.Bundle.Contents<Player<S>>>((build, family) => {
-            // Transform the bundle of player constructor-argument descriptors
-            // into a bundle of corresponding, newly constructed player objects:
-            (build[family] as ReadonlyArray<Player<S>>)
-            = playerDescs.contents[family]
-            .map((ctorArgs, numberInFamily) => {
-                if (family === Player.Family.HUMAN) {
-                    return (numberInFamily === gameDesc.operatorIndex)
-                        ? this.__createOperatorPlayer(ctorArgs)
-                        : new Player(this, ctorArgs);
-                } else {
-                    return this.__createArtifPlayer(ctorArgs);
-                }
-            });
-            return build;
-        }, {} as Player.Bundle.Contents<Player<S>>));
+        return playerDescs.map((playerDesc, playerIndex) => {
+            if (playerDesc.familyId === Player.Family.HUMAN) {
+                return (playerIndex === gameDesc.operatorIndex)
+                    ? this.__createOperatorPlayer(playerDesc)
+                    : new Player(this, playerDesc);
+            } else {
+                return this.__createArtifPlayer(playerDesc);
+            }
+        });
     }
     protected abstract __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;
     protected abstract __createArtifPlayer(desc: Player.CtorArgs):
@@ -131,7 +122,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         if (this.status !== Game.Status.PAUSED) {
             throw new Error("Can only resume a game that is currently paused.");
         }
-        this.players.flat.forEach((player) => {
+        this.players.forEach((player) => {
             player.__abstractNotifyThatGameStatusBecamePlaying();
         })
         this.__abstractStatusBecomePlaying();
@@ -141,7 +132,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         if (this.status !== Game.Status.PLAYING) {
             throw new Error("Can only pause a game that is currently playing.");
         }
-        this.players.flat.forEach((player) => {
+        this.players.forEach((player) => {
             player.__abstractNotifyThatGameStatusBecamePaused();
         })
         this.__abstractStatusBecomePaused();
@@ -151,7 +142,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         if (this.status !== Game.Status.PLAYING) {
             throw new Error("Can only end a game that is currently playing.");
         }
-        this.players.flat.forEach((player) => {
+        this.players.forEach((player) => {
             player.__abstractNotifyThatGameStatusBecameOver();
         })
         this.__abstractStatusBecomeOver();

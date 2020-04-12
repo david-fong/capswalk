@@ -1,6 +1,5 @@
 import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
-import type { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
 import { VisibleGrid } from "../VisibleGrid";
 
@@ -297,9 +296,9 @@ export namespace Euclid2 {
          * @override
          */
         public static getSpawnCoords(
-            playerCounts: Player.Bundle.Counts,
+            playerCounts: number,
             dimensions: Grid.Dimensions,
-        ): Player.Bundle<Coord.Bare> {
+        ):  ReadonlyArray<Coord.Bare> {
             return undefined!;
 
             // TODO

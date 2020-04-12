@@ -23,6 +23,7 @@ export function PostInit(): void {
         [ Coord.System.EUCLID2 ]: Euclid2.Grid,
         [ Coord.System.BEEHIVE ]: Beehive.Grid,
     });
+    Object.freeze(Grid.prototype);
 
     // Visible Grid Implementation Registry:
     (VisibleGrid.__Constructors as {[S in Coord.System]: VisibleGrid.ClassIf<S>})

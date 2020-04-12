@@ -131,7 +131,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * A descriptor for all changes mandated by the player-movement event.
      */
     protected processMoveExecute(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
-        const player = this.players.get(desc.playerId);
+        const player = this.players[desc.playerId];
         const dest   = this.grid.tile.at(desc.dest.coord);
         const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
 
@@ -190,7 +190,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     protected processBubbleExecute(desc: Readonly<PlayerActionEvent.Bubble>): void {
         // TODO.impl Visually highlight the affected tiles for the specified estimate-duration.
-        const bubbler = this.players.get(desc.playerId);
+        const bubbler = this.players[desc.playerId];
 
         bubbler.requestInFlight = false;
 

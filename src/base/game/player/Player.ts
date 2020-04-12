@@ -136,13 +136,6 @@ export namespace Player {
      */
     export type Health = PlayerTypeDefs.Health;
 
-    export type Bundle<T> = PlayerTypeDefs.Bundle<T>;
-
-    export namespace Bundle {
-        export type Contents<T> = PlayerTypeDefs.Bundle.Contents<T>;
-        export type Counts      = PlayerTypeDefs.Bundle.Counts;
-    }
-
     export type Username = string;
 
     export namespace Username {
@@ -162,18 +155,22 @@ export namespace Player {
     /**
      * # Player Constructor Arguments
      */
-    export type CtorArgs = CtorArgs.PreIdAssignment & {
-        readonly playerId: Player.Id;
-        readonly langName: Lang.Names.Key,
-    };
+    export type CtorArgs = CtorArgs.PreIdAssignment & Readonly<{
+        playerId: Player.Id;
+        langName: Lang.Names.Key,
+    }>;
 
     export namespace CtorArgs {
 
-        export type PreIdAssignment = {
-            readonly username: Username;
-            readonly socketId: SocketId;
-            readonly teamId: Team.Id;
-        };
+        export type PreIdAssignment = Readonly<{
+            /**
+             * This determines which constructor function to use.
+             */
+            familyId: Player.Family;
+            teamId:   Team.Id;
+            socketId: SocketId;
+            username: Username;
+        }>;
 
         /**
          * @returns
@@ -181,45 +178,33 @@ export namespace Player {
          *
          * @param playerDescs -
          */
-        export const finalizePlayerIds = (
-            playerDescs: Bundle<CtorArgs.PreIdAssignment>,
+        export const finalize = (
+            playerDescs: ReadonlyArray<CtorArgs.PreIdAssignment>,
             langName: Lang.Names.Key,
-        ): Bundle<CtorArgs> => {
+        ): ReadonlyArray<CtorArgs> => {
             // Map team ID's to consecutive numbers
             // (to play nice with array representations):
-            const allTeamIds = playerDescs.values
-                .flatMap((members) => members.map((member) => member.teamId));
-            const teamIdSquasherMap: Record<Team.Id, Team.Id>
-                = Array.from(new Set(allTeamIds))
-                .reduce((prev, unSquashedId, index) => {
-                    prev[unSquashedId] = index;
+            const teamIdCleaner: ReadonlyArray<Team.Id>
+                = Array.from(new Set(playerDescs.map((player) => player.teamId)))
+                .sort((a, b) => a - b)
+                .reduce((prev, originalId, squashedId) => {
+                    prev[originalId] = squashedId;
                     return prev;
-                }, {});
-            // Add the `playerId` field to each member descriptor:
-            for (const [ family, familyMembers, ] of playerDescs.entries) {
-                // TODO.design I don't like this. There's so much casting-off of
-                // readonly-ness. It would be nicer to create a new object and copy
-                // in reusable fields from the pre-id-assignment ctorArgs. That would
-                // also solve another thing I don't like about this: It isn't type-
-                // safe. We've basically told the Typescript compiler to believe we
-                // have fully completed the translation, when we might actually not
-                // have, which I might not catch if I'm not careful after modifying
-                // the shape of Player.CtorArgs. This fix may be easier to do after
-                // I get rid of Player.Bundle.
-                familyMembers.forEach((memberDesc, numberInFamily) => {
-                    // Note for below casts: cast-off readonly.
-                    (memberDesc.teamId as Player.Team.Id) = teamIdSquasherMap[memberDesc.teamId];
-                    ((memberDesc as CtorArgs).langName as Lang.Names.Key) = langName;
-                    ((memberDesc as CtorArgs).playerId as Id) = {
-                        family: family,
-                        number: numberInFamily,
-                    };
-                });
-            }
-            return playerDescs as Bundle<CtorArgs>;
+                }, [] as Array<Team.Id>);
+            return (playerDescs as Array<CtorArgs.PreIdAssignment>)
+            .sort((pda, pdb) => teamIdCleaner[pda.teamId] - teamIdCleaner[pdb.teamId])
+            .map<CtorArgs>((playerDesc, index) => { return {
+                playerId:   index,
+                familyId:   playerDesc.familyId,
+                teamId:     teamIdCleaner[playerDesc.teamId],
+                socketId:   playerDesc.socketId,
+                username:   playerDesc.username,
+                langName:   langName,
+            }; });
         };
 
     }
+    Object.freeze(CtorArgs);
 
 }
 Object.freeze(Player.prototype);

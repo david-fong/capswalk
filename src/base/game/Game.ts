@@ -66,8 +66,8 @@ export namespace Game {
          */
         operatorIndex: G extends Game.Type.SERVER
             ? undefined
-            : Player.Id["number"];
-        playerDescs: Player.Bundle.Contents<(
+            : Player.Id;
+        playerDescs: ReadonlyArray<(
             G extends Game.Type.Manager
             ? Player.CtorArgs.PreIdAssignment
             : Player.CtorArgs

@@ -12,18 +12,17 @@
 
 ### High Priority
 
-1. Decide: Should I get rid of player classes? (human, chaser, runner, etc)?
-   - It seems like the focus will be on making the old `Chaser` artificial player behave like a human player in that they can be eliminated and act as teammates for human players. The boundary between them has blurred.
-   - But! I still kind of want to have a kind of artificial player that can't be killed in a more "survive for as long as possible" mode (instead of an "eliminate all other teams" mode), which I could implement as a subclass of `Chaser` whose `status` field has its `set rawHealth` to do nothing.
-     - As an important side-note, if a team is only composed of such players, the game will technically never end unless we add a full check for it in the function that check whether the game should end, or we add a field to the team class on whether it counts toward the check for whether the game should end (a more powerful design at the cost of slightly more complexity).
+1. Freeze class constructors and prototypes where possible. check if this breaks anything.
+1. Design: I still kind of want to have a kind of artificial player that can't be killed in a more "survive for as long as possible" mode (instead of an "eliminate all other teams" mode), which I could implement as a subclass of `Chaser` whose `status` field has its `set rawHealth` to do nothing.
+    - As an important side-note, if a team is only composed of such players, the game will technically never end unless we add a full check for it in the function that check whether the game should end, or we add a field to the team class on whether it counts toward the check for whether the game should end (a more powerful design at the cost of slightly more complexity).
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
-   - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
-   - When done automatically, health will be levelled-down enough to cause as many changes in downed-ness as possible by changing other players' health to zero.
-   - If done by pressing space, health will be levelled further until the space-presser's health is at zero.
-   - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
-     - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
-     - If it still has more health, it does something similar for its teammates.
+    - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
+    - When done automatically, health will be levelled-down enough to cause as many changes in downed-ness as possible by changing other players' health to zero.
+    - If done by pressing space, health will be levelled further until the space-presser's health is at zero.
+    - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
+      - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
+      - If it still has more health, it does something similar for its teammates.
 
 ### Low Priority
 

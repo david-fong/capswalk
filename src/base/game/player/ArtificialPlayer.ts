@@ -83,7 +83,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
 export namespace ArtificialPlayer {
 
-    export const __Constructors = {} as Readonly<Record<
+    export declare const __Constructors: Readonly<Record<
         Exclude<Player.Family, typeof Player.Family.HUMAN>,
         typeof ArtificialPlayer
     >>; // Type Assertion.
@@ -92,7 +92,7 @@ export namespace ArtificialPlayer {
         game: Readonly<GameManager<any,S>>,
         playerDesc: Readonly<Player.CtorArgs>,
     ): ArtificialPlayer<S> => {
-        return new (__Constructors[playerDesc.playerId.family])(game, playerDesc);
+        return new (__Constructors[playerDesc.familyId])(game, playerDesc);
     };
 
 }

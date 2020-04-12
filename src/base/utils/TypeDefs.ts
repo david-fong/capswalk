@@ -18,14 +18,7 @@ export namespace Player {
     /**
      * See the main documentation in game/player/Player.
      */
-    export type Id = {
-        family: Family;
-        /**
-         * A positive integer used to index into an array of members
-         * of the same Family.
-         */
-        number: number;
-    };
+    export type Id = number;
 
     export namespace Id {
         /**
@@ -39,59 +32,6 @@ export namespace Player {
      * See the main documentation in game/player/Player.
      */
     export type Health = number;
-
-    export class Bundle<T> {
-
-        // weakly immutable.
-        public readonly contents: Bundle.Contents<T>;
-
-        public constructor(contents: Bundle.Contents<T>) {
-            this.contents = contents;
-        }
-
-        public get(playerId: Player.Id): T {
-            return this.contents[playerId.family][playerId.number];
-        };
-
-        public get keys(): Array<Family> {
-            return Object.keys(this.contents) as Array<Family>;
-        }
-
-        public get values(): Array<ReadonlyArray<T>> {
-            return Object.values(this.contents);
-        }
-
-        public get entries(): Array<[Family,ReadonlyArray<T>]> {
-            return Object.entries(this.contents) as Array<[Family,ReadonlyArray<T>]>;
-        }
-
-        public get flat(): ReadonlyArray<T> {
-            return this.values.flat() as ReadonlyArray<T>;
-        }
-
-        public get counts(): Bundle.Counts {
-            return Object.freeze(this.entries.reduce
-                    <Record<Player.Family, number>>
-                    ((build, [family, players,]) => {
-                build[family] = players.length;
-                return build;
-            }, {} as Record<Player.Family, number>));
-        }
-    }
-
-    export namespace Bundle {
-
-        /**
-         * (weakly) **Immutable**.
-         *
-         * Entries in each family-array can be modified, but this
-         * object's references to those entries cannot be reassigned.
-         */
-        export type Contents<T> = Readonly<Record<Family, ReadonlyArray<T>>>;
-
-        export type Counts = Readonly<Record<Player.Family, number>>;
-
-    }
 }
 Object.freeze(Player.prototype);
 

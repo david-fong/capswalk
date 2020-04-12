@@ -32,7 +32,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends PlayerTypeD
 
     protected constructor(game: GameBase<any,S>, playerId: Player.Id) {
         super();
-        if (Math.trunc(playerId.number) !== playerId.number) {
+        if (Math.trunc(playerId) !== playerId) {
             throw new RangeError("Player ID's must be integer values.");
         }
         this.playerId = playerId;

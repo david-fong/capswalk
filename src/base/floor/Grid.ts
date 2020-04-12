@@ -1,7 +1,6 @@
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
-import type { Player } from "utils/TypeDefs";
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
 
@@ -180,9 +179,9 @@ export namespace Grid {
          * @param playerCounts -
          */
         getSpawnCoords(
-            playerCounts: Player.Bundle.Counts,
+            playerCounts: number,
             dimensions: Dimensions<S>,
-        ): Player.Bundle<Coord.Bare<S>>;
+        ): ReadonlyArray<Coord.Bare<S>>;
 
     };
 
@@ -218,3 +217,4 @@ export namespace Grid {
     }>;
 
 }
+// Grid gets frozen in PostInit after __Constructors get initialized.

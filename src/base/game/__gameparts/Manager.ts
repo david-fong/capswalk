@@ -83,13 +83,11 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // Reset and spawn players:
         this.teams.forEach((team) => team.reset());
         const spawnPoints = this.grid.static.getSpawnCoords(
-            this.players.counts,
+            this.players.length,
             this.grid.dimensions,
         );
-        this.players.values.forEach((familyMembers) => {
-            familyMembers.forEach((player) => {
-                player.reset(this.grid.tile.at(spawnPoints.get(player.playerId)));
-            });
+        this.players.forEach((player) => {
+            player.reset(this.grid.tile.at(spawnPoints[player.playerId]));
         });
 
         // TODO.impl Targets should be spawned _after_ players have
@@ -152,7 +150,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         if (this.status !== Game.Status.PLAYING) {
             return undefined;
         }
-        const player = this.players.get(desc.playerId);
+        const player = this.players[desc.playerId];
         if (!player) {
             throw new Error("No such player exists.");
         }

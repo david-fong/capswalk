@@ -50,7 +50,6 @@ Import your system namespace, and add entries to `Coord` and `Coord.Bare` for th
 // coord-related imports
 import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
-import type { Player } from "utils/TypeDefs";
 import { Grid as AbstractGrid } from "../Grid";
 import { VisibleGrid } from "../VisibleGrid";
 
@@ -85,9 +84,9 @@ export namespace SysName {
          * @override
          */
         public static getSpawnCoords(
-            playerCounts: Player.Bundle.Counts,
+            playerCounts: number,
             bounds: Required<Grid.Dimensions>,
-        ): Player.Bundle<Coord.Bare> {
+        ): ReadonlyArray<Coord.Bare> {
             return undefined!;
         }
         /**

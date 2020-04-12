@@ -2,7 +2,6 @@ import { WebHooks }        from "../webui/WebHooks";
 import { Coord }            from "floor/Tile";
 import { BalancingScheme }  from "lang/LangSeqTreeNode";
 import { OfflineGame }      from "./OfflineGame";
-import { Player }           from "game/player/Player";
 import { PostInit }         from "game/PostInit";
 
 PostInit();
@@ -19,14 +18,14 @@ const game = new OfflineGame<Coord.System.EUCLID2>({
     langBalancingScheme: BalancingScheme.WEIGHT,
     languageName: "ENGLISH__LOWERCASE",
     operatorIndex: 0,
-    playerDescs: {
-        [Player.Family.HUMAN]: [{
+    playerDescs: [
+        {
+            familyId: "HUMAN",
             teamId: 0,
             username: "hello world",
             socketId: "todo", // TODO.impl maybe make some static method to assign unique values based on operator class?
-        }, ],
-        [Player.Family.CHASER]: [],
-    },
+        },
+    ],
 });
 game.reset();
 console.log(game);
