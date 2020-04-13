@@ -165,9 +165,6 @@ export namespace Euclid2 {
             width:  Object.freeze(<const>{ min: 10, max: 50, }),
         });
 
-        public readonly height: number;
-        public readonly width:  number;
-
         /**
          * A 2-dimensional rectangular array with height and width following
          * their corresponding fields, containing `Tile` objects with `pos`
@@ -182,9 +179,9 @@ export namespace Euclid2 {
             super(desc);
 
             const grid: Array<ReadonlyArray<Tile<S>>> = [];
-            for (let row = 0; row < this.height; row++) {
+            for (let row = 0; row < this.dimensions.height; row++) {
                 const newRow: Array<Tile<S>> = [];
-                for (let col = 0; col < this.width; col++) {
+                for (let col = 0; col < this.dimensions.width; col++) {
                     const newTile = new desc.tileClass(new Coord({ x: col, y: row, }));
                     newRow.push(newTile);
                 }
@@ -260,8 +257,8 @@ export namespace Euclid2 {
          * @override
          */
         public __getTileAt(coord: Coord.Bare): Tile<S> {
-            if (coord.x < 0 || coord.x >= this.width ||
-                coord.y < 0 || coord.y >= this.height
+            if (coord.x < 0 || coord.x >= this.dimensions.width ||
+                coord.y < 0 || coord.y >= this.dimensions.height
             ) {
                 throw new RangeError("Out of bounds. No such tile exists.");
             }
@@ -275,11 +272,11 @@ export namespace Euclid2 {
             return this.grid.slice(
                 // filter for included rows:
                 Math.max(0, coord.y - radius),
-                Math.min(this.height, coord.y + radius + 1),
+                Math.min(this.dimensions.height, coord.y + radius + 1),
             ).flatMap((tile) => tile.slice(
                 // filter for included slices of rows (columns):
                 Math.max(0, coord.x - radius,
-                Math.min(this.width, coord.x + radius + 1)),
+                Math.min(this.dimensions.width, coord.x + radius + 1)),
             ));
         }
 
@@ -299,7 +296,7 @@ export namespace Euclid2 {
             playerCounts: number,
             dimensions: Grid.Dimensions,
         ):  ReadonlyArray<Coord.Bare> {
-            return undefined!;
+            return [{x:0,y:0,}];
 
             // TODO.impl A proper, nice looking version of this.
             //

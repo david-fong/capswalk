@@ -41,10 +41,9 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
             );
         }
         this.familyId = desc.familyId;
-        this.teamId = desc.teamId;
+        this.teamId   = desc.teamId;
         this.username = desc.username;
-        console.log(this.game.__playerStatusCtor);
-        this.status = new (this.game.__playerStatusCtor)(this);
+        this.status   = new (this.game.__playerStatusCtor)(this);
     }
 
     public reset(spawnTile: Tile<S>): void {

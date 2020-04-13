@@ -34,15 +34,15 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
         {
-            const tCell = new HTMLTableCellElement();
+            const tCell = document.createElement("td");
             tCell.className = WebHooks.Tile.Class.BASE;
             {
-                const cDiv = new HTMLDivElement();
+                const cDiv = document.createElement("div");
                 cDiv.className = WebHooks.Tile.Class.LANG_CHAR;
                 tCell.appendChild(cDiv);
                 this.langCharDivElem = cDiv;
             } {
-                const sDiv = new HTMLDivElement();
+                const sDiv = document.createElement("div");
                 sDiv.className = WebHooks.Tile.Class.LANG_SEQ;
                 tCell.appendChild(sDiv);
                 this.langSeqDivElem = sDiv;

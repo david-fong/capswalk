@@ -78,7 +78,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // history of shuffle-ins has no effects on the new pairs.
         this.lang.reset();
         // Shuffle everything:
-        this.grid.forEachTile(this.dryRunShuffleLangCharSeqAt, this);
+        this.grid.forEachTile((tile) => this.dryRunShuffleLangCharSeqAt(tile));
 
         // Reset and spawn players:
         this.teams.forEach((team) => team.reset());

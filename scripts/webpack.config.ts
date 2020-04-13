@@ -46,7 +46,10 @@ const BASE_PLUGINS: ReadonlyArray<Readonly<webpack.Plugin>> = [
             `[${Math.floor(pct * 100).toString().padStart(3)}% ]`,
             (msg === "building") ? msg : msg.padEnd(45),
             (msg === "building") ? moduleProgress!.padStart(15) : (moduleProgress || ""),
-            (moduleName || "").replace(PROJECT_ROOT, "...").replace(PROJECT_ROOT, "..."),
+            (moduleName || "")
+            .replace(PROJECT_ROOT, "...")
+            .replace(PROJECT_ROOT, "...")
+            .replace(path.join("node_modules","ts-loader","index.js"), "ts-loader"),
         );
     }),
     // new webpack.WatchIgnorePlugin([
