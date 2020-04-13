@@ -149,14 +149,14 @@ export class GroupSession {
             langBalancingScheme: undefined!,
             operatorIndex: undefined,
             playerDescs: {
-                [Player.Family.HUMAN]: Object.values(this.sockets).map((socket) => {
+                ...Object.values(this.sockets).map((socket) => {
                     return {
-                        username: socket.username!, // checked above.
-                        socketId: socket.id,
+                        familyId: Player.Family.HUMAN,
                         teamId: socket.teamId!,
+                        socketId: socket.id,
+                        username: socket.username!, // checked above.
                     };
                 }),
-                [Player.Family.CHASER]: undefined!,
             },
         });
         return undefined;

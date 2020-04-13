@@ -32,4 +32,3 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     }
 
 }
-(ArtificialPlayer.__Constructors[Player.Family.CHASER] as typeof Chaser) = Chaser;

@@ -18,9 +18,11 @@ export { PlayerStatus };
  */
 export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
-    public readonly username: Player.Username;
+    public readonly familyId: Player.Family;
 
     public readonly teamId: Player.Team.Id;
+
+    public readonly username: Player.Username;
 
     public readonly status: PlayerStatus<S>;
 
@@ -38,8 +40,9 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
             + ` \"${Player.Username.REGEXP.source}\".`
             );
         }
-        this.username = desc.username;
+        this.familyId = desc.familyId;
         this.teamId = desc.teamId;
+        this.username = desc.username;
         console.log(this.game.__playerStatusCtor);
         this.status = new (this.game.__playerStatusCtor)(this);
     }

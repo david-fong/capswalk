@@ -18,7 +18,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly grid: Grid<S>;
 
-    protected readonly players: ReadonlyArray<Player<S>>;
+    protected readonly players: RoArray<Player<S>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
 

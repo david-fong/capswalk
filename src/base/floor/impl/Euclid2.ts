@@ -160,9 +160,9 @@ export namespace Euclid2 {
          * @override
          */
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
-        private static readonly SIZE_LIMITS = Object.freeze({
-            height: Object.freeze({ min: 10, max: 50, }),
-            width:  Object.freeze({ min: 10, max: 50, }),
+        private static readonly SIZE_LIMITS = Object.freeze(<const>{
+            height: Object.freeze(<const>{ min: 10, max: 50, }),
+            width:  Object.freeze(<const>{ min: 10, max: 50, }),
         });
 
         public readonly height: number;
@@ -263,7 +263,7 @@ export namespace Euclid2 {
             if (coord.x < 0 || coord.x >= this.width ||
                 coord.y < 0 || coord.y >= this.height
             ) {
-                throw new RangeError("Argument \"pos\" is outside the bounds of this Grid.");
+                throw new RangeError("Out of bounds. No such tile exists.");
             }
             return this.grid[coord.x][coord.y];
         }
@@ -301,7 +301,7 @@ export namespace Euclid2 {
         ):  ReadonlyArray<Coord.Bare> {
             return undefined!;
 
-            // TODO
+            // TODO.impl A proper, nice looking version of this.
             //
             //
             //

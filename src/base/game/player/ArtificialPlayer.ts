@@ -86,7 +86,7 @@ export namespace ArtificialPlayer {
     export declare const __Constructors: Readonly<Record<
         Exclude<Player.Family, typeof Player.Family.HUMAN>,
         typeof ArtificialPlayer
-    >>; // Type Assertion.
+    >>;
 
     export const of = <S extends Coord.System>(
         game: Readonly<GameManager<any,S>>,
@@ -96,3 +96,4 @@ export namespace ArtificialPlayer {
     };
 
 }
+// ArtificialPlayer gets frozen in PostInit after __Constructors get initialized.

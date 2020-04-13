@@ -4,7 +4,7 @@ import { setTimeout } from "timers";
 import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
 import { Game } from "game/Game";
-import type { Player } from "game/player/Player";
+import { Player } from "game/player/Player";
 import { PlayerStatus } from "game/player/PlayerStatus";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
@@ -26,7 +26,11 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
     public readonly namespace: io.Namespace;
 
-    protected readonly socketBundle: Player.Bundle<io.Socket>;
+    /**
+     * Entries indexed at ID's belonging to human-operated players
+     * contain an `io.Socket` object.
+     */
+    protected readonly playerSockets: ReadonlyArray<io.Socket>;
 
     /**
      * @override
@@ -62,8 +66,11 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
         // TODO.impl initialize this.socketBundle
 
+        const humanPlayers = this.players
+        .filter((player) => player.familyId === Player.Family.HUMAN);
+
         // Attach event listeners / handlers to each socket:
-        this.players.contents.HUMAN.map((player) => this.socketBundle.get(player.playerId))
+        humanPlayers.map((player) => this.playerSockets[player.playerId])
         .forEach((socket) => {
             // Attach the movement request handler:
             socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Movement);
@@ -81,9 +88,9 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         });
 
         // Pass on Game constructor arguments to each client:
-        (this.players.contents.HUMAN).forEach((player) => {
-            (gameDesc.operatorIndex! as Player.Id["number"]) = player.playerId.number;
-            this.socketBundle.get(player.playerId).emit(
+        humanPlayers.forEach((player) => {
+            (gameDesc.operatorIndex! as Player.Id) = player.playerId;
+            this.playerSockets[player.playerId].emit(
                 Game.CtorArgs.EVENT_NAME,
                 gameDesc,
             );
@@ -135,7 +142,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
-            this.socketBundle.get(desc.playerId).emit(
+            this.playerSockets[desc.playerId].emit(
                 PlayerActionEvent.EVENT_NAME.Movement,
                 desc,
             );
@@ -154,7 +161,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
-            this.socketBundle.get(desc.playerId).emit(
+            this.playerSockets[desc.playerId].emit(
                 PlayerActionEvent.EVENT_NAME.Bubble,
                 desc,
             );

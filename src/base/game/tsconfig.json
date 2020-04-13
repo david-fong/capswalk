@@ -5,5 +5,5 @@
         { "path": "../../webui", },
         { "path": "../lang", },
         { "path": "../floor", },
-    ]
+    ],
 }

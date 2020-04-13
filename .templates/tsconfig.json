@@ -2,10 +2,12 @@
     "compilerOptions": {
         // Project References:
         "composite": true,
-        //"declaration": true,
 
-        // Project Structure:
+        // Compiler Behaviour:
+        "extendedDiagnostics": true,
         "moduleResolution": "node",
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true, // time-saving measure.
 
         // Language Settings:
         "target": "es6",
@@ -16,10 +18,6 @@
         "sourceMap": true,
         "removeComments": true,
         "alwaysStrict": true,
-
-        // Console Output:
-        "pretty": true,
-        "extendedDiagnostics": true,
 
         // Grammar Checking:
         "strictNullChecks": true,
