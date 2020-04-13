@@ -112,6 +112,8 @@ export namespace Beehive {
             bash: number;
         }>;
     }
+    Object.freeze(Coord);
+    Object.freeze(Coord.prototype);
 
 
 
@@ -237,5 +239,8 @@ export namespace Beehive {
             }
         }
     }
+    Object.freeze(Grid);
+    Object.freeze(Grid.prototype);
 
 }
+Object.freeze(Beehive);

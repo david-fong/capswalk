@@ -141,6 +141,8 @@ export namespace Euclid2 {
             y: number;
         }>;
     }
+    Object.freeze(Coord);
+    Object.freeze(Coord.prototype);
 
 
 
@@ -317,7 +319,6 @@ export namespace Euclid2 {
         public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
             return new Coord(undefined!);
         }
-
     }
 
     export namespace Grid {
@@ -358,5 +359,8 @@ export namespace Euclid2 {
             }
         }
     }
+    Object.freeze(Grid);
+    Object.freeze(Grid.prototype);
 
 }
+Object.freeze(Euclid2);

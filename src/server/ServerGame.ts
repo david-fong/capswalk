@@ -40,7 +40,6 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
     }
 
 
-
     /**
      * _Calls reset recursively for this entire composition._
      *
@@ -125,7 +124,6 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
     }
 
 
-
     public setTimeout(callback: VoidFunction, millis: number, ...args: any[]): NodeJS.Timeout {
         return setTimeout(callback, millis, args).unref();
     }
@@ -174,6 +172,6 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
             );
         }
     }
-
 }
+Object.freeze(ServerGame);
 Object.freeze(ServerGame.prototype);

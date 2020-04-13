@@ -1,7 +1,5 @@
 import { Lang, Player } from "utils/TypeDefs";
-
 import { Coord } from "./Coord";
-
 export { Coord };
 
 
@@ -133,3 +131,5 @@ export namespace Tile {
     };
 
 }
+Object.freeze(Tile);
+Object.freeze(Tile.prototype);

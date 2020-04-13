@@ -62,7 +62,8 @@ export namespace Korean {
         }
     }
     Dubeolsik as Lang.ClassIf;
-
+    Object.seal(Dubeolsik);
+    Object.seal(Dubeolsik.prototype);
 
 
     /**
@@ -140,7 +141,8 @@ export namespace Korean {
         ); }
     }
     Sebeolsik as Lang.ClassIf;
-
+    Object.seal(Sebeolsik);
+    Object.seal(Sebeolsik.prototype);
 
 
     /**
@@ -190,7 +192,8 @@ export namespace Korean {
         ); }
     }
     Romanization as Lang.ClassIf;
-
+    Object.seal(Romanization);
+    Object.seal(Romanization.prototype);
 
 
     const UNICODE_HANGUL_SYLLABLES_BASE = 0xAC00;
@@ -333,3 +336,4 @@ export namespace Korean {
     };
 
 }
+Object.freeze(Korean);

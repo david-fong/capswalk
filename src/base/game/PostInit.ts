@@ -21,24 +21,28 @@ import { Chaser } from "game/player/artificials/Chaser";
 export function PostInit(): void {
 
     // Non-Visible Grid Implementation Registry:
-    (<NoRo<typeof Grid.__Constructors>>Grid.__Constructors)
+    (<TU.NoRo<typeof Grid.__Constructors>>Grid.__Constructors)
     = Object.freeze({
         [ Coord.System.EUCLID2 ]: Euclid2.Grid,
         [ Coord.System.BEEHIVE ]: Beehive.Grid,
     });
+    Object.freeze(Grid);
     Object.freeze(Grid.prototype);
 
     // Visible Grid Implementation Registry:
-    (<NoRo<typeof VisibleGrid.__Constructors>>VisibleGrid.__Constructors)
+    (<TU.NoRo<typeof VisibleGrid.__Constructors>>VisibleGrid.__Constructors)
     = Object.freeze({
         [ Coord.System.EUCLID2 ]: Euclid2.Grid.Visible,
         [ Coord.System.BEEHIVE ]: Beehive.Grid.Visible,
     });
+    Object.freeze(VisibleGrid);
     // This is just an interface. There is no instance prototype to freeze.
 
-    (<NoRo<typeof ArtificialPlayer.__Constructors>>ArtificialPlayer.__Constructors)
+    (<TU.NoRo<typeof ArtificialPlayer.__Constructors>>ArtificialPlayer.__Constructors)
     = Object.freeze({
         CHASER: Chaser,
     });
+    Object.freeze(ArtificialPlayer);
     Object.freeze(ArtificialPlayer.prototype);
 }
+Object.freeze(PostInit);

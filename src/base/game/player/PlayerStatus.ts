@@ -62,6 +62,6 @@ export class PlayerStatus<S extends Coord.System> {
     public get isDowned(): boolean {
         return this.health < 0.0;
     }
-
 }
+Object.freeze(PlayerStatus);
 Object.freeze(PlayerStatus.prototype);

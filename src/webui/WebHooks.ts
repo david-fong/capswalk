@@ -30,4 +30,22 @@ export namespace WebHooks {
         });
     }
 
+    /**
+     * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
+     * https://www.w3schools.com/html/html5_webstorage.asp
+     */
+    export const WebStorageKeys = Object.freeze(<const>{
+        RecentCoordSystem: "recent-coord-system",
+        RecentLang: "recent-lang",
+    });
+
+    // I can't find a way to use this and assert that the namespaces
+    // no extra exports (yes I'm paranoid I know. To me it's a game).
+    export type HookDict = {
+        [ DictKey in "Id" | "Class" | "Dataset" ]?: Readonly<{
+            [ JsHook: string ]: string;
+        }>;
+    };
+
 }
+Object.freeze(WebHooks);

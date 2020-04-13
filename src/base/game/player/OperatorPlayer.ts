@@ -152,4 +152,5 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     }
 
 }
+Object.freeze(OperatorPlayer);
 Object.freeze(OperatorPlayer.prototype);

@@ -22,6 +22,6 @@ fi
 # stats.color argument is ignored... I haven't fiddled to
 # see what else is like this.
 declare -r doneMsg="$(echo -e "\n\n\n=== BUILD DONE ===\n\n\n")"
-time npx webpack --color --build-delimiter="${doneMsg}" --config "${cwd}/../webpack.config.js"
+time npx --no-install webpack --color --build-delimiter="${doneMsg}" --config "${cwd}/../webpack.config.js"
 
 # TODO.build check that the html requests all the necessary javascript files.

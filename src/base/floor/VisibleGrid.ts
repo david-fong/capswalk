@@ -40,5 +40,4 @@ export namespace VisibleGrid {
         const ctor = __Constructors[coordSys];
         return ctor as unknown as ClassIf<S>;
     };
-
 }

@@ -108,7 +108,6 @@ export class SnakeyServer {
 }
 
 
-
 export namespace SnakeyServer {
 
     export const DEFAULT_PORT = <const>8080;
@@ -145,3 +144,5 @@ export namespace SnakeyServer {
         }).map((info) => info.address);
     };
 }
+Object.freeze(SnakeyServer);
+Object.freeze(SnakeyServer.prototype);

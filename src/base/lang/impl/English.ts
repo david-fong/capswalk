@@ -48,7 +48,8 @@ export namespace English {
         ); }
     }
     Lowercase as Lang.ClassIf;
-
+    Object.seal(Lowercase);
+    Object.freeze(Lowercase.prototype);
 
 
     /**
@@ -98,7 +99,8 @@ export namespace English {
         }
     }
     MixedCase as Lang.ClassIf;
-
+    Object.seal(MixedCase);
+    Object.freeze(MixedCase.prototype);
 
 
     /**
@@ -115,3 +117,4 @@ export namespace English {
     });
 
 }
+Object.seal(English);

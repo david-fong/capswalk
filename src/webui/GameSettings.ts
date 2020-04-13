@@ -4,9 +4,7 @@ import { SoundSettings } from "./Sound";
 export abstract class GameSetting {
 
     abstract get selectedValue(): any;
-
 }
-
 
 
 /**
@@ -31,11 +29,9 @@ export class LocalGameSettings {
     public readonly sound: SoundSettings;
 
 
-
     private constructor() {
         this.sound = new SoundSettings();
     }
-
 }
 
 
@@ -64,5 +60,4 @@ export class GlobalGameSettings {
     }
 
     public langBalancingScheme: GameSetting; // TODO.impl create class and use its type here.
-
 }

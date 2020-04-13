@@ -200,4 +200,5 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     }
 
 }
+Object.freeze(GameEvents);
 Object.freeze(GameEvents.prototype);

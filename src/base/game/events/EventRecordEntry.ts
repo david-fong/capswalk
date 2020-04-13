@@ -5,7 +5,6 @@ import type { Player } from "game/player/Player";
  *
  */
 export interface EventRecordEntry {
-
     /**
      * A positive, integer-valued identifier for an event.
      *
@@ -15,23 +14,21 @@ export interface EventRecordEntry {
      * {@link EVENT_ID_REJECT}.
      */
     eventId: number;
-
 }
-
-/**
- *
- */
 export namespace EventRecordEntry {
-
     /**
      * The Game Manager should assign this value to the `eventId` field
      * of a request-type event to signal if a request has been rejected.
      * It is convenient to use as a default value.
      */
     export const EVENT_ID_REJECT = -1;
-
 }
+Object.freeze(EventRecordEntry);
 
+
+/**
+ *
+ */
 export interface PlayerGeneratedRequest extends EventRecordEntry {
 
     readonly playerId: Player.Id;
@@ -77,5 +74,4 @@ export interface PlayerGeneratedRequest extends EventRecordEntry {
      * debugging purposes.
      */
     playerLastAcceptedRequestId: number;
-
 };

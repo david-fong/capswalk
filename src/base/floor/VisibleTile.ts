@@ -1,5 +1,5 @@
 import { WebHooks } from "../../webui/WebHooks";
-import type { Lang as LangTypeDefs } from "utils/TypeDefs";
+import type { Lang } from "utils/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
 
@@ -78,7 +78,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     /**
      * @override
      */
-    public setLangCharSeq(charSeqPair: LangTypeDefs.CharSeqPair): void {
+    public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
         super.setLangCharSeq(charSeqPair);
         this.langCharDivElem.innerText = this.langChar;
         this.langSeqDivElem.innerText  = this.langSeq;
@@ -87,3 +87,5 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 }
 // Assert that this extension's constructor has a compatible signature:
 VisibleTile as Tile.ClassIf<any>;
+Object.freeze(VisibleTile);
+Object.freeze(VisibleTile.prototype);

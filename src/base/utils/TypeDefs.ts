@@ -33,8 +33,8 @@ export namespace Player {
      */
     export type Health = number;
 }
+Object.freeze(Player);
 Object.freeze(Player.prototype);
-
 
 
 export class Lang {}
@@ -119,4 +119,5 @@ export namespace Lang {
         [Names.KOREAN__SEBEOLSIK]:  __RemapTemplates.IDENTITY,
     });
 }
+Object.freeze(Lang);
 Object.freeze(Lang.prototype);

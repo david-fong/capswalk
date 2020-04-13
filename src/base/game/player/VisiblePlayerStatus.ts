@@ -31,6 +31,6 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         // TODO.design CSS integration for Player.isDowned rendering.
         // this.playerDivElem.dataset[HtmlHooks.Player.Dataset.IS_DOWNED] = this.isDowned;
     }
-
 }
+Object.freeze(VisiblePlayerStatus);
 Object.freeze(VisiblePlayerStatus.prototype);

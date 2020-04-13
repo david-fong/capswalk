@@ -132,4 +132,5 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
     }
 
 }
+Object.freeze(ClientGame);
 Object.freeze(ClientGame.prototype);

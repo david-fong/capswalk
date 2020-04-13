@@ -1,4 +1,4 @@
-import { WebHooks }        from "../webui/WebHooks";
+import { WebHooks }         from "../webui/WebHooks";
 import { Coord }            from "floor/Tile";
 import { BalancingScheme }  from "lang/LangSeqTreeNode";
 import { OfflineGame }      from "./OfflineGame";

@@ -18,7 +18,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly grid: Grid<S>;
 
-    protected readonly players: RoArray<Player<S>>;
+    protected readonly players: TU.RoArr<Player<S>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
 
@@ -166,4 +166,5 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
 
 }
+Object.freeze(GameBase);
 Object.freeze(GameBase.prototype);

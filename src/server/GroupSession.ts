@@ -169,7 +169,6 @@ export class GroupSession {
 }
 
 
-
 export namespace GroupSession {
 
     /**
@@ -240,5 +239,6 @@ export namespace GroupSession {
             this.initialTtl = initialTtl;
         }
     };
-
 }
+Object.freeze(GroupSession);
+Object.freeze(GroupSession.prototype);

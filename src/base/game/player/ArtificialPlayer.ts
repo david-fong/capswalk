@@ -76,9 +76,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
         );
         return;
     }
-
 }
-
 
 
 export namespace ArtificialPlayer {
@@ -94,6 +92,5 @@ export namespace ArtificialPlayer {
     ): ArtificialPlayer<S> => {
         return new (__Constructors[playerDesc.familyId])(game, playerDesc);
     };
-
 }
 // ArtificialPlayer gets frozen in PostInit after __Constructors get initialized.

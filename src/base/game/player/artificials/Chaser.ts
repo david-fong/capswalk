@@ -30,5 +30,6 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     protected computeNextMovementTimer(): number {
         return undefined!;
     }
-
 }
+Object.freeze(Chaser);
+Object.freeze(Chaser.prototype);

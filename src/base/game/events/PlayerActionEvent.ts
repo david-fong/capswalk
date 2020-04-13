@@ -146,3 +146,4 @@ export namespace PlayerActionEvent {
     }
 
 }
+Object.freeze(PlayerActionEvent);

@@ -2,7 +2,7 @@ import { Game } from "game/Game";
 
 import type { Lang } from "lang/Lang";
 import type { Coord, Tile } from "floor/Tile";
-import type { Player as PlayerTypeDefs } from "utils/TypeDefs";
+import type { Player as __Player } from "utils/TypeDefs";
 import type { GameBase } from "game/__gameparts/Base";
 
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
@@ -98,9 +98,9 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
 export namespace Player {
 
-    export type Family = PlayerTypeDefs.Family;
+    export type Family = __Player.Family;
 
-    export type Id = PlayerTypeDefs.Id;
+    export type Id = __Player.Id;
 
     export class Team<S extends Coord.System> {
         public readonly id: Team.Id;
@@ -128,6 +128,8 @@ export namespace Player {
     export namespace Team {
         export type Id = number;
     }
+    Object.freeze(Team);
+    Object.freeze(Team.prototype);
 
     export type SocketId = string;
 
@@ -136,7 +138,7 @@ export namespace Player {
      * by the game manager. It can be used to attack enemy players, or
      * to heal teammates.
      */
-    export type Health = PlayerTypeDefs.Health;
+    export type Health = __Player.Health;
 
     export type Username = string;
 
@@ -209,4 +211,5 @@ export namespace Player {
     Object.freeze(CtorArgs);
 
 }
+Object.freeze(Player);
 Object.freeze(Player.prototype);

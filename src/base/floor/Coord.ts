@@ -52,7 +52,6 @@ export namespace Coord {
         }
 
         public abstract equals(other: Coord.Bare<S>): boolean;
-
     }
 
     export namespace Abstract {
@@ -73,5 +72,9 @@ export namespace Coord {
             public abstract mul(scalar: number): Coord<S>;
         }
     }
+    Object.freeze(Abstract);
+    Object.freeze(Abstract.prototype);
 
 }
+Object.freeze(Coord);
+// No prototype to freeze.

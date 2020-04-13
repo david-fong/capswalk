@@ -78,4 +78,5 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
     }
 
 }
+Object.freeze(OfflineGame);
 Object.freeze(OfflineGame.prototype);

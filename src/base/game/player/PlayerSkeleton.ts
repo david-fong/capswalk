@@ -1,4 +1,4 @@
-import { Player as PlayerTypeDefs } from "utils/TypeDefs";
+import { Player as __Player } from "utils/TypeDefs";
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
@@ -13,9 +13,9 @@ import { TileGetter } from "floor/TileGetter";
  * field. Enforces / exposes the {@link PlayerSkeleton#moveTo} method as
  * the interface to any such operations.
  *
- * @extends PlayerTypeDefs to intake its namespace exports.
+ * @extends __Player to intake its namespace exports.
  */
-export abstract class PlayerSkeleton<S extends Coord.System> extends PlayerTypeDefs<S> {
+export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S> {
 
     public readonly playerId: Player.Id;
 
@@ -116,9 +116,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends PlayerTypeD
             dest.setOccupant(this.playerId);
         }
     }
-
 }
-
 
 
 export namespace PlayerSkeleton {
@@ -139,8 +137,9 @@ export namespace PlayerSkeleton {
             return this.player.game.grid.tile.sourcesTo(this.player.coord).get;
         }
     }
-    Object.seal(TileGetterSource.prototype);
+    Object.freeze(TileGetterSource);
+    Object.freeze(TileGetterSource.prototype);
 
 }
-
-Object.seal(PlayerSkeleton.prototype);
+Object.freeze(PlayerSkeleton);
+Object.freeze(PlayerSkeleton.prototype);

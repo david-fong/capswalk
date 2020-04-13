@@ -103,5 +103,5 @@ export namespace Game {
         PAUSED  = "PAUSED",
         OVER    = "OVER",
     }
-
 }
+Object.freeze(Game);

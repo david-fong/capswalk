@@ -35,11 +35,9 @@ export class TileGetter<S extends CoordSys, A extends Arguments<S>> {
     public sourcesTo(...args: A): Query<S> {
         return new Query(this.source.__getTileSourcesTo(...args));
     }
-
 }
 
 export namespace TileGetter {
-
     /**
      * A Tile should always be a source-to and destination-from itself.
      */
@@ -50,8 +48,9 @@ export namespace TileGetter {
         __getTileDestsFrom(...args: A): Array<Tile<S>>;
         __getTileSourcesTo(...args: A): Array<Tile<S>>;
     }
-
 }
+Object.freeze(TileGetter);
+Object.freeze(TileGetter.prototype);
 
 /**
  *
@@ -74,5 +73,6 @@ class Query<S extends CoordSys> {
         const retval = this.contents;
         return retval;
     }
-
 }
+Object.freeze(Query);
+Object.freeze(Query.prototype);

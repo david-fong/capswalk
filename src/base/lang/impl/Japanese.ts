@@ -131,6 +131,8 @@ export namespace Japanese {
         }
     }
     Hiragana as Lang.ClassIf;
+    Object.seal(Hiragana);
+    Object.freeze(Hiragana.prototype);
 
 
 
@@ -253,5 +255,8 @@ export namespace Japanese {
         }
     }
     Katakana as Lang.ClassIf;
+    Object.seal(Katakana);
+    Object.freeze(Katakana.prototype);
 
 }
+Object.freeze(Japanese);

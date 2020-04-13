@@ -16,7 +16,6 @@ export namespace BalancingScheme {
 }
 
 
-
 /**
  * No `LangSeqTreeNode`s mapped in the `children` field have an empty
  * `characters` collection (with the exception of the root node). The
@@ -39,7 +38,6 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
     // Use weak privacy here to leave room for testing and debugging by inspection.
     private hitCount: number;
     private weightedHitCount: number;
-
 
 
     /**
@@ -258,7 +256,6 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
 }
 
 
-
 export namespace LangSeqTreeNode {
     export class Root extends LangSeqTreeNode<true> {
         public constructor() {
@@ -284,6 +281,8 @@ export namespace LangSeqTreeNode {
         }
     }
 }
+Object.freeze(LangSeqTreeNode);
+Object.freeze(LangSeqTreeNode.prototype);
 
 
 
@@ -367,3 +366,5 @@ class WeightedLangChar {
         [ BalancingScheme.WEIGHT ]: (a, b) => a.weightedHitCount - b.weightedHitCount,
     });
 };
+Object.freeze(WeightedLangChar);
+Object.freeze(WeightedLangChar.prototype);

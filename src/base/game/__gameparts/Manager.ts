@@ -240,4 +240,5 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     }
 
 }
+Object.freeze(GameManager);
 Object.freeze(GameManager.prototype);

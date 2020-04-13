@@ -1,2 +1,2 @@
 #!/bin/bash
-npx eslint --color --cache --cache-location './scripts/eslint-cache.json' "${@:-./src/**/*}"
+npx --no-install eslint --color --cache --cache-location './scripts/eslint-cache.json' "${@:-./src/**/*}"
