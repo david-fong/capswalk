@@ -36,9 +36,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc);
-        this.langRemappingFunc = Lang.RemappingFunctions[
-            Lang.Names[desc.langName]
-        ];
+        this.langRemappingFunc = Lang.RemappingFunctions[desc.langName];
     }
 
     /**

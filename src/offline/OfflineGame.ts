@@ -56,7 +56,7 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
         // =====================================
 
         document.body.onkeydown = ((ev) => {
-            console.log("hi", ev.key);
+            // console.log(ev.key);
             this.operator.processKeyboardInput(ev);
         });
     }

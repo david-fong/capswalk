@@ -19,7 +19,7 @@ export namespace Japanese {
 
         private static SINGLETON?: Hiragana = undefined;
 
-        public static getName(): string {
+        public static getName(): Lang.Names.Value {
             return Lang.Names.JAPANESE__HIRAGANA;
         }
 
@@ -143,7 +143,7 @@ export namespace Japanese {
 
         private static SINGLETON?: Katakana = undefined;
 
-        public static getName(): string {
+        public static getName(): Lang.Names.Value {
             return Lang.Names.JAPANESE__KATAKANA;
         }
 

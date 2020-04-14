@@ -12,6 +12,7 @@
 
 ### High Priority
 
+1. To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 1. Rename `webui/` to `browser/`. Rationale: it's not just for UI stuff anymore (ex storage hooks).
     - Also move event names for socket.io messaging to `WebHooks.ts`.
 1. Design: I still kind of want to have a kind of artificial player that can't be killed in a more "survive for as long as possible" mode (instead of an "eliminate all other teams" mode), which I could implement as a subclass of `Chaser` whose `status` field has its `set rawHealth` to do nothing.

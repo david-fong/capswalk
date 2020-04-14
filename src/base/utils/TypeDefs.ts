@@ -66,14 +66,43 @@ export namespace Lang {
         });
     }
 
+    /***
+     * There are three string for each language!
+     * - The object key string is for use in the ts/js code, hence the casing.
+     * - The display name is for display purposes. Special characters are OK.
+     * - The id name is a shorter string for web-storage keys and a URL query.
+     */
     export const Names = Object.freeze(<const>{
-        ENGLISH__LOWERCASE: "English Lowercase (QWERTY)",
-        ENGLISH__MIXEDCASE: "English Mixed-Case (QWERTY)",
-        JAPANESE__HIRAGANA: "Japanese Hiragana",
-        JAPANESE__KATAKANA: "Japanese Katakana",
-        KOREAN__DUBEOLSIK: "Korean Dubeolsik (두벌식 키보드)",
-        KOREAN__SEBEOLSIK: "Korean Sebeolsik (세벌식 최종 키보드)",
+        ENGLISH__LOWERCASE: {
+            display: "English Lowercase (QWERTY)",
+            id: "engl-low",
+        },
+        ENGLISH__MIXEDCASE: {
+            display: "English Mixed-Case (QWERTY)",
+            id: "engl-mix",
+        },
+        JAPANESE__HIRAGANA: {
+            display: "Japanese Hiragana",
+            id: "japn-hir",
+        },
+        JAPANESE__KATAKANA: {
+            display: "Japanese Katakana",
+            id: "japn-kat",
+        },
+        KOREAN__DUBEOLSIK: {
+            display: "Korean Dubeolsik (두벌식 키보드)",
+            id: "kore-dub",
+        },
+        KOREAN__SEBEOLSIK: {
+            display: "Korean Sebeolsik (세벌식 최종 키보드)",
+            id: "kore-sub",
+        },
+        KOREAN__ROMANIZATION: {
+            display: "Korean Revised Romanization",
+            id: "kore-rom",
+        }
     });
+    Names as Record<string, { display: string, id: string, }>;
     export namespace Names {
         export type Key = keyof typeof Names;
         export type Value = typeof Names[keyof typeof Names];
@@ -109,14 +138,15 @@ export namespace Lang {
      * @returns
      */
     export const RemappingFunctions
-    : Readonly<Record<Names.Value, {(input: string): string}>>
+    : Readonly<Record<Names.Value["id"], {(input: string): string}>>
     = Object.freeze(<const>{
-        [Names.ENGLISH__LOWERCASE]: __RemapTemplates.TO_LOWER,
-        [Names.ENGLISH__MIXEDCASE]: __RemapTemplates.IDENTITY,
-        [Names.JAPANESE__HIRAGANA]: __RemapTemplates.TO_LOWER,
-        [Names.JAPANESE__KATAKANA]: __RemapTemplates.TO_LOWER,
-        [Names.KOREAN__DUBEOLSIK]:  __RemapTemplates.IDENTITY,
-        [Names.KOREAN__SEBEOLSIK]:  __RemapTemplates.IDENTITY,
+        [ Names.ENGLISH__LOWERCASE.id ]: __RemapTemplates.TO_LOWER,
+        [ Names.ENGLISH__MIXEDCASE.id ]: __RemapTemplates.IDENTITY,
+        [ Names.JAPANESE__HIRAGANA.id ]: __RemapTemplates.TO_LOWER,
+        [ Names.JAPANESE__KATAKANA.id ]: __RemapTemplates.TO_LOWER,
+        [ Names.KOREAN__DUBEOLSIK.id  ]: __RemapTemplates.IDENTITY,
+        [ Names.KOREAN__SEBEOLSIK.id  ]: __RemapTemplates.IDENTITY,
+        [ Names.KOREAN__ROMANIZATION.id]:__RemapTemplates.TO_LOWER,
     });
 }
 Object.freeze(Lang);

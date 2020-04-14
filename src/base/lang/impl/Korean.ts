@@ -20,15 +20,15 @@ export namespace Korean {
 
         private static SINGLETON?: Dubeolsik = undefined;
 
-        public static getName(): string {
+        public static getName(): Lang.Names.Value {
             return Lang.Names.KOREAN__DUBEOLSIK;
         }
 
         public static getBlurb(): string {
             // A paraphrase of a segment from Wikipedia:
             return "The most common keyboard layout, and South Korea's only Hangul"
-                + " standard since 1969. Consonants are on the left, and vowels on"
-                + " the right.";
+            + " standard since 1969. Consonants are on the left, and vowels on"
+            + " the right.";
         }
 
         public static getInstance(): Dubeolsik {
@@ -79,17 +79,17 @@ export namespace Korean {
 
         private static SINGLETON?: Sebeolsik = undefined;
 
-        public static getName(): string {
+        public static getName(): Lang.Names.Value {
             return Lang.Names.KOREAN__SEBEOLSIK;
         }
 
         public static getBlurb(): string {
             // A paraphrase of a segment from Wikipedia:
             return "Another Hangul keyboard layout used in South Korea, and the"
-                + " final Sebeolsik layout designed by Dr. Kong Byung Woo, hence"
-                + " the name. Syllable-initial consonants are on the right, final"
-                + " consonants on the left, and vowels in the middle. It is more"
-                + " ergonomic than the dubeolsik, but not widely used.";
+            + " final Sebeolsik layout designed by Dr. Kong Byung Woo, hence"
+            + " the name. Syllable-initial consonants are on the right, final"
+            + " consonants on the left, and vowels in the middle. It is more"
+            + " ergonomic than the dubeolsik, but not widely used.";
         }
 
         public static getInstance(): Sebeolsik {
@@ -155,17 +155,17 @@ export namespace Korean {
 
         private static SINGLETON?: Romanization = undefined;
 
-        public static getName(): string {
-            return "Korean Revised Romanization";
+        public static getName(): Lang.Names.Value {
+            return Lang.Names.KOREAN__ROMANIZATION;
         }
 
         public static getBlurb(): string {
             // A paraphrase of a segment from Wikipedia:
             return "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
-                + " 表記法) is the official South Korean language romanization system. It"
-                + " was developed by the National Academy of the Korean Language from 1995,"
-                + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
-                + " and Tourism";
+            + " 表記法) is the official South Korean language romanization system. It"
+            + " was developed by the National Academy of the Korean Language from 1995,"
+            + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
+            + " and Tourism";
         }
 
         public static getInstance(): Romanization {

@@ -161,7 +161,7 @@ export namespace Player {
      */
     export type CtorArgs = CtorArgs.PreIdAssignment & Readonly<{
         playerId: Player.Id;
-        langName: Lang.Names.Key,
+        langName: Lang.Names.Value["id"],
     }>;
 
     export namespace CtorArgs {
@@ -184,7 +184,7 @@ export namespace Player {
          */
         export const finalize = (
             playerDescs: ReadonlyArray<CtorArgs.PreIdAssignment>,
-            langName: Lang.Names.Key,
+            langName: Lang.Names.Value["id"],
         ): ReadonlyArray<CtorArgs> => {
             // Map team ID's to consecutive numbers
             // (to play nice with array representations):

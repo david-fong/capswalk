@@ -58,7 +58,7 @@ export namespace Game {
         gridDimensions: Grid.Dimensions<S>;
         gridHtmlIdHook: G extends Game.Type.SERVER ? undefined : string;
 
-        languageName: Lang.Names.Key;
+        languageName: Lang.Names.Value["id"];
         langBalancingScheme: BalancingScheme;
 
         /**

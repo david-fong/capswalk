@@ -11,13 +11,13 @@ PostInit();
 export const game = new OfflineGame<Coord.System.EUCLID2>({
     coordSys: Coord.System.EUCLID2,
     gridDimensions: {
-        height: 5,
-        width:  7,
+        height: 25,
+        width:  25,
     },
     gridHtmlIdHook: WebHooks.Grid.Id.GRID,
     averageFreeHealthPerTile: 1.0 / 70.0,
     langBalancingScheme: BalancingScheme.WEIGHT,
-    languageName: "ENGLISH__LOWERCASE",
+    languageName: "engl-low",
     operatorIndex: 0,
     playerDescs: [
         {

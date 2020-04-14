@@ -24,6 +24,7 @@
         "gameparts",
         "sysname",
         "typeable",
+        "engl", "japn", "kore",
 
         "coord",
         "dict",

@@ -169,7 +169,7 @@ export namespace Lang {
      * implemented as static methods.
      */
     export interface ClassIf {
-        getName(): string;
+        getName(): Lang.Names.Value;
         getBlurb(): string;
         getInstance(): Lang;
     };

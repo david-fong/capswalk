@@ -1,4 +1,7 @@
 
+[class~="game-grid-host"] {
+    min-width: calc();
+}
 
 .tile, .tile * {
     padding:    0px;
