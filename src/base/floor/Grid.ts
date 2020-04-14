@@ -96,12 +96,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
     public abstract __getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
 
 }
-
-
-
-/**
- *
- */
 export namespace Grid {
 
     /**

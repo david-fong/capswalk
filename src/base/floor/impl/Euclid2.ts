@@ -343,6 +343,8 @@ export namespace Euclid2 {
              */
             declare protected readonly grid: TU.RoArr<TU.RoArr<VisibleTile<S>>>;
 
+            public domGrid: HTMLElement;
+
             public constructor(desc: AbstractGrid.CtorArgs<S>) {
                 super(desc);
                 const domGrid = document.createElement("table");
@@ -362,6 +364,7 @@ export namespace Euclid2 {
                 // remove all child elements and then append the new grid:
                 gridParentElement.childNodes.forEach((node) => gridParentElement.removeChild(node));
                 gridParentElement.appendChild(domGrid);
+                this.domGrid = domGrid;
             }
         }
     }

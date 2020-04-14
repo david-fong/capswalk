@@ -50,7 +50,15 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
         }
         this.settings = LocalGameSettings.getInstance();
 
+        // =====================================
+        // CALL TO RESET
         this.reset();
+        // =====================================
+
+        document.body.onkeydown = ((ev) => {
+            console.log("hi", ev.key);
+            this.operator.processKeyboardInput(ev);
+        });
     }
 
     /**

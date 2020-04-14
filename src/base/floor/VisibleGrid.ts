@@ -19,6 +19,7 @@ import { Grid } from "floor/Grid";
  */
 export interface VisibleGrid<S extends Coord.System> extends Grid<S> {
     // So far, there's no extra behaviour for this extension.
+    readonly domGrid: HTMLElement;
 }
 
 

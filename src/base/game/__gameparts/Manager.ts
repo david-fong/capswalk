@@ -129,8 +129,9 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     }
 
     // TODO.design what arguments must this take?
+    // then we need to implement it.
     public dryRunSpawnFreeHealth(): ReadonlyArray<TileModificationEvent<S>> {
-        return undefined!;
+        return [];
         // NOTE to self: make sure to update this.currentFreeHealth.
     }
 

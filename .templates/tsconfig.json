@@ -7,6 +7,7 @@
         "extendedDiagnostics": true,
         "moduleResolution": "node",
         "forceConsistentCasingInFileNames": true,
+        "importHelpers": true,
         "skipLibCheck": true, // time-saving measure.
 
         // Language Settings:

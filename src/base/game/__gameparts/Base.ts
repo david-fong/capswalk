@@ -1,12 +1,12 @@
 import { Game } from "../Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
+import type { VisibleGrid } from "floor/VisibleGrid";
 
 import { Player, PlayerStatus } from "../player/Player";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
-
 
 
 /**
@@ -16,7 +16,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly gameType: G;
 
-    public readonly grid: Grid<S>;
+    public readonly grid: G extends Game.Type.SERVER ? Grid<S> : VisibleGrid<S>;
 
     protected readonly players: TU.RoArr<Player<S>>;
 
@@ -54,7 +54,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
             domGridHtmlIdHook: (desc.gridHtmlIdHook || "n/a")!,
-        });
+        }) as GameBase<G,S>["grid"];
 
         // Construct players:
         this.__playerStatusCtor = impl.playerStatusCtor;
@@ -81,9 +81,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      */
     public reset(): void {
         this.grid.reset();
+        this.#status = Game.Status.PAUSED;
     }
 
-    protected abstract __getGridImplementation(coordSys: S): Grid.ClassIf<S>;
+    protected abstract __getGridImplementation(coordSys: S):
+    G extends Game.Type.SERVER ? Grid.ClassIf<S> : VisibleGrid.ClassIf<S>;
 
 
     /**

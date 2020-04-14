@@ -32,4 +32,6 @@ game.reset();
 
 // Print some things:
 console.log(game);
-console.log(game.lang.simpleView())
+console.log(game.lang.simpleView());
+
+game.statusBecomePlaying();

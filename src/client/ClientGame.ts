@@ -71,6 +71,9 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
         );
 
         this.reset();
+        document.body.onkeydown = ((ev) => {
+            this.operator!.processKeyboardInput(ev);
+        });
     }
 
     /**

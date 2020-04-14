@@ -135,7 +135,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         const dest   = this.grid.tile.at(desc.dest.coord);
         const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
 
-        if (desc.eventId !== EventRecordEntry.EVENT_ID_REJECT) {
+        if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // Rejected request. Implies either that: clientEventLag === 0,
             // or that (at Game Manager): dest.numTimesOccupied > desc.destNumTimesOccupied
             if (clientEventLag === 1) {
