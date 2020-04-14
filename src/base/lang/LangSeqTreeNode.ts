@@ -35,9 +35,18 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
     public readonly parent:     ROOT extends true ? undefined : LangSeqTreeNode;
     public readonly children:   Array<LangSeqTreeNode>; // Frozen.
 
-    // Use weak privacy here to leave room for testing and debugging by inspection.
-    private hitCount: number;
-    private weightedHitCount: number;
+    // These fields use weak privacy to leave room for testing and
+    // debugging by inspection. They have no getters.
+    /**
+     * Equals this node's own hit count plus all its ancestors' hit
+     * counts.
+     */
+    private inheritingHitCount: number;
+    /**
+     * Equals this node's own weighted hit count plus all its ancestors'
+     * weighted hit counts.
+     */
+    private inheritingWeightedHitCount: number;
 
 
     /**
@@ -93,6 +102,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
         this.children.forEach((child) => child.finalize());
     }
 
+    // TODO.test move this to only be run in tests?
     protected validateConstruction(): void | never {
         if (!(this.sequence.startsWith(this.parent!.sequence))) {
             throw new Error("Child node's sequence must start with that of its parent.");
@@ -100,10 +110,24 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
     }
 
     public reset(): void {
-        this.hitCount = 0;
-        this.weightedHitCount = 0.000;
-        this.characters.forEach((char) => char.reset());
+        // Recursively reset (from leaves first to root last):
+        // We must go in such an order so that our random hit
+        // seeds will be properly inherited (and not wrongly
+        // cleared).
         this.children.forEach((child) => child.reset());
+
+        this.inheritingHitCount = 0;
+        this.inheritingWeightedHitCount = 0.000;
+        this.characters.forEach((char) => {
+            char.reset();
+            // Seed with properly-weight-distributed hit counts
+            // for a uniformly distributed random number of times.
+            // The choice of the upper bound on the number of times
+            // is rather arbitrary, but it should not be too small.
+            for (let i = 0; i < Math.random() * 10; i++) {
+                this.incrementNumHits(char);
+            }
+        });
     }
 
     /**
@@ -114,7 +138,8 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
     protected addCharMapping(seq: Lang.Seq, chars: ReadonlyArray<WeightedLangChar>): void {
         if (!(Lang.Seq.REGEXP.test(seq))) {
             throw new RangeError(`Mapping-sequence \"${seq}\" did not match the`
-                + ` required regular expression \"${Lang.Seq.REGEXP.source}\".`);
+            + ` required regular expression \"${Lang.Seq.REGEXP.source}\".`
+            );
         } else if (chars.length === 0) {
             throw new Error("Must not make mapping without written characters.");
         }
@@ -128,8 +153,8 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
         if (node.sequence === seq) {
             // This should never happen.
             throw new Error(`Mappings for all written-characters with a common`
-                + `corresponding typeable-sequence should be registered together,`
-                + `but an existing mapping for the sequence \"${seq}\" was found.`
+            + `corresponding typeable-sequence should be registered together,`
+            + `but an existing mapping for the sequence \"${seq}\" was found.`
             );
         }
         node.children.push(new LangSeqTreeNode(node, seq, chars));
@@ -156,15 +181,17 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
             char: weightedChar.char,
             seq:  this.sequence,
         };
-        weightedChar.hitCount += 1;
-        weightedChar.weightedHitCount += weightedChar.weightInv;
-        this.recursiveIncrementNumHits(weightedChar.weightInv);
+        this.incrementNumHits(weightedChar);
         return pair;
     }
-    private recursiveIncrementNumHits(weightInv: number): void {
-        this.hitCount += 1;
-        this.weightedHitCount += weightInv;
-        this.children.forEach((child) => child.recursiveIncrementNumHits(weightInv));
+    private incrementNumHits(hitWeightedChar: WeightedLangChar): void {
+        hitWeightedChar.incrementNumHits();
+        this.__recursiveIncrementNumHits(hitWeightedChar.weightInv);
+    }
+    private __recursiveIncrementNumHits(weightInv: number): void {
+        this.inheritingHitCount += 1;
+        this.inheritingWeightedHitCount += weightInv;
+        this.children.forEach((child) => child.__recursiveIncrementNumHits(weightInv));
     }
 
     /**
@@ -173,7 +200,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @returns How many hits were made on this node since the last reset.
      */
     protected get personalHitCount(): number {
-        return this.hitCount - (this.parent!).hitCount;
+        return this.inheritingHitCount - (this.parent!).inheritingHitCount;
     }
 
     protected get averageCharHitCount(): number {
@@ -189,7 +216,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @returns How many hits were made on this node since the last reset.
      */
     protected get personalWeightedHitCount(): number {
-        return this.weightedHitCount - (this.parent!).weightedHitCount;
+        return this.inheritingWeightedHitCount - (this.parent!).inheritingWeightedHitCount;
     }
 
     public andNonRootParents(): Array<LangSeqTreeNode> {
@@ -205,13 +232,13 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
 
     public getLeafNodes(): Array<LangSeqTreeNode> {
         const leafNodes: Array<LangSeqTreeNode> = [];
-        this.recursiveGetLeafNodes(leafNodes);
+        this.__recursiveGetLeafNodes(leafNodes);
         return leafNodes;
     }
-    private recursiveGetLeafNodes(leafNodes: Array<LangSeqTreeNode>): void {
+    private __recursiveGetLeafNodes(leafNodes: Array<LangSeqTreeNode>): void {
         if (this.children.length) {
             this.children.forEach((child) => {
-                child.recursiveGetLeafNodes(leafNodes);
+                child.__recursiveGetLeafNodes(leafNodes);
             });
         } else {
             leafNodes.push(this as LangSeqTreeNode);
@@ -237,9 +264,9 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @returns -
      */
     public static readonly LEAF_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = Object.freeze({
-        [ BalancingScheme.SEQ ]:    ((a, b) => a.hitCount - b.hitCount),
-        [ BalancingScheme.CHAR ]:   ((a, b) => a.hitCount - b.hitCount),
-        [ BalancingScheme.WEIGHT ]: ((a, b) => a.weightedHitCount - b.weightedHitCount),
+        [ BalancingScheme.SEQ ]:    ((a, b) => a.inheritingHitCount - b.inheritingHitCount),
+        [ BalancingScheme.CHAR ]:   ((a, b) => a.inheritingHitCount - b.inheritingHitCount),
+        [ BalancingScheme.WEIGHT ]: ((a, b) => a.inheritingWeightedHitCount - b.inheritingWeightedHitCount),
     });
 
     /**
@@ -333,8 +360,8 @@ class WeightedLangChar {
     ) {
         if (weight <= 0) {
             throw new RangeError(`All weights must be positive, but we`
-                + ` were passed the value \"${weight}\" for the character`
-                + ` \"${char}\".`);
+            + ` were passed the value \"${weight}\" for the character`
+            + ` \"${char}\".`);
         }
         this.char = char;
         this.weightInv = 1.000 / weight;
@@ -346,6 +373,11 @@ class WeightedLangChar {
     public reset(): void {
         this.hitCount = 0;
         this.weightedHitCount = 0.000;
+    }
+
+    public incrementNumHits(): void {
+        this.hitCount += 1;
+        this.weightedHitCount += this.weightInv;
     }
 
     public simpleView(): object {

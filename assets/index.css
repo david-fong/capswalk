@@ -1,0 +1,21 @@
+
+body {
+    font:           90% Trebuchet MS;
+    text-align:     center;
+    color:          black;
+    transition:     filter 0.5s ease-in-out;
+    user-select:    none;
+}
+
+.background {
+    height:     100%;
+    width:      100%;
+    position:   fixed;
+    top:        0px;
+    left:       0px;
+    z-index:    -100;
+}
+
+table {
+    border-spacing: 0;
+}

@@ -143,7 +143,7 @@ export abstract class Lang extends __Lang {
             // Should never reach here because there is a check in the
             // constructor checking for this invariant.
             throw new Error(`Invariants guaranteeing that a LangSeq can`
-                + `always be shuffled-in were not met.`
+            + `always be shuffled-in were not met.`
             );
         }
         return nodeToHit.chooseOnePair(balancingScheme);
@@ -151,10 +151,8 @@ export abstract class Lang extends __Lang {
 
     public simpleView(): object {
         return Object.assign(Object.create(null), {
-            name: this.static.getName,
-            // we need to jump through some hoops to get this
-            // without passing it in as a constructor argument ':)
-            desc: (this["constructor"] as object as Lang.ClassIf).getBlurb(),
+            name: this.static.getName(),
+            desc: this.static.getBlurb(),
             root: this.treeMap.simpleView(),
         });
     }

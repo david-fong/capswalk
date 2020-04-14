@@ -170,9 +170,9 @@ export namespace Euclid2 {
         /**
          * A 2-dimensional rectangular array with height and width following
          * their corresponding fields, containing `Tile` objects with `pos`
-         * fields allowing indexing to themselves. Uses row-major ordering.
+         * fields allowing indexing to themselves. Uses _row-major_ ordering.
          */
-        protected readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
+        protected readonly grid: TU.RoArr<TU.RoArr<Tile<S>>>;
 
         /**
          * @override
@@ -264,21 +264,27 @@ export namespace Euclid2 {
             ) {
                 throw new RangeError("Out of bounds. No such tile exists.");
             }
-            return this.grid[coord.x][coord.y];
+            return this.grid[coord.y][coord.x];
         }
 
         /**
          * @override
          */
         public __getTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
+            let t = coord.y - radius;
+            let b = coord.y + radius + 1;
+            let l = coord.x - radius;
+            let r = coord.x + radius + 1;
+            if (t >= this.dimensions.height || b < 0
+             || l >= this.dimensions.width  || r < 0) return [];
             return this.grid.slice(
                 // filter for included rows:
-                Math.max(0, coord.y - radius),
-                Math.min(this.dimensions.height, coord.y + radius + 1),
-            ).flatMap((tile) => tile.slice(
+                Math.max(0, t),
+                Math.min(this.dimensions.height, b),
+            ).flatMap((gridRow) => gridRow.slice(
                 // filter for included slices of rows (columns):
-                Math.max(0, coord.x - radius,
-                Math.min(this.dimensions.width, coord.x + radius + 1)),
+                Math.max(0, l),
+                Math.min(this.dimensions.width, r),
             ));
         }
 
@@ -335,7 +341,7 @@ export namespace Euclid2 {
             /**
              * @override
              */
-            declare protected readonly grid: ReadonlyArray<ReadonlyArray<VisibleTile<S>>>;
+            declare protected readonly grid: TU.RoArr<TU.RoArr<VisibleTile<S>>>;
 
             public constructor(desc: AbstractGrid.CtorArgs<S>) {
                 super(desc);

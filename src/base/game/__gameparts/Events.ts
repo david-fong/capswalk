@@ -99,7 +99,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         const dest = this.grid.tile.at(desc.coord);
         if (dest.lastKnownUpdateId < desc.lastKnownUpdateId) {
             if (desc.newCharSeqPair) {
-                dest.setLangCharSeq(desc.newCharSeqPair);
+                dest.setLangCharSeqPair(desc.newCharSeqPair);
                 // Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
                 if (doCheckOperatorSeqBuffer && this.operator !== undefined
                     && !(this.operator.tile.destsFrom().get.includes(dest))) {

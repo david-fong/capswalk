@@ -7,11 +7,12 @@ import { PostInit }         from "game/PostInit";
 PostInit();
 
 // TODO.design override ctor args for each impl, and make it so they adapt input to pass to super ctor.
-const game = new OfflineGame<Coord.System.EUCLID2>({
+// TODO.build this has been set to `var` for testing purposes. It should be `const` in production.
+export const game = new OfflineGame<Coord.System.EUCLID2>({
     coordSys: Coord.System.EUCLID2,
     gridDimensions: {
-        height: 20,
-        width:  20,
+        height: 5,
+        width:  7,
     },
     gridHtmlIdHook: WebHooks.Grid.Id.GRID,
     averageFreeHealthPerTile: 1.0 / 70.0,
@@ -28,4 +29,7 @@ const game = new OfflineGame<Coord.System.EUCLID2>({
     ],
 });
 game.reset();
+
+// Print some things:
 console.log(game);
+console.log(game.lang.simpleView())

@@ -9,6 +9,8 @@
 
         <%= htmlWebpackPlugin.tags.headTags.join("\n        ") %>
         <%= extraScripts.map((name) => `<script src="${name}"></script>`).join("\n        ") %>
+        <link rel='stylesheet' type='text/css' href='assets/index.css' />
+        <link rel='stylesheet' type='text/css' href='assets/tile.css' />
     </head>
 
 

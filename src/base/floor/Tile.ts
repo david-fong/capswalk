@@ -54,7 +54,7 @@ export class Tile<S extends Coord.System> {
         // This is also done when shuffling individual tiles throughout
         // the game, but it is done here since initially, nothing needs
         // to be avoided because no CSP's have been set yet.
-        this.setLangCharSeq(Lang.CharSeqPair.NULL);
+        this.setLangCharSeqPair(Lang.CharSeqPair.NULL);
     }
 
     /**
@@ -102,7 +102,7 @@ export class Tile<S extends Coord.System> {
     /**
      * @override
      */
-    public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
+    public setLangCharSeqPair(charSeqPair: Lang.CharSeqPair): void {
         this.#langChar = charSeqPair.char;
         this.#langSeq  = charSeqPair.seq;
     }

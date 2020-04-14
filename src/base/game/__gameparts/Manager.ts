@@ -12,6 +12,9 @@ import { English } from "lang/impl/English"; // NOTE: temporary placeholder.
 import { GameEvents } from "game/__gameparts/Events";
 
 
+/**
+ *
+ */
 export abstract class GameManager<G extends Game.Type, S extends Coord.System> extends GameEvents<G,S> {
 
     public readonly averageFreeHealth: Player.Health;
@@ -78,7 +81,9 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // history of shuffle-ins has no effects on the new pairs.
         this.lang.reset();
         // Shuffle everything:
-        this.grid.forEachTile((tile) => this.dryRunShuffleLangCharSeqAt(tile));
+        this.grid.forEachTile((tile) => {
+            tile.setLangCharSeqPair(this.dryRunShuffleLangCharSeqAt(tile));
+        });
 
         // Reset and spawn players:
         this.teams.forEach((team) => team.reset());
@@ -110,10 +115,10 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     public dryRunShuffleLangCharSeqAt(targetTile: Tile<S>): Lang.CharSeqPair {
         // First, clear values for the target tile so its current
         // (to-be-previous) values don't get unnecessarily avoided.
-        targetTile.setLangCharSeq(Lang.CharSeqPair.NULL);
+        targetTile.setLangCharSeqPair(Lang.CharSeqPair.NULL);
 
-        const avoid: ReadonlyArray<Tile<S>> = Array.from(new Set(
-            this.grid.tile.sourcesTo((targetTile as Tile<S>).coord).get
+        const avoid: TU.RoArr<Tile<S>> = Array.from(new Set(
+            this.grid.tile.sourcesTo(targetTile.coord).get
             .flatMap((sourceToTarget) => this.grid.tile.destsFrom(sourceToTarget.coord).get)
         ));
         return this.lang.getNonConflictingChar(avoid

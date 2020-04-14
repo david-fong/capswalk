@@ -78,8 +78,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     /**
      * @override
      */
-    public setLangCharSeq(charSeqPair: Lang.CharSeqPair): void {
-        super.setLangCharSeq(charSeqPair);
+    public setLangCharSeqPair(charSeqPair: Lang.CharSeqPair): void {
+        super.setLangCharSeqPair(charSeqPair);
         this.langCharDivElem.innerText = this.langChar;
         this.langSeqDivElem.innerText  = this.langSeq;
     }
