@@ -76,6 +76,8 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
             if (!this.requestInFlight) {
                 // Only process movement-type input if the last request got
                 // acknowledged by the Game Manager and the game is playing.
+                // TODO.design is this okay? will any languages require different behaviour?
+                if (event.key.length !== 1) return;
                 this.seqBufferAcceptKey(event.key);
             }
         }

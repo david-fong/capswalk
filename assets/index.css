@@ -1,3 +1,5 @@
+@import "./tile.css";
+@import "./colour/index.css";
 
 :root {
     transition:
@@ -16,13 +18,14 @@ body {
     transition:     filter 0.5s ease-in-out;
 }
 
-.background {
+#background {
+    z-index:    -1000;
+    position:   fixed;
     height:     100%;
     width:      100%;
-    position:   fixed;
-    top:        0px;
-    left:       0px;
-    z-index:    -1000;
+    top:        0;
+    left:       0;
+    background-color: var(--colour-mainBg);
 }
 
 .fill-parent {

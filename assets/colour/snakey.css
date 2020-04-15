@@ -4,8 +4,8 @@
     --colour-snakey-tileBd: white;
     --colour-snakey-health: rgb(78, 223, 97);
 
-    --colour-snakey-mainFg: rgb(33, 96, 155);
-    --colour-snakey-mainFg: rgb(255, 255, 255);
+    --colour-snakey-mainFg: rgb(233, 238, 243);
+    --colour-snakey-mainBg: rgb(53, 87, 139);
 
     --colour-snakey-pFaceMe: rgb(72, 223, 243);
     --colour-snakey-pFaceTeammate: rgb(245, 219, 75);

@@ -1,9 +1,15 @@
-
+#game-grid-container {
+    position:   relative;
+    display:    inline-flex;
+    flex-flow:  column nowrap;
+    align-items: center;
+    justify-content: center;
+    height:     100vh;
+}
 .game-grid {
-    margin-left:    auto;
-    margin-right:   auto;
-    min-width:      calc();
-    color:          var(--colour-tileFg);
+    /* min-width:  calc(); */
+    color:      var(--colour-tileFg);
+    background-color: var(--colour-mainBg);
 }
 .game-grid__spotlight {
     background-image: radial-gradient(
@@ -18,25 +24,30 @@
     padding:    0px;
     overflow-x: hidden;
     overflow-y: hidden;
+    box-sizing: border-box;
 }
 .tile {
+    z-index:    0;
     position:   relative;
-    background-color: var(--colour-mainBg);
-    border-width: 0;
-    z-index: 0;
+    border: 0.5px solid var(--colour-mainBg);
+    border-radius: 18%;
 }
 .tile * {
-    box-sizing: border-box;
-    border-radius: 17%;
-    border: 5% solid transparent;
+    border: 1px solid var(--colour-tileBd);
+    border-radius: 16%;
+}
+.tile[data-health] * {
+    border-color: transparent;
 }
 
 
-.player {
+.tile .player {
     z-index: 10;
-    background-color: olivedrab;
+    border-color: var(--colour-tileBd);
 }
-.player[data-face="me"] { background-color: var(--colour-pFaceMe); }
+.player[data-face="me"] {
+    background-color: var(--colour-pFaceMe);
+}
 .player[data-face="teammate"] {
     background-color: var(--colour-pFaceTeammate);
 }
@@ -63,10 +74,11 @@
 .tile__seq {
     z-index:    20;
     position:   absolute;
-    /* display:    inline-block; */
+    top:        -50%;
+    left:       50%;
     visibility: none;
     opacity:    0.0;
-    transition: opacity 0.35s ease-in-out;
+    /* transition: opacity 0.2s ease-in-out; */
 }
 .tile:hover .tile__seq {
     visibility: visible;

@@ -29,8 +29,8 @@ export class Colour {
     public switchToScheme(schemeId: Colour.Scheme.Id) {
         for (const swatchName of Colour.Swatch) {
             document.body.style.setProperty(
-                `--${swatchName}`,
-                `--${schemeId}__${swatchName}`,
+                `--colour-selected-${swatchName}`,
+                `--colour-${schemeId}-${swatchName}`,
             );
         }
     }

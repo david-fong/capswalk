@@ -80,6 +80,10 @@ export namespace WebHooks {
             "pFaceTeammate", "pFaceImmortalTeammate",
             "pFaceOpponent", "pFaceImmortalOpponent",
         ]);
+        /**
+         * The scheme id `selected` is a special value and should not
+         * be used.
+         */
         export const Scheme = Object.freeze(<const>{
             ["snakey"]: Object.freeze(<const>{
                 displayName: "Snakey by N.W.",
