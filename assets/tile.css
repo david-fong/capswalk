@@ -36,30 +36,32 @@
     z-index: 10;
     background-color: olivedrab;
 }
+.player[data-face="me"] { background-color: var(--colour-pFaceMe); }
+.player[data-face="teammate"] {
+    background-color: var(--colour-pFaceTeammate);
+}
+.player[data-face="opponent"] {
+    background-color: var(--colour-pFaceOpponent);
+}
+.player[data-face="teammate"][data-downed="team"] {
+    background-color: var(--colour-pFaceImmortalTeammate);
+}
+.player[data-face="opponent"][data-downed="team"] {
+    background-color: var(--colour-pFaceImmortalOpponent);
+}
 .player__downed-overlay {
-    visibility: hidden;
     z-index: 5;
 }
-.player[data-downed="self"] > .player__downed-overlay {
-    visibility: visible;
+.player[data-downed="no"] > .player__downed-overlay {
+    visibility: hidden;
 }
-.player[data-downed="team"] {
-    visibility: visible;
-}
-.player[data-face=0] { background-color: var(--colour-pFace0); }
-.player[data-face=1] { background-color: var(--colour-pFace1); }
-.player[data-face=2] { background-color: var(--colour-pFace2); }
-.player[data-face=3] { background-color: var(--colour-pFace3); }
-.player[data-face=4] { background-color: var(--colour-pFace4); }
-.player[data-face=5] { background-color: var(--colour-pFace5); }
-.player[data-face=6] { background-color: var(--colour-pFace6); }
-.player[data-face=7] { background-color: var(--colour-pFace7); }
 
 .tile__char {
     z-index: 2;
     background-color: var(--colour-tileBg);
 }
 .tile__seq {
+    z-index:    20;
     position:   absolute;
     /* display:    inline-block; */
     visibility: none;

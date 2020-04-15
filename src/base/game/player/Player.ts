@@ -8,9 +8,11 @@ import type { GameBase } from "game/__gameparts/Base";
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 import { PlayerSkeleton } from "./PlayerSkeleton";
 import { PlayerStatus } from "./PlayerStatus";
+import { Team } from "./Team";
 
 export { PlayerSkeleton };
 export { PlayerStatus };
+export { Team };
 
 
 /**
@@ -20,7 +22,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
     public readonly familyId: Player.Family;
 
-    public readonly teamId: Player.Team.Id;
+    public readonly teamId: Team.Id;
 
     public readonly username: Player.Username;
 
@@ -43,7 +45,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.familyId = desc.familyId;
         this.teamId   = desc.teamId;
         this.username = desc.username;
-        this.status   = new (this.game.__playerStatusCtor)(this);
+        this.status   = new (this.game.__playerStatusCtor)(this, desc.noCheckGameOver);
     }
 
     public reset(spawnTile: Tile<S>): void {
@@ -84,7 +86,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         );
     }
 
-    public get team(): Player.Team<S> {
+    public get team(): Team<S> {
         return this.game.teams[this.teamId];
     }
 
@@ -101,43 +103,6 @@ export namespace Player {
     export type Family = __Player.Family;
 
     export type Id = __Player.Id;
-
-    export class Team<S extends Coord.System> {
-        public readonly id: Team.Id;
-        public readonly members: ReadonlyArray<Player<S>>;
-        #teamElimOrder: number;
-        public constructor(teamId: Team.Id, members: ReadonlyArray<Player<S>>) {
-            this.id = teamId;
-            this.members = members;
-        }
-        public reset(): void {
-            this.#teamElimOrder = 0;
-        }
-        /**
-         * Indicates the order (relative to other teams) in which this
-         * team was to have all its members downed at the same time at
-         * least once. Once a team is soft-eliminated, they can continue
-         * playing as normal, but there is no going back. The game ends
-         * when all teams but one have been soft-eliminated.
-         *
-         * ### Semantics
-         *
-         * A comparatively smaller value denotes having been soft-
-         * eliminated at an earlier point in the game. **The value zero
-         * denotes _not-having-been-soft-eliminated-yet_**.
-         */
-        public get teamElimOrder(): number {
-            return this.#teamElimOrder;
-        }
-        public set teamElimOrder(teamElimOrder: number) {
-            this.#teamElimOrder = teamElimOrder;
-        }
-    }
-    export namespace Team {
-        export type Id = number;
-    }
-    Object.freeze(Team);
-    Object.freeze(Team.prototype);
 
     export type SocketId = string;
 
@@ -182,6 +147,7 @@ export namespace Player {
             teamId:   Team.Id;
             socketId: SocketId;
             username: Username;
+            noCheckGameOver: boolean;
         }>;
 
         /**
@@ -212,6 +178,7 @@ export namespace Player {
                 socketId:   playerDesc.socketId,
                 username:   playerDesc.username,
                 langName:   langName,
+                noCheckGameOver: playerDesc.noCheckGameOver,
             }; });
         };
 

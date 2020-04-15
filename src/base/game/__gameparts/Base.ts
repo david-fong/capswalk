@@ -3,7 +3,7 @@ import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { VisibleGrid } from "floor/VisibleGrid";
 
-import { Player, PlayerStatus } from "../player/Player";
+import { Player, PlayerStatus, Team } from "../player/Player";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
@@ -25,7 +25,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     /**
      * Indexable by team ID's.
      */
-    public readonly teams: ReadonlyArray<Player.Team<S>>;
+    public readonly teams: ReadonlyArray<Team<S>>;
 
     #status: Game.Status;
 
@@ -72,8 +72,15 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             teams[player.teamId].push(player);
         });
         this.teams = teams.map((teammateArray, teamId) => {
-            return new Player.Team<S>(teamId, teammateArray);
+            return new Team<S>(teamId, teammateArray);
         });
+        if (this.teams.every((team) => team.id === Team.ElimOrder.IMMORTAL)) {
+            // TODO.design put a check inside the UI code to prevent this.
+            // The purpose of this restriction is to prevent DoS attacks on
+            // a hosting server by creating games that can never end and
+            // leaving them open forever, thus leaking the server's resources.
+            throw new Error("All teams are immortal. The game will never end.");
+        }
     }
 
     /**
@@ -81,6 +88,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      */
     public reset(): void {
         this.grid.reset();
+        // We must reset status to PAUSED to pass a state-transition
+        // assertion when changing status later to PLAYING.
         this.#status = Game.Status.PAUSED;
     }
 

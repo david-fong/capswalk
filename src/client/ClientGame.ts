@@ -56,6 +56,7 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
         if (!this.operator) {
             throw new Error("The Operator for a ClientGame should be defined.");
         }
+        VisiblePlayerStatus.colourizeTeamMembers(this.teams, this.operator);
         this.settings = LocalGameSettings.getInstance();
         this.socket = socket;
 

@@ -76,9 +76,9 @@ export namespace WebHooks {
             "mainFg", "mainBg",
             "tileFg", "tileBg", "tileBd",
             "health",
-            "pFace0", "pFace1", "pFace2", "pFace3",
-            "pFace4", "pFace5", "pFace6", "pFace7",
-            "pFaceInvincible",
+            "pFaceMe",
+            "pFaceTeammate", "pFaceImmortalTeammate",
+            "pFaceOpponent", "pFaceImmortalOpponent",
         ]);
         export const Scheme = Object.freeze(<const>{
             ["snakey"]: Object.freeze(<const>{

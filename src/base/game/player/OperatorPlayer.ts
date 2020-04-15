@@ -18,6 +18,11 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
+    declare public readonly game: GameBase<(Game.Type.OFFLINE|Game.Type.CLIENT),S>;
+
+    /**
+     * @override
+     */
     declare public readonly hostTile: VisibleTile<S>;
 
     /**

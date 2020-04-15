@@ -4,7 +4,7 @@ import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
-import { Player } from "game/player/Player";
+import { Player, Team } from "game/player/Player";
 
 export { ServerGame } from "./ServerGame";
 
@@ -155,6 +155,7 @@ export class GroupSession {
                         teamId: socket.teamId!,
                         socketId: socket.id,
                         username: socket.username!, // checked above.
+                        noCheckGameOver: false,
                     };
                 }),
             },
@@ -177,7 +178,7 @@ export namespace GroupSession {
      */
     export type Socket = io.Socket & {
         username?: Player.Username;
-        teamId?: Player.Team.Id; // These input values can be messy and non-continuous. They will be cleaned later.
+        teamId?: Team.Id; // These input values can be messy and non-continuous. They will be cleaned later.
         updateId: number; // initial value = 0
     };
 

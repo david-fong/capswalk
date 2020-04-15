@@ -1,5 +1,6 @@
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
+import { Team } from "game/player/Team";
 
 
 /**
@@ -11,11 +12,13 @@ import type { Player } from "./Player";
 export class PlayerStatus<S extends Coord.System> {
 
     protected readonly player: Player<S>; // Circular field reference.
+    public readonly noCheckGameOver: boolean;
     #score:  Player.Health;
     #health: Player.Health;
 
-    public constructor(player: Player<S>) {
+    public constructor(player: Player<S>, noCheckGameOver: boolean) {
         this.player = player;
+        this.noCheckGameOver = noCheckGameOver;
     }
 
     public reset(): void {
@@ -36,21 +39,27 @@ export class PlayerStatus<S extends Coord.System> {
     }
     public set health(newHealth: Player.Health) {
         this.#health = newHealth;
-        const team = this.player.team;
-        if (this.isDowned && team.teamElimOrder === 0) {
+        const team  = this.player.team;
+        const teams = this.player.game.teams;
+        if (this.isDowned && !(this.noCheckGameOver) && team.elimOrder === 0) {
             // Right before this downing event, the team has not been
             // soft-eliminated yet, but it might be now. Check it:
-            if (team.members.every((player) => player.status.isDowned)) {
-                // All players are downed! The team is now soft-eliminated:
-                const numSoftEliminatedTeams
-                = team.teamElimOrder = 1 + this.player.game.teams
-                .filter((team) => team.teamElimOrder > 0).length;
-                // Now that a team is newly-soft-eliminated, check if the
+            if (team.members.every((player) => {
+                return player.status.noCheckGameOver || player.status.isDowned;
+            })) {
+                // All players are downed! The team is now eliminated:
+                const numNonStandingTeams
+                    = 1 + teams.filter((team) => {
+                    return team.elimOrder !== Team.ElimOrder.STANDING;
+                }).length;
+                team.elimOrder
+                    = 1 + teams.filter((team) => {
+                    return team.elimOrder !== Team.ElimOrder.STANDING
+                        && team.elimOrder !== Team.ElimOrder.IMMORTAL;
+                }).length;
+                // Now that a team is newly-eliminated, check if the
                 // game should end:
-                // TODO.design This will not work if there are artificial-only teams
-                // that do not try to eliminate each other! What to do... :/
-                // See :/TODO.md for my thoughts on changes that could effect this.
-                if (numSoftEliminatedTeams >= this.player.game.teams.length) {
+                if (numNonStandingTeams === teams.length) {
                     this.player.game.statusBecomeOver();
                 }
             }

@@ -25,6 +25,7 @@ export const game = new OfflineGame<Coord.System.EUCLID2>({
             teamId: 0,
             username: "hello world",
             socketId: "todo", // TODO.impl maybe make some static method to assign unique values based on operator class?
+            noCheckGameOver: false,
         },
     ],
 });

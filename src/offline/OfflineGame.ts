@@ -48,6 +48,7 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
         if (!this.operator) {
             throw new Error("The Operator for an OfflineGame should be defined.");
         }
+        VisiblePlayerStatus.colourizeTeamMembers(this.teams, this.operator);
         this.settings = LocalGameSettings.getInstance();
 
         // =====================================
