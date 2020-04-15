@@ -6,7 +6,8 @@ import { Grid } from "floor/Grid";
 
 
 /**
- *
+ * All implementations must call `Grid.__VisibleGrid_super` at the end
+ * of their constructors.
  *
  * NOTE: As a design choice, this is put in a separate file from the
  * base `Grid` class with a _separate_ dictionary of implementation
@@ -19,7 +20,6 @@ import { Grid } from "floor/Grid";
  */
 export interface VisibleGrid<S extends Coord.System> extends Grid<S> {
     // So far, there's no extra behaviour for this extension.
-    readonly domGrid: HTMLElement;
 }
 
 

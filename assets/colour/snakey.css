@@ -1,0 +1,17 @@
+:root {
+    --colour-snakey-tileFg: rgb(228, 234, 236);
+    --colour-snakey-tileBg: rgb(38, 140, 180);
+    --colour-snakey-tileBd: white;
+
+    --colour-snakey-mainFg: white;
+    --colour-snakey-mainFg: white;
+
+    --colour-snakey-pFace0: white;
+    --colour-snakey-pFace1: white;
+    --colour-snakey-pFace2: white;
+    --colour-snakey-pFace3: white;
+    --colour-snakey-pFace4: white;
+    --colour-snakey-pFace5: white;
+    --colour-snakey-pFace6: white;
+    --colour-snakey-pFace7: white;
+}

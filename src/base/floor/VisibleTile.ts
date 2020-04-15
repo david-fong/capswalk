@@ -39,6 +39,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             {
                 const cDiv = document.createElement("div");
                 cDiv.className = WebHooks.Tile.Class.LANG_CHAR;
+                cDiv.classList.add(WebHooks.General.Class.FILL_PARENT);
                 tCell.appendChild(cDiv);
                 this.langCharDivElem = cDiv;
             } {
@@ -72,7 +73,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public set freeHealth(newHealth: number) {
         super.freeHealth = newHealth;
-        this.tileCellElem.dataset[WebHooks.Tile.Dataset.SCORE_VALUE] = newHealth.toString();
+        this.tileCellElem.dataset[WebHooks.Tile.Dataset.HEALTH] = newHealth.toString();
     }
 
     /**

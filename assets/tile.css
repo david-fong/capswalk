@@ -1,43 +1,88 @@
 
-[class~="game-grid-host"] {
-    min-width: calc();
+.game-grid {
+    margin-left:    auto;
+    margin-right:   auto;
+    min-width:      calc();
+    color:          var(--colour-tileFg);
+}
+.game-grid__spotlight {
+    background-image: radial-gradient(
+        ellipse closest-side at center,
+        white, black
+    );
+    /* TODO.design how to set size of box + z-index */
 }
 
-.tile, .tile * {
+
+.tile, .tile > * {
     padding:    0px;
     overflow-x: hidden;
     overflow-y: hidden;
 }
-.tile__char, .tile__seq, .player {
-    position:   absolute;
-    top: 0;
-    width:      100%;
-    height:     100%;
-
-    background-color: lightslategray;
-    box-sizing: border-box;
-    border-radius: 17%;
-    border: 1px solid black;
-}
 .tile {
     position:   relative;
-    width:      20px;
-    height:     20px;
-
-    background-color: black;
+    background-color: var(--colour-mainBg);
     border-width: 0;
     z-index: 0;
 }
+.tile * {
+    box-sizing: border-box;
+    border-radius: 17%;
+    border: 5% solid transparent;
+}
+
 
 .player {
-    z-index: 3;
+    z-index: 10;
     background-color: olivedrab;
 }
+.player__downed-overlay {
+    visibility: hidden;
+    z-index: 5;
+}
+.player[data-downed="self"] > .player__downed-overlay {
+    visibility: visible;
+}
+.player[data-downed="team"] {
+    visibility: visible;
+}
+.player[data-face=0] { background-color: var(--colour-pFace0); }
+.player[data-face=1] { background-color: var(--colour-pFace1); }
+.player[data-face=2] { background-color: var(--colour-pFace2); }
+.player[data-face=3] { background-color: var(--colour-pFace3); }
+.player[data-face=4] { background-color: var(--colour-pFace4); }
+.player[data-face=5] { background-color: var(--colour-pFace5); }
+.player[data-face=6] { background-color: var(--colour-pFace6); }
+.player[data-face=7] { background-color: var(--colour-pFace7); }
 
 .tile__char {
     z-index: 2;
+    background-color: var(--colour-tileBg);
+}
+.tile__seq {
+    position:   absolute;
+    /* display:    inline-block; */
+    visibility: none;
+    opacity:    0.0;
+    transition: opacity 0.35s ease-in-out;
+}
+.tile:hover .tile__seq {
+    visibility: visible;
+    opacity:    1.0;
 }
 
-.tile__seq {
-    z-index: 1;
+
+.game-grid[data-coord-sys="EUCLID2"] .tile {
+    width:      20px;
+    height:     20px;
+}
+.game-grid[data-coord-sys="EUCLID2"] .tile > * {
+    --nothing:  "yet";
+}
+
+.game-grid[data-coord-sys="BEEHIVE"] .tile {
+    --nothing:  "yet";
+}
+.game-grid[data-coord-sys="BEEHIVE"] .tile > * {
+    --nothing:  "yet";
 }

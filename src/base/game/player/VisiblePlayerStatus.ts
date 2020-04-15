@@ -15,9 +15,16 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         {
             // TODO.design create a spotlight mask using the below CSS properties:
             // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
-            const pDiv: HTMLDivElement = document.createElement("div");
+            const pDiv = document.createElement("div");
             pDiv.className = WebHooks.Player.Class.BASE;
+            pDiv.classList.add(WebHooks.General.Class.FILL_PARENT);
             this.playerDivElem = pDiv;
+        } {
+            // Setup downedOverlay element:
+            const doDiv = document.createElement("div");
+            doDiv.className = WebHooks.Player.Class.DOWNED_OVERLAY;
+            doDiv.classList.add(WebHooks.General.Class.FILL_PARENT);
+            this.playerDivElem.appendChild(doDiv);
         }
     }
 
@@ -28,8 +35,13 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
     public set health(newHealth: Player.Health) {
         super.health = newHealth;
-        // TODO.design CSS integration for Player.isDowned rendering.
-        // this.playerDivElem.dataset[HtmlHooks.Player.Dataset.IS_DOWNED] = this.isDowned;
+
+        // CSS integration for Player.isDowned rendering.
+        if (this.isDowned) {
+            this.playerDivElem.dataset[WebHooks.Player.Dataset.DOWNED] = "has-attr";
+        } else {
+            delete this.playerDivElem.dataset[WebHooks.Player.Dataset.DOWNED];
+        }
     }
 }
 Object.freeze(VisiblePlayerStatus);

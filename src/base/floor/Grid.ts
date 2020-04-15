@@ -1,8 +1,10 @@
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
+import type { VisibleGrid } from "./VisibleGrid";
 
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
+import { WebHooks } from "../../webui/WebHooks";
 
 
 /**
@@ -94,6 +96,25 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * @override
      */
     public abstract __getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
+
+    protected __VisibleGrid_super(desc: Grid.CtorArgs<S>, domGrid: HTMLElement): void {
+        const hostElement = document.getElementById(desc.domGridHtmlIdHook);
+        if (!hostElement) {
+            throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\"`
+            + ` did not refer to an existing html element.`
+            );
+        }
+        hostElement.dataset[WebHooks.Grid.Dataset.COORD_SYS] = desc.coordSys;
+        if (!hostElement.classList.contains(WebHooks.Grid.Class.GRID)) {
+            // throw new Error(`The grid host element is missing the token`
+            // + ` \"${WebHooks.Grid.Class.GRID}\" in its class list.`
+            // );
+            hostElement.classList.add(WebHooks.Grid.Class.GRID);
+        }
+        // Remove all child elements from host and then append the new grid:
+        hostElement.childNodes.forEach((node) => hostElement.removeChild(node));
+        hostElement.appendChild(domGrid);
+    }
 
 }
 export namespace Grid {

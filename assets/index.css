@@ -1,10 +1,19 @@
 
+:root {
+    transition:
+        background-color,
+        border-color,
+        color
+        0.5s ease-in-out;
+}
+
 body {
     font:           90% Trebuchet MS;
+    color:          var(--colour-mainFg);
     text-align:     center;
-    color:          black;
-    transition:     filter 0.5s ease-in-out;
     user-select:    none;
+    -moz-user-select: none;
+    transition:     filter 0.5s ease-in-out;
 }
 
 .background {
@@ -13,7 +22,14 @@ body {
     position:   fixed;
     top:        0px;
     left:       0px;
-    z-index:    -100;
+    z-index:    -1000;
+}
+
+.fill-parent {
+    position:   absolute;
+    width:      100%;
+    height:     100%;
+    top:        0;
 }
 
 table {

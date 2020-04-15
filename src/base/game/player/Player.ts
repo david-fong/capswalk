@@ -105,6 +105,14 @@ export namespace Player {
     export class Team<S extends Coord.System> {
         public readonly id: Team.Id;
         public readonly members: ReadonlyArray<Player<S>>;
+        #teamElimOrder: number;
+        public constructor(teamId: Team.Id, members: ReadonlyArray<Player<S>>) {
+            this.id = teamId;
+            this.members = members;
+        }
+        public reset(): void {
+            this.#teamElimOrder = 0;
+        }
         /**
          * Indicates the order (relative to other teams) in which this
          * team was to have all its members downed at the same time at
@@ -112,17 +120,17 @@ export namespace Player {
          * playing as normal, but there is no going back. The game ends
          * when all teams but one have been soft-eliminated.
          *
+         * ### Semantics
+         *
          * A comparatively smaller value denotes having been soft-
-         * eliminated at an earlier point in the game. The value zero
-         * denotes _not-having-been-soft-eliminated-yet_.
+         * eliminated at an earlier point in the game. **The value zero
+         * denotes _not-having-been-soft-eliminated-yet_**.
          */
-        public softEliminationOrder: number;
-        public constructor(teamId: Team.Id, members: ReadonlyArray<Player<S>>) {
-            this.id = teamId;
-            this.members = members;
+        public get teamElimOrder(): number {
+            return this.#teamElimOrder;
         }
-        public reset(): void {
-            this.softEliminationOrder = 0;
+        public set teamElimOrder(teamElimOrder: number) {
+            this.#teamElimOrder = teamElimOrder;
         }
     }
     export namespace Team {

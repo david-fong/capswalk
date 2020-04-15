@@ -37,14 +37,14 @@ export class PlayerStatus<S extends Coord.System> {
     public set health(newHealth: Player.Health) {
         this.#health = newHealth;
         const team = this.player.team;
-        if (this.isDowned && team.softEliminationOrder === 0) {
+        if (this.isDowned && team.teamElimOrder === 0) {
             // Right before this downing event, the team has not been
             // soft-eliminated yet, but it might be now. Check it:
             if (team.members.every((player) => player.status.isDowned)) {
                 // All players are downed! The team is now soft-eliminated:
                 const numSoftEliminatedTeams
-                = team.softEliminationOrder = 1 + this.player.game.teams
-                .filter((team) => team.softEliminationOrder > 0).length;
+                = team.teamElimOrder = 1 + this.player.game.teams
+                .filter((team) => team.teamElimOrder > 0).length;
                 // Now that a team is newly-soft-eliminated, check if the
                 // game should end:
                 // TODO.design This will not work if there are artificial-only teams
