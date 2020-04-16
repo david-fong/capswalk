@@ -12,7 +12,6 @@
 
 ### High Priority
 
-1. Move stylesheets to dedicated folder and move index.html template to project root.
 1. Change the way langSeq hints are displayed: instead of being clipped to the tile size, which is would not fit long sequence strings, use a mouseover tooltip.
 1. To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 1. Rename `webui/` to `browser/`. Rationale: it's not just for UI stuff anymore (ex storage hooks).

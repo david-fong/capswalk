@@ -168,7 +168,7 @@ const webBundleConfig = BaseConfig(); {
         config.entry[entryName] = `./src/${entryName}/index.ts`;
         // config.entry[`${name}_body`] = `./src/${name}/body.html`;
         config.plugins.push(new HtmlPlugin({
-            template: "./src/base/index.ejs",
+            template: "./index.ejs",
             filename: `${entryName}/index.html`,
             //favicon: `assets/${name}-favicon.ico`,
             favicon: `assets/favicon.ico`,
