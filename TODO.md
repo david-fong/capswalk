@@ -12,6 +12,7 @@
 
 ### High Priority
 
+1. Move stylesheets to dedicated folder and move index.html template to project root.
 1. Change the way langSeq hints are displayed: instead of being clipped to the tile size, which is would not fit long sequence strings, use a mouseover tooltip.
 1. To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 1. Rename `webui/` to `browser/`. Rationale: it's not just for UI stuff anymore (ex storage hooks).
@@ -76,6 +77,9 @@ https://nodejs.org/api/esm.html#esm_enabling
 I might use [this](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) for choosing which team you want to be part of.
 
 ```text
+https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets
+
 https://developer.mozilla.org/en-US/docs/Web/API
 https://web.dev/add-manifest/
 https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
@@ -123,6 +127,7 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
 https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Backgrounds_and_borders
 https://developer.mozilla.org/en-US/docs/Web/CSS/display
 https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing
+flex playground: https://codepen.io/enxaneta/full/adLPwv/
 ```
 
 ### Handling Network Latency
@@ -137,6 +142,7 @@ https://stackoverflow.com/a/9283222/11107541
 ```text
 https://javascript.info/class-inheritance
 https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
+https://www.quirksmode.org/js/events_order.html#link4
 https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
 ```
 

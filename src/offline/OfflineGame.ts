@@ -56,7 +56,16 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
         this.reset();
         // =====================================
 
-        document.body.onkeydown = ((ev) => {
+        /* TODO.test This should be safe in a garbage-collection and
+        event-handler sense: Since the event handler is added to the
+        event-handler-list of the `.game-grid`-classed element as an
+        anonymous function, which makes it impossible to remove from
+        the list without a reference to that function. Luckily for us,
+        Grid.__VisibleGrid_super will automatically remove old grid-
+        host elements, thus allowing them to be garbage collected, and
+        the event-handler function with it. */
+        document.getElementById(gameDesc.gridHtmlIdHook)!
+        .addEventListener("keydown", (ev) => {
             // console.log(`key: ${ev.key}, code: ${ev.code},`
             // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
             // + ` charCode: ${ev.charCode}`);

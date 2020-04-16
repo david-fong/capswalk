@@ -1,10 +1,11 @@
+
 #game-grid-container {
     position:   relative;
     display:    inline-flex;
-    flex-flow:  column nowrap;
-    align-items: center;
-    justify-content: center;
     height:     100vh;
+    flex-flow:  column nowrap;
+    align-content: center;
+    justify-content: center;
 }
 .game-grid {
     /* min-width:  calc(); */
@@ -12,38 +13,65 @@
     background-color: var(--colour-mainBg);
 }
 .game-grid__spotlight {
+    z-index:    -100;
     background-image: radial-gradient(
         ellipse closest-side at center,
-        white, black
+        transparent, var(--colour-mainBg),
     );
     /* TODO.design how to set size of box + z-index */
 }
 
 
 .tile, .tile > * {
-    padding:    0px;
-    overflow-x: hidden;
-    overflow-y: hidden;
     box-sizing: border-box;
+    padding:    0px;
+    /* beware that some values for width seem to
+    behave with poor symmetry in browsers */
+    border: 0.07em solid transparent;
+    border-radius: 16%;
 }
 .tile {
     z-index:    0;
     position:   relative;
-    border: 0.5px solid var(--colour-mainBg);
-    border-radius: 18%;
+    background-color: transparent;
 }
-.tile * {
-    border: 1px solid var(--colour-tileBd);
-    border-radius: 16%;
+.tile[data-health] .tile__char {
+    border-color: var(--colour-tileBd);
+    background-color: var(--colour-health);
 }
-.tile[data-health] * {
-    border-color: transparent;
+
+.tile .tile__char {
+    z-index: 2;
+    background-color: var(--colour-tileBg);
+}
+.tile .tile__seq {
+    z-index:    1;
+    position:   absolute;
+    display:    inline-block;
+    justify-self: center;
+    padding:    0 0.6em;
+    bottom:     125%;
+    left:       50%;
+    height:     100%;
+    visibility:    none;
+    opacity:    0.0;
+    /* transition: opacity 0.2s ease-in-out; */
+}
+.tile:hover .tile__seq {
+    display: initial;
+    opacity:    1.0;
 }
 
 
 .tile .player {
-    z-index: 10;
+    z-index:    10;
     border-color: var(--colour-tileBd);
+}
+.player__downed-overlay {
+    z-index:    5;
+}
+.player[data-downed="no"] > .player__downed-overlay {
+    visibility: hidden;
 }
 .player[data-face="me"] {
     background-color: var(--colour-pFaceMe);
@@ -60,43 +88,17 @@
 .player[data-face="opponent"][data-downed="team"] {
     background-color: var(--colour-pFaceImmortalOpponent);
 }
-.player__downed-overlay {
-    z-index: 5;
-}
-.player[data-downed="no"] > .player__downed-overlay {
-    visibility: hidden;
-}
-
-.tile__char {
-    z-index: 2;
-    background-color: var(--colour-tileBg);
-}
-.tile__seq {
-    z-index:    20;
-    position:   absolute;
-    top:        -50%;
-    left:       50%;
-    visibility: none;
-    opacity:    0.0;
-    /* transition: opacity 0.2s ease-in-out; */
-}
-.tile:hover .tile__seq {
-    visibility: visible;
-    opacity:    1.0;
-}
 
 
 .game-grid[data-coord-sys="EUCLID2"] .tile {
     width:      20px;
     height:     20px;
 }
-.game-grid[data-coord-sys="EUCLID2"] .tile > * {
-    --nothing:  "yet";
-}
+/* .game-grid[data-coord-sys="EUCLID2"] .tile > * {
+} */
 
-.game-grid[data-coord-sys="BEEHIVE"] .tile {
-    --nothing:  "yet";
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path */
+/* .game-grid[data-coord-sys="BEEHIVE"] .tile {
 }
 .game-grid[data-coord-sys="BEEHIVE"] .tile > * {
-    --nothing:  "yet";
-}
+} */

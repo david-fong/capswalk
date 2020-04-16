@@ -350,7 +350,7 @@ export namespace Euclid2 {
                 for (const row of this.grid) {
                     const rowElem = tBody.insertRow();
                     for (const tile of row) {
-                        rowElem.appendChild(tile.tileCellElem);
+                        rowElem.appendChild(tile.tileElem);
                     }
                 }
                 this.__VisibleGrid_super(desc, domGrid);

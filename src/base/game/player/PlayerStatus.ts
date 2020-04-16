@@ -38,7 +38,10 @@ export class PlayerStatus<S extends Coord.System> {
         return this.#health;
     }
     public set health(newHealth: Player.Health) {
+        const oldIsDowned = this.isDowned;
         this.#health = newHealth;
+
+        if (oldIsDowned) return;
         const team  = this.player.team;
         const teams = this.player.game.teams;
         if (this.isDowned && !(this.noCheckGameOver) && team.elimOrder === 0) {

@@ -27,9 +27,9 @@ export { Coord } from "./Tile";
  */
 export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
-    public  readonly tileCellElem:      HTMLTableCellElement;
-    private readonly langCharDivElem:   HTMLDivElement;
-    private readonly langSeqDivElem:    HTMLDivElement;
+    public  readonly tileElem:      HTMLTableCellElement;
+    private readonly langCharElem:  HTMLDivElement;
+    private readonly langSeqElem:   HTMLDivElement;
 
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
@@ -41,14 +41,14 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
                 cDiv.className = WebHooks.Tile.Class.LANG_CHAR;
                 cDiv.classList.add(WebHooks.General.Class.FILL_PARENT);
                 tCell.appendChild(cDiv);
-                this.langCharDivElem = cDiv;
+                this.langCharElem = cDiv;
             } {
                 const sDiv = document.createElement("div");
                 sDiv.className = WebHooks.Tile.Class.LANG_SEQ;
                 tCell.appendChild(sDiv);
-                this.langSeqDivElem = sDiv;
+                this.langSeqElem = sDiv;
             }
-            this.tileCellElem = tCell;
+            this.tileElem = tCell;
         }
     }
 
@@ -57,7 +57,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      * @override
      */
     public visualBell(): void {
-        this.tileCellElem; // TODO.impl Use an animation to flash tile element?
+        this.tileElem; // TODO.impl Use an animation to flash tile element?
     }
 
 
@@ -73,7 +73,11 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public set freeHealth(newHealth: number) {
         super.freeHealth = newHealth;
-        this.tileCellElem.dataset[WebHooks.Tile.Dataset.HEALTH] = newHealth.toString();
+        if (this.freeHealth) {
+            this.tileElem.dataset[WebHooks.Tile.Dataset.HEALTH] = newHealth.toString();
+        } else {
+            delete this.tileElem.dataset[WebHooks.Tile.Dataset.HEALTH];
+        }
     }
 
     /**
@@ -81,8 +85,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public setLangCharSeqPair(charSeqPair: Lang.CharSeqPair): void {
         super.setLangCharSeqPair(charSeqPair);
-        this.langCharDivElem.innerText = this.langChar;
-        this.langSeqDivElem.innerText  = this.langSeq;
+        this.langCharElem.innerText = this.langChar;
+        this.langSeqElem.innerText  = this.langSeq;
     }
 
 }

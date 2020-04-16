@@ -252,6 +252,7 @@ const testBundleConfig = BaseConfig(); {
 
 module.exports = [
     webBundleConfig,
-    nodeBundleConfig,
-    testBundleConfig,
+    // TODO.build Uncomment these pack configs when we get to using them.
+    /* nodeBundleConfig,
+    testBundleConfig, */
 ];

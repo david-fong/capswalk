@@ -1,7 +1,4 @@
 import type { Coord, Tile } from "floor/Tile";
-import type { Euclid2 } from "./impl/Euclid2";
-import type { Beehive } from "./impl/Beehive";
-
 import { Grid } from "floor/Grid";
 
 
@@ -19,7 +16,12 @@ import { Grid } from "floor/Grid";
  * not use
  */
 export interface VisibleGrid<S extends Coord.System> extends Grid<S> {
-    // So far, there's no extra behaviour for this extension.
+    // This is just a reminder to the developer that such a function
+    // exists and is an important part of the architecture. Since
+    // VisibleGrid can't be a class (no multiple inheritance), this
+    // part of a VisibleGrid's constructor sequence is implemented
+    // in Grid.
+    __VisibleGrid_super(desc: Grid.CtorArgs<S>, domGrid: HTMLElement): void;
 }
 
 

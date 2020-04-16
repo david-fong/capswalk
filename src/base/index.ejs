@@ -26,7 +26,7 @@
                     event.preventDefault();
                     return false;
                 }
-            });
+            }, { capture: false, });
             // window.onbeforeunload = (event) => '';
         </script>
         <%= htmlWebpackPlugin.tags.bodyTags.join("\n        ") %>

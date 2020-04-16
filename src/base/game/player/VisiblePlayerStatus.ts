@@ -1,7 +1,7 @@
 import { WebHooks } from "../../../webui/WebHooks";
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
-import type { OperatorPlayer } from "./OperatorPlayer";
+import { OperatorPlayer } from "./OperatorPlayer";
 import { PlayerStatus } from "./PlayerStatus";
 import { Team } from "game/player/Team";
 
@@ -9,11 +9,6 @@ import { Team } from "game/player/Team";
 // TODO.impl make the overridden setters modify the HTML elements to
 // visually indicate the changes.
 export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
-
-    /**
-     * @override
-     */
-    declare protected readonly player: OperatorPlayer<S>;
 
     public readonly playerDivElem: HTMLDivElement;
 
@@ -24,12 +19,20 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
             // TODO.design create a spotlight mask using the below CSS properties:
             // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
             const pDiv = document.createElement("div");
-            const operator = this.player.game.operator;
             pDiv.classList.add(
                 WebHooks.Player.Class.BASE,
                 WebHooks.General.Class.FILL_PARENT,
             );
             this.playerDivElem = pDiv;
+        } {
+            if (this.player instanceof OperatorPlayer) {
+                const spotDiv = document.createElement("div");
+                spotDiv.classList.add(
+                    WebHooks.Grid.Class.SPOTLIGHT,
+                    WebHooks.General.Class.FILL_PARENT,
+                );
+                this.playerDivElem.appendChild(spotDiv);
+            }
         } {
             // Setup downedOverlay element:
             const doDiv = document.createElement("div");
@@ -47,17 +50,20 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
     public set health(newHealth: Player.Health) {
+        const oldIsDowned = this.isDowned;
         super.health = newHealth;
 
-        // CSS integration for Player.isDowned rendering.
-        const dataDowned = WebHooks.Player.Dataset.DOWNED;
-        if (this.isDowned) {
-            if (this.player.team.elimOrder) {
-                this.playerDivElem.dataset[dataDowned] = "team";
-            } else {
-                this.playerDivElem.dataset[dataDowned] = "self";
-            }
-        } else {this.playerDivElem.dataset[dataDowned] = "no"; }
+        if (oldIsDowned !== this.isDowned) {
+            // CSS integration for Player.isDowned rendering.
+            const dataDowned = WebHooks.Player.Dataset.DOWNED;
+            if (this.isDowned) {
+                if (this.player.team.elimOrder) {
+                    this.playerDivElem.dataset[dataDowned] = "team";
+                } else {
+                    this.playerDivElem.dataset[dataDowned] = "self";
+                }
+            } else {this.playerDivElem.dataset[dataDowned] = "no"; }
+        }
     }
 
 }
