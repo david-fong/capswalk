@@ -34,13 +34,10 @@
     color:      white;
     background-color: rgba(0, 0, 0, 0.5);
     border-color: white;
-    display:    none;
-    opacity:    0.0;
-    /* transition: opacity 0.2s ease-in-out; */
+    visibility: hidden;
 }
 .tile:hover .tile__seq {
-    display:    initial;
-    opacity:    1.0;
+    visibility: visible;
 }
 .tile:hover {
     color:      transparent;

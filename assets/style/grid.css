@@ -31,20 +31,21 @@
 }
 
 .game-grid__kbd-dc-icon {
+    pointer-events: none;
     z-index:    5;
     position:   absolute;
     color:      var(--colour-tileBd);
-    display:    none;
+    visibility: hidden;
 }
 .game-grid:focus {
-    cursor:     help;
+    /* cursor:     help; */
     outline:    none;
 }
 .game-grid:not(:focus) .game-grid__impl-body {
     filter:     brightness(70%);
 }
 .game-grid:not(:focus) .game-grid__kbd-dc-icon {
-    display:    initial;
+    visibility: visible;
 }
 
 
