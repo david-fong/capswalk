@@ -38,7 +38,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
      *
      * @param gameType -
-     * @param tileClass -
+     * @param impl -
      * @param desc -
      */
     public constructor(
@@ -110,8 +110,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             = (this.gameType === Game.Type.CLIENT)
             // The client receives these descriptors already finalized / cleaned by the server.
             ? gameDesc.playerDescs as Game.CtorArgs<Game.Type.CLIENT,S>["playerDescs"]
-            : Player.CtorArgs.finalize(gameDesc.playerDescs, gameDesc.languageName)
-            ;
+            : Player.CtorArgs.finalize(gameDesc.playerDescs, gameDesc.languageName);
+
         return playerDescs.map((playerDesc, playerIndex) => {
             if (playerDesc.familyId === Player.Family.HUMAN) {
                 return (playerIndex === gameDesc.operatorIndex)
@@ -135,7 +135,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         }
         this.players.forEach((player) => {
             player.__abstractNotifyThatGameStatusBecamePlaying();
-        })
+        });
         this.__abstractStatusBecomePlaying();
         this.#status = Game.Status.PLAYING;
         // Make sure focus goes back to the grid element so that it
@@ -150,7 +150,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         }
         this.players.forEach((player) => {
             player.__abstractNotifyThatGameStatusBecamePaused();
-        })
+        });
         this.__abstractStatusBecomePaused();
         this.#status = Game.Status.PAUSED;
     }
@@ -160,7 +160,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         }
         this.players.forEach((player) => {
             player.__abstractNotifyThatGameStatusBecameOver();
-        })
+        });
         this.__abstractStatusBecomeOver();
         this.#status = Game.Status.OVER;
     }

@@ -155,6 +155,7 @@ export namespace Player {
          * Squashes teamId fields to be suitable for array indices.
          *
          * @param playerDescs -
+         * @param langName -
          */
         export const finalize = (
             playerDescs: ReadonlyArray<CtorArgs.PreIdAssignment>,

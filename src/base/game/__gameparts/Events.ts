@@ -146,7 +146,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         this.recordEvent(desc);
         this.executeTileModificationsEvent(desc.dest, player !== this.operator);
         desc.tilesWithHealthUpdates!.forEach((desc) => {
-            this.executeTileModificationsEvent(desc)
+            this.executeTileModificationsEvent(desc);
         });
 
         if (clientEventLag > 1) {

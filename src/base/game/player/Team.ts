@@ -32,6 +32,7 @@ export class Team<S extends Coord.System> {
     }
 
     /**
+     * @returns
      * Indicates the order (relative to other teams) in which this
      * team was to have all its members downed at the same time at
      * least once. Once a team is soft-eliminated, they can continue

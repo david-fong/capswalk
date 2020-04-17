@@ -70,6 +70,8 @@ export namespace VisiblePlayerStatus {
     /**
      * This must be called once after all teams are constructed.
      * @param teams -
+     * @param operator
+     * A reference to the operator player. Used to determine colouring.
      */
     export function colourizeTeamMembers<S extends Coord.System>(
         teams: TU.RoArr<Team<S>>,
