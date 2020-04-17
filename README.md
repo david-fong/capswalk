@@ -1,7 +1,7 @@
 
 # ⌨🐍 SnaKey
 
-There's nothing to show yet! But, you can try [**`an older, working version` 👈**](https://david-fong.github.io/SnaKey-JS/ "*boop*")
+[**`Try it!` 👈**](https://david-fong.github.io/SnaKey-NTS/)
 
 > I want you- just for a moment- to think back to your most challenging learning experience- a time you stepped into waters that you were completely unfamiliar with: Maybe it was to learn a sport, an instrument, a language, or how to cook something. I think we can all agree that learning is hard. And that's what makes the process of doing it frustrating. I can vouch for that by this entire project. But I can also say from other past experiences that the difficulty in tackling something new and unfamiliar is what makes its eventual fruit so sweet to enjoy.
 >
