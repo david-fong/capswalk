@@ -29,7 +29,6 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
                 const spotDiv = document.createElement("div");
                 spotDiv.classList.add(
                     WebHooks.Grid.Class.SPOTLIGHT,
-                    WebHooks.General.Class.FILL_PARENT,
                 );
                 this.playerDivElem.appendChild(spotDiv);
             }

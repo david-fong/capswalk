@@ -13,6 +13,11 @@
         0.5s ease-in-out;
 }
 
+/* If anything goes into fullscreen mode: */
+::backdrop {
+    background-color: var(--colour-mainBg);
+}
+
 body {
     font-family:    "Trebuchet MS", "Lucida Sans Unicode";
     font-weight:    bold;

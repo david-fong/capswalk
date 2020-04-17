@@ -1,31 +1,19 @@
 
-/*
-https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
-https://www.w3schools.com/cssref/pr_background-blend-mode.asp
- */
-.game-grid__spotlight {
-    z-index:    -100;
-    background-image: radial-gradient(
-        ellipse closest-side at center,
-        transparent, var(--colour-mainBg),
-    );
-    /* TODO.design how to set size of box + z-index */
-}
-
-
 .tile {
-    z-index:    0;
+    /* NO NOT give this a z-index property. If you do,
+    each tile will start its own stacking context, which
+    breaks the spotlight display. */
     position:   relative;
     display:    inline-flex;
     justify-content: center;
     background-color: transparent;
 }
-.tile > * {
+.tile * {
+    /* No pointer events for Tile children! */
     pointer-events: none;
+}
+.tile > * {
     box-sizing: border-box;
-    /* beware that some values for width seem to
-    behave with poor symmetry in browsers. Change
-    The HTML to use a div with grid */
     border: 0.14em solid transparent;
     border-radius: 16%;
 }

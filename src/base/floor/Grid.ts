@@ -106,24 +106,37 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * @param gridElem -
      */
     public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridElem: HTMLElement): void {
+        const WHG = WebHooks.Grid;
+        gridElem.classList.add(WHG.Class.IMPL_BODY);
         const hostElem = document.getElementById(desc.domGridHtmlIdHook);
         if (!hostElem) {
             throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\"`
             + ` did not refer to an existing html element.`);
         }
-        hostElem.dataset[WebHooks.Grid.Dataset.COORD_SYS] = desc.coordSys;
-        if (!hostElem.classList.contains(WebHooks.Grid.Class.GRID)) {
+        hostElem.dataset[WHG.Dataset.COORD_SYS] = desc.coordSys;
+        if (!hostElem.classList.contains(WHG.Class.GRID)) {
             // throw new Error(`The grid host element is missing the token`
-            // + ` \"${WebHooks.Grid.Class.GRID}\" in its class list.`
+            // + ` \"${WHG.Class.GRID}\" in its class list.`
             // );
-            hostElem.classList.add(WebHooks.Grid.Class.GRID);
+            hostElem.classList.add(WHG.Class.GRID);
+        } {
+            // Add a "keyboard-disconnected" icon if not added already:
+            let kbdDcIcon: HTMLElement | null = hostElem
+                .querySelector(`:scope > .${WHG.Class.KBD_DC_ICON}`);
+            if (!kbdDcIcon) {
+                // TODO.impl Add an <svg> with icon instead please.
+                kbdDcIcon = document.createElement("div");
+                kbdDcIcon.classList.add(WHG.Class.KBD_DC_ICON);
+                kbdDcIcon.innerText = "(click grid to continue typing)";
+                hostElem.appendChild(kbdDcIcon);
+            }
         }
         if (hostElem.tabIndex !== 0) {
             throw new Error("The DOM grid's host must have a tabIndex of zero!"
-            + " I want this specified in the HTML so it is clear from the HTML.");
+            + " I want this done directly in the HTML.");
         }
         // Remove all child elements from host and then append the new grid:
-        hostElem.childNodes.forEach((node) => hostElem.removeChild(node));
+        hostElem.querySelectorAll(`.${WHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
         hostElem.appendChild(gridElem);
         (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).hostElem = hostElem;
     }

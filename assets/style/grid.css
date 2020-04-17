@@ -10,16 +10,55 @@
 #game-grid-container > * {
 }
 .game-grid {
-    /* min-width:  calc(); */
+    z-index:    0;
+    position:   relative;
     padding:    4px;
-    border:     5px double white;
-    border-radius: 14px;
+    border:     5px double var(--colour-tileBd);
+    border-radius: 15px;
     color:      var(--colour-tileFg);
+
+    display:    inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* To hide the spotlight off the edges */
+    overflow:   hidden hidden;
 }
-.game-grid:not(focus) {
-    /* TODO.design perhaps overlay an icon of a disconnected keyboard? */
+
+
+.game-grid__impl-body {
+    position:   relative;
 }
-.game-grid > :not(:first-child) {
-    /* This should never happen. */
-    background: red;
+
+.game-grid__kbd-dc-icon {
+    z-index:    5;
+    position:   absolute;
+    color:      var(--colour-tileBd);
+    display:    none;
+}
+.game-grid:focus {
+    cursor:     help;
+    outline:    none;
+}
+.game-grid:not(:focus) .game-grid__impl-body {
+    filter:     brightness(70%);
+}
+.game-grid:not(:focus) .game-grid__kbd-dc-icon {
+    display:    initial;
+}
+
+
+/*
+Links that could be helpful for creating different implementations:
+https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
+https://www.w3schools.com/cssref/pr_background-blend-mode.asp
+ */
+.game-grid__spotlight {
+    z-index:    10;
+    background-image: radial-gradient(
+        farthest-side,
+        transparent 20%, var(--colour-mainBg)
+    );
+    padding:    1500%;
+    border:     100vmax solid var(--colour-mainBg);
 }

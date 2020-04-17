@@ -40,7 +40,9 @@ export namespace WebHooks {
         }),
         Class: Object.freeze(<const>{
             GRID:       "game-grid",
+            IMPL_BODY:  "game-grid__impl-body",
             SPOTLIGHT:  "game-grid__spotlight",
+            KBD_DC_ICON:"game-grid__kbd-dc-icon",
         }),
         Dataset: Object.freeze(<const>{
             /**

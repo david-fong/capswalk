@@ -63,8 +63,7 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
         Grid.__VisibleGrid_super will automatically remove old grid-
         host elements, thus allowing them to be garbage collected, and
         the event-handler function with it. */
-        document.getElementById(gameDesc.gridHtmlIdHook)!
-        .addEventListener("keydown", (ev): boolean => {
+        this.grid.hostElem.addEventListener("keydown", (ev): boolean => {
             // console.log(`key: ${ev.key}, code: ${ev.code},`
             // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
             // + ` charCode: ${ev.charCode}`);

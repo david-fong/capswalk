@@ -36,3 +36,8 @@ console.log(game);
 console.log(game.lang.simpleView());
 
 game.statusBecomePlaying();
+
+// window.onerror = (msg, url, lineNum) => {
+//     alert(`Error message: ${msg}\nURL: ${url}\nLine Number: ${lineNum}`);
+//     return true;
+// }
