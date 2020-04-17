@@ -1,0 +1,25 @@
+
+#game-grid-container {
+    position:   relative;
+    display:    inline-flex;
+    height:     100vh;
+    flex-flow:  column nowrap;
+    align-content: center;
+    justify-content: center;
+}
+#game-grid-container > * {
+}
+.game-grid {
+    /* min-width:  calc(); */
+    padding:    4px;
+    border:     5px double white;
+    border-radius: 14px;
+    color:      var(--colour-tileFg);
+}
+.game-grid:not(focus) {
+    /* TODO.design perhaps overlay an icon of a disconnected keyboard? */
+}
+.game-grid > :not(:first-child) {
+    /* This should never happen. */
+    background: red;
+}

@@ -233,7 +233,7 @@ export namespace Beehive {
         };
 
         export class Visible extends Grid implements VisibleGrid<S> {
-            public readonly domGridHost: HTMLElement;
+            public readonly hostElem: HTMLElement;
             public constructor(desc: AbstractGrid.CtorArgs<S>) {
                 super(desc);
                 const domGrid: HTMLElement = undefined!;

@@ -1,16 +1,16 @@
 :root {
-    --colour-snakey-tileFg: rgb(228, 234, 236);
-    --colour-snakey-tileBg: rgb(38, 140, 180);
-    --colour-snakey-tileBd: white;
-    --colour-snakey-health: rgb(78, 223, 97);
+    --colour-snakey-tileFg: #aebde2;
+    --colour-snakey-tileBg: #2e3b48;
+    --colour-snakey-tileBd: #ffffff;
+    --colour-snakey-health: #4edf8f;
 
-    --colour-snakey-mainFg: rgb(233, 238, 243);
-    --colour-snakey-mainBg: rgb(53, 87, 139);
+    --colour-snakey-mainFg: #e9eef3;
+    --colour-snakey-mainBg: #3f5e77;
 
-    --colour-snakey-pFaceMe: rgb(72, 223, 243);
-    --colour-snakey-pFaceTeammate: rgb(245, 219, 75);
-    --colour-snakey-pFaceImmortalTeammate: rgb(245, 219, 75);
+    --colour-snakey-pFaceMe: #48dff3;
+    --colour-snakey-pFaceTeammate: #f8df50;
+    --colour-snakey-pFaceImmortalTeammate: #f8df50;
 
-    --colour-snakey-pFaceOpponent: rgb(226, 63, 163);
-    --colour-snakey-pFaceImmortalOpponent: rgb(226, 63, 163);
+    --colour-snakey-pFaceOpponent: #e23fa3;
+    --colour-snakey-pFaceImmortalOpponent: #e23fa3;
 }

@@ -1,10 +1,10 @@
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
-import type { VisibleGrid } from "./VisibleGrid";
 
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
 import { WebHooks } from "../../webui/WebHooks";
+import { VisibleGrid } from 'floor/VisibleGrid';
 
 
 /**
@@ -97,7 +97,15 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      */
     public abstract __getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
 
-    public __VisibleGrid_super(desc: Grid.CtorArgs<S>, domGrid: HTMLElement): void {
+    /**
+     * Note: I would rather have this implementation go under the
+     * `VisibleGrid` class, but I don't want to get into mixins as of
+     * now to get around no-multiple-inheritance.
+     *
+     * @param desc -
+     * @param gridElem -
+     */
+    public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridElem: HTMLElement): void {
         const hostElem = document.getElementById(desc.domGridHtmlIdHook);
         if (!hostElem) {
             throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\"`
@@ -109,12 +117,15 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
             // + ` \"${WebHooks.Grid.Class.GRID}\" in its class list.`
             // );
             hostElem.classList.add(WebHooks.Grid.Class.GRID);
-            hostElem.tabIndex = 0;
-            hostElem.focus();
+        }
+        if (hostElem.tabIndex !== 0) {
+            throw new Error("The DOM grid's host must have a tabIndex of zero!"
+            + " I want this specified in the HTML so it is clear from the HTML.");
         }
         // Remove all child elements from host and then append the new grid:
         hostElem.childNodes.forEach((node) => hostElem.removeChild(node));
-        hostElem.appendChild(domGrid);
+        hostElem.appendChild(gridElem);
+        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).hostElem = hostElem;
     }
 
 }

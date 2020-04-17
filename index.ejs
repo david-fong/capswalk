@@ -16,17 +16,10 @@
     <body style='margin:0;'>
         <div id='background'></div>
         <div id="game-grid-container">
-            <div id='game-grid'></div>
+            <div id='game-grid' class='unselectable' tabindex='0'></div>
         </div>
 
         <script>
-            // Disable scroll-down via spacebar:
-            window.addEventListener('keydown', (event) => {
-                if (event.keyCode === 32 && event.target === document.body) {
-                    event.preventDefault();
-                    return false;
-                }
-            }, { capture: false, });
             // window.onbeforeunload = (event) => '';
         </script>
         <%= htmlWebpackPlugin.tags.bodyTags.join("\n        ") %>

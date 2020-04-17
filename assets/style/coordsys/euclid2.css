@@ -1,0 +1,13 @@
+
+.game-grid[data-coord-sys="EUCLID2"] > :first-child {
+    --track-size: minmax(27px, 1fr);
+    display:    grid;
+    grid-template-columns:
+        repeat(var(--euclid2-grid-width), var(--track-size));
+    grid-auto-rows: var(--track-size);
+}
+.game-grid[data-coord-sys="EUCLID2"] .tile {
+    margin:     5%;
+}
+/* .game-grid[data-coord-sys="EUCLID2"] .tile > * {
+} */

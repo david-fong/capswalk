@@ -180,7 +180,7 @@ export namespace Euclid2 {
         public constructor(desc: AbstractGrid.CtorArgs<S>) {
             super(desc);
 
-            const grid: Array<ReadonlyArray<Tile<S>>> = [];
+            const grid: Array<TU.RoArr<Tile<S>>> = [];
             for (let row = 0; row < this.dimensions.height; row++) {
                 const newRow: Array<Tile<S>> = [];
                 for (let col = 0; col < this.dimensions.width; col++) {
@@ -337,6 +337,7 @@ export namespace Euclid2 {
         };
 
         export class Visible extends Grid implements VisibleGrid<S> {
+            public readonly hostElem: HTMLElement;
 
             /**
              * @override
@@ -345,15 +346,15 @@ export namespace Euclid2 {
 
             public constructor(desc: AbstractGrid.CtorArgs<S>) {
                 super(desc);
-                const domGrid = document.createElement("table");
-                const tBody = domGrid.createTBody();
+                const gridElem = document.createElement("div");
+                gridElem.style.setProperty("--euclid2-grid-width",  this.dimensions.width.toString());
+                //gridElem.style.setProperty("--euclid2-grid-height", this.dimensions.height.toString());
                 for (const row of this.grid) {
-                    const rowElem = tBody.insertRow();
                     for (const tile of row) {
-                        rowElem.appendChild(tile.tileElem);
+                        gridElem.appendChild(tile.tileElem);
                     }
                 }
-                this.__VisibleGrid_super(desc, domGrid);
+                this.__VisibleGrid_super(desc, gridElem);
             }
         }
     }

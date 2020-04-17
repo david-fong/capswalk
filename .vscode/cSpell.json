@@ -32,6 +32,7 @@
         "desc", "descs",
         "dests",
         "elem",
+        "minmax",
         "nsps",
         "retval",
         "refs",

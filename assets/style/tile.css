@@ -1,17 +1,8 @@
 
-#game-grid-container {
-    position:   relative;
-    display:    inline-flex;
-    height:     100vh;
-    flex-flow:  column nowrap;
-    align-content: center;
-    justify-content: center;
-}
-.game-grid {
-    /* min-width:  calc(); */
-    color:      var(--colour-tileFg);
-    background-color: var(--colour-mainBg);
-}
+/*
+https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
+https://www.w3schools.com/cssref/pr_background-blend-mode.asp
+ */
 .game-grid__spotlight {
     z-index:    -100;
     background-image: radial-gradient(
@@ -22,83 +13,47 @@
 }
 
 
-.tile, .tile > * {
-    box-sizing: border-box;
-    padding:    0px;
-    /* beware that some values for width seem to
-    behave with poor symmetry in browsers */
-    border: 0.07em solid transparent;
-    border-radius: 16%;
-}
 .tile {
     z-index:    0;
     position:   relative;
+    display:    inline-flex;
+    justify-content: center;
     background-color: transparent;
 }
-.tile[data-health] .tile__char {
-    border-color: var(--colour-tileBd);
-    background-color: var(--colour-health);
+.tile > * {
+    pointer-events: none;
+    box-sizing: border-box;
+    /* beware that some values for width seem to
+    behave with poor symmetry in browsers. Change
+    The HTML to use a div with grid */
+    border: 0.14em solid transparent;
+    border-radius: 16%;
 }
-
-.tile .tile__char {
-    z-index: 2;
+.tile__char {
     background-color: var(--colour-tileBg);
 }
-.tile .tile__seq {
-    z-index:    1;
+.tile[data-health] .tile__char {
+    border-color:     var(--colour-tileBd);
+    background-color: var(--colour-health);
+}
+.tile__seq {
+    z-index:    5;
     position:   absolute;
-    display:    inline-block;
-    justify-self: center;
-    padding:    0 0.6em;
-    bottom:     125%;
-    left:       50%;
+    padding:    0ch  0.4ch;
+    min-width:  100%;
+    bottom:     0%;
     height:     100%;
-    visibility:    none;
+    color:      white;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: white;
+    display:    none;
     opacity:    0.0;
     /* transition: opacity 0.2s ease-in-out; */
 }
 .tile:hover .tile__seq {
-    display: initial;
+    display:    initial;
     opacity:    1.0;
 }
-
-
-.tile .player {
-    z-index:    10;
-    border-color: var(--colour-tileBd);
+.tile:hover {
+    color:      transparent;
 }
-.player__downed-overlay {
-    z-index:    5;
-}
-.player[data-downed="no"] > .player__downed-overlay {
-    visibility: hidden;
-}
-.player[data-face="me"] {
-    background-color: var(--colour-pFaceMe);
-}
-.player[data-face="teammate"] {
-    background-color: var(--colour-pFaceTeammate);
-}
-.player[data-face="opponent"] {
-    background-color: var(--colour-pFaceOpponent);
-}
-.player[data-face="teammate"][data-downed="team"] {
-    background-color: var(--colour-pFaceImmortalTeammate);
-}
-.player[data-face="opponent"][data-downed="team"] {
-    background-color: var(--colour-pFaceImmortalOpponent);
-}
-
-
-.game-grid[data-coord-sys="EUCLID2"] .tile {
-    width:      20px;
-    height:     20px;
-}
-/* .game-grid[data-coord-sys="EUCLID2"] .tile > * {
-} */
-
-/* https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path */
-/* .game-grid[data-coord-sys="BEEHIVE"] .tile {
-}
-.game-grid[data-coord-sys="BEEHIVE"] .tile > * {
-} */

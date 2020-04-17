@@ -1,0 +1,26 @@
+
+.player {
+    z-index:    2;
+    border-color: var(--colour-tileBd);
+}
+.player__downed-overlay {
+    z-index:    5;
+}
+.player[data-downed="no"] > .player__downed-overlay {
+    visibility: hidden;
+}
+.player[data-face="me"] {
+    background-color: var(--colour-pFaceMe);
+}
+.player[data-face="teammate"] {
+    background-color: var(--colour-pFaceTeammate);
+}
+.player[data-face="opponent"] {
+    background-color: var(--colour-pFaceOpponent);
+}
+.player[data-face="teammate"][data-downed="team"] {
+    background-color: var(--colour-pFaceImmortalTeammate);
+}
+.player[data-face="opponent"][data-downed="team"] {
+    background-color: var(--colour-pFaceImmortalOpponent);
+}

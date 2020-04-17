@@ -32,7 +32,6 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
     }
 
 
-
     /**
      * _Calls reset recursively for this entire composition._
      *
@@ -65,11 +64,17 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
         host elements, thus allowing them to be garbage collected, and
         the event-handler function with it. */
         document.getElementById(gameDesc.gridHtmlIdHook)!
-        .addEventListener("keydown", (ev) => {
+        .addEventListener("keydown", (ev): boolean => {
             // console.log(`key: ${ev.key}, code: ${ev.code},`
             // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
             // + ` charCode: ${ev.charCode}`);
             this.operator.processKeyboardInput(ev);
+            // Disable scroll-down via spacebar:
+            if (ev.keyCode === 32) {
+                ev.preventDefault();
+                return false;
+            }
+            return true;
         });
     }
 
@@ -87,16 +92,19 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
         return ArtificialPlayer.of(this, desc);
     }
 
-
-
+    /**
+     * @override
+     */
     public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
         return setTimeout(callback, millis, args);
     }
 
+    /**
+     * @override
+     */
     public cancelTimeout(handle: number): void {
         clearTimeout(handle);
     }
-
 }
 Object.freeze(OfflineGame);
 Object.freeze(OfflineGame.prototype);

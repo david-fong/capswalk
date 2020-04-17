@@ -1,5 +1,9 @@
-@import "./tile.css";
+@import "./utils.css";
 @import "./colour/index.css";
+@import "./coordsys/index.css";
+@import "./tile.css";
+@import "./grid.css";
+@import "./player.css";
 
 :root {
     transition:
@@ -10,11 +14,10 @@
 }
 
 body {
-    font:           90% Trebuchet MS;
+    font-family:    "Trebuchet MS", "Lucida Sans Unicode";
+    font-weight:    bold;
     color:          var(--colour-mainFg);
     text-align:     center;
-    user-select:    none;
-    -moz-user-select: none;
     transition:     filter 0.5s ease-in-out;
 }
 
@@ -23,13 +26,6 @@ body {
     position:   fixed;
     top: 0; right: 0; bottom: 0; left: 0;
     background-color: var(--colour-mainBg);
-}
-
-.fill-parent {
-    position:   absolute;
-    top: 0; right: 0; bottom: 0; left: 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
 }
 
 table {

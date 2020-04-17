@@ -138,6 +138,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         })
         this.__abstractStatusBecomePlaying();
         this.#status = Game.Status.PLAYING;
+        // Make sure focus goes back to the grid element so that it
+        // can pick up user input as keydown events:
+        if ((this.grid as VisibleGrid<S>).hostElem) {
+            (this.grid as VisibleGrid<S>).hostElem.focus();
+        }
     }
     public statusBecomePaused(): void {
         if (this.status !== Game.Status.PLAYING) {

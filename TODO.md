@@ -12,6 +12,8 @@
 
 ### High Priority
 
+1. Make and hook up lang registry (initialize in PostInit, define under Lang).
+1. https://github.com/danklammer/bytesize-icons
 1. Change the way langSeq hints are displayed: instead of being clipped to the tile size, which is would not fit long sequence strings, use a mouseover tooltip.
 1. To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 1. Rename `webui/` to `browser/`. Rationale: it's not just for UI stuff anymore (ex storage hooks).
@@ -120,6 +122,7 @@ https://stackoverflow.com/a/38129612/11107541
 ### CSS
 
 ```text
+styling east-asian fonts: https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-east-asian
 https://stackoverflow.com/a/45802847/11107541
 https://devdocs.io/css/clip-path
 https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
