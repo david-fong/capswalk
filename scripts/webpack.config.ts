@@ -173,6 +173,7 @@ const webBundleConfig = BaseConfig(); {
             //favicon: `assets/${name}-favicon.ico`,
             favicon: `assets/favicon.ico`,
             base: "../..", // must play nice with path configs.
+            scriptLoading: "defer",
             inject: false, // (I specify where each injection goes in the template).
             chunks: [
                 entryName,
@@ -188,6 +189,7 @@ const webBundleConfig = BaseConfig(); {
                     files: assets,
                     options
                 },
+                // Custom HTML templates for index.ejs:
                 "extraScripts": (entryName === "client")
                     ? [ "/socket.io/socket.io.js", ] : [],
             }; },

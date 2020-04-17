@@ -3,7 +3,7 @@ import { TileGetter } from "./TileGetter";
 
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
-import { WebHooks } from "../../webui/WebHooks";
+import { WebHooks } from "../../browser/WebHooks";
 import { VisibleGrid } from 'floor/VisibleGrid';
 
 

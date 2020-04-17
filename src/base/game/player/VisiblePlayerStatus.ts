@@ -1,4 +1,4 @@
-import { WebHooks } from "../../../webui/WebHooks";
+import { WebHooks } from "../../../browser/WebHooks";
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 import { OperatorPlayer } from "./OperatorPlayer";
