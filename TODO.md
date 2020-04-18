@@ -16,7 +16,6 @@
     - [](https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/The_head_metadata_in_HTML#Other_types_of_metadata)
     - I want to do this before sharing about my progress on social media (or else the link will not have a picture)
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
-1. To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 1. Design: I still kind of want to have a kind of artificial player that can't be killed in a more "survive for as long as possible" mode (instead of an "eliminate all other teams" mode), which I could implement as a subclass of `Chaser` whose `status` field has its `set rawHealth` to do nothing.
     - As an important side-note, if a team is only composed of such players, the game will technically never end unless we add a full check for it in the function that check whether the game should end, or we add a field to the team class on whether it counts toward the check for whether the game should end (a more powerful design at the cost of slightly more complexity).
 1. Fill in implementation of bubble event handler.
@@ -31,11 +30,12 @@
 ### Low Priority
 
 - Use mini-css to combine all my css into one file as part of the build procedure.
-  - https://blog.jakoblind.no/css-modules-webpack/#how-to-extract-the-css-to-its-own-stylescss-file
+  - [](https://blog.jakoblind.no/css-modules-webpack/#how-to-extract-the-css-to-its-own-stylescss-file)
 - Read about these topics and see how they might be useful
-  - https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API
-  - https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen
-  - https://github.com/danklammer/bytesize-icons
+  - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
+  - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
+  - [](https://github.com/danklammer/bytesize-icons)
+- To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 - For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 - Use es6 #private syntax for getter-backing fields
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
