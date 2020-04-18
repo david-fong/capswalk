@@ -34,7 +34,7 @@ export type TileModificationEvent<S extends Coord.System> = {
      * to `undefined` if it wants to leave the CSP unchanged.
      */
     newCharSeqPair?: Lang.CharSeqPair;
-}
+};
 
 
 

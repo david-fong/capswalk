@@ -1,4 +1,4 @@
-import { WebHooks } from "../../webui/WebHooks";
+import { WebHooks } from "../../browser/WebHooks";
 import type { Lang } from "utils/TypeDefs";
 
 import { Coord, Tile } from "./Tile";

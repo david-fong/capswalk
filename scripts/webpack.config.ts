@@ -164,15 +164,18 @@ const webBundleConfig = BaseConfig(); {
     config.target = "web";
     config.externals = [ "socket.io-client", ];
 
-    (<const>[ "offline", "client", ]).forEach((entryName) => {
-        config.entry[entryName] = `./src/${entryName}/index.ts`;
-        // config.entry[`${name}_body`] = `./src/${name}/body.html`;
-        config.plugins.push(new HtmlPlugin({
+    const offlineEntryName = "offline";
+    const clientEntryName  = "client";
+    const makeHtmlPluginArgs = (
+        entryName: typeof offlineEntryName |
+        typeof clientEntryName): HtmlPlugin.Options => {
+        return {
             template: "./index.ejs",
             filename: `${entryName}/index.html`,
             //favicon: `assets/${name}-favicon.ico`,
             favicon: `assets/favicon.ico`,
             base: "../..", // must play nice with path configs.
+            scriptLoading: "defer",
             inject: false, // (I specify where each injection goes in the template).
             chunks: [
                 entryName,
@@ -188,11 +191,25 @@ const webBundleConfig = BaseConfig(); {
                     files: assets,
                     options
                 },
-                "extraScripts": (entryName === "client")
+                // Custom HTML templates for index.ejs:
+                "extraScripts": (entryName === clientEntryName)
                     ? [ "/socket.io/socket.io.js", ] : [],
             }; },
             //hash: true,
-        }));
+        }
+    }
+    (<const>[ offlineEntryName, clientEntryName, ]).forEach((entryName) => {
+        config.entry[entryName] = `./src/${entryName}/index.ts`;
+        // config.entry[`${name}_body`] = `./src/${name}/body.html`;
+        config.plugins.push(new HtmlPlugin(makeHtmlPluginArgs(entryName)));
+        if (entryName === offlineEntryName) {
+            // Make one more output for the offline entry and place it
+            // in the project root folder for GitHub Pages:
+            const ghPages = makeHtmlPluginArgs(entryName);
+            ghPages.filename = "../index.html";
+            ghPages.base = ".";
+            config.plugins.push(new HtmlPlugin(ghPages));
+        }
     });
 }
 

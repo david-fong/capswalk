@@ -36,7 +36,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
      */
     #seqBuffer: Lang.Seq;
 
-    private langRemappingFunc: {(input: string): string};
+    private readonly langRemappingFunc: {(input: string): string};
 
 
     public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {

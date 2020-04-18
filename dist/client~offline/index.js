@@ -182,7 +182,7 @@ var VisibleGrid;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VisibleTile", function() { return VisibleTile; });
-/* harmony import */ var _webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/webui/WebHooks.ts");
+/* harmony import */ var _browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/browser/WebHooks.ts");
 /* harmony import */ var _Tile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/base/floor/Tile.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Coord", function() { return _Tile__WEBPACK_IMPORTED_MODULE_1__["Coord"]; });
 
@@ -194,17 +194,17 @@ class VisibleTile extends _Tile__WEBPACK_IMPORTED_MODULE_1__["Tile"] {
         super(coordDesc);
         {
             const tCell = document.createElement("td");
-            tCell.className = _webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Tile.Class.BASE;
+            tCell.className = _browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Tile.Class.BASE;
             {
                 const cDiv = document.createElement("div");
-                cDiv.className = _webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Tile.Class.LANG_CHAR;
-                cDiv.classList.add(_webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].General.Class.FILL_PARENT);
+                cDiv.className = _browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Tile.Class.LANG_CHAR;
+                cDiv.classList.add(_browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].General.Class.FILL_PARENT);
                 tCell.appendChild(cDiv);
                 this.langCharElem = cDiv;
             }
             {
                 const sDiv = document.createElement("div");
-                sDiv.className = _webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Tile.Class.LANG_SEQ;
+                sDiv.className = _browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Tile.Class.LANG_SEQ;
                 tCell.appendChild(sDiv);
                 this.langSeqElem = sDiv;
             }
@@ -220,10 +220,10 @@ class VisibleTile extends _Tile__WEBPACK_IMPORTED_MODULE_1__["Tile"] {
     set freeHealth(newHealth) {
         super.freeHealth = newHealth;
         if (this.freeHealth) {
-            this.tileElem.dataset[_webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Tile.Dataset.HEALTH] = newHealth.toString();
+            this.tileElem.dataset[_browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Tile.Dataset.HEALTH] = newHealth.toString();
         }
         else {
-            delete this.tileElem.dataset[_webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Tile.Dataset.HEALTH];
+            delete this.tileElem.dataset[_browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Tile.Dataset.HEALTH];
         }
     }
     setLangCharSeqPair(charSeqPair) {
@@ -982,7 +982,7 @@ Object.freeze(Team.prototype);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VisiblePlayerStatus", function() { return VisiblePlayerStatus; });
-/* harmony import */ var _webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/webui/WebHooks.ts");
+/* harmony import */ var _browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/browser/WebHooks.ts");
 /* harmony import */ var _OperatorPlayer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/base/game/player/OperatorPlayer.ts");
 /* harmony import */ var _PlayerStatus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/base/game/player/PlayerStatus.ts");
 
@@ -993,19 +993,19 @@ class VisiblePlayerStatus extends _PlayerStatus__WEBPACK_IMPORTED_MODULE_2__["Pl
         super(player, noCheckGameOver);
         {
             const pDiv = document.createElement("div");
-            pDiv.classList.add(_webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Player.Class.BASE, _webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].General.Class.FILL_PARENT);
+            pDiv.classList.add(_browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Player.Class.BASE, _browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].General.Class.FILL_PARENT);
             this.playerDivElem = pDiv;
         }
         {
             if (this.player instanceof _OperatorPlayer__WEBPACK_IMPORTED_MODULE_1__["OperatorPlayer"]) {
                 const spotDiv = document.createElement("div");
-                spotDiv.classList.add(_webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Grid.Class.SPOTLIGHT);
+                spotDiv.classList.add(_browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Grid.Class.SPOTLIGHT);
                 this.playerDivElem.appendChild(spotDiv);
             }
         }
         {
             const doDiv = document.createElement("div");
-            doDiv.classList.add(_webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Player.Class.DOWNED_OVERLAY, _webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].General.Class.FILL_PARENT);
+            doDiv.classList.add(_browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Player.Class.DOWNED_OVERLAY, _browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].General.Class.FILL_PARENT);
             this.playerDivElem.appendChild(doDiv);
         }
     }
@@ -1016,7 +1016,7 @@ class VisiblePlayerStatus extends _PlayerStatus__WEBPACK_IMPORTED_MODULE_2__["Pl
         const oldIsDowned = this.isDowned;
         super.health = newHealth;
         if (oldIsDowned !== this.isDowned) {
-            const dataDowned = _webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Player.Dataset.DOWNED;
+            const dataDowned = _browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Player.Dataset.DOWNED;
             if (this.isDowned) {
                 if (this.player.team.elimOrder) {
                     this.playerDivElem.dataset[dataDowned] = "team";
@@ -1036,7 +1036,7 @@ class VisiblePlayerStatus extends _PlayerStatus__WEBPACK_IMPORTED_MODULE_2__["Pl
         for (const team of teams) {
             for (const member of team.members) {
                 member.status
-                    .playerDivElem.dataset[_webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Player.Dataset.FACE_SWATCH]
+                    .playerDivElem.dataset[_browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Player.Dataset.FACE_SWATCH]
                     = (member === operator) ? "me"
                         : (member.teamId === operator.teamId) ? "teammate" : "opponent";
             }
@@ -1411,7 +1411,7 @@ class Lang {
         KOREAN__ROMANIZATION: {
             display: "Korean Revised Romanization",
             id: "kore-rom",
-        }
+        },
     });
     Lang.Names;
     Lang.__RemapTemplates = Object.freeze({
@@ -1435,7 +1435,7 @@ Object.freeze(Lang.prototype);
 
 /***/ }),
 
-/***/ "./src/webui/GameSettings.ts":
+/***/ "./src/browser/GameSettings.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1443,7 +1443,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GameSetting", function() { return GameSetting; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LocalGameSettings", function() { return LocalGameSettings; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GlobalGameSettings", function() { return GlobalGameSettings; });
-/* harmony import */ var _Sound__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/webui/Sound.ts");
+/* harmony import */ var _Sound__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/browser/Sound.ts");
 
 class GameSetting {
 }
@@ -1472,7 +1472,7 @@ GlobalGameSettings.SINGLETON = undefined;
 
 /***/ }),
 
-/***/ "./src/webui/Sound.ts":
+/***/ "./src/browser/Sound.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1486,7 +1486,7 @@ class SoundSettings {
 
 /***/ }),
 
-/***/ "./src/webui/WebHooks.ts":
+/***/ "./src/browser/WebHooks.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1497,7 +1497,7 @@ var WebHooks;
     WebHooks.General = Object.freeze({
         Class: Object.freeze({
             FILL_PARENT: "fill-parent",
-        })
+        }),
     });
     WebHooks.Tile = Object.freeze({
         Class: Object.freeze({
@@ -1526,12 +1526,15 @@ var WebHooks;
     WebHooks.Player = Object.freeze({
         Class: Object.freeze({
             BASE: "player",
-            DOWNED_OVERLAY: "player__downed-overlay"
+            DOWNED_OVERLAY: "player__downed-overlay",
         }),
         Dataset: Object.freeze({
             DOWNED: "downed",
             FACE_SWATCH: "face",
         }),
+    });
+    WebHooks.Ui = Object.freeze({
+        Class: Object.freeze({}),
     });
     let Colour;
     (function (Colour) {

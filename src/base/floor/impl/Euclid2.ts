@@ -304,7 +304,7 @@ export namespace Euclid2 {
             playerCounts: number,
             dimensions: Grid.Dimensions,
         ):  ReadonlyArray<Coord.Bare> {
-            return [{x:0,y:0,}];
+            return [{x:0,y:0,},];
 
             // TODO.impl A proper, nice looking version of this.
             //

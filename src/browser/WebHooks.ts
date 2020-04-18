@@ -14,8 +14,9 @@ export namespace WebHooks {
     export const General = Object.freeze(<const>{
         Class: Object.freeze(<const>{
             FILL_PARENT: "fill-parent",
-        })
-    })
+        }),
+    });
+
 
     export const Tile = Object.freeze(<const>{
         Class: Object.freeze(<const>{
@@ -57,11 +58,17 @@ export namespace WebHooks {
     export const Player = Object.freeze(<const>{
         Class: Object.freeze(<const>{
             BASE:       "player",
-            DOWNED_OVERLAY: "player__downed-overlay"
+            DOWNED_OVERLAY: "player__downed-overlay",
         }),
         Dataset: Object.freeze(<const>{
             DOWNED:     "downed",
             FACE_SWATCH:"face",
+        }),
+    });
+
+
+    export const Ui = Object.freeze(<const>{
+        Class: Object.freeze(<const>{
         }),
     });
 

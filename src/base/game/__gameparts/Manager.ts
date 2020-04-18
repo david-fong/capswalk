@@ -38,7 +38,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
      *
      * @param gameType -
-     * @param tileClass -
+     * @param impl -
      * @param desc -
      */
     public constructor(

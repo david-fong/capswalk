@@ -45,7 +45,7 @@ export abstract class Lang extends __Lang {
     /**
      * _Does not call reset._
      *
-     * @param name -
+     * @param classIf -
      * @param forwardDict - Weights are _relative_ values handled by
      *      {@link LangSeqTreeNode}, which requires the provided values
      *      to all be strictly positive values. They do not all need

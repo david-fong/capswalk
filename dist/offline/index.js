@@ -162,7 +162,7 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Grid", function() { return Grid; });
 /* harmony import */ var _TileGetter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/base/floor/TileGetter.ts");
-/* harmony import */ var _webui_WebHooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/webui/WebHooks.ts");
+/* harmony import */ var _browser_WebHooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/browser/WebHooks.ts");
 
 
 class Grid {
@@ -180,7 +180,7 @@ class Grid {
     check() {
     }
     __VisibleGrid_super(desc, gridElem) {
-        const WHG = _webui_WebHooks__WEBPACK_IMPORTED_MODULE_1__["WebHooks"].Grid;
+        const WHG = _browser_WebHooks__WEBPACK_IMPORTED_MODULE_1__["WebHooks"].Grid;
         gridElem.classList.add(WHG.Class.IMPL_BODY);
         const hostElem = document.getElementById(desc.domGridHtmlIdHook);
         if (!hostElem) {
@@ -492,7 +492,7 @@ var Euclid2;
             return this.__getTileDestsFrom(coord, radius);
         }
         static getSpawnCoords(playerCounts, dimensions) {
-            return [{ x: 0, y: 0, }];
+            return [{ x: 0, y: 0, },];
         }
         static getArea(dim) {
             return dim.height * dim.width;
@@ -854,7 +854,7 @@ Object.seal(English);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "OfflineGame", function() { return OfflineGame; });
 /* harmony import */ var game_Game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/base/game/Game.ts");
-/* harmony import */ var _webui_GameSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/webui/GameSettings.ts");
+/* harmony import */ var _browser_GameSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/browser/GameSettings.ts");
 /* harmony import */ var floor_VisibleTile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/base/floor/VisibleTile.ts");
 /* harmony import */ var floor_VisibleGrid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/base/floor/VisibleGrid.ts");
 /* harmony import */ var game_player_OperatorPlayer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/base/game/player/OperatorPlayer.ts");
@@ -879,7 +879,7 @@ class OfflineGame extends game_gameparts_Manager__WEBPACK_IMPORTED_MODULE_7__["G
             throw new Error("The Operator for an OfflineGame should be defined.");
         }
         game_player_VisiblePlayerStatus__WEBPACK_IMPORTED_MODULE_5__["VisiblePlayerStatus"].colourizeTeamMembers(this.teams, this.operator);
-        this.settings = _webui_GameSettings__WEBPACK_IMPORTED_MODULE_1__["LocalGameSettings"].getInstance();
+        this.settings = _browser_GameSettings__WEBPACK_IMPORTED_MODULE_1__["LocalGameSettings"].getInstance();
         this.reset();
         this.grid.hostElem.addEventListener("keydown", (ev) => {
             this.operator.processKeyboardInput(ev);
@@ -918,7 +918,7 @@ Object.freeze(OfflineGame.prototype);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "game", function() { return game; });
-/* harmony import */ var _webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/webui/WebHooks.ts");
+/* harmony import */ var _browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/browser/WebHooks.ts");
 /* harmony import */ var floor_Tile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/base/floor/Tile.ts");
 /* harmony import */ var lang_LangSeqTreeNode__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/base/lang/LangSeqTreeNode.ts");
 /* harmony import */ var _OfflineGame__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/offline/OfflineGame.ts");
@@ -935,7 +935,7 @@ const game = new _OfflineGame__WEBPACK_IMPORTED_MODULE_3__["OfflineGame"]({
         height: 21,
         width: 21,
     },
-    gridHtmlIdHook: _webui_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Grid.Id.GRID,
+    gridHtmlIdHook: _browser_WebHooks__WEBPACK_IMPORTED_MODULE_0__["WebHooks"].Grid.Id.GRID,
     averageFreeHealthPerTile: 1.0 / 70.0,
     langBalancingScheme: lang_LangSeqTreeNode__WEBPACK_IMPORTED_MODULE_2__["BalancingScheme"].WEIGHT,
     languageName: "engl-low",

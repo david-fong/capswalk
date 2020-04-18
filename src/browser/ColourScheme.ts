@@ -19,14 +19,14 @@ export class Colour {
         sel.onchange = () => {
             sel.blur();
             this.switchToScheme(this.sel.value);
-        }
+        };
         hostElement.appendChild(sel);
         this.sel = sel as Colour["sel"];
         sel.selectedIndex = 0;
         sel.dispatchEvent(new Event("change"));
     }
 
-    public switchToScheme(schemeId: Colour.Scheme.Id) {
+    public switchToScheme(schemeId: Colour.Scheme.Id): void {
         for (const swatchName of Colour.Swatch) {
             document.body.style.setProperty(
                 `--colour-selected-${swatchName}`,

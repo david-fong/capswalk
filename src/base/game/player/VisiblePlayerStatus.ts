@@ -1,4 +1,4 @@
-import { WebHooks } from "../../../webui/WebHooks";
+import { WebHooks } from "../../../browser/WebHooks";
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 import { OperatorPlayer } from "./OperatorPlayer";
@@ -70,6 +70,8 @@ export namespace VisiblePlayerStatus {
     /**
      * This must be called once after all teams are constructed.
      * @param teams -
+     * @param operator
+     * A reference to the operator player. Used to determine colouring.
      */
     export function colourizeTeamMembers<S extends Coord.System>(
         teams: TU.RoArr<Team<S>>,

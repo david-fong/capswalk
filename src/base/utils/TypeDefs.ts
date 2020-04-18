@@ -100,7 +100,7 @@ export namespace Lang {
         KOREAN__ROMANIZATION: {
             display: "Korean Revised Romanization",
             id: "kore-rom",
-        }
+        },
     });
     Names as Record<string, { display: string, id: string, }>;
     export namespace Names {
@@ -113,7 +113,7 @@ export namespace Lang {
         IDENTITY: (input: string): string => input,
         TO_LOWER: (input: string): string => input.toLowerCase(),
     });
-    __RemapTemplates as Readonly<Record<string, {(input: string): string}>>
+    __RemapTemplates as Readonly<Record<string, {(input: string): string}>>;
 
     /**
      *
