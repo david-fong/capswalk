@@ -23,9 +23,13 @@ export namespace OmHooks {
     export const Tile = Object.freeze(<const>{
         Class: Object.freeze(<const>{
             BASE:           "tile",
-              UNSHIFT_HB:     "tile__unshift-hitbox",
-                LANG_CHAR:      "tile__char",
-                LANG_SEQ:       "tile__seq",
+            /**
+             * Must be the first child to allow CSS to use the variable-
+             * distance same-parent precede selection operator.
+             */
+            POINTER_HB:     "tile__pointer-hitbox",
+            LANG_CHAR:      "tile__char",
+            LANG_SEQ:       "tile__seq",
         }),
         Dataset: Object.freeze(<const>{
             HEALTH:     "health",
@@ -44,9 +48,9 @@ export namespace OmHooks {
         }),
         Class: Object.freeze(<const>{
             GRID:           "game-grid",
-              IMPL_BODY:      "game-grid__impl-body",
-                SPOTLIGHT:      "game-grid__spotlight",
-              KBD_DC_ICON:    "game-grid__kbd-dc-icon",
+            IMPL_BODY:      "game-grid__impl-body",
+            SPOTLIGHT:      "game-grid__spotlight",
+            KBD_DC_ICON:    "game-grid__kbd-dc-icon",
         }),
         Dataset: Object.freeze(<const>{
             /**
@@ -61,7 +65,7 @@ export namespace OmHooks {
     export const Player = Object.freeze(<const>{
         Class: Object.freeze(<const>{
             BASE:       "player",
-              DOWNED_OVERLAY: "player__downed-overlay",
+            DOWNED_OVERLAY: "player__downed-overlay",
         }),
         Dataset: Object.freeze(<const>{
             DOWNED:     "downed",
@@ -75,22 +79,5 @@ export namespace OmHooks {
             BASE:       "display",
         }),
     });
-
-
-    /**
-     * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
-     * https://www.w3schools.com/html/html5_webstorage.asp
-     */
-    export const WebStorageKeys = Object.freeze(<const>{
-        RecentCoordSystem: "recent-coord-system",
-        RecentLang: "recent-lang",
-    });
-
-    type HookDict = {
-        [ DictKey in "Id" | "Class" | "Dataset" ]?: Readonly<{
-            [ JsHook: string ]: string;
-        }>;
-    };
-
 }
 Object.freeze(OmHooks);

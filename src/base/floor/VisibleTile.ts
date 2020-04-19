@@ -28,32 +28,33 @@ export { Coord } from "./Tile";
 export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     readonly #baseElem:     HTMLElement;
-    readonly #innerBase:    HTMLElement;
     private readonly langCharElem:  HTMLDivElement;
     private readonly langSeqElem:   HTMLDivElement;
 
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
         {
-            const innerBase = document.createElement("div");
-            innerBase.className = OmHooks.Tile.Class.UNSHIFT_HB;
-            this.#innerBase = innerBase
-            {
-                const cDiv = document.createElement("div");
-                cDiv.className = OmHooks.Tile.Class.LANG_CHAR;
-                cDiv.classList.add(OmHooks.General.Class.FILL_PARENT);
-                innerBase.appendChild(cDiv);
-                this.langCharElem = cDiv;
-            } {
-                const sDiv = document.createElement("div");
-                sDiv.className = OmHooks.Tile.Class.LANG_SEQ;
-                innerBase.appendChild(sDiv);
-                this.langSeqElem = sDiv;
-            }
-            const tCell = document.createElement("div");
-            tCell.className = OmHooks.Tile.Class.BASE;
-            tCell.appendChild(innerBase);
-            this.#baseElem = tCell;
+            const baseElem = document.createElement("div");
+            baseElem.classList.add(OmHooks.Tile.Class.BASE);
+            this.#baseElem = baseElem;
+        } {
+            // Must be the first child. See note in CSS class hook.
+            const pthbElem = document.createElement("div");
+            pthbElem.classList.add(OmHooks.Tile.Class.POINTER_HB);
+            this.#baseElem.appendChild(pthbElem);
+        } {
+            const charElem = document.createElement("div");
+            charElem.classList.add(
+                OmHooks.Tile.Class.LANG_CHAR,
+                OmHooks.General.Class.FILL_PARENT,
+            );
+            this.#baseElem.appendChild(charElem);
+            this.langCharElem = charElem;
+        } {
+            const seqElem = document.createElement("div");
+            seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
+            this.#baseElem.appendChild(seqElem);
+            this.langSeqElem = seqElem;
         }
     }
 
@@ -63,7 +64,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     public setOccupant(playerId: Player.Id, playerElem: HTMLElement): void {
         super.setOccupant(playerId, playerElem);
-        this.#innerBase.appendChild(playerElem)
+        this.#baseElem.appendChild(playerElem)
     }
 
 
