@@ -16,6 +16,8 @@ export class PlayerStatus<S extends Coord.System> {
     #score:  Player.Health;
     #health: Player.Health;
 
+    public readonly baseElem?: HTMLDivElement;
+
     public constructor(player: Player<S>, noCheckGameOver: boolean) {
         this.player = player;
         this.noCheckGameOver = noCheckGameOver;

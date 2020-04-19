@@ -26,15 +26,13 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
     public readonly username: Player.Username;
 
-    public readonly status: PlayerStatus<S>;
-
     public lastAcceptedRequestId: number;
 
     public requestInFlight: boolean;
 
 
     public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {
-        super(game, desc.playerId);
+        super(game, desc);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {
             throw new RangeError(`Username \"${desc.username}\"`
@@ -45,7 +43,6 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.familyId = desc.familyId;
         this.teamId   = desc.teamId;
         this.username = desc.username;
-        this.status   = new (this.game.__playerStatusCtor)(this, desc.noCheckGameOver);
     }
 
     public reset(spawnTile: Tile<S>): void {

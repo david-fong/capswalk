@@ -1,18 +1,27 @@
 
 .tile {
-    /* NO NOT give this a z-index property. If you do,
+    /* DO NOT give this a z-index property. If you do,
     each tile will start its own stacking context, which
     breaks the spotlight display. */
+    --mouseover-shift: 40%;
     position:   relative;
+    top:        var(--mouseover-shift);
+    left:       var(--mouseover-shift);
     display:    inline-flex;
     justify-content: center;
     background-color: transparent;
+}
+.tile__unshift-hitbox {
+    position:   relative;
+    top:        calc(-1 * var(--mouseover-shift));
+    left:       calc(-1 * var(--mouseover-shift));
+    height: 100%; width: 100%;
 }
 .tile * {
     /* No pointer events for Tile children! */
     pointer-events: none;
 }
-.tile > * {
+.tile__unshift-hitbox > * {
     box-sizing: border-box;
     border: 0.14em solid transparent;
     border-radius: 16%;
@@ -39,6 +48,6 @@
 .tile:hover .tile__seq {
     visibility: visible;
 }
-.tile:hover {
+.tile:hover .tile__char {
     color:      transparent;
 }

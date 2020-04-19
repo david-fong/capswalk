@@ -13,6 +13,7 @@
 ### High Priority
 
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
+1. Implement Euclid2 spawn coordinates.
 1. Implement health spawning.
 1. Implement basic artificial player.
 1. Fill in implementation of bubble event handler.

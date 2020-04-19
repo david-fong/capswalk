@@ -49,9 +49,6 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
      */
     public reset(spawnTile: Tile<S>): void {
         super.reset(spawnTile);
-        // This below line must be done because the reset chain does
-        // not contain any calls to Player.moveTo, which updates visuals.
-        this.hostTile.tileElem.appendChild(this.status.playerDivElem);
         this.#seqBuffer = "";
     }
 
@@ -149,7 +146,6 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         // Clear my `seqBuffer` first:
         this.#seqBuffer = "";
         super.moveTo(dest);
-        this.hostTile.tileElem.appendChild(this.status.playerDivElem);
     }
 
 

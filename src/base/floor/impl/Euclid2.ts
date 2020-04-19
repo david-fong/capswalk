@@ -351,7 +351,7 @@ export namespace Euclid2 {
                 //gridElem.style.setProperty("--euclid2-grid-height", this.dimensions.height.toString());
                 for (const row of this.grid) {
                     for (const tile of row) {
-                        gridElem.appendChild(tile.tileElem);
+                        tile.__addToDom(gridElem);
                     }
                 }
                 this.__VisibleGrid_super(desc, gridElem);

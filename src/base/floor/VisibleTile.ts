@@ -1,5 +1,5 @@
 import { WebHooks } from "../../browser/WebHooks";
-import type { Lang } from "utils/TypeDefs";
+import type { Lang, Player } from "utils/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
 
@@ -27,29 +27,43 @@ export { Coord } from "./Tile";
  */
 export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
-    public  readonly tileElem:      HTMLTableCellElement;
+    readonly #baseElem:     HTMLElement;
+    readonly #innerBase:    HTMLElement;
     private readonly langCharElem:  HTMLDivElement;
     private readonly langSeqElem:   HTMLDivElement;
 
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
         {
-            const tCell = document.createElement("td");
-            tCell.className = WebHooks.Tile.Class.BASE;
+            const innerBase = document.createElement("div");
+            innerBase.className = WebHooks.Tile.Class.UNSHIFT_HB;
             {
                 const cDiv = document.createElement("div");
                 cDiv.className = WebHooks.Tile.Class.LANG_CHAR;
                 cDiv.classList.add(WebHooks.General.Class.FILL_PARENT);
-                tCell.appendChild(cDiv);
+                innerBase.appendChild(cDiv);
                 this.langCharElem = cDiv;
             } {
                 const sDiv = document.createElement("div");
                 sDiv.className = WebHooks.Tile.Class.LANG_SEQ;
-                tCell.appendChild(sDiv);
+                innerBase.appendChild(sDiv);
                 this.langSeqElem = sDiv;
             }
-            this.tileElem = tCell;
+            const tCell = document.createElement("div");
+            tCell.className = WebHooks.Tile.Class.BASE;
+            tCell.appendChild(innerBase);
+            this.#innerBase = innerBase
+            this.#baseElem = tCell;
         }
+    }
+
+    public __addToDom(parent: HTMLElement): void {
+        parent.appendChild(this.#baseElem);
+    }
+
+    public setOccupant(playerId: Player.Id, playerElem: HTMLElement): void {
+        super.setOccupant(playerId, playerElem);
+        this.#innerBase.appendChild(playerElem)
     }
 
 
@@ -57,7 +71,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      * @override
      */
     public visualBell(): void {
-        this.tileElem; // TODO.impl Use an animation to flash tile element?
+        this.#baseElem; // TODO.impl Use an animation to flash tile element?
     }
 
 
@@ -74,9 +88,9 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     public set freeHealth(newHealth: number) {
         super.freeHealth = newHealth;
         if (this.freeHealth) {
-            this.tileElem.dataset[WebHooks.Tile.Dataset.HEALTH] = newHealth.toString();
+            this.#baseElem.dataset[WebHooks.Tile.Dataset.HEALTH] = newHealth.toString();
         } else {
-            delete this.tileElem.dataset[WebHooks.Tile.Dataset.HEALTH];
+            delete this.#baseElem.dataset[WebHooks.Tile.Dataset.HEALTH];
         }
     }
 

@@ -5,6 +5,7 @@ import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
 import type { GameBase } from "game/__gameparts/Base";
 
+import { PlayerStatus } from "./PlayerStatus";
 import { TileGetter } from "floor/TileGetter";
 
 
@@ -24,19 +25,25 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
      */
     public readonly game: GameBase<any,S>;
 
+    public readonly status: PlayerStatus<S>;
+
     #hostTile: Tile<S>;
 
     public readonly tile: TileGetter<S,[]>;
 
 
 
-    protected constructor(game: GameBase<any,S>, playerId: Player.Id) {
+    protected constructor(game: GameBase<any,S>, desc: Player.CtorArgs) {
         super();
-        if (Math.trunc(playerId) !== playerId) {
+        if (Math.trunc(desc.playerId) !== desc.playerId) {
             throw new RangeError("Player ID's must be integer values.");
         }
-        this.playerId = playerId;
+        this.playerId = desc.playerId;
         this.game = game;
+        this.status = new (this.game.__playerStatusCtor)(
+            this as PlayerSkeleton<S> as Player<S>,
+            desc.noCheckGameOver,
+        );
         this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
     }
 
@@ -49,7 +56,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
      */
     protected reset(spawnTile: Tile<S>): void {
         this.#hostTile = spawnTile;
-        this.hostTile.setOccupant(this.playerId);
+        this.hostTile.setOccupant(this.playerId, this.status.baseElem);
     }
 
 
@@ -113,7 +120,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
         else {
             // Move to occupy the destination `Tile`:
             this.#hostTile = dest;
-            dest.setOccupant(this.playerId);
+            dest.setOccupant(this.playerId, this.status.baseElem);
         }
     }
 }

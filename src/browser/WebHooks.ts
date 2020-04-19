@@ -20,9 +20,10 @@ export namespace WebHooks {
 
     export const Tile = Object.freeze(<const>{
         Class: Object.freeze(<const>{
-            BASE:       "tile",
-            LANG_CHAR:  "tile__char",
-            LANG_SEQ:   "tile__seq",
+            BASE:           "tile",
+              UNSHIFT_HB:     "tile__unshift-hitbox",
+                LANG_CHAR:      "tile__char",
+                LANG_SEQ:       "tile__seq",
         }),
         Dataset: Object.freeze(<const>{
             HEALTH:     "health",
@@ -40,10 +41,10 @@ export namespace WebHooks {
             GRID:       "game-grid",
         }),
         Class: Object.freeze(<const>{
-            GRID:       "game-grid",
-            IMPL_BODY:  "game-grid__impl-body",
-            SPOTLIGHT:  "game-grid__spotlight",
-            KBD_DC_ICON:"game-grid__kbd-dc-icon",
+            GRID:           "game-grid",
+              IMPL_BODY:      "game-grid__impl-body",
+                SPOTLIGHT:      "game-grid__spotlight",
+              KBD_DC_ICON:    "game-grid__kbd-dc-icon",
         }),
         Dataset: Object.freeze(<const>{
             /**
@@ -58,7 +59,7 @@ export namespace WebHooks {
     export const Player = Object.freeze(<const>{
         Class: Object.freeze(<const>{
             BASE:       "player",
-            DOWNED_OVERLAY: "player__downed-overlay",
+              DOWNED_OVERLAY: "player__downed-overlay",
         }),
         Dataset: Object.freeze(<const>{
             DOWNED:     "downed",
