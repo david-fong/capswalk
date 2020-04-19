@@ -25,7 +25,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     /**
      * Indexable by team ID's.
      */
-    public readonly teams: ReadonlyArray<Team<S>>;
+    public readonly teams: TU.RoArr<Team<S>>;
 
     #status: Game.Status;
 
@@ -106,7 +106,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * @returns A bundle of the constructed players.
      */
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameBase<G,S>["players"] {
-        const playerDescs: ReadonlyArray<Player.CtorArgs>
+        const playerDescs: TU.RoArr<Player.CtorArgs>
             = (this.gameType === Game.Type.CLIENT)
             // The client receives these descriptors already finalized / cleaned by the server.
             ? gameDesc.playerDescs as Game.CtorArgs<Game.Type.CLIENT,S>["playerDescs"]

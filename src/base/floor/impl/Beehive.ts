@@ -145,7 +145,7 @@ export namespace Beehive {
         // TODO.design determine spec for indexing
         // Then initialize the field in the constructor
         // Also design HTML representation and initialize in Grid.Visible
-        private readonly grid: ReadonlyArray<ReadonlyArray<Tile<S>>>;
+        private readonly grid: TU.RoArr<TU.RoArr<Tile<S>>>;
 
         /**
          * @override

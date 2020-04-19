@@ -31,7 +31,7 @@ export namespace BalancingScheme {
 export class LangSeqTreeNode<ROOT extends boolean = false> {
 
     public readonly sequence:   ROOT extends true ? "" : Lang.Seq;
-    public readonly characters: ReadonlyArray<WeightedLangChar>; // Frozen.
+    public readonly characters: TU.RoArr<WeightedLangChar>; // Frozen.
     public readonly parent:     ROOT extends true ? undefined : LangSeqTreeNode;
     public readonly children:   Array<LangSeqTreeNode>; // Frozen.
 
@@ -87,7 +87,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
     protected constructor(
         parent:     LangSeqTreeNode<ROOT>["parent"],
         sequence:   LangSeqTreeNode<ROOT>["sequence"],
-        characters: ROOT extends true ? readonly [] : ReadonlyArray<WeightedLangChar>,
+        characters: ROOT extends true ? readonly [] : TU.RoArr<WeightedLangChar>,
     ) {
         this.sequence   = sequence;
         this.characters = characters;
@@ -135,7 +135,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @param seq The typeable sequence corresponding to entries of `chars`.
      * @param chars A collection of unique characters in a written language.
      */
-    protected addCharMapping(seq: Lang.Seq, chars: ReadonlyArray<WeightedLangChar>): void {
+    protected addCharMapping(seq: Lang.Seq, chars: TU.RoArr<WeightedLangChar>): void {
         if (!(Lang.Seq.REGEXP.test(seq))) {
             throw new RangeError(`Mapping-sequence \"${seq}\" did not match the`
             + ` required regular expression \"${Lang.Seq.REGEXP.source}\".`

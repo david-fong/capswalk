@@ -67,7 +67,7 @@ export namespace Game {
         operatorIndex: G extends Game.Type.SERVER
             ? undefined
             : Player.Id;
-        playerDescs: ReadonlyArray<(
+        playerDescs: TU.RoArr<(
             G extends Game.Type.Manager
             ? Player.CtorArgs.PreIdAssignment
             : Player.CtorArgs
@@ -84,8 +84,8 @@ export namespace Game {
          * Not used here, but used in {@link GroupSession#createGameInstance}.
          */
         export type FailureReasons = {
-            undefinedUsername: ReadonlyArray<Player.SocketId>; // socket ID's
-            undefinedTeamId:   ReadonlyArray<Player.SocketId>;
+            undefinedUsername: TU.RoArr<Player.SocketId>; // socket ID's
+            undefinedTeamId:   TU.RoArr<Player.SocketId>;
         };
     }
 

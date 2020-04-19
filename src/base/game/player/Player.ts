@@ -158,12 +158,12 @@ export namespace Player {
          * @param langName -
          */
         export const finalize = (
-            playerDescs: ReadonlyArray<CtorArgs.PreIdAssignment>,
+            playerDescs: TU.RoArr<CtorArgs.PreIdAssignment>,
             langName: Lang.Names.Value["id"],
-        ): ReadonlyArray<CtorArgs> => {
+        ): TU.RoArr<CtorArgs> => {
             // Map team ID's to consecutive numbers
             // (to play nice with array representations):
-            const teamIdCleaner: ReadonlyArray<Team.Id>
+            const teamIdCleaner: TU.RoArr<Team.Id>
                 = Array.from(new Set(playerDescs.map((player) => player.teamId)))
                 .sort((a, b) => a - b)
                 .reduce((prev, originalId, squashedId) => {

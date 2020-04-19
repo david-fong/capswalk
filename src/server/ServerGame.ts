@@ -30,7 +30,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
      * Entries indexed at ID's belonging to human-operated players
      * contain an `io.Socket` object.
      */
-    protected readonly playerSockets: ReadonlyArray<io.Socket>;
+    protected readonly playerSockets: TU.RoArr<io.Socket>;
 
     /**
      * @override

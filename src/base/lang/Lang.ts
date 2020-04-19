@@ -96,7 +96,7 @@ export abstract class Lang extends __Lang {
      * @param balancingScheme -
      */
     public getNonConflictingChar(
-        avoid: ReadonlyArray<Lang.Seq>,
+        avoid: TU.RoArr<Lang.Seq>,
         balancingScheme: BalancingScheme,
     ): Lang.CharSeqPair {
         // Wording the spec closer to this implementation: We must find

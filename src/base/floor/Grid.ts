@@ -221,7 +221,7 @@ export namespace Grid {
         getSpawnCoords(
             playerCounts: number,
             dimensions: Dimensions<S>,
-        ): ReadonlyArray<Coord.Bare<S>>;
+        ): TU.RoArr<Coord.Bare<S>>;
 
     };
 

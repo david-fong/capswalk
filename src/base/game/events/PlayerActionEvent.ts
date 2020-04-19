@@ -68,7 +68,7 @@ export namespace PlayerActionEvent {
          */
         public playerLastAcceptedRequestId: number;
 
-        public affectedNeighbours?: ReadonlyArray<{
+        public affectedNeighbours?: TU.RoArr<{
             readonly playerId: Player.Id;
             readonly newHealth: Player.Health;
         }> = undefined;
@@ -128,7 +128,7 @@ export namespace PlayerActionEvent {
 
         public readonly dest: TileModificationEvent<S>;
 
-        public tilesWithHealthUpdates?: ReadonlyArray<TileModificationEvent<S>> = undefined;
+        public tilesWithHealthUpdates?: TU.RoArr<TileModificationEvent<S>> = undefined;
 
         public constructor(
             playerId: Player.Id,
