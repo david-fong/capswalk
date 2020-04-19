@@ -5,18 +5,15 @@ As a TypeScript project, this will have minimal dependencies. It will present a 
 
 ## UI by location
 
-### homepage: choose from
+### homepage
 
-on mouseover, show description
-
-- play offline: go to settings
-- play online: redirect to server
-- join LAN party: prompt for ip address
-- how to host LAN party
+- play offline -> game setup
+- join game -> enter host ip
+- host game -> host setup
 
 ### Game Options
 
-These are settings for the next game. All these options can be specified in the query part of a URL as an object. Users should be able to save named configurations (use the WebStorage API). One default configuration, "last used", will be automatically maintained by the javascript.
+These are settings for the next game (This does not include multiplayer options). All these options can be specified in the query part of a URL as an object. Users should be able to save named configurations (use the WebStorage API). One default configuration, "last used", will be automatically maintained by the javascript.
 
 - language
 - lang balancing

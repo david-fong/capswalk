@@ -1,8 +1,11 @@
-import { WebHooks } from "./WebHooks";
-
 
 /**
  *
+ * CSS variables declared for each color scheme are in the
+ * form: `--colour-schemeId-swatchName`. js/ts should not need to
+ * interface with these values directly. Instead, it should use
+ * provided class names and dataset attributes as to minimize its
+ * effort when colour schemes are swapped.
  */
 export class Colour {
 
@@ -26,6 +29,11 @@ export class Colour {
         sel.dispatchEvent(new Event("change"));
     }
 
+    /**
+     * See `:/assets/style/colour/index.css`.
+     *
+     * @param schemeId -
+     */
     public switchToScheme(schemeId: Colour.Scheme.Id): void {
         for (const swatchName of Colour.Swatch) {
             document.body.style.setProperty(
@@ -36,11 +44,25 @@ export class Colour {
     }
 }
 export namespace Colour {
-    // references / aliases:
-    export const Swatch = WebHooks.Colour.Swatch;
-    export const Scheme = WebHooks.Colour.Scheme;
+    export const Swatch = Object.freeze(<const>[
+        "mainFg", "mainBg",
+        "tileFg", "tileBg", "tileBd",
+        "health",
+        "pFaceMe",
+        "pFaceTeammate", "pFaceImmortalTeammate",
+        "pFaceOpponent", "pFaceImmortalOpponent",
+    ]);
+    /**
+     * The scheme id `selected` is a special value and should not
+     * be used.
+     */
+    export const Scheme = Object.freeze(<const>{
+        ["snakey"]: Object.freeze(<const>{
+            displayName: "Snakey by N.W.",
+        }),
+    });
     export namespace Scheme {
-        export type Id = WebHooks.Colour.Scheme.Id;
+        export type Id = keyof typeof Scheme;
     }
 }
 Object.freeze(Colour);

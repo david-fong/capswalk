@@ -3,7 +3,7 @@ import { TileGetter } from "./TileGetter";
 
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
-import { WebHooks } from "../../browser/WebHooks";
+import { OmHooks } from "../../browser/OmHooks";
 import { VisibleGrid } from 'floor/VisibleGrid';
 
 
@@ -103,42 +103,42 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * now to get around no-multiple-inheritance.
      *
      * @param desc -
-     * @param gridElem -
+     * @param gridImplElem -
      */
-    public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridElem: HTMLElement): void {
-        const WHG = WebHooks.Grid;
-        gridElem.classList.add(WHG.Class.IMPL_BODY);
-        const hostElem = document.getElementById(desc.domGridHtmlIdHook);
-        if (!hostElem) {
-            throw new RangeError(`The ID \"${desc.domGridHtmlIdHook}\"`
+    public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridImplElem: HTMLElement): void {
+        const OHG = OmHooks.Grid;
+        gridImplElem.classList.add(OHG.Class.IMPL_BODY);
+        const parentElem = document.getElementById(desc.domParentHtmlIdHook);
+        if (!parentElem) {
+            throw new RangeError(`The ID \"${desc.domParentHtmlIdHook}\"`
             + ` did not refer to an existing html element.`);
         }
-        hostElem.dataset[WHG.Dataset.COORD_SYS] = desc.coordSys;
-        if (!hostElem.classList.contains(WHG.Class.GRID)) {
-            // throw new Error(`The grid host element is missing the token`
-            // + ` \"${WHG.Class.GRID}\" in its class list.`
-            // );
-            hostElem.classList.add(WHG.Class.GRID);
-        } {
+        parentElem.tabIndex = 0;
+        parentElem.classList.add(
+            OHG.Class.GRID,
+            OmHooks.General.Class.TEXT_SELECT_DISABLED,
+        );
+        parentElem.dataset[OHG.Dataset.COORD_SYS] = desc.coordSys;
+        {
             // Add a "keyboard-disconnected" icon if not added already:
-            let kbdDcIcon: HTMLElement | null = hostElem
-                .querySelector(`:scope > .${WHG.Class.KBD_DC_ICON}`);
+            let kbdDcIcon: HTMLElement | null = parentElem
+                .querySelector(`:scope > .${OHG.Class.KBD_DC_ICON}`);
             if (!kbdDcIcon) {
                 // TODO.impl Add an <svg> with icon instead please.
                 kbdDcIcon = document.createElement("div");
-                kbdDcIcon.classList.add(WHG.Class.KBD_DC_ICON);
+                kbdDcIcon.classList.add(OHG.Class.KBD_DC_ICON);
                 kbdDcIcon.innerText = "(click grid to continue typing)";
-                hostElem.appendChild(kbdDcIcon);
+                parentElem.appendChild(kbdDcIcon);
             }
         }
-        if (hostElem.tabIndex !== 0) {
+        if (parentElem.tabIndex !== 0) {
             throw new Error("The DOM grid's host must have a tabIndex of zero!"
             + " I want this done directly in the HTML.");
         }
         // Remove all child elements from host and then append the new grid:
-        hostElem.querySelectorAll(`.${WHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
-        hostElem.appendChild(gridElem);
-        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).hostElem = hostElem;
+        parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
+        parentElem.appendChild(gridImplElem);
+        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).hostElem = parentElem;
     }
 
 }
@@ -162,7 +162,7 @@ export namespace Grid {
         tileClass: Tile.ClassIf<S>;
         coordSys: S;
         dimensions: Dimensions<S>;
-        domGridHtmlIdHook: string;
+        domParentHtmlIdHook: string;
     };
 
     /**

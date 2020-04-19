@@ -53,7 +53,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             tileClass:  impl.tileClass,
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
-            domGridHtmlIdHook: (desc.gridHtmlIdHook || "n/a")!,
+            domParentHtmlIdHook: (desc.gridHtmlIdHook || "n/a")!,
         }) as GameBase<G,S>["grid"];
 
         // Construct players:

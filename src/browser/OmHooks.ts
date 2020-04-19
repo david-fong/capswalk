@@ -1,18 +1,20 @@
 
 /**
+ * # DOM / CSSOM Hook Strings
+ *
  * Must be matched exactly in the html, css, and javascript.
  *
  * Dataset values are defined for the javascript domain. The CSS should
  * use the CSS-cased version with dash-separators.
- *
- * Things that don't go here:
- * - Event names go in `src/base/game/events`.
- * - Sound file names go in `./Sound.ts`
  */
-export namespace WebHooks {
+export namespace OmHooks {
 
+    /**
+     * See `:/assets/style/utils.css`.
+     */
     export const General = Object.freeze(<const>{
         Class: Object.freeze(<const>{
+            TEXT_SELECT_DISABLED: "text-select-disabled",
             FILL_PARENT: "fill-parent",
         }),
     });
@@ -68,42 +70,11 @@ export namespace WebHooks {
     });
 
 
-    export const Ui = Object.freeze(<const>{
+    export const Display = Object.freeze(<const>{
         Class: Object.freeze(<const>{
+            BASE:       "display",
         }),
     });
-
-
-    /**
-     * Final CSS variables declared for each color scheme are in the
-     * form: `--colour-schemeId-swatchName`. js/ts should not need to
-     * interface with these values directly. Instead, it should use
-     * provided class names and dataset attributes as to minimize its
-     * effort when colour schemes are swapped.
-     */
-    export namespace Colour {
-        export const Swatch = Object.freeze(<const>[
-            "mainFg", "mainBg",
-            "tileFg", "tileBg", "tileBd",
-            "health",
-            "pFaceMe",
-            "pFaceTeammate", "pFaceImmortalTeammate",
-            "pFaceOpponent", "pFaceImmortalOpponent",
-        ]);
-        /**
-         * The scheme id `selected` is a special value and should not
-         * be used.
-         */
-        export const Scheme = Object.freeze(<const>{
-            ["snakey"]: Object.freeze(<const>{
-                displayName: "Snakey by N.W.",
-            }),
-        });
-        export namespace Scheme {
-            export type Id = keyof typeof Scheme;
-        }
-    }
-    Object.freeze(Colour);
 
 
     /**
@@ -122,4 +93,4 @@ export namespace WebHooks {
     };
 
 }
-Object.freeze(WebHooks);
+Object.freeze(OmHooks);

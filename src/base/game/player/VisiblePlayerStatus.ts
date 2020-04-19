@@ -1,4 +1,4 @@
-import { WebHooks } from "../../../browser/WebHooks";
+import { OmHooks } from "../../../browser/OmHooks";
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 import { OperatorPlayer } from "./OperatorPlayer";
@@ -18,15 +18,15 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         {
             const baseElem = document.createElement("div");
             baseElem.classList.add(
-                WebHooks.Player.Class.BASE,
-                WebHooks.General.Class.FILL_PARENT,
+                OmHooks.Player.Class.BASE,
+                OmHooks.General.Class.FILL_PARENT,
             );
             this.baseElem = baseElem;
         } {
             if (this.player instanceof OperatorPlayer) {
                 const spotlightElem = document.createElement("div");
                 spotlightElem.classList.add(
-                    WebHooks.Grid.Class.SPOTLIGHT,
+                    OmHooks.Grid.Class.SPOTLIGHT,
                 );
                 this.baseElem.appendChild(spotlightElem);
             }
@@ -34,8 +34,8 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
             // Setup downedOverlay element:
             const dOverlayElem = document.createElement("div");
             dOverlayElem.classList.add(
-                WebHooks.Player.Class.DOWNED_OVERLAY,
-                WebHooks.General.Class.FILL_PARENT,
+                OmHooks.Player.Class.DOWNED_OVERLAY,
+                OmHooks.General.Class.FILL_PARENT,
             );
             this.baseElem.appendChild(dOverlayElem);
         }
@@ -52,7 +52,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
         if (oldIsDowned !== this.isDowned) {
             // CSS integration for Player.isDowned rendering.
-            const dataDowned = WebHooks.Player.Dataset.DOWNED;
+            const dataDowned = OmHooks.Player.Dataset.DOWNED;
             if (this.isDowned) {
                 if (this.player.team.elimOrder) {
                     this.baseElem.dataset[dataDowned] = "team";
@@ -78,7 +78,7 @@ export namespace VisiblePlayerStatus {
         for (const team of teams) {
             for (const member of team.members) {
                 (member.status as VisiblePlayerStatus<S>)
-                .baseElem.dataset[WebHooks.Player.Dataset.FACE_SWATCH]
+                .baseElem.dataset[OmHooks.Player.Dataset.FACE_SWATCH]
                 = (member === operator) ? "me"
                 : (member.teamId === operator.teamId) ? "teammate" : "opponent";
             }

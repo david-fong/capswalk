@@ -1,4 +1,4 @@
-import { WebHooks } from "../../browser/WebHooks";
+import { OmHooks } from "../../browser/OmHooks";
 import type { Lang, Player } from "utils/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
@@ -36,23 +36,23 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         super(coordDesc);
         {
             const innerBase = document.createElement("div");
-            innerBase.className = WebHooks.Tile.Class.UNSHIFT_HB;
+            innerBase.className = OmHooks.Tile.Class.UNSHIFT_HB;
+            this.#innerBase = innerBase
             {
                 const cDiv = document.createElement("div");
-                cDiv.className = WebHooks.Tile.Class.LANG_CHAR;
-                cDiv.classList.add(WebHooks.General.Class.FILL_PARENT);
+                cDiv.className = OmHooks.Tile.Class.LANG_CHAR;
+                cDiv.classList.add(OmHooks.General.Class.FILL_PARENT);
                 innerBase.appendChild(cDiv);
                 this.langCharElem = cDiv;
             } {
                 const sDiv = document.createElement("div");
-                sDiv.className = WebHooks.Tile.Class.LANG_SEQ;
+                sDiv.className = OmHooks.Tile.Class.LANG_SEQ;
                 innerBase.appendChild(sDiv);
                 this.langSeqElem = sDiv;
             }
             const tCell = document.createElement("div");
-            tCell.className = WebHooks.Tile.Class.BASE;
+            tCell.className = OmHooks.Tile.Class.BASE;
             tCell.appendChild(innerBase);
-            this.#innerBase = innerBase
             this.#baseElem = tCell;
         }
     }
@@ -88,9 +88,9 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     public set freeHealth(newHealth: number) {
         super.freeHealth = newHealth;
         if (this.freeHealth) {
-            this.#baseElem.dataset[WebHooks.Tile.Dataset.HEALTH] = newHealth.toString();
+            this.#baseElem.dataset[OmHooks.Tile.Dataset.HEALTH] = newHealth.toString();
         } else {
-            delete this.#baseElem.dataset[WebHooks.Tile.Dataset.HEALTH];
+            delete this.#baseElem.dataset[OmHooks.Tile.Dataset.HEALTH];
         }
     }
 
