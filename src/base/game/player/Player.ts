@@ -142,7 +142,7 @@ export namespace Player {
              */
             familyId: Player.Family;
             teamId:   Team.Id;
-            socketId: SocketId;
+            socketId: SocketId | undefined; // Must exist for operated players.
             username: Username;
             noCheckGameOver: boolean;
         }>;

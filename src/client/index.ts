@@ -7,7 +7,7 @@ import { IndexTasks }       from "game/IndexTasks";
 IndexTasks.INIT_CLASS_REGISTRIES();
 
 (() => {
-    if ("serviceWorker" in navigator) {
+    if (window.origin && window.origin !== "null" && "serviceWorker" in navigator) {
         // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
         navigator.serviceWorker.register("./src/client/ServiceWorker.js");
         // TODO.learn Using Service Workers to make an offline-friendly PWA.
@@ -30,10 +30,10 @@ export const game = new OfflineGame<Coord.System.EUCLID2>({
     operatorIndex: 0,
     playerDescs: [
         {
-            familyId: "HUMAN",
-            teamId: 0,
-            username: "hello world",
-            socketId: "todo", // TODO.impl maybe make some static method to assign unique values based on operator class?
+            familyId:   "HUMAN",
+            teamId:     0,
+            socketId:   undefined,
+            username:   "hello world",
             noCheckGameOver: false,
         },
     ],

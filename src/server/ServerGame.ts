@@ -27,9 +27,11 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
     /**
      * Entries indexed at ID's belonging to human-operated players
-     * contain an `io.Socket` object.
+     * contain an `io.Socket` object. I could have made this a field
+     * of the `Player` class, but it is only used for players of the
+     * `HUMAN` family, which is designated by field and not by class.
      */
-    protected readonly playerSockets: TU.RoArr<io.Socket>;
+    protected readonly playerSockets: Readonly<Record<Player.Id, io.Socket>>;
 
     /**
      * @override
@@ -62,14 +64,16 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         );
         this.namespace = namespace;
 
-        // TODO.impl initialize this.socketBundle
-        // TODO.design I don't like this. let's just make socketId a Player field.
-        // Then we can get rid of this whole `playerSockets` map business.
         {
-            const playerSockets = {};
-            this.players.forEach((player) => {
-                //player.
+            const playerSockets: Record<Player.Id, io.Socket> = {};
+            gameDesc.playerDescs.forEach((playerDesc) => {
+                if (playerDesc.familyId === Player.Family.HUMAN) {
+                    if (!playerDesc.socketId) { throw new Error; }
+                }
+                playerSockets[(playerDesc as Player.CtorArgs).playerId]
+                    = this.namespace.sockets[playerDesc.socketId!];
             });
+            this.playerSockets = playerSockets;
         }
 
         const humanPlayers = this.players
