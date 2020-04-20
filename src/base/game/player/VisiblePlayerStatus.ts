@@ -1,4 +1,4 @@
-import { OmHooks } from "../../../browser/OmHooks";
+import { OmHooks } from "browser/OmHooks";
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 import { OperatorPlayer } from "./OperatorPlayer";

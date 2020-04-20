@@ -33,7 +33,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
     /**
      * All copies of the game should contain identical entries. That
-     * in a {@link ClientGame} may at any instant be missing trailing
+     * in a {@link OnlineGame} may at any instant be missing trailing
      * entries, or contain some trailing holes, but such gaps should
      * eventually be filled to match those in the Game Manager.
      *
@@ -116,7 +116,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * Update the {@link Game#grid}. Call either at the end of
      * {@link Game#processMoveRequest} if I am a {@link ServerGame} or
      * {@link OfflineGame}, or as an event callback if I am a
-     * {@link ClientGame}.
+     * {@link OnlineGame}.
      *
      * Automatically lowers the {@link Player#requestInFlight} field
      * for the requesting `Player` if the arriving event description

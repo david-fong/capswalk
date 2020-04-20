@@ -24,9 +24,9 @@ import type { Player, PlayerStatus } from "./player/Player";
 export namespace Game {
 
     export const enum Type {
-        OFFLINE = "OFFLINE",
         SERVER  = "SERVER",
-        CLIENT  = "CLIENT",
+        ONLINE  = "ONLINE",
+        OFFLINE = "OFFLINE",
     }
     export namespace Type {
         export type Manager = Type.OFFLINE | Type.SERVER;

@@ -1,6 +1,6 @@
 import { Game } from "game/Game";
 
-import { LocalGameSettings }    from "../browser/GameSettings";
+import { LocalGameSettings }    from "browser/GameSettings";
 import type { Coord }           from "floor/Tile";
 import { VisibleTile }          from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";

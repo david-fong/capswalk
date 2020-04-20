@@ -100,16 +100,16 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     /**
      * Private helper for the constructor to create player objects.
      * This is bypassed in non-game-manager implementations (Ie. In
-     * ClientGame).
+     * OnlineGame).
      *
      * @param gameDesc -
      * @returns A bundle of the constructed players.
      */
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameBase<G,S>["players"] {
         const playerDescs: TU.RoArr<Player.CtorArgs>
-            = (this.gameType === Game.Type.CLIENT)
+            = (this.gameType === Game.Type.ONLINE)
             // The client receives these descriptors already finalized / cleaned by the server.
-            ? gameDesc.playerDescs as Game.CtorArgs<Game.Type.CLIENT,S>["playerDescs"]
+            ? gameDesc.playerDescs as Game.CtorArgs<Game.Type.ONLINE,S>["playerDescs"]
             : Player.CtorArgs.finalize(gameDesc.playerDescs, gameDesc.languageName);
 
         return playerDescs.map((playerDesc, playerIndex) => {
@@ -176,7 +176,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
  /* The implementations are fully defined and publicly exposed by
     GameManager. These protected declarations higher up the class
-    hierarchy exist to allow ClientGame to override them to send
+    hierarchy exist to allow OnlineGame to override them to send
     a request to the ServerGame. */
     public abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
     protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;

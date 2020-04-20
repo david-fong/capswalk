@@ -154,6 +154,8 @@ const BaseConfig: () => Require<webpack.Configuration,
 /**
  * ## Web Bundles
  *
+ * socket.io-client will be bundled as well.
+ *
  * - `target: "web",`. This is implied, but here, explicitness helps me learn.
  * - `externals: [ nodeExternals(), ],` or something like `[ "socket.io-client", ]`
  * - appropriate plugin entries for the index.html file.
@@ -162,54 +164,41 @@ const webBundleConfig = BaseConfig(); {
     const config = webBundleConfig;
     config.name = "src-web";
     config.target = "web";
-    config.externals = [ "socket.io-client", ];
+    config.externals = [ ]; // "socket.io-client"
 
-    const offlineEntryName = "offline";
-    const clientEntryName  = "client";
-    const makeHtmlPluginArgs = (
-        entryName: typeof offlineEntryName |
-        typeof clientEntryName): HtmlPlugin.Options => {
-        return {
-            template: "./index.ejs",
-            filename: `${entryName}/index.html`,
-            //favicon: `assets/${name}-favicon.ico`,
-            favicon: `assets/favicon.ico`,
-            base: "../..", // must play nice with path configs.
-            scriptLoading: "defer",
-            inject: false, // (I specify where each injection goes in the template).
-            chunks: [
-                entryName,
-                //`${name}/runtime`, // see BaseConfig.optimization.runtime
-                "client~offline", // see BaseConfig.optimization.splitChunks
-            ],
-            chunksSortMode: "auto",
-            templateParameters: (compilation, assets, assetTags, options) => { return {
-                compilation,
-                webpackConfig: compilation.options,
-                htmlWebpackPlugin: {
-                    tags: assetTags,
-                    files: assets,
-                    options
-                },
-                // Custom HTML templates for index.ejs:
-                "extraScripts": (entryName === clientEntryName)
-                    ? [ "/socket.io/socket.io.js", ] : [],
-            }; },
-            //hash: true,
-        }
-    }
-    (<const>[ offlineEntryName, clientEntryName, ]).forEach((entryName) => {
+    const makeHtmlPluginArgs = (entryName: string): HtmlPlugin.Options => { return {
+        template:   "./index.ejs",
+        favicon:    "assets/favicon.ico",
+        filename:   `${entryName}/index.html`,
+        base:       "../..", // must play nice with path configs.
+        scriptLoading: "defer",
+        inject: false, // (I specify where each injection goes in the template).
+        chunks: [
+            entryName,
+            //`${name}/runtime`, // see BaseConfig.optimization.runtime
+            //"client~offline", // see BaseConfig.optimization.splitChunks
+        ],
+        chunksSortMode: "auto",
+        templateParameters: (compilation, assets, assetTags, options) => { return {
+            compilation,
+            webpackConfig: compilation.options,
+            htmlWebpackPlugin: {
+                tags: assetTags,
+                files: assets,
+                options
+            },
+            // Custom HTML templates for index.ejs:
+            "extraScripts": [],
+        }; },
+        //hash: true,
+    }; }
+    (<const>[ "client", ]).forEach((entryName) => {
         config.entry[entryName] = `./src/${entryName}/index.ts`;
-        // config.entry[`${name}_body`] = `./src/${name}/body.html`;
-        config.plugins.push(new HtmlPlugin(makeHtmlPluginArgs(entryName)));
-        if (entryName === offlineEntryName) {
-            // Make one more output for the offline entry and place it
-            // in the project root folder for GitHub Pages:
-            const ghPages = makeHtmlPluginArgs(entryName);
-            ghPages.filename = "../index.html";
-            ghPages.base = ".";
-            config.plugins.push(new HtmlPlugin(ghPages));
-        }
+        // config.plugins.push(new HtmlPlugin(makeHtmlPluginArgs(entryName)));
+        const ghPages = makeHtmlPluginArgs(entryName);
+        ghPages.filename = "../index.html";
+        ghPages.base = ".";
+        config.plugins.push(new HtmlPlugin(ghPages));
     });
 }
 

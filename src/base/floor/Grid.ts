@@ -3,7 +3,7 @@ import { TileGetter } from "./TileGetter";
 
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
-import { OmHooks } from "../../browser/OmHooks";
+import { OmHooks } from "browser/OmHooks";
 import { VisibleGrid } from 'floor/VisibleGrid';
 
 

@@ -2,7 +2,7 @@ import * as io from "socket.io-client";
 
 import { Game } from "game/Game";
 
-import { LocalGameSettings }    from "../browser/GameSettings";
+import { LocalGameSettings }    from "browser/GameSettings";
 import { Coord, VisibleTile }   from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
 
@@ -14,14 +14,14 @@ import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
 import { GameEvents }           from "game/__gameparts/Events";
 
 
-type G = Game.Type.CLIENT;
+type G = Game.Type.ONLINE;
 
 /**
  *
  *
  * @extends Game
  */
-export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
+export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
 
     protected settings: LocalGameSettings;
 
@@ -48,13 +48,13 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(
-            Game.Type.CLIENT, {
+            Game.Type.ONLINE, {
             tileClass: VisibleTile,
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,
         );
         if (!this.operator) {
-            throw new Error("The Operator for a ClientGame should be defined.");
+            throw new Error("The Operator for an OnlineGame should be defined.");
         }
         VisiblePlayerStatus.colourizeTeamMembers(this.teams, this.operator);
         this.settings = LocalGameSettings.getInstance();
@@ -72,9 +72,6 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
         );
 
         this.reset();
-        document.body.onkeydown = ((ev) => {
-            this.operator!.processKeyboardInput(ev);
-        });
     }
 
     /**
@@ -136,5 +133,5 @@ export class ClientGame<S extends Coord.System> extends GameEvents<G,S> {
     }
 
 }
-Object.freeze(ClientGame);
-Object.freeze(ClientGame.prototype);
+Object.freeze(OnlineGame);
+Object.freeze(OnlineGame.prototype);
