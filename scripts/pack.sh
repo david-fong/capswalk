@@ -24,4 +24,3 @@ fi
 declare -r doneMsg="$(echo -e "\n\n\n=== BUILD DONE ===\n\n\n")"
 time npx --no-install webpack --color --build-delimiter="${doneMsg}" --config "${cwd}/../webpack.config.js"
 
-# TODO.build check that the html requests all the necessary javascript files.

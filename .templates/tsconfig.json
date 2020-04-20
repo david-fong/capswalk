@@ -4,7 +4,6 @@
         "composite": true,
 
         // Compiler Behaviour:
-        "extendedDiagnostics": true,
         "moduleResolution": "node",
         "forceConsistentCasingInFileNames": true,
         "importHelpers": true,

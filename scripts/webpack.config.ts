@@ -4,6 +4,9 @@ import fs = require("fs");
 import webpack = require("webpack");
 import HtmlPlugin = require("html-webpack-plugin");
 
+// https://webpack.js.org/plugins/mini-css-extract-plugin/
+import MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 // Note: if I ever add this back, I'll need to look into how to make
 // sure it doesn't clean away things from separate configs (See notes
 // below on why I export multiple configurations).
@@ -61,26 +64,31 @@ const BASE_PLUGINS: ReadonlyArray<Readonly<webpack.Plugin>> = [
 /**
  * https://webpack.js.org/loaders/
  */
-const MODULE_RULES: Array<webpack.RuleSetRule> = [
-    {
-        test: /[.]ts$/,
-        use: {
-            loader: "ts-loader",
-            options: <tsloader.LoaderOptions>{
-                projectReferences: true,
-                compilerOptions: {
-                    emitDeclarationOnly: true,
-                    //noEmit: true,
-                },
-                // https://github.com/TypeStrong/ts-loader#faster-builds
-                transpileOnly: true,
-                experimentalWatchApi: true,
+const MODULE_RULES: Array<webpack.RuleSetRule> = [{
+    // With ts-loader@7.0.0, you need to set:
+    // options.compilerOptions.emitDeclarationsOnly: false
+    // options.transpileOnly: false
+    test: /[.]ts$/,
+    use: {
+        loader: "ts-loader",
+        options: <tsloader.LoaderOptions>{
+            projectReferences: true,
+            compilerOptions: {
+                emitDeclarationOnly: false,
+                //noEmit: true,
             },
+            // https://github.com/TypeStrong/ts-loader#faster-builds
+            transpileOnly: false,
+            experimentalWatchApi: true,
         },
-        exclude: /node_modules/,
     },
-    // TODO.learn look into need for html loader
-];
+    exclude: /node_modules/,
+}, {
+    // test: /\.css$/,
+    // use: [{
+    //     loader: MiniCssExtractPlugin.loader,
+    // }, "css-loader", ],
+}, ];
 
 /**
  * # Base Config
@@ -199,6 +207,9 @@ const webBundleConfig = BaseConfig(); {
         ghPages.filename = "../index.html";
         ghPages.base = ".";
         config.plugins.push(new HtmlPlugin(ghPages));
+        // config.plugins.push(new MiniCssExtractPlugin({
+        //     filename: "[name].css"
+        // }));
     });
 }
 
