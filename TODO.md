@@ -29,8 +29,6 @@
 
 ### Low Priority
 
-- Use mini-css to combine all my css into one file as part of the build procedure.
-  - [](https://blog.jakoblind.no/css-modules-webpack/#how-to-extract-the-css-to-its-own-stylescss-file)
 - Read about these topics and see how they might be useful
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)

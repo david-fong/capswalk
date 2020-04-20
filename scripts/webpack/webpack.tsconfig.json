@@ -3,7 +3,7 @@
         "target": "es6",
         "module": "CommonJS",
         "rootDir": ".",
-        "outDir": "../",
+        "outDir": ".",
         "listEmittedFiles": true,
 
         "removeComments": true,

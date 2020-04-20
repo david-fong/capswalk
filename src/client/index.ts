@@ -3,6 +3,7 @@ import { Coord }            from "floor/Tile";
 import { BalancingScheme }  from "lang/LangSeqTreeNode";
 import { OfflineGame }      from "./OfflineGame";
 import { IndexTasks }       from "game/IndexTasks";
+import "../../assets/style/index.css";
 
 IndexTasks.INIT_CLASS_REGISTRIES();
 

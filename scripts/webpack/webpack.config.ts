@@ -26,14 +26,7 @@ type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
  * Externalized definition (for convenience of toggling).
  */
 const PACK_MODE: webpack.Configuration["mode"] = "development";
-
-/**
- * Relative paths in any config fields will resolve off the parent
- * directory of this file. Note the lack of "../" since this file
- * is configured to send its transpilation output to the root of
- * this project.
- */
-export const PROJECT_ROOT = __dirname;
+export const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
 const WATERMARK = "/**\n * " + [
     "SnaKey by David Fong",
@@ -52,6 +45,7 @@ const BASE_PLUGINS: ReadonlyArray<Readonly<webpack.Plugin>> = [
             (moduleName || "")
             .replace(PROJECT_ROOT, "...")
             .replace(PROJECT_ROOT, "...")
+            .replace(PROJECT_ROOT, "...")
             .replace(path.join("node_modules","ts-loader","index.js"), "ts-loader"),
         );
     }),
@@ -68,7 +62,7 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [{
     // With ts-loader@7.0.0, you need to set:
     // options.compilerOptions.emitDeclarationsOnly: false
     // options.transpileOnly: false
-    test: /[.]ts$/,
+    test: /\.ts$/,
     use: {
         loader: "ts-loader",
         options: <tsloader.LoaderOptions>{
@@ -84,10 +78,10 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [{
     },
     exclude: /node_modules/,
 }, {
-    // test: /\.css$/,
-    // use: [{
-    //     loader: MiniCssExtractPlugin.loader,
-    // }, "css-loader", ],
+    test: /\.css$/,
+    use: [{
+        loader: MiniCssExtractPlugin.loader,
+    }, "css-loader", ],
 }, ];
 
 /**
@@ -207,9 +201,9 @@ const webBundleConfig = BaseConfig(); {
         ghPages.filename = "../index.html";
         ghPages.base = ".";
         config.plugins.push(new HtmlPlugin(ghPages));
-        // config.plugins.push(new MiniCssExtractPlugin({
-        //     filename: "[name].css"
-        // }));
+        config.plugins.push(new MiniCssExtractPlugin({
+            filename: "index.css"
+        }));
     });
 }
 
