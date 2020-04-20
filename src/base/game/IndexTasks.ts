@@ -1,12 +1,11 @@
-import { Coord } from "floor/Coord";
 import { Grid } from "floor/Grid";
 import { VisibleGrid } from "floor/VisibleGrid";
 
 import { Euclid2 } from "floor/impl/Euclid2";
 import { Beehive } from "floor/impl/Beehive";
 
-import { ArtificialPlayer } from "game/player/ArtificialPlayer";
-import { Chaser } from "game/player/artificials/Chaser";
+import { ArtificialPlayer } from "./player/ArtificialPlayer";
+import { Chaser } from "./player/artificials/Chaser";
 
 
 /**
@@ -24,32 +23,35 @@ export namespace IndexTasks {
      * been defined, and of importing implementations so they don't get
      * tree-shaken-out by webpack.
      */
-    export function INIT_CLASS_REGISTRIES(): void {
+    export function INIT_CLASS_REGISTRIES(): void
+    { {
         // Non-Visible Grid Implementation Registry:
         (<TU.NoRo<typeof Grid.__Constructors>>Grid.__Constructors)
         = Object.freeze({
-            [ Coord.System.EUCLID2 ]: Euclid2.Grid,
-            [ Coord.System.BEEHIVE ]: Beehive.Grid,
+            [ "EUCLID2" ]: Euclid2.Grid,
+            [ "BEEHIVE" ]: Beehive.Grid,
         });
         Object.freeze(Grid);
         Object.freeze(Grid.prototype);
-
+    } {
         // Visible Grid Implementation Registry:
-        (<TU.NoRo<typeof VisibleGrid.__Constructors>>VisibleGrid.__Constructors)
+        const VGr = VisibleGrid;
+        (<TU.NoRo<typeof VGr.__Constructors>>VGr.__Constructors)
         = Object.freeze({
-            [ Coord.System.EUCLID2 ]: Euclid2.Grid.Visible,
-            [ Coord.System.BEEHIVE ]: Beehive.Grid.Visible,
+            [ "EUCLID2" ]: Euclid2.Grid.Visible,
+            [ "BEEHIVE" ]: Beehive.Grid.Visible,
         });
-        Object.freeze(VisibleGrid);
+        Object.freeze(VGr);
         // This is just an interface. There is no instance prototype to freeze.
-
-        (<TU.NoRo<typeof ArtificialPlayer.__Constructors>>ArtificialPlayer.__Constructors)
+    } {
+        const AP = ArtificialPlayer;
+        (<TU.NoRo<typeof AP.__Constructors>>AP.__Constructors)
         = Object.freeze({
             CHASER: Chaser,
         });
-        Object.freeze(ArtificialPlayer);
-        Object.freeze(ArtificialPlayer.prototype);
-    }
+        Object.freeze(AP);
+        Object.freeze(AP.prototype);
+    } }
     Object.freeze(INIT_CLASS_REGISTRIES);
 }
 Object.freeze(IndexTasks);

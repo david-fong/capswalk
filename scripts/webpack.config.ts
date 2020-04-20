@@ -74,11 +74,11 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [{
         options: <tsloader.LoaderOptions>{
             projectReferences: true,
             compilerOptions: {
-                emitDeclarationOnly: false,
+                emitDeclarationOnly: true,
                 //noEmit: true,
             },
             // https://github.com/TypeStrong/ts-loader#faster-builds
-            transpileOnly: false,
+            transpileOnly: true,
             experimentalWatchApi: true,
         },
     },

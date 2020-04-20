@@ -9,7 +9,7 @@
 
         // don't always need this:
         "node_modules/": true,
-        //"{**/.templates/,**/tsconfig.json}": true,
+        "{**/.templates/,**/tsconfig.json}": true,
         //"{**/.eslintrc.*,.eslintignore}": true,
     },
     "search.exclude": {
