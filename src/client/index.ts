@@ -2,9 +2,18 @@ import { OmHooks }          from "browser/OmHooks";
 import { Coord }            from "floor/Tile";
 import { BalancingScheme }  from "lang/LangSeqTreeNode";
 import { OfflineGame }      from "./OfflineGame";
-import { PostInit }         from "game/PostInit";
+import { IndexTasks }       from "game/IndexTasks";
 
-PostInit();
+IndexTasks.INIT_CLASS_REGISTRIES();
+
+(() => {
+    if ("serviceWorker" in navigator) {
+        // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
+        navigator.serviceWorker.register("./src/client/ServiceWorker.js");
+        // TODO.learn Using Service Workers to make an offline-friendly PWA.
+        // https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
+    }
+})();
 
 // TODO.design override ctor args for each impl, and make it so they adapt input to pass to super ctor.
 // TODO.build this has been set to `var` for testing purposes. It should be `const` in production.

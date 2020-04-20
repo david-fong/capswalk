@@ -62,6 +62,6 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
         farthest-side,
         transparent 20%, var(--colour-mainBg)
     );
-    padding:    1500%;
+    padding:    1300%;
     border:     100vmax solid var(--colour-mainBg);
 }

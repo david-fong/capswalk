@@ -188,7 +188,7 @@ const webBundleConfig = BaseConfig(); {
                 options
             },
             // Custom HTML templates for index.ejs:
-            "extraScripts": [],
+            // "extraScripts": [],
         }; },
         //hash: true,
     }; }

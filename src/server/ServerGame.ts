@@ -63,6 +63,14 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         this.namespace = namespace;
 
         // TODO.impl initialize this.socketBundle
+        // TODO.design I don't like this. let's just make socketId a Player field.
+        // Then we can get rid of this whole `playerSockets` map business.
+        {
+            const playerSockets = {};
+            this.players.forEach((player) => {
+                //player.
+            });
+        }
 
         const humanPlayers = this.players
         .filter((player) => player.familyId === Player.Family.HUMAN);

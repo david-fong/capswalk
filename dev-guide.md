@@ -16,4 +16,17 @@ Methodology: Use #private fields for fields that back accessors- Ie. Fields that
 1. Run `:/scripts/pack.sh` to build the project.
 1. Stage changes, commit, and push.
 
-TODO.build Should we be maintaining some sort of release notes / making annotated tags for releases?
+```shell
+git switch gh-pages
+git merge --no-ff --no-commit dev
+# Resolve merge conflicts.
+./scripts/pack.sh -t # Pass -t to rebuild (transpile) webpack.config.ts
+# Edit changelog?
+git add -u
+# Add any required, untracked files.
+git commit
+git push
+git switch @{-1}
+```
+
+TODO.build Should we be maintaining some sort of release notes / making annotated tags for releases? If so, update list and shell template.

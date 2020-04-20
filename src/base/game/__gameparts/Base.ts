@@ -106,10 +106,12 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * @returns A bundle of the constructed players.
      */
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameBase<G,S>["players"] {
-        const playerDescs: TU.RoArr<Player.CtorArgs>
+        type pCtorArgs = TU.RoArr<Player.CtorArgs>;
+        const playerDescs: pCtorArgs
+            = (gameDesc.playerDescs as pCtorArgs)
             = (this.gameType === Game.Type.ONLINE)
             // The client receives these descriptors already finalized / cleaned by the server.
-            ? gameDesc.playerDescs as Game.CtorArgs<Game.Type.ONLINE,S>["playerDescs"]
+            ? gameDesc.playerDescs as pCtorArgs
             : Player.CtorArgs.finalize(gameDesc.playerDescs, gameDesc.languageName);
 
         return playerDescs.map((playerDesc, playerIndex) => {
