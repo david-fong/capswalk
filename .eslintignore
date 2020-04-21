@@ -10,7 +10,7 @@ tsconfig.json
 # used ".../**/*" since "!" overrides don't work for ".../"
 /scripts/**/*
 !/scripts/webpack.config.ts
-/webpack.config.js
+/scripts/webpack/webpack.config.js
 
 *.md
 *.html

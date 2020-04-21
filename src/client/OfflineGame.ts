@@ -1,5 +1,6 @@
 import { Game } from "game/Game";
 
+import { OmHooks } from 'browser/OmHooks';
 import { LocalGameSettings }    from "browser/GameSettings";
 import type { Coord }           from "floor/Tile";
 import { VisibleTile }          from "floor/VisibleTile";
@@ -33,7 +34,7 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
 
 
     /**
-     * _Calls reset recursively for this entire composition._
+     * _Does not call reset._
      *
      * @param gameDesc -
      */
@@ -57,13 +58,13 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
 
         /* TODO.test This should be safe in a garbage-collection and
         event-handler sense: Since the event handler is added to the
-        event-handler-list of the `.game-grid`-classed element as an
+        event-handler-list of the `.game-grid__impl-body` element as an
         anonymous function, which makes it impossible to remove from
         the list without a reference to that function. Luckily for us,
-        Grid.__VisibleGrid_super will automatically remove old grid-
-        host elements, thus allowing them to be garbage collected, and
-        the event-handler function with it. */
-        this.grid.hostElem.addEventListener("keydown", (ev): boolean => {
+        Grid.__VisibleGrid_super will automatically remove the old game-
+        grid__impl-body child, thus allowing it to be GC'ed, and its
+        event-handler function with it. */
+        this.grid.baseElem.addEventListener("keydown", (ev): boolean => {
             // console.log(`key: ${ev.key}, code: ${ev.code},`
             // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
             // + ` charCode: ${ev.charCode}`);

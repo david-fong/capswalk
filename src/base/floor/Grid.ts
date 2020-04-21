@@ -113,14 +113,19 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
             throw new RangeError(`The ID \"${desc.domParentHtmlIdHook}\"`
             + ` did not refer to an existing html element.`);
         }
-        parentElem.tabIndex = 0;
+        parentElem.dataset[OHG.Dataset.COORD_SYS] = desc.coordSys;
         parentElem.classList.add(
             OHG.Class.GRID,
             OmHooks.General.Class.TEXT_SELECT_DISABLED,
         );
-        parentElem.dataset[OHG.Dataset.COORD_SYS] = desc.coordSys;
+        // Remove all child elements from host and then append the new grid:
+        parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
+        parentElem.appendChild(gridImplElem);
+        gridImplElem.tabIndex = 0;
+        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
         {
             // Add a "keyboard-disconnected" icon if not added already:
+            // This needs to be a _later_ sibling of gridImplElem.
             let kbdDcIcon: HTMLElement | null = parentElem
                 .querySelector(`:scope > .${OHG.Class.KBD_DC_ICON}`);
             if (!kbdDcIcon) {
@@ -131,14 +136,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
                 parentElem.appendChild(kbdDcIcon);
             }
         }
-        if (parentElem.tabIndex !== 0) {
-            throw new Error("The DOM grid's host must have a tabIndex of zero!"
-            + " I want this done directly in the HTML.");
-        }
-        // Remove all child elements from host and then append the new grid:
-        parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
-        parentElem.appendChild(gridImplElem);
-        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).hostElem = parentElem;
     }
 
 }

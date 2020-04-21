@@ -48,6 +48,15 @@ export namespace OmHooks {
         }),
         Class: Object.freeze(<const>{
             GRID:           "game-grid",
+            /**
+             * Must be the first child because it is the element that
+             * can take focus (tabIndex = 0). It needs to be that way
+             * so that its onkeydown handler (which references a Game
+             * object) will get GC'd with it when removed from the DOM.
+             * The keyboard-disconnected overlay is a sibling whose
+             * CSS visibility depends on whether this element has focus
+             * or not.
+             */
             IMPL_BODY:      "game-grid__impl-body",
             SPOTLIGHT:      "game-grid__spotlight",
             KBD_DC_ICON:    "game-grid__kbd-dc-icon",

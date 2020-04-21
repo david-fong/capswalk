@@ -39,14 +39,14 @@
     color:      var(--colour-tileBd);
     visibility: hidden;
 }
-.game-grid:focus {
+.game-grid__impl-body:focus {
     /* cursor:     help; */
     outline:    none;
 }
-.game-grid:not(:focus) .game-grid__impl-body {
+.game-grid__impl-body:not(:focus) {
     filter:     brightness(70%);
 }
-.game-grid:not(:focus) .game-grid__kbd-dc-icon {
+.game-grid__impl-body:not(:focus) ~ .game-grid__kbd-dc-icon {
     visibility: visible;
 }
 

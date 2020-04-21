@@ -12,8 +12,6 @@
 
 ### High Priority
 
-1. Consider combining webpack bundles for offline and client into one.
-    - Do I need to change how / when the socket.io client code is loaded?
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
 1. Implement Euclid2 spawn coordinates.
 1. Implement health spawning.
@@ -26,6 +24,10 @@
     - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
       - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
       - If it still has more health, it does something similar for its teammates.
+1. Brainstorm ways to split up the js and css to defer loading.
+    - The lang implementations are particularly large, and the user might only ever use one.
+    - Can we make all game related code get loaded on demand? Not loaded until user tries to start a game.
+      - Same with game-grid related CSS.
 
 ### Low Priority
 
@@ -45,11 +47,6 @@
 
 ## Important Ideas to Develop
 
-- Make all settings available to all clients, and leave it to GameSession / Game Manager to decide how to respond
-  - (ie, execute privileged-only change if requester is privileged client,
-  - And broadcast how the request was handled:
-    - "lang change made by _username_ will take effect in the next game"
-    - Or "_username_ requested a game-pause" or "_username_ paused the game")
 - Make sound settings stubs for playing music and sound effects.
   - make BGM have a track that varies with lang and different selectable style variations such as jazz cafe/elevator music, fast 13/8.
   - Make movement sound effects able to depend on translated key input like morse sounds.

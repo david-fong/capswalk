@@ -3,7 +3,7 @@ import { Coord }            from "floor/Tile";
 import { BalancingScheme }  from "lang/LangSeqTreeNode";
 import { OfflineGame }      from "./OfflineGame";
 import { IndexTasks }       from "game/IndexTasks";
-import "../../assets/style/index.css";
+require("../../assets/style/index.css");
 
 IndexTasks.INIT_CLASS_REGISTRIES();
 
@@ -39,7 +39,6 @@ export const game = new OfflineGame<Coord.System.EUCLID2>({
         },
     ],
 });
-game.reset();
 
 // Print some things:
 console.log(game);

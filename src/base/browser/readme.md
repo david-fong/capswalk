@@ -44,3 +44,10 @@ These should be able to be changed at any time: on the homepage, or during a gam
 
 - pause or restart
 - quit to settings
+
+Make all settings available to all clients, and leave it to GameSession / Game Manager to decide how to respond.
+
+- (ie, execute privileged-only change if requester is privileged client,
+- And broadcast how the request was handled:
+  - "lang change made by _username_ will take effect in the next game"
+  - Or "_username_ requested a game-pause" or "_username_ paused the game")

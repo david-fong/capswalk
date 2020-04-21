@@ -37,18 +37,17 @@ const WATERMARK = "/**\n * " + [
  *
  */
 const BASE_PLUGINS: ReadonlyArray<Readonly<webpack.Plugin>> = [
-    new webpack.ProgressPlugin((pct, msg, moduleProgress?, activeModules?, moduleName?) => {
-        console.log(
-            `[${Math.floor(pct * 100).toString().padStart(3)}% ]`,
-            (msg === "building") ? msg : msg.padEnd(45),
-            (msg === "building") ? moduleProgress!.padStart(15) : (moduleProgress || ""),
-            (moduleName || "")
-            .replace(PROJECT_ROOT, "...")
-            .replace(PROJECT_ROOT, "...")
-            .replace(PROJECT_ROOT, "...")
-            .replace(path.join("node_modules","ts-loader","index.js"), "ts-loader"),
-        );
-    }),
+    // new webpack.ProgressPlugin((pct, msg, moduleProgress?, activeModules?, moduleName?) => {
+    //     console.log(
+    //         `[${Math.floor(pct * 100).toString().padStart(3)}% ]`,
+    //         (msg === "building") ? msg : msg.padEnd(45),
+    //         (msg === "building") ? moduleProgress!.padStart(15) : (moduleProgress || ""),
+    //         (moduleName || "")
+    //         .replace(new RegExp(PROJECT_ROOT.replace(/\\/g, "\\\\"), "g"), ":")
+    //         .replace(path.join("node_modules","ts-loader","index.js"), "ts-loader")
+    //         .replace(path.join("node_modules","css-loader","dist","cjs.js"), "css-loader"),
+    //     );
+    // }),
     // new webpack.WatchIgnorePlugin([
     //     /\.js$/,
     //     /\.d\.ts$/,
@@ -77,11 +76,18 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [{
         },
     },
     exclude: /node_modules/,
+
 }, {
     test: /\.css$/,
-    use: [{
-        loader: MiniCssExtractPlugin.loader,
-    }, "css-loader", ],
+    use: ((): webpack.RuleSetUseItem[] => {
+        const retval: webpack.RuleSetUse = [ "css-loader", ];
+        //if (PACK_MODE !== "development") {
+            retval.unshift({
+                loader: MiniCssExtractPlugin.loader,
+            });
+        //}
+        return retval;
+    })(),
 }, ];
 
 /**
@@ -181,7 +187,8 @@ const webBundleConfig = BaseConfig(); {
             //"client~offline", // see BaseConfig.optimization.splitChunks
         ],
         chunksSortMode: "auto",
-        templateParameters: (compilation, assets, assetTags, options) => { return {
+        templateParameters: (compilation, assets, assetTags, options) => {
+        return {
             compilation,
             webpackConfig: compilation.options,
             htmlWebpackPlugin: {
@@ -202,7 +209,7 @@ const webBundleConfig = BaseConfig(); {
         ghPages.base = ".";
         config.plugins.push(new HtmlPlugin(ghPages));
         config.plugins.push(new MiniCssExtractPlugin({
-            filename: "index.css"
+            filename: "index.css",
         }));
     });
 }

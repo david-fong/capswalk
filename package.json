@@ -16,13 +16,11 @@
     "https://nodejs.org/api/esm.html#esm_package_exports"
   ],
   "exports": {
-    ".": "./build/src/index"
   },
   "files": [
     "./dist/"
   ],
   "scripts": {
-    "start": "node --experimental-exports --experimental-modules --experimental-json--modules --es-module-specifier-resolution"
   },
   "dependencies": {
     "express": "^4.17.1",

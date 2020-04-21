@@ -337,7 +337,7 @@ export namespace Euclid2 {
         };
 
         export class Visible extends Grid implements VisibleGrid<S> {
-            public readonly hostElem: HTMLElement;
+            public readonly baseElem: HTMLElement;
 
             /**
              * @override
