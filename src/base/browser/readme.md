@@ -10,6 +10,8 @@ As a TypeScript project, this will have minimal dependencies. It will present a 
 - play offline -> game setup
 - join game -> enter host ip
 - host game -> host setup
+- visit repo
+- report an issue
 
 ### Game Options
 
