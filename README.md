@@ -23,9 +23,9 @@ SnaKey drew some initial inspiration from the well-known [Snake Game](https://wi
 
 1. To me, it is my baby. I'm so happy that I can call this idea my own, and I find a lot of fulfilment in working toward an image of its completion. Through it, I've continually been pushing myself to learn new things and to do things better.
 1. To anyone who plays it, I hope it can be three things:
-    - A way to practice typing, and to practice recognizing characters from various supported languages.
     - Something fun to play with friends 🙂
-    - A reminder of how learning is difficult, and yet that we have proven we can overcome that difficulty. Yes, I said that working on this project is immensely fulfilling, but the sheer amount of learning it comes with also brings me a lot of frustration. I have to keep reminding myself to be patient with the process and to be kind to myself. I want you to remember to do that too!
+    - A way to practice typing, and to practice recognizing characters from various supported languages.
+    - A reminder of how learning is difficult, and yet that you and I have proven that we can overcome that difficulty. Yes, I said that working on this project is immensely fulfilling, but the sheer amount of learning it entails also brings me a proportional helping of frustration. I have to keep reminding myself to be patient with the process and to be kind to myself. I want you to remember to do that too!
 
 ## 🚋 Looking Back and Looking Forward
 
