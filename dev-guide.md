@@ -13,7 +13,9 @@ Methodology: Use #private fields for fields that back accessors- Ie. Fields that
 
 #### Prefixing with Double Underscores
 
-Do this if:
+TLDR: use such naming if a member / variable must be public, but is only meant to be called in a very specific place.
+
+Full Explanation: Do this if:
 
 - The _method_ has a good reason to exist and must grant public access, but is able to put an entity into a bad state. Such methods should be called very intentionally in very specific places. The reason is usually that it behaves as a setter (abstracts away management of internal representation), or that it is a hook for extension classes to perform implementation-specific duties. Those two scenarios are actually not all that different. See `Tile.__setOccupant`, `GameBase.__abstractStatusBecome*`, `Player.__abstractNotifyThatGameStatusBecame*` for examples of this.
   - The _method_ is used to abstract the construction of an object of some abstract type. See `GameBase.__playerStatusCtor`, `GameBase.__getGridImplementation`, `GameBase.__createOperatorPlayer` for examples of this. This is a weak-rationale strain of the above classification. The main benefit being sought here is that in autocompletion, its naming will communicate that it was created to be used in a very specific place (typically in constructors).

@@ -25,7 +25,7 @@ body {
     background-color: var(--colour-mainBg);
 }
 
-.display {
+.screen {
     /* Make sure that each display
     starts its own stacking context. */
     z-index:    0;

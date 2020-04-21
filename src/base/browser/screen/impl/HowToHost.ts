@@ -1,13 +1,14 @@
-import { Display } from '../Display';
+import { SkScreen } from '../Screen';
 
 
-export class HostGameDisplay extends Display {
+export class HowToHostScreen extends SkScreen {
 
-    public constructor() {
-        super();
+    protected __lazyLoad(): void {
+        ;
     }
+
 }
-export namespace HostGameDisplay {
+export namespace HowToHostScreen {
     // TODO.doc
     // This will not work. They would need to run webpack, which would
     // require installing developer dependencies... Should we eventually
@@ -20,3 +21,5 @@ export namespace HostGameDisplay {
         "when finished, kill the shell process with \"<ctrl-c>\"",
     ]);
 }
+Object.freeze(HowToHostScreen);
+Object.freeze(HowToHostScreen.prototype);

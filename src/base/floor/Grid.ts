@@ -1,11 +1,11 @@
-import type { Lang, Player } from 'utils/TypeDefs';
+import type { Lang, Player } from "utils/TypeDefs";
 import { OmHooks } from "browser/OmHooks";
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
-import { VisibleGrid } from 'floor/VisibleGrid';
+import { VisibleGrid } from "floor/VisibleGrid";
 
 
 /**

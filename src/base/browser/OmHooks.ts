@@ -83,9 +83,12 @@ export namespace OmHooks {
     });
 
 
-    export const Display = Object.freeze(<const>{
+    export const Screen = Object.freeze(<const>{
         Class: Object.freeze(<const>{
-            BASE:       "display",
+            BASE:       "screen",
+        }),
+        Dataset: Object.freeze(<const>{
+            CURRENT:    "current",
         }),
     });
 }

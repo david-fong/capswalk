@@ -2,7 +2,7 @@
 @import "./colour/index.css";
 
 @import "./root.css";
-@import "./display.css";
+@import "./screen.css";
 
 @import "./coordsys/index.css";
 @import "./grid.css";

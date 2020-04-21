@@ -63,8 +63,8 @@ You might think that after making this game twice I'd be tired of it... but that
 
 ## 🛩 Design Challenges
 
-See [dedicated readme](./src/).
+See [dedicated readme](./src/#source-code).
 
 ## Language Representation
 
-[See dedicated readme](src/base/lang/readme.md)
+See [dedicated readme](./src/base/lang/)
