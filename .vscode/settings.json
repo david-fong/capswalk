@@ -5,7 +5,6 @@
 
         // project specific excludes:
         "package-lock.json": true,
-        "webpack.config.js": true,
 
         // don't always need this:
         "node_modules/": true,

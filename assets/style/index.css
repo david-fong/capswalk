@@ -1,38 +1,10 @@
 @import "./utils.css";
 @import "./colour/index.css";
+
+@import "./root.css";
+@import "./display.css";
+
 @import "./coordsys/index.css";
-@import "./tile.css";
 @import "./grid.css";
+@import "./tile.css";
 @import "./player.css";
-
-:root {
-    transition:
-        background-color,
-        border-color,
-        color
-        0.5s ease-in-out;
-}
-
-/* If anything goes into fullscreen mode: */
-::backdrop {
-    background-color: var(--colour-mainBg);
-}
-
-body {
-    font-family:    "Trebuchet MS", "Lucida Sans Unicode";
-    font-weight:    bold;
-    color:          var(--colour-mainFg);
-    text-align:     center;
-    transition:     filter 0.5s ease-in-out;
-}
-
-#background {
-    z-index:    -1000;
-    position:   fixed;
-    top: 0; right: 0; bottom: 0; left: 0;
-    background-color: var(--colour-mainBg);
-}
-
-table {
-    border-spacing: 0;
-}

@@ -25,7 +25,7 @@ type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 /**
  * Externalized definition (for convenience of toggling).
  */
-const PACK_MODE: webpack.Configuration["mode"] = "development";
+const PACK_MODE = (process.env.NODE_ENV) as webpack.Configuration["mode"];
 export const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
 const WATERMARK = "/**\n * " + [

@@ -35,6 +35,10 @@
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
   - [](https://github.com/danklammer/bytesize-icons)
+  - Heroku
+    - [](https://devcenter.heroku.com/articles/deploying-nodejs)
+    - [](https://devcenter.heroku.com/articles/node-best-practices)
+    - [](https://devcenter.heroku.com/articles/nodejs-support)
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 - For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 - Use es6 #private syntax for getter-backing fields

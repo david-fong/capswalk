@@ -1,9 +1,10 @@
+require("../../assets/style/index.css");
+
 import { OmHooks }          from "browser/OmHooks";
 import { Coord }            from "floor/Tile";
 import { BalancingScheme }  from "lang/LangSeqTreeNode";
 import { OfflineGame }      from "./OfflineGame";
 import { IndexTasks }       from "game/IndexTasks";
-require("../../assets/style/index.css");
 
 IndexTasks.INIT_CLASS_REGISTRIES();
 

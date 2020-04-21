@@ -36,7 +36,6 @@
         "nsps",
         "retval",
         "refs",
-        "retval",
         "supercall",
         "spec",
         "typeof",
@@ -44,6 +43,7 @@
 
         "API's",
         "eslintrc's",
+        "heroku",
         "javascript's",
         "linting",
         "readmes",
