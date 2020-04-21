@@ -90,6 +90,24 @@ export namespace Game {
     }
 
     /**
+     * Serialization of the Game State after a reset.
+     *
+     * Only contains state information that would not be known by a
+     * non-Game Manager.
+     */
+    export type ResetSer<S extends Coord.System> = Readonly<{
+        csps: TU.RoArr<Lang.CharSeqPair>;
+        playerCoords: TU.RoArr<Coord.Bare<S>>;
+        healthCoords: TU.RoArr<{
+            coord: Coord.Bare<S>;
+            health: Player.Health;
+        }>;
+    }>;
+    export namespace Serialization {
+        export const EVENT_NAME = <const>"game-reset";
+    }
+
+    /**
      * - **`PLAYING`** can go to:
      *   - `PAUSED`: when a pause request initiated by a player is accepted.
      *   - `OVER`:  when certain conditions of players being downed are met.

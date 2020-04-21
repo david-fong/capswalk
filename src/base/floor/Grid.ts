@@ -1,9 +1,10 @@
+import type { Lang, Player } from 'utils/TypeDefs';
+import { OmHooks } from "browser/OmHooks";
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
-import { OmHooks } from "browser/OmHooks";
 import { VisibleGrid } from 'floor/VisibleGrid';
 
 
@@ -58,6 +59,18 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
     }
 
 
+    /**
+     * For BaseGame's implementation of SER/DES to work, the traversal
+     * order taken by an implementation of this method must depend
+     * only on the dimensions of the instance. Ie. If two Grids (such
+     * as those at the Client and Server when separated by a network)
+     * were constructed with the same arguments for their dimensions,
+     * then their Tiles should be traversed in the same order by this
+     * function.
+     *
+     * @param consumer -
+     * @param thisArg -
+     */
     public abstract forEachTile(consumer: (tile: Tile<S>) => void, thisArg?: object): void;
 
     /**

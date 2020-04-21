@@ -62,8 +62,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         parent.appendChild(this.#baseElem);
     }
 
-    public setOccupant(playerId: Player.Id, playerElem: HTMLElement): void {
-        super.setOccupant(playerId, playerElem);
+    public __setOccupant(playerId: Player.Id, playerElem: HTMLElement): void {
+        super.__setOccupant(playerId, playerElem);
         this.#baseElem.appendChild(playerElem)
     }
 

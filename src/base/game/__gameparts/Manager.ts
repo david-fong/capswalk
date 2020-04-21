@@ -195,7 +195,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         const dest = this.grid.tile.at(desc.dest.coord);
         if (dest.isOccupied ||
             dest.lastKnownUpdateId !== desc.dest.lastKnownUpdateId) {
-            // The occupancy counter check is not essential, but it helps
+            // The update ID check is not essential, but it helps
             // enforce stronger client-experience consistency: they cannot
             // move somewhere where they have not realized the `LangSeq` has
             // changed.
@@ -213,7 +213,6 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         this.currentFreeHealth -= dest.freeHealth;
         desc.dest.newFreeHealth = 0;
         desc.dest.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
-        // TODO.impl spawn in some new raw health to the floor:
         desc.tilesWithHealthUpdates = this.dryRunSpawnFreeHealth();
 
         // Accept the request, and trigger calculation

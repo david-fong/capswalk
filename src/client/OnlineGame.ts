@@ -37,7 +37,9 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
 
 
     /**
-     * _Calls Grid.reset for this composition (bypasses super)._
+     * _Calls recursively for this entire composition._
+     *
+     * Note that this class does not extend `GameManager`.
      *
      * @param socket -
      * @param gameDesc - This should come from a Server event by the name
@@ -78,12 +80,15 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
      * @override
      */
     public reset(): void {
+        super.reset();
 
-        // TODO.impl Wait for a GameStateDump from the ServerGame. Send ack.
-        // this.socket.once(
-        //     Game.StateDump.EVENT_NAME,
-        //     () => {},
-        // );
+        // TODO.impl Send ack?
+        this.socket.once(
+            Game.Serialization.EVENT_NAME,
+            (ser: Game.ResetSer<S>) => {
+                this.deserializeResetState(ser);
+            },
+        );
     }
 
     /**

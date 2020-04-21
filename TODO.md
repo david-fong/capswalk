@@ -24,6 +24,7 @@
     - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
       - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
       - If it still has more health, it does something similar for its teammates.
+1. For OnlineGame reset method must take a descriptor of the reset game:
 1. Brainstorm ways to split up the js and css to defer loading.
     - The lang implementations are particularly large, and the user might only ever use one.
     - Can we make all game related code get loaded on demand? Not loaded until user tries to start a game.

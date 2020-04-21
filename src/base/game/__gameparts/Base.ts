@@ -1,4 +1,5 @@
 import { Game } from "../Game";
+import type { Lang } from 'utils/TypeDefs';
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { VisibleGrid } from "floor/VisibleGrid";
@@ -127,6 +128,41 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     protected abstract __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;
     protected abstract __createArtifPlayer(desc: Player.CtorArgs):
     (G extends Game.Type.Manager ? ArtificialPlayer<S> : Player<S>);
+
+    public serializeResetState(): Game.ResetSer<S> {
+        const csps: Array<Lang.CharSeqPair> = [];
+        const playerCoords = this.players.map((player) => player.coord);
+        const healthCoords: TU.NoRo<Game.ResetSer<S>["healthCoords"]> = [];
+        this.grid.forEachTile((tile) => {
+            csps.push({
+                char: tile.langChar,
+                seq:  tile.langSeq,
+            });
+            if (tile.freeHealth) {
+                healthCoords.push({
+                    coord:  tile.coord,
+                    health: tile.freeHealth,
+                })
+            }
+        });
+        return { csps, playerCoords, healthCoords, };
+    }
+
+    public deserializeResetState(ser: Game.ResetSer<S>): void {
+        { let i = 0;
+        // Could also use `csps.unshift`, but that may be slower
+        // because it modifies csps, which we don't need to do.
+        this.grid.forEachTile((tile) => {
+            tile.setLangCharSeqPair(ser.csps[i++]);
+        }); }
+        ser.playerCoords.forEach((coord, index) => {
+            this.players[index].moveTo(this.grid.tile.at(coord));
+        });
+        ser.healthCoords.forEach((desc) => {
+            this.grid.tile.at(desc.coord).freeHealth = desc.health;
+        });
+    }
+
 
     public get status(): Game.Status {
         return this.#status;

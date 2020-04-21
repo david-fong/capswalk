@@ -140,7 +140,7 @@ export namespace PlayerActionEvent {
                 coord:              destTile.coord,
                 lastKnownUpdateId:  destTile.lastKnownUpdateId,
                 newCharSeqPair:     undefined,
-                newFreeHealth:undefined,
+                newFreeHealth:      undefined,
             };
         }
     }
