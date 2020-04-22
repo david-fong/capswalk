@@ -1,24 +1,22 @@
 {
-  "name": "snakey-nts",
+  "name": "snakey-mp",
   "version": "0.0.0",
-  "description": "a typing game!",
+  "description": "A multiplayer typing game for learning written languages.",
   "keywords": [
     "typing",
     "game"
   ],
   "author": "David Fong (https://github.com/david-fong)",
   "repository": "github:david-fong/SnaKey-NTS",
-  "private": true,
+  "private": false,
   "type": "module",
-  "//": [
-    "use ECMA modules by default",
-    "https://nodejs.org/api/esm.html#esm_enabling",
-    "https://nodejs.org/api/esm.html#esm_package_exports"
+  "files": [
+    "dist/",
+    "!dist/{src,test}/",
+    "index.html",
+    "manifest.webmanifest"
   ],
   "exports": {},
-  "files": [
-    "./dist/"
-  ],
   "scripts": {},
   "dependencies": {
     "express": "^4.17.1",
