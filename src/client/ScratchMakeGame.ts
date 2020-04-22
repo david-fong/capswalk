@@ -1,3 +1,5 @@
+require("../../assets/style/game/index.css");
+
 import { OmHooks }          from "browser/OmHooks";
 import type { Coord }       from "floor/Tile";
 import { Lang }             from "utils/TypeDefs";

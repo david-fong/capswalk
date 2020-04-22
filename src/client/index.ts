@@ -1,5 +1,5 @@
 // Tell WebPack we want CSS:
-require("../../assets/style/index.css");
+require("../../assets/style/initial/index.css");
 
 import { AllSkScreens } from "browser/screen/AllSkScreens";
 
