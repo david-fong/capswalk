@@ -12,6 +12,11 @@
 
 ### High Priority
 
+1. Brainstorm ways to split up the js and css to defer loading.
+    - The lang implementations are particularly large, and the user might only ever use one.
+    - Can we make all game related code get loaded on demand? Not loaded until user tries to start a game.
+      - Same with game-grid related CSS.
+    - [How WebPack compiles dynamic imports](https://webpack.js.org/api/module-methods/#import-1).
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
 1. Implement Euclid2 spawn coordinates.
 1. Implement health spawning.
@@ -24,11 +29,6 @@
     - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
       - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
       - If it still has more health, it does something similar for its teammates.
-1. For OnlineGame reset method must take a descriptor of the reset game:
-1. Brainstorm ways to split up the js and css to defer loading.
-    - The lang implementations are particularly large, and the user might only ever use one.
-    - Can we make all game related code get loaded on demand? Not loaded until user tries to start a game.
-      - Same with game-grid related CSS.
 
 ### Low Priority
 
@@ -43,11 +43,17 @@
     - [](https://devcenter.heroku.com/articles/nodejs-support)
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 - For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
+- Look into switching from JsDoc to TsDoc
+  - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
+
+### Dependency Management
+
 - Use es6 #private syntax for getter-backing fields
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
-- Look into switching from JsDoc to TsDoc
-  - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
+- WebPack 5:
+  - [Magic dynamic import strings](https://webpack.js.org/migrate/5/#cleanup-the-code) will start getting useful values by default.
+  - `output.ecmaVersion` is `6` by default. If we have set it to `6` manually, we can delete the manual field specification.
 
 ---
 
@@ -148,6 +154,7 @@ https://javascript.info/class-inheritance
 https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
 https://www.quirksmode.org/js/events_order.html#link4
 https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
+https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
 ```
 
 ## Things I have Tried that Haven't Worked (and that's okay)

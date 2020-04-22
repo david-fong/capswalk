@@ -1,4 +1,4 @@
-import { SkScreen } from "../Screen";
+import { SkScreen } from "../SkScreen";
 
 
 export class HomeScreen extends SkScreen {

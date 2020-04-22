@@ -1,7 +1,6 @@
 import { Game } from "game/Game";
 
 import { OmHooks } from 'browser/OmHooks';
-import { LocalGameSettings }    from "browser/GameSettings";
 import type { Coord }           from "floor/Tile";
 import { VisibleTile }          from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
@@ -23,15 +22,12 @@ type G = Game.Type.OFFLINE;
  */
 export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
 
-    protected settings: LocalGameSettings;
-
     /**
      * @override
      */
     protected __getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
         return VisibleGrid.getImplementation(coordSys);
     }
-
 
     /**
      * _Does not call reset._
@@ -49,7 +45,6 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
             throw new Error("The Operator for an OfflineGame should be defined.");
         }
         VisiblePlayerStatus.colourizeTeamMembers(this.teams, this.operator);
-        this.settings = LocalGameSettings.getInstance();
 
         // =====================================
         // CALL TO RESET

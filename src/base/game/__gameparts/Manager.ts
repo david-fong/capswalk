@@ -1,5 +1,4 @@
 import { Lang } from "lang/Lang";
-import { BalancingScheme } from "lang/LangSeqTreeNode";
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
@@ -30,7 +29,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * more simple. It's one less thing they'll see in the in-game UI,
      * and I don't think they'd feel as if it were missing.
      */
-    protected readonly langBalancingScheme: BalancingScheme;
+    protected readonly langBalancingScheme: Lang.BalancingScheme;
 
     /**
      * _Does not call reset._
@@ -49,8 +48,8 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         super(gameType, impl, desc);
         this.averageFreeHealth = desc.averageFreeHealthPerTile * this.grid.area;
 
-        // TODO.design How to get a Language implementation by name?
-        // Below is a placeholder waiting for the above todo item to be sorted out.
+        // TODO.impl Change this to use a dynamic import for a Lang registry dict.
+        // We need to make that registry dict first!
         this.lang = English.Lowercase.getInstance();
 
         // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.

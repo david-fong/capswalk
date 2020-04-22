@@ -1,5 +1,4 @@
 import type { Lang } from "lang/Lang";
-import type { BalancingScheme } from "lang/LangSeqTreeNode";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
@@ -59,7 +58,7 @@ export namespace Game {
         gridHtmlIdHook: G extends Game.Type.SERVER ? undefined : string;
 
         languageName: Lang.Names.Value["id"];
-        langBalancingScheme: BalancingScheme;
+        langBalancingScheme: Lang.BalancingScheme;
 
         /**
          * The index in `playerDescs` of the operator's ctor args.

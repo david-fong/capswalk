@@ -12,9 +12,6 @@ import MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // below on why I export multiple configurations).
 // import clean = require("clean-webpack-plugin");
 
-// https://www.npmjs.com/package/webpack-node-externals
-// import nodeExternals = require("webpack-node-externals");
-
 // https://github.com/TypeStrong/ts-loader#loader-options
 import type * as tsloader from "ts-loader/dist/interfaces";
 
@@ -26,16 +23,9 @@ type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
  * Externalized definition (for convenience of toggling).
  */
 const PACK_MODE = (process.env.NODE_ENV) as webpack.Configuration["mode"];
+
 export const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
-const WATERMARK = "/**\n * " + [
-    "SnaKey by David Fong",
-    "https://github.com/david-fong/SnaKey-NTS",
-].join("\n * ") + "\n */";
-
-/**
- *
- */
 const BASE_PLUGINS: ReadonlyArray<Readonly<webpack.Plugin>> = [
     // new webpack.ProgressPlugin((pct, msg, moduleProgress?, activeModules?, moduleName?) => {
     //     console.log(
@@ -76,7 +66,6 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [{
         },
     },
     exclude: /node_modules/,
-
 }, {
     test: /\.css$/,
     use: ((): webpack.RuleSetUseItem[] => {
@@ -120,8 +109,7 @@ const BaseConfig: () => Require<webpack.Configuration,
     cache: true,
     stats: {
         // https://webpack.js.org/configuration/stats/
-        cached: false,
-        warningsFilter: [ /export .* was not found in/, ],
+        //warningsFilter: [ /export .* was not found in/, ],
     },
 
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
@@ -141,16 +129,13 @@ const BaseConfig: () => Require<webpack.Configuration,
         //     name: entrypoint => `${entrypoint.name}/runtime`,
         // } as webpack.Options.RuntimeChunkOptions,
         //mergeDuplicateChunks: true,
-        splitChunks: {
-            chunks: "initial",
-            minChunks: 1,
-        },
     },
     output: {
-        path: path.resolve(PROJECT_ROOT, "dist"),
-        publicPath: "dist",
-        filename: "[name]/index.js",
-        sourcePrefix: WATERMARK,
+        path:           path.resolve(PROJECT_ROOT, "dist"),
+        publicPath:     "dist/", // lol webpack fails without the trailing slash.
+        filename:       "[name]/index.js",
+        chunkFilename:  "[name]/index.js",
+        library:        "snakey3",
         pathinfo: false, // don't need it. suppression yields small performance gain.
     },
 }; };
@@ -169,49 +154,31 @@ const BaseConfig: () => Require<webpack.Configuration,
  * - appropriate plugin entries for the index.html file.
  */
 const webBundleConfig = BaseConfig(); {
-    const config = webBundleConfig;
-    config.name = "src-web";
+    const config  = webBundleConfig;
     config.target = "web";
+    config.name   = "src-web";
     config.externals = [ ]; // "socket.io-client"
 
-    const makeHtmlPluginArgs = (entryName: string): HtmlPlugin.Options => { return {
+    const htmlPluginArgs: HtmlPlugin.Options = {
         template:   "./index.ejs",
-        favicon:    "assets/favicon.ico",
-        filename:   `${entryName}/index.html`,
-        base:       "../..", // must play nice with path configs.
+        filename:   "../index.html",
+        base:       ".", // must play nice with path configs.
+        favicon:    "./assets/favicon.ico",
         scriptLoading: "defer",
         inject: false, // (I specify where each injection goes in the template).
-        chunks: [
-            entryName,
-            //`${name}/runtime`, // see BaseConfig.optimization.runtime
-            //"client~offline", // see BaseConfig.optimization.splitChunks
-        ],
-        chunksSortMode: "auto",
-        templateParameters: (compilation, assets, assetTags, options) => {
-        return {
-            compilation,
-            webpackConfig: compilation.options,
-            htmlWebpackPlugin: {
-                tags: assetTags,
-                files: assets,
-                options
-            },
+        templateParameters: (compilation, assets, assetTags, options) => { return {
+            compilation, webpackConfig: compilation.options,
+            htmlWebpackPlugin: { tags: assetTags, files: assets, options, },
             // Custom HTML templates for index.ejs:
             // "extraScripts": [],
         }; },
         //hash: true,
-    }; }
-    (<const>[ "client", ]).forEach((entryName) => {
-        config.entry[entryName] = `./src/${entryName}/index.ts`;
-        // config.plugins.push(new HtmlPlugin(makeHtmlPluginArgs(entryName)));
-        const ghPages = makeHtmlPluginArgs(entryName);
-        ghPages.filename = "../index.html";
-        ghPages.base = ".";
-        config.plugins.push(new HtmlPlugin(ghPages));
-        config.plugins.push(new MiniCssExtractPlugin({
-            filename: "index.css",
-        }));
-    });
+    };
+    config.entry["client"] = `./src/client/index.ts`;
+    config.plugins.push(new HtmlPlugin(htmlPluginArgs));
+    config.plugins.push(new MiniCssExtractPlugin({
+        filename: "index.css",
+    }));
 }
 
 
@@ -229,6 +196,7 @@ const NODE_CONFIG = (config: ReturnType<typeof BaseConfig>): void => {
     config.target = "node";
     config.resolve.modules!.push("node_modules");
     config.resolve.extensions!.push(".js");
+    // alternative to below: https://www.npmjs.com/package/webpack-node-externals
     config.externals = fs.readdirSync(path.resolve(PROJECT_ROOT, "node_modules"));
 };
 
@@ -271,6 +239,6 @@ const testBundleConfig = BaseConfig(); {
 module.exports = [
     webBundleConfig,
     // TODO.build Uncomment these pack configs when we get to using them.
-    /* nodeBundleConfig,
-    testBundleConfig, */
+    //nodeBundleConfig,
+    //testBundleConfig,
 ];

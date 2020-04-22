@@ -2,7 +2,6 @@ import * as io from "socket.io-client";
 
 import { Game } from "game/Game";
 
-import { LocalGameSettings }    from "browser/GameSettings";
 import { Coord, VisibleTile }   from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
 
@@ -22,8 +21,6 @@ type G = Game.Type.ONLINE;
  * @extends Game
  */
 export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
-
-    protected settings: LocalGameSettings;
 
     public readonly socket: SocketIOClient.Socket;
 
@@ -59,7 +56,6 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
             throw new Error("The Operator for an OnlineGame should be defined.");
         }
         VisiblePlayerStatus.colourizeTeamMembers(this.teams, this.operator);
-        this.settings = LocalGameSettings.getInstance();
         this.socket = socket;
 
         this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);
@@ -73,7 +69,10 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
             this.processBubbleExecute,
         );
 
+        // =====================================
+        // CALL TO RESET
         this.reset();
+        // =====================================
     }
 
     /**

@@ -1,20 +1,8 @@
-import { Lang } from "lang/Lang";
+import { Lang as __Lang } from "utils/TypeDefs";
+import type { Lang } from "./Lang";
 
 
-/**
- * Ways of choosing {@link LangCharSeqPair} to balance the frequency
- * of the selection of a result based on the results of all previous
- * selections.
- */
-export const enum BalancingScheme {
-    SEQ     = "SEQ",
-    CHAR    = "CHAR",
-    WEIGHT  = "WEIGHT",
-}
-export namespace BalancingScheme {
-    export type SorterMap<T> = Readonly<Record<BalancingScheme, (a: T, b: T) => number>>;
-}
-
+type SorterMap<T> = Readonly<Record<Lang.BalancingScheme, (a: T, b: T) => number>>;
 
 /**
  * No `LangSeqTreeNode`s mapped in the `children` field have an empty
@@ -136,9 +124,9 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @param chars A collection of unique characters in a written language.
      */
     protected addCharMapping(seq: Lang.Seq, chars: TU.RoArr<WeightedLangChar>): void {
-        if (!(Lang.Seq.REGEXP.test(seq))) {
+        if (!(__Lang.Seq.REGEXP.test(seq))) {
             throw new RangeError(`Mapping-sequence \"${seq}\" did not match the`
-            + ` required regular expression \"${Lang.Seq.REGEXP.source}\".`
+            + ` required regular expression \"${__Lang.Seq.REGEXP.source}\".`
             );
         } else if (chars.length === 0) {
             throw new Error("Must not make mapping without written characters.");
@@ -173,7 +161,7 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @returns A character / sequence pair from this node that has
      *      been selected the least according to the specified scheme.
      */
-    public chooseOnePair(balancingScheme: BalancingScheme): Lang.CharSeqPair {
+    public chooseOnePair(balancingScheme: Lang.BalancingScheme): Lang.CharSeqPair {
         const weightedChar = this.characters.slice(0)
             .sort(WeightedLangChar.CMP[balancingScheme])
             .shift()!;
@@ -263,10 +251,10 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @param b -
      * @returns -
      */
-    public static readonly LEAF_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = Object.freeze({
-        [ BalancingScheme.SEQ ]:    ((a, b) => a.inheritingHitCount - b.inheritingHitCount),
-        [ BalancingScheme.CHAR ]:   ((a, b) => a.inheritingHitCount - b.inheritingHitCount),
-        [ BalancingScheme.WEIGHT ]: ((a, b) => a.inheritingWeightedHitCount - b.inheritingWeightedHitCount),
+    public static readonly LEAF_CMP: SorterMap<LangSeqTreeNode> = Object.freeze({
+        [ __Lang.BalancingScheme.SEQ ]:    ((a, b) => a.inheritingHitCount - b.inheritingHitCount),
+        [ __Lang.BalancingScheme.CHAR ]:   ((a, b) => a.inheritingHitCount - b.inheritingHitCount),
+        [ __Lang.BalancingScheme.WEIGHT ]: ((a, b) => a.inheritingWeightedHitCount - b.inheritingWeightedHitCount),
     });
 
     /**
@@ -274,10 +262,10 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @param b -
      * @returns -
      */
-    public static readonly PATH_CMP: BalancingScheme.SorterMap<LangSeqTreeNode> = Object.freeze({
-        [ BalancingScheme.SEQ ]:    ((a, b) => a.personalHitCount - b.personalHitCount),
-        [ BalancingScheme.CHAR ]:   ((a, b) => a.averageCharHitCount - b.averageCharHitCount),
-        [ BalancingScheme.WEIGHT ]: ((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount),
+    public static readonly PATH_CMP: SorterMap<LangSeqTreeNode> = Object.freeze({
+        [ __Lang.BalancingScheme.SEQ ]:    ((a, b) => a.personalHitCount - b.personalHitCount),
+        [ __Lang.BalancingScheme.CHAR ]:   ((a, b) => a.averageCharHitCount - b.averageCharHitCount),
+        [ __Lang.BalancingScheme.WEIGHT ]: ((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount),
     });
 
 }
@@ -291,7 +279,7 @@ export namespace LangSeqTreeNode {
         public validateConstruction(): void {
             // nothing.
         }
-        public chooseOnePair(balancingScheme: BalancingScheme): never {
+        public chooseOnePair(balancingScheme: Lang.BalancingScheme): never {
             throw new TypeError("Must never hit on the root.");
         }
         protected get personalHitCount(): number {
@@ -392,10 +380,10 @@ class WeightedLangChar {
      * @param b -
      * @returns -
      */
-    public static readonly CMP: BalancingScheme.SorterMap<WeightedLangChar> = Object.freeze({
-        [ BalancingScheme.SEQ ]:    (a, b) => a.hitCount - b.hitCount, // design choice.
-        [ BalancingScheme.CHAR ]:   (a, b) => a.hitCount - b.hitCount,
-        [ BalancingScheme.WEIGHT ]: (a, b) => a.weightedHitCount - b.weightedHitCount,
+    public static readonly CMP: SorterMap<WeightedLangChar> = Object.freeze({
+        [ __Lang.BalancingScheme.SEQ ]:    (a, b) => a.hitCount - b.hitCount, // design choice.
+        [ __Lang.BalancingScheme.CHAR ]:   (a, b) => a.hitCount - b.hitCount,
+        [ __Lang.BalancingScheme.WEIGHT ]: (a, b) => a.weightedHitCount - b.weightedHitCount,
     });
 };
 Object.freeze(WeightedLangChar);

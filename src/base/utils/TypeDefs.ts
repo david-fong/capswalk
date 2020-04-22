@@ -47,6 +47,18 @@ export namespace Lang {
      * See the main documentation in game/lang/Lang
      */
     export type Seq = string;
+    export namespace Seq {
+        /**
+         * The choice of this pattern is not out of necessity, but following
+         * the mindset of spec designers when they mark something as reserved:
+         * For the language implementations I have in mind, I don't see the
+         * need to include characters other than these.
+         *
+         * Characters that must never be unmarked as reserved (state reason):
+         * (currently none. update as needed)
+         */
+        export const REGEXP = new RegExp("^[a-zA-Z\-.]+$");
+    }
     /**
      * See the main documentation in game/lang/Lang
      */
@@ -64,6 +76,17 @@ export namespace Lang {
             char: "",
             seq:  "",
         });
+    }
+
+    /**
+     * Ways of choosing {@link LangCharSeqPair} to balance the frequency
+     * of the selection of a result based on the results of all previous
+     * selections.
+     */
+    export const enum BalancingScheme {
+        SEQ     = "SEQ",
+        CHAR    = "CHAR",
+        WEIGHT  = "WEIGHT",
     }
 
     /***

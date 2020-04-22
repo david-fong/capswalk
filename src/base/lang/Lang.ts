@@ -1,6 +1,6 @@
 import { Lang as __Lang } from "utils/TypeDefs";
 
-import { LangSeqTreeNode, BalancingScheme } from "lang/LangSeqTreeNode";
+import { LangSeqTreeNode } from "lang/LangSeqTreeNode";
 
 
 /**
@@ -97,7 +97,7 @@ export abstract class Lang extends __Lang {
      */
     public getNonConflictingChar(
         avoid: TU.RoArr<Lang.Seq>,
-        balancingScheme: BalancingScheme,
+        balancingScheme: Lang.BalancingScheme,
     ): Lang.CharSeqPair {
         // Wording the spec closer to this implementation: We must find
         // characters from nodes that are not descendants or ancestors
@@ -188,18 +188,6 @@ export namespace Lang {
      * implementation's {@link Lang#remapKey} method.
      */
     export type Seq = __Lang.Seq;
-    export namespace Seq {
-        /**
-         * The choice of this pattern is not out of necessity, but following
-         * the mindset of spec designers when they mark something as reserved:
-         * For the language implementations I have in mind, I don't see the
-         * need to include characters other than these.
-         *
-         * Characters that must never be unmarked as reserved (state reason):
-         * (currently none. update as needed)
-         */
-        export const REGEXP = new RegExp("^[a-zA-Z\-.]+$");
-    }
 
     /**
      * A key-value pair containing a `LangChar` and its corresponding
@@ -217,6 +205,8 @@ export namespace Lang {
          */
         export type WeightedForwardMap = Record<Lang.Char, Readonly<{seq: Lang.Seq, weight: number,}>>;
     }
+
+    export type BalancingScheme = __Lang.BalancingScheme;
 
     export namespace Names {
         export type Key   = __Lang.Names.Key;
