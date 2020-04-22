@@ -1,5 +1,4 @@
 import type { Lang } from "lang/Lang";
-import type { BalancingScheme } from "lang/LangSeqTreeNode";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
@@ -24,9 +23,9 @@ import type { Player, PlayerStatus } from "./player/Player";
 export namespace Game {
 
     export const enum Type {
-        OFFLINE = "OFFLINE",
         SERVER  = "SERVER",
-        CLIENT  = "CLIENT",
+        ONLINE  = "ONLINE",
+        OFFLINE = "OFFLINE",
     }
     export namespace Type {
         export type Manager = Type.OFFLINE | Type.SERVER;
@@ -59,7 +58,7 @@ export namespace Game {
         gridHtmlIdHook: G extends Game.Type.SERVER ? undefined : string;
 
         languageName: Lang.Names.Value["id"];
-        langBalancingScheme: BalancingScheme;
+        langBalancingScheme: Lang.BalancingScheme;
 
         /**
          * The index in `playerDescs` of the operator's ctor args.
@@ -67,7 +66,7 @@ export namespace Game {
         operatorIndex: G extends Game.Type.SERVER
             ? undefined
             : Player.Id;
-        playerDescs: ReadonlyArray<(
+        playerDescs: TU.RoArr<(
             G extends Game.Type.Manager
             ? Player.CtorArgs.PreIdAssignment
             : Player.CtorArgs
@@ -84,9 +83,27 @@ export namespace Game {
          * Not used here, but used in {@link GroupSession#createGameInstance}.
          */
         export type FailureReasons = {
-            undefinedUsername: ReadonlyArray<Player.SocketId>; // socket ID's
-            undefinedTeamId:   ReadonlyArray<Player.SocketId>;
+            undefinedUsername: TU.RoArr<Player.SocketId>; // socket ID's
+            undefinedTeamId:   TU.RoArr<Player.SocketId>;
         };
+    }
+
+    /**
+     * Serialization of the Game State after a reset.
+     *
+     * Only contains state information that would not be known by a
+     * non-Game Manager.
+     */
+    export type ResetSer<S extends Coord.System> = Readonly<{
+        csps: TU.RoArr<Lang.CharSeqPair>;
+        playerCoords: TU.RoArr<Coord.Bare<S>>;
+        healthCoords: TU.RoArr<{
+            coord: Coord.Bare<S>;
+            health: Player.Health;
+        }>;
+    }>;
+    export namespace Serialization {
+        export const EVENT_NAME = <const>"game-reset";
     }
 
     /**

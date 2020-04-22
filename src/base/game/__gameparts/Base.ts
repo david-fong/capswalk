@@ -1,4 +1,5 @@
 import { Game } from "../Game";
+import type { Lang } from 'utils/TypeDefs';
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { VisibleGrid } from "floor/VisibleGrid";
@@ -25,7 +26,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     /**
      * Indexable by team ID's.
      */
-    public readonly teams: ReadonlyArray<Team<S>>;
+    public readonly teams: TU.RoArr<Team<S>>;
 
     #status: Game.Status;
 
@@ -53,7 +54,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             tileClass:  impl.tileClass,
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
-            domGridHtmlIdHook: (desc.gridHtmlIdHook || "n/a")!,
+            domParentHtmlIdHook: (desc.gridHtmlIdHook || "n/a")!,
         }) as GameBase<G,S>["grid"];
 
         // Construct players:
@@ -100,16 +101,18 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     /**
      * Private helper for the constructor to create player objects.
      * This is bypassed in non-game-manager implementations (Ie. In
-     * ClientGame).
+     * OnlineGame).
      *
      * @param gameDesc -
      * @returns A bundle of the constructed players.
      */
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameBase<G,S>["players"] {
-        const playerDescs: ReadonlyArray<Player.CtorArgs>
-            = (this.gameType === Game.Type.CLIENT)
+        type pCtorArgs = TU.RoArr<Player.CtorArgs>;
+        const playerDescs: pCtorArgs
+            = (gameDesc.playerDescs as pCtorArgs)
+            = (this.gameType === Game.Type.ONLINE)
             // The client receives these descriptors already finalized / cleaned by the server.
-            ? gameDesc.playerDescs as Game.CtorArgs<Game.Type.CLIENT,S>["playerDescs"]
+            ? gameDesc.playerDescs as pCtorArgs
             : Player.CtorArgs.finalize(gameDesc.playerDescs, gameDesc.languageName);
 
         return playerDescs.map((playerDesc, playerIndex) => {
@@ -126,6 +129,41 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     protected abstract __createArtifPlayer(desc: Player.CtorArgs):
     (G extends Game.Type.Manager ? ArtificialPlayer<S> : Player<S>);
 
+    public serializeResetState(): Game.ResetSer<S> {
+        const csps: Array<Lang.CharSeqPair> = [];
+        const playerCoords = this.players.map((player) => player.coord);
+        const healthCoords: TU.NoRo<Game.ResetSer<S>["healthCoords"]> = [];
+        this.grid.forEachTile((tile) => {
+            csps.push({
+                char: tile.langChar,
+                seq:  tile.langSeq,
+            });
+            if (tile.freeHealth) {
+                healthCoords.push({
+                    coord:  tile.coord,
+                    health: tile.freeHealth,
+                })
+            }
+        });
+        return { csps, playerCoords, healthCoords, };
+    }
+
+    public deserializeResetState(ser: Game.ResetSer<S>): void {
+        { let i = 0;
+        // Could also use `csps.unshift`, but that may be slower
+        // because it modifies csps, which we don't need to do.
+        this.grid.forEachTile((tile) => {
+            tile.setLangCharSeqPair(ser.csps[i++]);
+        }); }
+        ser.playerCoords.forEach((coord, index) => {
+            this.players[index].moveTo(this.grid.tile.at(coord));
+        });
+        ser.healthCoords.forEach((desc) => {
+            this.grid.tile.at(desc.coord).freeHealth = desc.health;
+        });
+    }
+
+
     public get status(): Game.Status {
         return this.#status;
     }
@@ -140,8 +178,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.#status = Game.Status.PLAYING;
         // Make sure focus goes back to the grid element so that it
         // can pick up user input as keydown events:
-        if ((this.grid as VisibleGrid<S>).hostElem) {
-            (this.grid as VisibleGrid<S>).hostElem.focus();
+        if ((this.grid as VisibleGrid<S>).baseElem) {
+            (this.grid as VisibleGrid<S>).baseElem.focus();
         }
     }
     public statusBecomePaused(): void {
@@ -176,7 +214,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
  /* The implementations are fully defined and publicly exposed by
     GameManager. These protected declarations higher up the class
-    hierarchy exist to allow ClientGame to override them to send
+    hierarchy exist to allow OnlineGame to override them to send
     a request to the ServerGame. */
     public abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
     protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;

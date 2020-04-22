@@ -1,0 +1,96 @@
+
+.fill-parent {
+    position:   absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    overflow: hidden hidden;
+}
+
+.text-select-disabled {
+    user-select:        none;
+    -moz-user-select:   none;
+    -webkit-user-select:none;
+    -ms-user-select:    none;
+}
+
+:root {
+    --colour-snakey-tileFg: #aebde2;
+    --colour-snakey-tileBg: #2e3b48;
+    --colour-snakey-tileBd: #ffffff;
+    --colour-snakey-health: #4edf8f;
+
+    --colour-snakey-mainFg: #e9eef3;
+    --colour-snakey-mainBg: #3f5e77;
+
+    --colour-snakey-pFaceMe: #48dff3;
+    --colour-snakey-pFaceTeammate: #f8df50;
+    --colour-snakey-pFaceImmortalTeammate: #f8df50;
+
+    --colour-snakey-pFaceOpponent: #e23fa3;
+    --colour-snakey-pFaceImmortalOpponent: #e23fa3;
+}
+/*
+This is a special file to get a view of the programmatically-set
+swatch based on user selection, with the extra behaviour of falling
+back to default values to prevent a flash of uncoloured content
+before the javascript programmatically selects the default scheme.
+*/
+:root {
+    --colour-tileFg: var(--colour-selected-tileFg, var(--colour-snakey-tileFg));
+    --colour-tileBg: var(--colour-selected-tileBg, var(--colour-snakey-tileBg));
+    --colour-tileBd: var(--colour-selected-tileBd, var(--colour-snakey-tileBd));
+    --colour-health: var(--colour-selected-health, var(--colour-snakey-health));
+    --colour-mainFg: var(--colour-selected-mainFg, var(--colour-snakey-mainFg));
+    --colour-mainBg: var(--colour-selected-mainBg, var(--colour-snakey-mainBg));
+    --colour-pFaceMe: var(--colour-selected-pFaceMe, var(--colour-snakey-pFaceMe));
+    --colour-pFaceTeammate: var(--colour-selected-pFaceTeammate, var(--colour-snakey-pFaceTeammate));
+    --colour-pFaceOpponent: var(--colour-selected-pFaceOpponent, var(--colour-snakey-pFaceOpponent));
+    --colour-pFaceImmortalTeammate: var(--colour-selected-pFaceImmortalTeammate, var(--colour-snakey-pFaceImmortalTeammate));
+    --colour-pFaceImmortalOpponent: var(--colour-selected-pFaceImmortalOpponent, var(--colour-snakey-pFaceImmortalOpponent));
+}
+
+:root {
+    transition:
+        background-color,
+        border-color,
+        color
+        0.5s ease-in-out;
+}
+
+/* If anything goes into fullscreen mode: */
+::backdrop {
+    background-color: var(--colour-mainBg);
+}
+
+body {
+    font-family:    "Trebuchet MS", "Lucida Sans Unicode";
+    font-weight:    bold;
+    color:          var(--colour-mainFg);
+    text-align:     center;
+    transition:     filter 0.5s ease-in-out;
+}
+
+#background {
+    z-index:    -1000;
+    background-color: var(--colour-mainBg);
+}
+
+.screen {
+    /* Make sure that each display
+    starts its own stacking context. */
+    z-index:    0;
+    position:   fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+}
+
+table {
+    border-spacing: 0;
+}
+
+/* This file is for implementation-specific styling.
+See `root.css` for styling applied to elements of the
+`.display` class. */
+
+
+
+
+/*# sourceMappingURL=index.css.map*/

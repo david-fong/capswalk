@@ -4,7 +4,6 @@
         "composite": true,
 
         // Compiler Behaviour:
-        "extendedDiagnostics": true,
         "moduleResolution": "node",
         "forceConsistentCasingInFileNames": true,
         "importHelpers": true,
@@ -13,7 +12,7 @@
         // Language Settings:
         "target": "es6",
         "lib": [ "es6", "dom", "es2019.array" ],
-        "module": "ES6",
+        "module": "ES2020",
 
         // Emit Flags:
         "sourceMap":      true,

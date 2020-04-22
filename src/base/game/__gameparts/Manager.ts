@@ -1,5 +1,4 @@
 import { Lang } from "lang/Lang";
-import { BalancingScheme } from "lang/LangSeqTreeNode";
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
@@ -30,7 +29,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * more simple. It's one less thing they'll see in the in-game UI,
      * and I don't think they'd feel as if it were missing.
      */
-    protected readonly langBalancingScheme: BalancingScheme;
+    protected readonly langBalancingScheme: Lang.BalancingScheme;
 
     /**
      * _Does not call reset._
@@ -49,8 +48,8 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         super(gameType, impl, desc);
         this.averageFreeHealth = desc.averageFreeHealthPerTile * this.grid.area;
 
-        // TODO.design How to get a Language implementation by name?
-        // Below is a placeholder waiting for the above todo item to be sorted out.
+        // TODO.impl Change this to use a dynamic import for a Lang registry dict.
+        // We need to make that registry dict first!
         this.lang = English.Lowercase.getInstance();
 
         // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
@@ -130,7 +129,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
 
     // TODO.design what arguments must this take?
     // then we need to implement it.
-    public dryRunSpawnFreeHealth(): ReadonlyArray<TileModificationEvent<S>> {
+    public dryRunSpawnFreeHealth(): TU.RoArr<TileModificationEvent<S>> {
         return [];
         // NOTE to self: make sure to update this.currentFreeHealth.
     }
@@ -195,7 +194,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         const dest = this.grid.tile.at(desc.dest.coord);
         if (dest.isOccupied ||
             dest.lastKnownUpdateId !== desc.dest.lastKnownUpdateId) {
-            // The occupancy counter check is not essential, but it helps
+            // The update ID check is not essential, but it helps
             // enforce stronger client-experience consistency: they cannot
             // move somewhere where they have not realized the `LangSeq` has
             // changed.
@@ -213,7 +212,6 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         this.currentFreeHealth -= dest.freeHealth;
         desc.dest.newFreeHealth = 0;
         desc.dest.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
-        // TODO.impl spawn in some new raw health to the floor:
         desc.tilesWithHealthUpdates = this.dryRunSpawnFreeHealth();
 
         // Accept the request, and trigger calculation

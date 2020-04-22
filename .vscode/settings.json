@@ -5,7 +5,6 @@
 
         // project specific excludes:
         "package-lock.json": true,
-        "webpack.config.js": true,
 
         // don't always need this:
         "node_modules/": true,
@@ -25,7 +24,10 @@
         }, {
             "fileMatch": [ "/**/*cSpell.json", ],
             "url": "https://raw.githubusercontent.com/streetsidesoftware/cspell/master/cspell.schema.json",
-        },
+        }, {
+            "fileMatch": [ "/**/*.webmanifest", ],
+            "url": "http://json.schemastore.org/web-manifest"
+        }
     ],
 
     "eslint.enable": false, // TODO.build Re-enable this once typescript's eslint parser can handle #private fields.

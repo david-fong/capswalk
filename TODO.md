@@ -12,12 +12,15 @@
 
 ### High Priority
 
-1. Add opengraph tags to my html template and redirector:
-    - [](https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/The_head_metadata_in_HTML#Other_types_of_metadata)
-    - I want to do this before sharing about my progress on social media (or else the link will not have a picture)
+1. Brainstorm ways to split up the js and css to defer loading.
+    - The lang implementations are particularly large, and the user might only ever use one.
+    - Can we make all game related code get loaded on demand? Not loaded until user tries to start a game.
+      - Same with game-grid related CSS.
+    - [How WebPack compiles dynamic imports](https://webpack.js.org/api/module-methods/#import-1).
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
-1. Design: I still kind of want to have a kind of artificial player that can't be killed in a more "survive for as long as possible" mode (instead of an "eliminate all other teams" mode), which I could implement as a subclass of `Chaser` whose `status` field has its `set rawHealth` to do nothing.
-    - As an important side-note, if a team is only composed of such players, the game will technically never end unless we add a full check for it in the function that check whether the game should end, or we add a field to the team class on whether it counts toward the check for whether the game should end (a more powerful design at the cost of slightly more complexity).
+1. Implement Euclid2 spawn coordinates.
+1. Implement health spawning.
+1. Implement basic artificial player.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
@@ -29,29 +32,33 @@
 
 ### Low Priority
 
-- Use mini-css to combine all my css into one file as part of the build procedure.
-  - [](https://blog.jakoblind.no/css-modules-webpack/#how-to-extract-the-css-to-its-own-stylescss-file)
 - Read about these topics and see how they might be useful
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
   - [](https://github.com/danklammer/bytesize-icons)
+  - Heroku
+    - [](https://devcenter.heroku.com/articles/getting-started-with-nodejs)
+    - [](https://devcenter.heroku.com/articles/deploying-nodejs)
+    - [](https://devcenter.heroku.com/articles/node-best-practices)
+    - [](https://devcenter.heroku.com/articles/nodejs-support)
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 - For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
+- Look into switching from JsDoc to TsDoc
+  - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
+
+### Dependency Management
+
 - Use es6 #private syntax for getter-backing fields
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
-- Look into switching from JsDoc to TsDoc
-  - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
+- WebPack 5:
+  - [Magic dynamic import strings](https://webpack.js.org/migrate/5/#cleanup-the-code) will start getting useful values by default.
+  - `output.ecmaVersion` is `6` by default. If we have set it to `6` manually, we can delete the manual field specification.
 
 ---
 
 ## Important Ideas to Develop
 
-- Make all settings available to all clients, and leave it to GameSession / Game Manager to decide how to respond
-  - (ie, execute privileged-only change if requester is privileged client,
-  - And broadcast how the request was handled:
-    - "lang change made by _username_ will take effect in the next game"
-    - Or "_username_ requested a game-pause" or "_username_ paused the game")
 - Make sound settings stubs for playing music and sound effects.
   - make BGM have a track that varies with lang and different selectable style variations such as jazz cafe/elevator music, fast 13/8.
   - Make movement sound effects able to depend on translated key input like morse sounds.
@@ -80,7 +87,6 @@ https://nodejs.org/api/esm.html#esm_enabling
 I might use [this](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) for choosing which team you want to be part of.
 
 ```text
-https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
 https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets
 
 https://developer.mozilla.org/en-US/docs/Web/API
@@ -148,6 +154,7 @@ https://javascript.info/class-inheritance
 https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
 https://www.quirksmode.org/js/events_order.html#link4
 https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
+https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
 ```
 
 ## Things I have Tried that Haven't Worked (and that's okay)

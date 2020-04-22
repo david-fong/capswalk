@@ -5,7 +5,7 @@
 # build
 /dist/
 /scripts/eslint-cache.json
-/webpack.config.js
+/scripts/webpack/webpack.config.js
 
 # vim
 *.swp

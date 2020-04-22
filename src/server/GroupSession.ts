@@ -203,9 +203,9 @@ export namespace GroupSession {
      */
     export class CtorArgs {
 
-        public static EVENT_NAME = "group-session-create";
+        public static EVENT_NAME = <const>"group-session-create";
 
-        public static DEFAULT_INITIAL_TTL = 60;
+        public static DEFAULT_INITIAL_TTL = <const>60;
 
         /**
          * The client should set this to a string to use as a group

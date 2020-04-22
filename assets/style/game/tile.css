@@ -1,0 +1,54 @@
+
+.tile {
+    /* DO NOT give this a z-index property. If you do,
+    each tile will start its own stacking context, which
+    breaks the spotlight display. */
+    position:   relative;
+    display:    inline-flex;
+    justify-content: center;
+    align-content: center;
+}
+.tile, .tile * {
+    pointer-events: none;
+}
+.tile .tile__pointer-hitbox {
+    position: absolute;
+    pointer-events: initial;
+    box-sizing:     initial;
+    border-width:   5%;
+    top:     40%;   left:   40%;
+    height: 100%;   width: 100%;
+    border-radius:  0%;
+    /* border-color: black; */
+}
+
+.tile > * {
+    box-sizing: border-box;
+    border: 0.14em solid transparent;
+    border-radius: 16%;
+}
+.tile__char {
+    background-color: var(--colour-tileBg);
+}
+.tile[data-health] .tile__char {
+    border-color:     var(--colour-tileBd);
+    background-color: var(--colour-health);
+}
+.tile__seq {
+    z-index:    5;
+    position:   absolute;
+    padding:    0ch  0.4ch;
+    /* bottom:     0%; */
+    min-width:  100%;
+    height:     100%;
+    color:      white;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: white;
+    visibility: hidden;
+}
+.tile__pointer-hitbox:hover ~ .tile__seq {
+    visibility: visible;
+}
+.tile__pointer-hitbox:hover ~ .tile__char {
+    color:      transparent;
+}

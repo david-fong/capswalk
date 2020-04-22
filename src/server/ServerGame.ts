@@ -1,11 +1,10 @@
 import * as io from "socket.io";
 import { setTimeout } from "timers";
 
+import { Game } from "game/Game";
 import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
-import { Game } from "game/Game";
-import { Player } from "game/player/Player";
-import { PlayerStatus } from "game/player/PlayerStatus";
+import { Player, PlayerStatus } from "game/player/Player";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
@@ -28,9 +27,11 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
     /**
      * Entries indexed at ID's belonging to human-operated players
-     * contain an `io.Socket` object.
+     * contain an `io.Socket` object. I could have made this a field
+     * of the `Player` class, but it is only used for players of the
+     * `HUMAN` family, which is designated by field and not by class.
      */
-    protected readonly playerSockets: ReadonlyArray<io.Socket>;
+    protected readonly playerSockets: Readonly<Record<Player.Id, io.Socket>>;
 
     /**
      * @override
@@ -63,7 +64,21 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         );
         this.namespace = namespace;
 
-        // TODO.impl initialize this.socketBundle
+        {
+            const playerSockets: Record<Player.Id, io.Socket> = {};
+            gameDesc.playerDescs.forEach((playerDesc) => {
+                if (playerDesc.familyId === Player.Family.HUMAN) {
+                    if (!playerDesc.socketId) { throw new Error; }
+                }
+                // The below cast is safe because GameBase reassigns
+                // `gameDesc.playerDescs` the result of `Player.finalize`.
+                // (Otherwise, `playerDesc` would still be a
+                // `Player.CtorArgs.PreIdAssignment`).
+                playerSockets[(playerDesc as Player.CtorArgs).playerId]
+                    = this.namespace.sockets[playerDesc.socketId!];
+            });
+            this.playerSockets = playerSockets;
+        }
 
         const humanPlayers = this.players
         .filter((player) => player.familyId === Player.Family.HUMAN);
@@ -103,10 +118,12 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
      */
     public reset(): void {
         super.reset();
-        // TODO.design broadcast a game-state dump to all clients
-        // and wait for each of their ACK's before starting to
-        // actually process their movement requests and making
-        // any artificial players start moving.
+        // TODO.design Should we wait for ACK's from all clients before
+        // enabling `stateBecomePlayer`
+        this.namespace.emit(
+            Game.Serialization.EVENT_NAME,
+            this.serializeResetState(),
+        );
     }
 
     /**

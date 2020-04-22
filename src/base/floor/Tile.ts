@@ -73,7 +73,7 @@ export class Tile<S extends Coord.System> {
      *
      * @param playerId -
      */
-    public setOccupant(playerId: Player.Id): void {
+    public __setOccupant(playerId: Player.Id, playerElem?: HTMLElement): void {
         this.#occupantId = playerId;
     }
 

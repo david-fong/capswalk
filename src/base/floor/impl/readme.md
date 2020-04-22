@@ -86,7 +86,7 @@ export namespace SysName {
         public static getSpawnCoords(
             playerCounts: number,
             bounds: Required<Grid.Dimensions>,
-        ): ReadonlyArray<Coord.Bare> {
+        ): TU.RoArr<Coord.Bare> {
             return undefined!;
         }
         /**

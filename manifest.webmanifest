@@ -1,0 +1,20 @@
+{
+    "name": "SnaKey v3",
+    "short_name": "SnaKey v3",
+    "description": "A multiplayer typing game for learning written languages.",
+    "categories": [
+        "education",
+        "entertainment",
+        "games"
+    ],
+    "icons": [{ "src": "dist/favicon.ico" }],
+    "screenshots": [{
+        "src": "assets/images/screenshots/snakey_version3_blanktitle.png"
+    }],
+    "theme_color": "#3f5e77",
+    "background_color": "#3f5e77",
+
+    "start_url": ".",
+    "scope": ".",
+    "display": "minimal-ui"
+}

@@ -163,8 +163,8 @@ export namespace Euclid2 {
          */
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze(<const>{
-            height: Object.freeze(<const>{ min: 10, max: 50, }),
-            width:  Object.freeze(<const>{ min: 10, max: 50, }),
+            height: Object.freeze(<const>{ min: 11, max: 51, }),
+            width:  Object.freeze(<const>{ min: 11, max: 51, }),
         });
 
         /**
@@ -303,7 +303,7 @@ export namespace Euclid2 {
         public static getSpawnCoords(
             playerCounts: number,
             dimensions: Grid.Dimensions,
-        ):  ReadonlyArray<Coord.Bare> {
+        ):  TU.RoArr<Coord.Bare> {
             return [{x:0,y:0,},];
 
             // TODO.impl A proper, nice looking version of this.
@@ -337,7 +337,7 @@ export namespace Euclid2 {
         };
 
         export class Visible extends Grid implements VisibleGrid<S> {
-            public readonly hostElem: HTMLElement;
+            public readonly baseElem: HTMLElement;
 
             /**
              * @override
@@ -351,7 +351,7 @@ export namespace Euclid2 {
                 //gridElem.style.setProperty("--euclid2-grid-height", this.dimensions.height.toString());
                 for (const row of this.grid) {
                     for (const tile of row) {
-                        gridElem.appendChild(tile.tileElem);
+                        tile.__addToDom(gridElem);
                     }
                 }
                 this.__VisibleGrid_super(desc, gridElem);

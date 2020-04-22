@@ -138,7 +138,7 @@ export namespace SnakeyServer {
      * TODO: change to return a map from each of "public" and "private" to a list of addresses
      * https://en.wikipedia.org/wiki/Private_network
      */
-    export const chooseIPv4Address = (): ReadonlyArray<string> => {
+    export const chooseIPv4Address = (): TU.RoArr<string> => {
         return Object.values(os.networkInterfaces()).flat().filter((info) => {
             return !(info.internal) && info.family === "IPv4";
         }).map((info) => info.address);

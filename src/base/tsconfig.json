@@ -2,9 +2,10 @@
     "extends": "../.templates/tsconfig.json",
     "files": [],
     "references": [
-        { "path": "utils", },
-        { "path": "lang", },
-        { "path": "floor", },
-        { "path": "game", },
+        { "path": "utils",  },
+        { "path": "browser",},
+        { "path": "lang",   },
+        { "path": "floor",  },
+        { "path": "game",   },
     ],
 }

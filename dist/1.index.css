@@ -1,0 +1,189 @@
+
+#game-grid-container {
+    position:   relative;
+    display:    inline-flex;
+    height:     100vh;
+    flex-flow:  column nowrap;
+    align-content: center;
+    justify-content: center;
+}
+#game-grid-container > * {
+}
+
+
+.game-grid {
+    z-index:    0;
+    position:   relative;
+    padding:    4px 4px;
+    border:     5px double var(--colour-tileBd);
+    border-radius: 15px;
+    color:      var(--colour-tileFg);
+
+    display:    inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* To hide the spotlight off the edges */
+    overflow:   hidden hidden;
+}
+
+
+.game-grid__impl-body {
+    position:   relative;
+}
+
+.game-grid__kbd-dc-icon {
+    pointer-events: none;
+    z-index:    20;
+    position:   absolute;
+    color:      var(--colour-tileBd);
+    visibility: hidden;
+}
+.game-grid__impl-body:focus {
+    /* cursor:     help; */
+    outline:    none;
+}
+.game-grid__impl-body:not(:focus) {
+    filter:     brightness(70%);
+}
+.game-grid__impl-body:not(:focus) ~ .game-grid__kbd-dc-icon {
+    visibility: visible;
+}
+
+
+/*
+Links that could be helpful for creating different implementations:
+https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
+https://www.w3schools.com/cssref/pr_background-blend-mode.asp
+ */
+.game-grid__spotlight {
+    z-index:    10;
+    background-image: radial-gradient(
+        farthest-side,
+        transparent 20%, var(--colour-mainBg)
+    );
+    padding:    1300%;
+    border:     100vmax solid var(--colour-mainBg);
+}
+
+
+.tile {
+    /* DO NOT give this a z-index property. If you do,
+    each tile will start its own stacking context, which
+    breaks the spotlight display. */
+    position:   relative;
+    display:    inline-flex;
+    justify-content: center;
+    align-content: center;
+}
+.tile, .tile * {
+    pointer-events: none;
+}
+.tile .tile__pointer-hitbox {
+    position: absolute;
+    pointer-events: initial;
+    box-sizing:     initial;
+    border-width:   5%;
+    top:     40%;   left:   40%;
+    height: 100%;   width: 100%;
+    border-radius:  0%;
+    /* border-color: black; */
+}
+
+.tile > * {
+    box-sizing: border-box;
+    border: 0.14em solid transparent;
+    border-radius: 16%;
+}
+.tile__char {
+    background-color: var(--colour-tileBg);
+}
+.tile[data-health] .tile__char {
+    border-color:     var(--colour-tileBd);
+    background-color: var(--colour-health);
+}
+.tile__seq {
+    z-index:    5;
+    position:   absolute;
+    padding:    0ch  0.4ch;
+    /* bottom:     0%; */
+    min-width:  100%;
+    height:     100%;
+    color:      white;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: white;
+    visibility: hidden;
+}
+.tile__pointer-hitbox:hover ~ .tile__seq {
+    visibility: visible;
+}
+.tile__pointer-hitbox:hover ~ .tile__char {
+    color:      transparent;
+}
+
+
+.player {
+    /* DO NOT give this a z-index property. If you do,
+    each player will start its own stacking context, which
+    breaks the ability for the spotlight to hide faraway
+    tile sequence hints. */
+    display:    inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-color: var(--colour-tileBd);
+    /* Need this to allow the spotlight to be visible */
+    overflow: visible visible;
+}
+.player__downed-overlay {
+    z-index:    1;
+}
+.player[data-downed="no"] > .player__downed-overlay {
+    visibility: hidden;
+}
+.player[data-face="me"] {
+    background-color: var(--colour-pFaceMe);
+}
+.player[data-face="teammate"] {
+    background-color: var(--colour-pFaceTeammate);
+}
+.player[data-face="opponent"] {
+    background-color: var(--colour-pFaceOpponent);
+}
+.player[data-face="teammate"][data-downed="team"] {
+    background-color: var(--colour-pFaceImmortalTeammate);
+}
+.player[data-face="opponent"][data-downed="team"] {
+    background-color: var(--colour-pFaceImmortalOpponent);
+}
+
+
+.game-grid[data-coord-sys="EUCLID2"] .game-grid__impl-body {
+    --track-size: minmax(27px, 1fr);
+    display:    grid;
+    grid-template-columns:
+        repeat(var(--euclid2-grid-width), var(--track-size));
+    grid-auto-rows: var(--track-size);
+}
+.game-grid[data-coord-sys="EUCLID2"] .tile {
+    margin:     5%;
+}
+/* .game-grid[data-coord-sys="EUCLID2"] .tile > * {
+} */
+
+
+/*
+https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path
+*/
+.game-grid[data-coord-sys="BEEHIVE"] .tile {
+    --nothing: "yet";
+}
+.game-grid[data-coord-sys="BEEHIVE"] .tile > * {
+    --nothing: "yet";
+}
+
+
+
+
+
+
+/*# sourceMappingURL=1.index.css.map*/

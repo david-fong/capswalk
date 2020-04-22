@@ -1,4 +1,4 @@
-import { WebHooks } from "../../../browser/WebHooks";
+import { OmHooks } from "browser/OmHooks";
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 import { OperatorPlayer } from "./OperatorPlayer";
@@ -10,36 +10,34 @@ import { Team } from "game/player/Team";
 // visually indicate the changes.
 export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
 
-    public readonly playerDivElem: HTMLDivElement;
+    declare public readonly baseElem: HTMLDivElement;
 
 
     public constructor(player: Player<S>, noCheckGameOver: boolean) {
         super(player, noCheckGameOver);
         {
-            // TODO.design create a spotlight mask using the below CSS properties:
-            // https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
-            const pDiv = document.createElement("div");
-            pDiv.classList.add(
-                WebHooks.Player.Class.BASE,
-                WebHooks.General.Class.FILL_PARENT,
+            const baseElem = document.createElement("div");
+            baseElem.classList.add(
+                OmHooks.Player.Class.BASE,
+                OmHooks.General.Class.FILL_PARENT,
             );
-            this.playerDivElem = pDiv;
+            this.baseElem = baseElem;
         } {
             if (this.player instanceof OperatorPlayer) {
-                const spotDiv = document.createElement("div");
-                spotDiv.classList.add(
-                    WebHooks.Grid.Class.SPOTLIGHT,
+                const spotlightElem = document.createElement("div");
+                spotlightElem.classList.add(
+                    OmHooks.Grid.Class.SPOTLIGHT,
                 );
-                this.playerDivElem.appendChild(spotDiv);
+                this.baseElem.appendChild(spotlightElem);
             }
         } {
             // Setup downedOverlay element:
-            const doDiv = document.createElement("div");
-            doDiv.classList.add(
-                WebHooks.Player.Class.DOWNED_OVERLAY,
-                WebHooks.General.Class.FILL_PARENT,
+            const dOverlayElem = document.createElement("div");
+            dOverlayElem.classList.add(
+                OmHooks.Player.Class.DOWNED_OVERLAY,
+                OmHooks.General.Class.FILL_PARENT,
             );
-            this.playerDivElem.appendChild(doDiv);
+            this.baseElem.appendChild(dOverlayElem);
         }
     }
 
@@ -54,14 +52,14 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
         if (oldIsDowned !== this.isDowned) {
             // CSS integration for Player.isDowned rendering.
-            const dataDowned = WebHooks.Player.Dataset.DOWNED;
+            const dataDowned = OmHooks.Player.Dataset.DOWNED;
             if (this.isDowned) {
                 if (this.player.team.elimOrder) {
-                    this.playerDivElem.dataset[dataDowned] = "team";
+                    this.baseElem.dataset[dataDowned] = "team";
                 } else {
-                    this.playerDivElem.dataset[dataDowned] = "self";
+                    this.baseElem.dataset[dataDowned] = "self";
                 }
-            } else {this.playerDivElem.dataset[dataDowned] = "no"; }
+            } else {this.baseElem.dataset[dataDowned] = "no"; }
         }
     }
 
@@ -80,7 +78,7 @@ export namespace VisiblePlayerStatus {
         for (const team of teams) {
             for (const member of team.members) {
                 (member.status as VisiblePlayerStatus<S>)
-                .playerDivElem.dataset[WebHooks.Player.Dataset.FACE_SWATCH]
+                .baseElem.dataset[OmHooks.Player.Dataset.FACE_SWATCH]
                 = (member === operator) ? "me"
                 : (member.teamId === operator.teamId) ? "teammate" : "opponent";
             }

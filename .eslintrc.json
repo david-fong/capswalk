@@ -10,15 +10,14 @@
             // webpack:
             "./scripts/webpack.tsconfig.json",
             // basecode:
-            "./src/webui/tsconfig.json",
             "./src/base/utils/tsconfig.json",
+            "./src/base/browser/tsconfig.json",
             "./src/base/lang/tsconfig.json",
             "./src/base/floor/tsconfig.json",
             "./src/base/game/tsconfig.json",
             // concrete implementations:
-            "./src/offline/tsconfig.json",
-            "./src/server/tsconfig.json",
             "./src/client/tsconfig.json",
+            "./src/server/tsconfig.json",
             // tests:
             "./test/lang/tsconfig.json"
         ],

@@ -8,24 +8,18 @@
         <meta charset="UTF-8"/>
 
         <%= htmlWebpackPlugin.tags.headTags.join("\n        ") %>
-        <meta name="og:title" content="SnaKey v3"/>
+        <meta name="og:title"  content="SnaKey v3"/>
         <meta name="og:description" content="A multiplayer typing game for learning written languages."/>
-        <meta name="og:image" content="https://raw.githubusercontent.com/david-fong/SnaKey-NTS/dev/assets/images/screenshots/snakey_version3_blanktitle.png"/>
-
-        <%= extraScripts.map((name) => `<script src="${name}"></script>`).join("\n        ") %>
-        <link rel="stylesheet" type="text/css" href="assets/style/index.css"/>
+        <meta name="og:image"  content="./assets/images/screenshots/snakey_version3_blanktitle.png"/>
+        <link rel="manifest"   href="manifest.webmanifest"/>
     </head>
 
 
     <body style="margin:0;">
-        <div id="background"></div>
+        <div id="background" class="screen"></div>
         <div id="game-grid-container">
-            <div id="game-grid" class="unselectable" tabindex="0"></div>
+            <div id="game-grid"></div>
         </div>
-
-        <script>
-            // window.onbeforeunload = (event) => "";
-        </script>
         <%= htmlWebpackPlugin.tags.bodyTags.join("\n        ") %>
     </body>
 </html>

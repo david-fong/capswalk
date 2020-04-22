@@ -5,6 +5,7 @@ import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
 import type { GameBase } from "game/__gameparts/Base";
 
+import { PlayerStatus } from "./PlayerStatus";
 import { TileGetter } from "floor/TileGetter";
 
 
@@ -24,19 +25,25 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
      */
     public readonly game: GameBase<any,S>;
 
+    public readonly status: PlayerStatus<S>;
+
     #hostTile: Tile<S>;
 
     public readonly tile: TileGetter<S,[]>;
 
 
 
-    protected constructor(game: GameBase<any,S>, playerId: Player.Id) {
+    protected constructor(game: GameBase<any,S>, desc: Player.CtorArgs) {
         super();
-        if (Math.trunc(playerId) !== playerId) {
+        if (Math.trunc(desc.playerId) !== desc.playerId) {
             throw new RangeError("Player ID's must be integer values.");
         }
-        this.playerId = playerId;
+        this.playerId = desc.playerId;
         this.game = game;
+        this.status = new (this.game.__playerStatusCtor)(
+            this as PlayerSkeleton<S> as Player<S>,
+            desc.noCheckGameOver,
+        );
         this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
     }
 
@@ -49,7 +56,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
      */
     protected reset(spawnTile: Tile<S>): void {
         this.#hostTile = spawnTile;
-        this.hostTile.setOccupant(this.playerId);
+        this.hostTile.__setOccupant(this.playerId, this.status.baseElem);
     }
 
 
@@ -80,12 +87,12 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
     public moveTo(dest: Tile<S>): void {
         // Evict self from current `Tile`.
         if (this.hostTile.occupantId !== this.playerId) {
-            if (this.game.gameType !== Game.Type.CLIENT) {
+            if (this.game.gameType !== Game.Type.ONLINE) {
                 // Should never happen.
                 throw new Error("Linkage between player and occupied tile disagrees.");
             }
             /* Otherwise, this corner case is guaranteed to follow the events
-            described in the below comment: at this `ClientGame`, `p2` will
+            described in the below comment: at this `OnlineGame`, `p2` will
             move off of the `Tile` currently occupied by this `Player`. */
         }
         else {
@@ -94,7 +101,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
         }
         // Occupy the destination `Tile.
         if (dest.isOccupied) {
-            if (this.game.gameType !== Game.Type.CLIENT) {
+            if (this.game.gameType !== Game.Type.ONLINE) {
                 // Should never happen because the Game Manager
                 // rejects requests to move onto an occupied `Tile`.
                 throw new Error("Only one player can occupy a tile at a time.");
@@ -102,18 +109,18 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
             /* Otherwise, this is actually possible in a variant of the _DAS_
             where another `Player` `p2` moves to `B`, I receive that update,
             then `p2` makes a request to move to `C`, which the Game Manager
-            accepts and begins to notify my `ClientGame` of, but between the
+            accepts and begins to notify my `OnlineGame` of, but between the
             time that the GM accepts the request and when I receive the update,
             I make a request to move to `B`, which gets accepted by the GM,
             and because I might not be using websockets as my underlying
             transport, I receive the update for my own request first, which
-            would appear to my `ClientGame` as if I was moving onto the `Tile`
+            would appear to my `OnlineGame` as if I was moving onto the `Tile`
             occupied by `p2`. */
         }
         else {
             // Move to occupy the destination `Tile`:
             this.#hostTile = dest;
-            dest.setOccupant(this.playerId);
+            dest.__setOccupant(this.playerId, this.status.baseElem);
         }
     }
 }
