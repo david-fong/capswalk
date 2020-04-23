@@ -14,11 +14,9 @@ export namespace HowToHostScreen {
     // require installing developer dependencies... Should we eventually
     // publish this npm package containing only the built output?
     export const INSTRUCTIONS_STEPS = Object.freeze(<const>[
-        "$ git clone https://github.com/david-fong/SnaKey-NTS",
-        "$ npm install --production",
+        "$ npm install \'https://github.com/david-fong/SnaKey-NTS#gh-pages\'",
         "$ npm run start",
         "send the url to your friends",
-        "when finished, kill the shell process with \"<ctrl-c>\"",
     ]);
 }
 Object.freeze(HowToHostScreen);

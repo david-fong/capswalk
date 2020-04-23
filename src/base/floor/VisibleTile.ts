@@ -46,7 +46,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             const charElem = document.createElement("div");
             charElem.classList.add(
                 OmHooks.Tile.Class.LANG_CHAR,
-                OmHooks.General.Class.FILL_PARENT,
             );
             this.#baseElem.appendChild(charElem);
             this.langCharElem = charElem;
@@ -64,7 +63,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     public __setOccupant(playerId: Player.Id, playerElem: HTMLElement): void {
         super.__setOccupant(playerId, playerElem);
-        this.#baseElem.appendChild(playerElem)
+        this.#baseElem.appendChild(playerElem);
+        //this.langSeqElem.innerText = player.username;
     }
 
 
@@ -81,6 +81,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public evictOccupant(): void {
         super.evictOccupant();
+        // Undo setting mouseover text to occupant username:
+        // this.langSeqElem.innerText = this.langSeq;
     }
 
     /**

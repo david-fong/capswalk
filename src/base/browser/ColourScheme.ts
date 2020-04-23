@@ -1,3 +1,4 @@
+import { StorageHooks } from 'browser/StorageHooks';
 
 /**
  *
@@ -7,6 +8,10 @@
  * provided class names and dataset attributes as to minimize its
  * effort when colour schemes are swapped.
  */
+// TODO.design I want each option to show the swatches. To make the
+// transition smooth without making every element with the CSS have
+// transition behaviour for colour-related properties, use a garage-
+// door with
 export class Colour {
 
     public readonly sel: HTMLSelectElement & {value: Colour.Scheme.Id};
@@ -22,6 +27,10 @@ export class Colour {
         sel.onchange = () => {
             sel.blur();
             this.switchToScheme(this.sel.value);
+            localStorage.setItem(
+                StorageHooks.Keys.COLOUR,
+                this.sel.value,
+            );
         };
         hostElement.appendChild(sel);
         this.sel = sel as Colour["sel"];

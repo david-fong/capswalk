@@ -58,7 +58,6 @@ export namespace OmHooks {
              * or not.
              */
             IMPL_BODY:      "game-grid__impl-body",
-            SPOTLIGHT:      "game-grid__spotlight",
             KBD_DC_ICON:    "game-grid__kbd-dc-icon",
         }),
         Dataset: Object.freeze(<const>{
@@ -73,8 +72,9 @@ export namespace OmHooks {
 
     export const Player = Object.freeze(<const>{
         Class: Object.freeze(<const>{
-            BASE:       "player",
+            BASE:           "player",
             DOWNED_OVERLAY: "player__downed-overlay",
+            SPOTLIGHT:      "player__spotlight",
         }),
         Dataset: Object.freeze(<const>{
             DOWNED:     "downed",

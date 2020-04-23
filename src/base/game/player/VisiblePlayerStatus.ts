@@ -3,41 +3,32 @@ import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 import { OperatorPlayer } from "./OperatorPlayer";
 import { PlayerStatus } from "./PlayerStatus";
-import { Team } from "game/player/Team";
+import { Team } from "./Team";
 
 
-// TODO.impl make the overridden setters modify the HTML elements to
-// visually indicate the changes.
 export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
 
-    declare public readonly baseElem: HTMLDivElement;
+    declare public readonly baseElem: HTMLElement;
 
 
     public constructor(player: Player<S>, noCheckGameOver: boolean) {
         super(player, noCheckGameOver);
         {
             const baseElem = document.createElement("div");
-            baseElem.classList.add(
-                OmHooks.Player.Class.BASE,
-                OmHooks.General.Class.FILL_PARENT,
-            );
+            baseElem.classList.add(OmHooks.Player.Class.BASE);
             this.baseElem = baseElem;
-        } {
-            if (this.player instanceof OperatorPlayer) {
-                const spotlightElem = document.createElement("div");
-                spotlightElem.classList.add(
-                    OmHooks.Grid.Class.SPOTLIGHT,
-                );
-                this.baseElem.appendChild(spotlightElem);
-            }
         } {
             // Setup downedOverlay element:
             const dOverlayElem = document.createElement("div");
-            dOverlayElem.classList.add(
-                OmHooks.Player.Class.DOWNED_OVERLAY,
-                OmHooks.General.Class.FILL_PARENT,
-            );
+            dOverlayElem.classList.add(OmHooks.Player.Class.DOWNED_OVERLAY);
             this.baseElem.appendChild(dOverlayElem);
+        } {
+            // Setup spotlight element:
+            if (this.player instanceof OperatorPlayer) {
+                const spotlightElem = document.createElement("div");
+                spotlightElem.classList.add(OmHooks.Player.Class.SPOTLIGHT);
+                this.baseElem.appendChild(spotlightElem);
+            }
         }
     }
 
