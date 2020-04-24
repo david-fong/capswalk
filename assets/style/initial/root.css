@@ -4,6 +4,10 @@
     background-color: var(--colour-mainBg);
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family:    "Trebuchet MS", "Lucida Sans Unicode";
     font-weight:    bold;

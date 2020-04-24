@@ -36,17 +36,23 @@ export abstract class SkScreen {
         this.__abstractOnBeforeEnter();
     }
 
-    public leave(): void {
-        this.__abstractOnBeforeLeave();
+    public leave(): boolean {
+        return this.__abstractOnBeforeLeave();
     }
 
     protected abstract __lazyLoad(): void;
 
     /**
+     * Return false if the leave should be cancelled. This functionality
+     * allows an implementation to provide a prompt to the user such as
+     * a confirmation modal warning that unsaved changes would be lost.
+     *
      * This is a good place, for example, to stop any non-essential
      * `setInterval` schedules.
      */
-    protected __abstractOnBeforeLeave(): void {}
+    protected __abstractOnBeforeLeave(): boolean {
+        return true;
+    }
 
     /**
      * This is a good place to start any `setInterval` schedules, and

@@ -120,6 +120,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      */
     public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridImplElem: HTMLElement): void {
         const OHG = OmHooks.Grid;
+        gridImplElem.tabIndex = 0;
         gridImplElem.classList.add(OHG.Class.IMPL_BODY);
         const parentElem = document.getElementById(desc.domParentHtmlIdHook);
         if (!parentElem) {
@@ -134,7 +135,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         // Remove all child elements from host and then append the new grid:
         parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
         parentElem.appendChild(gridImplElem);
-        gridImplElem.tabIndex = 0;
         (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
         {
             // Add a "keyboard-disconnected" icon if not added already:

@@ -25,6 +25,7 @@ export class AllSkScreens {
             [ SkScreen.Id.HOW_TO_HOST ]: new  HowToHostScreen(p,f),
             [ SkScreen.Id.PLAY_GAME   ]: new   PlayGameScreen(p,f),
         });
+        this.goToScreen(SkScreen.Id.HOME);
     }
 
     public goToScreen(destId: SkScreen.Id): void {
@@ -33,9 +34,13 @@ export class AllSkScreens {
             // I don't see why this would ever need to happen.
             throw new Error ("never happens. see comment in source.");
         }
-        this.currentScreen.leave();
-        destScreen.enter();
-        this.#currentScreen = destScreen;
+        if (this.currentScreen?.leave()) {
+            // Note on above nullish coalesce: Special case entered
+            // during construction when there is no currentScreen yet.
+            // Any confirm-leave prompts made to the user were OK-ed.
+            destScreen.enter();
+            this.#currentScreen = destScreen;
+        }
     }
 
     public get currentScreen(): SkScreen {

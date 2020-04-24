@@ -61,10 +61,16 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         parent.appendChild(this.#baseElem);
     }
 
-    public __setOccupant(playerId: Player.Id, playerElem: HTMLElement): void {
-        super.__setOccupant(playerId, playerElem);
-        this.#baseElem.appendChild(playerElem);
-        //this.langSeqElem.innerText = player.username;
+    /**
+     * @override
+     */
+    public __setOccupant(
+        playerId: Player.Id,
+        immigrantInfo: Tile.VisibleImmigrantInfo,
+    ): void {
+        super.__setOccupant(playerId, immigrantInfo);
+        this.#baseElem.appendChild(immigrantInfo.playerElem);
+        this.langSeqElem.innerText = immigrantInfo.username;
     }
 
 
@@ -82,7 +88,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     public evictOccupant(): void {
         super.evictOccupant();
         // Undo setting mouseover text to occupant username:
-        // this.langSeqElem.innerText = this.langSeq;
+        this.langSeqElem.innerText = this.langSeq;
     }
 
     /**
