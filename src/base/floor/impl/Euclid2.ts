@@ -206,9 +206,8 @@ export namespace Euclid2 {
          */
         public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
             const options = this.tile.destsFrom(sourceCoord).unoccupied.get;
-            if (!(options.some((tile) => tile.coord.equals(sourceCoord)))) {
-                // This should never happen. It is here as a reminder.
-                throw new Error("Caller code didn't break the upward occupancy link.");
+            if (options.length === 0) {
+                return this.tile.at(sourceCoord);
             }
             if (options.length === 1) {
                 // Minor optimization:
@@ -252,6 +251,15 @@ export namespace Euclid2 {
             }
             // Choose a random non-axial option:
             return options[Math.floor(options.length * Math.random())];
+        }
+
+        /**
+         * @override
+         */
+        public getUntAwayFrom(sourceCoord: Coord, avoidCoord: Coord): Tile<S> {
+            return this.getUntToward(sourceCoord, sourceCoord.add(
+                sourceCoord.sub(avoidCoord)
+            ));
         }
 
 

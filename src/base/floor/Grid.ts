@@ -80,10 +80,9 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * to be broken in such a way that imitates movement in a straight
      * path (visually speaking).
      *
-     * **Important:** The caller must first break the upward occupancy
-     * link by calling `this.hostTile.evictOccupant();` This is so that
-     * the current position of this `ArtificialPlayer` will always be
-     * an option when everything adjacent to it is occupied.
+     * **Important:** If All destinations from sourceCoord are occupied
+     * (which includes `sourceCoord` itself), the implementation must
+     * return `sourceCoord`.
      *
      * @param sourceCoord
      * The coordinate from which to find the next hop.
@@ -93,6 +92,14 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * grid, or have integer-valued coordinate values.
      */
    public abstract getUntToward(sourceCoord: Coord<S>, intendedDest: Coord<S>): Tile<S>;
+
+   /**
+    *
+    * @param sourceCoord -
+    * @param avoidCoord -
+    */
+   // TODO.doc
+   public abstract getUntAwayFrom(sourceCoord: Coord<S>, avoidCoord: Coord<S>): Tile<S>;
 
 
     /**
