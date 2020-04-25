@@ -43,9 +43,13 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
         // Setup spotlight element:
         if (player === operator) {
-            const spotlightElem = document.createElement("div");
-            spotlightElem.classList.add(OmHooks.Player.Class.SPOTLIGHT);
-            this.#baseElem.appendChild(spotlightElem);
+            const sslElem = document.createElement("div");
+            sslElem.classList.add(OmHooks.Player.Class.SHORT_SPOTLIGHT);
+            this.#baseElem.appendChild(sslElem);
+
+            const lslElem = document.createElement("div");
+            lslElem.classList.add(OmHooks.Player.Class.LONG_SPOTLIGHT);
+            this.#baseElem.appendChild(lslElem);
         }
         (this.__immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
             playerElem: this.#baseElem,

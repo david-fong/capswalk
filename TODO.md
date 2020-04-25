@@ -15,7 +15,6 @@
 1. Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
 1. Brainstorm ways to split up the js and css to defer loading.
     - Make lang files dynamically imported. This will save loading if the user only plays online (no game-manager implementation needed).
-1. Make player movement have a shrinking animation where leaving a tile and a simultaneous expanding animation where entering a tile.
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
 1. Implement Euclid2 spawn coordinates.
 1. Implement basic artificial player.
@@ -33,7 +32,7 @@
 - Read about these topics and see how they might be useful
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
-  - [](https://github.com/danklammer/bytesize-icons)
+  - [](https://www.npmjs.com/package/bad-words)
   - Heroku
     - [](https://devcenter.heroku.com/articles/getting-started-with-nodejs)
     - [](https://devcenter.heroku.com/articles/deploying-nodejs)

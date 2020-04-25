@@ -1,0 +1,12 @@
+
+/* The only way I'm going to stay sane managing this
+is by giving it its own file. */
+.game-grid                      { z-index:   0; }
+.game-grid__kbd-dc-icon         { z-index:  30; }
+
+.player__spotlight-long         { z-index:  20; } /* SPOTLIGHT (long-range) */
+.tile__seq                      { z-index:  12; }
+.tile[data-health] .tile__char  { z-index:  11; }
+.player[data-face="teammate"]   { z-index:  11; }
+.player__spotlight-short        { z-index:  10; } /* SPOTLIGHT (short-range) */
+/* .player                         { z-index:   1; } */

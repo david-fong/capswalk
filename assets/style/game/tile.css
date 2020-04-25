@@ -28,15 +28,16 @@
 .tile__char {
     background-color: var(--colour-tileBg);
     overflow: hidden hidden;
+    transition-property: color, background-color;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in;
 }
 .tile[data-health] .tile__char {
-    z-index: 11;
     border-color:     var(--colour-tileBd);
     color:            var(--colour-healthFg);
     background-color: var(--colour-healthBg);
 }
 .tile__seq {
-    z-index:    5;
     padding:    0ch  0.4ch;
     /* bottom:     0%; */
     min-height: 100%; height: max-content;

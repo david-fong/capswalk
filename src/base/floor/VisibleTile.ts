@@ -69,7 +69,9 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         immigrantInfo: Tile.VisibleImmigrantInfo,
     ): void {
         super.__setOccupant(playerId, immigrantInfo);
-        this.#baseElem.appendChild(immigrantInfo.playerElem);
+        // It must go at least before the langChar element so that the
+        // CSS can create a fading trail effect.
+        this.#baseElem.insertBefore(immigrantInfo.playerElem, this.langCharElem);
         this.langSeqElem.innerText = immigrantInfo.username;
     }
 

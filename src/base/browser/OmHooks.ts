@@ -24,8 +24,9 @@ export namespace OmHooks {
         Class: Object.freeze(<const>{
             BASE:           "tile",
             /**
-             * Must be the first child to allow CSS to use the variable-
-             * distance same-parent precede selection operator.
+             * Must precede the char and seq elements to allow CSS
+             * to use the variable-distance same-parent precede
+             * selection operator ("~").
              */
             POINTER_HB:     "tile__pointer-hitbox",
             LANG_CHAR:      "tile__char",
@@ -74,7 +75,8 @@ export namespace OmHooks {
         Class: Object.freeze(<const>{
             BASE:           "player",
             DOWNED_OVERLAY: "player__downed-overlay",
-            SPOTLIGHT:      "player__spotlight",
+            SHORT_SPOTLIGHT:"player__spotlight-short",
+            LONG_SPOTLIGHT: "player__spotlight-long",
         }),
         Dataset: Object.freeze(<const>{
             DOWNED:     "downed",
