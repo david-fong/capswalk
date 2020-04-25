@@ -30,6 +30,7 @@
     overflow: hidden hidden;
 }
 .tile[data-health] .tile__char {
+    z-index: 11;
     border-color:     var(--colour-tileBd);
     color:            var(--colour-healthFg);
     background-color: var(--colour-healthBg);

@@ -39,6 +39,7 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
     background-color: var(--colour-pFaceMe);
 }
 .player[data-face="teammate"] {
+    z-index:    11;
     background-color: var(--colour-pFaceTeammate);
 }
 .player[data-face="opponent"] {

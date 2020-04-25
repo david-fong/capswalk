@@ -145,7 +145,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         }
         this.recordEvent(desc);
         this.executeTileModEvent(desc.dest, player !== this.operator);
-        desc.tilesWithHealthUpdates!.forEach((desc) => {
+        desc.tilesWithHealthUpdates?.forEach((desc) => {
             this.executeTileModEvent(desc);
         });
 
@@ -166,7 +166,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         if ((player === this.operator)
             ? (clientEventLag === 1)
             : (clientEventLag <= 1)) {
-            player.status.score     = desc.newPlayerHealth!.score;
+            player.status.score  = desc.newPlayerHealth!.score;
             player.status.health = desc.newPlayerHealth!.health;
 
             player.moveTo(dest);
