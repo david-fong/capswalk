@@ -9,4 +9,4 @@ is by giving it its own file. */
 .tile[data-health] .tile__char  { z-index:  11; }
 .player[data-face="teammate"]   { z-index:  11; }
 .player__spotlight-short        { z-index:  10; } /* SPOTLIGHT (short-range) */
-/* .player                         { z-index:   1; } */
+.player__face                   { z-index:   1; }

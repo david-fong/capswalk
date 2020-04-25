@@ -74,6 +74,7 @@ export namespace OmHooks {
     export const Player = Object.freeze(<const>{
         Class: Object.freeze(<const>{
             BASE:           "player",
+            FACE:           "player__face",
             DOWNED_OVERLAY: "player__downed-overlay",
             SHORT_SPOTLIGHT:"player__spotlight-short",
             LONG_SPOTLIGHT: "player__spotlight-long",

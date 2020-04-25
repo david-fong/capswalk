@@ -45,6 +45,8 @@
         "unshift",
 
         "API's",
+        "devtool",
+        "entrypoint",
         "eslintrc's",
         "heroku",
         "javascript's",

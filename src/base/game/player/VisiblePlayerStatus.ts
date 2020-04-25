@@ -19,6 +19,11 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
             baseElem.classList.add(OmHooks.Player.Class.BASE);
             this.#baseElem = baseElem;
         } {
+            // Setup face element:
+            const faceElem = document.createElement("div");
+            faceElem.classList.add(OmHooks.Player.Class.FACE);
+            this.#baseElem.appendChild(faceElem);
+        } {
             // Setup downedOverlay element:
             const dOverlayElem = document.createElement("div");
             dOverlayElem.classList.add(OmHooks.Player.Class.DOWNED_OVERLAY);
@@ -72,14 +77,8 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
         if (oldIsDowned !== this.isDowned) {
             // CSS integration for Player.isDowned rendering.
-            const dataDowned = OmHooks.Player.Dataset.DOWNED;
-            if (this.isDowned) {
-                if (this.player.team.elimOrder) {
-                    this.#baseElem.dataset[dataDowned] = "team";
-                } else {
-                    this.#baseElem.dataset[dataDowned] = "self";
-                }
-            } else {this.#baseElem.dataset[dataDowned] = "no"; }
+            this.#baseElem[OmHooks.Player.Dataset.DOWNED] = (this.isDowned)
+                ? ((this.player.team.elimOrder) ? "team" : "self") : "no";
         }
     }
 }

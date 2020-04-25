@@ -9,11 +9,15 @@
     display:    inline-flex;
     align-items: center;
     justify-content: center;
-    border-color: var(--colour-tileBd);
     /* Need this to allow the spotlight to be visible */
     /* overflow: visible visible; */
 }
+.player__face {
+    border-color: var(--colour-tileBd);
+}
 .player__downed-overlay {
+    background-color: red;
+    opacity: 0.2;
 }
 
 
@@ -27,39 +31,39 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
         farthest-side,
         transparent 30%, var(--colour-mainBg)
     );
-    padding:    1300%;
+    padding:    1100%;
     border:     100vmax solid var(--colour-mainBg);
 }
 .player__spotlight-long {
     background-image: radial-gradient(
         farthest-side,
-        transparent 10%, var(--colour-mainBg)
+        transparent 15%, var(--colour-mainBg)
     );
-    padding:    4000%;
+    padding:    1700%;
     border:     100vmax solid var(--colour-mainBg);
-    opacity:    0.8;
+    opacity:    0.92;
 }
 .player[data-downed="no"] > .player__downed-overlay {
     visibility: hidden;
 }
 /* TODO.debug why aren't these `~` selectors working? */
-.player[data-face="me"]/* ,
+.player[data-face="me"] > .player__face/* ,
 .player[data-face="me"] ~ .tile__char */ {
     background-color: var(--colour-pFaceMe);
 }
-.player[data-face="teammate"]/* ,
+.player[data-face="teammate"] > .player__face/* ,
 .player[data-face="teammate"] ~ .tile__char */ {
     background-color: var(--colour-pFaceTeammate);
 }
-.player[data-face="opponent"]/* ,
+.player[data-face="opponent"] > .player__face/* ,
 .player[data-face="opponent"] ~ .tile__char */ {
     background-color: var(--colour-pFaceOpponent);
 }
-.player[data-face="teammate"][data-downed="team"]/* ,
+.player[data-face="teammate"][data-downed="team"] > .player__face/* ,
 .player[data-face="teammate"][data-downed="team"] ~ .tile__char */ {
     background-color: var(--colour-pFaceImmortalTeammate);
 }
-.player[data-face="opponent"][data-downed="team"]/* ,
+.player[data-face="opponent"][data-downed="team"] > .player__face/* ,
 .player[data-face="opponent"][data-downed="team"] ~ .tile__char */ {
     background-color: var(--colour-pFaceImmortalOpponent);
 }

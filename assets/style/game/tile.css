@@ -14,13 +14,11 @@
 }
 .tile .tile__pointer-hitbox {
     pointer-events: initial;
-    box-sizing:     initial;
     top: 40%; left: 40%;
-    border-radius:  0%;
     /* border-color: black; */
 }
 
-.tile > * {
+.tile__char, .tile__seq, .player__face {
     box-sizing: border-box;
     border: 0.14em solid transparent;
     border-radius: 16%;
