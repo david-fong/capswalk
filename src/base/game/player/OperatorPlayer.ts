@@ -79,7 +79,8 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
             if (event.keyCode === 32) {
                 // TODO.design: this should cost health... add an argument to
                 // makeMovementRequest? An enum saying how the movement should
-                // be "charged" / its "cost-type" in health?
+                // be "charged" / its "cost-type" in health? The cost should
+                // be proportional to `GameManager.averageFreeHealthPerTile`.
                 // TODO.learn why isn't TypeScript able to figure the below line out?
                 if (!this.coord.equals(this.prevCoord as any)) {
                     this.makeMovementRequest(this.game.grid.getUntAwayFrom(

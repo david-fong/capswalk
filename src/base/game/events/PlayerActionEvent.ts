@@ -69,7 +69,7 @@ export namespace PlayerActionEvent {
         public playerLastAcceptedRequestId: number;
 
         public affectedNeighbours?: TU.RoArr<{
-            readonly playerId: Player.Id;
+            readonly playerId:  Player.Id;
             readonly newHealth: Player.Health;
         }> = undefined;
 
@@ -122,7 +122,7 @@ export namespace PlayerActionEvent {
          * values taken on by the player for these fields.
          */
         public newPlayerHealth?: {
-            score:     Player.Health;
+            score:  Player.Health;
             health: Player.Health;
         } = undefined;
 

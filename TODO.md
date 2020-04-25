@@ -12,6 +12,11 @@
 
 ### High Priority
 
+1. Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
+1. Setup WebPack to minimize CSS
+    - https://github.com/webpack/webpack/issues/1205
+    - https://webpack.js.org/plugins/mini-css-extract-plugin/#minimizing-for-production
+    - https://github.com/NMFR/optimize-css-assets-webpack-plugin
 1. Brainstorm ways to split up the js and css to defer loading.
     - The lang implementations are particularly large, and the user might only ever use one.
     - Can we make all game related code get loaded on demand? Not loaded until user tries to start a game.

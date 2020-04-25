@@ -100,8 +100,8 @@ export class Tile<S extends Coord.System> {
         return this.#freeHealth;
     }
 
-    public set freeHealth(score: Player.Health) {
-        this.#freeHealth = score;
+    public set freeHealth(newFreeHealth: Player.Health) {
+        this.#freeHealth = newFreeHealth;
     }
 
     /**

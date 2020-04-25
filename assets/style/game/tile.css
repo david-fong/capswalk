@@ -31,7 +31,8 @@
 }
 .tile[data-health] .tile__char {
     border-color:     var(--colour-tileBd);
-    background-color: var(--colour-health);
+    color:            var(--colour-healthFg);
+    background-color: var(--colour-healthBg);
 }
 .tile__seq {
     z-index:    5;

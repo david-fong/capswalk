@@ -1,4 +1,3 @@
-import type { Lang, Player } from "utils/TypeDefs";
 import { OmHooks } from "browser/OmHooks";
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
@@ -91,15 +90,19 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * Does not need to be within the boundaries of the {@link Game}'s
      * grid, or have integer-valued coordinate values.
      */
-   public abstract getUntToward(sourceCoord: Coord<S>, intendedDest: Coord<S>): Tile<S>;
+    public abstract getUntToward(sourceCoord: Coord<S>, intendedDest: Coord<S>): Tile<S>;
 
-   /**
-    *
-    * @param sourceCoord -
-    * @param avoidCoord -
-    */
-   // TODO.doc
-   public abstract getUntAwayFrom(sourceCoord: Coord<S>, avoidCoord: Coord<S>): Tile<S>;
+    /**
+     *
+     * @param sourceCoord -
+     * @param avoidCoord -
+     */
+    // TODO.doc
+    public abstract getUntAwayFrom(sourceCoord: Coord<S>, avoidCoord: Coord<S>): Tile<S>;
+
+    public getRandomCoord(): Coord<S> {
+        return this.static.getRandomCoord(this.dimensions);
+    }
 
 
     /**

@@ -331,7 +331,9 @@ export namespace Euclid2 {
          * @override
          */
         public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
-            return new Coord(undefined!);
+            const x = Math.floor(dimensions.width  * Math.random());
+            const y = Math.floor(dimensions.height * Math.random());
+            return new Coord({x,y,});
         }
     }
 

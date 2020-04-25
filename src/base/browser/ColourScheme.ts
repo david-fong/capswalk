@@ -18,10 +18,11 @@ export class Colour {
 
     public constructor(hostElement: HTMLElement) {
         const sel = document.createElement("select");
-        for (const schemeId of (Object.keys(Colour.Scheme) as TU.RoArr<Colour.Scheme.Id>)) {
+        //sel.name =
+        for (const scheme of Colour.Scheme) {
             const opt = document.createElement("option");
-            opt.innerText = Colour.Scheme[schemeId].displayName;
-            opt.value = schemeId;
+            opt.innerText = Colour.Scheme[scheme.id].displayName;
+            opt.value = scheme.id;
             sel.add(opt);
         }
         sel.onchange = () => {
@@ -34,8 +35,17 @@ export class Colour {
         };
         hostElement.appendChild(sel);
         this.sel = sel as Colour["sel"];
-        sel.selectedIndex = 0;
-        sel.dispatchEvent(new Event("change"));
+
+        // Initialize to the user's last selected colour scheme (if it exists).
+        const lastUsedSchemeId = localStorage.getItem(StorageHooks.Keys.COLOUR);
+        if (lastUsedSchemeId) {
+            for (let i = 0; i < sel.length; i++) {
+                if ((sel.item(i) as HTMLOptionElement).value === lastUsedSchemeId) {
+                    sel.selectedIndex = i;
+                    sel.dispatchEvent(new Event("change"));
+                }
+            }
+        }
     }
 
     /**
@@ -56,7 +66,7 @@ export namespace Colour {
     export const Swatch = Object.freeze(<const>[
         "mainFg", "mainBg",
         "tileFg", "tileBg", "tileBd",
-        "health",
+        "healthFg", "healthBg",
         "pFaceMe",
         "pFaceTeammate", "pFaceImmortalTeammate",
         "pFaceOpponent", "pFaceImmortalOpponent",
@@ -65,13 +75,11 @@ export namespace Colour {
      * The scheme id `selected` is a special value and should not
      * be used.
      */
-    export const Scheme = Object.freeze(<const>{
-        ["snakey"]: Object.freeze(<const>{
-            displayName: "Snakey by N.W.",
-        }),
-    });
+    export const Scheme = Object.freeze([
+        <const>{ id: "snakey",  displayName: "Snakey by N.W.", },
+    ].map((scheme) => Object.freeze(scheme)));
     export namespace Scheme {
-        export type Id = keyof typeof Scheme;
+        export type Id = (typeof Scheme)[number]["id"];
     }
 }
 Object.freeze(Colour);

@@ -92,7 +92,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     }
 
 
-    private executeTileModificationsEvent(
+    protected executeTileModEvent(
         desc: TileModificationEvent<S>,
         doCheckOperatorSeqBuffer: boolean = true,
     ): void {
@@ -144,9 +144,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             return; // Short-circuit!
         }
         this.recordEvent(desc);
-        this.executeTileModificationsEvent(desc.dest, player !== this.operator);
+        this.executeTileModEvent(desc.dest, player !== this.operator);
         desc.tilesWithHealthUpdates!.forEach((desc) => {
-            this.executeTileModificationsEvent(desc);
+            this.executeTileModEvent(desc);
         });
 
         if (clientEventLag > 1) {
