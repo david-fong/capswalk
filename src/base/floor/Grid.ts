@@ -1,4 +1,3 @@
-import type { Lang, Player } from "utils/TypeDefs";
 import { OmHooks } from "browser/OmHooks";
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
@@ -80,10 +79,9 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * to be broken in such a way that imitates movement in a straight
      * path (visually speaking).
      *
-     * **Important:** The caller must first break the upward occupancy
-     * link by calling `this.hostTile.evictOccupant();` This is so that
-     * the current position of this `ArtificialPlayer` will always be
-     * an option when everything adjacent to it is occupied.
+     * **Important:** If All destinations from sourceCoord are occupied
+     * (which includes `sourceCoord` itself), the implementation must
+     * return `sourceCoord`.
      *
      * @param sourceCoord
      * The coordinate from which to find the next hop.
@@ -92,7 +90,19 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * Does not need to be within the boundaries of the {@link Game}'s
      * grid, or have integer-valued coordinate values.
      */
-   public abstract getUntToward(sourceCoord: Coord<S>, intendedDest: Coord<S>): Tile<S>;
+    public abstract getUntToward(sourceCoord: Coord<S>, intendedDest: Coord<S>): Tile<S>;
+
+    /**
+     *
+     * @param sourceCoord -
+     * @param avoidCoord -
+     */
+    // TODO.doc
+    public abstract getUntAwayFrom(sourceCoord: Coord<S>, avoidCoord: Coord<S>): Tile<S>;
+
+    public getRandomCoord(): Coord<S> {
+        return this.static.getRandomCoord(this.dimensions);
+    }
 
 
     /**
@@ -120,6 +130,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      */
     public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridImplElem: HTMLElement): void {
         const OHG = OmHooks.Grid;
+        gridImplElem.tabIndex = 0;
         gridImplElem.classList.add(OHG.Class.IMPL_BODY);
         const parentElem = document.getElementById(desc.domParentHtmlIdHook);
         if (!parentElem) {
@@ -134,7 +145,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         // Remove all child elements from host and then append the new grid:
         parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
         parentElem.appendChild(gridImplElem);
-        gridImplElem.tabIndex = 0;
         (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
         {
             // Add a "keyboard-disconnected" icon if not added already:

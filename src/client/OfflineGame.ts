@@ -1,6 +1,5 @@
 import { Game } from "game/Game";
 
-import { OmHooks } from 'browser/OmHooks';
 import type { Coord }           from "floor/Tile";
 import { VisibleTile }          from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
@@ -44,7 +43,7 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
         if (!this.operator) {
             throw new Error("The Operator for an OfflineGame should be defined.");
         }
-        VisiblePlayerStatus.colourizeTeamMembers(this.teams, this.operator);
+        this.players.forEach((player) => player.status.__afterAllPlayersConstruction());
 
         // =====================================
         // CALL TO RESET
@@ -57,7 +56,7 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
         anonymous function, which makes it impossible to remove from
         the list without a reference to that function. Luckily for us,
         Grid.__VisibleGrid_super will automatically remove the old game-
-        grid__impl-body child, thus allowing it to be GC'ed, and its
+        grid__impl-body child, thus allowing it to be GC-ed, and its
         event-handler function with it. */
         this.grid.baseElem.addEventListener("keydown", (ev): boolean => {
             // console.log(`key: ${ev.key}, code: ${ev.code},`

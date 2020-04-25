@@ -6,6 +6,7 @@ import HtmlPlugin = require("html-webpack-plugin");
 
 // https://webpack.js.org/plugins/mini-css-extract-plugin/
 import MiniCssExtractPlugin = require("mini-css-extract-plugin");
+import OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 // Note: if I ever add this back, I'll need to look into how to make
 // sure it doesn't clean away things from separate configs (See notes
@@ -179,6 +180,13 @@ const webBundleConfig = BaseConfig(); {
     config.plugins.push(new MiniCssExtractPlugin({
         filename: "index.css",
     }));
+    if (PACK_MODE === 'production') {
+        config.plugins.push(new OptimizeCssAssetsPlugin({
+            cssProcessorPluginOptions: {
+                preset: ['default', { discardComments: { removeAll: true, },},],
+            },
+        }));
+    }
 }
 
 

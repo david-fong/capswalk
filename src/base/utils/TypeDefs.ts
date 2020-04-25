@@ -1,4 +1,9 @@
 
+export namespace SkErrors {
+    // TODO.impl use these?
+    export const NEVER = <const>"Never happens. See comment in source.";
+}
+
 
 export class Player<S> { }
 export namespace Player {

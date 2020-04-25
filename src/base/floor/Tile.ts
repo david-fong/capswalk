@@ -71,9 +71,14 @@ export class Tile<S extends Coord.System> {
     /**
      * Any overrides must make a supercall to this implementation.
      *
+     * Must be followed by a call to `PlayerStatus.__onAfterOccupy()`.
+     *
      * @param playerId -
      */
-    public __setOccupant(playerId: Player.Id, playerElem?: HTMLElement): void {
+    public __setOccupant(
+        playerId: Player.Id,
+        immigrantInfo: Tile.VisibleImmigrantInfo | undefined,
+    ): void {
         this.#occupantId = playerId;
     }
 
@@ -95,8 +100,8 @@ export class Tile<S extends Coord.System> {
         return this.#freeHealth;
     }
 
-    public set freeHealth(score: Player.Health) {
-        this.#freeHealth = score;
+    public set freeHealth(newFreeHealth: Player.Health) {
+        this.#freeHealth = newFreeHealth;
     }
 
     /**
@@ -130,6 +135,10 @@ export namespace Tile {
         new(coord: Tile<S>["coord"]): Tile<S>;
     };
 
+    export type VisibleImmigrantInfo = Readonly<{
+        playerElem: HTMLElement;
+        username:   string;
+    }>;
 }
 Object.freeze(Tile);
 Object.freeze(Tile.prototype);

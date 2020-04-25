@@ -4,7 +4,7 @@
 ## High-level
 
 1. Get a basic, working implementation of an offline game.
-1. Write the stylesheets + consider SASS.
+1. Write the stylesheets.
 1. Record music + find out how to play tracks together.
 1. Get working bundles for networked games.
 
@@ -12,11 +12,13 @@
 
 ### High Priority
 
+1. Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
 1. Brainstorm ways to split up the js and css to defer loading.
     - The lang implementations are particularly large, and the user might only ever use one.
     - Can we make all game related code get loaded on demand? Not loaded until user tries to start a game.
       - Same with game-grid related CSS.
     - [How WebPack compiles dynamic imports](https://webpack.js.org/api/module-methods/#import-1).
+1. Make player movement have a shrinking animation where leaving a tile and a simultaneous expanding animation where entering a tile.
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
 1. Implement Euclid2 spawn coordinates.
 1. Implement health spawning.
@@ -136,7 +138,6 @@ https://devdocs.io/css/clip-path
 https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
 https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Backgrounds_and_borders
 https://developer.mozilla.org/en-US/docs/Web/CSS/display
-https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing
 flex playground: https://codepen.io/enxaneta/full/adLPwv/
 ```
 
@@ -155,6 +156,8 @@ https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
 https://www.quirksmode.org/js/events_order.html#link4
 https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
 https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
+
+https://github.com/whatwg/html/issues/4078
 ```
 
 ## Things I have Tried that Haven't Worked (and that's okay)

@@ -17,7 +17,7 @@ export const game = new OfflineGame<Coord.System.EUCLID2>({
         width:  21,
     },
     gridHtmlIdHook: OmHooks.Grid.Id.GRID,
-    averageFreeHealthPerTile: 1.0 / 70.0,
+    averageFreeHealthPerTile: 1.0 / 45.0,
     langBalancingScheme: Lang.BalancingScheme.WEIGHT,
     languageName: "engl-low",
     operatorIndex: 0,

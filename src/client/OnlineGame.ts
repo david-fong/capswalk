@@ -55,7 +55,7 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
         if (!this.operator) {
             throw new Error("The Operator for an OnlineGame should be defined.");
         }
-        VisiblePlayerStatus.colourizeTeamMembers(this.teams, this.operator);
+        this.players.forEach((player) => player.status.__afterAllPlayersConstruction());
         this.socket = socket;
 
         this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);

@@ -50,6 +50,7 @@
         "linting",
         "readmes",
         "todos",
+        "transpiled",
         "webpage",
         "websockets",
 
@@ -59,6 +60,7 @@
 
         "constraining",
         "gameplay",
+        "hinderance",
         "hitbox",
         "lifestages",
         "lifecycle",

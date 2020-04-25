@@ -172,6 +172,15 @@ export namespace Beehive {
             return undefined!;
         }
 
+        /**
+         * @override
+         */
+        public getUntAwayFrom(sourceCoord: Coord, avoidCoord: Coord): Tile<S> {
+            return this.getUntToward(sourceCoord, sourceCoord.add(
+                sourceCoord.sub(avoidCoord)
+            ));
+        }
+
 
         /**
          * @override

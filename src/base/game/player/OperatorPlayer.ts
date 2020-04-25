@@ -38,6 +38,8 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     private readonly langRemappingFunc: {(input: string): string};
 
+    private prevCoord: Coord<S>;
+
 
     public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {
         super(game, desc);
@@ -49,6 +51,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
      */
     public reset(spawnTile: Tile<S>): void {
         super.reset(spawnTile);
+        this.prevCoord = spawnTile.coord;
         this.#seqBuffer = "";
     }
 
@@ -65,16 +68,28 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
      */
     public processKeyboardInput(event: KeyboardEvent): void {
         if (false) {
-
+            return;
         // @ Above: Conditional handlers for actions that are valid
         // even when the game is over or paused.
         // ==========================================================
-        } else if (this.game.status === Game.Status.PLAYING) {
-            if (!this.requestInFlight) {
-                // Only process movement-type input if the last request got
-                // acknowledged by the Game Manager and the game is playing.
-                // TODO.design is this okay? will any languages require different behaviour?
-                if (event.key.length !== 1) return;
+        } else if (this.game.status !== Game.Status.PLAYING) return;
+        if (!this.requestInFlight) {
+            // Only process movement-type input if the last request got
+            // acknowledged by the Game Manager and the game is playing.
+            if (event.keyCode === 32) {
+                // TODO.design: this should cost health... add an argument to
+                // makeMovementRequest? An enum saying how the movement should
+                // be "charged" / its "cost-type" in health? The cost should
+                // be proportional to `GameManager.averageFreeHealthPerTile`.
+                // TODO.learn why isn't TypeScript able to figure the below line out?
+                if (!this.coord.equals(this.prevCoord as any)) {
+                    this.makeMovementRequest(this.game.grid.getUntAwayFrom(
+                        this.coord, this.prevCoord,
+                    ));
+                }
+            } else if (event.key.length === 1) {
+                // TODO.design is the above condition okay? will any
+                // languages require different behaviour?
                 this.seqBufferAcceptKey(event.key);
             }
         }
@@ -145,6 +160,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     public moveTo(dest: Tile<S>): void {
         // Clear my `seqBuffer` first:
         this.#seqBuffer = "";
+        this.prevCoord = this.coord;
         super.moveTo(dest);
     }
 

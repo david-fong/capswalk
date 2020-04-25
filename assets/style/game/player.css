@@ -1,18 +1,36 @@
 
 .player {
-    /* DO NOT give this a z-index property. If you do,
-    each player will start its own stacking context, which
+    /* DO NOT create a new stacking context. Doing so
     breaks the ability for the spotlight to hide faraway
-    tile sequence hints. */
+    tile sequence hints. If this requirement becomes a
+    major hinderance, then consider making it an HTML
+    child of a tile instead of a player (would double
+    the number of DOM operations per operator movement. */
     display:    inline-flex;
     align-items: center;
     justify-content: center;
     border-color: var(--colour-tileBd);
     /* Need this to allow the spotlight to be visible */
-    overflow: visible visible;
+    /* overflow: visible visible; */
 }
 .player__downed-overlay {
     z-index:    1;
+}
+
+
+/*
+Links that could be helpful for creating different implementations:
+https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
+https://www.w3schools.com/cssref/pr_background-blend-mode.asp
+ */
+.player__spotlight {
+    z-index:    10;
+    background-image: radial-gradient(
+        farthest-side,
+        transparent 20%, var(--colour-mainBg)
+    );
+    padding:    1300%;
+    border:     100vmax solid var(--colour-mainBg);
 }
 .player[data-downed="no"] > .player__downed-overlay {
     visibility: hidden;

@@ -4,7 +4,7 @@ import type { Player } from "game/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
 
 
-export type TileModificationEvent<S extends Coord.System> = {
+export type TileModEvent<S extends Coord.System> = {
     readonly coord: Coord.Bare<S>;
 
     /**
@@ -69,7 +69,7 @@ export namespace PlayerActionEvent {
         public playerLastAcceptedRequestId: number;
 
         public affectedNeighbours?: TU.RoArr<{
-            readonly playerId: Player.Id;
+            readonly playerId:  Player.Id;
             readonly newHealth: Player.Health;
         }> = undefined;
 
@@ -122,13 +122,13 @@ export namespace PlayerActionEvent {
          * values taken on by the player for these fields.
          */
         public newPlayerHealth?: {
-            score:     Player.Health;
+            score:  Player.Health;
             health: Player.Health;
         } = undefined;
 
-        public readonly dest: TileModificationEvent<S>;
+        public readonly dest: TileModEvent<S>;
 
-        public tilesWithHealthUpdates?: TU.RoArr<TileModificationEvent<S>> = undefined;
+        public tilesWithHealthUpdates?: TU.RoArr<TileModEvent<S>> = undefined;
 
         public constructor(
             playerId: Player.Id,

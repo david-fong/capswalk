@@ -19,6 +19,6 @@ import { AllSkScreens } from "browser/screen/AllSkScreens";
 
 const allDisplays = new AllSkScreens(document.createElement("div"));
 
-import(/* webpackChunkName: "Scratch" */ "./ScratchMakeGame").then((mod) => {
+import(/* webpackChunkName: "[request]" */ "./ScratchMakeGame").then((mod) => {
     mod.game;
 });

@@ -5,7 +5,6 @@
 
 1. Switch to the `gh-pages` branch, which has parts of the `dist/` folder tracked despite the `dist/` folder being matched as ignored in the top-level `.gitignore`.
 1. Merge in changes from the `dev` branch.
-    - `--no-ff`: Make sure we never fast forward.
     - `--squash`: Looks a little cleaner and prevents GitHub from double-counting commits in user contributions.
     - `--no-commit`: Don't automatically end the merge with a commit. We need to update the build output (and changelog?).
 1. Run `:/scripts/pack.sh -t` to build the project. The `-t` option tells the script to transpile the webpack config before using it in case it since the previous release.
@@ -13,7 +12,7 @@
 
 ```shell
 git switch gh-pages
-git merge --no-ff --squash --no-commit dev
+git merge --squash --no-commit dev
 # Resolve merge conflicts.
 export NODE_ENV='production'
 ./scripts/pack.sh -t

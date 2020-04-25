@@ -1,4 +1,4 @@
-import type { Coord } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
 import { Team } from "game/player/Team";
 
@@ -11,14 +11,12 @@ import { Team } from "game/player/Team";
  */
 export class PlayerStatus<S extends Coord.System> {
 
-    protected readonly player: Player<S>; // Circular field reference.
+    protected readonly player: Readonly<Player<S>>; // Circular field reference.
     public readonly noCheckGameOver: boolean;
     #score:  Player.Health;
     #health: Player.Health;
 
-    public readonly baseElem?: HTMLDivElement;
-
-    public constructor(player: Player<S>, noCheckGameOver: boolean) {
+    public constructor(player: Readonly<Player<S>>, noCheckGameOver: boolean) {
         this.player = player;
         this.noCheckGameOver = noCheckGameOver;
     }
@@ -26,6 +24,12 @@ export class PlayerStatus<S extends Coord.System> {
     public reset(): void {
         this.score   = 0;
         this.health  = 0;
+    }
+
+    public __afterAllPlayersConstruction(): void { }
+
+    public get immigrantInfo(): Tile.VisibleImmigrantInfo | undefined {
+        return undefined;
     }
 
 

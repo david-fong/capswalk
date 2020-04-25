@@ -46,7 +46,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             const charElem = document.createElement("div");
             charElem.classList.add(
                 OmHooks.Tile.Class.LANG_CHAR,
-                OmHooks.General.Class.FILL_PARENT,
             );
             this.#baseElem.appendChild(charElem);
             this.langCharElem = charElem;
@@ -62,9 +61,16 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         parent.appendChild(this.#baseElem);
     }
 
-    public __setOccupant(playerId: Player.Id, playerElem: HTMLElement): void {
-        super.__setOccupant(playerId, playerElem);
-        this.#baseElem.appendChild(playerElem)
+    /**
+     * @override
+     */
+    public __setOccupant(
+        playerId: Player.Id,
+        immigrantInfo: Tile.VisibleImmigrantInfo,
+    ): void {
+        super.__setOccupant(playerId, immigrantInfo);
+        this.#baseElem.appendChild(immigrantInfo.playerElem);
+        this.langSeqElem.innerText = immigrantInfo.username;
     }
 
 
@@ -81,18 +87,30 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public evictOccupant(): void {
         super.evictOccupant();
+        // Undo setting mouseover text to occupant username:
+        this.langSeqElem.innerText = this.langSeq;
     }
 
     /**
      * @override
      */
-    public set freeHealth(newHealth: number) {
-        super.freeHealth = newHealth;
-        if (this.freeHealth) {
-            this.#baseElem.dataset[OmHooks.Tile.Dataset.HEALTH] = newHealth.toString();
+    public set freeHealth(newFreeHealth: Player.Health) {
+        super.freeHealth = newFreeHealth;
+        if (this.freeHealth > 0) {
+            this.#baseElem.dataset[OmHooks.Tile.Dataset.HEALTH] = this.freeHealth.toString();
         } else {
             delete this.#baseElem.dataset[OmHooks.Tile.Dataset.HEALTH];
         }
+    }
+
+    /**
+     * @override
+     */
+    // NOTE: For some reason, if we override the setter, the transpiled
+    // code does not link to the super implementation... Or maybe this
+    // is just a property of plain ECMA javascript??
+    public get freeHealth(): Player.Health {
+        return super.freeHealth;
     }
 
     /**

@@ -56,7 +56,10 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
      */
     protected reset(spawnTile: Tile<S>): void {
         this.#hostTile = spawnTile;
-        this.hostTile.__setOccupant(this.playerId, this.status.baseElem);
+        this.hostTile.__setOccupant(
+            this.playerId,
+            this.status.immigrantInfo,
+        );
     }
 
 
@@ -120,7 +123,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
         else {
             // Move to occupy the destination `Tile`:
             this.#hostTile = dest;
-            dest.__setOccupant(this.playerId, this.status.baseElem);
+            dest.__setOccupant(this.playerId, this.status.immigrantInfo);
         }
     }
 }

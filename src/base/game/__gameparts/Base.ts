@@ -154,6 +154,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         // because it modifies csps, which we don't need to do.
         this.grid.forEachTile((tile) => {
             tile.setLangCharSeqPair(ser.csps[i++]);
+            tile.lastKnownUpdateId = 1;
         }); }
         ser.playerCoords.forEach((coord, index) => {
             this.players[index].moveTo(this.grid.tile.at(coord));
