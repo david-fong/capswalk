@@ -1,7 +1,7 @@
 import type { Coord } from "floor/Tile";
 import { Game } from "../Game";
 
-import { PlayerActionEvent, TileModificationEvent } from "../events/PlayerActionEvent";
+import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
 import { EventRecordEntry } from "../events/EventRecordEntry";
 
 import { GameBase } from "./Base";
@@ -93,7 +93,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
 
     protected executeTileModEvent(
-        desc: TileModificationEvent<S>,
+        desc: TileModEvent<S>,
         doCheckOperatorSeqBuffer: boolean = true,
     ): void {
         const dest = this.grid.tile.at(desc.coord);

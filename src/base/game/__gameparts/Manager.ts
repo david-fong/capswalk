@@ -5,7 +5,7 @@ import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "../player/Player";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
-import { PlayerActionEvent, TileModificationEvent } from "../events/PlayerActionEvent";
+import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
 
 import { English } from "lang/impl/English"; // NOTE: temporary placeholder.
 import { GameEvents } from "game/__gameparts/Events";
@@ -18,7 +18,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
 
     public readonly averageFreeHealth: Player.Health;
     public readonly averageFreeHealthPerTile: Player.Health;
-    protected currentFreeHealth: Player.Health; // TODO.impl maintain this field. and use it to spawn in health.
+    #currentFreeHealth: Player.Health;
 
     public readonly lang: Lang;
 
@@ -75,7 +75,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // Reset the grid and event record:
         super.reset();
 
-        this.currentFreeHealth = 0.0;
+        this.#currentFreeHealth = 0.0;
 
         // Reset hit-counters in the current language:
         // This must be done before shuffling so that the previous
@@ -132,6 +132,10 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         );
     }
 
+    public get currentFreeHealth(): Player.Health {
+        return this.#currentFreeHealth;
+    }
+
     /**
      * @returns
      * A descriptor of changes to make to tiles regarding health spawning.
@@ -140,10 +144,10 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * where the Server additionally notifies clients of the changes. It
      * is intended to be wrapped inside other events with such behaviour.
      */
-    public dryRunSpawnFreeHealth(): TU.RoArr<TileModificationEvent<S>> {
+    public dryRunSpawnFreeHealth(): TU.RoArr<TileModEvent<S>> {
         let healthToSpawn = this.averageFreeHealth - this.currentFreeHealth;
         if (healthToSpawn <= 0) return [];
-        const retval: Array<TileModificationEvent<S>> = [];
+        const retval: Array<TileModEvent<S>> = [];
         while (healthToSpawn > 0) {
             let tile: Tile<S>;
             do {
@@ -238,7 +242,6 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             health: player.status.health + dest.freeHealth,
         };
         desc.dest.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
-        this.currentFreeHealth -= dest.freeHealth;
         desc.dest.newFreeHealth = 0;
         desc.dest.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
         desc.tilesWithHealthUpdates = this.dryRunSpawnFreeHealth();
@@ -253,7 +256,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * @override
      */
     protected executeTileModEvent(
-        desc: TileModificationEvent<S>,
+        desc: TileModEvent<S>,
         doCheckOperatorSeqBuffer: boolean = true,
     ): void {
         const tile = this.grid.tile.at(desc.coord);
@@ -262,7 +265,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             // We literally just specified this in processMoveRequest.
             throw new Error("this never happens. see comment in source.");
         }
-        this.currentFreeHealth += desc.newFreeHealth! - tile.freeHealth;
+        this.#currentFreeHealth += desc.newFreeHealth! - tile.freeHealth;
         super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
     }
 
