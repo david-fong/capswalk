@@ -89,18 +89,22 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // Reset and spawn players:
         this.teams.forEach((team) => team.reset());
         const spawnPoints = this.grid.static.getSpawnCoords(
-            this.players.length,
+            this.teams.map((team) => team.members.length),
             this.grid.dimensions,
         );
-        this.players.forEach((player) => {
-            player.reset(this.grid.tile.at(spawnPoints[player.playerId]));
-        });
+        this.teams.forEach((team, teamIndex) => {
+            team.members.forEach((member, memberIndex) => {
+                member.reset(this.grid.tile.at(spawnPoints[teamIndex][memberIndex]));
+            })
+        })
 
+        // NOTE: This is currently commented out because they'll just
+        // spawn as the players start moving. It's not necessary.
         // Targets should be spawned _after_ players have spawned so
         // that they do not spawn in the same tile as any players.
-        this.dryRunSpawnFreeHealth([])?.forEach((tileModDesc) => {
-            this.executeTileModEvent(tileModDesc);
-        })
+        // this.dryRunSpawnFreeHealth([])?.forEach((tileModDesc) => {
+        //     this.executeTileModEvent(tileModDesc);
+        // })
     }
 
 
@@ -196,6 +200,10 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     private getHealthCostOfBoost(): Player.Health {
         return this.averageFreeHealthPerTile
         / Game.K.PCT_MOVES_THAT_ARE_BOOST;
+        // TODO.design Take into account the connectivity of the grid
+        // implementation. Ie. What is the average number of movements
+        // it would take me to reach any other tile averaged over all
+        // tiles?
     }
 
 
@@ -265,10 +273,10 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             this.processMoveExecute(desc); // Reject the request.
             return;
         }
-        const newPlayerHealthValue= player.status.health
-            + dest.freeHealth
-            - ((desc.moveType === Player.MoveType.BOOST)
-            ? this.getHealthCostOfBoost() : 0);
+        const newPlayerHealthValue
+            = player.status.health
+            + (dest.freeHealth * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
+            - ((desc.moveType === Player.MoveType.BOOST) ? this.getHealthCostOfBoost() : 0);
         if (newPlayerHealthValue < 0) {
             // Reject a boost-type movement request if it would make
             // the player become downed (or if they are already downed):

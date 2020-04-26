@@ -32,9 +32,9 @@
     pointer-events: none;
     top: 0; left: 0; bottom: 0; right: 0;
 }
-.game-grid-kbd-dc__icon {
+.game-grid-kbd-dc {
     color:      var(--colour-tileBd);
-    text-shadow: 0 0  0.3em black;
+    text-shadow: 0 0  0.5em black;
     visibility: hidden;
 }
 
@@ -45,6 +45,6 @@
 .game-grid-impl-body:not(:focus) {
     filter:     brightness(70%);
 }
-.game-grid-impl-body:not(:focus) ~ .game-grid-kbd-dc__icon {
+.game-grid-impl-body:not(:focus) ~ .game-grid-kbd-dc {
     visibility: visible;
 }

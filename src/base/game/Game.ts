@@ -130,7 +130,7 @@ export namespace Game {
          * the next time `dryRunSpawnFreeHealth` is called. This is the
          * reciprocal of the average number of calls that must be to
          * `dryRunSpawnFreeHealth` before a unit of health will be
-         * respawned after being consumed.
+         * re-spawned after being consumed.
          */
         HEALTH_UPDATE_CHANCE: 0.1,
         /**
@@ -138,8 +138,24 @@ export namespace Game {
          * boost indefinitely. If close to zero, then players virtually
          * cannot boost, no matter how much health they have. If `0.3`,
          * players can boost for roughly 30% of the movements they make.
+         *
+         * This value assumes that the player moves around aimlessly
+         * and randomly. Adjustments for more rational assumptions are
+         * not to be made _here_.
          */
         PCT_MOVES_THAT_ARE_BOOST: 0.05,
+        /**
+         * A value in `(0,1]` (values greater than one are legal from
+         * a mathematic standpoint, but not from one of game-design).
+         * Scales the health received from picking up free health for
+         * a player who is downed.
+         *
+         * This value exists to dampen the ability for team members to
+         * regenerate health when downed so that it takes a (subjectively)
+         * "reasonable" amount of effort to eliminate an entire team-
+         * not too much, not too little.
+         */
+        HEALTH_EFFECT_FOR_DOWNED_PLAYER: 0.6,
     });
 }
 Object.freeze(Game);

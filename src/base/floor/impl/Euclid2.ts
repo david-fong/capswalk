@@ -309,15 +309,23 @@ export namespace Euclid2 {
          * @override
          */
         public static getSpawnCoords(
-            playerCounts: number,
+            playerCounts: TU.RoArr<number>,
             dimensions: Grid.Dimensions,
-        ):  TU.RoArr<Coord.Bare> {
-            return [{x:0,y:0,},];
-
-            // TODO.impl A proper, nice looking version of this.
-            //
-            //
-            //
+        ): TU.RoArr<TU.RoArr<Coord.Bare>> {
+            const avoidSet: Array<Coord.Bare> = [];
+            return playerCounts.map((numMembers: number) => {
+                const teamSpawnCoords: Array<Coord.Bare> = [];
+                while (numMembers > 0) {
+                    let coord: Coord;
+                    do {
+                        coord = Grid.getRandomCoord(dimensions);
+                    } while (avoidSet.find((other) => coord.equals(other)));
+                    teamSpawnCoords.push(coord);
+                    avoidSet.push(coord);
+                    numMembers--;
+                }
+                return teamSpawnCoords;
+            });
         }
 
         /**

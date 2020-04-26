@@ -84,9 +84,9 @@ export namespace SysName {
          * @override
          */
         public static getSpawnCoords(
-            playerCounts: number,
+            playerCounts: TU.RoArr<number>,
             bounds: Required<Grid.Dimensions>,
-        ): TU.RoArr<Coord.Bare> {
+        ): TU.RoArr<TU.RoArr<Coord.Bare>> {
             return undefined!;
         }
         /**

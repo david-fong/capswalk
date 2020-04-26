@@ -208,9 +208,9 @@ export namespace Beehive {
          * @override
          */
         public static getSpawnCoords(
-            playerCounts: number,
+            playerCounts: TU.RoArr<number>,
             dimensions: Grid.Dimensions,
-        ): ReadonlyArray<Coord.Bare> {
+        ): TU.RoArr<TU.RoArr<Coord.Bare>> {
             return undefined!;
         }
 

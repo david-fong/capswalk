@@ -144,6 +144,10 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
             OmHooks.General.Class.CENTER_CONTENTS,
             OmHooks.General.Class.STACK_CONTENTS,
         );
+        // Remove all child elements from host and then append the new grid:
+        parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
+        parentElem.insertAdjacentElement("afterbegin", gridImplElem);
+        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
         {
             // Add a "keyboard-disconnected" icon if not added already:
             // This needs to be a _later_ sibling of gridImplElem.
@@ -165,10 +169,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
                 parentElem.appendChild(kbdDcBase);
             }
         }
-        // Remove all child elements from host and then append the new grid:
-        parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
-        parentElem.appendChild(gridImplElem);
-        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
     }
 
 }
@@ -249,9 +249,9 @@ export namespace Grid {
          * @param playerCounts -
          */
         getSpawnCoords(
-            playerCounts: number,
+            playerCounts: TU.RoArr<number>,
             dimensions: Dimensions<S>,
-        ): TU.RoArr<Coord.Bare<S>>;
+        ): TU.RoArr<TU.RoArr<Coord.Bare<S>>>;
 
     };
 
