@@ -14,14 +14,9 @@
 
 1. Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
 1. Brainstorm ways to split up the js and css to defer loading.
-    - The lang implementations are particularly large, and the user might only ever use one.
-    - Can we make all game related code get loaded on demand? Not loaded until user tries to start a game.
-      - Same with game-grid related CSS.
-    - [How WebPack compiles dynamic imports](https://webpack.js.org/api/module-methods/#import-1).
-1. Make player movement have a shrinking animation where leaving a tile and a simultaneous expanding animation where entering a tile.
+    - Make lang files dynamically imported. This will save loading if the user only plays online (no game-manager implementation needed).
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
 1. Implement Euclid2 spawn coordinates.
-1. Implement health spawning.
 1. Implement basic artificial player.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
@@ -34,15 +29,17 @@
 
 ### Low Priority
 
+- If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
 - Read about these topics and see how they might be useful
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
-  - [](https://github.com/danklammer/bytesize-icons)
+  - [](https://www.npmjs.com/package/bad-words)
   - Heroku
     - [](https://devcenter.heroku.com/articles/getting-started-with-nodejs)
     - [](https://devcenter.heroku.com/articles/deploying-nodejs)
     - [](https://devcenter.heroku.com/articles/node-best-practices)
     - [](https://devcenter.heroku.com/articles/nodejs-support)
+    - [](https://medium.com/deployplace/heroku-vs-docker-the-ultimate-comparison-with-hidden-pitfalls-revealed-f6b7f4075de5)
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 - For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 - Look into switching from JsDoc to TsDoc

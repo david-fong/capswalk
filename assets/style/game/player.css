@@ -6,15 +6,13 @@
     major hinderance, then consider making it an HTML
     child of a tile instead of a player (would double
     the number of DOM operations per operator movement. */
-    display:    inline-flex;
-    align-items: center;
-    justify-content: center;
+}
+.player__face {
     border-color: var(--colour-tileBd);
-    /* Need this to allow the spotlight to be visible */
-    /* overflow: visible visible; */
 }
 .player__downed-overlay {
-    z-index:    1;
+    background-color: red;
+    opacity: 0.2;
 }
 
 
@@ -23,30 +21,44 @@ Links that could be helpful for creating different implementations:
 https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
 https://www.w3schools.com/cssref/pr_background-blend-mode.asp
  */
-.player__spotlight {
-    z-index:    10;
+.player__spotlight-short {
     background-image: radial-gradient(
         farthest-side,
-        transparent 20%, var(--colour-mainBg)
+        transparent 30%, var(--colour-mainBg)
     );
-    padding:    1300%;
+    padding:    1100%;
     border:     100vmax solid var(--colour-mainBg);
+}
+.player__spotlight-long {
+    background-image: radial-gradient(
+        farthest-side,
+        transparent 15%, var(--colour-mainBg)
+    );
+    padding:    1700%;
+    border:     100vmax solid var(--colour-mainBg);
+    opacity:    0.92;
 }
 .player[data-downed="no"] > .player__downed-overlay {
     visibility: hidden;
 }
-.player[data-face="me"] {
+/* TODO.debug why aren't these `~` selectors working? */
+.player[data-face="me"] > .player__face/* ,
+.player[data-face="me"] ~ .tile__char */ {
     background-color: var(--colour-pFaceMe);
 }
-.player[data-face="teammate"] {
+.player[data-face="teammate"] > .player__face/* ,
+.player[data-face="teammate"] ~ .tile__char */ {
     background-color: var(--colour-pFaceTeammate);
 }
-.player[data-face="opponent"] {
+.player[data-face="opponent"] > .player__face/* ,
+.player[data-face="opponent"] ~ .tile__char */ {
     background-color: var(--colour-pFaceOpponent);
 }
-.player[data-face="teammate"][data-downed="team"] {
+.player[data-face="teammate"][data-downed="team"] > .player__face/* ,
+.player[data-face="teammate"][data-downed="team"] ~ .tile__char */ {
     background-color: var(--colour-pFaceImmortalTeammate);
 }
-.player[data-face="opponent"][data-downed="team"] {
+.player[data-face="opponent"][data-downed="team"] > .player__face/* ,
+.player[data-face="opponent"][data-downed="team"] ~ .tile__char */ {
     background-color: var(--colour-pFaceImmortalOpponent);
 }

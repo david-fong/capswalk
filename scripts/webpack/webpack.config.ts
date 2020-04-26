@@ -115,7 +115,8 @@ const BaseConfig: () => Require<webpack.Configuration,
 
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
     entry: { /* Left to each branch config */ },
-    devtool: "source-map",
+    devtool: <webpack.Options.Devtool>(PACK_MODE === "production")
+        ? "nosources-source-map" : "eval-source-map",
     plugins: [ ...BASE_PLUGINS, ],
     resolve: {
         extensions: [ ".ts", ], // ".json", ".tsx",

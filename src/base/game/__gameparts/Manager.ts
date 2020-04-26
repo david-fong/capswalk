@@ -98,7 +98,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
 
         // Targets should be spawned _after_ players have spawned so
         // that they do not spawn in the same tile as any players.
-        this.dryRunSpawnFreeHealth().forEach((tileModDesc) => {
+        this.dryRunSpawnFreeHealth([])?.forEach((tileModDesc) => {
             this.executeTileModEvent(tileModDesc);
         })
     }
@@ -143,10 +143,23 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * **`IMPORTANT`**: This method does not have any override structure
      * where the Server additionally notifies clients of the changes. It
      * is intended to be wrapped inside other events with such behaviour.
+     *
+     * Note that this will seem to have a one-movement-event delay in
+     * specifying changes to be made because `this.currentFreeHealth`
+     * does not update until after the movement request has been
+     * executed.
+     *
+     * @param sameReqOtherModDescs
+     * A list of other descs including those specifying modifications
+     * to be made in the same `execute???Request` function as the one
+     * for which this is being called. Without this information, we
+     * could mess up `lastKnownUpdateId` counters at those locations.
      */
-    public dryRunSpawnFreeHealth(): TU.RoArr<TileModEvent<S>> {
+    public dryRunSpawnFreeHealth(
+        sameReqOtherModDescs: TU.RoArr<TileModEvent<S>>,
+    ): TU.RoArr<TileModEvent<S>> | undefined {
         let healthToSpawn = this.averageFreeHealth - this.currentFreeHealth;
-        if (healthToSpawn <= 0) return [];
+        if (healthToSpawn <= 0) return undefined;
         const retval: Array<TileModEvent<S>> = [];
         while (healthToSpawn > 0) {
             let tile: Tile<S>;
@@ -154,14 +167,27 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
                 tile = this.grid.tile.at(this.grid.getRandomCoord());
                 // The below equality check is necessary to prevent counting bugs.
                 // TODO.learn see other TODO about the type cast seen here on the below line.
-            } while (tile.isOccupied || retval.find((desc) => tile.coord.equals(desc.coord as any)));
+            } while ((() => {
+                return tile.isOccupied
+                || retval.find((desc) => tile.coord.equals(desc.coord as any));
+                // TODO.impl add other checks to improve distribution and reduce
+                // crowding of freeHealth. Make sure it is sensitive to
+                // `this.averageFreeHealthPerTile`.
+            })());
             const tileHealthToAdd = 1;
-            retval.push({
-                coord: tile.coord,
-                lastKnownUpdateId: 1 + tile.lastKnownUpdateId,
-                newCharSeqPair: undefined, // "do not change".
-                newFreeHealth: tile.freeHealth + tileHealthToAdd,
-            })
+            if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
+                let otherDesc: TileModEvent<S> | undefined;
+                if (otherDesc = sameReqOtherModDescs.find((desc) => tile.coord.equals(desc.coord as any))) {
+                    otherDesc.newFreeHealth = (otherDesc.newFreeHealth || 0) + tileHealthToAdd;
+                } else {
+                    retval.push({
+                        coord: tile.coord,
+                        lastKnownUpdateId: 1 + tile.lastKnownUpdateId,
+                        newCharSeqPair: undefined, // "do not change".
+                        newFreeHealth: tile.freeHealth + tileHealthToAdd,
+                    })
+                }
+            }
             healthToSpawn -= tileHealthToAdd;
         }
         return retval;
@@ -242,9 +268,9 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             health: player.status.health + dest.freeHealth,
         };
         desc.dest.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
-        desc.dest.newFreeHealth = 0;
-        desc.dest.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
-        desc.tilesWithHealthUpdates = this.dryRunSpawnFreeHealth();
+        desc.dest.newFreeHealth     = 0;
+        desc.dest.newCharSeqPair    = this.dryRunShuffleLangCharSeqAt(dest);
+        desc.tilesWithHealthUpdates = this.dryRunSpawnFreeHealth([desc.dest,]);
 
         // Accept the request, and trigger calculation
         // and enactment of the requested changes:
@@ -260,8 +286,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         doCheckOperatorSeqBuffer: boolean = true,
     ): void {
         const tile = this.grid.tile.at(desc.coord);
-        if (desc.lastKnownUpdateId !== tile.lastKnownUpdateId + 1) {
-            // TODO.fix Why are we running into this?
+        if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
             // We literally just specified this in processMoveRequest.
             throw new Error("this never happens. see comment in source.");
         }

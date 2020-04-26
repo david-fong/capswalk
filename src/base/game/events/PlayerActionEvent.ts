@@ -128,6 +128,9 @@ export namespace PlayerActionEvent {
 
         public readonly dest: TileModEvent<S>;
 
+        /**
+         * Undefined is equivalent to an empty array.
+         */
         public tilesWithHealthUpdates?: TU.RoArr<TileModEvent<S>> = undefined;
 
         public constructor(

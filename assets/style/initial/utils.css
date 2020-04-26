@@ -11,3 +11,16 @@
     -webkit-user-select:none;
     -ms-user-select:    none;
 }
+
+.center-contents {
+    display:    inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.stack-contents {
+    position:   relative;
+}
+.stack-contents > * {
+    position:   absolute;
+}
+

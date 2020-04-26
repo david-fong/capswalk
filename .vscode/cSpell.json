@@ -27,6 +27,7 @@
         "sesh",
         "sysname",
         "typeable",
+        "unts",
         "engl", "japn", "kore",
 
         "coord",
@@ -44,6 +45,8 @@
         "unshift",
 
         "API's",
+        "devtool",
+        "entrypoint",
         "eslintrc's",
         "heroku",
         "javascript's",

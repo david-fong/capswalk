@@ -35,7 +35,11 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         super(coordDesc);
         {
             const baseElem = document.createElement("div");
-            baseElem.classList.add(OmHooks.Tile.Class.BASE);
+            baseElem.classList.add(
+                OmHooks.Tile.Class.BASE,
+                OmHooks.General.Class.CENTER_CONTENTS,
+                OmHooks.General.Class.STACK_CONTENTS,
+            );
             this.#baseElem = baseElem;
         } {
             // Must be the first child. See note in CSS class hook.
@@ -69,7 +73,9 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         immigrantInfo: Tile.VisibleImmigrantInfo,
     ): void {
         super.__setOccupant(playerId, immigrantInfo);
-        this.#baseElem.appendChild(immigrantInfo.playerElem);
+        // It must go at least before the langChar element so that the
+        // CSS can create a fading trail effect.
+        this.#baseElem.insertBefore(immigrantInfo.playerElem, this.langCharElem);
         this.langSeqElem.innerText = immigrantInfo.username;
     }
 

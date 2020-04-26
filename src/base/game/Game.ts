@@ -120,5 +120,9 @@ export namespace Game {
         PAUSED  = "PAUSED",
         OVER    = "OVER",
     }
+
+    export const K = Object.freeze(<const>{
+        HEALTH_UPDATE_CHANCE: 0.1,
+    });
 }
 Object.freeze(Game);

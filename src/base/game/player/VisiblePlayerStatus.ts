@@ -16,8 +16,17 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         super(player, noCheckGameOver);
         {
             const baseElem = document.createElement("div");
-            baseElem.classList.add(OmHooks.Player.Class.BASE);
+            baseElem.classList.add(
+                OmHooks.Player.Class.BASE,
+                OmHooks.General.Class.CENTER_CONTENTS,
+                OmHooks.General.Class.STACK_CONTENTS,
+            );
             this.#baseElem = baseElem;
+        } {
+            // Setup face element:
+            const faceElem = document.createElement("div");
+            faceElem.classList.add(OmHooks.Player.Class.FACE);
+            this.#baseElem.appendChild(faceElem);
         } {
             // Setup downedOverlay element:
             const dOverlayElem = document.createElement("div");
@@ -43,9 +52,13 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
         // Setup spotlight element:
         if (player === operator) {
-            const spotlightElem = document.createElement("div");
-            spotlightElem.classList.add(OmHooks.Player.Class.SPOTLIGHT);
-            this.#baseElem.appendChild(spotlightElem);
+            const sslElem = document.createElement("div");
+            sslElem.classList.add(OmHooks.Player.Class.SHORT_SPOTLIGHT);
+            this.#baseElem.appendChild(sslElem);
+
+            const lslElem = document.createElement("div");
+            lslElem.classList.add(OmHooks.Player.Class.LONG_SPOTLIGHT);
+            this.#baseElem.appendChild(lslElem);
         }
         (this.__immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
             playerElem: this.#baseElem,
@@ -68,14 +81,8 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
         if (oldIsDowned !== this.isDowned) {
             // CSS integration for Player.isDowned rendering.
-            const dataDowned = OmHooks.Player.Dataset.DOWNED;
-            if (this.isDowned) {
-                if (this.player.team.elimOrder) {
-                    this.#baseElem.dataset[dataDowned] = "team";
-                } else {
-                    this.#baseElem.dataset[dataDowned] = "self";
-                }
-            } else {this.#baseElem.dataset[dataDowned] = "no"; }
+            this.#baseElem[OmHooks.Player.Dataset.DOWNED] = (this.isDowned)
+                ? ((this.player.team.elimOrder) ? "team" : "self") : "no";
         }
     }
 }
