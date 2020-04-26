@@ -1,5 +1,5 @@
 
-.game-grid[data-coord-sys="EUCLID2"] .game-grid__impl-body {
+.game-grid[data-coord-sys="EUCLID2"] .game-grid-impl-body {
     --track-size: minmax(27px, 1fr);
     display:    grid;
     grid-template-columns:

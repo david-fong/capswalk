@@ -16,7 +16,11 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         super(player, noCheckGameOver);
         {
             const baseElem = document.createElement("div");
-            baseElem.classList.add(OmHooks.Player.Class.BASE);
+            baseElem.classList.add(
+                OmHooks.Player.Class.BASE,
+                OmHooks.General.Class.CENTER_CONTENTS,
+                OmHooks.General.Class.STACK_CONTENTS,
+            );
             this.#baseElem = baseElem;
         } {
             // Setup face element:

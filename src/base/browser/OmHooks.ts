@@ -16,6 +16,8 @@ export namespace OmHooks {
         Class: Object.freeze(<const>{
             TEXT_SELECT_DISABLED: "text-select-disabled",
             FILL_PARENT: "fill-parent",
+            CENTER_CONTENTS: "center-contents",
+            STACK_CONTENTS: "stack-contents",
         }),
     });
 
@@ -58,8 +60,9 @@ export namespace OmHooks {
              * CSS visibility depends on whether this element has focus
              * or not.
              */
-            IMPL_BODY:      "game-grid__impl-body",
-            KBD_DC_ICON:    "game-grid__kbd-dc-icon",
+            IMPL_BODY:      "game-grid-impl-body",
+            KBD_DC_BASE:    "game-grid-kbd-dc",
+            KBD_DC_ICON:    "game-grid-kbd-dc__icon",
         }),
         Dataset: Object.freeze(<const>{
             /**

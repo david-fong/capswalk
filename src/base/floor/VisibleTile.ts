@@ -35,7 +35,11 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         super(coordDesc);
         {
             const baseElem = document.createElement("div");
-            baseElem.classList.add(OmHooks.Tile.Class.BASE);
+            baseElem.classList.add(
+                OmHooks.Tile.Class.BASE,
+                OmHooks.General.Class.CENTER_CONTENTS,
+                OmHooks.General.Class.STACK_CONTENTS,
+            );
             this.#baseElem = baseElem;
         } {
             // Must be the first child. See note in CSS class hook.

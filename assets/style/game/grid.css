@@ -1,25 +1,20 @@
 
 #game-grid-container {
-    position:   relative;
-    display:    inline-flex;
     height:     100vh;
     flex-flow:  column nowrap;
-    align-content: center;
-    justify-content: center;
 }
 
 
 .game-grid {
-    position:   relative;
-
-    display:    inline-flex;
-    align-items: center;
-    justify-content: center;
+    /* Since this is given the `center-contents` and
+    `stack-contents` classes, it defaults to taking
+    up no space (its children all have their position
+    property set to `absolute`). We rectify this case
+    by giving `.game-grid-impl-body` `position: static`. */
 }
 
-
-.game-grid__impl-body {
-    position:   relative;
+.game-grid-impl-body {
+    position:   static;
     padding:    4px 4px;
     border:     5px double var(--colour-tileBd);
     border-radius: 15px;
@@ -29,19 +24,27 @@
     overflow:   hidden hidden;
 }
 
-.game-grid__kbd-dc-icon {
+.game-grid-kbd-dc {
+    /* Take up the whole space of the parent, and
+    make sure that (regardless of element ordering,)
+    This doesn't prevent `.game-grid-impl-body` from
+    receiving focus via pointer. */
     pointer-events: none;
-    position:   absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+}
+.game-grid-kbd-dc__icon {
     color:      var(--colour-tileBd);
+    text-shadow: 0 0  0.3em black;
     visibility: hidden;
 }
-.game-grid__impl-body:focus {
+
+.game-grid-impl-body:focus {
     /* cursor:     help; */
     outline:    none;
 }
-.game-grid__impl-body:not(:focus) {
+.game-grid-impl-body:not(:focus) {
     filter:     brightness(70%);
 }
-.game-grid__impl-body:not(:focus) ~ .game-grid__kbd-dc-icon {
+.game-grid-impl-body:not(:focus) ~ .game-grid-kbd-dc__icon {
     visibility: visible;
 }

@@ -3,13 +3,8 @@
     /* DO NOT create a new stacking context, which
     breaks the spotlight display. */
     pointer-events: none;
-    position:   relative;
-    display:    inline-flex;
-    align-content: center;
-    justify-content: center;
 }
 .tile * {
-    position: absolute;
     height: 100%; width: 100%;
 }
 .tile .tile__pointer-hitbox {

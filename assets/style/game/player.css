@@ -6,11 +6,6 @@
     major hinderance, then consider making it an HTML
     child of a tile instead of a player (would double
     the number of DOM operations per operator movement. */
-    display:    inline-flex;
-    align-items: center;
-    justify-content: center;
-    /* Need this to allow the spotlight to be visible */
-    /* overflow: visible visible; */
 }
 .player__face {
     border-color: var(--colour-tileBd);

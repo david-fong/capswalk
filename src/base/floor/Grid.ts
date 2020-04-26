@@ -141,24 +141,34 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         parentElem.classList.add(
             OHG.Class.GRID,
             OmHooks.General.Class.TEXT_SELECT_DISABLED,
+            OmHooks.General.Class.CENTER_CONTENTS,
+            OmHooks.General.Class.STACK_CONTENTS,
         );
+        {
+            // Add a "keyboard-disconnected" icon if not added already:
+            // This needs to be a _later_ sibling of gridImplElem.
+            let kbdDcBase: HTMLElement | null = parentElem
+                .querySelector(`:scope .${OHG.Class.KBD_DC_BASE}`);
+            if (!kbdDcBase) {
+                const kbdDcBase = document.createElement("div");
+                kbdDcBase.classList.add(
+                    OHG.Class.KBD_DC_BASE,
+                    OmHooks.General.Class.CENTER_CONTENTS,
+                );
+                // TODO.impl Add an <svg> with icon instead please.
+                {
+                    const kbdDcIcon = document.createElement("div");
+                    kbdDcIcon.classList.add(OHG.Class.KBD_DC_ICON);
+                    kbdDcIcon.innerText = "(click grid to continue typing)";
+                    kbdDcBase.appendChild(kbdDcIcon);
+                }
+                parentElem.appendChild(kbdDcBase);
+            }
+        }
         // Remove all child elements from host and then append the new grid:
         parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
         parentElem.appendChild(gridImplElem);
         (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
-        {
-            // Add a "keyboard-disconnected" icon if not added already:
-            // This needs to be a _later_ sibling of gridImplElem.
-            let kbdDcIcon: HTMLElement | null = parentElem
-                .querySelector(`:scope > .${OHG.Class.KBD_DC_ICON}`);
-            if (!kbdDcIcon) {
-                // TODO.impl Add an <svg> with icon instead please.
-                kbdDcIcon = document.createElement("div");
-                kbdDcIcon.classList.add(OHG.Class.KBD_DC_ICON);
-                kbdDcIcon.innerText = "(click grid to continue typing)";
-                parentElem.appendChild(kbdDcIcon);
-            }
-        }
     }
 
 }
