@@ -121,8 +121,25 @@ export namespace Game {
         OVER    = "OVER",
     }
 
+    /**
+     * Global, Game-Setup-Agnostic constants for tuning game behaviour.
+     */
     export const K = Object.freeze(<const>{
+        /**
+         * A value in `(0,1]`. If `1`, then new health will be spawned
+         * the next time `dryRunSpawnFreeHealth` is called. This is the
+         * reciprocal of the average number of calls that must be to
+         * `dryRunSpawnFreeHealth` before a unit of health will be
+         * respawned after being consumed.
+         */
         HEALTH_UPDATE_CHANCE: 0.1,
+        /**
+         * A value in `(0,1]`. If `1`, then players can (on average),
+         * boost indefinitely. If close to zero, then players virtually
+         * cannot boost, no matter how much health they have. If `0.3`,
+         * players can boost for roughly 30% of the movements they make.
+         */
+        PCT_MOVES_THAT_ARE_BOOST: 0.05,
     });
 }
 Object.freeze(Game);

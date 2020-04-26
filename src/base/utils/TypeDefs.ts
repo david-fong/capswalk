@@ -37,6 +37,13 @@ export namespace Player {
      * See the main documentation in game/player/Player.
      */
     export type Health = number;
+
+    export type MoveType = keyof typeof MoveType;
+    export const MoveType = Object.freeze(<const>{
+        NORMAL: "NORMAL",
+        BOOST:  "BOOST",
+    });
+    MoveType as { [ key in MoveType ]: key };
 }
 Object.freeze(Player);
 Object.freeze(Player.prototype);

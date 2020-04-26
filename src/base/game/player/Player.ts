@@ -67,7 +67,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * @param dest -
      * @throws Error if the game is over or paused.
      */
-    protected makeMovementRequest(dest:Tile<S>): void {
+    protected makeMovementRequest(dest:Tile<S>, type: Player.MoveType): void {
         if (this.game.status !== Game.Status.PLAYING) {
             throw new Error("This is not a necessary precondition, but we're doing it anyway.");
         } else if (this.requestInFlight) {
@@ -79,6 +79,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
                 this.playerId,
                 this.lastAcceptedRequestId,
                 dest,
+                type,
             ),
         );
     }
@@ -125,6 +126,8 @@ export namespace Player {
          */
         export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
     }
+
+    export type MoveType = __Player.MoveType;
 
     /**
      * # Player Constructor Arguments

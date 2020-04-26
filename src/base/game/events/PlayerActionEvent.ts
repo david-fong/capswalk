@@ -128,6 +128,8 @@ export namespace PlayerActionEvent {
 
         public readonly dest: TileModEvent<S>;
 
+        public readonly moveType: Player.MoveType;
+
         /**
          * Undefined is equivalent to an empty array.
          */
@@ -137,6 +139,7 @@ export namespace PlayerActionEvent {
             playerId: Player.Id,
             lastAcceptedRequestId: number,
             destTile: Tile<S>,
+            moveType: Player.MoveType
         ) {
             super(playerId, lastAcceptedRequestId);
             this.dest = {
@@ -145,6 +148,7 @@ export namespace PlayerActionEvent {
                 newCharSeqPair:     undefined,
                 newFreeHealth:      undefined,
             };
+            this.moveType = moveType;
         }
     }
 

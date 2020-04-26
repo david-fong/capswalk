@@ -74,6 +74,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         // ==========================================================
         } else if (this.game.status !== Game.Status.PLAYING) return;
         if (!this.requestInFlight) {
+            console.log("no request in flight");
             // Only process movement-type input if the last request got
             // acknowledged by the Game Manager and the game is playing.
             if (event.keyCode === 32) {
@@ -85,7 +86,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
                 if (!this.coord.equals(this.prevCoord as any)) {
                     this.makeMovementRequest(this.game.grid.getUntAwayFrom(
                         this.coord, this.prevCoord,
-                    ));
+                    ), Player.MoveType.BOOST);
                 }
             } else if (event.key.length === 1) {
                 // TODO.design is the above condition okay? will any
@@ -142,7 +143,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
             if (possibleTarget) {
                 this.#seqBuffer = newSeqBuffer;
                 if (possibleTarget.langSeq === newSeqBuffer) {
-                    this.makeMovementRequest(possibleTarget);
+                    this.makeMovementRequest(possibleTarget, Player.MoveType.NORMAL);
                 }
                 return;
             }

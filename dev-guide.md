@@ -1,26 +1,34 @@
 
 # My Developer Guidelines
 
-## Releases
+## Release Procedure
 
-1. Switch to the `gh-pages` branch, which has parts of the `dist/` folder tracked despite the `dist/` folder being matched as ignored in the top-level `.gitignore`.
-1. Merge in changes from the `dev` branch.
-    - `--squash`: Looks a little cleaner and prevents GitHub from double-counting commits in user contributions.
-    - `--no-commit`: Don't automatically end the merge with a commit. We need to update the build output (and changelog?).
-1. Run `:/scripts/pack.sh -t` to build the project. The `-t` option tells the script to transpile the webpack config before using it in case it since the previous release.
-1. Stage changes, commit, and push.
+Update the `version` field in `package.json`.
 
 ```shell
 git switch gh-pages
-git merge --squash --no-commit dev
-# Resolve merge conflicts.
+git checkout dev -- .
 export NODE_ENV='production'
+echo 'y' | rm -r dist/*
 ./scripts/pack.sh -t
+```
+
+Sanity check that everything is running properly for online and offline implementations.
+
+```shell
 git add -u
-# Add any required, untracked files.
+# Force git tracking of dynamic chunks.
 git commit
 git push
+npm publish
+```
+
+```shell
+# Now let's go back to development:
 git switch -
+export NODE_ENV='development'
+echo 'y' | rm -r dist/*
+./scripts/pack.sh -t
 ```
 
 TODO.build Should we be maintaining some sort of release notes / making annotated tags for releases? If so, update list and shell template right before the git staging step.

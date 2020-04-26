@@ -138,7 +138,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // Rejected request. Implies either that: clientEventLag === 0,
             // or that (at Game Manager): dest.numTimesOccupied > desc.destNumTimesOccupied
-            if (clientEventLag === 1) {
+            if (clientEventLag === 0) {
                 player.requestInFlight = false;
             }
             return; // Short-circuit!

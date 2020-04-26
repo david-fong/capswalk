@@ -43,6 +43,8 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      */
     protected abstract computeDesiredDestination(): Coord<S>;
 
+    protected abstract getNextMoveType(): Player.MoveType;
+
     /**
      * Units are in milliseconds.
      */
@@ -63,7 +65,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
     private movementContinue(): void {
         this.makeMovementRequest(this.game.grid.getUntToward(
             this.coord, this.computeDesiredDestination()
-        ));
+        ), this.getNextMoveType());
         this.movementContinueWithInitialDelay();
     }
 

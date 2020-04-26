@@ -2,7 +2,7 @@ import { Lang } from "lang/Lang";
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
-import type { Player } from "../player/Player";
+import { Player } from "../player/Player";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
@@ -193,6 +193,11 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         return retval;
     }
 
+    private getHealthCostOfBoost(): Player.Health {
+        return this.averageFreeHealthPerTile
+        / Game.K.PCT_MOVES_THAT_ARE_BOOST;
+    }
+
 
     /**
      * Perform checks on an incoming event request for some action that
@@ -260,12 +265,22 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             this.processMoveExecute(desc); // Reject the request.
             return;
         }
+        const newPlayerHealthValue= player.status.health
+            + dest.freeHealth
+            - ((desc.moveType === Player.MoveType.BOOST)
+            ? this.getHealthCostOfBoost() : 0);
+        if (newPlayerHealthValue < 0) {
+            // Reject a boost-type movement request if it would make
+            // the player become downed (or if they are already downed):
+            this.processMoveExecute(desc);
+            return;
+        }
 
         // Set response fields according to spec in `PlayerMovementEvent`:
         desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
         desc.newPlayerHealth = {
             score:  player.status.score  + dest.freeHealth,
-            health: player.status.health + dest.freeHealth,
+            health: newPlayerHealthValue,
         };
         desc.dest.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
         desc.dest.newFreeHealth     = 0;

@@ -12,7 +12,6 @@
 
 ### High Priority
 
-1. Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
 1. Brainstorm ways to split up the js and css to defer loading.
     - Make lang files dynamically imported. This will save loading if the user only plays online (no game-manager implementation needed).
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
@@ -26,6 +25,10 @@
     - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
       - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
       - If it still has more health, it does something similar for its teammates.
+
+### Routine Checkups
+
+- Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
 
 ### Low Priority
 

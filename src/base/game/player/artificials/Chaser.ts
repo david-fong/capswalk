@@ -24,6 +24,10 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
         return undefined!;
     }
 
+    protected getNextMoveType(): Player.MoveType {
+        return Player.MoveType.NORMAL;
+    }
+
     /**
      * @override
      */

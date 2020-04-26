@@ -202,6 +202,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         });
         this.__abstractStatusBecomeOver();
         this.#status = Game.Status.OVER;
+        console.log("game is over!");
     }
     protected __abstractStatusBecomePlaying(): void {}
     protected __abstractStatusBecomePaused(): void {}
