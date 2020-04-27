@@ -229,6 +229,13 @@ export namespace Euclid2 {
             ));
         }
 
+        public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {
+            return new Coord({
+                x: origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
+                y: origin.y + Math.trunc(2 * radius * (Math.random() - 0.5)),
+            });
+        }
+
 
         public __getTileAt(coord: Coord.Bare): Tile<S> {
             if (coord.x < 0 || coord.x >= this.dimensions.width ||

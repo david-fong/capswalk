@@ -104,6 +104,17 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         return this.static.getRandomCoord(this.dimensions);
     }
 
+    /**
+     * A coord that is at most `radius` movements away from `origin`.
+     * The returned value does not necessarily need to be within this
+     * grid's dimensions as long as the returned coordinate can be
+     * meaningfully truncated by `getUntToward` when passing `origin`
+     * as the `sourceCoord` argument.
+     *
+     * The returned value should follow a uniform distribution.
+     */
+    public abstract getRandomCoordAround(origin: Coord.Bare<S>, radius: number): Coord<S>;
+
 
     /**
      * @override

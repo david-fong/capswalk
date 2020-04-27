@@ -17,9 +17,13 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 
     private readonly behaviour: Chaser.Behaviour;
 
+    private readonly grid: Chaser<S>["game"]["grid"];
+    #prevCoord: Coord<S>;
+
     protected constructor(game: GameManager<any,S>, desc: Player.__CtorArgs<"CHASER">) {
         super(game, desc);
-        this.behaviour = desc.familyArgs;
+        this.behaviour = Object.freeze(desc.familyArgs);
+        this.grid = this.game.grid;
     }
 
     public __afterAllPlayersConstruction(): void {
@@ -32,49 +36,70 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
         (this.targetProximity as Array<Player<S>>) = this.threatProximity.slice();
     }
 
+    public reset(spawnTile: Tile<S>): void {
+        super.reset(spawnTile);
+        this.#prevCoord = this.coord;
+    }
+
+    public moveTo(dest: Tile<S>): void {
+        this.#prevCoord = this.coord;
+        super.moveTo(dest);
+    }
+
     protected computeDesiredDestination(): Coord<S> {
         // Check if there is anyone to run away from:
         this.threatProximity.sort((pa,pb) => {
-            return this.game.grid.minMovesFromTo(pa.coord, this.coord)
-                -  this.game.grid.minMovesFromTo(pb.coord, this.coord);
+            return this.grid.minMovesFromTo(pa.coord, this.coord)
+                -  this.grid.minMovesFromTo(pb.coord, this.coord);
         });
         for (const threatP of this.threatProximity) {
-            if (this.game.grid.minMovesFromTo(threatP.coord, this.coord)
+            if (this.grid.minMovesFromTo(threatP.coord, this.coord)
                 > this.behaviour.fearDistance) break;
             if (threatP.status.isDowned) continue;
             if (threatP.status.health > this.status.health) {
-                return this.game.grid.getUntAwayFrom(this.coord, threatP.coord).coord;
+                // TODO.design Something that avoids getting cornered.
+                return this.grid.getUntAwayFrom(this.coord, threatP.coord).coord;
             }
         }
         // If there is nobody to run away from,
         // Check if there is anyone we want to attack:
         this.targetProximity.sort((pa,pb) => {
-            return this.game.grid.minMovesFromTo(this.coord, pa.coord)
-                -  this.game.grid.minMovesFromTo(this.coord, pb.coord);
+            return this.grid.minMovesFromTo(this.coord, pa.coord)
+                -  this.grid.minMovesFromTo(this.coord, pb.coord);
         });
         if (this.status.isDowned) {
         for (const targetP of this.targetProximity) {
-            if (this.game.grid.minMovesFromTo(this.coord, targetP.coord)
+            if (this.grid.minMovesFromTo(this.coord, targetP.coord)
                 > this.behaviour.bloodThirstDistance) break;
             if (targetP.status.health < this.status.health - this.behaviour.healthReserve) {
-                return this.game.grid.getUntToward(this.coord, targetP.coord).coord;
+                return targetP.coord;
             }
         } }
         // If there is nobody we want to chase after to attack,
         // Head toward the nearest free health if it exists.
         if (this.game.freeHealthTiles.size === 0) {
-            return this.game.grid.getRandomCoord();
+            // No tiles close by. Wander around:
+            const chanceOfBigDirectionChange = 0.2;
+            if (Math.random() < chanceOfBigDirectionChange) {
+                // Big direction change:
+                return this.grid.getRandomCoordAround(this.coord, 3);
+            } else {
+                // Continue wandering with a subtle, random direction:
+                return this.grid.getRandomCoordAround(this.grid.getUntAwayFrom(
+                    this.grid.getUntAwayFrom(this.coord, this.#prevCoord).coord,
+                this.#prevCoord).coord, 1);
+            }
         }
         let closestFht: Tile<S> = this.game.freeHealthTiles[0];
         let closestFhtDistance = Infinity;
         for (const fht of this.game.freeHealthTiles) {
-            const distance = this.game.grid.minMovesFromTo(this.coord, fht.coord);
+            const distance = this.grid.minMovesFromTo(this.coord, fht.coord);
             if (distance < closestFhtDistance) {
                 closestFht = fht;
                 closestFhtDistance = distance;
             }
         }
-        return this.game.grid.getUntToward(this.coord, closestFht.coord).coord;
+        return closestFht.coord;
     }
 
     protected getNextMoveType(): Player.MoveType {

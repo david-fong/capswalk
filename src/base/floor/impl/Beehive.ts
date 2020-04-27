@@ -148,6 +148,12 @@ export namespace Beehive {
             ));
         }
 
+        public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {
+            // Note to self when I implement this:
+            // Be careful about getting proper uniform random distribution!
+            return undefined!;
+        }
+
 
         public __getTileAt(coord: Coord.Bare): Tile<S> {
             return undefined!;
