@@ -1,4 +1,4 @@
-import { OmHooks } from "browser/OmHooks";
+import { OmHooks } from "defs/OmHooks";
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
 

@@ -1,5 +1,5 @@
 import { Game } from "../Game";
-import type { Lang } from 'utils/TypeDefs';
+import type { Lang } from "defs/TypeDefs";
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { VisibleGrid } from "floor/VisibleGrid";
@@ -146,7 +146,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
                 healthCoords.push({
                     coord:  tile.coord,
                     health: tile.freeHealth,
-                })
+                });
             }
         });
         return { csps, playerCoords, healthCoords, };

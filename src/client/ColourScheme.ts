@@ -1,4 +1,4 @@
-import { StorageHooks } from 'browser/StorageHooks';
+import { StorageHooks } from "defs/StorageHooks";
 
 /**
  *

@@ -1,5 +1,5 @@
-import { OmHooks } from "browser/OmHooks";
-import type { Lang, Player } from "utils/TypeDefs";
+import { OmHooks } from "defs/OmHooks";
+import type { Lang, Player } from "defs/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
 

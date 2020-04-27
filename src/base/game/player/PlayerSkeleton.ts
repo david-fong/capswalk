@@ -1,4 +1,4 @@
-import { Player as __Player } from "utils/TypeDefs";
+import { Player as __Player } from "defs/TypeDefs";
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";

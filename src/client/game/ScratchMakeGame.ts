@@ -1,9 +1,8 @@
 require("../../assets/style/game/index.css");
 
-import { OmHooks }          from "browser/OmHooks";
+import { OmHooks }          from "defs/OmHooks";
 import type { Coord }       from "floor/Tile";
-import { Lang }             from "utils/TypeDefs";
-import { Player }      from "game/player/Player";
+import { Lang }             from "defs/TypeDefs";
 import { OfflineGame }      from "./OfflineGame";
 import { IndexTasks }       from "game/IndexTasks";
 

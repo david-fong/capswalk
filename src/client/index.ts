@@ -1,7 +1,7 @@
 // Tell WebPack we want CSS:
 require("../../assets/style/initial/index.css");
 
-import { AllSkScreens } from "browser/screen/AllSkScreens";
+import { AllSkScreens } from "./screen/AllSkScreens";
 
 ((): void => {
     if (window.origin && window.origin !== "null" && "serviceWorker" in navigator) {
@@ -18,7 +18,3 @@ import { AllSkScreens } from "browser/screen/AllSkScreens";
 // }
 
 const allDisplays = new AllSkScreens(document.createElement("div"));
-
-import(/* webpackChunkName: "[request]" */ "./ScratchMakeGame").then((mod) => {
-    mod.game;
-});

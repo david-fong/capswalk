@@ -1,5 +1,5 @@
-import { OmHooks } from "../OmHooks";
-import type { AllSkScreens } from 'browser/screen/AllSkScreens';
+import { OmHooks } from "defs/OmHooks";
+import type { AllSkScreens } from "./AllSkScreens";
 
 /**
  *
@@ -58,7 +58,7 @@ export abstract class SkScreen {
      * This is a good place to start any `setInterval` schedules, and
      * to bring focus to a starting HTML element if appropriate.
      */
-    protected __abstractOnBeforeEnter(): void {}
+    protected __abstractOnBeforeEnter(): void { }
 
 }
 export namespace SkScreen {

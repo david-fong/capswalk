@@ -83,19 +83,32 @@ export namespace OmHooks {
             LONG_SPOTLIGHT: "player__spotlight-long",
         }),
         Dataset: Object.freeze(<const>{
-            DOWNED:     "downed",
-            FACE_SWATCH:"face",
+            DOWNED:         "downed",
+            FACE_SWATCH:    "face",
         }),
     });
 
 
     export const Screen = Object.freeze(<const>{
+        Id: Object.freeze(<const>{
+            ALL_SCREENS: "all-screens-container",
+        }),
         Class: Object.freeze(<const>{
             BASE:       "screen",
         }),
         Dataset: Object.freeze(<const>{
             CURRENT:    "current",
         }),
+        Impl: Object.freeze({
+            Home: Object.freeze(<const>{
+            }),
+            PlayGame: Object.freeze(<const>{
+                Class: Object.freeze(<const>{
+                    GRID_CONTAINER: "sks-pg--grid-container",
+                }),
+            }),
+        }),
     });
+    export namespace Screen {  }
 }
 Object.freeze(OmHooks);

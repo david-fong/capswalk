@@ -1,4 +1,8 @@
 
+#all-screens-container {
+    display:    contents;
+}
+
 .screen {
     /* Make sure that each display
     starts its own stacking context. */
@@ -10,4 +14,16 @@
 #background {
     z-index:    -1000;
     background-color: var(--colour-mainBg);
+}
+
+
+
+.sks-pg--grid-container {
+    flex-flow:  column nowrap;
+}
+@media screen and (min-aspect-ratio: 6/5) {
+    .sks-pg--grid-container {
+        height:     100vh;
+        min-width:  100vh;
+    }
 }

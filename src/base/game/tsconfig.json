@@ -1,8 +1,7 @@
 {
     "extends": "../.templates/tsconfig.json",
     "references": [
-        { "path": "../utils", },
-        { "path": "../browser", },
+        { "path": "../defs", },
         { "path": "../lang", },
         { "path": "../floor", },
     ],

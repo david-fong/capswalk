@@ -156,7 +156,7 @@ export class GroupSession {
                         socketId: socket.id,
                         username: socket.username!, // checked above.
                         noCheckGameOver: false,
-                        familyArgs: {}
+                        familyArgs: {},
                     };
                 }),
             },

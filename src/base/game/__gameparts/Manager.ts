@@ -8,8 +8,8 @@ import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
 
 import { English } from "lang/impl/English"; // NOTE: temporary placeholder.
-import { GameEvents } from "game/__gameparts/Events";
-import { ScoreInfo } from 'game/ScoreInfo';
+import { GameEvents } from "./Events";
+import { ScoreInfo } from "game/ScoreInfo";
 
 
 /**
@@ -202,7 +202,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
                         lastKnownUpdateId: 1 + tile.lastKnownUpdateId,
                         newCharSeqPair: undefined, // "do not change".
                         newFreeHealth: tile.freeHealth + tileHealthToAdd,
-                    })
+                    });
                 }
             }
             healthToSpawn -= tileHealthToAdd;
@@ -227,7 +227,10 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         desc: TileModEvent<S>,
         doCheckOperatorSeqBuffer: boolean = true,
     ): Tile<S> {
-        const tile = super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
+        const tile = this.grid.tile.at(desc.coord);
+        // NOTE: This assertion must be performed before executing
+        // changes by making a supercall or else the previous state
+        // will be gone.
         if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
             // We literally just specified this in processMoveRequest.
             throw new Error("this never happens. see comment in source.");
@@ -238,6 +241,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         } else {
             this.#freeHealthTiles.add(tile);
         }
+        super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
         return tile;
     }
 

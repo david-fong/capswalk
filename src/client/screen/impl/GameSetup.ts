@@ -1,5 +1,5 @@
 import { SkScreen } from "../SkScreen";
-import { Lang } from "utils/TypeDefs";
+import { Lang } from "defs/TypeDefs";
 
 
 /**
@@ -23,7 +23,7 @@ export class GameSetupScreen extends SkScreen {
         langSel.onselect = (): void => {
             langSel.blur();
             // TODO
-        }
+        };
         // TODO.impl set defaults from last used setup.
         (this.langSel as HTMLSelectElement) = langSel;
     } {

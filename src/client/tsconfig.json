@@ -1,7 +1,7 @@
 {
     "extends": "../.templates/tsconfig.json",
     "references": [
-        { "path": "../base/browser", },
+        { "path": "../base/defs", },
         { "path": "../base/game", },
     ],
 }

@@ -1,7 +1,7 @@
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
-import type { Player as __Player } from "utils/TypeDefs";
+import type { Player as __Player } from "defs/TypeDefs";
 import type { ArtificialPlayer } from "./ArtificialPlayer";
 import type { GameBase } from "game/__gameparts/Base";
 

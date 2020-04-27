@@ -1,4 +1,4 @@
-import { Lang, Player } from "utils/TypeDefs";
+import { Lang, Player } from "defs/TypeDefs";
 import { Coord } from "./Coord";
 export { Coord };
 

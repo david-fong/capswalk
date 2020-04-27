@@ -1,4 +1,4 @@
-import { Lang as __Lang } from "utils/TypeDefs";
+import { Lang as __Lang } from "defs/TypeDefs";
 
 import { LangSeqTreeNode } from "lang/LangSeqTreeNode";
 

@@ -1,4 +1,4 @@
-import { OmHooks } from "browser/OmHooks";
+import { OmHooks } from "defs/OmHooks";
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 

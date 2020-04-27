@@ -1,10 +1,4 @@
 
-#game-grid-container {
-    height:     100vh;
-    flex-flow:  column nowrap;
-}
-
-
 .game-grid {
     /* Since this is given the `center-contents` and
     `stack-contents` classes, it defaults to taking
@@ -36,13 +30,15 @@
     visibility: hidden;
 }
 
-.game-grid-impl-body:focus {
-    /* cursor:     help; */
-    outline:    none;
-}
-.game-grid-impl-body:not(:focus) {
-    filter:     brightness(70%);
-}
-.game-grid-impl-body:not(:focus) ~ .game-grid-kbd-dc {
-    visibility: visible;
+@media screen {
+    .game-grid-impl-body:focus {
+        /* cursor:     help; */
+        outline:    none;
+    }
+    .game-grid-impl-body:not(:focus) {
+        filter:     brightness(70%);
+    }
+    .game-grid-impl-body:not(:focus) ~ .game-grid-kbd-dc {
+        visibility: visible;
+    }
 }
