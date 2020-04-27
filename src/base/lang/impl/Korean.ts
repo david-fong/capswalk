@@ -54,10 +54,13 @@ export namespace Korean {
         private constructor() {
             super(
                 Dubeolsik,
-                INITIALIZE((ij, mj, fj) => {
-                    const atoms = [ij, mj, fj,].flatMap((jamos) => jamos.atoms.split(""));
+                INITIALIZE(((ij, mj, fj) => {
+                    const atoms = [ij, mj, fj,].flatMap((jamos) => {
+                        return (jamos.value in Dubeolsik.KEYBOARD)
+                            ? [jamos.value,] : jamos.atoms.split("");
+                    }) as Array<keyof typeof Dubeolsik.KEYBOARD>;
                     return atoms.map((atom) => Dubeolsik.KEYBOARD[atom]).join("");
-                }),
+                }) as SeqBuilder),
             );
         }
     }
@@ -95,7 +98,7 @@ export namespace Korean {
         public static getInstance(): Sebeolsik {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Sebeolsik();
-                delete this.KEYBOARD;
+                delete this.SEB_KEYBOARD;
             }
             return this.SINGLETON;
         }
@@ -103,8 +106,9 @@ export namespace Korean {
         /**
          *
          */
-        private static KEYBOARD = Object.freeze(<const>{
-            "FINALS": {
+        private static SEB_KEYBOARD = Object.freeze(<const>{
+            // Finals and consonant clusters are found on the left.
+            FINALS: {
                 "": "",
                 "ㅎ": "1", "ㅆ": "2", "ㅂ": "3", // 1-row
                 "ㅅ": "q", "ㄹ": "w", // q-row
@@ -115,29 +119,36 @@ export namespace Korean {
                 "ㄷ": "A", "ㄶ": "S", "ㄼ": "D", "ㄻ": "F", // A-row
                 "ㅊ": "Z", "ㅄ": "X", "ㅋ": "C", "ㄳ": "V", // Z-row
             },
-            "MEDIALS": {
-                "ㅛ": "4", "ㅠ": "5", "ㅑ": "6", "ㅖ": "7", "ᅴ": "8", // "ㅜ": "9",
+            // Medials are found in the middle.
+            MEDIALS: {
+                "ㅛ": "4", "ㅠ": "5", "ㅑ": "6", "ㅖ": "7", "ㅢ": "8", // "ㅜ": "9",
                 "ㅕ": "e", "ㅐ": "r", "ㅓ": "t", // q-row
                 "ㅣ": "d", "ㅏ": "f", "ㅡ": "g", // a-row
                 "ㅔ": "c", "ㅗ": "v", "ㅜ": "b", // z-row
                 "ㅒ": "G",
+                // Things that don't have dedicated keys:
+                "ㅘ": "vf", "ㅙ": "vr", "ㅚ": "vd", "ㅝ": "bt", "ㅞ": "bc", "ㅟ": "bd"
             },
-            "INITIALS": {
+            // Initials are found on the right.
+            INITIALS: {
                 "ㅋ": "0", // 1-row
                 "ㄹ": "y", "ㄷ": "u", "ㅁ": "i", "ㅊ": "o", "ㅍ": "p", // q-row
                 "ㄴ": "h", "ㅇ": "j", "ㄱ": "k", "ㅈ": "l", "ㅂ": ";", "ㅌ": "'", // a-row
                 "ㅅ": "n", "ㅎ": "m", // z-row
+                "ㄲ": "!",  // !-row
                 // NOTE: If we included numbers, this is where they would go.
+                // Things that don't have dedicated keys:
+                "ㄸ": "uu", "ㅃ": ";;", "ㅆ": "nn", "ㅉ": "l",
             },
         });
 
         private constructor() { super(
             Sebeolsik,
-            INITIALIZE((ij, mj, fj) => {
-                return Sebeolsik.KEYBOARD.INITIALS[ij.value]
-                    + Sebeolsik.KEYBOARD.MEDIALS[mj.value]
-                    + Sebeolsik.KEYBOARD.FINALS[fj.value];
-            }),
+            INITIALIZE(((ij, mj, fj) => {
+                return Sebeolsik.SEB_KEYBOARD.INITIALS[ij.value]
+                    + Sebeolsik.SEB_KEYBOARD.MEDIALS[mj.value]
+                    + Sebeolsik.SEB_KEYBOARD.FINALS[fj.value];
+            }) as SeqBuilder),
         ); }
     }
     Sebeolsik as Lang.ClassIf;
@@ -186,9 +197,9 @@ export namespace Korean {
 
         private constructor() { super(
             Romanization,
-            INITIALIZE((ij, mj, fj) => {
+            INITIALIZE(((ij, mj, fj) => {
                 return ij.roman + mj.roman + fj.roman;
-            }),
+            }) as SeqBuilder),
         ); }
     }
     Romanization as Lang.ClassIf;
@@ -213,11 +224,7 @@ export namespace Korean {
      *      suitable for consumption by the {@link Lang} constructor.
      */
     const INITIALIZE = (
-        seqBuilder: { (
-            ij: typeof INITIALS[number],
-            mj: typeof MEDIALS[number],
-            fj: typeof FINALS[number],
-        ): Lang.Seq, }
+        seqBuilder: SeqBuilder,
     ): Lang.CharSeqPair.WeightedForwardMap => {
         const forwardDict: Lang.CharSeqPair.WeightedForwardMap = {};
         INITIALS.forEach((initialJamo, initialIdx) => {
@@ -237,6 +244,11 @@ export namespace Korean {
         });
         return forwardDict;
     };
+    type SeqBuilder = { (
+        ij: typeof INITIALS[number],
+        mj: typeof MEDIALS[number],
+        fj: typeof FINALS[number],
+    ): Lang.Seq, };
 
     /**
      * # Initial Jamo (Choseong)
@@ -331,9 +343,9 @@ export namespace Korean {
      *
      */
     // TODO.learn
-    const WEIGHTS = {
+    const WEIGHTS = Object.freeze({
         "": 1,
-    };
+    }) as Record<string, number>;
 
 }
 Object.freeze(Korean);
