@@ -7,7 +7,7 @@
 .tile * {
     height: 100%; width: 100%;
 }
-.tile .tile__pointer-hitbox {
+.tile__pointer-hitbox {
     pointer-events: initial;
     top: 40%; left: 40%;
     /* border-color: black; */

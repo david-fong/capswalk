@@ -71,10 +71,16 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
 
+    public get score(): Player.Health {
+        return super.score;
+    }
     public set score(newValue: Player.Health) {
         super.score = newValue;
     }
 
+    public get health(): Player.Health {
+        return super.health;
+    }
     public set health(newHealth: Player.Health) {
         const oldIsDowned = this.isDowned;
         super.health = newHealth;

@@ -3,6 +3,7 @@ require("../../assets/style/game/index.css");
 import { OmHooks }          from "browser/OmHooks";
 import type { Coord }       from "floor/Tile";
 import { Lang }             from "utils/TypeDefs";
+import { Player }      from "game/player/Player";
 import { OfflineGame }      from "./OfflineGame";
 import { IndexTasks }       from "game/IndexTasks";
 
@@ -23,12 +24,25 @@ export const game = new OfflineGame<Coord.System.EUCLID2>({
     operatorIndex: 0,
     playerDescs: [
         {
-            familyId:   "HUMAN",
+            familyId:   <const>"HUMAN",
             teamId:     0,
             socketId:   undefined,
             username:   "hello world",
             noCheckGameOver: false,
-        },
+            familyArgs: {},
+        }, {
+            familyId:   <const>"CHASER",
+            teamId:     1,
+            socketId:   undefined,
+            username:   "chaser test",
+            noCheckGameOver: true,
+            familyArgs: {
+                fearDistance: 5,
+                bloodThirstDistance: 7,
+                healthReserve: 3.0,
+                movesPerSecond: 2.0,
+            }
+        }
     ],
 });
 

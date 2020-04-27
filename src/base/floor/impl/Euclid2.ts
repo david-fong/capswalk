@@ -26,16 +26,10 @@ export namespace Euclid2 {
             Object.freeze(this);
         }
 
-        /**
-         * @override
-         */
         public equals(other: Coord.Bare): boolean {
             return (this.x === other.x) && (this.y === other.y);
         }
 
-        /**
-         * @override
-         */
         public round(): Coord {
             return new Coord({
                 x: Math.round(this.x),
@@ -57,9 +51,6 @@ export namespace Euclid2 {
             return this.sub(other).originOneNorm();
         }
 
-        /**
-         * @override
-         */
         public originOneNorm(): number {
             return Math.abs(this.x) + Math.abs(this.y);
         }
@@ -104,9 +95,6 @@ export namespace Euclid2 {
                 / (Math.abs(this.x) + Math.abs(this.y));
         }
 
-        /**
-         * @override
-         */
         public add(other: Coord.Bare): Coord {
             return new Coord({
                 x: this.x + other.x,
@@ -114,9 +102,6 @@ export namespace Euclid2 {
             });
         }
 
-        /**
-         * @override
-         */
         public sub(other: Coord.Bare): Coord {
             return new Coord({
                 x: this.x - other.x,
@@ -151,16 +136,10 @@ export namespace Euclid2 {
      */
     export class Grid extends AbstractGrid<S> {
 
-        /**
-         * @override
-         */
         public static getAmbiguityThreshold(): 24 {
             return 24;
         }
 
-        /**
-         * @override
-         */
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze(<const>{
             height: Object.freeze(<const>{ min: 11, max: 51, }),
@@ -174,9 +153,6 @@ export namespace Euclid2 {
          */
         protected readonly grid: TU.RoArr<TU.RoArr<Tile<S>>>;
 
-        /**
-         * @override
-         */
         public constructor(desc: AbstractGrid.CtorArgs<S>) {
             super(desc);
 
@@ -192,18 +168,12 @@ export namespace Euclid2 {
             this.grid = grid;
         }
 
-        /**
-         * @override
-         */
         public forEachTile(consumer: (tile: Tile<S>) => void, thisArg: object = this): void {
             this.grid.forEach((row) => row.forEach((tile) => {
                 consumer(tile);
             }, thisArg), thisArg);
         }
 
-        /**
-         * @override
-         */
         public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
             const options = this.tile.destsFrom(sourceCoord).unoccupied.get;
             if (options.length === 0) {
@@ -253,19 +223,20 @@ export namespace Euclid2 {
             return options[Math.floor(options.length * Math.random())];
         }
 
-        /**
-         * @override
-         */
         public getUntAwayFrom(sourceCoord: Coord, avoidCoord: Coord): Tile<S> {
             return this.getUntToward(sourceCoord, sourceCoord.add(
                 sourceCoord.sub(avoidCoord)
             ));
         }
 
+        public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {
+            return new Coord({
+                x: origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
+                y: origin.y + Math.trunc(2 * radius * (Math.random() - 0.5)),
+            });
+        }
 
-        /**
-         * @override
-         */
+
         public __getTileAt(coord: Coord.Bare): Tile<S> {
             if (coord.x < 0 || coord.x >= this.dimensions.width ||
                 coord.y < 0 || coord.y >= this.dimensions.height
@@ -275,9 +246,6 @@ export namespace Euclid2 {
             return this.grid[coord.y][coord.x];
         }
 
-        /**
-         * @override
-         */
         public __getTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             let t = coord.y - radius;
             let b = coord.y + radius + 1;
@@ -296,12 +264,16 @@ export namespace Euclid2 {
             ));
         }
 
-        /**
-         * @override
-         */
         public __getTileSourcesTo(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             // Same behaviour as getting destinations from `coord`.
             return this.__getTileDestsFrom(coord, radius);
+        }
+
+        public minMovesFromTo(source: Coord.Bare, dest: Coord.Bare): number {
+            return Math.min(
+                Math.abs(dest.x - source.x),
+                Math.abs(dest.y - source.y),
+            );
         }
 
 
@@ -309,15 +281,23 @@ export namespace Euclid2 {
          * @override
          */
         public static getSpawnCoords(
-            playerCounts: number,
+            playerCounts: TU.RoArr<number>,
             dimensions: Grid.Dimensions,
-        ):  TU.RoArr<Coord.Bare> {
-            return [{x:0,y:0,},];
-
-            // TODO.impl A proper, nice looking version of this.
-            //
-            //
-            //
+        ): TU.RoArr<TU.RoArr<Coord.Bare>> {
+            const avoidSet: Array<Coord.Bare> = [];
+            return playerCounts.map((numMembers: number) => {
+                const teamSpawnCoords: Array<Coord.Bare> = [];
+                while (numMembers > 0) {
+                    let coord: Coord;
+                    do {
+                        coord = Grid.getRandomCoord(dimensions);
+                    } while (avoidSet.find((other) => coord.equals(other)));
+                    teamSpawnCoords.push(coord);
+                    avoidSet.push(coord);
+                    numMembers--;
+                }
+                return teamSpawnCoords;
+            });
         }
 
         /**

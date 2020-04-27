@@ -1,8 +1,8 @@
 import { Game } from "game/Game";
 
-import type { Lang } from "lang/Lang";
 import type { Coord, Tile } from "floor/Tile";
 import type { Player as __Player } from "utils/TypeDefs";
+import type { ArtificialPlayer } from "./ArtificialPlayer";
 import type { GameBase } from "game/__gameparts/Base";
 
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
@@ -31,7 +31,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     public requestInFlight: boolean;
 
 
-    public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {
+    public constructor(game: GameBase<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {
@@ -67,7 +67,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      * @param dest -
      * @throws Error if the game is over or paused.
      */
-    protected makeMovementRequest(dest:Tile<S>): void {
+    protected makeMovementRequest(dest: Tile<S>, type: Player.MoveType): void {
         if (this.game.status !== Game.Status.PLAYING) {
             throw new Error("This is not a necessary precondition, but we're doing it anyway.");
         } else if (this.requestInFlight) {
@@ -79,6 +79,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
                 this.playerId,
                 this.lastAcceptedRequestId,
                 dest,
+                type,
             ),
         );
     }
@@ -126,26 +127,43 @@ export namespace Player {
         export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
     }
 
+    export type MoveType = __Player.MoveType;
+
     /**
      * # Player Constructor Arguments
      */
-    export type CtorArgs = CtorArgs.PreIdAssignment & Readonly<{
-        playerId: Player.Id;
-        langName: Lang.Names.Value["id"],
-    }>;
+    export type CtorArgs = __CtorArgs<Player.Family>;
+    export type __CtorArgs<F extends Player.Family> = any extends F ? never
+    : { [atomic_F in F]: atomic_F extends Player.Family
+        ? (CtorArgs.__PreIdAssignment<atomic_F> & Readonly<{
+            playerId: Player.Id;
+        }>)
+        : never
+    }[F];
 
     export namespace CtorArgs {
 
-        export type PreIdAssignment = Readonly<{
-            /**
-             * This determines which constructor function to use.
-             */
-            familyId: Player.Family;
-            teamId:   Team.Id;
-            socketId: SocketId | undefined; // Must exist for operated players.
-            username: Username;
-            noCheckGameOver: boolean;
-        }>;
+        export type PreIdAssignment = __PreIdAssignment<Player.Family>;
+        export type __PreIdAssignment<F extends Player.Family> = any extends F ? never
+        : { [atomic_F in F]: atomic_F extends Player.Family
+            ? (Readonly<{
+                /**
+                 * This determines which constructor function to use.
+                 */
+                familyId: atomic_F;
+                teamId:   Team.Id;
+                socketId: SocketId | undefined; // Must exist for operated players.
+                username: Username;
+                noCheckGameOver: boolean;
+                familyArgs: FamilySpecificPart<atomic_F>;
+            }>)
+            : never;
+        }[F];
+
+        export type FamilySpecificPart<F extends Player.Family> =
+        ( F extends typeof Player.Family.HUMAN ? {}
+        : ArtificialPlayer.FamilySpecificPart<F>
+        );
 
         /**
          * @returns
@@ -156,7 +174,6 @@ export namespace Player {
          */
         export const finalize = (
             playerDescs: TU.RoArr<CtorArgs.PreIdAssignment>,
-            langName: Lang.Names.Value["id"],
         ): TU.RoArr<CtorArgs> => {
             // Map team ID's to consecutive numbers
             // (to play nice with array representations):
@@ -167,7 +184,7 @@ export namespace Player {
                     prev[originalId] = squashedId;
                     return prev;
                 }, [] as Array<Team.Id>);
-            return (playerDescs as Array<CtorArgs.PreIdAssignment>)
+            return playerDescs.slice()
             .sort((pda, pdb) => teamIdCleaner[pda.teamId] - teamIdCleaner[pdb.teamId])
             .map<CtorArgs>((playerDesc, index) => { return {
                 playerId:   index,
@@ -175,9 +192,9 @@ export namespace Player {
                 teamId:     teamIdCleaner[playerDesc.teamId],
                 socketId:   playerDesc.socketId,
                 username:   playerDesc.username,
-                langName:   langName,
                 noCheckGameOver: playerDesc.noCheckGameOver,
-            }; });
+                familyArgs: playerDesc.familyArgs,
+            } as CtorArgs; });
         };
 
     }

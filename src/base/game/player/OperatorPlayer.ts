@@ -41,14 +41,11 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     private prevCoord: Coord<S>;
 
 
-    public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {
+    public constructor(game: GameBase<any,S>, desc: Player.__CtorArgs<"HUMAN">) {
         super(game, desc);
-        this.langRemappingFunc = Lang.RemappingFunctions[desc.langName];
+        this.langRemappingFunc = Lang.RemappingFunctions[this.game.langName];
     }
 
-    /**
-     * @override {@link Player#reset}
-     */
     public reset(spawnTile: Tile<S>): void {
         super.reset(spawnTile);
         this.prevCoord = spawnTile.coord;
@@ -77,15 +74,11 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
             // Only process movement-type input if the last request got
             // acknowledged by the Game Manager and the game is playing.
             if (event.keyCode === 32) {
-                // TODO.design: this should cost health... add an argument to
-                // makeMovementRequest? An enum saying how the movement should
-                // be "charged" / its "cost-type" in health? The cost should
-                // be proportional to `GameManager.averageFreeHealthPerTile`.
                 // TODO.learn why isn't TypeScript able to figure the below line out?
                 if (!this.coord.equals(this.prevCoord as any)) {
                     this.makeMovementRequest(this.game.grid.getUntAwayFrom(
                         this.coord, this.prevCoord,
-                    ));
+                    ), Player.MoveType.BOOST);
                 }
             } else if (event.key.length === 1) {
                 // TODO.design is the above condition okay? will any
@@ -142,7 +135,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
             if (possibleTarget) {
                 this.#seqBuffer = newSeqBuffer;
                 if (possibleTarget.langSeq === newSeqBuffer) {
-                    this.makeMovementRequest(possibleTarget);
+                    this.makeMovementRequest(possibleTarget, Player.MoveType.NORMAL);
                 }
                 return;
             }

@@ -41,7 +41,6 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
 .player[data-downed="no"] > .player__downed-overlay {
     visibility: hidden;
 }
-/* TODO.debug why aren't these `~` selectors working? */
 .player[data-face="me"] > .player__face/* ,
 .player[data-face="me"] ~ .tile__char */ {
     background-color: var(--colour-pFaceMe);

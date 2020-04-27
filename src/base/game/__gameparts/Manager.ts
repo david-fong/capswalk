@@ -2,7 +2,7 @@ import { Lang } from "lang/Lang";
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
-import type { Player } from "../player/Player";
+import { Player } from "../player/Player";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
@@ -19,6 +19,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     public readonly averageFreeHealth: Player.Health;
     public readonly averageFreeHealthPerTile: Player.Health;
     #currentFreeHealth: Player.Health;
+    readonly #freeHealthTiles: Set<Tile<S>>;
 
     public readonly lang: Lang;
 
@@ -49,6 +50,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         super(gameType, impl, desc);
         this.averageFreeHealth = desc.averageFreeHealthPerTile * this.grid.area;
         this.averageFreeHealthPerTile = desc.averageFreeHealthPerTile;
+        this.#freeHealthTiles = new Set();
 
         // TODO.impl Change this to use a dynamic import for a Lang registry dict.
         // We need to make that registry dict first!
@@ -76,6 +78,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         super.reset();
 
         this.#currentFreeHealth = 0.0;
+        this.#freeHealthTiles.clear();
 
         // Reset hit-counters in the current language:
         // This must be done before shuffling so that the previous
@@ -89,18 +92,22 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // Reset and spawn players:
         this.teams.forEach((team) => team.reset());
         const spawnPoints = this.grid.static.getSpawnCoords(
-            this.players.length,
+            this.teams.map((team) => team.members.length),
             this.grid.dimensions,
         );
-        this.players.forEach((player) => {
-            player.reset(this.grid.tile.at(spawnPoints[player.playerId]));
-        });
+        this.teams.forEach((team, teamIndex) => {
+            team.members.forEach((member, memberIndex) => {
+                member.reset(this.grid.tile.at(spawnPoints[teamIndex][memberIndex]));
+            });
+        })
 
+        // NOTE: This is currently commented out because they'll just
+        // spawn as the players start moving. It's not necessary.
         // Targets should be spawned _after_ players have spawned so
         // that they do not spawn in the same tile as any players.
-        this.dryRunSpawnFreeHealth([])?.forEach((tileModDesc) => {
-            this.executeTileModEvent(tileModDesc);
-        })
+        // this.dryRunSpawnFreeHealth([])?.forEach((tileModDesc) => {
+        //     this.executeTileModEvent(tileModDesc);
+        // })
     }
 
 
@@ -134,6 +141,10 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
 
     public get currentFreeHealth(): Player.Health {
         return this.#currentFreeHealth;
+    }
+
+    public get freeHealthTiles(): ReadonlySet<Tile<S>> {
+        return this.#freeHealthTiles;
     }
 
     /**
@@ -193,6 +204,36 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         return retval;
     }
 
+    private getHealthCostOfBoost(): Player.Health {
+        return this.averageFreeHealthPerTile
+        / Game.K.PCT_MOVES_THAT_ARE_BOOST;
+        // TODO.design Take into account the connectivity of the grid
+        // implementation. Ie. What is the average number of movements
+        // it would take me to reach any other tile averaged over all
+        // tiles?
+    }
+
+
+    /**
+     * @override
+     */
+    protected executeTileModEvent(
+        desc: TileModEvent<S>,
+        doCheckOperatorSeqBuffer: boolean = true,
+    ): void {
+        const tile = this.grid.tile.at(desc.coord);
+        if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
+            // We literally just specified this in processMoveRequest.
+            throw new Error("this never happens. see comment in source.");
+        }
+        this.#currentFreeHealth += desc.newFreeHealth! - tile.freeHealth;
+        if (desc.newFreeHealth === 0) {
+            this.#freeHealthTiles.delete(tile);
+        } else {
+            this.#freeHealthTiles.add(tile);
+        }
+        super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
+    }
 
     /**
      * Perform checks on an incoming event request for some action that
@@ -260,12 +301,22 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             this.processMoveExecute(desc); // Reject the request.
             return;
         }
+        const newPlayerHealthValue
+            = player.status.health
+            + (dest.freeHealth * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
+            - ((desc.moveType === Player.MoveType.BOOST) ? this.getHealthCostOfBoost() : 0);
+        if (newPlayerHealthValue < 0) {
+            // Reject a boost-type movement request if it would make
+            // the player become downed (or if they are already downed):
+            this.processMoveExecute(desc);
+            return;
+        }
 
         // Set response fields according to spec in `PlayerMovementEvent`:
         desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
         desc.newPlayerHealth = {
             score:  player.status.score  + dest.freeHealth,
-            health: player.status.health + dest.freeHealth,
+            health: newPlayerHealthValue,
         };
         desc.dest.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
         desc.dest.newFreeHealth     = 0;
@@ -274,24 +325,8 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
 
         // Accept the request, and trigger calculation
         // and enactment of the requested changes:
-        desc.eventId = this.getNextUnusedEventId();
+        desc.eventId = this.nextUnusedEventId;
         this.processMoveExecute(desc);
-    }
-
-    /**
-     * @override
-     */
-    protected executeTileModEvent(
-        desc: TileModEvent<S>,
-        doCheckOperatorSeqBuffer: boolean = true,
-    ): void {
-        const tile = this.grid.tile.at(desc.coord);
-        if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
-            // We literally just specified this in processMoveRequest.
-            throw new Error("this never happens. see comment in source.");
-        }
-        this.#currentFreeHealth += desc.newFreeHealth! - tile.freeHealth;
-        super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
     }
 
 
@@ -313,7 +348,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         desc.playerLastAcceptedRequestId = (1 + bubbler.lastAcceptedRequestId);
 
         // We are all go! Do it.
-        desc.eventId = this.getNextUnusedEventId();
+        desc.eventId = this.nextUnusedEventId;
         this.processBubbleExecute(desc);
     }
 

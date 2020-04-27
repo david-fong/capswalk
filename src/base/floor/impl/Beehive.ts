@@ -47,16 +47,10 @@ export namespace Beehive {
             Object.freeze(this);
         }
 
-        /**
-         * @override
-         */
         public equals(other: Coord.Bare): boolean {
             return (this.dash === other.dash) && (this.bash === other.bash);
         }
 
-        /**
-         * @override
-         */
         public round(): Coord {
             // I'm pretty proud of this despite the fact that I don't
             // think there's anything very impressive about it.
@@ -75,9 +69,6 @@ export namespace Beehive {
             }
         }
 
-        /**
-         * @override
-         */
         public add(other: Coord.Bare): Coord {
             return new Coord({
                 dash: this.dash + other.dash,
@@ -85,9 +76,6 @@ export namespace Beehive {
             });
         }
 
-        /**
-         * @override
-         */
         public sub(other: Coord.Bare): Coord {
             return new Coord({
                 dash: this.dash - other.dash,
@@ -95,9 +83,6 @@ export namespace Beehive {
             });
         }
 
-        /**
-         * @override
-         */
         public mul(scalar: number): Coord {
             return new Coord({
                 dash: scalar * this.dash,
@@ -122,16 +107,10 @@ export namespace Beehive {
      */
     export class Grid extends AbstractGrid<S> {
 
-        /**
-         * @override
-         */
         public static getAmbiguityThreshold(): 18 {
             return 18;
         }
 
-        /**
-         * @override
-         */
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
             dash:    Object.freeze({ min: 10, max: 50, }),
@@ -147,76 +126,59 @@ export namespace Beehive {
         // Also design HTML representation and initialize in Grid.Visible
         private readonly grid: TU.RoArr<TU.RoArr<Tile<S>>>;
 
-        /**
-         * @override
-         */
         public constructor(desc: AbstractGrid.CtorArgs<S>) {
             super(desc);
 
             // Initialize `grid`:
         }
 
-        /**
-         * @override
-         */
         public forEachTile(consumer: (tile: Tile<S>) => void, thisArg: object = this): void {
             this.grid.forEach((row) => row.forEach((tile) => {
                 consumer(tile);
             }, thisArg), thisArg);
         }
 
-        /**
-         * @override
-         */
         public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
             return undefined!;
         }
 
-        /**
-         * @override
-         */
         public getUntAwayFrom(sourceCoord: Coord, avoidCoord: Coord): Tile<S> {
             return this.getUntToward(sourceCoord, sourceCoord.add(
                 sourceCoord.sub(avoidCoord)
             ));
         }
 
+        public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {
+            // Note to self when I implement this:
+            // Be careful about getting proper uniform random distribution!
+            return undefined!;
+        }
 
-        /**
-         * @override
-         */
+
         public __getTileAt(coord: Coord.Bare): Tile<S> {
             return undefined!;
         }
 
-        /**
-         * @override
-         */
         public __getTileDestsFrom(coord: Coord.Bare): Array<Tile<S>> {
             return undefined!;
         }
 
-        /**
-         * @override
-         */
         public __getTileSourcesTo(coord: Coord.Bare): Array<Tile<S>> {
             return undefined!;
         }
 
-
-        /**
-         * @override
-         */
-        public static getSpawnCoords(
-            playerCounts: number,
-            dimensions: Grid.Dimensions,
-        ): ReadonlyArray<Coord.Bare> {
+        public minMovesFromTo(source: Coord.Bare, dest: Coord.Bare): number {
             return undefined!;
         }
 
-        /**
-         * @override
-         */
+
+        public static getSpawnCoords(
+            playerCounts: TU.RoArr<number>,
+            dimensions: Grid.Dimensions,
+        ): TU.RoArr<TU.RoArr<Coord.Bare>> {
+            return undefined!;
+        }
+
         public static getArea(dim: Grid.Dimensions): number {
             const shorterSide = Math.min(dim.fslash, dim.bslash);
             const longerSide  = Math.max(dim.fslash, dim.bslash);

@@ -4,7 +4,7 @@ import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
-import { Player, Team } from "game/player/Player";
+import type { Player, Team } from "game/player/Player";
 
 export { ServerGame } from "./ServerGame";
 
@@ -151,11 +151,12 @@ export class GroupSession {
             playerDescs: {
                 ...Object.values(this.sockets).map((socket) => {
                     return {
-                        familyId: Player.Family.HUMAN,
+                        familyId: "HUMAN",
                         teamId: socket.teamId!,
                         socketId: socket.id,
                         username: socket.username!, // checked above.
                         noCheckGameOver: false,
+                        familyArgs: {}
                     };
                 }),
             },

@@ -104,6 +104,17 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         return this.static.getRandomCoord(this.dimensions);
     }
 
+    /**
+     * A coord that is at most `radius` movements away from `origin`.
+     * The returned value does not necessarily need to be within this
+     * grid's dimensions as long as the returned coordinate can be
+     * meaningfully truncated by `getUntToward` when passing `origin`
+     * as the `sourceCoord` argument.
+     *
+     * The returned value should follow a uniform distribution.
+     */
+    public abstract getRandomCoordAround(origin: Coord.Bare<S>, radius: number): Coord<S>;
+
 
     /**
      * @override
@@ -119,6 +130,15 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * @override
      */
     public abstract __getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
+
+    /**
+     * The returned value must be consistent with results from the
+     * methods `__getTileDestsFrom` and `__getTileSourcesTo`.
+     *
+     * @param source -
+     * @param dest -
+     */
+    public abstract minMovesFromTo(source: Coord.Bare<S>, dest: Coord.Bare<S>): number;
 
     /**
      * Note: I would rather have this implementation go under the
@@ -144,6 +164,10 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
             OmHooks.General.Class.CENTER_CONTENTS,
             OmHooks.General.Class.STACK_CONTENTS,
         );
+        // Remove all child elements from host and then append the new grid:
+        parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
+        parentElem.insertAdjacentElement("afterbegin", gridImplElem);
+        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
         {
             // Add a "keyboard-disconnected" icon if not added already:
             // This needs to be a _later_ sibling of gridImplElem.
@@ -165,10 +189,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
                 parentElem.appendChild(kbdDcBase);
             }
         }
-        // Remove all child elements from host and then append the new grid:
-        parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
-        parentElem.appendChild(gridImplElem);
-        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
     }
 
 }
@@ -249,9 +269,9 @@ export namespace Grid {
          * @param playerCounts -
          */
         getSpawnCoords(
-            playerCounts: number,
+            playerCounts: TU.RoArr<number>,
             dimensions: Dimensions<S>,
-        ): TU.RoArr<Coord.Bare<S>>;
+        ): TU.RoArr<TU.RoArr<Coord.Bare<S>>>;
 
     };
 

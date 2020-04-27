@@ -41,8 +41,14 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * call the {@link Game#recordEvent} method, passing it the event
      * descriptor. To create a new event ID at the Game Manager, just
      * take the current length of this array.
+     *
+     * This array has a fixed length to put a bound on the amount of
+     * memory it consumes. Therefore, any accesses to it must use a
+     * wrapped (apply modulus operator) version of event ID's. Event
+     * ID's are _not_ wrapped in their representation.
      */
-    private readonly eventRecord: Array<Readonly<EventRecordEntry>>;
+    private readonly eventRecordBitmap: Array<boolean>;
+    #nextUnusedEventId: EventRecordEntry["eventId"];
 
     public constructor(
         gameType: G,
@@ -50,18 +56,19 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(gameType, impl, gameDesc);
-        this.eventRecord = [];
+        this.eventRecordBitmap = [];
     }
 
     public reset(): void {
-        // Clear the event record:
-        this.eventRecord.splice(0);
-
         super.reset();
+
+        // Clear the event record:
+        this.eventRecordBitmap.fill(false, 0, Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH);
+        this.#nextUnusedEventId = 0;
     }
 
-    protected getNextUnusedEventId(): EventRecordEntry["eventId"] {
-        return this.eventRecord.length;
+    protected get nextUnusedEventId(): EventRecordEntry["eventId"] {
+        return this.#nextUnusedEventId;
     }
 
 
@@ -78,17 +85,20 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     private recordEvent(desc: Readonly<EventRecordEntry>): void {
         const id = desc.eventId;
+        const wrappedId = id % Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH;
         if (id === EventRecordEntry.EVENT_ID_REJECT) {
             throw new TypeError("Do not try to record events for rejected requests.");
         } else if (id < 0 || id !== Math.trunc(id)) {
             throw new RangeError("Event ID's must only be assigned positive, integer values.");
-        } else if (this.eventRecord[id]) {
+        } else if (this.eventRecordBitmap[wrappedId]) {
             throw new Error("Event ID's must be assigned unique values.");
         }
-        // NOTE: If storage becomes a concern with logging events,
-        // create a static constant for the record's buffer size,
-        // and then here, wrap around.
-        this.eventRecord[id] = desc;
+        this.eventRecordBitmap[wrappedId] = true;
+        this.eventRecordBitmap[(id
+            + Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH
+            - Game.K.EVENT_RECORD_FORWARD_WINDOW_LENGTH)
+            % Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH] = false;
+            this.#nextUnusedEventId++;
     }
 
 
@@ -138,7 +148,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // Rejected request. Implies either that: clientEventLag === 0,
             // or that (at Game Manager): dest.numTimesOccupied > desc.destNumTimesOccupied
-            if (clientEventLag === 1) {
+            if (clientEventLag === 0) {
                 player.requestInFlight = false;
             }
             return; // Short-circuit!

@@ -17,7 +17,7 @@ Sanity check that everything is running properly for online and offline implemen
 
 ```shell
 git add -u
-# Add any required, untracked files.
+# Force git tracking of dynamic chunks.
 git commit
 git push
 npm publish
