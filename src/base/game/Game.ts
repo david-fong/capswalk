@@ -146,7 +146,7 @@ export namespace Game {
         PCT_MOVES_THAT_ARE_BOOST: 0.05,
         /**
          * A value in `(0,1]` (values greater than one are legal from
-         * a mathematic standpoint, but not from one of game-design).
+         * a mathematical standpoint, but not from one of game-design).
          * Scales the health received from picking up free health for
          * a player who is downed.
          *
@@ -156,6 +156,19 @@ export namespace Game {
          * not too much, not too little.
          */
         HEALTH_EFFECT_FOR_DOWNED_PLAYER: 0.6,
+        /**
+         * A strictly-positive integer.
+         *
+         * This describes a functionality put in place to limit memory
+         * consumption for keeping track of events affected by network
+         * latency. See `EVENT_RECORD_FORWARD_WINDOW_LENGTH` for more
+         * explanation.
+         */
+        EVENT_RECORD_WRAPPING_BUFFER_LENGTH: 128,
+        /**
+         *
+         */
+        EVENT_RECORD_FORWARD_WINDOW_LENGTH: 64,
     });
 }
 Object.freeze(Game);

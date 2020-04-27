@@ -325,7 +325,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
 
         // Accept the request, and trigger calculation
         // and enactment of the requested changes:
-        desc.eventId = this.getNextUnusedEventId();
+        desc.eventId = this.nextUnusedEventId;
         this.processMoveExecute(desc);
     }
 
@@ -348,7 +348,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         desc.playerLastAcceptedRequestId = (1 + bubbler.lastAcceptedRequestId);
 
         // We are all go! Do it.
-        desc.eventId = this.getNextUnusedEventId();
+        desc.eventId = this.nextUnusedEventId;
         this.processBubbleExecute(desc);
     }
 

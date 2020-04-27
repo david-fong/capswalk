@@ -15,7 +15,6 @@
 1. Brainstorm ways to split up the js and css to defer loading.
     - Make lang files dynamically imported. This will save loading if the user only plays online (no game-manager implementation needed).
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
-1. Implement basic artificial player.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
