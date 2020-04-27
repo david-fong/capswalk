@@ -25,5 +25,6 @@
         "noImplicitReturns":    true,
         "strictBindCallApply":  true,
         "noImplicitThis":       true,
+        "noImplicitAny":        true,
     },
 }

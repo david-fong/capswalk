@@ -21,7 +21,7 @@ export class Colour {
         //sel.name =
         for (const scheme of Colour.Scheme) {
             const opt = document.createElement("option");
-            opt.innerText = Colour.Scheme[scheme.id].displayName;
+            opt.innerText = scheme.displayName;
             opt.value = scheme.id;
             sel.add(opt);
         }

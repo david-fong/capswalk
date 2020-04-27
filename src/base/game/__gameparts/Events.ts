@@ -1,4 +1,4 @@
-import type { Coord } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 import { Game } from "../Game";
 
 import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
@@ -105,7 +105,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     protected executeTileModEvent(
         desc: TileModEvent<S>,
         doCheckOperatorSeqBuffer: boolean = true,
-    ): void {
+    ): Tile<S> {
+        Object.freeze(desc);
         const dest = this.grid.tile.at(desc.coord);
         if (dest.lastKnownUpdateId < desc.lastKnownUpdateId) {
             if (desc.newCharSeqPair) {
@@ -120,6 +121,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             dest.lastKnownUpdateId = desc.lastKnownUpdateId;
             dest.freeHealth = desc.newFreeHealth!;
         }
+        return dest;
     }
 
     /**
@@ -142,7 +144,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      */
     protected processMoveExecute(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
         const player = this.players[desc.playerId];
-        const dest   = this.grid.tile.at(desc.dest.coord);
         const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
@@ -154,8 +155,8 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             return; // Short-circuit!
         }
         this.recordEvent(desc);
-        this.executeTileModEvent(desc.dest, player !== this.operator);
-        desc.tilesWithHealthUpdates?.forEach((desc) => {
+        const dest = this.executeTileModEvent(desc.destModDesc, player !== this.operator);
+        desc.tileHealthModDescs?.forEach((desc) => {
             this.executeTileModEvent(desc);
         });
 
@@ -176,7 +177,6 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         if ((player === this.operator)
             ? (clientEventLag === 1)
             : (clientEventLag <= 1)) {
-            player.status.score  = desc.newPlayerHealth!.score;
             player.status.health = desc.newPlayerHealth!.health;
 
             player.moveTo(dest);

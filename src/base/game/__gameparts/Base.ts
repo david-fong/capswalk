@@ -130,7 +130,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         });
     }
     protected abstract __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S>;
-    protected abstract __createArtifPlayer(desc: Player.CtorArgs):
+    protected abstract __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>):
     (G extends Game.Type.Manager ? ArtificialPlayer<S> : Player<S>);
 
     public serializeResetState(): Game.ResetSer<S> {

@@ -71,13 +71,6 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
 
-    public get score(): Player.Health {
-        return super.score;
-    }
-    public set score(newValue: Player.Health) {
-        super.score = newValue;
-    }
-
     public get health(): Player.Health {
         return super.health;
     }
@@ -87,7 +80,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
         if (oldIsDowned !== this.isDowned) {
             // CSS integration for Player.isDowned rendering.
-            this.#baseElem[OmHooks.Player.Dataset.DOWNED] = (this.isDowned)
+            this.#baseElem.dataset[OmHooks.Player.Dataset.DOWNED] = (this.isDowned)
                 ? ((this.player.team.elimOrder) ? "team" : "self") : "no";
         }
     }

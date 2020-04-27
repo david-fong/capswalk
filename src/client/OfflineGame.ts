@@ -81,7 +81,7 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
     /**
      * @override
      */
-    protected __createArtifPlayer(desc: Player.CtorArgs): ArtificialPlayer<S> {
+    protected __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>): ArtificialPlayer<S> {
         return ArtificialPlayer.of(this, desc);
     }
 

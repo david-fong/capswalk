@@ -99,6 +99,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 export namespace Player {
 
     export type Family = __Player.Family;
+    export type FamilyArtificial = Exclude<Player.Family, typeof Player.Family.HUMAN>;
 
     export type Id = __Player.Id;
 
@@ -196,10 +197,8 @@ export namespace Player {
                 familyArgs: playerDesc.familyArgs,
             } as CtorArgs; });
         };
-
     }
     Object.freeze(CtorArgs);
-
 }
 Object.freeze(Player);
 Object.freeze(Player.prototype);

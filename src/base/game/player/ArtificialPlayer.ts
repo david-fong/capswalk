@@ -86,8 +86,11 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 export namespace ArtificialPlayer {
 
     export declare const __Constructors: Readonly<{
-        [ F in Exclude<Player.Family, typeof Player.Family.HUMAN> ]:
-        typeof ArtificialPlayer
+        [ F in Player.FamilyArtificial ]: {
+            new<S extends Coord.System>(
+                game: GameManager<any,S>, desc: Player.__CtorArgs<F>
+            ): ArtificialPlayer<S>;
+        };
     }>;
 
     export type FamilySpecificPart<F extends Player.Family> =
@@ -96,10 +99,11 @@ export namespace ArtificialPlayer {
     );
 
     export const of = <S extends Coord.System>(
-        game: Readonly<GameManager<any,S>>,
-        playerDesc: Player.CtorArgs,
+        game: GameManager<any,S>,
+        playerDesc: Player.__CtorArgs<Player.FamilyArtificial>,
     ): ArtificialPlayer<S> => {
-        return new (__Constructors[playerDesc.familyId])(game, playerDesc);
+        const familyId = playerDesc.familyId as Player.FamilyArtificial;
+        return new (__Constructors[familyId])(game, playerDesc);
     };
 }
 // ArtificialPlayer gets frozen in PostInit after __Constructors get initialized.

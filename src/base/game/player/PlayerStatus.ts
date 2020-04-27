@@ -13,7 +13,6 @@ export class PlayerStatus<S extends Coord.System> {
 
     protected readonly player: Readonly<Player<S>>; // Circular field reference.
     public readonly noCheckGameOver: boolean;
-    #score:  Player.Health;
     #health: Player.Health;
 
     public constructor(player: Readonly<Player<S>>, noCheckGameOver: boolean) {
@@ -22,7 +21,6 @@ export class PlayerStatus<S extends Coord.System> {
     }
 
     public reset(): void {
-        this.score   = 0;
         this.health  = 0;
     }
 
@@ -32,13 +30,6 @@ export class PlayerStatus<S extends Coord.System> {
         return undefined;
     }
 
-
-    public get score(): Player.Health {
-        return this.#score;
-    }
-    public set score(newValue: Player.Health) {
-        this.#score = newValue;
-    }
 
     public get health(): Player.Health {
         return this.#health;

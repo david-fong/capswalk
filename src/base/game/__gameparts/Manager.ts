@@ -9,6 +9,7 @@ import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
 
 import { English } from "lang/impl/English"; // NOTE: temporary placeholder.
 import { GameEvents } from "game/__gameparts/Events";
+import { ScoreInfo } from 'game/ScoreInfo';
 
 
 /**
@@ -32,6 +33,8 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * and I don't think they'd feel as if it were missing.
      */
     protected readonly langBalancingScheme: Lang.BalancingScheme;
+
+    private readonly scoreInfo: ScoreInfo;
 
     /**
      * _Does not call reset._
@@ -68,6 +71,8 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             );
         }
         this.langBalancingScheme = desc.langBalancingScheme;
+
+        this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
     }
 
     /**
@@ -99,7 +104,8 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             team.members.forEach((member, memberIndex) => {
                 member.reset(this.grid.tile.at(spawnPoints[teamIndex][memberIndex]));
             });
-        })
+        });
+        this.scoreInfo.reset();
 
         // NOTE: This is currently commented out because they'll just
         // spawn as the players start moving. It's not necessary.
@@ -220,8 +226,8 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     protected executeTileModEvent(
         desc: TileModEvent<S>,
         doCheckOperatorSeqBuffer: boolean = true,
-    ): void {
-        const tile = this.grid.tile.at(desc.coord);
+    ): Tile<S> {
+        const tile = super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
         if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
             // We literally just specified this in processMoveRequest.
             throw new Error("this never happens. see comment in source.");
@@ -232,7 +238,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         } else {
             this.#freeHealthTiles.add(tile);
         }
-        super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
+        return tile;
     }
 
     /**
@@ -291,9 +297,9 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             this.processMoveExecute(desc);
             return;
         }
-        const dest = this.grid.tile.at(desc.dest.coord);
+        const dest = this.grid.tile.at(desc.destModDesc.coord);
         if (dest.isOccupied ||
-            dest.lastKnownUpdateId !== desc.dest.lastKnownUpdateId) {
+            dest.lastKnownUpdateId !== desc.destModDesc.lastKnownUpdateId) {
             // The update ID check is not essential, but it helps
             // enforce stronger client-experience consistency: they cannot
             // move somewhere where they have not realized the `LangSeq` has
@@ -312,21 +318,27 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             return;
         }
 
+        // Update stats records:
+        this.scoreInfo.entries[player.playerId].totalHealthPickedUp += dest.freeHealth;
+
         // Set response fields according to spec in `PlayerMovementEvent`:
         desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
         desc.newPlayerHealth = {
-            score:  player.status.score  + dest.freeHealth,
             health: newPlayerHealthValue,
         };
-        desc.dest.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
-        desc.dest.newFreeHealth     = 0;
-        desc.dest.newCharSeqPair    = this.dryRunShuffleLangCharSeqAt(dest);
-        desc.tilesWithHealthUpdates = this.dryRunSpawnFreeHealth([desc.dest,]);
+        desc.destModDesc.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
+        desc.destModDesc.newFreeHealth     = 0;
+        desc.destModDesc.newCharSeqPair    = this.dryRunShuffleLangCharSeqAt(dest);
+        desc.tileHealthModDescs = this.dryRunSpawnFreeHealth([desc.destModDesc,]);
 
         // Accept the request, and trigger calculation
         // and enactment of the requested changes:
         desc.eventId = this.nextUnusedEventId;
         this.processMoveExecute(desc);
+    }
+
+    private processPlayerContact(sourceP: Player<S>): PlayerActionEvent.Movement<S>["playerHealthModDescs"] {
+        return undefined!;
     }
 
 

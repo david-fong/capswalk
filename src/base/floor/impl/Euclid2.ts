@@ -169,9 +169,11 @@ export namespace Euclid2 {
         }
 
         public forEachTile(consumer: (tile: Tile<S>) => void, thisArg: object = this): void {
-            this.grid.forEach((row) => row.forEach((tile) => {
-                consumer(tile);
-            }, thisArg), thisArg);
+            for (const row of this.grid) {
+                for (const tile of row) {
+                    consumer(tile);
+                }
+            }
         }
 
         public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
