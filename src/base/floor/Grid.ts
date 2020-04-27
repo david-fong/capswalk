@@ -121,6 +121,15 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
     public abstract __getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
 
     /**
+     * The returned value must be consistent with results from the
+     * methods `__getTileDestsFrom` and `__getTileSourcesTo`.
+     *
+     * @param source -
+     * @param dest -
+     */
+    public abstract minMovesFromTo(source: Coord.Bare<S>, dest: Coord.Bare<S>): number;
+
+    /**
      * Note: I would rather have this implementation go under the
      * `VisibleGrid` class, but I don't want to get into mixins as of
      * now to get around no-multiple-inheritance.

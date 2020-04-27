@@ -59,15 +59,9 @@ export namespace SysName {
 
     // optional documentation
     export class Grid extends AbstractGrid<S> implements Required<Grid.Dimensions> {
-        /**
-         * @override
-         */
         public static getAmbiguityThreshold(): <value> {
             return <value>;
         }
-        /**
-         * @override
-         */
         public getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
             // fields from dimension type, except mapped to a frozen range description.
@@ -79,25 +73,16 @@ export namespace SysName {
         // Note: I place the following abstract static methods at the
         // bottom because they are implementation-heavy and don't
         // control / describe the behaviour of the implementation at
-        // such a core level.
-        /**
-         * @override
-         */
+        // such a core / logistical level.
         public static getSpawnCoords(
             playerCounts: TU.RoArr<number>,
             bounds: Required<Grid.Dimensions>,
         ): TU.RoArr<TU.RoArr<Coord.Bare>> {
             return undefined!;
         }
-        /**
-         * @override
-         */
         public static getArea(dim: Grid.Dimensions): number {
             return undefined!;
         }
-        /**
-         * @override
-         */
         public static getRandomCoord(bounds: Grid.Dimensions): Coord {
             return new Coord(undefined!);
         }

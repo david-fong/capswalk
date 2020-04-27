@@ -19,7 +19,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly grid: G extends Game.Type.SERVER ? Grid<S> : VisibleGrid<S>;
 
-    protected readonly players: TU.RoArr<Player<S>>;
+    public readonly players: TU.RoArr<Player<S>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
 
@@ -75,6 +75,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.teams = teams.map((teammateArray, teamId) => {
             return new Team<S>(teamId, teammateArray);
         });
+        this.players.forEach((player) => player.__afterAllPlayersConstruction());
         if (this.teams.every((team) => team.id === Team.ElimOrder.IMMORTAL)) {
             // TODO.design put a check inside the UI code to prevent this.
             // The purpose of this restriction is to prevent DoS attacks on
@@ -112,7 +113,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             = (gameDesc.playerDescs as pCtorArgs)
             = (this.gameType === Game.Type.ONLINE)
             // The client receives these descriptors already finalized / cleaned by the server.
-            ? gameDesc.playerDescs as pCtorArgs
+            ? (gameDesc.playerDescs as pCtorArgs)
             : Player.CtorArgs.finalize(gameDesc.playerDescs, gameDesc.languageName);
 
         return playerDescs.map((playerDesc, playerIndex) => {

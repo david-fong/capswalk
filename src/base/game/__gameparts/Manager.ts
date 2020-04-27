@@ -19,6 +19,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     public readonly averageFreeHealth: Player.Health;
     public readonly averageFreeHealthPerTile: Player.Health;
     #currentFreeHealth: Player.Health;
+    readonly #freeHealthTiles: Set<Tile<S>>;
 
     public readonly lang: Lang;
 
@@ -49,6 +50,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         super(gameType, impl, desc);
         this.averageFreeHealth = desc.averageFreeHealthPerTile * this.grid.area;
         this.averageFreeHealthPerTile = desc.averageFreeHealthPerTile;
+        this.#freeHealthTiles = new Set();
 
         // TODO.impl Change this to use a dynamic import for a Lang registry dict.
         // We need to make that registry dict first!
@@ -76,6 +78,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         super.reset();
 
         this.#currentFreeHealth = 0.0;
+        this.#freeHealthTiles.clear();
 
         // Reset hit-counters in the current language:
         // This must be done before shuffling so that the previous
@@ -95,7 +98,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         this.teams.forEach((team, teamIndex) => {
             team.members.forEach((member, memberIndex) => {
                 member.reset(this.grid.tile.at(spawnPoints[teamIndex][memberIndex]));
-            })
+            });
         })
 
         // NOTE: This is currently commented out because they'll just
@@ -138,6 +141,10 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
 
     public get currentFreeHealth(): Player.Health {
         return this.#currentFreeHealth;
+    }
+
+    public get freeHealthTiles(): ReadonlySet<Tile<S>> {
+        return this.#freeHealthTiles;
     }
 
     /**
@@ -206,6 +213,27 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // tiles?
     }
 
+
+    /**
+     * @override
+     */
+    protected executeTileModEvent(
+        desc: TileModEvent<S>,
+        doCheckOperatorSeqBuffer: boolean = true,
+    ): void {
+        const tile = this.grid.tile.at(desc.coord);
+        if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
+            // We literally just specified this in processMoveRequest.
+            throw new Error("this never happens. see comment in source.");
+        }
+        this.#currentFreeHealth += desc.newFreeHealth! - tile.freeHealth;
+        if (desc.newFreeHealth === 0) {
+            this.#freeHealthTiles.delete(tile);
+        } else {
+            this.#freeHealthTiles.add(tile);
+        }
+        super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
+    }
 
     /**
      * Perform checks on an incoming event request for some action that
@@ -299,22 +327,6 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // and enactment of the requested changes:
         desc.eventId = this.getNextUnusedEventId();
         this.processMoveExecute(desc);
-    }
-
-    /**
-     * @override
-     */
-    protected executeTileModEvent(
-        desc: TileModEvent<S>,
-        doCheckOperatorSeqBuffer: boolean = true,
-    ): void {
-        const tile = this.grid.tile.at(desc.coord);
-        if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
-            // We literally just specified this in processMoveRequest.
-            throw new Error("this never happens. see comment in source.");
-        }
-        this.#currentFreeHealth += desc.newFreeHealth! - tile.freeHealth;
-        super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
     }
 
 

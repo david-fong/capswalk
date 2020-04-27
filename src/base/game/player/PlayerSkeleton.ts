@@ -47,6 +47,10 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
         this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
     }
 
+    public __afterAllPlayersConstruction(): void {
+        this.status.__afterAllPlayersConstruction();
+    }
+
     /**
      * Must be called _after_ the {@link Grid} has been reset.
      * Does not evict itself from its current host tile (if it

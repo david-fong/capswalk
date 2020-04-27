@@ -43,7 +43,6 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
         if (!this.operator) {
             throw new Error("The Operator for an OfflineGame should be defined.");
         }
-        this.players.forEach((player) => player.status.__afterAllPlayersConstruction());
 
         // =====================================
         // CALL TO RESET
