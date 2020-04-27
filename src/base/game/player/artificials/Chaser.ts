@@ -17,8 +17,9 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 
     private readonly behaviour: Chaser.Behaviour;
 
-    protected constructor(game: GameManager<any,S>, desc: Player.CtorArgs) {
+    protected constructor(game: GameManager<any,S>, desc: Player.__CtorArgs<"CHASER">) {
         super(game, desc);
+        this.behaviour = desc.familyArgs;
     }
 
     public __afterAllPlayersConstruction(): void {
@@ -27,7 +28,8 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
         (this.threatProximity as Array<Player<S>>) = this.game.teams
             .filter((team) => team.id !== this.teamId)
             .flatMap((team) => team.members);
-        (this.threatProximity as Array<Player<S>>) = this.threatProximity.slice();
+
+        (this.targetProximity as Array<Player<S>>) = this.threatProximity.slice();
     }
 
     protected computeDesiredDestination(): Coord<S> {
@@ -79,11 +81,8 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
         return Player.MoveType.NORMAL;
     }
 
-    /**
-     * @override
-     */
     protected computeNextMovementTimer(): number {
-        return undefined!;
+        return 1000 / this.behaviour.movesPerSecond;
     }
 }
 export namespace Chaser {
@@ -111,6 +110,10 @@ export namespace Chaser {
          * opponents even if they would end up being downed as a result.
          */
         healthReserve: number;
+        /**
+         * How often this player moves in units of moves-per-second.
+         */
+        movesPerSecond: number;
     }>;
 }
 Object.freeze(Chaser);

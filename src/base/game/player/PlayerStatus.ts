@@ -47,10 +47,10 @@ export class PlayerStatus<S extends Coord.System> {
         const oldIsDowned = this.isDowned;
         this.#health = newHealth;
 
-        if (oldIsDowned) return;
+        if (oldIsDowned || !this.isDowned || this.noCheckGameOver) return;
         const team  = this.player.team;
         const teams = this.player.game.teams;
-        if (this.isDowned && !(this.noCheckGameOver) && team.elimOrder === 0) {
+        if (team.elimOrder === Team.ElimOrder.STANDING) {
             // Right before this downing event, the team has not been
             // soft-eliminated yet, but it might be now. Check it:
             if (team.members.every((player) => {
@@ -74,8 +74,6 @@ export class PlayerStatus<S extends Coord.System> {
             }
         }
     }
-    // TODO.design Equation and architecture for getting/setting adjusted health.
-    // This should be a getter here. Easy now that I added the circular reference to the Player.
 
     public get isDowned(): boolean {
         return this.health < 0.0;

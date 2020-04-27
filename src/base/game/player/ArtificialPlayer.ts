@@ -2,6 +2,8 @@ import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { GameManager } from "game/__gameparts/Manager";
 
+import type { Chaser } from './artificials/Chaser';
+
 import { Player } from "./Player";
 
 
@@ -72,7 +74,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
     private movementContinueWithInitialDelay(): void {
         // Schedule the next movement.
         this.scheduledMovementCallbackId = this.game.setTimeout(
-            this.movementContinue,
+            () => this.movementContinue(),
             this.computeNextMovementTimer(),
             // * Callback function arguments go here.
         );
@@ -83,14 +85,19 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
 export namespace ArtificialPlayer {
 
-    export declare const __Constructors: Readonly<Record<
-        Exclude<Player.Family, typeof Player.Family.HUMAN>,
+    export declare const __Constructors: Readonly<{
+        [ F in Exclude<Player.Family, typeof Player.Family.HUMAN> ]:
         typeof ArtificialPlayer
-    >>;
+    }>;
+
+    export type FamilySpecificPart<F extends Player.Family> =
+    ( F extends typeof Player.Family.CHASER ? Chaser.Behaviour
+    : never
+    );
 
     export const of = <S extends Coord.System>(
         game: Readonly<GameManager<any,S>>,
-        playerDesc: Readonly<Player.CtorArgs>,
+        playerDesc: Player.CtorArgs,
     ): ArtificialPlayer<S> => {
         return new (__Constructors[playerDesc.familyId])(game, playerDesc);
     };

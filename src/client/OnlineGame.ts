@@ -92,7 +92,7 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
     /**
      * @override
      */
-    protected __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S> {
+    protected __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S> {
         return new OperatorPlayer(this, desc);
     }
 

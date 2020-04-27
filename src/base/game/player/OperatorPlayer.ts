@@ -41,14 +41,11 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     private prevCoord: Coord<S>;
 
 
-    public constructor(game: GameBase<any,S>, desc: Readonly<Player.CtorArgs>) {
+    public constructor(game: GameBase<any,S>, desc: Player.__CtorArgs<"HUMAN">) {
         super(game, desc);
-        this.langRemappingFunc = Lang.RemappingFunctions[desc.langName];
+        this.langRemappingFunc = Lang.RemappingFunctions[this.game.langName];
     }
 
-    /**
-     * @override {@link Player#reset}
-     */
     public reset(spawnTile: Tile<S>): void {
         super.reset(spawnTile);
         this.prevCoord = spawnTile.coord;

@@ -74,7 +74,7 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
     /**
      * @override
      */
-    protected __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S> {
+    protected __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S> {
         return new OperatorPlayer<S>(this, desc);
     }
 

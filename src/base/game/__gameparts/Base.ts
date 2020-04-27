@@ -19,6 +19,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly grid: G extends Game.Type.SERVER ? Grid<S> : VisibleGrid<S>;
 
+    public readonly langName: Lang.Names.Value["id"];
+
     public readonly players: TU.RoArr<Player<S>>;
 
     public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
@@ -56,6 +58,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             dimensions: desc.gridDimensions,
             domParentHtmlIdHook: (desc.gridHtmlIdHook || "n/a")!,
         }) as GameBase<G,S>["grid"];
+        this.langName = desc.languageName;
 
         // Construct players:
         this.__playerStatusCtor = impl.playerStatusCtor;
@@ -114,7 +117,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             = (this.gameType === Game.Type.ONLINE)
             // The client receives these descriptors already finalized / cleaned by the server.
             ? (gameDesc.playerDescs as pCtorArgs)
-            : Player.CtorArgs.finalize(gameDesc.playerDescs, gameDesc.languageName);
+            : Player.CtorArgs.finalize(gameDesc.playerDescs);
 
         return playerDescs.map((playerDesc, playerIndex) => {
             if (playerDesc.familyId === Player.Family.HUMAN) {
@@ -126,7 +129,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             }
         });
     }
-    protected abstract __createOperatorPlayer(desc: Player.CtorArgs): OperatorPlayer<S>;
+    protected abstract __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S>;
     protected abstract __createArtifPlayer(desc: Player.CtorArgs):
     (G extends Game.Type.Manager ? ArtificialPlayer<S> : Player<S>);
 
@@ -194,6 +197,13 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.__abstractStatusBecomePaused();
         this.#status = Game.Status.PAUSED;
     }
+    /**
+     * This should be called when all non-immortal teams have been
+     * eliminated. A team is immortal if all its members have the
+     * `noCheckGameOver` flag set to `true`. A mortal team becomes
+     * (and subsequently, unconditionally stays) eliminated when all
+     * their members are in a downed state at the same time.
+     */
     public statusBecomeOver(): void {
         if (this.status !== Game.Status.PLAYING) {
             throw new Error("Can only end a game that is currently playing.");
