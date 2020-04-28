@@ -59,6 +59,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         super(
             Game.Type.SERVER, {
             tileClass: Tile,
+            htmlHosts: undefined,
             playerStatusCtor: PlayerStatus,
             }, gameDesc,
         );
@@ -103,7 +104,10 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
         // Pass on Game constructor arguments to each client:
         humanPlayers.forEach((player) => {
-            (gameDesc.operatorIndex! as Player.Id) = player.playerId;
+            gameDesc.playerDescs.forEach((playerDesc) => {
+                (playerDesc.isALocalOperator as boolean) =
+                (playerDesc.socketId === this.playerSockets[player.playerId].id);
+            })
             this.playerSockets[player.playerId].emit(
                 Game.CtorArgs.EVENT_NAME,
                 gameDesc,
@@ -119,7 +123,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
     public reset(): void {
         super.reset();
         // TODO.design Should we wait for ACK's from all clients before
-        // enabling `stateBecomePlayer`
+        // enabling the privileged users' `stateBecomePlaying` buttons?
         this.namespace.emit(
             Game.Serialization.EVENT_NAME,
             this.serializeResetState(),
@@ -152,8 +156,8 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
     /**
      * @override
      */
-    public processMoveExecute(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
-        super.processMoveExecute(desc);
+    public executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
+        super.executePlayerMoveEvent(desc);
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
@@ -171,8 +175,8 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         }
     }
 
-    public processBubbleExecute(desc: Readonly<PlayerActionEvent.Bubble>): void {
-        super.processBubbleExecute(desc);
+    public executePlayerBubbleEvent(desc: Readonly<PlayerActionEvent.Bubble>): void {
+        super.executePlayerBubbleEvent(desc);
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.

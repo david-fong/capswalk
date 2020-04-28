@@ -20,6 +20,8 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
 
     public readonly playerId: Player.Id;
 
+    readonly isALocalOperator: boolean;
+
     /**
      * The game object that this player belongs to.
      */
@@ -39,6 +41,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
             throw new RangeError("Player ID's must be integer values.");
         }
         this.playerId = desc.playerId;
+        this.isALocalOperator = desc.isALocalOperator;
         this.game = game;
         this.status = new (this.game.__playerStatusCtor)(
             this as PlayerSkeleton<S> as Player<S>,

@@ -1,11 +1,12 @@
 import { SkScreen } from "./SkScreen";
 
-import {       HomeScreen } from "./impl/Home";
-import {  GameSetupScreen } from "./impl/GameSetup";
-import { SeshJoinerScreen } from "./impl/SeshJoiner";
-import {  HowToPlayScreen } from "./impl/HowToPlay";
-import {  HowToHostScreen } from "./impl/HowToHost";
-import {   PlayGameScreen } from "./impl/PlayGame";
+import {        HomeScreen } from "./impl/Home";
+import {   GameSetupScreen } from "./impl/GameSetup";
+import {  SeshJoinerScreen } from "./impl/SeshJoiner";
+import {   HowToPlayScreen } from "./impl/HowToPlay";
+import {   HowToHostScreen } from "./impl/HowToHost";
+import { PlayOfflineScreen } from "./impl/PlayOffline";
+import {  PlayOnlineScreen } from "./impl/PlayOnline";
 
 
 export class AllSkScreens {
@@ -18,12 +19,13 @@ export class AllSkScreens {
         const p = baseElem;
         const f = this.goToScreen;
         this.dict = Object.freeze({
-            [ SkScreen.Id.HOME        ]: new       HomeScreen(p,f),
-            [ SkScreen.Id.GAME_SETUP  ]: new  GameSetupScreen(p,f),
-            [ SkScreen.Id.SESH_JOINER ]: new SeshJoinerScreen(p,f),
-            [ SkScreen.Id.HOW_TO_PLAY ]: new  HowToPlayScreen(p,f),
-            [ SkScreen.Id.HOW_TO_HOST ]: new  HowToHostScreen(p,f),
-            [ SkScreen.Id.PLAY_GAME   ]: new   PlayGameScreen(p,f),
+            [ SkScreen.Id.HOME         ]: new        HomeScreen(p,f),
+            [ SkScreen.Id.HOW_TO_PLAY  ]: new   HowToPlayScreen(p,f),
+            [ SkScreen.Id.HOW_TO_HOST  ]: new   HowToHostScreen(p,f),
+            [ SkScreen.Id.GAME_SETUP   ]: new   GameSetupScreen(p,f),
+            [ SkScreen.Id.PLAY_OFFLINE ]: new PlayOfflineScreen(p,f),
+            [ SkScreen.Id.PLAY_ONLINE  ]: new  PlayOnlineScreen(p,f),
+            [ SkScreen.Id.SESH_JOINER  ]: new  SeshJoinerScreen(p,f),
         });
         this.goToScreen(SkScreen.Id.HOME);
     }

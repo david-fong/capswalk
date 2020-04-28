@@ -37,8 +37,12 @@ export namespace Game {
      * These are abstract handles to game-implementation-dependant
      * components.
      */
-    export type ImplArgs<S extends Coord.System> = {
+    export type ImplArgs<
+        G extends Game.Type,
+        S extends Coord.System,
+    > = {
         tileClass: Tile.ClassIf<S>,
+        htmlHosts: G extends Game.Type.SERVER ? undefined : Game.HtmlHosts,
         playerStatusCtor: typeof PlayerStatus,
     };
 
@@ -55,24 +59,16 @@ export namespace Game {
     > = Readonly<{
         coordSys: S;
         gridDimensions: Grid.Dimensions<S>;
-        gridHtmlIdHook: G extends Game.Type.SERVER ? undefined : string;
+        averageFreeHealthPerTile: Player.Health;
 
         languageName: Lang.Names.Value["id"];
         langBalancingScheme: Lang.BalancingScheme;
 
-        /**
-         * The index in `playerDescs` of the operator's ctor args.
-         */
-        operatorIndex: G extends Game.Type.SERVER
-            ? undefined
-            : Player.Id;
         playerDescs: TU.RoArr<(
             G extends Game.Type.Manager
             ? Player.CtorArgs.PreIdAssignment
             : Player.CtorArgs
         )>;
-
-        averageFreeHealthPerTile: Player.Health;
     }>;
 
     export namespace CtorArgs {
@@ -120,6 +116,10 @@ export namespace Game {
         PAUSED  = "PAUSED",
         OVER    = "OVER",
     }
+
+    export type HtmlHosts = Readonly<{
+        gridElem: HTMLElement;
+    }>;
 
     /**
      * Global, Game-Setup-Agnostic constants for tuning game behaviour.

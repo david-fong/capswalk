@@ -23,7 +23,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly players: TU.RoArr<Player<S>>;
 
-    public readonly operator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
+    // TODO.design a method to rotate the current operator.
+    public readonly operators: TU.RoArr<OperatorPlayer<S>>;
+    #currentOperator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
 
     /**
      * Indexable by team ID's.
@@ -46,7 +48,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      */
     public constructor(
         gameType: G,
-        impl: Game.ImplArgs<S>,
+        impl: Game.ImplArgs<G,S>,
         desc: Game.CtorArgs<G,S>,
     ) {
         this.gameType = gameType;
@@ -56,36 +58,46 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             tileClass:  impl.tileClass,
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
-            domParentHtmlIdHook: (desc.gridHtmlIdHook || "n/a")!,
+            gridElem:   impl.htmlHosts?.gridElem,
         }) as GameBase<G,S>["grid"];
         this.langName = desc.languageName;
 
         // Construct players:
         this.__playerStatusCtor = impl.playerStatusCtor;
         this.players = this.createPlayers(desc);
-        if (desc.operatorIndex !== undefined) {
-            // Note at above comparison: we must be explicit
-            // since zero is a valid, _falsy_ operatorIndex.
-            (this.operator as Player<S>) = this.players[desc.operatorIndex!];
-        }
-        const teams: Array<Array<Player<S>>> = [];
-        this.players.forEach((player) => {
-            if (!teams[player.teamId]) {
-                teams[player.teamId] = [];
+
+        this.operators = this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[];
+        if (this.gameType !== Game.Type.SERVER) {
+            (this.#currentOperator as OperatorPlayer<S>) = this.operators[0];
+            if (this.operators.some((op) => op.teamId !== this.operators[0].teamId)) {
+                // Currently requiring this because the current visual colouring
+                // is initialized based on whether a player is on the operator's
+                // team. Otherwise, we'd have to re-colour when rotating operator.
+                throw new Error("All local operators must be on the same team.");
             }
-            teams[player.teamId].push(player);
-        });
-        this.teams = teams.map((teammateArray, teamId) => {
-            return new Team<S>(teamId, teammateArray);
-        });
-        this.players.forEach((player) => player.__afterAllPlayersConstruction());
-        if (this.teams.every((team) => team.id === Team.ElimOrder.IMMORTAL)) {
-            // TODO.design put a check inside the UI code to prevent this.
-            // The purpose of this restriction is to prevent DoS attacks on
-            // a hosting server by creating games that can never end and
-            // leaving them open forever, thus leaking the server's resources.
-            throw new Error("All teams are immortal. The game will never end.");
+        } else {
+            (this.#currentOperator as undefined) = undefined;
         }
+        {
+            const teams: Array<Array<Player<S>>> = [];
+            this.players.forEach((player) => {
+                if (!teams[player.teamId]) {
+                    teams[player.teamId] = [];
+                }
+                teams[player.teamId].push(player);
+            });
+            this.teams = teams.map((teammateArray, teamId) => {
+                return new Team<S>(teamId, teammateArray);
+            });
+            if (this.teams.every((team) => team.id === Team.ElimOrder.IMMORTAL)) {
+                // TODO.design put a check inside the UI code to prevent this.
+                // The purpose of this restriction is to prevent DoS attacks on
+                // a hosting server by creating games that can never end and
+                // leaving them open forever, thus leaking the server's resources.
+                throw new Error("All teams are immortal. The game will never end.");
+            }
+        }
+        this.players.forEach((player) => player.__afterAllPlayersConstruction());
     }
 
     /**
@@ -119,9 +131,9 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             ? (gameDesc.playerDescs as pCtorArgs)
             : Player.CtorArgs.finalize(gameDesc.playerDescs);
 
-        return playerDescs.map((playerDesc, playerIndex) => {
+        return playerDescs.map((playerDesc) => {
             if (playerDesc.familyId === Player.Family.HUMAN) {
-                return (playerIndex === gameDesc.operatorIndex)
+                return (playerDesc.isALocalOperator)
                     ? this.__createOperatorPlayer(playerDesc)
                     : new Player(this, playerDesc);
             } else {
@@ -168,10 +180,18 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         });
     }
 
+    public get currentOperator(): G extends Game.Type.SERVER ? undefined : OperatorPlayer<S> {
+        return this.#currentOperator;
+    }
+
 
     public get status(): Game.Status {
         return this.#status;
     }
+    /**
+     * On the client side, this should only be accessed through a
+     * wrapper function that also makes UI-related changes.
+     */
     public statusBecomePlaying(): void {
         if (this.status !== Game.Status.PAUSED) {
             throw new Error("Can only resume a game that is currently paused.");
@@ -181,12 +201,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         });
         this.__abstractStatusBecomePlaying();
         this.#status = Game.Status.PLAYING;
-        // Make sure focus goes back to the grid element so that it
-        // can pick up user input as keydown events:
-        if ((this.grid as VisibleGrid<S>).baseElem) {
-            (this.grid as VisibleGrid<S>).baseElem.focus();
-        }
     }
+    /**
+     * On the client side, this should only be accessed through a
+     * wrapper function that also makes UI-related changes.
+     */
     public statusBecomePaused(): void {
         if (this.status !== Game.Status.PLAYING) {
             throw new Error("Can only pause a game that is currently playing.");
@@ -203,6 +222,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * `noCheckGameOver` flag set to `true`. A mortal team becomes
      * (and subsequently, unconditionally stays) eliminated when all
      * their members are in a downed state at the same time.
+     *
+     * This should not be controllable by UI input elements.
      */
     public statusBecomeOver(): void {
         if (this.status !== Game.Status.PLAYING) {

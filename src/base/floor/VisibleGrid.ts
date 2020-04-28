@@ -21,7 +21,7 @@ export interface VisibleGrid<S extends Coord.System> extends Grid<S> {
      * Contains the implementation-dependant HTML representation of
      * the grid.
      */
-    readonly baseElem: HTMLElement;
+    readonly focusElem: HTMLElement;
 
     // This is just a reminder to the developer that such a function
     // exists and is an important part of the architecture. Since

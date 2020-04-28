@@ -2,9 +2,11 @@
 /*
 https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path
 */
-.game-grid[data-coord-sys="BEEHIVE"] .tile {
+/*
+.game-grid-impl-body[data-coord-sys="BEEHIVE"] .tile {
     --nothing: "yet";
 }
-.game-grid[data-coord-sys="BEEHIVE"] .tile > * {
+.game-grid-impl-body[data-coord-sys="BEEHIVE"] .tile > * {
     --nothing: "yet";
 }
+ */

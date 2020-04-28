@@ -40,18 +40,13 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
      */
     public __afterAllPlayersConstruction(): void {
         const player = this.player;
-        const operator = this.player.game.operator!;
-        if (!operator) {
-            // This _would_ be the case if we did it in the constructor
-            // where `this.player.game.operator` has not been defined yet.
-            throw new Error("this never happens. see comment in source.");
-        }
+        const operatorTeamId = this.player.game.operators[0].teamId;
         this.#baseElem.dataset[OmHooks.Player.Dataset.FACE_SWATCH]
-        = (player === operator) ? "me"
-        : (player.teamId === operator.teamId) ? "teammate" : "opponent";
+        = (player.isALocalOperator) ? "me"
+        : (player.teamId === operatorTeamId) ? "teammate" : "opponent";
 
         // Setup spotlight element:
-        if (player === operator) {
+        if (player.isALocalOperator) {
             const sslElem = document.createElement("div");
             sslElem.classList.add(OmHooks.Player.Class.SHORT_SPOTLIGHT);
             this.#baseElem.appendChild(sslElem);

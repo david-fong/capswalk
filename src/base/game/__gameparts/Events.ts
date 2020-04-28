@@ -52,7 +52,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
     public constructor(
         gameType: G,
-        impl: Game.ImplArgs<S>,
+        impl:     Game.ImplArgs<G,S>,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(gameType, impl, gameDesc);
@@ -93,6 +93,9 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         } else if (this.eventRecordBitmap[wrappedId]) {
             throw new Error("Event ID's must be assigned unique values.");
         }
+        // TODO.impl Check for an OnlineGame that it is not far behind the Server.
+        // also design what should be done to handle that... Do we really need to
+        // recover from that?
         this.eventRecordBitmap[wrappedId] = true;
         this.eventRecordBitmap[(id
             + Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH
@@ -103,33 +106,30 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
 
 
     protected executeTileModEvent(
-        desc: TileModEvent<S>,
+        desc: Readonly<TileModEvent<S>>,
         doCheckOperatorSeqBuffer: boolean = true,
     ): Tile<S> {
         Object.freeze(desc);
         const dest = this.grid.tile.at(desc.coord);
-        if (dest.lastKnownUpdateId < desc.lastKnownUpdateId) {
-            if (desc.newCharSeqPair) {
-                dest.setLangCharSeqPair(desc.newCharSeqPair);
-                // Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
-                if (doCheckOperatorSeqBuffer && this.operator !== undefined
-                    && !(this.operator.tile.destsFrom().get.includes(dest))) {
-                    // ^Do this when non-operator moves into the the operator's vicinity.
-                    this.operator.seqBufferAcceptKey("");
-                }
+        if (dest.lastKnownUpdateId  >  desc.lastKnownUpdateId) return dest;
+        if (dest.lastKnownUpdateId === desc.lastKnownUpdateId) throw new Error("never.");
+
+        if (desc.newCharSeqPair) {
+            dest.setLangCharSeqPair(desc.newCharSeqPair);
+            // Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
+            if (doCheckOperatorSeqBuffer) {
+                // ^Do this when non-operator moves into the the operator's vicinity.
+                this.operators.filter((op) => {
+                    return op.tile.destsFrom().get.includes(dest);
+                }).forEach((op) => op.seqBufferAcceptKey(""));
             }
-            dest.lastKnownUpdateId = desc.lastKnownUpdateId;
-            dest.freeHealth = desc.newFreeHealth!;
         }
+        dest.lastKnownUpdateId = desc.lastKnownUpdateId;
+        dest.freeHealth = desc.newFreeHealth!;
         return dest;
     }
 
     /**
-     * Update the {@link Game#grid}. Call either at the end of
-     * {@link Game#processMoveRequest} if I am a {@link ServerGame} or
-     * {@link OfflineGame}, or as an event callback if I am a
-     * {@link OnlineGame}.
-     *
      * Automatically lowers the {@link Player#requestInFlight} field
      * for the requesting `Player` if the arriving event description
      * is the newest one for the specified `Player`.
@@ -142,7 +142,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      * @param desc
      * A descriptor for all changes mandated by the player-movement event.
      */
-    protected processMoveExecute(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
+    protected executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
         const player = this.players[desc.playerId];
         const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
 
@@ -155,7 +155,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
             return; // Short-circuit!
         }
         this.recordEvent(desc);
-        const dest = this.executeTileModEvent(desc.destModDesc, player !== this.operator);
+        const dest = this.executeTileModEvent(desc.destModDesc, player !== this.currentOperator);
         desc.tileHealthModDescs?.forEach((desc) => {
             this.executeTileModEvent(desc);
         });
@@ -163,7 +163,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         if (clientEventLag > 1) {
             // ===== Out of order receipt (client-side) =====
             // Already received more recent request responses.
-            if (player === this.operator) {
+            if (player === this.currentOperator) {
                 // Operator never receives their own updates out of
                 // order because they only have one unacknowledged
                 // in-flight request at a time.
@@ -174,7 +174,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         // Okay- the response is an acceptance of the specified player's most
         // recent request pending this acknowledgement.
         player.requestInFlight = false;
-        if ((player === this.operator)
+        if ((player === this.currentOperator)
             ? (clientEventLag === 1)
             : (clientEventLag <= 1)) {
             player.status.health = desc.newPlayerHealth!.health;
@@ -198,7 +198,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
      *
      * @param desc -
      */
-    protected processBubbleExecute(desc: Readonly<PlayerActionEvent.Bubble>): void {
+    protected executePlayerBubbleEvent(desc: Readonly<PlayerActionEvent.Bubble>): void {
         // TODO.impl Visually highlight the affected tiles for the specified estimate-duration.
         const bubbler = this.players[desc.playerId];
 

@@ -20,7 +20,7 @@ export class GameSetupScreen extends SkScreen {
             opt.innerText = langName.display;
             langSel.add(opt);
         }
-        langSel.onselect = (): void => {
+        langSel.onchange = (): void => {
             langSel.blur();
             // TODO
         };

@@ -43,6 +43,12 @@ export abstract class SkScreen {
     protected abstract __lazyLoad(): void;
 
     /**
+     * This is a good place to start any `setInterval` schedules, and
+     * to bring focus to a starting HTML element if appropriate.
+     */
+    protected __abstractOnBeforeEnter(): void { }
+
+    /**
      * Return false if the leave should be cancelled. This functionality
      * allows an implementation to provide a prompt to the user such as
      * a confirmation modal warning that unsaved changes would be lost.
@@ -54,22 +60,17 @@ export abstract class SkScreen {
         return true;
     }
 
-    /**
-     * This is a good place to start any `setInterval` schedules, and
-     * to bring focus to a starting HTML element if appropriate.
-     */
-    protected __abstractOnBeforeEnter(): void { }
-
 }
 export namespace SkScreen {
 
     export const enum Id {
         HOME,
-        GAME_SETUP,
-        SESH_JOINER,
         HOW_TO_PLAY,
         HOW_TO_HOST,
-        PLAY_GAME,
+        GAME_SETUP,
+        PLAY_OFFLINE,
+        PLAY_ONLINE,
+        SESH_JOINER,
     }
 }
 Object.freeze(SkScreen);

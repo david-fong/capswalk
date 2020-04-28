@@ -134,32 +134,30 @@ export namespace Player {
      * # Player Constructor Arguments
      */
     export type CtorArgs = __CtorArgs<Player.Family>;
-    export type __CtorArgs<F extends Player.Family> = any extends F ? never
-    : { [atomic_F in F]: atomic_F extends Player.Family
-        ? (CtorArgs.__PreIdAssignment<atomic_F> & Readonly<{
+    export type __CtorArgs<F_group extends Player.Family> = any extends F_group ? never
+    : { [F in F_group]: F extends Player.Family
+        ? (CtorArgs.__PreIdAssignment<F> & Readonly<{
             playerId: Player.Id;
         }>)
         : never
-    }[F];
+    }[F_group];
 
     export namespace CtorArgs {
 
         export type PreIdAssignment = __PreIdAssignment<Player.Family>;
-        export type __PreIdAssignment<F extends Player.Family> = any extends F ? never
-        : { [atomic_F in F]: atomic_F extends Player.Family
+        export type __PreIdAssignment<F_group extends Player.Family> = any extends F_group ? never
+        : { [F in F_group]: F extends Player.Family
             ? (Readonly<{
-                /**
-                 * This determines which constructor function to use.
-                 */
-                familyId: atomic_F;
+                isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
+                familyId: F;
                 teamId:   Team.Id;
-                socketId: SocketId | undefined; // Must exist for operated players.
+                socketId: F extends typeof Player.Family.HUMAN ? (SocketId | undefined) : undefined;
                 username: Username;
                 noCheckGameOver: boolean;
-                familyArgs: FamilySpecificPart<atomic_F>;
+                familyArgs: FamilySpecificPart<F>;
             }>)
             : never;
-        }[F];
+        }[F_group];
 
         export type FamilySpecificPart<F extends Player.Family> =
         ( F extends typeof Player.Family.HUMAN ? {}

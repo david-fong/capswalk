@@ -47,7 +47,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      */
     public constructor(
         gameType: G,
-        impl: Game.ImplArgs<S>,
+        impl: Game.ImplArgs<G,S>,
         desc: Game.CtorArgs<G,S>,
     ) {
         super(gameType, impl, desc);
@@ -224,9 +224,10 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * @override
      */
     protected executeTileModEvent(
-        desc: TileModEvent<S>,
+        desc: Readonly<TileModEvent<S>>,
         doCheckOperatorSeqBuffer: boolean = true,
     ): Tile<S> {
+        Object.freeze(desc);
         const tile = this.grid.tile.at(desc.coord);
         // NOTE: This assertion must be performed before executing
         // changes by making a supercall or else the previous state
@@ -298,7 +299,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         const player = this.managerCheckGamePlayingRequest(desc);
         if (!player) {
             // Reject the request:
-            this.processMoveExecute(desc);
+            this.executePlayerMoveEvent(desc);
             return;
         }
         const dest = this.grid.tile.at(desc.destModDesc.coord);
@@ -308,7 +309,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             // enforce stronger client-experience consistency: they cannot
             // move somewhere where they have not realized the `LangSeq` has
             // changed.
-            this.processMoveExecute(desc); // Reject the request.
+            this.executePlayerMoveEvent(desc); // Reject the request.
             return;
         }
         const newPlayerHealthValue
@@ -318,7 +319,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         if (newPlayerHealthValue < 0) {
             // Reject a boost-type movement request if it would make
             // the player become downed (or if they are already downed):
-            this.processMoveExecute(desc);
+            this.executePlayerMoveEvent(desc);
             return;
         }
 
@@ -338,7 +339,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // Accept the request, and trigger calculation
         // and enactment of the requested changes:
         desc.eventId = this.nextUnusedEventId;
-        this.processMoveExecute(desc);
+        this.executePlayerMoveEvent(desc);
     }
 
     private processPlayerContact(sourceP: Player<S>): PlayerActionEvent.Movement<S>["playerHealthModDescs"] {
@@ -358,14 +359,14 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         const bubbler = this.managerCheckGamePlayingRequest(desc);
         if (!bubbler) {
             // Reject the request:
-            this.processBubbleExecute(desc);
+            this.executePlayerBubbleEvent(desc);
             return;
         }
         desc.playerLastAcceptedRequestId = (1 + bubbler.lastAcceptedRequestId);
 
         // We are all go! Do it.
         desc.eventId = this.nextUnusedEventId;
-        this.processBubbleExecute(desc);
+        this.executePlayerBubbleEvent(desc);
     }
 
 }

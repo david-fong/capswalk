@@ -143,14 +143,13 @@ export class GroupSession {
         this.currentGame = new ServerGame(this.namespace, {
             coordSys,
             gridDimensions,
-            gridHtmlIdHook: undefined,
             averageFreeHealthPerTile: undefined!,
             languageName: undefined!,
             langBalancingScheme: undefined!,
-            operatorIndex: undefined,
             playerDescs: {
                 ...Object.values(this.sockets).map((socket) => {
-                    return {
+                    return <Player.CtorArgs>{
+                        isALocalOperator: false,
                         familyId: "HUMAN",
                         teamId: socket.teamId!,
                         socketId: socket.id,

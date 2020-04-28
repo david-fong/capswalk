@@ -44,28 +44,36 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
      */
     public constructor(
         socket: SocketIOClient.Socket,
+        htmlHosts: Game.HtmlHosts,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(
             Game.Type.ONLINE, {
             tileClass: VisibleTile,
+            htmlHosts,
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,
         );
-        if (!this.operator) {
-            throw new Error("The Operator for an OnlineGame should be defined.");
-        }
         this.socket = socket;
 
         this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.Movement,
-            this.processMoveExecute
+            this.executePlayerMoveEvent
         );
         this.socket.off(PlayerActionEvent.EVENT_NAME.Bubble);
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.Bubble,
-            this.processBubbleExecute,
+            this.executePlayerBubbleEvent,
+        );
+
+        // TODO.impl Send ack?
+        this.socket.on(
+            Game.Serialization.EVENT_NAME,
+            (ser: Game.ResetSer<S>) => {
+                this.reset();
+                this.deserializeResetState(ser);
+            },
         );
 
         // =====================================
@@ -79,26 +87,12 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
      */
     public reset(): void {
         super.reset();
-
-        // TODO.impl Send ack?
-        this.socket.once(
-            Game.Serialization.EVENT_NAME,
-            (ser: Game.ResetSer<S>) => {
-                this.deserializeResetState(ser);
-            },
-        );
     }
 
-    /**
-     * @override
-     */
     protected __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S> {
         return new OperatorPlayer(this, desc);
     }
 
-    /**
-     * @override
-     */
     protected __createArtifPlayer(desc: Player.CtorArgs): Player<S> {
         return new Player(this, desc);
     }
