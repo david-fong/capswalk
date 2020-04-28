@@ -11,6 +11,9 @@ import { ArtificialPlayer }     from "game/player/ArtificialPlayer";
 
 import { GameManager } from "game/__gameparts/Manager";
 
+import { IndexTasks } from "game/IndexTasks";
+IndexTasks.INIT_CLASS_REGISTRIES();
+
 
 type G = Game.Type.OFFLINE;
 
@@ -20,6 +23,8 @@ type G = Game.Type.OFFLINE;
  * @extends Game
  */
 export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
+
+    declare public readonly currentOperator: NonNullable<GameManager<G,S>["currentOperator"]>;
 
     /**
      * @override

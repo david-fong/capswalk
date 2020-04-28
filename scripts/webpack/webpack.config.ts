@@ -66,6 +66,7 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [{
             experimentalWatchApi: true,
         },
     },
+    // TODO we lose some presents when getting rid of this. what does this do?
     exclude: /node_modules/,
 }, {
     test: /\.css$/,
@@ -119,8 +120,12 @@ const BaseConfig: () => Require<webpack.Configuration,
         ? "nosources-source-map" : "eval-source-map",
     plugins: [ ...BASE_PLUGINS, ],
     resolve: {
-        extensions: [ ".ts", ], // ".json", ".tsx",
-        modules: [ path.resolve(PROJECT_ROOT, "src", "base"), ], // match tsconfig.baseUrl
+        extensions: [ ".ts", ".css", ], // ".json", ".tsx",
+        modules: [
+            path.resolve(PROJECT_ROOT, "src", "base"),
+            path.resolve(PROJECT_ROOT),
+            "node_modules",
+        ], // match tsconfig.baseUrl
     },
     watchOptions: {
         ignored: [ "node_modules", ],
@@ -203,7 +208,6 @@ const webBundleConfig = BaseConfig(); {
  */
 const NODE_CONFIG = (config: ReturnType<typeof BaseConfig>): void => {
     config.target = "node";
-    config.resolve.modules!.push("node_modules");
     config.resolve.extensions!.push(".js");
     // alternative to below: https://www.npmjs.com/package/webpack-node-externals
     config.externals = fs.readdirSync(path.resolve(PROJECT_ROOT, "node_modules"));

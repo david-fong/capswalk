@@ -85,7 +85,7 @@ export namespace OmHooks {
             ALL_SCREENS: "all-screens-container",
         }),
         Class: Object.freeze(<const>{
-            BASE:       "screen",
+            BASE:       "sk-screen",
         }),
         Dataset: Object.freeze(<const>{
             CURRENT:    "current",

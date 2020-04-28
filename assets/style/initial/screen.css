@@ -3,15 +3,19 @@
     display:    contents;
 }
 
-.screen {
+.sk-screen {
     /* Make sure that each display
     starts its own stacking context. */
     position:   fixed;
     top: 0; right: 0; bottom: 0; left: 0;
 }
+.sk-screen:not([data-current]) {
+    visibility: hidden;
+}
 
 #background {
     z-index:    -1000;
+    visibility: visible;
     background-color: var(--colour-mainBg);
 }
 

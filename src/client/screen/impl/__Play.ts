@@ -1,3 +1,6 @@
+// Tell WebPack about the CSS chunk we want:
+require("assets/style/game/index.css");
+
 import { OmHooks } from "defs/OmHooks";
 import type { GameBase } from "game/__gameparts/Base";
 import type { OfflineGame } from "../../game/OfflineGame";
@@ -68,7 +71,9 @@ export abstract class __PlayScreen extends SkScreen {
     protected __abstractOnBeforeEnter(): void {
     // TODO.design Are there ways we can share more code between
     // implementations by passing arguments?
-        this.createNewGame();
+        this.__createNewGame();
+        // console.log(this.currentGame);
+        // console.log(this.currentGame.lang.simpleView());
         this.statusBecomePlaying();
     }
 
@@ -76,7 +81,7 @@ export abstract class __PlayScreen extends SkScreen {
         return this.#currentGame;
     }
 
-    protected abstract async createNewGame(): Promise<Game>;
+    protected abstract async __createNewGame(): Promise<Game>;
 
     protected destroyCurrentGame(): void {
     }

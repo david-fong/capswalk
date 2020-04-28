@@ -25,7 +25,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     // TODO.design a method to rotate the current operator.
     public readonly operators: TU.RoArr<OperatorPlayer<S>>;
-    #currentOperator: G extends Game.Type.SERVER ? undefined : OperatorPlayer<S>;
+    #currentOperator: OperatorPlayer<S> | undefined;
 
     /**
      * Indexable by team ID's.
@@ -68,15 +68,13 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
         this.operators = this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[];
         if (this.gameType !== Game.Type.SERVER) {
-            (this.#currentOperator as OperatorPlayer<S>) = this.operators[0];
+            this.#currentOperator = this.operators[0];
             if (this.operators.some((op) => op.teamId !== this.operators[0].teamId)) {
                 // Currently requiring this because the current visual colouring
                 // is initialized based on whether a player is on the operator's
                 // team. Otherwise, we'd have to re-colour when rotating operator.
                 throw new Error("All local operators must be on the same team.");
             }
-        } else {
-            (this.#currentOperator as undefined) = undefined;
         }
         {
             const teams: Array<Array<Player<S>>> = [];
@@ -180,7 +178,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         });
     }
 
-    public get currentOperator(): G extends Game.Type.SERVER ? undefined : OperatorPlayer<S> {
+    public get currentOperator(): OperatorPlayer<S> | undefined {
         return this.#currentOperator;
     }
 

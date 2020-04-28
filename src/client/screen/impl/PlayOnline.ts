@@ -1,4 +1,5 @@
 import { OmHooks } from "defs/OmHooks";
+import type { Coord }       from "floor/Tile";
 import type { OnlineGame } from "../../game/OnlineGame";
 
 import { __PlayScreen } from "./__Play";
@@ -15,7 +16,7 @@ export class PlayOnlineScreen extends __PlayScreen {
         super.__lazyLoad();
     }
 
-    protected async createNewGame(): Promise<OnlineGame<any>> {
+    protected async __createNewGame(): Promise<OnlineGame<any>> {
         return undefined!;
     }
 

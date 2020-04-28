@@ -17,7 +17,7 @@ export class AllSkScreens {
 
     public constructor(baseElem: HTMLElement) {
         const p = baseElem;
-        const f = this.goToScreen;
+        const f = this.goToScreen.bind(this);
         this.dict = Object.freeze({
             [ SkScreen.Id.HOME         ]: new        HomeScreen(p,f),
             [ SkScreen.Id.HOW_TO_PLAY  ]: new   HowToPlayScreen(p,f),
@@ -36,7 +36,7 @@ export class AllSkScreens {
             // I don't see why this would ever need to happen.
             throw new Error ("never happens. see comment in source.");
         }
-        if (this.currentScreen?.leave()) {
+        if ((!this.currentScreen) || this.currentScreen.leave()) {
             // Note on above nullish coalesce: Special case entered
             // during construction when there is no currentScreen yet.
             // Any confirm-leave prompts made to the user were OK-ed.

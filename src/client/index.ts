@@ -1,7 +1,7 @@
 // Tell WebPack we want CSS:
-require("../../assets/style/initial/index.css");
+require("assets/style/initial/index.css");
 
-import { AllSkScreens } from "./screen/AllSkScreens";
+import { TopLevel } from '../client/TopLevel';
 
 ((): void => {
     if (window.origin && window.origin !== "null" && "serviceWorker" in navigator) {
@@ -17,4 +17,4 @@ import { AllSkScreens } from "./screen/AllSkScreens";
 //     return true;
 // }
 
-const allDisplays = new AllSkScreens(document.createElement("div"));
+export const top = new TopLevel();

@@ -23,7 +23,7 @@
     make sure that (regardless of element ordering,)
     This doesn't prevent `.game-grid-impl-body` from
     receiving focus via pointer. */
-    pointer-events: none;
+    /* pointer-events: none; */
     top: 0; left: 0; bottom: 0; right: 0;
     color:      var(--colour-tileBd);
     text-shadow: 0 0  0.5em black;
@@ -31,14 +31,13 @@
 }
 
 @media screen {
-    .game-grid-impl-body:focus {
-        /* cursor:     help; */
+    .game-grid:focus {
         outline:    none;
     }
-    .game-grid-impl-body:not(:focus) {
+    .game-grid:not(:focus) > .game-grid-impl-body {
         filter:     brightness(70%);
     }
-    .game-grid-impl-body:not(:focus) ~ .game-grid-kbd-dc {
+    .game-grid:not(:focus) > .game-grid-kbd-dc {
         visibility: visible;
     }
 }

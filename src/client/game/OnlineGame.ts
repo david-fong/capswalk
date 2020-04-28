@@ -12,6 +12,9 @@ import { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
 import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
 import { GameEvents }           from "game/__gameparts/Events";
 
+import { IndexTasks } from "game/IndexTasks";
+IndexTasks.INIT_CLASS_REGISTRIES();
+
 
 type G = Game.Type.ONLINE;
 
@@ -22,6 +25,8 @@ type G = Game.Type.ONLINE;
  */
 export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
 
+    declare public readonly currentOperator: NonNullable<GameEvents<G,S>["currentOperator"]>;
+
     public readonly socket: SocketIOClient.Socket;
 
     /**
@@ -30,7 +35,6 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
     protected __getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
         return VisibleGrid.getImplementation(coordSys);
     }
-
 
 
     /**
