@@ -43,7 +43,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     public constructor(game: GameBase<any,S>, desc: Player.__CtorArgs<"HUMAN">) {
         super(game, desc);
-        this.langRemappingFunc = Lang.RemappingFunctions[this.game.langName];
+        this.langRemappingFunc = this.game.langFrontend.remapFunc;
     }
 
     public reset(spawnTile: Tile<S>): void {

@@ -19,14 +19,6 @@ export namespace Japanese {
 
         private static SINGLETON?: Hiragana = undefined;
 
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.JAPANESE__HIRAGANA;
-        }
-
-        public static getBlurb(): string {
-            return ""; // TODO.doc
-        }
-
         public static getInstance(): Hiragana {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Hiragana();
@@ -142,14 +134,6 @@ export namespace Japanese {
     export class Katakana extends Lang {
 
         private static SINGLETON?: Katakana = undefined;
-
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.JAPANESE__KATAKANA;
-        }
-
-        public static getBlurb(): string {
-            return ""; // TODO.doc
-        }
 
         public static getInstance(): Katakana {
             if (!this.SINGLETON) {

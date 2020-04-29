@@ -144,7 +144,7 @@ export class GroupSession {
             coordSys,
             gridDimensions,
             averageFreeHealthPerTile: undefined!,
-            languageName: undefined!,
+            langId: undefined!,
             langBalancingScheme: undefined!,
             playerDescs: {
                 ...Object.values(this.sockets).map((socket) => {

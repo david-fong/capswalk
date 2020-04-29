@@ -1,5 +1,6 @@
 import { Game } from "../Game";
-import type { Lang } from "defs/TypeDefs";
+import { Lang } from "defs/TypeDefs";
+
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { VisibleGrid } from "floor/VisibleGrid";
@@ -19,7 +20,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly grid: G extends Game.Type.SERVER ? Grid<S> : VisibleGrid<S>;
 
-    public readonly langName: Lang.Names.Value["id"];
+    public readonly langFrontend: Lang.FrontendDesc;
 
     public readonly players: TU.RoArr<Player<S>>;
 
@@ -60,7 +61,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             dimensions: desc.gridDimensions,
             gridElem:   impl.htmlHosts?.gridElem,
         }) as GameBase<G,S>["grid"];
-        this.langName = desc.languageName;
+
+        this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId);
 
         // Construct players:
         this.__playerStatusCtor = impl.playerStatusCtor;

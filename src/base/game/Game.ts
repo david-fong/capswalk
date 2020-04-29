@@ -61,7 +61,7 @@ export namespace Game {
         gridDimensions: Grid.Dimensions<S>;
         averageFreeHealthPerTile: Player.Health;
 
-        languageName: Lang.Names.Value["id"];
+        langId: Lang.FrontendDesc["id"];
         langBalancingScheme: Lang.BalancingScheme;
 
         playerDescs: TU.RoArr<(

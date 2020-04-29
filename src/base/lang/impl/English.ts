@@ -15,14 +15,6 @@ export namespace English {
 
         private static SINGLETON?: Lowercase = undefined;
 
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.ENGLISH__LOWERCASE;
-        }
-
-        public static getBlurb(): string {
-            return ""; // TODO.doc
-        }
-
         public static getInstance(): Lowercase {
             if (!this.SINGLETON) {
                 this.SINGLETON  = new Lowercase();
@@ -60,14 +52,6 @@ export namespace English {
     export class MixedCase extends Lang {
 
         private static SINGLETON?: MixedCase = undefined;
-
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.ENGLISH__MIXEDCASE;
-        }
-
-        public static getBlurb(): string {
-            return ""; // TODO.doc
-        }
 
         public static getInstance(): MixedCase {
             if (!this.SINGLETON) {

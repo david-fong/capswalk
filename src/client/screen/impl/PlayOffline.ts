@@ -18,6 +18,7 @@ export class PlayOfflineScreen extends __PlayScreen {
     }
 
     protected async __createNewGame(): Promise<OfflineGame<any>> {
+        // TODO.impl fetch special game preset "forNextGame".
         return new (await import("../../game/OfflineGame")).OfflineGame({
             gridElem: this.gridElem,
         }, {
@@ -28,7 +29,7 @@ export class PlayOfflineScreen extends __PlayScreen {
             },
             averageFreeHealthPerTile: 1.0 / 45.0,
             langBalancingScheme: Lang.BalancingScheme.WEIGHT,
-            languageName: "engl-low",
+            langId: "engl-low",
             playerDescs: [{
                 isALocalOperator: true,
                 familyId:   <const>"HUMAN",

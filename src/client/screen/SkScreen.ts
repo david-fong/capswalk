@@ -10,6 +10,8 @@ import type { AllSkScreens } from "./AllSkScreens";
  */
 export abstract class SkScreen {
 
+    private parentElem: HTMLElement;
+
     protected readonly baseElem: HTMLElement;
 
     #hasLazyLoaded: boolean;
@@ -23,11 +25,6 @@ export abstract class SkScreen {
     public constructor(parentElem: HTMLElement, requestGoToDisplay: SkScreen["requestGoToScreen"]) {
         this.#hasLazyLoaded = false;
         this.requestGoToScreen = requestGoToDisplay;
-
-        const baseElem = document.createElement("div");
-        baseElem.classList.add(OmHooks.Screen.Class.BASE);
-        this.baseElem = baseElem;
-        parentElem.appendChild(baseElem);
     }
 
     /**
@@ -35,8 +32,12 @@ export abstract class SkScreen {
      */
     public enter(): void {
         if (!this.#hasLazyLoaded) {
+            const baseElem = document.createElement("div");
+            baseElem.classList.add(OmHooks.Screen.Class.BASE);
+            (this.baseElem as HTMLElement) = baseElem;
             this.__lazyLoad();
-            this.#hasLazyLoaded = true;
+            this.parentElem.appendChild(this.baseElem);
+        this.#hasLazyLoaded = true;
         }
         this.__abstractOnBeforeEnter();
         this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = "exists";

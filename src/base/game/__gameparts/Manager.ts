@@ -57,7 +57,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
 
         // TODO.impl Change this to use a dynamic import for a Lang registry dict.
         // We need to make that registry dict first!
-        this.lang = English.Lowercase.getInstance();
+        this.lang = import(`../../lang/impl/${this.langFrontend.module}`)[this.langFrontend.export];
 
         // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
         const minLangLeaves = this.grid.static.getAmbiguityThreshold();

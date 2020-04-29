@@ -5,6 +5,9 @@ export namespace SkErrors {
 }
 
 
+/**
+ *
+ */
 export class Player<S> { }
 export namespace Player {
 
@@ -49,6 +52,9 @@ Object.freeze(Player);
 Object.freeze(Player.prototype);
 
 
+/**
+ *
+ */
 export class Lang {}
 export namespace Lang {
     /**
@@ -101,62 +107,6 @@ export namespace Lang {
         WEIGHT  = "WEIGHT",
     }
 
-    /***
-     * There are three string for each language!
-     * - The object key string is for use in the ts/js code, hence the casing.
-     * - The display name is for display purposes. Special characters are OK.
-     * - The id name is a shorter string for web-storage keys and a URL query.
-     */
-    export const Names = Object.freeze(<const>{
-        ENGLISH__LOWERCASE: {
-            id:         "engl-low",
-            filename:   "English",
-            display:    "English Lowercase (QWERTY)",
-        },
-        ENGLISH__MIXEDCASE: {
-            id:         "engl-mix",
-            filename:   "English",
-            display:    "English Mixed-Case (QWERTY)",
-        },
-        JAPANESE__HIRAGANA: {
-            id:         "japn-hir",
-            filename:   "Japanese",
-            display:    "Japanese Hiragana",
-        },
-        JAPANESE__KATAKANA: {
-            id:         "japn-kat",
-            filename:   "Japanese",
-            display:    "Japanese Katakana",
-        },
-        KOREAN__DUBEOLSIK: {
-            id:         "kore-dub",
-            filename:   "Korean",
-            display:    "Korean Dubeolsik (두벌식 키보드)",
-        },
-        KOREAN__SEBEOLSIK: {
-            id:         "kore-sub",
-            filename:   "Korean",
-            display:    "Korean Sebeolsik (세벌식 최종 키보드)",
-        },
-        KOREAN__ROMANIZATION: {
-            id:         "kore-rom",
-            filename:   "Korean",
-            display:    "Korean Revised Romanization",
-        },
-    });
-    Names as Record<string, { display: string, id: string, }>;
-    export namespace Names {
-        export type Key = keyof typeof Names;
-        export type Value = typeof Names[keyof typeof Names];
-    }
-
-    // Common remapping functions.
-    export const __RemapTemplates = Object.freeze(<const>{
-        IDENTITY: (input: string): string => input,
-        TO_LOWER: (input: string): string => input.toLowerCase(),
-    });
-    __RemapTemplates as Readonly<Record<string, {(input: string): string}>>;
-
     /**
      *
      * This can be used, for example, for basic practical purposes like
@@ -179,17 +129,90 @@ export namespace Lang {
      * @param input -
      * @returns
      */
-    export const RemappingFunctions
-    : Readonly<Record<Names.Value["id"], {(input: string): string}>>
-    = Object.freeze(<const>{
-        [ Names.ENGLISH__LOWERCASE.id ]: __RemapTemplates.TO_LOWER,
-        [ Names.ENGLISH__MIXEDCASE.id ]: __RemapTemplates.IDENTITY,
-        [ Names.JAPANESE__HIRAGANA.id ]: __RemapTemplates.TO_LOWER,
-        [ Names.JAPANESE__KATAKANA.id ]: __RemapTemplates.TO_LOWER,
-        [ Names.KOREAN__DUBEOLSIK.id  ]: __RemapTemplates.IDENTITY,
-        [ Names.KOREAN__SEBEOLSIK.id  ]: __RemapTemplates.IDENTITY,
-        [ Names.KOREAN__ROMANIZATION.id]:__RemapTemplates.TO_LOWER,
+    export const __RemapTemplates = Object.freeze(<const>{
+        IDENTITY: (input: string): string => input,
+        TO_LOWER: (input: string): string => input.toLowerCase(),
     });
+    __RemapTemplates as Readonly<Record<string, {(input: string): string}>>;
+
+    /**
+     *
+     */
+    export const FrontendDescs = Object.freeze([
+    <const>{
+        id: "engl-low",
+        module: "English", export: "",
+        remapFunc: __RemapTemplates.TO_LOWER,
+        display: "English Lowercase (QWERTY)",
+        blurb: "",
+    }, <const>{
+        id: "engl-mix",
+        module: "English", export: "",
+        remapFunc: __RemapTemplates.IDENTITY,
+        display: "English Mixed-Case (QWERTY)",
+        blurb: "",
+    }, <const>{
+        id: "japn-hir",
+        module: "Japanese", export: "",
+        remapFunc: __RemapTemplates.TO_LOWER,
+        display: "Japanese Hiragana",
+        blurb: "",
+    }, <const>{
+        id: "japn-kat",
+        module: "Japanese", export: "",
+        remapFunc: __RemapTemplates.TO_LOWER,
+        display: "Japanese Katakana",
+        blurb: "",
+    }, <const>{
+        id: "kore-dub",
+        module: "Korean", export: "",
+        remapFunc: __RemapTemplates.IDENTITY,
+        display: "Korean Dubeolsik (두벌식 키보드)",
+        blurb: "The most common keyboard layout, and South Korea's only Hangul"
+        + " standard since 1969. Consonants are on the left, and vowels on"
+        + " the right.",
+    }, <const>{
+        id: "kore-sub",
+        module: "Korean", export: "",
+        remapFunc: __RemapTemplates.IDENTITY,
+        display: "Korean Sebeolsik (세벌식 최종 키보드)",
+        blurb: "Another Hangul keyboard layout used in South Korea, and the"
+        + " final Sebeolsik layout designed by Dr. Kong Byung Woo, hence"
+        + " the name. Syllable-initial consonants are on the right, final"
+        + " consonants on the left, and vowels in the middle. It is more"
+        + " ergonomic than the dubeolsik, but not widely used.",
+    }, <const>{
+        id: "kore-rom",
+        module: "Korean", export: "",
+        remapFunc: __RemapTemplates.TO_LOWER,
+        display: "Korean Revised Romanization",
+        blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
+        + " 表記法) is the official South Korean language romanization system. It"
+        + " was developed by the National Academy of the Korean Language from 1995,"
+        + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
+        + " and Tourism",
+    },
+    ].map((desc) => Object.freeze(desc)),);
+    FrontendDescs as TU.RoArr<Readonly<{
+        id:         string;
+        module:     string;
+        export:     string;
+        remapFunc:  {(input: string): string};
+        display:    string;
+        blurb:      string;
+    }>>;
+    export type FrontendDesc = typeof FrontendDescs[number];
+
+    /**
+     *
+     * @param langId -
+     */
+    export function GET_FRONTEND_DESC_BY_ID(langId: FrontendDesc["id"]): FrontendDesc {
+        const desc = FrontendDescs.find((desc) => desc.id === langId);
+        if (!desc) throw new Error(`Frontend descriptor of language with id`
+        + ` \"${langId}\" not found.`);
+        return desc!;
+    }
 }
 Object.freeze(Lang);
 Object.freeze(Lang.prototype);

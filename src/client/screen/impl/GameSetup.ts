@@ -3,18 +3,21 @@ import { Lang } from "defs/TypeDefs";
 
 
 /**
- *
+ * What coordinate systems are available will depend on what language
+ * the user chooses.
  */
+// TODO.learn how to use the IndexDB web API.
 export class GameSetupScreen extends SkScreen {
 
     private readonly langSel: HTMLSelectElement;
 
     protected __lazyLoad(): void {
-        // TODO.impl Read last used setup from localStorage.
-        {
-        // LANGUAGE SELECTION:
+        this.createLangSelector();
+    }
+
+    private createLangSelector(): void {
         const langSel = document.createElement("select");
-        for (const langName of Object.values(Lang.Names)) {
+        for (const langName of Object.values(Lang.FrontendDescs)) {
             const opt = document.createElement("option");
             opt.value = langName.id;
             opt.innerText = langName.display;
@@ -26,10 +29,9 @@ export class GameSetupScreen extends SkScreen {
         };
         // TODO.impl set defaults from last used setup.
         (this.langSel as HTMLSelectElement) = langSel;
-    } {
-        // TODO.impl
-    } }
-
+    }
+}
+export namespace GameSetupScreen {
 }
 Object.freeze(GameSetupScreen);
 Object.freeze(GameSetupScreen.prototype);

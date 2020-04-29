@@ -150,27 +150,17 @@ export abstract class Lang extends __Lang {
     }
 
     public simpleView(): object {
-        return Object.assign(Object.create(null), {
-            name: this.static.getName(),
-            desc: this.static.getBlurb(),
-            root: this.treeMap.simpleView(),
-        });
+        return this.treeMap.simpleView();
     }
 
 }
-
-
-
 export namespace Lang {
-
     /**
      * Every constructor function (class literal) implementing the
      * `Lang` class must implement this interface. Ie. These will be
      * implemented as static methods.
      */
     export interface ClassIf {
-        getName(): Lang.Names.Value;
-        getBlurb(): string;
         getInstance(): Lang;
     };
 
@@ -208,11 +198,7 @@ export namespace Lang {
 
     export type BalancingScheme = __Lang.BalancingScheme;
 
-    export namespace Names {
-        export type Key   = __Lang.Names.Key;
-        export type Value = __Lang.Names.Value;
-    }
-
+    export type FrontendDesc = __Lang.FrontendDesc;
 }
 Object.freeze(Lang);
 Object.freeze(Lang.prototype);

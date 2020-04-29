@@ -7,6 +7,8 @@
 1. Write the stylesheets.
 1. Record music + find out how to play tracks together.
 1. Get working bundles for networked games.
+1. Make the website accessible by ARIA standards.
+    - Sorry this is last on the list! In fact- I want to do it continuously, but I know that I get easily distracted, and that I want to do a good job of it. Unless I set it aside for later, it will keep popping up in my mind as I try to do higher-priority things. It will be most efficient if I do it all at once after those high-priority things are done.
 
 ## Concrete TODOs
 
