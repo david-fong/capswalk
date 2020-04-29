@@ -13,10 +13,21 @@
     visibility: hidden;
 }
 
+/* Special instances of non-navigated screens that
+are explicitly marked up in the HTML. */
 #background {
-    z-index:    -1000;
+    z-index:    -10000;
     visibility: visible;
     background-color: var(--colour-mainBg);
+}
+#screen-tint {
+    pointer-events: none;
+    z-index:    10000;
+    visibility: visible;
+    opacity:    0.0;
+    transition-property: opacity, background-color;
+    /* transition-duration will be assigned programmatically. */
+    transition-timing-function: ease-in-out;
 }
 
 

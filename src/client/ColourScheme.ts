@@ -1,4 +1,5 @@
 import { StorageHooks } from "defs/StorageHooks";
+import { OmHooks } from 'defs/OmHooks';
 
 /**
  *
@@ -8,13 +9,12 @@ import { StorageHooks } from "defs/StorageHooks";
  * provided class names and dataset attributes as to minimize its
  * effort when colour schemes are swapped.
  */
-// TODO.design I want each option to show the swatches. To make the
-// transition smooth without making every element with the CSS have
-// transition behaviour for colour-related properties, use a garage-
-// door with
+// TODO.design I want each option to show the swatches.
 export class Colour {
 
     public readonly sel: HTMLSelectElement & {value: Colour.Scheme.Id};
+
+    public readonly tintElem: HTMLElement;
 
     public constructor(hostElement: HTMLElement) {
         const sel = document.createElement("select");
@@ -46,6 +46,9 @@ export class Colour {
                 }
             }
         }
+        this.tintElem = document.getElementById(OmHooks.Screen.Id.SCREEN_TINT)!;
+        if (!this.tintElem) throw new Error;
+        this.tintElem.style.transitionDuration = `${Colour.SMOOTH_CHANGE_DURATION}ms`;
     }
 
     /**
@@ -54,12 +57,21 @@ export class Colour {
      * @param schemeId -
      */
     public switchToScheme(schemeId: Colour.Scheme.Id): void {
-        for (const swatchName of Colour.Swatch) {
-            document.body.style.setProperty(
-                `--colour-selected-${swatchName}`,
-                `--colour-${schemeId}-${swatchName}`,
-            );
-        }
+        const duration = Colour.SMOOTH_CHANGE_DURATION / 4.0;
+        setTimeout(() => {
+            this.tintElem.style.opacity = 1.0.toString();
+            setTimeout(() => {
+                for (const swatchName of Colour.Swatch) {
+                    document.body.style.setProperty(
+                        `--colour-selected-${swatchName}`,
+                        `--colour-${schemeId}-${swatchName}`,
+                    );
+                }
+                setTimeout(() => {
+                    this.tintElem.style.opacity = 0.0.toString();
+                }, duration);
+            }, duration);
+        }, duration);
     }
 }
 export namespace Colour {
@@ -81,6 +93,12 @@ export namespace Colour {
     export namespace Scheme {
         export type Id = (typeof Scheme)[number]["id"];
     }
+
+    /**
+     * How long the entire smooth transition between colour schemes
+     * should last in units of milliseconds.
+     */
+    export const SMOOTH_CHANGE_DURATION = 2_000.0;
 }
 Object.freeze(Colour);
 Object.freeze(Colour.prototype);

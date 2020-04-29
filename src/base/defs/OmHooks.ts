@@ -35,7 +35,7 @@ export namespace OmHooks {
             LANG_SEQ:       "tile__seq",
         }),
         Dataset: Object.freeze(<const>{
-            HEALTH:     "health",
+            HEALTH:         "health",
         }),
     });
 
@@ -47,7 +47,7 @@ export namespace OmHooks {
              * string. The specified element should _only_ contain the
              * grid element. Anything else will be removed by js/ts.
              */
-            GRID:       "game-grid",
+            GRID:           "game-grid",
         }),
         Class: Object.freeze(<const>{
             GRID:           "game-grid",
@@ -82,13 +82,14 @@ export namespace OmHooks {
 
     export const Screen = Object.freeze(<const>{
         Id: Object.freeze(<const>{
-            ALL_SCREENS: "all-screens-container",
+            ALL_SCREENS:    "all-screens-container",
+            SCREEN_TINT:    "screen-tint",
         }),
         Class: Object.freeze(<const>{
-            BASE:       "sk-screen",
+            BASE:           "sk-screen",
         }),
         Dataset: Object.freeze(<const>{
-            CURRENT:    "current",
+            CURRENT:        "current",
         }),
         Impl: Object.freeze({
             Home: Object.freeze(<const>{

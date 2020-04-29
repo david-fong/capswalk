@@ -12,8 +12,6 @@
 
 ### High Priority
 
-1. Rename the #background id to #sk-toplevel-background, and create and element with the id #sk-toplevel-foreground, which we can use when changing colour scheme to make a smooth transition.
-    - Do the smooth transition by chaining (nesting in the js) ontransitionend callbacks that- in this order- make the foreground the current background colour, then changing to the new one automatically by changing the colour scheme, then make it transparent again.
 1. Design way to change colour scheme on the css side to reduce the number of CSS variables exposed on the :root element.
     - Make the colour schemes set themselves either as variables or dataset things in a shared, dedicated, non-displayed dummy element.
     - When the user selects a colour scheme, copy those values to dataset-values in the root that are referenced using CSS' attr() function inside the `colour-selected` variables.
@@ -140,6 +138,13 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
 https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Backgrounds_and_borders
 https://developer.mozilla.org/en-US/docs/Web/CSS/display
 flex playground: https://codepen.io/enxaneta/full/adLPwv/
+```
+
+### ARIA
+
+```text
+https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles
+https://a11yproject.com/checklist/
 ```
 
 ### ES6 modules in NodeJS
