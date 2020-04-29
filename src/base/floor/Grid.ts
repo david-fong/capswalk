@@ -30,8 +30,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * Protected. See `Grid.getImplementation` for how to access class
      * literals for construction.
      *
-     * _Does not call reset._
-     *
      * @param desc -
      */
     protected constructor(desc: Grid.CtorArgs<S>) {
@@ -152,12 +150,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         const OHG = OmHooks.Grid;
         gridImplElem.classList.add(OHG.Class.IMPL_BODY);
         gridImplElem.dataset[OHG.Dataset.COORD_SYS] = desc.coordSys;
-        // Remove all child elements from host and then append the new grid:
-        const parentElem = desc.gridElem!;
-        parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
-        parentElem.insertAdjacentElement("afterbegin", gridImplElem);
-        // ^The order it is inserted into does not actually matter (it used to).
-        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).focusElem = parentElem;
+        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
     }
 
 }
@@ -181,7 +174,6 @@ export namespace Grid {
         tileClass: Tile.ClassIf<S>;
         coordSys: S;
         dimensions: Dimensions<S>;
-        gridElem: HTMLElement | undefined;
     }>;
 
     /**

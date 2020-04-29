@@ -5,10 +5,10 @@ import { Game } from "game/Game";
 import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
 import { Player, PlayerStatus } from "game/player/Player";
+import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
-import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
 import { GameManager } from "game/__gameparts/Manager";
 
@@ -18,8 +18,6 @@ type G = Game.Type.SERVER;
 /**
  * Handles game-related events and attaches listeners to each client
  * socket.
- *
- * @extends Game
  */
 export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
@@ -42,8 +40,6 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
 
     /**
-     * _Calls reset recursively for this entire composition._
-     *
      * Attach listeners for requests to each socket.
      *
      * Broadcasts constructor arguments to all clients.
@@ -59,7 +55,6 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         super(
             Game.Type.SERVER, {
             tileClass: Tile,
-            htmlHosts: undefined,
             playerStatusCtor: PlayerStatus,
             }, gameDesc,
         );
@@ -113,21 +108,20 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
                 gameDesc,
             );
         }, this);
-
-        this.reset();
     }
 
     /**
      * @override
      */
-    public reset(): void {
-        super.reset();
+    public async reset(): Promise<void> {
+        const superPromise = super.reset();
         // TODO.design Should we wait for ACK's from all clients before
         // enabling the privileged users' `stateBecomePlaying` buttons?
         this.namespace.emit(
             Game.Serialization.EVENT_NAME,
             this.serializeResetState(),
         );
+        return superPromise;
     }
 
     /**

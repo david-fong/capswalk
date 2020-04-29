@@ -58,7 +58,10 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
         options: <tsloader.LoaderOptions>{
             projectReferences: true,
             compilerOptions: {
-                emitDeclarationOnly: true,
+                // We need to preserve comments in transpiled output
+                // so that magic comments in dynamic imports can be
+                // seen by webpack.
+                removeComments: false,
                 //noEmit: true,
             },
             // https://github.com/TypeStrong/ts-loader#faster-builds
@@ -108,7 +111,7 @@ const BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
     entry: { /* Left to each branch config */ },
     plugins: [ ...BASE_PLUGINS(), ],
     resolve: {
-        extensions: [ ".ts", ".css", ],
+        extensions: [ ".ts", ".css", ".js", ],
         modules: [
             path.resolve(PROJECT_ROOT, "src", "base"),
             path.resolve(PROJECT_ROOT),
@@ -122,8 +125,8 @@ const BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
     output: {
         path:           path.resolve(PROJECT_ROOT, "dist", distSubFolder),
         publicPath:     `dist/${distSubFolder}/`, // webpack needs trailing slash.
-        filename:       "index.js",
-        chunkFilename:  "chunk.[name].js",
+        filename:       "[name].js",
+        chunkFilename:  "chunk/[name].js",
         library:        "snakey3",
         pathinfo: false, // don't need it. suppression yields small performance gain.
     },
@@ -174,10 +177,11 @@ const CLIENT_CONFIG = BaseConfig("client"); {
         }; },
         //hash: true,
     };
-    config.entry["client"] = `./src/client/index.ts`;
+    config.entry["index"] = `./src/client/index.ts`;
     config.plugins.push(new HtmlPlugin(htmlPluginArgs));
     config.plugins.push(new MiniCssExtractPlugin({
         filename: "index.css",
+        chunkFilename: "chunk/[name].css"
     }));
     if (PACK_MODE === 'production') {
         config.plugins.push(new OptimizeCssAssetsPlugin({
@@ -202,7 +206,7 @@ const CLIENT_CONFIG = BaseConfig("client"); {
 const applyCommonNodeConfigSettings = (config: ReturnType<typeof BaseConfig>): void => {
     config.target = "node";
     // alternative to below: https://www.npmjs.com/package/webpack-node-externals
-    externals: fs.readdirSync(path.resolve(PROJECT_ROOT, "node_modules")),
+    config.externals = fs.readdirSync(path.resolve(PROJECT_ROOT, "node_modules")),
     config.resolve.extensions!.push(".js");
 };
 

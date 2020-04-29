@@ -28,6 +28,8 @@ export namespace Korean {
             return this.SINGLETON;
         }
 
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-dub");
+
         private static KEYBOARD = Object.freeze(<const>{
             "": "",
             "ㅂ": "q", "ㅈ": "w", "ㄷ": "e", "ㄱ": "r", "ㅅ": "t",
@@ -78,6 +80,8 @@ export namespace Korean {
             }
             return this.SINGLETON;
         }
+
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-sub");
 
         /**
          *
@@ -147,6 +151,8 @@ export namespace Korean {
             }
             return Romanization.SINGLETON;
         }
+
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-rom");
 
         /**
          * Does nothing.

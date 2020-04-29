@@ -6,6 +6,7 @@ import * as io from "socket.io-client";
 import { Game }                 from "game/Game";
 import { Coord, VisibleTile }   from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
+import { VisibleGame }          from "./VisibleGame";
 
 import { Player }               from "game/player/Player";
 import { OperatorPlayer }       from "game/player/OperatorPlayer";
@@ -22,12 +23,13 @@ type G = Game.Type.ONLINE;
 
 /**
  *
- *
- * @extends Game
  */
-export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
+export class OnlineGame<S extends Coord.System>
+extends GameEvents<G,S> implements VisibleGame {
 
     declare public readonly currentOperator: NonNullable<GameEvents<G,S>["currentOperator"]>;
+
+    public htmlElements: VisibleGame["htmlElements"];
 
     public readonly socket: SocketIOClient.Socket;
 
@@ -40,8 +42,6 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
 
 
     /**
-     * _Calls recursively for this entire composition._
-     *
      * Note that this class does not extend `GameManager`.
      *
      * @param socket -
@@ -50,17 +50,18 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
      */
     public constructor(
         socket: SocketIOClient.Socket,
-        htmlHosts: Game.HtmlHosts,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(
             Game.Type.ONLINE, {
             tileClass: VisibleTile,
-            htmlHosts,
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,
         );
         this.socket = socket;
+        this.htmlElements = Object.freeze(<VisibleGame["htmlElements"]>{
+            gridImplElem: this.grid.baseElem,
+        });
 
         this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);
         this.socket.on(
@@ -81,18 +82,13 @@ export class OnlineGame<S extends Coord.System> extends GameEvents<G,S> {
                 this.deserializeResetState(ser);
             },
         );
-
-        // =====================================
-        // CALL TO RESET
-        this.reset();
-        // =====================================
     }
 
     /**
      * @override
      */
-    public reset(): void {
-        super.reset();
+    public async reset(): Promise<void> {
+        return super.reset();
     }
 
     protected __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S> {

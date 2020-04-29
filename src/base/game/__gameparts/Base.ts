@@ -39,8 +39,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
 
     /**
-     * _Does not call reset._
-     *
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
      *
      * @param gameType -
@@ -59,7 +57,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             tileClass:  impl.tileClass,
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
-            gridElem:   impl.htmlHosts?.gridElem,
         }) as GameBase<G,S>["grid"];
 
         this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId);
@@ -99,12 +96,19 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     /**
      * Reset the grid.
+     *
+     * Overrides should not use the return value. They should return
+     * the result of calling `ctorAsync`.
      */
-    public reset(): void {
+    public async reset(): Promise<void> {
         this.grid.reset();
         // We must reset status to PAUSED to pass a state-transition
         // assertion when changing status later to PLAYING.
         this.#status = Game.Status.PAUSED;
+
+        // Important: Since there is nothing to do in this game-part's
+        // ctorAsync getter, we don't need to use `await`.
+        return Promise.resolve();
     }
 
     protected abstract __getGridImplementation(coordSys: S):
@@ -128,15 +132,15 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             ? (gameDesc.playerDescs as pCtorArgs)
             : Player.CtorArgs.finalize(gameDesc.playerDescs);
 
-        return playerDescs.map((playerDesc) => {
+        return Object.freeze(playerDescs.map((playerDesc) => {
             if (playerDesc.familyId === Player.Family.HUMAN) {
                 return (playerDesc.isALocalOperator)
                     ? this.__createOperatorPlayer(playerDesc)
                     : new Player(this, playerDesc);
             } else {
-                return this.__createArtifPlayer(playerDesc);
+                return this.__createArtifPlayer(playerDesc) as Player<S>;
             }
-        });
+        }));
     }
     protected abstract __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S>;
     protected abstract __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>):

@@ -38,8 +38,6 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
 
 
     /**
-     * _Does not call reset._
-     *
      * @param forwardDict -
      * @returns The root node of a new tree map.
      */

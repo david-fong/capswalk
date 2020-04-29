@@ -139,33 +139,34 @@ export namespace Lang {
      *
      */
     export const FrontendDescs = Object.freeze([
-    <const>{
+       <const>{
         id: "engl-low",
-        module: "English", export: "",
+        module: "English", export: "Lowercase",
+        numLeaves: 26,
         remapFunc: __RemapTemplates.TO_LOWER,
         display: "English Lowercase (QWERTY)",
         blurb: "",
     }, <const>{
         id: "engl-mix",
-        module: "English", export: "",
+        module: "English", export: "MixedCase",
         remapFunc: __RemapTemplates.IDENTITY,
         display: "English Mixed-Case (QWERTY)",
         blurb: "",
     }, <const>{
         id: "japn-hir",
-        module: "Japanese", export: "",
+        module: "Japanese", export: "Hiragana",
         remapFunc: __RemapTemplates.TO_LOWER,
         display: "Japanese Hiragana",
         blurb: "",
     }, <const>{
         id: "japn-kat",
-        module: "Japanese", export: "",
+        module: "Japanese", export: "Katakana",
         remapFunc: __RemapTemplates.TO_LOWER,
         display: "Japanese Katakana",
         blurb: "",
     }, <const>{
         id: "kore-dub",
-        module: "Korean", export: "",
+        module: "Korean", export: "Dubeolsik",
         remapFunc: __RemapTemplates.IDENTITY,
         display: "Korean Dubeolsik (두벌식 키보드)",
         blurb: "The most common keyboard layout, and South Korea's only Hangul"
@@ -173,7 +174,7 @@ export namespace Lang {
         + " the right.",
     }, <const>{
         id: "kore-sub",
-        module: "Korean", export: "",
+        module: "Korean", export: "Sebeolsik",
         remapFunc: __RemapTemplates.IDENTITY,
         display: "Korean Sebeolsik (세벌식 최종 키보드)",
         blurb: "Another Hangul keyboard layout used in South Korea, and the"
@@ -183,7 +184,7 @@ export namespace Lang {
         + " ergonomic than the dubeolsik, but not widely used.",
     }, <const>{
         id: "kore-rom",
-        module: "Korean", export: "",
+        module: "Korean", export: "Romanization",
         remapFunc: __RemapTemplates.TO_LOWER,
         display: "Korean Revised Romanization",
         blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
@@ -193,14 +194,15 @@ export namespace Lang {
         + " and Tourism",
     },
     ].map((desc) => Object.freeze(desc)),);
-    FrontendDescs as TU.RoArr<Readonly<{
+    FrontendDescs as TU.RoArr<Required<Readonly<{
         id:         string;
         module:     string;
         export:     string;
         remapFunc:  {(input: string): string};
+        numLeaves:  number;
         display:    string;
         blurb:      string;
-    }>>;
+    }>>>;
     export type FrontendDesc = typeof FrontendDescs[number];
 
     /**

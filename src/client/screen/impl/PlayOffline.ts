@@ -20,8 +20,6 @@ export class PlayOfflineScreen extends __PlayScreen {
     protected async __createNewGame(): Promise<OfflineGame<any>> {
         // TODO.impl fetch special game preset "forNextGame".
         return new (await import("../../game/OfflineGame")).OfflineGame({
-            gridElem: this.gridElem,
-        }, {
             coordSys: "EUCLID2" as Coord.System.EUCLID2,
             gridDimensions: {
                 height: 21,

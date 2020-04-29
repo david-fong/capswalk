@@ -59,12 +59,15 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         this.eventRecordBitmap = [];
     }
 
-    public reset(): void {
-        super.reset();
+    public async reset(): Promise<void> {
+        const superPromise = super.reset();
 
         // Clear the event record:
         this.eventRecordBitmap.fill(false, 0, Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH);
         this.#nextUnusedEventId = 0;
+
+        // Since we didn't wait for the superPromise, return it.
+        return superPromise;
     }
 
     protected get nextUnusedEventId(): EventRecordEntry["eventId"] {

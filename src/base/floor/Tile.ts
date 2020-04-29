@@ -37,8 +37,6 @@ export class Tile<S extends Coord.System> {
     public lastKnownUpdateId: number;
 
     /**
-     * _Does not call reset._
-     *
      * @param coord -
      */
     public constructor(coord: Coord<S>) {

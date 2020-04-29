@@ -22,6 +22,8 @@ export namespace English {
             return this.SINGLETON;
         }
 
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-low");
+
         // TODO.learn see https://wikipedia.org/wiki/Keyboard_layout#Dvorak
         // and https://wikipedia.org/wiki/Keyboard_layout#Colemak
 
@@ -59,6 +61,8 @@ export namespace English {
             }
             return this.SINGLETON;
         }
+
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-mix");
 
         private constructor() {
             let initializer: Lang.CharSeqPair.WeightedForwardMap = {};

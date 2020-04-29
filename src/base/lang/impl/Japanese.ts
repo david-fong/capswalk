@@ -27,6 +27,8 @@ export namespace Japanese {
             return this.SINGLETON;
         }
 
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("japn-hir");
+
         /**
          * Values obtained from page 18 of the below pdf (p.499 of text)
          * https://link.springer.com/content/pdf/10.3758/BF03200819.pdf
@@ -142,6 +144,8 @@ export namespace Japanese {
             }
             return this.SINGLETON;
         }
+
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("japn-kat");
 
         /**
          * Values obtained from page 19 of the below pdf (p.500 of text)

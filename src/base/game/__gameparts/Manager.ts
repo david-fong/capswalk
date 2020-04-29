@@ -23,6 +23,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     readonly #freeHealthTiles: Set<Tile<S>>;
 
     public readonly lang: Lang;
+    readonly #langImportPromise: Promise<Lang>;
 
     /**
      * NOTE: Shuffling operations and the
@@ -37,8 +38,6 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     private readonly scoreInfo: ScoreInfo;
 
     /**
-     * _Does not call reset._
-     *
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
      *
      * @param gameType -
@@ -57,7 +56,16 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
 
         // TODO.impl Change this to use a dynamic import for a Lang registry dict.
         // We need to make that registry dict first!
-        this.lang = import(`../../lang/impl/${this.langFrontend.module}`)[this.langFrontend.export];
+        // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+        this.#langImportPromise = (import(
+            /* webpackChunkName: "lang/[request]" */
+            /* webpackInclude: /\.ts$/ */
+            `../../lang/impl/${this.langFrontend.module}`
+        ) as Promise<{ readonly [K in Lang.FrontendDesc["export"]]: Lang; }>)
+        .then((module) => {
+            (this.lang as Lang) = module[this.langFrontend.export];
+            return this.lang;
+        });
 
         // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
         const minLangLeaves = this.grid.static.getAmbiguityThreshold();
@@ -78,9 +86,9 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     /**
      *
      */
-    public reset(): void {
+    public async reset(): Promise<void> {
         // Reset the grid and event record:
-        super.reset();
+        await super.reset();
 
         this.#currentFreeHealth = 0.0;
         this.#freeHealthTiles.clear();
@@ -88,6 +96,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // Reset hit-counters in the current language:
         // This must be done before shuffling so that the previous
         // history of shuffle-ins has no effects on the new pairs.
+        await this.#langImportPromise;
         this.lang.reset();
         // Shuffle everything:
         this.grid.forEachTile((tile) => {
@@ -114,6 +123,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // this.dryRunSpawnFreeHealth([])?.forEach((tileModDesc) => {
         //     this.executeTileModEvent(tileModDesc);
         // })
+        return Promise.resolve();
     }
 
 

@@ -43,8 +43,6 @@ export abstract class Lang extends __Lang {
 
 
     /**
-     * _Does not call reset._
-     *
      * @param classIf -
      * @param forwardDict - Weights are _relative_ values handled by
      *      {@link LangSeqTreeNode}, which requires the provided values
@@ -56,6 +54,9 @@ export abstract class Lang extends __Lang {
         this.static = classIf;
         this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes = this.treeMap.getLeafNodes();
+        if (this.leafNodes.length !== this.static.frontend.numLeaves) {
+            throw new Error("never. the frontend constant needs to be fixed.");
+        }
     }
 
     public reset(): void {
@@ -162,6 +163,7 @@ export namespace Lang {
      */
     export interface ClassIf {
         getInstance(): Lang;
+        readonly frontend: Lang.FrontendDesc;
     };
 
     /**

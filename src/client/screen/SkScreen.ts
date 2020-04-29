@@ -25,6 +25,7 @@ export abstract class SkScreen {
     public constructor(parentElem: HTMLElement, requestGoToDisplay: SkScreen["requestGoToScreen"]) {
         this.#hasLazyLoaded = false;
         this.requestGoToScreen = requestGoToDisplay;
+        this.parentElem = parentElem;
     }
 
     /**
@@ -40,7 +41,7 @@ export abstract class SkScreen {
         this.#hasLazyLoaded = true;
         }
         this.__abstractOnBeforeEnter();
-        this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = "exists";
+        this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = "";
     }
 
     /**

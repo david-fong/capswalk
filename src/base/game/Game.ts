@@ -42,7 +42,6 @@ export namespace Game {
         S extends Coord.System,
     > = {
         tileClass: Tile.ClassIf<S>,
-        htmlHosts: G extends Game.Type.SERVER ? undefined : Game.HtmlHosts,
         playerStatusCtor: typeof PlayerStatus,
     };
 
@@ -116,10 +115,6 @@ export namespace Game {
         PAUSED  = "PAUSED",
         OVER    = "OVER",
     }
-
-    export type HtmlHosts = Readonly<{
-        gridElem: HTMLElement;
-    }>;
 
     /**
      * Global, Game-Setup-Agnostic constants for tuning game behaviour.
