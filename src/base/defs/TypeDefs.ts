@@ -109,32 +109,39 @@ export namespace Lang {
      */
     export const Names = Object.freeze(<const>{
         ENGLISH__LOWERCASE: {
-            display: "English Lowercase (QWERTY)",
-            id: "engl-low",
+            id:         "engl-low",
+            filename:   "English",
+            display:    "English Lowercase (QWERTY)",
         },
         ENGLISH__MIXEDCASE: {
-            display: "English Mixed-Case (QWERTY)",
-            id: "engl-mix",
+            id:         "engl-mix",
+            filename:   "English",
+            display:    "English Mixed-Case (QWERTY)",
         },
         JAPANESE__HIRAGANA: {
-            display: "Japanese Hiragana",
-            id: "japn-hir",
+            id:         "japn-hir",
+            filename:   "Japanese",
+            display:    "Japanese Hiragana",
         },
         JAPANESE__KATAKANA: {
-            display: "Japanese Katakana",
-            id: "japn-kat",
+            id:         "japn-kat",
+            filename:   "Japanese",
+            display:    "Japanese Katakana",
         },
         KOREAN__DUBEOLSIK: {
-            display: "Korean Dubeolsik (두벌식 키보드)",
-            id: "kore-dub",
+            id:         "kore-dub",
+            filename:   "Korean",
+            display:    "Korean Dubeolsik (두벌식 키보드)",
         },
         KOREAN__SEBEOLSIK: {
-            display: "Korean Sebeolsik (세벌식 최종 키보드)",
-            id: "kore-sub",
+            id:         "kore-sub",
+            filename:   "Korean",
+            display:    "Korean Sebeolsik (세벌식 최종 키보드)",
         },
         KOREAN__ROMANIZATION: {
-            display: "Korean Revised Romanization",
-            id: "kore-rom",
+            id:         "kore-rom",
+            filename:   "Korean",
+            display:    "Korean Revised Romanization",
         },
     });
     Names as Record<string, { display: string, id: string, }>;

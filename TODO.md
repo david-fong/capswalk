@@ -12,6 +12,12 @@
 
 ### High Priority
 
+1. Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
+1. Rename the #background id to #sk-toplevel-background, and create and element with the id #sk-toplevel-foreground, which we can use when changing colour scheme to make a smooth transition.
+    - Do the smooth transition by chaining (nesting in the js) ontransitionend callbacks that- in this order- make the foreground the current background colour, then changing to the new one automatically by changing the colour scheme, then make it transparent again.
+1. Design way to change colour scheme on the css side to reduce the number of CSS variables exposed on the :root element.
+    - Make the colour schemes set themselves either as variables or dataset things in a shared, dedicated, non-displayed dummy element.
+    - When the user selects a colour scheme, copy those values to dataset-values in the root that are referenced using CSS' attr() function inside the `colour-selected` variables.
 1. Brainstorm ways to split up the js and css to defer loading.
     - Make lang files dynamically imported. This will save loading if the user only plays online (no game-manager implementation needed).
 1. Make and hook up lang registry (initialize in PostInit, define under Lang).
@@ -33,6 +39,7 @@
 
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
 - Read about these topics and see how they might be useful
+  - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Concepts_Behind_IndexedDB)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
   - [](https://www.npmjs.com/package/bad-words)

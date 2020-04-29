@@ -71,10 +71,12 @@ export abstract class __PlayScreen extends SkScreen {
     protected __abstractOnBeforeEnter(): void {
     // TODO.design Are there ways we can share more code between
     // implementations by passing arguments?
-        this.__createNewGame();
-        // console.log(this.currentGame);
-        // console.log(this.currentGame.lang.simpleView());
-        this.statusBecomePlaying();
+        this.__createNewGame().then((game) => {
+            this.#currentGame = game;
+            // console.log(this.currentGame);
+            // console.log(this.currentGame!.lang.simpleView());
+            this.statusBecomePlaying();
+        });
     }
 
     public get currentGame(): Game | undefined {

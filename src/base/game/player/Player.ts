@@ -178,22 +178,17 @@ export namespace Player {
             // (to play nice with array representations):
             const teamIdCleaner: TU.RoArr<Team.Id>
                 = Array.from(new Set(playerDescs.map((player) => player.teamId)))
-                .sort((a, b) => a - b)
+                .sort((a, b) => a - b) // This is not a representation requirement.
                 .reduce((prev, originalId, squashedId) => {
                     prev[originalId] = squashedId;
                     return prev;
                 }, [] as Array<Team.Id>);
             return playerDescs.slice()
             .sort((pda, pdb) => teamIdCleaner[pda.teamId] - teamIdCleaner[pdb.teamId])
-            .map<CtorArgs>((playerDesc, index) => { return {
+            .map<CtorArgs>((playerDesc, index) => Object.assign(playerDesc, {
                 playerId:   index,
-                familyId:   playerDesc.familyId,
                 teamId:     teamIdCleaner[playerDesc.teamId],
-                socketId:   playerDesc.socketId,
-                username:   playerDesc.username,
-                noCheckGameOver: playerDesc.noCheckGameOver,
-                familyArgs: playerDesc.familyArgs,
-            } as CtorArgs; });
+            }, ), );
         };
     }
     Object.freeze(CtorArgs);

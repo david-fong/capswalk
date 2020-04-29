@@ -67,16 +67,13 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.players = this.createPlayers(desc);
 
         this.operators = this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[];
-        if (this.gameType !== Game.Type.SERVER) {
-            this.#currentOperator = this.operators[0];
-            if (this.operators.some((op) => op.teamId !== this.operators[0].teamId)) {
-                // Currently requiring this because the current visual colouring
-                // is initialized based on whether a player is on the operator's
-                // team. Otherwise, we'd have to re-colour when rotating operator.
-                throw new Error("All local operators must be on the same team.");
-            }
-        }
-        {
+        this.#currentOperator = this.operators[0];
+        if (this.operators.some((op) => op.teamId !== this.operators[0].teamId)) {
+            // Currently requiring this because the current visual colouring
+            // is initialized based on whether a player is on the operator's
+            // team. Otherwise, we'd have to re-colour when rotating operator.
+            throw new Error("All local operators must be on the same team.");
+        } {
             const teams: Array<Array<Player<S>>> = [];
             this.players.forEach((player) => {
                 if (!teams[player.teamId]) {
