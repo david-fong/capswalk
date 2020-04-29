@@ -12,7 +12,6 @@
 
 ### High Priority
 
-1. Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
 1. Rename the #background id to #sk-toplevel-background, and create and element with the id #sk-toplevel-foreground, which we can use when changing colour scheme to make a smooth transition.
     - Do the smooth transition by chaining (nesting in the js) ontransitionend callbacks that- in this order- make the foreground the current background colour, then changing to the new one automatically by changing the colour scheme, then make it transparent again.
 1. Design way to change colour scheme on the css side to reduce the number of CSS variables exposed on the :root element.
@@ -37,9 +36,12 @@
 
 ### Low Priority
 
+- Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
+  - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
 - Read about these topics and see how they might be useful
   - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Concepts_Behind_IndexedDB)
+  - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
   - [](https://www.npmjs.com/package/bad-words)
@@ -71,24 +73,23 @@
   - make BGM have a track that varies with lang and different selectable style variations such as jazz cafe/elevator music, fast 13/8.
   - Make movement sound effects able to depend on translated key input like morse sounds.
 
+## Good Reads
+
+```text
+https://javascript.info/class-inheritance
+https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
+https://www.quirksmode.org/js/events_order.html#link4
+https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
+https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
+
+https://github.com/whatwg/html/issues/4078
+```
+
 ## Research / Learning Links
 
 ### Dynamic imports
 
-```text
-https://javascript.info/modules-dynamic-imports
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
-https://github.com/tc39/proposal-dynamic-import/#import
-https://v8.dev/features/dynamic-import
-```
-
-### ES6 modules in NodeJS
-
-```text
-https://stackoverflow.com/questions/45854169/how-can-i-use-an-es6-import-in-node
-https://medium.com/@iamstan/typescript-es-modules-micheal-jackson-2040216be793
-https://nodejs.org/api/esm.html#esm_enabling
-```
+Links no longer needed. Good things to know: both TypeScript and WebPack implement handling for dynamic imports. TypeScript will provide type information about the exports from a module, and WebPack will intercept the dynamic import to create a deferred-loading split chunk.
 
 ### Web API's
 
@@ -104,12 +105,6 @@ https://www.w3schools.com/html/html5_webstorage.asp
 https://www.w3schools.com/html/html5_serversentevents.asp
 Navigator.{keyboard,online,connection,language,languages,battery}
 https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
-```
-
-### JsDoc
-
-```text
-https://devdocs.io/jsdoc/howto-es2015-classes
 ```
 
 ### Audio
@@ -147,23 +142,25 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/display
 flex playground: https://codepen.io/enxaneta/full/adLPwv/
 ```
 
+### ES6 modules in NodeJS
+
+```text
+https://stackoverflow.com/questions/45854169/how-can-i-use-an-es6-import-in-node
+https://medium.com/@iamstan/typescript-es-modules-micheal-jackson-2040216be793
+https://nodejs.org/api/esm.html#esm_enabling
+```
+
+### JsDoc
+
+```text
+https://devdocs.io/jsdoc/howto-es2015-classes
+```
+
 ### Handling Network Latency
 
 ```text
 https://martinfowler.com/eaaDev/EventSourcing.html
 https://stackoverflow.com/a/9283222/11107541
-```
-
-## Good Reads
-
-```text
-https://javascript.info/class-inheritance
-https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
-https://www.quirksmode.org/js/events_order.html#link4
-https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
-https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
-
-https://github.com/whatwg/html/issues/4078
 ```
 
 ## Things I have Tried that Haven't Worked (and that's okay)

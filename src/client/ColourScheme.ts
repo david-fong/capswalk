@@ -29,7 +29,7 @@ export class Colour {
             sel.blur();
             this.switchToScheme(this.sel.value);
             localStorage.setItem(
-                StorageHooks.Keys.COLOUR,
+                StorageHooks.LocalKeys.COLOUR,
                 this.sel.value,
             );
         };
@@ -37,7 +37,7 @@ export class Colour {
         this.sel = sel as Colour["sel"];
 
         // Initialize to the user's last selected colour scheme (if it exists).
-        const lastUsedSchemeId = localStorage.getItem(StorageHooks.Keys.COLOUR);
+        const lastUsedSchemeId = localStorage.getItem(StorageHooks.LocalKeys.COLOUR);
         if (lastUsedSchemeId) {
             for (let i = 0; i < sel.length; i++) {
                 if ((sel.item(i) as HTMLOptionElement).value === lastUsedSchemeId) {

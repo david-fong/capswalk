@@ -1,5 +1,7 @@
-import { Game } from "game/Game";
+// Tell WebPack about the CSS chunk we want:
+require("assets/style/game/index.css");
 
+import { Game }                 from "game/Game";
 import type { Coord }           from "floor/Tile";
 import { VisibleTile }          from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";

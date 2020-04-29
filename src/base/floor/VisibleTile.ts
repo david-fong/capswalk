@@ -27,7 +27,7 @@ export { Coord } from "./Tile";
  */
 export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
-    readonly #baseElem:     HTMLElement;
+    readonly #baseElem:             HTMLDivElement;
     private readonly langCharElem:  HTMLDivElement;
     private readonly langSeqElem:   HTMLDivElement;
 
@@ -43,9 +43,9 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             this.#baseElem = baseElem;
         } {
             // Must be the first child. See note in CSS class hook.
-            const pthbElem = document.createElement("div");
-            pthbElem.classList.add(OmHooks.Tile.Class.POINTER_HB);
-            this.#baseElem.appendChild(pthbElem);
+            const pointerHitboxElem = document.createElement("div");
+            pointerHitboxElem.classList.add(OmHooks.Tile.Class.POINTER_HB);
+            this.#baseElem.appendChild(pointerHitboxElem);
         } {
             const charElem = document.createElement("div");
             charElem.classList.add(
@@ -93,7 +93,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public evictOccupant(): void {
         super.evictOccupant();
-        // Undo setting mouseover text to occupant username:
+        // Undo setting mouseover text to something player-related
+        // (See `__setOccupant` for what we did and now need to undo):
         this.langSeqElem.innerText = this.langSeq;
     }
 

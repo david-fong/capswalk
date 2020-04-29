@@ -13,7 +13,7 @@ In order to play nice with any behaviours dependent on how long the game has las
 
 ## Responsibility Overview
 
-Behaviours dependent on game-state: A game should be automatically un-paused upon reset. Requests to pause the game when it is over should be immediately rejected.
+Behaviours dependent on game-state: A game should _not_ be automatically un-paused upon reset. Requests to pause the game when it is over should be immediately rejected.
 
 (per implementation):
 
@@ -42,7 +42,9 @@ Behaviours dependent on game-state: A game should be automatically un-paused upo
 
 ### Request Vectors
 
-These listener functions must either be bound to an object that gets garbage collected with a dead Game instance, or they must be manually de-registered when a Game object will no longer be used. An example of this would be [`document.onvisibilitychange`](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API).
+Make sure that any registered listener callbacks do not prevent garbage-collection of a Game instance that is no longer intended to be used.
+
+Take a look at [`document.onvisibilitychange`](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API).
 
 ### Web UI Changes
 

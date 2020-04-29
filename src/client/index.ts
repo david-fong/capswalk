@@ -7,11 +7,13 @@ export { OmHooks } from "defs/OmHooks";
 
 
 ((): void => {
-// https://developers.google.com/web/fundamentals/primers/service-workers
+/**
+ * https://developers.google.com/web/fundamentals/primers/service-workers
+ */
 if (window.origin && window.origin !== "null" && "serviceWorker" in navigator) {
     window.addEventListener('load', function() {
         // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
-        navigator.serviceWorker.register("./src/client/ServiceWorker.js").then(
+        navigator.serviceWorker.register("/sw.js").then(
         (registration) => {
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
         },

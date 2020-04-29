@@ -10,6 +10,8 @@
 
     /* To hide the spotlight off the edges */
     overflow:   hidden hidden;
+    min-width:      max-content;
+    min-height:     max-content;
 }
 
 .game-grid-impl-body {

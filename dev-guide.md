@@ -37,6 +37,10 @@ TODO.build Should we be maintaining some sort of release notes / making annotate
 
 This is to cover more abstract practices than rules that are covered by linting.
 
+### Markdown
+
+Use single-underscore enclosures to italicize. Use double-asterisk enclosures to embolden.
+
 ### ES6 #private Fields
 
 Methodology: Use #private fields for fields that back accessors- Ie. Fields that need to be internally reassigned, but should never be directly reassigned externally. If such a field does not have a get-accessor (because it doesn't need one, leave it- do not switch it to use hard privacy.

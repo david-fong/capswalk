@@ -1,7 +1,9 @@
+// Tell WebPack about the CSS chunk we want:
+require("assets/style/game/index.css");
+
 import * as io from "socket.io-client";
 
-import { Game } from "game/Game";
-
+import { Game }                 from "game/Game";
 import { Coord, VisibleTile }   from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
 

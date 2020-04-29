@@ -1,6 +1,3 @@
-// Tell WebPack about the CSS chunk we want:
-require("assets/style/game/index.css");
-
 import { OmHooks } from "defs/OmHooks";
 import type { GameBase } from "game/__gameparts/Base";
 import type { OfflineGame } from "../../game/OfflineGame";
