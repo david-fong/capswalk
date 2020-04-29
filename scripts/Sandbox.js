@@ -52,9 +52,11 @@ const f = () => {
 }
 log(f());
 e.push("4")
+f().addedtoreturnvalue = "hello?"
 log(f());
-// darn. it does it by value... good to know.
-// well, I guess that's the whole basis of Javascript OOP :/
+// The returned object literal is a new object each time.
+// Of course, the property `e` only _refers_ to an array.
+// The arrow-function does not make a deep copy of `e` unless I tell it to.
 
 // What is the truthiness of an empty array?
 if ([]) {
