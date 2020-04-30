@@ -105,10 +105,10 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
  *
  * @returns A standalone ("deep-copy") basic configuration.
  */
-const BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
+const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 "entry" | "plugins" | "resolve" | "output"> => { return {
     mode: PACK_MODE,
-    name: `${"=".repeat(32)} ${distSubFolder.toUpperCase()} ${"=".repeat(32)}\n`,
+    name: `\n\n${"=".repeat(32)} ${distSubFolder.toUpperCase()} ${"=".repeat(32)}\n`,
     stats: { /* https://webpack.js.org/configuration/stats/ */ },
 
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
@@ -118,7 +118,6 @@ const BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
         extensions: [ ".ts", ".css", ".js", ],
         modules: [
             path.resolve(PROJECT_ROOT, "src", "base"),
-            path.resolve(PROJECT_ROOT),
             "node_modules",
         ], // match tsconfig.baseUrl
     },
@@ -162,7 +161,7 @@ const BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
  * - `externals: [ nodeExternals(), ],` or something like `[ "socket.io-client", ]`
  * - appropriate plugin entries for the index.html file.
  */
-const CLIENT_CONFIG = BaseConfig("client"); {
+const CLIENT_CONFIG = __BaseConfig("client"); {
     const config  = CLIENT_CONFIG;
     config.target = "web";
 
@@ -182,6 +181,7 @@ const CLIENT_CONFIG = BaseConfig("client"); {
         //hash: true,
     };
     config.entry["index"] = `./src/client/index.ts`;
+    config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
     config.plugins.push(new HtmlPlugin(htmlPluginArgs));
     config.plugins.push(new MiniCssExtractPlugin({
         filename: "index.css",
@@ -207,7 +207,7 @@ const CLIENT_CONFIG = BaseConfig("client"); {
  *
  * @param config -
  */
-const applyCommonNodeConfigSettings = (config: ReturnType<typeof BaseConfig>): void => {
+const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>): void => {
     config.target = "node";
     // alternative to below: https://www.npmjs.com/package/webpack-node-externals
     config.externals = fs.readdirSync(path.resolve(PROJECT_ROOT, "node_modules")),
@@ -217,9 +217,9 @@ const applyCommonNodeConfigSettings = (config: ReturnType<typeof BaseConfig>): v
 /**
  * ## Node Bundles
  */
-const SERVER_CONFIG = BaseConfig("server"); {
+const SERVER_CONFIG = __BaseConfig("server"); {
     const config = SERVER_CONFIG;
-    applyCommonNodeConfigSettings(config);
+    __applyCommonNodeConfigSettings(config);
     (<const>[ "server", ]).forEach((name) => {
         config.entry[name] = `./src/${name}/index.ts`;
     });
@@ -227,14 +227,11 @@ const SERVER_CONFIG = BaseConfig("server"); {
 
 /**
  * ## Test Bundles
- *
- * See the node settings.
- *
- * Emit all test bundles under a single folder.
  */
-const TEST_CONFIG = BaseConfig("test"); {
+const TEST_CONFIG = __BaseConfig("wp.test"); {
     const config = TEST_CONFIG;
-    applyCommonNodeConfigSettings(config);
+    config.resolve.modules!.push(path.resolve(PROJECT_ROOT, "src"));
+    __applyCommonNodeConfigSettings(config);
     (<const>[ "lang", ]).forEach((name) => {
         config.entry[name] = `./test/${name}/index.ts`;
     });

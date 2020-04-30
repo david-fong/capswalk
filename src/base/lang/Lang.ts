@@ -49,13 +49,20 @@ export abstract class Lang extends __Lang {
      *      to all be strictly positive values. They do not all need
      *      to sum to a specific value such as 100.
      */
-    protected constructor(classIf: Lang.ClassIf, forwardDict: Lang.CharSeqPair.WeightedForwardMap) {
+    protected constructor(
+        classIf: Lang.ClassIf,
+        forwardDict: Lang.CharSeqPair.WeightedForwardMap,
+    ) {
         super();
-        this.static = classIf;
-        this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
-        this.leafNodes = this.treeMap.getLeafNodes();
+        this.static     = classIf;
+        this.treeMap    = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
+        this.leafNodes  = this.treeMap.getLeafNodes();
         if (this.leafNodes.length !== this.static.frontend.numLeaves) {
-            throw new Error("never. the frontend constant needs to be fixed.");
+            // TODO.impl change back to error after testing.
+            /* throw new Error */console.log(`maintenance required: the frontend constant`
+            + ` for the language \"${this.static.frontend.id}\" needs to`
+            + ` be updated to the correct, computed value, which is`
+            + ` \`${this.leafNodes.length}\`.`);
         }
     }
 
@@ -151,7 +158,12 @@ export abstract class Lang extends __Lang {
     }
 
     public simpleView(): object {
-        return this.treeMap.simpleView();
+        return Object.assign(Object.create(null), {
+            id: this.static.frontend.id,
+            displayName: this.static.frontend.display,
+            root: this.treeMap.simpleView(),
+            numLeaves: this.leafNodes.length,
+        });
     }
 
 }

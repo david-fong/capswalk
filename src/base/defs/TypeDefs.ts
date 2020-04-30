@@ -75,7 +75,7 @@ export namespace Lang {
          * Characters that must never be unmarked as reserved (state reason):
          * (currently none. update as needed)
          */
-        export const REGEXP = new RegExp("^[a-zA-Z\-.]+$");
+        export const REGEXP = new RegExp("^[a-zA-Z0-9!@#$%^&*()\-_=+;:'\"\\|,.<>/?]+$");
     }
     /**
      * See the main documentation in game/lang/Lang
@@ -141,32 +141,31 @@ export namespace Lang {
     export const FrontendDescs = Object.freeze([
        <const>{
         id: "engl-low",
-        module: "English", export: "Lowercase",
-        numLeaves: 26,
+        module: "English", export: "Lowercase", numLeaves: 26,
         remapFunc: __RemapTemplates.TO_LOWER,
         display: "English Lowercase (QWERTY)",
         blurb: "",
     }, <const>{
         id: "engl-mix",
-        module: "English", export: "MixedCase",
+        module: "English", export: "MixedCase", numLeaves: 52,
         remapFunc: __RemapTemplates.IDENTITY,
         display: "English Mixed-Case (QWERTY)",
         blurb: "",
     }, <const>{
         id: "japn-hir",
-        module: "Japanese", export: "Hiragana",
+        module: "Japanese", export: "Hiragana", numLeaves: 71,
         remapFunc: __RemapTemplates.TO_LOWER,
         display: "Japanese Hiragana",
         blurb: "",
     }, <const>{
         id: "japn-kat",
-        module: "Japanese", export: "Katakana",
+        module: "Japanese", export: "Katakana", numLeaves: 70,
         remapFunc: __RemapTemplates.TO_LOWER,
         display: "Japanese Katakana",
         blurb: "",
     }, <const>{
         id: "kore-dub",
-        module: "Korean", export: "Dubeolsik",
+        module: "Korean", export: "Dubeolsik", numLeaves: 9177,
         remapFunc: __RemapTemplates.IDENTITY,
         display: "Korean Dubeolsik (두벌식 키보드)",
         blurb: "The most common keyboard layout, and South Korea's only Hangul"
@@ -174,7 +173,7 @@ export namespace Lang {
         + " the right.",
     }, <const>{
         id: "kore-sub",
-        module: "Korean", export: "Sebeolsik",
+        module: "Korean", export: "Sebeolsik", numLeaves: 10206,
         remapFunc: __RemapTemplates.IDENTITY,
         display: "Korean Sebeolsik (세벌식 최종 키보드)",
         blurb: "Another Hangul keyboard layout used in South Korea, and the"
@@ -184,7 +183,7 @@ export namespace Lang {
         + " ergonomic than the dubeolsik, but not widely used.",
     }, <const>{
         id: "kore-rom",
-        module: "Korean", export: "Romanization",
+        module: "Korean", export: "Romanization", numLeaves: 3990,
         remapFunc: __RemapTemplates.TO_LOWER,
         display: "Korean Revised Romanization",
         blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"

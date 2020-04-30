@@ -57,7 +57,7 @@ export namespace English {
 
         public static getInstance(): MixedCase {
             if (!this.SINGLETON) {
-                this.SINGLETON  = new MixedCase();
+                this.SINGLETON = new MixedCase();
             }
             return this.SINGLETON;
         }
@@ -66,7 +66,7 @@ export namespace English {
 
         private constructor() {
             let initializer: Lang.CharSeqPair.WeightedForwardMap = {};
-            const addMappings = (charSeqTransform: (charOrSeq: string) => string): void => {
+            const addMappings = (charSeqTransform: (cs: string) => string): void => {
                 initializer = Object.entries(LETTER_FREQUENCY).reduce(
                     (accumulator, current) => {
                         const char: Lang.Char = charSeqTransform(current[0]);

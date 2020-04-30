@@ -23,7 +23,7 @@ export namespace Korean {
         public static getInstance(): Dubeolsik {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Dubeolsik();
-                delete this.KEYBOARD;
+                (this.KEYBOARD as any) = undefined;
             }
             return this.SINGLETON;
         }
@@ -76,7 +76,7 @@ export namespace Korean {
         public static getInstance(): Sebeolsik {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Sebeolsik();
-                delete this.SEB_KEYBOARD;
+                (this.SEB_KEYBOARD as any) = undefined;
             }
             return this.SINGLETON;
         }

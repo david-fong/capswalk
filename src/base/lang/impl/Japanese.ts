@@ -22,7 +22,7 @@ export namespace Japanese {
         public static getInstance(): Hiragana {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Hiragana();
-                delete this.INITIALIZER;
+                (this.INITIALIZER as any) = undefined;
             }
             return this.SINGLETON;
         }
@@ -140,7 +140,7 @@ export namespace Japanese {
         public static getInstance(): Katakana {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Katakana();
-                delete this.INITIALIZER;
+                (this.INITIALIZER as any) = undefined;
             }
             return this.SINGLETON;
         }
