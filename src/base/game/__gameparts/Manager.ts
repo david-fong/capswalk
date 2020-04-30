@@ -54,30 +54,31 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         this.averageFreeHealthPerTile = desc.averageFreeHealthPerTile;
         this.#freeHealthTiles = new Set();
 
-        // TODO.impl Change this to use a dynamic import for a Lang registry dict.
-        // We need to make that registry dict first!
         // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
         this.#langImportPromise = (import(
             /* webpackChunkName: "lang/[request]" */
             /* webpackInclude: /\.ts$/ */
-            `../../lang/impl/${this.langFrontend.module}`
-        ) as Promise<{ readonly [K in Lang.FrontendDesc["export"]]: Lang; }>)
+            `../../lang/impl/English` //${this.langFrontend.module}
+        ) /* as Promise<{ readonly [K in Lang.FrontendDesc["export"]]: Lang; }> */)
         .then((module) => {
-            (this.lang as Lang) = module[this.langFrontend.export];
+            (this.lang as Lang) = (module
+                [this.langFrontend.module as "English"]
+                [this.langFrontend.export as "Lowercase"]
+            ).getInstance();
+
+            // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
+            const minLangLeaves = this.grid.static.getAmbiguityThreshold();
+            if (this.lang.numLeaves < minLangLeaves) {
+                throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
+                + ` least ${minLangLeaves} were required. The provided mappings`
+                + ` composing the current Lang-under-construction are not`
+                + ` sufficient to ensure that a shuffling operation will always`
+                + ` be able to find a safe candidate to use as a replacement.`
+                + ` Please see the spec for Lang.getNonConflictingChar.`
+                );
+            }
             return this.lang;
         });
-
-        // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
-        const minLangLeaves = this.grid.static.getAmbiguityThreshold();
-        if (this.lang.numLeaves < minLangLeaves) {
-            throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
-            + ` least ${minLangLeaves} were required. The provided mappings`
-            + ` composing the current Lang-under-construction are not`
-            + ` sufficient to ensure that a shuffling operation will always`
-            + ` be able to find a safe candidate to use as a replacement.`
-            + ` Please see the spec for Lang.getNonConflictingChar.`
-            );
-        }
         this.langBalancingScheme = desc.langBalancingScheme;
 
         this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));

@@ -5,10 +5,18 @@
         "rootDir": ".",
         "outDir": ".",
         "listEmittedFiles": true,
+        "incremental": true,
 
         "removeComments": true,
         "alwaysStrict": true,
-        "strictNullChecks": true
+        "skipLibCheck": true, // time-saving measure.
+
+        // Grammar Checking:
+        "strictNullChecks":     true,
+        "strictFunctionTypes":  true,
+        "noImplicitReturns":    true,
+        "strictBindCallApply":  true,
+        "noImplicitThis":       true,
     },
     "files": [
         "webpack.config.ts"

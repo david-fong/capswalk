@@ -11,7 +11,7 @@
 
         // Language Settings:
         "target": "es6",
-        "lib": [ "es6", "dom", "es2019.array" ],
+        "lib": [ "es6", "dom", "ES2019.Array" ],
         "module": "ES2020",
 
         // Emit Flags:

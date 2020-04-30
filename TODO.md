@@ -17,9 +17,6 @@
 1. Design way to change colour scheme on the css side to reduce the number of CSS variables exposed on the :root element.
     - Make the colour schemes set themselves either as variables or dataset things in a shared, dedicated, non-displayed dummy element.
     - When the user selects a colour scheme, copy those values to dataset-values in the root that are referenced using CSS' attr() function inside the `colour-selected` variables.
-1. Brainstorm ways to split up the js and css to defer loading.
-    - Make lang files dynamically imported. This will save loading if the user only plays online (no game-manager implementation needed).
-1. Make and hook up lang registry (initialize in PostInit, define under Lang).
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
@@ -64,6 +61,9 @@
 - WebPack 5:
   - [Magic dynamic import strings](https://webpack.js.org/migrate/5/#cleanup-the-code) will start getting useful values by default.
   - `output.ecmaVersion` is `6` by default. If we have set it to `6` manually, we can delete the manual field specification.
+- [TypeScript / tslib bug](https://github.com/microsoft/TypeScript/issues/36841)
+  - This is on the roadmap for TypeScript 2.9.1... That may be a while.
+  - When it is fixed, we can take out the ts-loader compiler option forcing `importHelpers` to be off.
 
 ---
 

@@ -62,6 +62,10 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
                 // so that magic comments in dynamic imports can be
                 // seen by webpack.
                 removeComments: false,
+                importHelpers: false, // :'(
+                // TODO.build get rid of the above line when
+                // https://github.com/microsoft/TypeScript/issues/36841
+                // is fixed. What an absolute tragedy T^T
                 //noEmit: true,
             },
             // https://github.com/TypeStrong/ts-loader#faster-builds
@@ -104,7 +108,7 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 const BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 "entry" | "plugins" | "resolve" | "output"> => { return {
     mode: PACK_MODE,
-    name: `=== ${distSubFolder.toUpperCase()} ===`,
+    name: `${"=".repeat(32)} ${distSubFolder.toUpperCase()} ${"=".repeat(32)}\n`,
     stats: { /* https://webpack.js.org/configuration/stats/ */ },
 
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
@@ -124,11 +128,11 @@ const BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
         : "eval-source-map",
     output: {
         path:           path.resolve(PROJECT_ROOT, "dist", distSubFolder),
-        publicPath:     `dist/${distSubFolder}/`, // webpack needs trailing slash.
+        publicPath:     `dist/${distSubFolder}/`, // need trailing "/".
         filename:       "[name].js",
         chunkFilename:  "chunk/[name].js",
         library:        "snakey3",
-        pathinfo: false, // don't need it. suppression yields small performance gain.
+        pathinfo: false, // unneeded. minor performance gain.
     },
 
     // https://webpack.js.org/guides/caching/
