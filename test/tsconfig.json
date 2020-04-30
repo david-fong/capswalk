@@ -4,7 +4,7 @@
     "compilerOptions": {
         "baseUrl": "..", // not used
         "rootDir": "..",
-        "outDir": "../dist",
+        "outDir": "../dist/ts",
     },
     "files": [],
     "references": [

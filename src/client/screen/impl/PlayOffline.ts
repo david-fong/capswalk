@@ -19,7 +19,10 @@ export class PlayOfflineScreen extends __PlayScreen {
 
     protected async __createNewGame(): Promise<OfflineGame<any>> {
         // TODO.impl fetch special game preset "forNextGame".
-        return new (await import("../../game/OfflineGame")).OfflineGame({
+        return new (await import(
+            /* webpackChunkName: "game/offline" */
+            "../../game/OfflineGame"
+        )).OfflineGame({
             coordSys: "EUCLID2" as Coord.System.EUCLID2,
             gridDimensions: {
                 height: 21,

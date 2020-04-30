@@ -41,6 +41,7 @@ export abstract class __PlayScreen extends SkScreen {
 
         (this.resetButton as HTMLButtonElement) = document.createElement("button");
         this.resetButton.innerText = "Reset";
+        this.resetButton.onclick = this.__resetGame.bind(this);
         this.baseElem.appendChild(this.resetButton);
 
         // Leverage some state initialization:

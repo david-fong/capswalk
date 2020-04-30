@@ -7,7 +7,6 @@ import { Player } from "../player/Player";
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
 
-import { English } from "lang/impl/English"; // NOTE: temporary placeholder.
 import { GameEvents } from "./Events";
 import { ScoreInfo } from "game/ScoreInfo";
 
@@ -58,7 +57,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         this.#langImportPromise = (import(
             /* webpackChunkName: "lang/[request]" */
             /* webpackInclude: /\.ts$/ */
-            `../../lang/impl/English` //${this.langFrontend.module}
+            `../../lang/impl/${this.langFrontend.module}`
         ) /* as Promise<{ readonly [K in Lang.FrontendDesc["export"]]: Lang; }> */)
         .then((module) => {
             (this.lang as Lang) = (module

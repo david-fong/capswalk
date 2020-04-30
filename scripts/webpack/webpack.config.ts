@@ -228,7 +228,7 @@ const SERVER_CONFIG = __BaseConfig("server"); {
 /**
  * ## Test Bundles
  */
-const TEST_CONFIG = __BaseConfig("wp.test"); {
+const TEST_CONFIG = __BaseConfig("test"); {
     const config = TEST_CONFIG;
     config.resolve.modules!.push(path.resolve(PROJECT_ROOT, "src"));
     __applyCommonNodeConfigSettings(config);
