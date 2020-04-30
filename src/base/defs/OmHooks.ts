@@ -12,18 +12,20 @@ export namespace OmHooks {
     /**
      * See `:/assets/style/utils.css`.
      */
-    export const General = Object.freeze(<const>{
-        Class: Object.freeze(<const>{
+    export namespace General {
+        export const Class = <const>{
             TEXT_SELECT_DISABLED: "text-select-disabled",
             FILL_PARENT: "fill-parent",
             CENTER_CONTENTS: "center-contents",
             STACK_CONTENTS: "stack-contents",
-        }),
-    });
+        };
+        export const Id = <const>{
+            COLOUR_STORE: "colour-store",
+        };
+    }
 
-
-    export const Tile = Object.freeze(<const>{
-        Class: Object.freeze(<const>{
+    export namespace Tile {
+        export const Class = <const>{
             BASE:           "tile",
             /**
              * Must precede the char and seq elements to allow CSS
@@ -33,74 +35,71 @@ export namespace OmHooks {
             POINTER_HB:     "tile__pointer-hitbox",
             LANG_CHAR:      "tile__char",
             LANG_SEQ:       "tile__seq",
-        }),
-        Dataset: Object.freeze(<const>{
+        };
+        export const Dataset = <const>{
             HEALTH:         "health",
-        }),
-    });
+        };
+    }
 
-
-    export const Grid = Object.freeze(<const>{
-        Id: Object.freeze(<const>{
-            /**
-             * js/ts and html are allowed to prepend or append to this
-             * string. The specified element should _only_ contain the
-             * grid element. Anything else will be removed by js/ts.
-             */
-            GRID:           "game-grid",
-        }),
-        Class: Object.freeze(<const>{
+    export namespace Grid {
+        export const Class = <const>{
             GRID:           "game-grid",
             IMPL_BODY:      "game-grid-impl-body",
             KBD_DC_BASE:    "game-grid-kbd-dc",
             KBD_DC_ICON:    "game-grid-kbd-dc__icon",
-        }),
-        Dataset: Object.freeze(<const>{
+        };
+        export const Dataset = <const>{
             /**
              * Used as a part of CSS selector queries to specify coord-
              * system-specific styling.
              */
             COORD_SYS:  "coordSys",
-        }),
-    });
+        };
+    }
 
-
-    export const Player = Object.freeze(<const>{
-        Class: Object.freeze(<const>{
+    export namespace Player {
+        export const Class = <const>{
             BASE:           "player",
             FACE:           "player__face",
             DOWNED_OVERLAY: "player__downed-overlay",
             SHORT_SPOTLIGHT:"player__spotlight-short",
             LONG_SPOTLIGHT: "player__spotlight-long",
-        }),
-        Dataset: Object.freeze(<const>{
+        };
+        export const Dataset = <const>{
             DOWNED:         "downed",
             FACE_SWATCH:    "face",
-        }),
-    });
+        };
+    }
 
-
-    export const Screen = Object.freeze(<const>{
-        Id: Object.freeze(<const>{
+    export namespace Screen {
+        export const Id = <const>{
             ALL_SCREENS:    "all-screens-container",
             SCREEN_TINT:    "screen-tint",
-        }),
-        Class: Object.freeze(<const>{
+        };
+        export const Class = <const>{
             BASE:           "sk-screen",
-        }),
-        Dataset: Object.freeze(<const>{
+        };
+        export const Dataset = <const>{
             CURRENT:        "current",
-        }),
-        Impl: Object.freeze({
-            Home: Object.freeze(<const>{
-            }),
-            PlayGame: Object.freeze(<const>{
-                Class: Object.freeze(<const>{
+        };
+        export namespace Impl {
+            export namespace Home {
+            }
+            export namespace PlayGame {
+                export const Class = <const>{
                     GRID_CONTAINER: "sks-pg--grid-container",
-                }),
-            }),
-        }),
-    });
-    export namespace Screen {  }
+                };
+            }
+        }
+    }
 }
-Object.freeze(OmHooks);
+function deepFreeze(obj: any): void {
+    for (const propName of Object.getOwnPropertyNames(obj)) {
+        const val = obj[propName];
+        if (val && typeof val === "object") {
+            deepFreeze(val);
+        }
+    }
+    return Object.freeze(obj);
+}
+deepFreeze(OmHooks);
