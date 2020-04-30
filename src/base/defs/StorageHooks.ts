@@ -16,7 +16,8 @@ export namespace StorageHooks {
     export const LocalKeys = Object.freeze(<const>{
         MUSIC_VOLUME:   "musicVolume",
         SFX_VOLUME:     "sfxVolume",
-        COLOUR:         "colourSchemeId",
+        COLOUR_ID:      "colourSchemeId",
+        COLOUR_LITERAL: "colourSchemeStyleLiteral",
 
         GAME_PRESET:    "gamePresetId",
 

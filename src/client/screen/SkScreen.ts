@@ -79,13 +79,14 @@ export abstract class SkScreen {
 export namespace SkScreen {
 
     export const enum Id {
-        HOME            = "HOME",
-        HOW_TO_PLAY     = "HOW_TO_PLAY",
-        HOW_TO_HOST     = "HOW_TO_HOST",
-        GAME_SETUP      = "GAME_SETUP",
-        PLAY_OFFLINE    = "PLAY_OFFLINE",
-        PLAY_ONLINE     = "PLAY_ONLINE",
-        SESH_JOINER     = "SESH_JOINER",
+        HOME            = "home",
+        HOW_TO_PLAY     = "howToPlay",
+        HOW_TO_HOST     = "howToHost",
+        COLOUR_CTRL     = "colourControl",
+        GAME_SETUP      = "gameSetup",
+        PLAY_OFFLINE    = "playOffline",
+        PLAY_ONLINE     = "playOnline",
+        SESH_JOINER     = "sessionJoiner",
     }
 }
 Object.freeze(SkScreen);

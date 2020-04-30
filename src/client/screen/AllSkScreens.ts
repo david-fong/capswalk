@@ -7,6 +7,7 @@ import {   HowToPlayScreen } from "./impl/HowToPlay";
 import {   HowToHostScreen } from "./impl/HowToHost";
 import { PlayOfflineScreen } from "./impl/PlayOffline";
 import {  PlayOnlineScreen } from "./impl/PlayOnline";
+import { ColourCtrlScreen } from "./impl/ColourCtrl";
 
 
 export class AllSkScreens {
@@ -23,6 +24,7 @@ export class AllSkScreens {
             [ SkScreen.Id.HOW_TO_PLAY  ]: new   HowToPlayScreen(p,f),
             [ SkScreen.Id.HOW_TO_HOST  ]: new   HowToHostScreen(p,f),
             [ SkScreen.Id.GAME_SETUP   ]: new   GameSetupScreen(p,f),
+            [ SkScreen.Id.COLOUR_CTRL  ]: new  ColourCtrlScreen(p,f),
             [ SkScreen.Id.PLAY_OFFLINE ]: new PlayOfflineScreen(p,f),
             [ SkScreen.Id.PLAY_ONLINE  ]: new  PlayOnlineScreen(p,f),
             [ SkScreen.Id.SESH_JOINER  ]: new  SeshJoinerScreen(p,f),

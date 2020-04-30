@@ -21,7 +21,7 @@ export class Colour {
         //sel.name =
         for (const scheme of Colour.Scheme) {
             const opt = document.createElement("option");
-            opt.innerText = scheme.displayName;
+            opt.innerText = `\"${scheme.displayName}\" by ${scheme.author}`;
             opt.value = scheme.id;
             sel.add(opt);
         }
@@ -29,7 +29,7 @@ export class Colour {
             sel.blur();
             this.switchToScheme(this.sel.value);
             localStorage.setItem(
-                StorageHooks.LocalKeys.COLOUR,
+                StorageHooks.LocalKeys.COLOUR_ID,
                 this.sel.value,
             );
         };
@@ -37,7 +37,7 @@ export class Colour {
         this.sel = sel as Colour["sel"];
 
         // Initialize to the user's last selected colour scheme (if it exists).
-        const lastUsedSchemeId = localStorage.getItem(StorageHooks.LocalKeys.COLOUR);
+        const lastUsedSchemeId = localStorage.getItem(StorageHooks.LocalKeys.COLOUR_ID);
         if (lastUsedSchemeId) {
             for (let i = 0; i < sel.length; i++) {
                 if ((sel.item(i) as HTMLOptionElement).value === lastUsedSchemeId) {
@@ -80,15 +80,23 @@ export namespace Colour {
         "tileFg", "tileBg", "tileBd",
         "healthFg", "healthBg",
         "pFaceMe",
-        "pFaceTeammate", "pFaceImmortalTeammate",
-        "pFaceOpponent", "pFaceImmortalOpponent",
+        "pFaceTeammate", "pFaceImtlTeammate",
+        "pFaceOpponent", "pFaceImtlOpponent",
     ]);
     /**
      * The scheme id `selected` is a special value and should not
      * be used.
      */
     export const Scheme = Object.freeze([
-        <const>{ id: "snakey",  displayName: "Snakey by N.W.", },
+        {
+        id: "snakey",
+        displayName: "Snakey",
+        author: "N.W.",
+    }, {
+        id: "smoothstone",
+        displayName: "Smooth Stone",
+        author: "Dav",
+    },
     ].map((scheme) => Object.freeze(scheme)));
     export namespace Scheme {
         export type Id = (typeof Scheme)[number]["id"];

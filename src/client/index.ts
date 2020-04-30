@@ -1,5 +1,6 @@
 // Tell WebPack we want CSS:
 require("assets/style/initial/index.css");
+require("assets/style/initial/index.css");
 
 import { TopLevel } from '../client/TopLevel';
 

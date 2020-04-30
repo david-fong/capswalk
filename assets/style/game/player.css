@@ -66,9 +66,9 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
 }
 .player[data-face="teammate"][data-downed="team"] > .player__face/* ,
 .player[data-face="teammate"][data-downed="team"] ~ .tile__char */ {
-    background-color: var(--colour-pFaceImmortalTeammate);
+    background-color: var(--colour-pFaceImtlTeammate);
 }
 .player[data-face="opponent"][data-downed="team"] > .player__face/* ,
 .player[data-face="opponent"][data-downed="team"] ~ .tile__char */ {
-    background-color: var(--colour-pFaceImmortalOpponent);
+    background-color: var(--colour-pFaceImtlOpponent);
 }

@@ -29,6 +29,7 @@
         "typeable",
         "unts",
         "engl", "japn", "kore",
+        "smoothstone",
 
         "coord",
         "dict",

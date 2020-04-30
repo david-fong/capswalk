@@ -29,10 +29,13 @@ log("" == null)
 log("" + null)
 
 // what is the length of an array with leading holes?
+// and what does Object.getOwnPropertyNames return on an array?
 a = []
 a[5] = "hi this is five"
 log(a[5], a.length)
-// one plus the index of the last defined entry.
+log(Object.getOwnPropertyNames(a));
+log(Object.keys(a));
+// the length is one plus the index of the last defined entry.
 
 // what is in the `undefined` key of a plain object?
 e = [1, 2, 3,]

@@ -48,6 +48,7 @@
     - [](https://devcenter.heroku.com/articles/node-best-practices)
     - [](https://devcenter.heroku.com/articles/nodejs-support)
     - [](https://medium.com/deployplace/heroku-vs-docker-the-ultimate-comparison-with-hidden-pitfalls-revealed-f6b7f4075de5)
+  - [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 - For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 - Look into switching from JsDoc to TsDoc
