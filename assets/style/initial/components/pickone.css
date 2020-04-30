@@ -1,0 +1,12 @@
+
+.sk-pick-one {
+    display:        flex;
+    flex-direction: column;
+    align-items:    stretch;
+    overflow-x:     hidden;
+    overflow-y:     auto;
+}
+
+.sk-pick-one--opt {
+    overflow: hidden hidden;
+}
