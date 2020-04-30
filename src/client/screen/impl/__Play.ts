@@ -135,24 +135,24 @@ export namespace __PlayScreen {
     {
         const centerColElem = document.createElement("div");
         centerColElem.classList.add(
-            OmHooks.Screen.Impl.PlayGame.Class.GRID_CONTAINER,
             OmHooks.General.Class.CENTER_CONTENTS,
+            OmHooks.Screen.Impl.PlayGame.Class.GRID_CONTAINER,
         );
         const gridElem = document.createElement("div");
         gridElem.tabIndex = 0; // <-- allow focusing this element.
         gridElem.classList.add(
-            OmHooks.Grid.Class.GRID,
-            OmHooks.General.Class.TEXT_SELECT_DISABLED,
             OmHooks.General.Class.CENTER_CONTENTS,
             OmHooks.General.Class.STACK_CONTENTS,
+            OmHooks.General.Class.TEXT_SELECT_DISABLED,
+            OmHooks.Grid.Class.GRID,
         );
         gridElem.onkeydown = gridKeyDownCallback;
         {
             // Add a "keyboard-disconnected" overlay if not added already:
             const kbdDcBase = document.createElement("div");
             kbdDcBase.classList.add(
-                OmHooks.Grid.Class.KBD_DC_BASE,
                 OmHooks.General.Class.CENTER_CONTENTS,
+                OmHooks.Grid.Class.KBD_DC_BASE,
             );
             // TODO.impl Add an <svg> with icon instead please.
             {

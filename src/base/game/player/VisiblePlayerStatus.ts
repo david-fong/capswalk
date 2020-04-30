@@ -17,9 +17,9 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         {
             const baseElem = document.createElement("div");
             baseElem.classList.add(
-                OmHooks.Player.Class.BASE,
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
+                OmHooks.Player.Class.BASE,
             );
             this.#baseElem = baseElem;
         } {
