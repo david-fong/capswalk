@@ -2,7 +2,9 @@ import { OmHooks } from "defs/OmHooks";
 
 
 /**
- *
+ * Consumers and implementers of this utility widget must ensure that
+ * a call to `selectOpt` is made with valid arguments before it becomes
+ * interfaceable to a browser user.
  */
 // TODO.learn https://www.w3.org/TR/wai-aria-1.1/#managingfocus
 export abstract class SkPickOne<O extends SkPickOne.__Option> {
@@ -13,6 +15,7 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
 
     #confirmedOpt: O;
     #hoveredOpt: O;
+    #validity: boolean;
 
     public constructor() {
         const baseElem = document.createElement("div");
@@ -22,17 +25,15 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
     }
 
     public addOption(opt: O): void {
-        if (this.options.length === 0) {
-            this.#hoveredOpt   = opt;
-            this.#confirmedOpt = opt;
-        }
         this.options.push(opt);
         this.baseElem.appendChild(opt.baseElem);
+        opt.__registerParent(this.onOptDisabledChange.bind(this));
     }
 
     public hoverOpt(opt: O): void {
         if (this.hoveredOpt !== opt) {
-            this.hoveredOpt.baseElem.toggleAttribute("aria-active-descendant", false);
+            // nullish coalesce is for edge-case on adding first option.
+            this.hoveredOpt?.baseElem.toggleAttribute("aria-active-descendant", false);
             this.#hoveredOpt = opt;
             this.hoveredOpt.baseElem.toggleAttribute("aria-active-descendant", true);
         }
@@ -45,7 +46,8 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
         this.hoverOpt(opt);
         // Now that hovering is done, execute confirmation of selection:
         if (this.confirmedOpt !== opt) {
-            this.confirmedOpt.baseElem.toggleAttribute("aria-selected", false);
+            // nullish coalesce is for edge-case on adding first option.
+            this.confirmedOpt?.baseElem.toggleAttribute("aria-selected", false);
             this.#confirmedOpt = opt;
             this.confirmedOpt.baseElem.toggleAttribute("aria-selected", true);
             if (doCallback) {
@@ -53,6 +55,11 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
             }
         }
     }
+    /**
+     * When selecting an option makes changes to other elements,
+     * implementations should see the aria attributes `aria-controls`
+     * and `aria-describes`.
+     */
     protected abstract __onSelectOpt(opt: O): void;
 
     public get confirmedOpt(): O {
@@ -62,6 +69,21 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
         return this.#hoveredOpt;
     }
 
+    private onOptDisabledChange(opt: O): void {
+        if (this.confirmedOpt === opt) {
+            this.validity = !opt.disabled;
+        }
+    }
+
+    private set validity(newValidity: boolean) {
+        if (this.validity !== newValidity) {
+            this.baseElem.setAttribute("aria-invalid", (newValidity ? "false": "true"));
+            this.#validity = newValidity;
+            // TODO.impl styling.
+        }
+    }
+
+    // TODO.impl skip disabled options.
     private onKeyDown(ev: KeyboardEvent): boolean {
         if (ev.key === " " || ev.key === "Enter") {
             this.selectOpt(this.hoveredOpt);
@@ -92,9 +114,25 @@ export namespace SkPickOne {
      */
     export abstract class __Option {
         public readonly baseElem: HTMLElement;
+        #disabled: boolean;
+        #notifyParentOfDisabledChange: (me: __Option) => void;
         public constructor() {
             this.baseElem = document.createElement("div");
             this.baseElem.classList.add(OmHooks.SkPickOne.Class.OPT_BASE);
+            this.#disabled = false;
+        }
+        public __registerParent<__O extends __Option>(onDisabledChange: (me: __O) => void): void {
+            this.#notifyParentOfDisabledChange = onDisabledChange as (me: __Option) => void;
+        }
+        public get disabled(): boolean {
+            return this.#disabled;
+        }
+        public set disabled(newDisabled: boolean) {
+            if (this.disabled !== newDisabled) {
+                this.baseElem.toggleAttribute("aria-disabled", newDisabled);
+                this.#disabled = newDisabled;
+                this.#notifyParentOfDisabledChange(this);
+            }
         }
     }
     Object.freeze(SkPickOne);
