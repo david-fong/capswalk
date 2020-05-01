@@ -1,14 +1,14 @@
-#colour-store {
-    --colour-smoothstone-mainFg: #c3c5ce;
-    --colour-smoothstone-mainBg: #72888d;
-    --colour-smoothstone-tileFg: #a2b6bb;
-    --colour-smoothstone-tileBg: #546164;
-    --colour-smoothstone-tileBd: #ffffff;
-    --colour-smoothstone-healthFg: #21352e;
-    --colour-smoothstone-healthBg: #49a76d;
-    --colour-smoothstone-pFaceMe: #43aec9;
-    --colour-smoothstone-pFaceTeammate: #bdae58;
-    --colour-smoothstone-pFaceImtlTeammate: #f8df50;
-    --colour-smoothstone-pFaceOpponent: #a34e59;
-    --colour-smoothstone-pFaceImtlOpponent: #e23fa3;
+[data-sk-colour-scheme="smooth-stone"] {
+    --colour-mainFg: #c3c5ce;
+    --colour-mainBg: #72888d;
+    --colour-tileFg: #a2b6bb;
+    --colour-tileBg: #546164;
+    --colour-tileBd: #ffffff;
+    --colour-healthFg: #21352e;
+    --colour-healthBg: #398f5a;
+    --colour-pFaceMe: #43aec9;
+    --colour-pFaceTeammate: #bdae58;
+    --colour-pFaceImtlTeammate: #f8df50;
+    --colour-pFaceOpponent: #a34e59;
+    --colour-pFaceImtlOpponent: #e23fa3;
 }

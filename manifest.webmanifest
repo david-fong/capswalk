@@ -7,7 +7,10 @@
         "entertainment",
         "games"
     ],
-    "icons": [{ "src": "dist/favicon.ico" }],
+    "icons": [{
+        "src": "dist/favicon.ico",
+        "sizes": "302x302"
+    }],
     "screenshots": [{
         "src": "assets/images/screenshots/snakey_version3_blanktitle.png"
     }],

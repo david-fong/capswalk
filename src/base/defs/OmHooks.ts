@@ -19,8 +19,8 @@ export namespace OmHooks {
             CENTER_CONTENTS: "center-contents",
             STACK_CONTENTS: "stack-contents",
         };
-        export const Id = <const>{
-            COLOUR_STORE: "colour-store",
+        export const Dataset = <const>{
+            COLOUR_SCHEME: "skColourScheme",
         };
     }
 

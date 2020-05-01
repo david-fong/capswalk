@@ -16,7 +16,15 @@ export namespace StorageHooks {
     export const LocalKeys = Object.freeze(<const>{
         MUSIC_VOLUME:   "musicVolume",
         SFX_VOLUME:     "sfxVolume",
+        /**
+         * Only used to highlight the last-used colour scheme when
+         * cold-initializing the colour selection screen.
+         */
         COLOUR_ID:      "colourSchemeId",
+        /**
+         * Stores a css rule string for quick recovery on page load
+         * without even needing any colour scheme CSS files loaded.
+         */
         COLOUR_LITERAL: "colourSchemeStyleLiteral",
 
         GAME_PRESET:    "gamePresetId",

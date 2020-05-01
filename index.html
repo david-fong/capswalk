@@ -6,6 +6,7 @@
         <meta name="description"    content="A multiplayer typing game for learning written languages."/>
         <meta name="viewport"       content="width=device-width, initial-scale=1.0"/>
         <meta charset="UTF-8"/>
+        <link rel="manifest" href="manifest.webmanifest"/>
 
         <base href=".">
         <link rel="shortcut icon" href="dist/client/favicon.ico">
@@ -13,11 +14,17 @@
         <meta name="og:title"  content="SnaKey v3"/>
         <meta name="og:description" content="A multiplayer typing game for learning written languages."/>
         <meta name="og:image"  content="./assets/images/screenshots/snakey_version3_blanktitle.png"/>
-        <link rel="manifest"   href="manifest.webmanifest"/>
     </head>
 
 
     <body style="margin:0;">
+<script>
+{// Load up last used colour scheme (or default):
+const cssl = localStorage.getItem("colourSchemeStyleLiteral");
+const root = document.documentElement;
+if (cssl) { root.setAttribute("style", cssl); }
+else { root.dataset["skColourScheme"] = "snakey"; }
+}</script>
         <div id="background"  class="sk-screen"></div>
         <div id="screen-tint" class="sk-screen"></div>
         <div id="all-screens-container"></div>

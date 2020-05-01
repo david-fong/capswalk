@@ -36,6 +36,7 @@
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
+- [Create a mask-safe icon that is large enough (min 144px)](https://web.dev/maskable-icon/)
 - Read about these topics and see how they might be useful
   - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Concepts_Behind_IndexedDB)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB)
@@ -84,6 +85,8 @@ https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
 https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
 
 https://github.com/whatwg/html/issues/4078
+
+https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
 ```
 
 ## Research / Learning Links

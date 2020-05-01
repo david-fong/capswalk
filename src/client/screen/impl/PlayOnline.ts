@@ -20,10 +20,6 @@ export class PlayOnlineScreen extends __PlayScreen {
         return undefined!;
     }
 
-    protected destroyCurrentGame(): void {
-        super.destroyCurrentGame();
-    }
-
 }
 Object.freeze(PlayOnlineScreen);
 Object.freeze(PlayOnlineScreen.prototype);

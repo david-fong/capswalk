@@ -69,7 +69,7 @@ export abstract class __PlayScreen extends SkScreen {
         if (!window.confirm("Are you sure you would like to leave?")) {
             return false;
         }
-        this.destroyCurrentGame();
+        this.releaseCurrentGame();
         return true;
     }
 
@@ -80,8 +80,11 @@ export abstract class __PlayScreen extends SkScreen {
 
     protected abstract async __createNewGame(): Promise<Game>;
 
-    protected destroyCurrentGame(): void {
-        this.currentGame!.grid.baseElem.remove();
+    protected releaseCurrentGame(): void {
+        for (const elem of Object.values(this.currentGame!.htmlElements)) {
+            elem.remove();
+        }
+        this.#currentGame = undefined;
     }
 
 
@@ -91,7 +94,7 @@ export abstract class __PlayScreen extends SkScreen {
         // + ` charCode: ${ev.charCode}`);
         this.currentGame?.currentOperator.processKeyboardInput(ev);
         // Disable scroll-down via spacebar:
-        if (ev.keyCode === 32) {
+        if (ev.key === " ") {
             ev.preventDefault();
             return false;
         }

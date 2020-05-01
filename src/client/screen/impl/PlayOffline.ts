@@ -1,4 +1,3 @@
-import { OmHooks } from "defs/OmHooks";
 import type { Coord }       from "floor/Tile";
 import type { OfflineGame } from "../../game/OfflineGame";
 import { Lang }             from "defs/TypeDefs";
@@ -55,11 +54,6 @@ export class PlayOfflineScreen extends __PlayScreen {
             }],
         });
     }
-
-    protected destroyCurrentGame(): void {
-        super.destroyCurrentGame();
-    }
-
 }
 Object.freeze(PlayOfflineScreen);
 Object.freeze(PlayOfflineScreen.prototype);
