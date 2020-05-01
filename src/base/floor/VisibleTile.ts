@@ -26,11 +26,14 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
                 OmHooks.General.Class.STACK_CONTENTS,
                 OmHooks.Tile.Class.BASE,
             );
+            baseElem.setAttribute("aria-label", "Tile");
         } {
+            // Pointer hitbox element.
             // Must be the first child. See note in CSS class hook.
-            const pointerHitboxElem = document.createElement("div");
-            pointerHitboxElem.classList.add(OmHooks.Tile.Class.POINTER_HB);
-            this.#baseElem.appendChild(pointerHitboxElem);
+            const pthb = document.createElement("div");
+            pthb.classList.add(OmHooks.Tile.Class.POINTER_HB);
+            pthb.setAttribute("aria-hidden", "true");
+            this.#baseElem.appendChild(pthb);
         } {
             const charElem
                 = this.langCharElem
@@ -44,6 +47,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
                 = this.langSeqElem
                 = document.createElement("div");
             seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
+            seqElem.setAttribute("role", "tooltip");
             this.#baseElem.appendChild(seqElem);
         }
     }
@@ -64,14 +68,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         // CSS can create a fading trail effect.
         this.#baseElem.insertBefore(immigrantInfo.playerElem, this.langCharElem);
         this.langSeqElem.innerText = immigrantInfo.username;
-    }
-
-
-    /**
-     * @override
-     */
-    public visualBell(): void {
-        this.#baseElem; // TODO.impl Use an animation to flash tile element?
     }
 
 

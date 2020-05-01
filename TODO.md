@@ -14,9 +14,6 @@
 
 ### High Priority
 
-1. Design way to change colour scheme on the css side to reduce the number of CSS variables exposed on the :root element.
-    - Make the colour schemes set themselves either as variables or dataset things in a shared, dedicated, non-displayed dummy element.
-    - When the user selects a colour scheme, copy those values to dataset-values in the root that are referenced using CSS' attr() function inside the `colour-selected` variables.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
@@ -33,6 +30,7 @@
 
 ### Low Priority
 
+- Tell WebPack to split out styling for each screen?
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
@@ -90,6 +88,14 @@ https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
 ```
 
 ## Research / Learning Links
+
+### Licensing
+
+```text
+https://creativecommons.org/faq/#can-i-apply-a-creative-commons-license-to-software
+https://www.gnu.org/licenses/copyleft.html
+https://opensource.org/licenses
+```
 
 ### Dynamic imports
 

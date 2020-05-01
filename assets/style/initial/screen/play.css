@@ -1,0 +1,12 @@
+
+.screen-play {
+    display:        grid;
+}
+.screen-play--grid-container {
+    flex-flow:  column nowrap;
+    min-width:  max-content;
+}
+.screen-play--controls-bar {
+}
+@media screen and (min-aspect-ratio: 6/5) {
+}

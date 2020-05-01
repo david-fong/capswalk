@@ -59,6 +59,10 @@ export abstract class SkScreen {
         return false;
     }
 
+    /**
+     * Implementations should set the CSS class for the base element,
+     * and also set its aria label to an appropriate string.
+     */
     protected abstract __lazyLoad(): void;
 
     /**

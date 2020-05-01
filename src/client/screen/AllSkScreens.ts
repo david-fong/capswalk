@@ -17,6 +17,9 @@ export class AllSkScreens {
     #currentScreen: SkScreen;
 
     public constructor(baseElem: HTMLElement) {
+        baseElem.setAttribute("role", "presentation");
+        // Setting role="presentation" is similar to setting "display: content"
+        // Setting aria-hidden="true" is similar to setting "visibility: hidden"
         const p = baseElem;
         const f = this.goToScreen.bind(this);
         this.dict = Object.freeze({

@@ -55,15 +55,6 @@ export class Tile<S extends Coord.System> {
         this.setLangCharSeqPair(Lang.CharSeqPair.NULL);
     }
 
-    /**
-     * Called, for example, when a {@link Player} on this `Tile` provides
-     * input that did not work to complete their {@link Player#seqBuffer}
-     * against any neighbouring `Tile`s.
-     */
-    public visualBell(): void {
-        // does nothing by default.
-    }
-
 
 
     /**

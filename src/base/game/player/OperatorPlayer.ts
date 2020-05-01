@@ -142,7 +142,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         }
         // Operator's new `seqBuffer` didn't match anything.
         this.#seqBuffer = "";
-        this.hostTile.visualBell();
+        this.status.visualBell();
     }
 
     /**

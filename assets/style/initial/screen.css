@@ -11,33 +11,25 @@
 }
 .sk-screen:not([data-current]) {
     visibility: hidden;
+    pointer-events: none;
+    /* setting visibility to none should be
+    sufficient to prevent pointer listening,
+    but I've specified it just to be safe. */
 }
 
 /* Special instances of non-navigated screens that
 are explicitly marked up in the HTML. */
 #background {
-    z-index:    -10000;
-    visibility: visible;
+    z-index:        -10000;
+    visibility:     visible;
     background-color: var(--colour-mainBg);
 }
 #screen-tint {
     pointer-events: none;
-    z-index:    10000;
-    visibility: visible;
-    opacity:    0.0;
+    z-index:        10000;
+    visibility:     visible;
+    opacity:        0.0;
     transition-property: opacity, background-color;
     /* transition-duration will be assigned programmatically. */
     transition-timing-function: ease-in-out;
-}
-
-
-
-.sks-pg--grid-container {
-    flex-flow:  column nowrap;
-}
-@media screen and (min-aspect-ratio: 6/5) {
-    .sks-pg--grid-container {
-        height:     100vh;
-        min-width:  100vh;
-    }
 }

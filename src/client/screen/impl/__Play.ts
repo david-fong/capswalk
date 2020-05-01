@@ -44,11 +44,18 @@ export abstract class __PlayScreen extends SkScreen {
      */
     #currentGame: Game| undefined;
 
+    protected abstract readonly autoUnpauseOnRestart: boolean;
+
 
     /**
      * @override
      */
     protected __lazyLoad(): void {
+        this.baseElem.classList.add(
+            OmHooks.Screen.Impl.PlayGame.Class.SCREEN,
+        );
+        this.baseElem.setAttribute("aria-label", "Play Game Screen");
+
         const centerColItems = __PlayScreen.createCenterColElem(this.gridKeyDownCallback.bind(this));
         (this.gridElem as HTMLElement) = centerColItems.gridElem;
         this.baseElem.appendChild(centerColItems.baseElem);
@@ -80,9 +87,9 @@ export abstract class __PlayScreen extends SkScreen {
             await resetPromise;
             this.pauseButton.onclick = this.statusBecomePlaying.bind(this);
             this.pauseButton.disabled = false;
-
-            // Automatically start the game upon entering this screen:
-            this.pauseButton.click();
+            if (this.autoUnpauseOnRestart) {
+                setTimeout(() => this.pauseButton.click(), 500);
+            }
         })();
     }
 
@@ -149,6 +156,10 @@ export abstract class __PlayScreen extends SkScreen {
      */
     private __resetGame(): void {
         this.currentGame!.reset();
+        this.pauseButton.disabled = false;
+        if (this.autoUnpauseOnRestart) {
+            this.pauseButton.click();
+        }
     }
 
     protected initializeControlsBar(): void {
@@ -156,6 +167,7 @@ export abstract class __PlayScreen extends SkScreen {
         controlsBar.classList.add(
             OmHooks.Screen.Impl.PlayGame.Class.CONTROLS_BAR,
         );
+        controlsBar.setAttribute("role", "menu");
 
         { const bth
             = (this.backToHomeButton as HTMLButtonElement)
@@ -199,6 +211,8 @@ export namespace __PlayScreen {
         );
         const gridElem = document.createElement("div");
         gridElem.tabIndex = 0; // <-- allow focusing this element.
+        gridElem.setAttribute("role", "textbox");
+        gridElem.setAttribute("aria-label", "Game Grid");
         gridElem.classList.add(
             CssFx.CENTER_CONTENTS,
             CssFx.STACK_CONTENTS,

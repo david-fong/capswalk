@@ -12,6 +12,8 @@ export class PlayOnlineScreen extends __PlayScreen {
 
     declare public readonly currentGame: OnlineGame<any> | undefined;
 
+    protected readonly autoUnpauseOnRestart = false;
+
     protected __lazyLoad(): void {
         super.__lazyLoad();
     }

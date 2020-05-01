@@ -74,6 +74,10 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         return this.__immigrantInfoCache;
     }
 
+    public visualBell(): void {
+
+    }
+
 
     public get health(): Player.Health {
         return super.health;
