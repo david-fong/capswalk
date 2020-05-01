@@ -12,7 +12,7 @@ export class PlayOfflineScreen extends __PlayScreen {
 
     declare public readonly currentGame: OfflineGame<any> | undefined;
 
-    protected readonly autoUnpauseOnRestart = true;
+    protected readonly wantsAutoPause = true;
 
     protected __lazyLoad(): void {
         super.__lazyLoad();

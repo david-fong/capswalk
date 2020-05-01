@@ -42,9 +42,18 @@ export abstract class __PlayScreen extends SkScreen {
      * so there's no question that it can, under certain conditions be
      * undefined.
      */
-    #currentGame: Game| undefined;
+    #currentGame: Game | undefined;
 
-    protected abstract readonly autoUnpauseOnRestart: boolean;
+    protected abstract readonly wantsAutoPause: boolean;
+    /**
+     * Automatically added and removed from listeners when entering
+     * and leaving this screen.
+     */
+    readonly #onVisibilityChange: VoidFunction;
+    /**
+     * Undefined when the game is playing.
+     */
+    #pauseReason: "page-hide" | "other" | undefined;
 
 
     /**
@@ -64,31 +73,46 @@ export abstract class __PlayScreen extends SkScreen {
         this.initializeControlsBar();
         this.initializeScoresBar();
 
-        // Leverage some state initialization:
-        this.statusBecomePaused();
+        // @ts-ignore Assignment to readonly property.
+        this.#onVisibilityChange = () => {
+            if (!this.wantsAutoPause) return;
+            if (document.hidden) {
+                if (this.#pauseReason === undefined) this.statusBecomePaused();
+            } else {
+                if (this.#pauseReason === "page-hide") this.statusBecomePlaying();
+            }
+        }
     }
 
     /**
      * @override
      */
     protected __abstractOnBeforeEnter(): void {
-        // TODO.design Are there ways we can share more code between
-        // implementations by passing arguments?
         (async () => {
+            document.addEventListener("visibilitychange", this.#onVisibilityChange);
             this.pauseButton.disabled = true;
+            this.statusBecomePaused(); // <-- Leverage some state initialization.
+
+            // TODO.design Are there ways we can share more code between
+            // implementations by passing common arguments?
             this.#currentGame = await this.__createNewGame();
 
             const resetPromise = this.currentGame!.reset();
+
+            // Wait until resetting has finished before attaching the
+            // grid element to the screen so that the DOM changes made
+            // by populating tiles with CSP's can be done all at once.
+            await resetPromise;
             this.gridElem.insertAdjacentElement("afterbegin",
                 this.currentGame!.htmlElements.gridImplElem,
-            );
-            // ^The order of insertion does not matter (it used to).
+            ); // ^The order of insertion does not matter (it used to).
 
-            await resetPromise;
             this.pauseButton.onclick = this.statusBecomePlaying.bind(this);
             this.pauseButton.disabled = false;
-            if (this.autoUnpauseOnRestart) {
-                setTimeout(() => this.pauseButton.click(), 500);
+            if (this.wantsAutoPause) {
+                setTimeout(() => {
+                    if (!document.hidden) this.statusBecomePlaying();
+                }, 500);
             }
         })();
     }
@@ -100,6 +124,7 @@ export abstract class __PlayScreen extends SkScreen {
         if (!window.confirm("Are you sure you would like to leave?")) {
             return false;
         }
+        document.removeEventListener("visibilitychange", this.#onVisibilityChange);
         this.releaseCurrentGame();
         return true;
     }
@@ -132,11 +157,11 @@ export abstract class __PlayScreen extends SkScreen {
         return true;
     }
 
-    // TODO.impl bind this to a button and, for offline games, also
-    // to an event listener called when the page loses focus.
+
     private statusBecomePlaying(): void {
         this.currentGame?.statusBecomePlaying();
         this.pauseButton.innerText  = "Pause";
+        this.#pauseReason           = undefined;
         this.pauseButton.onclick    = this.statusBecomePaused.bind(this);
         this.resetButton.disabled   = true;
         this.gridElem.focus();
@@ -145,6 +170,7 @@ export abstract class __PlayScreen extends SkScreen {
     private statusBecomePaused(): void {
         this.currentGame?.statusBecomePaused();
         this.pauseButton.innerText  = "Unpause";
+        this.#pauseReason           = document.hidden ? "page-hide" : "other";
         this.pauseButton.onclick    = this.statusBecomePlaying.bind(this);
         this.resetButton.disabled   = false;
     }
@@ -157,10 +183,11 @@ export abstract class __PlayScreen extends SkScreen {
     private __resetGame(): void {
         this.currentGame!.reset();
         this.pauseButton.disabled = false;
-        if (this.autoUnpauseOnRestart) {
+        if (this.wantsAutoPause) {
             this.pauseButton.click();
         }
     }
+
 
     protected initializeControlsBar(): void {
         const controlsBar = document.createElement("div");

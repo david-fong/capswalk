@@ -192,8 +192,14 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     /**
      * On the client side, this should only be accessed through a
      * wrapper function that also makes UI-related changes.
+     *
+     * If the game is already playing, this does nothing.
      */
     public statusBecomePlaying(): void {
+        if (this.status === Game.Status.PLAYING) {
+            console.log("Game is already playing");
+            return;
+        }
         if (this.status !== Game.Status.PAUSED) {
             throw new Error("Can only resume a game that is currently paused.");
         }
@@ -206,8 +212,14 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     /**
      * On the client side, this should only be accessed through a
      * wrapper function that also makes UI-related changes.
+     *
+     * If the game is already paused, this does nothing.
      */
     public statusBecomePaused(): void {
+        if (this.status === Game.Status.PAUSED) {
+            console.log("Game is already paused");
+            return;
+        }
         if (this.status !== Game.Status.PLAYING) {
             throw new Error("Can only pause a game that is currently playing.");
         }
