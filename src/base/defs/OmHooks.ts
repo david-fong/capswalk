@@ -84,10 +84,15 @@ export namespace OmHooks {
         };
         export namespace Impl {
             export namespace Home {
+                export const Class = <const>{
+                    SCREEN:         "screen-home",
+                };
             }
             export namespace PlayGame {
                 export const Class = <const>{
-                    GRID_CONTAINER: "sks-pg--grid-container",
+                    SCREEN:         "screen-play",
+                    GRID_CONTAINER: "screen-play--grid-container",
+                    CONTROLS_BAR:   "screen-play--controls-bar",
                 };
             }
         }

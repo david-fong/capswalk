@@ -1,6 +1,7 @@
 import { OmHooks } from "defs/OmHooks";
 import type { AllSkScreens } from "./AllSkScreens";
 
+
 /**
  *
  *
@@ -10,7 +11,7 @@ import type { AllSkScreens } from "./AllSkScreens";
  */
 export abstract class SkScreen {
 
-    private parentElem: HTMLElement;
+    readonly #parentElem: HTMLElement;
 
     protected readonly baseElem: HTMLElement;
 
@@ -25,7 +26,7 @@ export abstract class SkScreen {
     public constructor(parentElem: HTMLElement, requestGoToDisplay: SkScreen["requestGoToScreen"]) {
         this.#hasLazyLoaded = false;
         this.requestGoToScreen = requestGoToDisplay;
-        this.parentElem = parentElem;
+        this.#parentElem = parentElem;
     }
 
     /**
@@ -33,15 +34,17 @@ export abstract class SkScreen {
      */
     public enter(): void {
         if (!this.#hasLazyLoaded) {
-            const baseElem = document.createElement("div");
+            const baseElem
+                = (this.baseElem as HTMLElement)
+                = document.createElement("div");
             baseElem.classList.add(OmHooks.Screen.Class.BASE);
-            (this.baseElem as HTMLElement) = baseElem;
             this.__lazyLoad();
-            this.parentElem.appendChild(this.baseElem);
+            this.#parentElem.appendChild(baseElem);
         this.#hasLazyLoaded = true;
         }
         this.__abstractOnBeforeEnter();
-        this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = "";
+        this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
+        this.baseElem.setAttribute("aria-hidden", "false");
     }
 
     /**
@@ -49,7 +52,8 @@ export abstract class SkScreen {
      */
     public leave(): boolean {
         if (this.__abstractOnBeforeLeave()) {
-            delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT];
+            delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT]; // non-existant.
+            this.baseElem.setAttribute("aria-hidden", "true");
             return true;
         }
         return false;

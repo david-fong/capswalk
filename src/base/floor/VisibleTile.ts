@@ -8,22 +8,6 @@ export { Coord } from "./Tile";
 
 /**
  * Implicitly handles visuals with help from CSS.
- *
- * Layers:
- * 0. Invisible cell layer (opaque on visual bell)
- * 1. Empty layer for spotlight mask
- * 2. Player face layer
- * 3. Language Written Character
- * 4. Language Type-able Sequence
- *
- * https://developer.mozilla.org/en-US/docs/Web/CSS/z-index
- * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index
- * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
- *
- * Dataset:
- * Top-level layer has property "scoreValue"
- *
- * @extends Tile
  */
 export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
@@ -34,30 +18,33 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
         {
-            const baseElem = document.createElement("div");
+            const baseElem
+                = this.#baseElem
+                = document.createElement("div");
             baseElem.classList.add(
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
                 OmHooks.Tile.Class.BASE,
             );
-            this.#baseElem = baseElem;
         } {
             // Must be the first child. See note in CSS class hook.
             const pointerHitboxElem = document.createElement("div");
             pointerHitboxElem.classList.add(OmHooks.Tile.Class.POINTER_HB);
             this.#baseElem.appendChild(pointerHitboxElem);
         } {
-            const charElem = document.createElement("div");
+            const charElem
+                = this.langCharElem
+                = document.createElement("div");
             charElem.classList.add(
                 OmHooks.Tile.Class.LANG_CHAR,
             );
             this.#baseElem.appendChild(charElem);
-            this.langCharElem = charElem;
         } {
-            const seqElem = document.createElement("div");
+            const seqElem
+                = this.langSeqElem
+                = document.createElement("div");
             seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             this.#baseElem.appendChild(seqElem);
-            this.langSeqElem = seqElem;
         }
     }
 

@@ -21,7 +21,7 @@ export class PlayerStatus<S extends Coord.System> {
     }
 
     public reset(): void {
-        this.health  = 0;
+        this.health = 0;
     }
 
     public __afterAllPlayersConstruction(): void { }
