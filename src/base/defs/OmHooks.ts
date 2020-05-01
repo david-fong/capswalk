@@ -66,7 +66,9 @@ export namespace OmHooks {
             LONG_SPOTLIGHT: "player__spotlight-long",
         };
         export const Dataset = <const>{
-            DOWNED:         "downed",
+            DOWNED: Object.assign("downed", <const>{
+                TEAM: "team", SELF: "self", NO: "no",
+            }),
             FACE_SWATCH:    "face",
         };
     }
@@ -105,10 +107,11 @@ export namespace OmHooks {
         };
     }
 }
+Object.freeze(OmHooks.Player.Dataset.DOWNED); // String with properties.
 function deepFreeze(obj: any): void {
-    for (const propName of Object.getOwnPropertyNames(obj)) {
-        const val = obj[propName];
-        if (val && typeof val === "object") {
+    for (const key of Object.getOwnPropertyNames(obj)) {
+        const val = obj[key];
+        if (typeof val === "object") {
             deepFreeze(val);
         }
     }

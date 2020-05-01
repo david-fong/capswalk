@@ -5,7 +5,8 @@ is by giving it its own file. */
 
 .game-grid-impl-body            { z-index:   0; } /* ROOT */
 .player__spotlight-long         { z-index:  20; } /* SPOTLIGHT (long-range) */
-.tile__seq                      { z-index:  12; }
+.tile__seq                      { z-index:  13; }
+.player__downed-overlay         { z-index:  12; }
 .player__face                   { z-index:  11; }
 .tile[data-health] .tile__char  { z-index:  11; }
 .player__spotlight-short        { z-index:  10; } /* SPOTLIGHT (short-range) */

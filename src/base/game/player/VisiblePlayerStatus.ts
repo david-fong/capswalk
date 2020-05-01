@@ -61,6 +61,15 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         });
     }
 
+    public reset(): void {
+        super.reset();
+        const DDH = OmHooks.Player.Dataset.DOWNED
+        this.#baseElem.dataset[DDH] = DDH.NO;
+        // ^We need to do this explicitly. It won't be done
+        // automatically when setting `health` because of the short-
+        // circuit=optimization made when `isDowned` hasn't changed.
+    }
+
     public get immigrantInfo(): Tile.VisibleImmigrantInfo {
         return this.__immigrantInfoCache;
     }
@@ -75,8 +84,12 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
         if (oldIsDowned !== this.isDowned) {
             // CSS integration for Player.isDowned rendering.
-            this.#baseElem.dataset[OmHooks.Player.Dataset.DOWNED] = (this.isDowned)
-                ? ((this.player.team.elimOrder) ? "team" : "self") : "no";
+            const DDH = OmHooks.Player.Dataset.DOWNED;
+            this.#baseElem.dataset[DDH] = (this.isDowned)
+                ? ((this.player.team.elimOrder)
+                    ? DDH.TEAM
+                    : DDH.SELF
+                ) : DDH.NO;
         }
     }
 }
