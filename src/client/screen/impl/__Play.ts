@@ -87,8 +87,8 @@ export abstract class __PlayScreen extends SkScreen {
     /**
      * @override
      */
-    protected __abstractOnBeforeEnter(): void {
-        (async () => {
+    protected __abstractOnBeforeEnter(): Promise<void> {
+        return (async () => {
             document.addEventListener("visibilitychange", this.#onVisibilityChange);
             this.pauseButton.disabled = true;
             this.statusBecomePaused(); // <-- Leverage some state initialization.
@@ -96,7 +96,6 @@ export abstract class __PlayScreen extends SkScreen {
             // TODO.design Are there ways we can share more code between
             // implementations by passing common arguments?
             this.#currentGame = await this.__createNewGame();
-
             const resetPromise = this.currentGame!.reset();
 
             // Wait until resetting has finished before attaching the
@@ -112,8 +111,9 @@ export abstract class __PlayScreen extends SkScreen {
             if (this.wantsAutoPause) {
                 setTimeout(() => {
                     if (!document.hidden) this.statusBecomePlaying();
-                }, 500);
+                }, 1000);
             }
+            return;
         })();
     }
 
@@ -184,11 +184,14 @@ export abstract class __PlayScreen extends SkScreen {
         this.currentGame!.reset();
         this.pauseButton.disabled = false;
         if (this.wantsAutoPause) {
-            this.pauseButton.click();
+            this.statusBecomePlaying();
         }
     }
 
 
+    /**
+     *
+     */
     protected initializeControlsBar(): void {
         const controlsBar = document.createElement("div");
         controlsBar.classList.add(

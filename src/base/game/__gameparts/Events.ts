@@ -59,7 +59,7 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
         this.eventRecordBitmap = [];
     }
 
-    public async reset(): Promise<void> {
+    public reset(): Promise<void> {
         const superPromise = super.reset();
 
         // Clear the event record:

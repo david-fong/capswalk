@@ -75,7 +75,9 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
     public visualBell(): void {
-
+        this.#baseElem.style.animation = "none";
+        this.#baseElem.offsetHeight; // force reflow O_o
+        this.#baseElem.style.animation = "";
     }
 
 

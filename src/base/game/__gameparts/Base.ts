@@ -100,7 +100,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * Overrides should not use the return value. They should return
      * the result of calling `ctorAsync`.
      */
-    public async reset(): Promise<void> {
+    public reset(): Promise<void> {
         this.grid.reset();
         // We must reset status to PAUSED to pass a state-transition
         // assertion when changing status later to PLAYING.

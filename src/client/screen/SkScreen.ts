@@ -23,16 +23,24 @@ export abstract class SkScreen {
      */
     protected readonly requestGoToScreen: AllSkScreens["goToScreen"];
 
-    public constructor(parentElem: HTMLElement, requestGoToDisplay: SkScreen["requestGoToScreen"]) {
+    /**
+     *
+     * @param parentElem -
+     * @param requestGoToDisplay -
+     */
+    public constructor(
+        parentElem: HTMLElement,
+        requestGoToDisplay: SkScreen["requestGoToScreen"],
+    ) {
         this.#hasLazyLoaded = false;
         this.requestGoToScreen = requestGoToDisplay;
         this.#parentElem = parentElem;
     }
 
     /**
-     * Do not override.
+     * **Do not override.**
      */
-    public enter(): void {
+    public async enter(): Promise<void> {
         if (!this.#hasLazyLoaded) {
             const baseElem
                 = (this.baseElem as HTMLElement)
@@ -42,13 +50,15 @@ export abstract class SkScreen {
             this.#parentElem.appendChild(baseElem);
         this.#hasLazyLoaded = true;
         }
-        this.__abstractOnBeforeEnter();
+        await this.__abstractOnBeforeEnter();
+        // ^Wait until the screen has finished setting itself up
+        // before entering it.
         this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
         this.baseElem.setAttribute("aria-hidden", "false");
     }
 
     /**
-     * Do not override.
+     * **Do not override.**
      */
     public leave(): boolean {
         if (this.__abstractOnBeforeLeave()) {
@@ -68,8 +78,11 @@ export abstract class SkScreen {
     /**
      * This is a good place to start any `setInterval` schedules, and
      * to bring focus to a starting HTML element if appropriate.
+     *
+     * The default implementation does nothing. Overriding implementations
+     * from direct subclasses can safely skip making a supercall.
      */
-    protected __abstractOnBeforeEnter(): void { }
+    protected async __abstractOnBeforeEnter(): Promise<void> { }
 
     /**
      * Return false if the leave should be cancelled. This functionality
