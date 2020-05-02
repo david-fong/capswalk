@@ -88,6 +88,14 @@ export namespace OmHooks {
             export namespace Home {
                 export const Class = <const>{
                     SCREEN:         "screen-home",
+                    NAV:            "screen-home--nav",
+                    NAV_PLAY_OFFLINE:"screen-home--nav--play-offline",
+                    NAV_JOIN_ONLINE:"screen-home--nav--join-online",
+                    NAV_HOST_ONLINE:"screen-home--nav--host-online",
+                    NAV_TUTORIAL:   "screen-home--nav--tutorial",
+                    NAV_COLOURS:    "screen-home--nav--colour-scheme",
+                    NAV_VIEW_REPO:  "screen-home--nav--goto-repo",
+                    NAV_RPT_ISSUE:  "screen-home--nav--report-issue",
                 };
             }
             export namespace PlayGame {

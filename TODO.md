@@ -114,6 +114,7 @@ https://www.w3schools.com/html/html5_webstorage.asp
 https://www.w3schools.com/html/html5_serversentevents.asp
 Navigator.{keyboard,online,connection,language,languages,battery}
 https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
+https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API
 ```
 
 ### Audio
@@ -125,6 +126,8 @@ When playing and pausing music, I can [fade it in and out](https://devdocs.io/do
 For the background music track, I will have multiple layers. They will all be the same length, except for the main melody track that will be some whole-number multiple in length. For all the short ones, we can [load them up into mono buffers](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/decodeAudioData) using the [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), and then combine all those buffers as channels in one [AudioBuffer](https://devdocs.io/dom/audiobuffer). That will be the buffer for a looping [AudioBufferSourceNode](https://devdocs.io/dom/audiobuffersourcenode). I connect that source node to a [ChannelSplitterNode](https://devdocs.io/dom/channelsplitternode), which passes each channel through a gain node, then joins them back into one node via [ChannelMergerNode](https://devdocs.io/dom/channelmergernode). Those fader-mixed tracks (channels) will be connected to some more stereo effects, and finally to the context output destination.
 
 I should keep my audio loops as short as possible. Ie. Every audio file 4 measures long except the melody file which is maybe 12 measures long.
+
+Here's [something fun I can do](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API) (but don't have to).
 
 ```text
 https://devdocs.io/dom/web_audio_api/best_practices
