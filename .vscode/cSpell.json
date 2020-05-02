@@ -17,6 +17,7 @@
         "typescriptreact"
     ],
     "words": [
+        // Project-specific Terms:
         "snakey",
         "fong",
         "artif",
@@ -31,6 +32,8 @@
         "engl", "japn", "kore",
         "smoothstone",
 
+        // Programming terminology:
+        // (Functions and Variables)
         "coord",
         "dict",
         "desc", "descs",
@@ -45,6 +48,7 @@
         "typeof",
         "unshift",
 
+        // Tooling and Programming Languages:
         "API's",
         "devtool",
         "entrypoint",
@@ -62,6 +66,7 @@
         "hiragana" , "katakana" ,
         "dubeolsik", "sebeolsik",
 
+        // English:
         "constraining",
         "gameplay",
         "hinderance",

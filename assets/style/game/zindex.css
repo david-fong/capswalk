@@ -1,9 +1,16 @@
 
-/* The only way I'm going to stay sane managing this
-is by giving it its own file. */
-.game-grid                      { z-index:   0; }
+/* The only way I'm going to stay sane managing
+this is by giving it its own file.
 
-.game-grid-impl-body            { z-index:   0; } /* ROOT */
+Pay special attention to the containment property
+specifications made here, which help the browser
+avoid performing unnecessary reflow calculations
+over the whole grid every time a player moves.
+Turn on "Paint Flashing" in a browser inspector. */
+
+.game-grid                      { z-index:   0; contain: content; }
+
+.game-grid-impl-body            { z-index:   0; contain: strict; } /* ROOT */
 .player__spotlight-long         { z-index:  20; } /* SPOTLIGHT (long-range) */
 .tile__seq                      { z-index:  13; }
 .player__downed-overlay         { z-index:  12; }

@@ -5,20 +5,14 @@
     up no space (its children all have their position
     property set to `absolute`). We rectify this case
     by giving `.game-grid-impl-body` `position: static`. */
-    border:     5px double var(--colour-tileBd);
-    border-radius: 15px;
-    transition: size 1.0s ease-in; /* TODO.test does this work? */
-
-    /* To hide the spotlight off the edges */
-    overflow:   hidden hidden;
-    min-width:      max-content;
-    min-height:     max-content;
+    border: 5px double var(--colour-tileBd);
+    border-radius:  15px;
+    padding: 5px;
+    background-color: var(--colour-mainBg);
 }
 
 .game-grid-impl-body {
     position:   static;
-    padding:    4px 4px;
-    color:      var(--colour-tileFg);
 }
 
 .game-grid-kbd-dc {
@@ -37,9 +31,6 @@
 @media screen {
     .game-grid:focus {
         outline:    none;
-    }
-    .game-grid:not(:focus) > .game-grid-impl-body {
-        /* filter:     brightness(70%); */
     }
     .game-grid:not(:focus) > .game-grid-kbd-dc {
         visibility: visible;
