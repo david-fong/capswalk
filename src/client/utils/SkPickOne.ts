@@ -25,6 +25,8 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
         baseElem.addEventListener("keydown", this.onKeyDown.bind(this));
         baseElem.setAttribute("role", "listbox");
         this.baseElem = baseElem;
+
+        this.options = [];
     }
 
     public addOption(opt: O): void {

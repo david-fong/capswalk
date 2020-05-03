@@ -111,7 +111,7 @@ export abstract class __PlayScreen extends SkScreen {
             if (this.wantsAutoPause) {
                 setTimeout(() => {
                     if (!document.hidden) this.statusBecomePlaying();
-                }, 4000);
+                }, 3500);
             }
             return;
         })();

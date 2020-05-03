@@ -13,6 +13,7 @@
 
 .game-grid-impl-body {
     position:   static;
+    color:      var(--colour-tileFg);
 }
 
 .game-grid-kbd-dc {

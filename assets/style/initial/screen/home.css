@@ -4,10 +4,9 @@
 }
 
 .screen-home--nav {
-    max-height:     90vmin;
-    max-width:      90vmin;
+    height: 30em; max-height: 90vmin;
+    width:  30em; max-width:  90vmin;
     display:        grid;
-    gap:            5%;
     grid-template:
     "pofl join join join" 3fr
     "host tuto tuto tuto" 1fr
@@ -17,16 +16,21 @@
 }
 .screen-home--nav > * {
     position: relative;
-    border-radius: 9px;
-    border: 5px double var(--colour-tileBd);
+    overflow: hidden;
+    border-radius: 15px;
+    margin: 6px;
+    border:  0px double var(--colour-tileBd);
+    color:              var(--colour-mainFg);
+    background-color:   var(--colour-tileBg);
 }
-.screen-home--nav:focus-within :not(:focus) {
-    filter: brightness(70%), contrast(80%);
+.screen-home--nav > :focus {
+    border-width: 5px;
+    outline: none;
 }
-.screen-home--nav--play-offline  { grid-area: pofl; background-color: var(--colour-pFaceMe); }
-.screen-home--nav--join-online   { grid-area: join; background-color: var(--colour-pFaceImtlTeammate); }
-.screen-home--nav--host-online   { grid-area: host; background-color: var(--colour-pFaceImtlOpponent); }
-.screen-home--nav--tutorial      { grid-area: tuto; background-color: var(--colour-healthBg); }
-.screen-home--nav--colour-scheme { grid-area: colr; background-color: var(--colour-healthBg); }
-.screen-home--nav--goto-repo     { grid-area: repo; background-color: var(--colour-healthBg); }
-.screen-home--nav--report-issue  { grid-area: bugs; background-color: var(--colour-healthBg); }
+.screen-home--nav--play-offline  { grid-area: pofl; }
+.screen-home--nav--join-online   { grid-area: join; }
+.screen-home--nav--host-online   { grid-area: host; }
+.screen-home--nav--tutorial      { grid-area: tuto; }
+.screen-home--nav--colour-scheme { grid-area: colr; }
+.screen-home--nav--goto-repo     { grid-area: repo; }
+.screen-home--nav--report-issue  { grid-area: bugs; }

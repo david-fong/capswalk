@@ -46,7 +46,7 @@ export class HomeScreen extends SkScreen {
             cssClass: OMHC.NAV_COLOURS,
             screenId: SkScreen.Id.COLOUR_CTRL,
         },{
-            text:    "Visit Repository",
+            text:    "Visit Repo",
             cssClass: OMHC.NAV_VIEW_REPO,
             screenId: new window.URL("https://github.com/david-fong/SnaKey-NTS"),
         },{
@@ -62,6 +62,7 @@ export class HomeScreen extends SkScreen {
                 desc.cssClass,
             );
             navButton.innerText = desc.text;
+            navButton.onpointerenter = () => navButton.focus();
             if (navButton instanceof HTMLButtonElement) {
                 navButton.onclick = this.requestGoToScreen.bind(
                     this, desc.screenId as SkScreen.Id,
