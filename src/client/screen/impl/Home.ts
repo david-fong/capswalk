@@ -7,6 +7,8 @@ import { OmHooks } from 'defs/OmHooks';
  */
 export class HomeScreen extends SkScreen {
 
+    private readonly navElem: HTMLElement;
+
     protected __lazyLoad(): void {
         const OMHC = OmHooks.Screen.Impl.Home.Class;
         this.baseElem.classList.add(
@@ -15,9 +17,16 @@ export class HomeScreen extends SkScreen {
         );
         this.baseElem.setAttribute("aria-label", "Home Page Screen");
 
-        const nav = document.createElement("div");
+        const nav
+            = (this.navElem as HTMLElement)
+            = document.createElement("div");
         nav.classList.add(OMHC.NAV);
         nav.setAttribute("role", "navigation");
+        nav.addEventListener("pointerleave", () => {
+            if (document.activeElement?.parentElement === nav) {
+                (document.activeElement as HTMLElement).blur();
+            }
+        });
 
         // NOTE: Define array entries in order that their
         // buttons should be tabbed through via keyboard.
@@ -62,11 +71,15 @@ export class HomeScreen extends SkScreen {
                 desc.cssClass,
             );
             navButton.innerText = desc.text;
-            navButton.onpointerenter = () => navButton.focus();
+            navButton.addEventListener("pointerenter", () => {
+                navButton.focus();
+                // TODO.impl play a keyboard click sound.
+            });
             if (navButton instanceof HTMLButtonElement) {
-                navButton.onclick = this.requestGoToScreen.bind(
-                    this, desc.screenId as SkScreen.Id,
-                );
+                navButton.onclick = () => {
+                    this.requestGoToScreen(desc.screenId as SkScreen.Id);
+                    // TODO.impl play a health-up sound.
+                };
             } else {
                 navButton.href = (desc.screenId as URL).toString();
                 navButton.referrerPolicy = "strict-origin-when-cross-origin";
