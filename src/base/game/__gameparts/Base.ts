@@ -197,7 +197,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      */
     public statusBecomePlaying(): void {
         if (this.status === Game.Status.PLAYING) {
-            console.log("Game is already playing");
+            console.log("[statusBecomePlaying]: Game is already playing");
             return;
         }
         if (this.status !== Game.Status.PAUSED) {
@@ -217,7 +217,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      */
     public statusBecomePaused(): void {
         if (this.status === Game.Status.PAUSED) {
-            console.log("Game is already paused");
+            console.log("[statusBecomePaused]: Game is already paused");
             return;
         }
         if (this.status !== Game.Status.PLAYING) {

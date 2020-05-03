@@ -29,9 +29,7 @@
     border:  0px double var(--colour-tileBg);
     color:              var(--colour-mainFg);
     background-color:   var(--colour-tileBg);
-    transition-property: margin, border, box-shadow, text-shadow, filter;
-    transition-duration: 0.15s;
-    transition-timing-function: ease-in;
+    transition: all 0.15s ease-in;
 }
 /* Note: The javascript focuses these on pointer entry. */
 .screen-home--nav > :focus {
@@ -43,7 +41,8 @@
     text-shadow: 0px 0px 8px #000000ff;
 }
 .screen-home--nav:focus-within > :not(:focus) {
-    filter:         blur(0.5px);
+    filter:         brightness(0.9);
+    opacity:        0.6;
 }
 .screen-home--nav--play-offline  { grid-area: pofl; }
 .screen-home--nav--join-online   { grid-area: join; }

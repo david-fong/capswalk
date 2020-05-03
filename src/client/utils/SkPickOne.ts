@@ -22,6 +22,7 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
     public constructor() {
         const baseElem = document.createElement("div");
         baseElem.tabIndex = 0;
+        baseElem.classList.add(OmHooks.SkPickOne.Class.BASE);
         baseElem.addEventListener("keydown", this.onKeyDown.bind(this));
         baseElem.setAttribute("role", "listbox");
         this.baseElem = baseElem;
