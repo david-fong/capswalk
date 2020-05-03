@@ -1,5 +1,6 @@
 import type { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
+import { OmHooks } from 'defs/OmHooks';
 
 
 /**
@@ -15,22 +16,8 @@ import { Grid } from "floor/Grid";
  * _server_ related code will benefit from this choice since it will
  * not use
  */
-export interface VisibleGrid<S extends Coord.System> extends Grid<S> {
-
-    /**
-     * Contains the implementation-dependant HTML representation of
-     * the grid.
-     */
-    readonly baseElem: HTMLElement;
-
-    // This is just a reminder to the developer that such a function
-    // exists and is an important part of the architecture. Since
-    // VisibleGrid can't be a class (no multiple inheritance), this
-    // part of a VisibleGrid's constructor sequence is implemented
-    // in Grid.
-    __VisibleGrid_super(desc: Grid.CtorArgs<S>, domGrid: HTMLElement): void;
-}
-
+export interface VisibleGrid<S extends Coord.System>
+extends Grid<S>, VisibleGridMixin<S> { }
 
 export namespace VisibleGrid {
 
@@ -51,3 +38,32 @@ export namespace VisibleGrid {
         return ctor as unknown as ClassIf<S>;
     };
 }
+
+
+/**
+ *
+ */
+export class VisibleGridMixin<S extends Coord.System> {
+    /**
+     * Contains the implementation-dependant HTML representation of
+     * the grid.
+     */
+    readonly baseElem: HTMLElement;
+
+    /**
+     * Note: I would rather have this implementation go under the
+     * `VisibleGrid` class, but I don't want to get into mixins as of
+     * now to get around no-multiple-inheritance.
+     *
+     * @param desc -
+     * @param gridImplElem -
+     */
+    public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridImplElem: HTMLElement): void {
+        const OHG = OmHooks.Grid;
+        gridImplElem.classList.add(OHG.Class.IMPL_BODY);
+        gridImplElem.dataset[OHG.Dataset.COORD_SYS] = desc.coordSys;
+        (this.baseElem as HTMLElement) = gridImplElem;
+    }
+}
+Object.freeze(VisibleGridMixin);
+Object.freeze(VisibleGridMixin.prototype);

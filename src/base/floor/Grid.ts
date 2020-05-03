@@ -1,10 +1,8 @@
-import { OmHooks } from "defs/OmHooks";
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
-import { VisibleGrid } from "floor/VisibleGrid";
 
 
 /**
@@ -137,22 +135,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * @param dest -
      */
     public abstract minMovesFromTo(source: Coord.Bare<S>, dest: Coord.Bare<S>): number;
-
-    /**
-     * Note: I would rather have this implementation go under the
-     * `VisibleGrid` class, but I don't want to get into mixins as of
-     * now to get around no-multiple-inheritance.
-     *
-     * @param desc -
-     * @param gridImplElem -
-     */
-    public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridImplElem: HTMLElement): void {
-        const OHG = OmHooks.Grid;
-        gridImplElem.classList.add(OHG.Class.IMPL_BODY);
-        gridImplElem.dataset[OHG.Dataset.COORD_SYS] = desc.coordSys;
-        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
-    }
-
 }
 export namespace Grid {
 

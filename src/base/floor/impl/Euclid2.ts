@@ -1,7 +1,8 @@
+import { applyMixins } from "defs/TypeDefs";
 import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
 import { Grid as AbstractGrid } from "../Grid";
-import { VisibleGrid } from "../VisibleGrid";
+import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
 
 
 type S = BaseCoord.System.EUCLID2;
@@ -119,7 +120,6 @@ export namespace Euclid2 {
             });
         }
     }
-
     export namespace Coord {
         export type Bare = Readonly<{
             x: number;
@@ -318,7 +318,6 @@ export namespace Euclid2 {
             return new Coord({x,y,});
         }
     }
-
     export namespace Grid {
         /**
          * If `width` is not specified, `height` is taken as its default value.
@@ -349,9 +348,12 @@ export namespace Euclid2 {
                 this.__VisibleGrid_super(desc, gridElem);
             }
         }
+        export interface Visible extends VisibleGridMixin<S> { };
+        applyMixins(Visible, [VisibleGridMixin,]);
+        Object.freeze(Visible);
+        Object.freeze(Visible.prototype);
     }
     Object.freeze(Grid);
     Object.freeze(Grid.prototype);
-
 }
 Object.freeze(Euclid2);

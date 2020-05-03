@@ -51,6 +51,7 @@
 - For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 - Look into switching from JsDoc to TsDoc
   - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
+- [custom mouse images!](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Basic_User_Interface/Using_URL_values_for_the_cursor_property)
 
 ### Dependency Management
 
@@ -79,6 +80,7 @@ https://javascript.info/class-inheritance
 https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
 https://www.quirksmode.org/js/events_order.html#link4
 https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
+https://javascript.info/mixins
 https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
 
 https://github.com/whatwg/html/issues/4078
