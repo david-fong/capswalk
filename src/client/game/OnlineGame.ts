@@ -66,12 +66,12 @@ extends GameEvents<G,S> implements VisibleGame {
         this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.Movement,
-            this.executePlayerMoveEvent
+            this.executePlayerMoveEvent.bind(this),
         );
         this.socket.off(PlayerActionEvent.EVENT_NAME.Bubble);
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.Bubble,
-            this.executePlayerBubbleEvent,
+            this.executePlayerBubbleEvent.bind(this),
         );
 
         // TODO.impl Send ack?

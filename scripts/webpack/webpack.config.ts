@@ -1,23 +1,16 @@
-import path = require("path");
-import fs = require("fs");
-
-import webpack = require("webpack");
-import HtmlPlugin = require("html-webpack-plugin");
-
-// https://webpack.js.org/plugins/mini-css-extract-plugin/
-import MiniCssExtractPlugin = require("mini-css-extract-plugin");
-import OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-
-// Note: if I ever add this back, I'll need to look into how to make
-// sure it doesn't clean away things from separate configs (See notes
-// below on why I export multiple configurations).
-// import clean = require("clean-webpack-plugin");
+import path     = require("path");
+import fs       = require("fs");
+import webpack  = require("webpack");
 
 // https://github.com/TypeStrong/ts-loader#loader-options
 import type * as tsloader from "ts-loader/dist/interfaces";
 
-type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
+import nodeExternals = require("webpack-node-externals")
+import HtmlPlugin = require("html-webpack-plugin");
+import MiniCssExtractPlugin = require("mini-css-extract-plugin");
+import OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
+type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
 
 /**
@@ -210,7 +203,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>): void => {
     config.target = "node";
     // alternative to below: https://www.npmjs.com/package/webpack-node-externals
-    config.externals = fs.readdirSync(path.resolve(PROJECT_ROOT, "node_modules")),
+    config.externals = [ nodeExternals(), ],
     config.resolve.extensions!.push(".js");
 };
 
@@ -220,9 +213,7 @@ const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>
 const SERVER_CONFIG = __BaseConfig("server"); {
     const config = SERVER_CONFIG;
     __applyCommonNodeConfigSettings(config);
-    (<const>[ "server", ]).forEach((name) => {
-        config.entry[name] = `./src/${name}/index.ts`;
-    });
+    config.entry["index"] = `./src/server/index.ts`;
 }
 
 /**
@@ -242,6 +233,6 @@ const TEST_CONFIG = __BaseConfig("test"); {
 module.exports = [
     CLIENT_CONFIG,
     // TODO.build Uncomment these pack configs when we get to using them.
-    //SERVER_CONFIG,
+    SERVER_CONFIG,
     //TEST_CONFIG,
 ];

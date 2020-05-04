@@ -1,7 +1,10 @@
-import * as os      from "os";
-import * as http    from "http";
-import * as app     from "express";
-import * as io      from "socket.io";
+import os   = require("os");
+import path = require("path");
+import http = require("http");
+import app  = require("express");
+import io   = require("socket.io");
+
+import { SnakeyNsps } from "defs/TypeDefs";
 
 import { GroupSession } from "./GroupSession";
 
@@ -33,16 +36,16 @@ export class SnakeyServer {
         this.http   = http.createServer({}, this.app);
         this.io     = io(this.http);
 
-        this.http.listen({ host, port, }, (): void => {
+        this.http.listen({ host, port,}, (): void => {
             console.log(`Server mounted to: ${this.http.address}.`);
         });
 
         this.app.get("/", (req, res) => {
-            res.sendFile(`${__dirname}/../../index.html`);
+            res.sendFile(path.resolve(__dirname, "..", "index.html"));
         });
 
-        this.io.of(SnakeyServer.SocketIoNamespaces.GROUP_JOINER)
-            .on("connection", this.onGameHostsConnection);
+        this.io.of(SnakeyNsps.HOST_REGISTRATION)
+            .on("connection", this.onHostsConnection.bind(this));
     }
 
     /**
@@ -51,7 +54,7 @@ export class SnakeyServer {
      *
      * @param socket - The socket from the game host.
      */
-    protected onGameHostsConnection(socket: io.Socket): void {
+    protected onHostsConnection(socket: io.Socket): void {
         socket.on(GroupSession.CtorArgs.EVENT_NAME, (desc: GroupSession.CtorArgs): void => {
             // Create a new group session:
             const groupName = this.createUniqueSessionName(desc.groupName);
@@ -94,42 +97,20 @@ export class SnakeyServer {
      *      which happens if `groupName` is already taken, or if it
      *      does not match the required regular expression.
      */
-    protected createUniqueSessionName(groupName: GroupSession.SessionName): string | null {
+    protected createUniqueSessionName(groupName: GroupSession.SessionName): string | undefined {
         if (!(GroupSession.SessionName.REGEXP.test(groupName))) {
-            return null;
+            return undefined;
         }
-        const sessionName: string = `${SnakeyServer.SocketIoNamespaces.GROUP_LOBBY}/${groupName}`;
+        const sessionName: string = `${SnakeyNsps.GROUP_PREFIX}/${groupName}`;
         if (this.allGroupSessions.has(sessionName)) {
-            return null;
+            return undefined;
         }
         return sessionName;
     }
-
 }
-
-
 export namespace SnakeyServer {
 
     export const DEFAULT_PORT = <const>8080;
-
-    /**
-     * Paths to pages on the site:
-     */
-    export const PATHS = Object.freeze(<const>{
-
-        /**
-         * A global hub where clients can join or create groups
-         */
-        GROUP_SESSIONS: "groups",
-    });
-
-    /**
-     *
-     */
-    export const enum SocketIoNamespaces {
-        GROUP_JOINER   = "/groups",
-        GROUP_LOBBY    = "/groups",
-    }
 
     /**
      * @returns An array of non-internal IPv4 addresses from any of the

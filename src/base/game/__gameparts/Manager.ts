@@ -56,13 +56,12 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
         this.#langImportPromise = (import(
             /* webpackChunkName: "lang/[request]" */
-            /* webpackInclude: /\.ts$/ */
-            `../../lang/impl/${this.langFrontend.module}`
+            `lang/impl/${this.langFrontend.module}.ts`
         ) /* as Promise<{ readonly [K in Lang.FrontendDesc["export"]]: Lang; }> */)
         .then((module) => {
             (this.lang as Lang) = (module
-                [this.langFrontend.module as "English"]
-                [this.langFrontend.export as "Lowercase"]
+                [this.langFrontend.module]
+                [this.langFrontend.export]
             ).getInstance();
 
             // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.

@@ -13,7 +13,7 @@ export { OmHooks } from "defs/OmHooks";
 if (window.origin && window.origin !== "null" && "serviceWorker" in navigator) {
     window.addEventListener('load', function() {
         // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
-        navigator.serviceWorker.register("/sw.js").then(
+        navigator.serviceWorker.register("/ServiceWorker.js").then(
         (registration) => {
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
         },

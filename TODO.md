@@ -5,8 +5,9 @@
 
 1. Get a basic, working implementation of an offline game.
 1. Write the stylesheets.
-1. Record music + find out how to play tracks together.
 1. Get working bundles for networked games.
+1. Add player sprites.
+1. Record music + find out how to play tracks together.
 1. Make the website accessible by ARIA standards.
 
 ## Concrete TODOs
@@ -64,6 +65,7 @@
 - [TypeScript / tslib bug](https://github.com/microsoft/TypeScript/issues/36841)
   - This is on the roadmap for TypeScript 2.9.1... That may be a while.
   - When it is fixed, we can take out the ts-loader compiler option forcing `importHelpers` to be off.
+- In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
 
 ---
 

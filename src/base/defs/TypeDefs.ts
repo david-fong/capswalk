@@ -25,6 +25,15 @@ export function applyMixins(derivedCtor: any, baseCtors: any[]) {
 /**
  *
  */
+export const enum SnakeyNsps {
+    HOST_REGISTRATION = "/host-reg",
+    GROUP_PREFIX = "/group",
+}
+
+
+/**
+ *
+ */
 export class Player<S> { }
 export namespace Player {
 
