@@ -1,8 +1,9 @@
-import os   = require("os");
-import path = require("path");
-import http = require("http");
-import app  = require("express");
-import io   = require("socket.io");
+import os       = require("os");
+import path     = require("path");
+import http     = require("http");
+import express  = require("express");
+import io       = require("socket.io");
+import type * as net from "net";
 
 import { SnakeyNsps } from "defs/TypeDefs";
 
@@ -15,7 +16,7 @@ import { GroupSession } from "./GroupSession";
 export class SnakeyServer {
 
     protected readonly http: http.Server;
-    protected readonly app:  app.Application;
+    protected readonly app:  express.Application;
     protected readonly io:   io.Server;
 
     /**
@@ -31,17 +32,25 @@ export class SnakeyServer {
      * @param port - The port number on which to host the Server.
      *          Defaults to {@link Defs.SERVER_PORT}.
      */
-    public constructor(host: string, port: number = SnakeyServer.DEFAULT_PORT) {
-        this.app    = app();
+    public constructor(
+        port: number = SnakeyServer.DEFAULT_PORT,
+        host: string | undefined = undefined,
+    ) {
+        this.app    = express();
         this.http   = http.createServer({}, this.app);
         this.io     = io(this.http);
 
-        this.http.listen({ host, port,}, (): void => {
-            console.log(`Server mounted to: ${this.http.address}.`);
-        });
-
+        // At runtime, __dirname resolves to ":/dist/server/"
+        const PROJECT_ROOT = path.resolve(__dirname, "../..");
+        this.app.disable("x-powered-by");
         this.app.get("/", (req, res) => {
-            res.sendFile(path.resolve(__dirname, "..", "index.html"));
+            res.sendFile(path.resolve(PROJECT_ROOT, "index.html"));
+        });
+        this.app.use("/dist",   express.static(path.resolve(PROJECT_ROOT, "dist")));
+        this.app.use("/assets", express.static(path.resolve(PROJECT_ROOT, "assets")));
+
+        this.http.listen(<net.ListenOptions>{ port, host, }, (): void => {
+            console.log(`Server mounted to: ${this.http.address()?.toString()}.`);
         });
 
         this.io.of(SnakeyNsps.HOST_REGISTRATION)

@@ -1,5 +1,4 @@
 import path     = require("path");
-import fs       = require("fs");
 import webpack  = require("webpack");
 
 // https://github.com/TypeStrong/ts-loader#loader-options
@@ -205,6 +204,11 @@ const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>
     // alternative to below: https://www.npmjs.com/package/webpack-node-externals
     config.externals = [ nodeExternals(), ],
     config.resolve.extensions!.push(".js");
+    config.node = {
+        __filename: false,
+        __dirname: false,
+        global: false,
+    };
 };
 
 /**
