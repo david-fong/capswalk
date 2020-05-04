@@ -2,13 +2,14 @@ import type { Coord }       from "floor/Tile";
 import type { OfflineGame } from "../../game/OfflineGame";
 import { Lang }             from "defs/TypeDefs";
 
+import type { SkScreen } from '../SkScreen';
 import { __PlayScreen } from "./__Play";
 
 
 /**
  *
  */
-export class PlayOfflineScreen extends __PlayScreen {
+export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
 
     declare public readonly currentGame: OfflineGame<any> | undefined;
 

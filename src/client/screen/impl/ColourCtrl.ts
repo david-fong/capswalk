@@ -11,7 +11,7 @@ import { SkScreen } from "../SkScreen";
 /**
  *
  */
-export class ColourCtrlScreen extends SkScreen {
+export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
 
     public readonly sel: ColourCtrlScreen.PickOne;
 

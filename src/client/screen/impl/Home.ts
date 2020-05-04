@@ -1,11 +1,12 @@
+import { OmHooks } from "defs/OmHooks";
+
 import { SkScreen } from "../SkScreen";
-import { OmHooks } from 'defs/OmHooks';
 
 
 /**
  *
  */
-export class HomeScreen extends SkScreen {
+export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 
     private readonly navElem: HTMLElement;
 
@@ -35,7 +36,7 @@ export class HomeScreen extends SkScreen {
             cssClass: typeof OMHC[keyof typeof OMHC];
             screenId: SkScreen.Id | URL;
         }>> = [{
-            text:    "Play Offline",
+            text:    "Play Offline", // TODO.impl this should go to the game setup screen.
             cssClass: OMHC.NAV_PLAY_OFFLINE,
             screenId: SkScreen.Id.PLAY_OFFLINE,
         },{
@@ -77,7 +78,7 @@ export class HomeScreen extends SkScreen {
             });
             if (navButton instanceof HTMLButtonElement) {
                 navButton.onclick = () => {
-                    this.requestGoToScreen(desc.screenId as SkScreen.Id);
+                    this.requestGoToScreen(desc.screenId as SkScreen.Id, {} as any); // TODO.design take away the any cast
                     // TODO.impl play a health-up sound.
                 };
             } else {

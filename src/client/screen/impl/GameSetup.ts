@@ -1,5 +1,6 @@
-import { SkScreen } from "../SkScreen";
 import { Lang } from "defs/TypeDefs";
+
+import { SkScreen } from "../SkScreen";
 
 
 /**
@@ -7,7 +8,7 @@ import { Lang } from "defs/TypeDefs";
  * the user chooses.
  */
 // TODO.learn how to use the IndexDB web API.
-export class GameSetupScreen extends SkScreen {
+export class GameSetupScreen extends SkScreen<SkScreen.Id.GAME_SETUP> {
 
     private readonly langSel: HTMLSelectElement;
 

@@ -6,6 +6,7 @@ import { SkScreen } from "../SkScreen";
 
 
 type Game = (OfflineGame<any> | OnlineGame<any>);
+type SID_options = SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE;
 
 /**
  * If and only if this screen is the current screen, then its
@@ -16,7 +17,7 @@ type Game = (OfflineGame<any> | OnlineGame<any>);
  */
 // TODO: make a hook in the Game class hierarchy that gets called when the game is over
 // so that we can disable the pause button.
-export abstract class __PlayScreen extends SkScreen {
+export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID> {
 
     protected readonly gridElem: HTMLElement;
 
