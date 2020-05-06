@@ -1,4 +1,4 @@
-import { Lang, Player } from "utils/TypeDefs";
+import { Lang, Player } from "defs/TypeDefs";
 import { Coord } from "./Coord";
 export { Coord };
 
@@ -37,8 +37,6 @@ export class Tile<S extends Coord.System> {
     public lastKnownUpdateId: number;
 
     /**
-     * _Does not call reset._
-     *
      * @param coord -
      */
     public constructor(coord: Coord<S>) {
@@ -55,15 +53,6 @@ export class Tile<S extends Coord.System> {
         // the game, but it is done here since initially, nothing needs
         // to be avoided because no CSP's have been set yet.
         this.setLangCharSeqPair(Lang.CharSeqPair.NULL);
-    }
-
-    /**
-     * Called, for example, when a {@link Player} on this `Tile` provides
-     * input that did not work to complete their {@link Player#seqBuffer}
-     * against any neighbouring `Tile`s.
-     */
-    public visualBell(): void {
-        // does nothing by default.
     }
 
 

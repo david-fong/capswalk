@@ -1,5 +1,7 @@
 @import "./utils.css";
-@import "./colour/index.css";
+@import "./snakey.css";
 
 @import "./root.css";
 @import "./screen.css";
+@import "./screen/index.css";
+@import "./components/index.css";

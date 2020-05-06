@@ -5,10 +5,10 @@ import { Game } from "game/Game";
 import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
 import { Player, PlayerStatus } from "game/player/Player";
+import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
-import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
 import { GameManager } from "game/__gameparts/Manager";
 
@@ -18,8 +18,6 @@ type G = Game.Type.SERVER;
 /**
  * Handles game-related events and attaches listeners to each client
  * socket.
- *
- * @extends Game
  */
 export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
@@ -42,8 +40,6 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
 
     /**
-     * _Calls reset recursively for this entire composition._
-     *
      * Attach listeners for requests to each socket.
      *
      * Broadcasts constructor arguments to all clients.
@@ -103,27 +99,29 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
         // Pass on Game constructor arguments to each client:
         humanPlayers.forEach((player) => {
-            (gameDesc.operatorIndex! as Player.Id) = player.playerId;
+            gameDesc.playerDescs.forEach((playerDesc) => {
+                (playerDesc.isALocalOperator as boolean) =
+                (playerDesc.socketId === this.playerSockets[player.playerId].id);
+            })
             this.playerSockets[player.playerId].emit(
                 Game.CtorArgs.EVENT_NAME,
                 gameDesc,
             );
         }, this);
-
-        this.reset();
     }
 
     /**
      * @override
      */
-    public reset(): void {
-        super.reset();
+    public async reset(): Promise<void> {
+        const superPromise = super.reset();
         // TODO.design Should we wait for ACK's from all clients before
-        // enabling `stateBecomePlayer`
+        // enabling the privileged users' `stateBecomePlaying` buttons?
         this.namespace.emit(
             Game.Serialization.EVENT_NAME,
             this.serializeResetState(),
         );
+        return superPromise;
     }
 
     /**
@@ -136,7 +134,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
     /**
      * @override
      */
-    protected __createArtifPlayer(desc: Player.CtorArgs): ArtificialPlayer<S> {
+    protected __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>): ArtificialPlayer<S> {
         return ArtificialPlayer.of(this, desc);
     }
 
@@ -152,8 +150,8 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
     /**
      * @override
      */
-    public processMoveExecute(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
-        super.processMoveExecute(desc);
+    public executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
+        super.executePlayerMoveEvent(desc);
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
@@ -171,8 +169,8 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         }
     }
 
-    public processBubbleExecute(desc: Readonly<PlayerActionEvent.Bubble>): void {
-        super.processBubbleExecute(desc);
+    public executePlayerBubbleEvent(desc: Readonly<PlayerActionEvent.Bubble>): void {
+        super.executePlayerBubbleEvent(desc);
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.

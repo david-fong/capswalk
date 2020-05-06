@@ -15,20 +15,14 @@ export namespace English {
 
         private static SINGLETON?: Lowercase = undefined;
 
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.ENGLISH__LOWERCASE;
-        }
-
-        public static getBlurb(): string {
-            return ""; // TODO.doc
-        }
-
         public static getInstance(): Lowercase {
             if (!this.SINGLETON) {
                 this.SINGLETON  = new Lowercase();
             }
             return this.SINGLETON;
         }
+
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-low");
 
         // TODO.learn see https://wikipedia.org/wiki/Keyboard_layout#Dvorak
         // and https://wikipedia.org/wiki/Keyboard_layout#Colemak
@@ -61,24 +55,18 @@ export namespace English {
 
         private static SINGLETON?: MixedCase = undefined;
 
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.ENGLISH__MIXEDCASE;
-        }
-
-        public static getBlurb(): string {
-            return ""; // TODO.doc
-        }
-
         public static getInstance(): MixedCase {
             if (!this.SINGLETON) {
-                this.SINGLETON  = new MixedCase();
+                this.SINGLETON = new MixedCase();
             }
             return this.SINGLETON;
         }
 
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-mix");
+
         private constructor() {
             let initializer: Lang.CharSeqPair.WeightedForwardMap = {};
-            const addMappings = (charSeqTransform: (charOrSeq: string) => string): void => {
+            const addMappings = (charSeqTransform: (cs: string) => string): void => {
                 initializer = Object.entries(LETTER_FREQUENCY).reduce(
                     (accumulator, current) => {
                         const char: Lang.Char = charSeqTransform(current[0]);

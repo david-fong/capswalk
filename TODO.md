@@ -5,16 +5,17 @@
 
 1. Get a basic, working implementation of an offline game.
 1. Write the stylesheets.
-1. Record music + find out how to play tracks together.
 1. Get working bundles for networked games.
+1. Add player sprites.
+1. Record music + find out how to play tracks together.
+1. Make the website accessible by ARIA standards.
 
 ## Concrete TODOs
 
 ### High Priority
 
-1. Brainstorm ways to split up the js and css to defer loading.
-    - Make lang files dynamically imported. This will save loading if the user only plays online (no game-manager implementation needed).
-1. Make and hook up lang registry (initialize in PostInit, define under Lang).
+1. Implement operator switching.
+    - Make the whole client-side only have one copy of the spotlight elements and always give it to the current operator.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
@@ -31,8 +32,14 @@
 
 ### Low Priority
 
+- Tell WebPack to split out styling for each screen?
+- Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
+  - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
+- [Create a mask-safe icon that is large enough (min 144px)](https://web.dev/maskable-icon/)
 - Read about these topics and see how they might be useful
+  - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Concepts_Behind_IndexedDB)
+  - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
   - [](https://www.npmjs.com/package/bad-words)
@@ -42,10 +49,12 @@
     - [](https://devcenter.heroku.com/articles/node-best-practices)
     - [](https://devcenter.heroku.com/articles/nodejs-support)
     - [](https://medium.com/deployplace/heroku-vs-docker-the-ultimate-comparison-with-hidden-pitfalls-revealed-f6b7f4075de5)
+  - [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 - For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 - Look into switching from JsDoc to TsDoc
   - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
+- [custom mouse images!](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Basic_User_Interface/Using_URL_values_for_the_cursor_property)
 
 ### Dependency Management
 
@@ -55,6 +64,10 @@
 - WebPack 5:
   - [Magic dynamic import strings](https://webpack.js.org/migrate/5/#cleanup-the-code) will start getting useful values by default.
   - `output.ecmaVersion` is `6` by default. If we have set it to `6` manually, we can delete the manual field specification.
+- [TypeScript / tslib bug](https://github.com/microsoft/TypeScript/issues/36841)
+  - This is on the roadmap for TypeScript 2.9.1... That may be a while.
+  - When it is fixed, we can take out the ts-loader compiler option forcing `importHelpers` to be off.
+- In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
 
 ---
 
@@ -64,24 +77,34 @@
   - make BGM have a track that varies with lang and different selectable style variations such as jazz cafe/elevator music, fast 13/8.
   - Make movement sound effects able to depend on translated key input like morse sounds.
 
+## Good Reads
+
+```text
+https://javascript.info/class-inheritance
+https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
+https://www.quirksmode.org/js/events_order.html#link4
+https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
+https://javascript.info/mixins
+https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
+
+https://github.com/whatwg/html/issues/4078
+
+https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
+```
+
 ## Research / Learning Links
+
+### Licensing
+
+```text
+https://creativecommons.org/faq/#can-i-apply-a-creative-commons-license-to-software
+https://www.gnu.org/licenses/copyleft.html
+https://opensource.org/licenses
+```
 
 ### Dynamic imports
 
-```text
-https://javascript.info/modules-dynamic-imports
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
-https://github.com/tc39/proposal-dynamic-import/#import
-https://v8.dev/features/dynamic-import
-```
-
-### ES6 modules in NodeJS
-
-```text
-https://stackoverflow.com/questions/45854169/how-can-i-use-an-es6-import-in-node
-https://medium.com/@iamstan/typescript-es-modules-micheal-jackson-2040216be793
-https://nodejs.org/api/esm.html#esm_enabling
-```
+Links no longer needed. Good things to know: both TypeScript and WebPack implement handling for dynamic imports. TypeScript will provide type information about the exports from a module, and WebPack will intercept the dynamic import to create a deferred-loading split chunk.
 
 ### Web API's
 
@@ -97,12 +120,7 @@ https://www.w3schools.com/html/html5_webstorage.asp
 https://www.w3schools.com/html/html5_serversentevents.asp
 Navigator.{keyboard,online,connection,language,languages,battery}
 https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
-```
-
-### JsDoc
-
-```text
-https://devdocs.io/jsdoc/howto-es2015-classes
+https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API
 ```
 
 ### Audio
@@ -114,6 +132,8 @@ When playing and pausing music, I can [fade it in and out](https://devdocs.io/do
 For the background music track, I will have multiple layers. They will all be the same length, except for the main melody track that will be some whole-number multiple in length. For all the short ones, we can [load them up into mono buffers](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/decodeAudioData) using the [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), and then combine all those buffers as channels in one [AudioBuffer](https://devdocs.io/dom/audiobuffer). That will be the buffer for a looping [AudioBufferSourceNode](https://devdocs.io/dom/audiobuffersourcenode). I connect that source node to a [ChannelSplitterNode](https://devdocs.io/dom/channelsplitternode), which passes each channel through a gain node, then joins them back into one node via [ChannelMergerNode](https://devdocs.io/dom/channelmergernode). Those fader-mixed tracks (channels) will be connected to some more stereo effects, and finally to the context output destination.
 
 I should keep my audio loops as short as possible. Ie. Every audio file 4 measures long except the melody file which is maybe 12 measures long.
+
+Here's [something fun I can do](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API) (but don't have to).
 
 ```text
 https://devdocs.io/dom/web_audio_api/best_practices
@@ -140,23 +160,32 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/display
 flex playground: https://codepen.io/enxaneta/full/adLPwv/
 ```
 
+### ARIA
+
+```text
+https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles
+https://a11yproject.com/checklist/
+```
+
+### ES6 modules in NodeJS
+
+```text
+https://stackoverflow.com/questions/45854169/how-can-i-use-an-es6-import-in-node
+https://medium.com/@iamstan/typescript-es-modules-micheal-jackson-2040216be793
+https://nodejs.org/api/esm.html#esm_enabling
+```
+
+### JsDoc
+
+```text
+https://devdocs.io/jsdoc/howto-es2015-classes
+```
+
 ### Handling Network Latency
 
 ```text
 https://martinfowler.com/eaaDev/EventSourcing.html
 https://stackoverflow.com/a/9283222/11107541
-```
-
-## Good Reads
-
-```text
-https://javascript.info/class-inheritance
-https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
-https://www.quirksmode.org/js/events_order.html#link4
-https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
-https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
-
-https://github.com/whatwg/html/issues/4078
 ```
 
 ## Things I have Tried that Haven't Worked (and that's okay)

@@ -1,7 +1,7 @@
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
-import type { Player as __Player } from "utils/TypeDefs";
+import type { Player as __Player } from "defs/TypeDefs";
 import type { ArtificialPlayer } from "./ArtificialPlayer";
 import type { GameBase } from "game/__gameparts/Base";
 
@@ -99,6 +99,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 export namespace Player {
 
     export type Family = __Player.Family;
+    export type FamilyArtificial = Exclude<Player.Family, typeof Player.Family.HUMAN>;
 
     export type Id = __Player.Id;
 
@@ -133,32 +134,30 @@ export namespace Player {
      * # Player Constructor Arguments
      */
     export type CtorArgs = __CtorArgs<Player.Family>;
-    export type __CtorArgs<F extends Player.Family> = any extends F ? never
-    : { [atomic_F in F]: atomic_F extends Player.Family
-        ? (CtorArgs.__PreIdAssignment<atomic_F> & Readonly<{
+    export type __CtorArgs<F_group extends Player.Family> = any extends F_group ? never
+    : { [F in F_group]: F extends Player.Family
+        ? (CtorArgs.__PreIdAssignment<F> & Readonly<{
             playerId: Player.Id;
         }>)
         : never
-    }[F];
+    }[F_group];
 
     export namespace CtorArgs {
 
         export type PreIdAssignment = __PreIdAssignment<Player.Family>;
-        export type __PreIdAssignment<F extends Player.Family> = any extends F ? never
-        : { [atomic_F in F]: atomic_F extends Player.Family
+        export type __PreIdAssignment<F_group extends Player.Family> = any extends F_group ? never
+        : { [F in F_group]: F extends Player.Family
             ? (Readonly<{
-                /**
-                 * This determines which constructor function to use.
-                 */
-                familyId: atomic_F;
+                isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
+                familyId: F;
                 teamId:   Team.Id;
-                socketId: SocketId | undefined; // Must exist for operated players.
+                socketId: F extends typeof Player.Family.HUMAN ? (SocketId | undefined) : undefined;
                 username: Username;
                 noCheckGameOver: boolean;
-                familyArgs: FamilySpecificPart<atomic_F>;
+                familyArgs: FamilySpecificPart<F>;
             }>)
             : never;
-        }[F];
+        }[F_group];
 
         export type FamilySpecificPart<F extends Player.Family> =
         ( F extends typeof Player.Family.HUMAN ? {}
@@ -179,27 +178,20 @@ export namespace Player {
             // (to play nice with array representations):
             const teamIdCleaner: TU.RoArr<Team.Id>
                 = Array.from(new Set(playerDescs.map((player) => player.teamId)))
-                .sort((a, b) => a - b)
+                .sort((a, b) => a - b) // This is not a representation requirement.
                 .reduce((prev, originalId, squashedId) => {
                     prev[originalId] = squashedId;
                     return prev;
                 }, [] as Array<Team.Id>);
             return playerDescs.slice()
             .sort((pda, pdb) => teamIdCleaner[pda.teamId] - teamIdCleaner[pdb.teamId])
-            .map<CtorArgs>((playerDesc, index) => { return {
+            .map<CtorArgs>((playerDesc, index) => Object.assign(playerDesc, {
                 playerId:   index,
-                familyId:   playerDesc.familyId,
                 teamId:     teamIdCleaner[playerDesc.teamId],
-                socketId:   playerDesc.socketId,
-                username:   playerDesc.username,
-                noCheckGameOver: playerDesc.noCheckGameOver,
-                familyArgs: playerDesc.familyArgs,
-            } as CtorArgs; });
+            }, ), );
         };
-
     }
     Object.freeze(CtorArgs);
-
 }
 Object.freeze(Player);
 Object.freeze(Player.prototype);

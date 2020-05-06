@@ -1,6 +1,6 @@
 {
   "name": "snakey-mp",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A multiplayer typing game for learning written languages.",
   "keywords": [
     "typing",
@@ -12,12 +12,14 @@
   "type": "module",
   "files": [
     "dist/",
-    "!dist/{src,test}/",
+    "!dist/ts/",
     "index.html",
     "manifest.webmanifest"
   ],
   "exports": {},
-  "scripts": {},
+  "scripts": {
+    "start": "node ./dist/server/index.js"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.2.0",
@@ -45,6 +47,7 @@
     "ts-loader": "^6.2.2",
     "typescript": "^3.8.3",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "webpack-node-externals": "^1.7.2"
   }
 }

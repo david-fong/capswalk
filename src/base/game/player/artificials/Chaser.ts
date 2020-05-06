@@ -20,7 +20,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     private readonly grid: Chaser<S>["game"]["grid"];
     #prevCoord: Coord<S>;
 
-    protected constructor(game: GameManager<any,S>, desc: Player.__CtorArgs<"CHASER">) {
+    public constructor(game: GameManager<any,S>, desc: Player.__CtorArgs<"CHASER">) {
         super(game, desc);
         this.behaviour = Object.freeze(desc.familyArgs);
         this.grid = this.game.grid;
@@ -90,7 +90,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
                 this.#prevCoord).coord, 1);
             }
         }
-        let closestFht: Tile<S> = this.game.freeHealthTiles[0];
+        let closestFht: Tile<S> = undefined!;
         let closestFhtDistance = Infinity;
         for (const fht of this.game.freeHealthTiles) {
             const distance = this.grid.minMovesFromTo(this.coord, fht.coord);

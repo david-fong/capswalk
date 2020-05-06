@@ -1,23 +1,15 @@
-import path = require("path");
-import fs = require("fs");
-
-import webpack = require("webpack");
-import HtmlPlugin = require("html-webpack-plugin");
-
-// https://webpack.js.org/plugins/mini-css-extract-plugin/
-import MiniCssExtractPlugin = require("mini-css-extract-plugin");
-import OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-
-// Note: if I ever add this back, I'll need to look into how to make
-// sure it doesn't clean away things from separate configs (See notes
-// below on why I export multiple configurations).
-// import clean = require("clean-webpack-plugin");
+import path     = require("path");
+import webpack  = require("webpack");
 
 // https://github.com/TypeStrong/ts-loader#loader-options
 import type * as tsloader from "ts-loader/dist/interfaces";
 
-type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
+import nodeExternals = require("webpack-node-externals")
+import HtmlPlugin = require("html-webpack-plugin");
+import MiniCssExtractPlugin = require("mini-css-extract-plugin");
+import OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
+type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
 
 /**
@@ -27,7 +19,7 @@ const PACK_MODE = (process.env.NODE_ENV) as webpack.Configuration["mode"];
 
 export const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
-const BASE_PLUGINS: ReadonlyArray<Readonly<webpack.Plugin>> = [
+const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.Plugin>> => { return [
     // new webpack.ProgressPlugin((pct, msg, moduleProgress?, activeModules?, moduleName?) => {
     //     console.log(
     //         `[${Math.floor(pct * 100).toString().padStart(3)}% ]`,
@@ -43,12 +35,12 @@ const BASE_PLUGINS: ReadonlyArray<Readonly<webpack.Plugin>> = [
     //     /\.js$/,
     //     /\.d\.ts$/,
     // ]),
-];
+]};
 
 /**
  * https://webpack.js.org/loaders/
  */
-const MODULE_RULES: Array<webpack.RuleSetRule> = [{
+const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
     // With ts-loader@7.0.0, you need to set:
     // options.compilerOptions.emitDeclarationsOnly: false
     // options.transpileOnly: false
@@ -58,7 +50,14 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [{
         options: <tsloader.LoaderOptions>{
             projectReferences: true,
             compilerOptions: {
-                emitDeclarationOnly: true,
+                // We need to preserve comments in transpiled output
+                // so that magic comments in dynamic imports can be
+                // seen by webpack.
+                removeComments: false,
+                importHelpers: false, // :'(
+                // TODO.build get rid of the above line when
+                // https://github.com/microsoft/TypeScript/issues/36841
+                // is fixed. What an absolute tragedy T^T
                 //noEmit: true,
             },
             // https://github.com/TypeStrong/ts-loader#faster-builds
@@ -71,14 +70,12 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [{
     test: /\.css$/,
     use: ((): webpack.RuleSetUseItem[] => {
         const retval: webpack.RuleSetUse = [ "css-loader", ];
-        //if (PACK_MODE !== "development") {
-            retval.unshift({
-                loader: MiniCssExtractPlugin.loader,
-            });
-        //}
+        retval.unshift({
+            loader: MiniCssExtractPlugin.loader,
+        });
         return retval;
     })(),
-}, ];
+}, ]};
 
 /**
  * # Base Config
@@ -90,9 +87,7 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [{
  *
  * Everything that builds off of this will need to add the `entry` field.
  *
- * **Important**: Make sure all referenced objects are only accessible
- * via pure producers. Otherwise, mutations in one bundle's config will
- * propagate to all the following config definitions.
+ * Important implementation note: make sure helpers such as
  *
  * ## Help Links
  *
@@ -102,43 +97,46 @@ const MODULE_RULES: Array<webpack.RuleSetRule> = [{
  *
  * @returns A standalone ("deep-copy") basic configuration.
  */
-const BaseConfig: () => Require<webpack.Configuration,
-"entry" | "plugins" | "resolve" | "output"> = () => { return {
+const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
+"entry" | "plugins" | "resolve" | "output"> => { return {
     mode: PACK_MODE,
-    // https://webpack.js.org/guides/caching/
-    // https://webpack.js.org/configuration/other-options/#cache
-    cache: true,
-    stats: {
-        // https://webpack.js.org/configuration/stats/
-        //warningsFilter: [ /export .* was not found in/, ],
-    },
+    name: `\n\n${"=".repeat(32)} ${distSubFolder.toUpperCase()} ${"=".repeat(32)}\n`,
+    stats: { /* https://webpack.js.org/configuration/stats/ */ },
 
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
     entry: { /* Left to each branch config */ },
-    devtool: <webpack.Options.Devtool>(PACK_MODE === "production")
-        ? "nosources-source-map" : "eval-source-map",
-    plugins: [ ...BASE_PLUGINS, ],
+    plugins: [ ...BASE_PLUGINS(), ],
     resolve: {
-        extensions: [ ".ts", ], // ".json", ".tsx",
-        modules: [ path.resolve(PROJECT_ROOT, "src", "base"), ], // match tsconfig.baseUrl
+        extensions: [ ".ts", ".css", ".js", ],
+        modules: [
+            path.resolve(PROJECT_ROOT, "src", "base"),
+            "node_modules",
+        ], // match tsconfig.baseUrl
     },
-    watchOptions: {
-        ignored: [ "node_modules", ],
+    module: { rules: MODULE_RULES(), },
+    devtool: <webpack.Options.Devtool>(PACK_MODE === "production")
+        ? "nosources-source-map"
+        : "eval-source-map",
+    output: {
+        path:           path.resolve(PROJECT_ROOT, "dist", distSubFolder),
+        publicPath:     `dist/${distSubFolder}/`, // need trailing "/".
+        filename:       "[name].js",
+        chunkFilename:  "chunk/[name].js",
+        library:        "snakey3",
+        pathinfo: false, // unneeded. minor performance gain.
     },
-    module: { rules: MODULE_RULES, },
+
+    // https://webpack.js.org/guides/caching/
+    // https://webpack.js.org/configuration/other-options/#cache
+    cache: true,
     optimization: {
         // runtimeChunk: {
         //     name: entrypoint => `${entrypoint.name}/runtime`,
         // } as webpack.Options.RuntimeChunkOptions,
         //mergeDuplicateChunks: true,
     },
-    output: {
-        path:           path.resolve(PROJECT_ROOT, "dist"),
-        publicPath:     "dist/", // lol webpack fails without the trailing slash.
-        filename:       "[name]/index.js",
-        chunkFilename:  "[name]/index.js",
-        library:        "snakey3",
-        pathinfo: false, // don't need it. suppression yields small performance gain.
+    watchOptions: {
+        ignored: [ "node_modules", ],
     },
 }; };
 
@@ -155,15 +153,13 @@ const BaseConfig: () => Require<webpack.Configuration,
  * - `externals: [ nodeExternals(), ],` or something like `[ "socket.io-client", ]`
  * - appropriate plugin entries for the index.html file.
  */
-const webBundleConfig = BaseConfig(); {
-    const config  = webBundleConfig;
+const CLIENT_CONFIG = __BaseConfig("client"); {
+    const config  = CLIENT_CONFIG;
     config.target = "web";
-    config.name   = "src-web";
-    config.externals = [ ]; // "socket.io-client"
 
     const htmlPluginArgs: HtmlPlugin.Options = {
         template:   "./index.ejs",
-        filename:   "../index.html",
+        filename:   path.resolve(PROJECT_ROOT, "index.html"),
         base:       ".", // must play nice with path configs.
         favicon:    "./assets/favicon.ico",
         scriptLoading: "defer",
@@ -176,10 +172,12 @@ const webBundleConfig = BaseConfig(); {
         }; },
         //hash: true,
     };
-    config.entry["client"] = `./src/client/index.ts`;
+    config.entry["index"] = `./src/client/index.ts`;
+    config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
     config.plugins.push(new HtmlPlugin(htmlPluginArgs));
     config.plugins.push(new MiniCssExtractPlugin({
         filename: "index.css",
+        chunkFilename: "chunk/[name].css"
     }));
     if (PACK_MODE === 'production') {
         config.plugins.push(new OptimizeCssAssetsPlugin({
@@ -201,43 +199,34 @@ const webBundleConfig = BaseConfig(); {
  *
  * @param config -
  */
-const NODE_CONFIG = (config: ReturnType<typeof BaseConfig>): void => {
+const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>): void => {
     config.target = "node";
-    config.resolve.modules!.push("node_modules");
-    config.resolve.extensions!.push(".js");
     // alternative to below: https://www.npmjs.com/package/webpack-node-externals
-    config.externals = fs.readdirSync(path.resolve(PROJECT_ROOT, "node_modules"));
+    config.externals = [ nodeExternals(), ],
+    config.resolve.extensions!.push(".js");
+    config.node = {
+        __filename: false,
+        __dirname: false,
+        global: false,
+    };
 };
 
 /**
  * ## Node Bundles
  */
-const nodeBundleConfig = BaseConfig(); {
-    const config = nodeBundleConfig;
-    config.name = "src-node";
-    NODE_CONFIG(config);
-    (<const>[ "server", ]).forEach((name) => {
-        config.entry[name] = `./src/${name}/index.ts`;
-    });
+const SERVER_CONFIG = __BaseConfig("server"); {
+    const config = SERVER_CONFIG;
+    __applyCommonNodeConfigSettings(config);
+    config.entry["index"] = `./src/server/index.ts`;
 }
 
 /**
  * ## Test Bundles
- *
- * See the node settings.
- *
- * Emit all test bundles under a single folder.
  */
-const testBundleConfig = BaseConfig(); {
-    const config = testBundleConfig;
-    config.name = "test";
-    config.resolve.modules = [
-        path.resolve(PROJECT_ROOT, "src", "base"),
-        path.resolve(PROJECT_ROOT, "src"),
-        PROJECT_ROOT,
-    ];
-    NODE_CONFIG(config);
-    config.output.path = path.resolve(PROJECT_ROOT, "dist", "test");
+const TEST_CONFIG = __BaseConfig("test"); {
+    const config = TEST_CONFIG;
+    config.resolve.modules!.push(path.resolve(PROJECT_ROOT, "src"));
+    __applyCommonNodeConfigSettings(config);
     (<const>[ "lang", ]).forEach((name) => {
         config.entry[name] = `./test/${name}/index.ts`;
     });
@@ -246,8 +235,8 @@ const testBundleConfig = BaseConfig(); {
 
 
 module.exports = [
-    webBundleConfig,
+    CLIENT_CONFIG,
     // TODO.build Uncomment these pack configs when we get to using them.
-    //nodeBundleConfig,
-    //testBundleConfig,
+    SERVER_CONFIG,
+    //TEST_CONFIG,
 ];

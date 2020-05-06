@@ -4,19 +4,20 @@ import { Korean } from "base/lang/impl/Korean";
 
 
 export namespace Lang {
-
-    // const eng = English.getInstance();
-    // console.log(eng);
-
-    // const jpnH = Japanese.Hiragana.getInstance();
-    // console.log(jpnH);
-
-    // const jpnK = Japanese.Katakana.getInstance();
-    // console.log(jpnK);
-
-    const korD = Korean.Dubeolsik.getInstance();
-    korD.reset();
-    console.log(korD.simpleView());
-    debugger;
-
+    // PRINT ALL THE LANGS !!!
+    [
+        English.Lowercase,
+        English.MixedCase,
+        Japanese.Hiragana,
+        Japanese.Katakana,
+        Korean.Dubeolsik,
+        Korean.Sebeolsik,
+        Korean.Romanization,
+    ]
+    .forEach((langImpl) => {
+        const inst = langImpl.getInstance();
+        inst.reset();
+        console.log(inst.simpleView());
+        debugger;
+    });
 }

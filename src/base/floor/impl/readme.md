@@ -34,6 +34,8 @@ export namespace SysName {
             // typed field definitions
         }>;
     }
+    Object.freeze(Coord);
+    Object.freeze(Coord.prototype);
     ...
 }
 ```
@@ -48,10 +50,11 @@ Import your system namespace, and add entries to `Coord` and `Coord.Bare` for th
 
 ```typescript
 // coord-related imports
+import { applyMixins } from "defs/TypeDefs";
 import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
 import { Grid as AbstractGrid } from "../Grid";
-import { VisibleGrid } from "../VisibleGrid";
+import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
 
 // documentation
 export namespace SysName {
@@ -99,8 +102,15 @@ export namespace SysName {
                 // Set up DOM fields for rendering the grid.
             }
         }
+        export interface Visible extends VisibleGridMixin<S> { };
+        applyMixins(Visible, [VisibleGridMixin]);
+        Object.freeze(Visible);
+        Object.freeze(Visible.prototype);
     }
+    Object.freeze(Grid);
+    Object.freeze(Grid.prototype);
 }
+Object.freeze(SysName);
 ```
 
 **In [`Grid.ts`](../Grid.ts)**

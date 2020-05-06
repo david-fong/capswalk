@@ -1,0 +1,62 @@
+
+.screen-home {
+    display:        flex;
+}
+
+.screen-home--nav {
+    --spacing: 6px;
+    --border-radius: 15px;
+    height: 30em; max-height: 80vmin;
+    width:  30em; max-width:  80vmin;
+    display:        grid;
+    grid-template:
+    "pofl pofl pofl ponl" 3fr
+    "tuto tuto tuto .   " 1fr
+    "colr colr colr .   " 1fr
+    "repo bugs .    .   " 1fr
+    / 1fr  1fr  1fr  3fr  ;
+    background-color: var(--colour-mainBg);
+    padding: var(--spacing);
+    border-radius: calc(
+        var(--border-radius) + (2.0 * var(--spacing))
+    );
+}
+.screen-home--nav > * {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    margin:  var(--spacing);
+    border:  0px double var(--colour-tileBg);
+    color:              var(--colour-mainFg);
+    background-color:   var(--colour-tileBg);
+    transition: all 0.15s ease-in;
+}
+/* Note: The javascript focuses these on pointer entry. */
+.screen-home--nav > :focus {
+    outline:        none;
+    border-color:   var(--colour-tileBd);
+    box-shadow: inset 0px 0px 20px #00000040;
+    text-shadow: 0px 0px 8px #000000ff;
+    animation: 0.4s ease-in-out -0.5s infinite alternate nav-button-focus;
+}
+.screen-home--nav:focus-within > :not(:focus) {
+    filter:         brightness(0.9);
+    opacity:        0.6;
+}
+.screen-home--nav--play-offline  { grid-area: pofl; }
+.screen-home--nav--play-online   { grid-area: ponl; }
+.screen-home--nav--tutorial      { grid-area: tuto; }
+.screen-home--nav--colour-scheme { grid-area: colr; }
+.screen-home--nav--goto-repo     { grid-area: repo; }
+.screen-home--nav--report-issue  { grid-area: bugs; }
+
+@keyframes nav-button-focus {
+    from {
+        margin: calc(var(--spacing) / 3.0);
+        border-width: calc(1.2 * var(--spacing));
+    }
+    to {
+        margin: calc(var(--spacing) * 2.0 / 3.0);
+        border-width: calc(1.4 * var(--spacing));
+    }
+}

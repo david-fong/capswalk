@@ -19,3 +19,12 @@ body {
 table {
     border-spacing: 0;
 }
+button {
+    font:       inherit;
+    color:      inherit;
+    padding:    0px;
+    background-color: var(--colour-tileBg);
+}
+button:disabled {
+    opacity:    0.7;
+}

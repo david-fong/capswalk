@@ -1,4 +1,4 @@
-import { Lang as __Lang } from "utils/TypeDefs";
+import { Lang as __Lang } from "defs/TypeDefs";
 
 import { LangSeqTreeNode } from "lang/LangSeqTreeNode";
 
@@ -43,19 +43,26 @@ export abstract class Lang extends __Lang {
 
 
     /**
-     * _Does not call reset._
-     *
      * @param classIf -
      * @param forwardDict - Weights are _relative_ values handled by
      *      {@link LangSeqTreeNode}, which requires the provided values
      *      to all be strictly positive values. They do not all need
      *      to sum to a specific value such as 100.
      */
-    protected constructor(classIf: Lang.ClassIf, forwardDict: Lang.CharSeqPair.WeightedForwardMap) {
+    protected constructor(
+        classIf: Lang.ClassIf,
+        forwardDict: Lang.CharSeqPair.WeightedForwardMap,
+    ) {
         super();
-        this.static = classIf;
-        this.treeMap = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
-        this.leafNodes = this.treeMap.getLeafNodes();
+        this.static     = classIf;
+        this.treeMap    = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
+        this.leafNodes  = this.treeMap.getLeafNodes();
+        if (this.leafNodes.length !== this.static.frontend.numLeaves) {
+            throw new Error(`maintenance required: the frontend constant`
+            + ` for the language \"${this.static.frontend.id}\" needs to`
+            + ` be updated to the correct, computed value, which is`
+            + ` \`${this.leafNodes.length}\`.`);
+        }
     }
 
     public reset(): void {
@@ -151,27 +158,23 @@ export abstract class Lang extends __Lang {
 
     public simpleView(): object {
         return Object.assign(Object.create(null), {
-            name: this.static.getName(),
-            desc: this.static.getBlurb(),
+            id: this.static.frontend.id,
+            displayName: this.static.frontend.display,
             root: this.treeMap.simpleView(),
+            numLeaves: this.leafNodes.length,
         });
     }
 
 }
-
-
-
 export namespace Lang {
-
     /**
      * Every constructor function (class literal) implementing the
      * `Lang` class must implement this interface. Ie. These will be
      * implemented as static methods.
      */
     export interface ClassIf {
-        getName(): Lang.Names.Value;
-        getBlurb(): string;
         getInstance(): Lang;
+        readonly frontend: Lang.FrontendDesc;
     };
 
     /**
@@ -208,11 +211,7 @@ export namespace Lang {
 
     export type BalancingScheme = __Lang.BalancingScheme;
 
-    export namespace Names {
-        export type Key   = __Lang.Names.Key;
-        export type Value = __Lang.Names.Value;
-    }
-
+    export type FrontendDesc = __Lang.FrontendDesc;
 }
 Object.freeze(Lang);
 Object.freeze(Lang.prototype);

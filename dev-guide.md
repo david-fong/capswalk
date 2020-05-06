@@ -8,6 +8,7 @@ Update the `version` field in `package.json`.
 ```shell
 git switch gh-pages
 git checkout dev -- .
+# delete old artifacts of folder moving.
 export NODE_ENV='production'
 echo 'y' | rm -r dist/*
 ./scripts/pack.sh -t
@@ -20,14 +21,16 @@ git add -u
 # Force git tracking of dynamic chunks.
 git commit
 git push
+npm publish --dry-run # Check included files.
 npm publish
 ```
 
 ```shell
 # Now let's go back to development:
-git switch -
+git switch dev
 export NODE_ENV='development'
-echo 'y' | rm -r dist/*
+echo 'y' | rm -r dist/{client,server}
+npx tsc -b --force
 ./scripts/pack.sh -t
 ```
 
@@ -36,6 +39,10 @@ TODO.build Should we be maintaining some sort of release notes / making annotate
 ## Coding Style
 
 This is to cover more abstract practices than rules that are covered by linting.
+
+### Markdown
+
+Use single-underscore enclosures to italicize. Use double-asterisk enclosures to embolden.
 
 ### ES6 #private Fields
 

@@ -1,7 +1,8 @@
+import { applyMixins } from "defs/TypeDefs";
 import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
 import { Grid as AbstractGrid } from "../Grid";
-import { VisibleGrid } from "../VisibleGrid";
+import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
 
 
 type S = BaseCoord.System.EUCLID2;
@@ -119,7 +120,6 @@ export namespace Euclid2 {
             });
         }
     }
-
     export namespace Coord {
         export type Bare = Readonly<{
             x: number;
@@ -169,9 +169,11 @@ export namespace Euclid2 {
         }
 
         public forEachTile(consumer: (tile: Tile<S>) => void, thisArg: object = this): void {
-            this.grid.forEach((row) => row.forEach((tile) => {
-                consumer(tile);
-            }, thisArg), thisArg);
+            for (const row of this.grid) {
+                for (const tile of row) {
+                    consumer(tile);
+                }
+            }
         }
 
         public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
@@ -316,7 +318,6 @@ export namespace Euclid2 {
             return new Coord({x,y,});
         }
     }
-
     export namespace Grid {
         /**
          * If `width` is not specified, `height` is taken as its default value.
@@ -327,8 +328,6 @@ export namespace Euclid2 {
         };
 
         export class Visible extends Grid implements VisibleGrid<S> {
-            public readonly baseElem: HTMLElement;
-
             /**
              * @override
              */
@@ -347,9 +346,12 @@ export namespace Euclid2 {
                 this.__VisibleGrid_super(desc, gridElem);
             }
         }
+        export interface Visible extends VisibleGridMixin<S> { };
+        applyMixins(Visible, [VisibleGridMixin,]);
+        Object.freeze(Visible);
+        Object.freeze(Visible.prototype);
     }
     Object.freeze(Grid);
     Object.freeze(Grid.prototype);
-
 }
 Object.freeze(Euclid2);

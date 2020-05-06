@@ -1,5 +1,5 @@
-import { OmHooks } from "browser/OmHooks";
-import type { Lang, Player } from "utils/TypeDefs";
+import { OmHooks } from "defs/OmHooks";
+import type { Lang, Player } from "defs/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
 
@@ -8,56 +8,47 @@ export { Coord } from "./Tile";
 
 /**
  * Implicitly handles visuals with help from CSS.
- *
- * Layers:
- * 0. Invisible cell layer (opaque on visual bell)
- * 1. Empty layer for spotlight mask
- * 2. Player face layer
- * 3. Language Written Character
- * 4. Language Type-able Sequence
- *
- * https://developer.mozilla.org/en-US/docs/Web/CSS/z-index
- * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index
- * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
- *
- * Dataset:
- * Top-level layer has property "scoreValue"
- *
- * @extends Tile
  */
 export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
-    readonly #baseElem:     HTMLElement;
+    readonly #baseElem:             HTMLDivElement;
     private readonly langCharElem:  HTMLDivElement;
     private readonly langSeqElem:   HTMLDivElement;
 
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
         {
-            const baseElem = document.createElement("div");
+            const baseElem
+                = this.#baseElem
+                = document.createElement("div");
             baseElem.classList.add(
-                OmHooks.Tile.Class.BASE,
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
+                OmHooks.Tile.Class.BASE,
             );
-            this.#baseElem = baseElem;
+            baseElem.setAttribute("aria-label", "Tile");
         } {
+            // Pointer hitbox element.
             // Must be the first child. See note in CSS class hook.
-            const pthbElem = document.createElement("div");
-            pthbElem.classList.add(OmHooks.Tile.Class.POINTER_HB);
-            this.#baseElem.appendChild(pthbElem);
+            const pthb = document.createElement("div");
+            pthb.classList.add(OmHooks.Tile.Class.POINTER_HB);
+            pthb.setAttribute("aria-hidden", "true");
+            this.#baseElem.appendChild(pthb);
         } {
-            const charElem = document.createElement("div");
+            const charElem
+                = this.langCharElem
+                = document.createElement("div");
             charElem.classList.add(
                 OmHooks.Tile.Class.LANG_CHAR,
             );
             this.#baseElem.appendChild(charElem);
-            this.langCharElem = charElem;
         } {
-            const seqElem = document.createElement("div");
+            const seqElem
+                = this.langSeqElem
+                = document.createElement("div");
             seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
+            seqElem.setAttribute("role", "tooltip");
             this.#baseElem.appendChild(seqElem);
-            this.langSeqElem = seqElem;
         }
     }
 
@@ -74,7 +65,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     ): void {
         super.__setOccupant(playerId, immigrantInfo);
         // It must go at least before the langChar element so that the
-        // CSS can create a fading trail effect.
+        // CSS can create a fading trail effect. It must go after the
+        // hitbox so that it can be hidden to avoid covering the tooltip.
         this.#baseElem.insertBefore(immigrantInfo.playerElem, this.langCharElem);
         this.langSeqElem.innerText = immigrantInfo.username;
     }
@@ -83,17 +75,10 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     /**
      * @override
      */
-    public visualBell(): void {
-        this.#baseElem; // TODO.impl Use an animation to flash tile element?
-    }
-
-
-    /**
-     * @override
-     */
     public evictOccupant(): void {
         super.evictOccupant();
-        // Undo setting mouseover text to occupant username:
+        // Undo setting mouseover text to something player-related
+        // (See `__setOccupant` for what we did and now need to undo):
         this.langSeqElem.innerText = this.langSeq;
     }
 

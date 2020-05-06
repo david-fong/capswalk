@@ -6,13 +6,43 @@
     major hinderance, then consider making it an HTML
     child of a tile instead of a player (would double
     the number of DOM operations per operator movement. */
+    --colour-spotlight: var(--colour-mainBg);
+    contain: size;
 }
 .player__face {
-    border-color: var(--colour-tileBd);
+    border-color:   var(--colour-tileBd);
+    contain:        strict;
+}
+.player__spotlight-short,
+.player__spotlight-long {
+    will-change: transform;
+}
+.player[data-face="me"] > .player__face {
+    /* Both `contain` and `will-change` are required
+    here to constrain repaints (due to animations) on
+    this element to the smallest possible box. It is
+    also required to put the spotlights on separate
+    compositing layers. */
+    will-change:    transform;
 }
 .player__downed-overlay {
     background-color: red;
     opacity: 0.2;
+}
+.player[data-downed="no"] .player__downed-overlay {
+    visibility: hidden;
+}
+
+/* Only applied for client-side operator player since
+using certain properties will create a new stacking
+context, and we decided that we will allow this for
+such players' face element. */
+/* .player[data-face="me"] > .anim-player__on-move {
+    animation: 0.2s
+            anim-frames-player__on-move;
+} */@keyframes anim-frames-player__on-move {
+     0% { transform: scale(1.1); }
+    37% { transform: scale(1.3); }
 }
 
 
@@ -24,23 +54,30 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
 .player__spotlight-short {
     background-image: radial-gradient(
         farthest-side,
-        transparent 30%, var(--colour-mainBg)
+        transparent 30%, var(--colour-spotlight)
     );
     padding:    1100%;
-    border:     100vmax solid var(--colour-mainBg);
+    border:     100vmax solid var(--colour-spotlight);
 }
 .player__spotlight-long {
     background-image: radial-gradient(
         farthest-side,
-        transparent 15%, var(--colour-mainBg)
+        transparent 15%, var(--colour-spotlight)
     );
     padding:    1700%;
-    border:     100vmax solid var(--colour-mainBg);
+    border:     100vmax solid var(--colour-spotlight);
     opacity:    0.92;
 }
-.player[data-downed="no"] > .player__downed-overlay {
-    visibility: hidden;
+@media print {
+    .player__spotlight-short {
+        visibility: hidden;
+    }
+    .player__spotlight-long {
+        visibility: hidden;
+    }
 }
+
+
 .player[data-face="me"] > .player__face/* ,
 .player[data-face="me"] ~ .tile__char */ {
     background-color: var(--colour-pFaceMe);
@@ -55,9 +92,9 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
 }
 .player[data-face="teammate"][data-downed="team"] > .player__face/* ,
 .player[data-face="teammate"][data-downed="team"] ~ .tile__char */ {
-    background-color: var(--colour-pFaceImmortalTeammate);
+    background-color: var(--colour-pFaceImtlTeammate);
 }
 .player[data-face="opponent"][data-downed="team"] > .player__face/* ,
 .player[data-face="opponent"][data-downed="team"] ~ .tile__char */ {
-    background-color: var(--colour-pFaceImmortalOpponent);
+    background-color: var(--colour-pFaceImtlOpponent);
 }

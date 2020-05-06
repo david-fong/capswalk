@@ -19,21 +19,15 @@ export namespace Japanese {
 
         private static SINGLETON?: Hiragana = undefined;
 
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.JAPANESE__HIRAGANA;
-        }
-
-        public static getBlurb(): string {
-            return ""; // TODO.doc
-        }
-
         public static getInstance(): Hiragana {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Hiragana();
-                delete this.INITIALIZER;
+                (this.INITIALIZER as any) = undefined;
             }
             return this.SINGLETON;
         }
+
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("japn-hir");
 
         /**
          * Values obtained from page 18 of the below pdf (p.499 of text)
@@ -143,21 +137,15 @@ export namespace Japanese {
 
         private static SINGLETON?: Katakana = undefined;
 
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.JAPANESE__KATAKANA;
-        }
-
-        public static getBlurb(): string {
-            return ""; // TODO.doc
-        }
-
         public static getInstance(): Katakana {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Katakana();
-                delete this.INITIALIZER;
+                (this.INITIALIZER as any) = undefined;
             }
             return this.SINGLETON;
         }
+
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("japn-kat");
 
         /**
          * Values obtained from page 19 of the below pdf (p.500 of text)

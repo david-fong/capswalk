@@ -1,0 +1,33 @@
+
+.screen-play {
+    display:        grid;
+    grid-template:
+        "controls main scoreboard" 1fr /
+        minmax( 5em, 1fr)
+        minmax(24em, auto)
+        minmax(12em, 1fr);
+}
+.screen-play--grid-container {
+    grid-area:      main;
+    flex-flow:      column nowrap;
+    min-width:      max-content;
+}
+.screen-play--controls-bar {
+    grid-area:      controls;
+    display:        flex;
+    flex-direction: column;
+    align-items:    stretch;
+}
+.screen-play--scoreboard-bar {
+    grid-area:      scoreboard;
+}
+@media screen and (max-aspect-ratio: 1/1) {
+    .screen-play {
+        grid-template:
+        "main" 1fr
+        "controls scoreboard" 1fr /
+        minmax( 5em, 1fr)
+        minmax(24em, auto)
+        minmax(12em, 1fr);
+    }
+}

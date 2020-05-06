@@ -23,6 +23,6 @@
     "compilerOptions": {
         "baseUrl": "../base",
         "rootDir": "../..",
-        "outDir": "../../dist",
+        "outDir": "../../dist/ts",
     },
 }

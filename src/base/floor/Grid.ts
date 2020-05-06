@@ -1,10 +1,8 @@
-import { OmHooks } from "browser/OmHooks";
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
 import type { Euclid2 } from "./impl/Euclid2";
 import type { Beehive } from "./impl/Beehive";
-import { VisibleGrid } from "floor/VisibleGrid";
 
 
 /**
@@ -29,8 +27,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
     /**
      * Protected. See `Grid.getImplementation` for how to access class
      * literals for construction.
-     *
-     * _Does not call reset._
      *
      * @param desc -
      */
@@ -139,58 +135,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * @param dest -
      */
     public abstract minMovesFromTo(source: Coord.Bare<S>, dest: Coord.Bare<S>): number;
-
-    /**
-     * Note: I would rather have this implementation go under the
-     * `VisibleGrid` class, but I don't want to get into mixins as of
-     * now to get around no-multiple-inheritance.
-     *
-     * @param desc -
-     * @param gridImplElem -
-     */
-    public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridImplElem: HTMLElement): void {
-        const OHG = OmHooks.Grid;
-        gridImplElem.tabIndex = 0;
-        gridImplElem.classList.add(OHG.Class.IMPL_BODY);
-        const parentElem = document.getElementById(desc.domParentHtmlIdHook);
-        if (!parentElem) {
-            throw new RangeError(`The ID \"${desc.domParentHtmlIdHook}\"`
-            + ` did not refer to an existing html element.`);
-        }
-        parentElem.dataset[OHG.Dataset.COORD_SYS] = desc.coordSys;
-        parentElem.classList.add(
-            OHG.Class.GRID,
-            OmHooks.General.Class.TEXT_SELECT_DISABLED,
-            OmHooks.General.Class.CENTER_CONTENTS,
-            OmHooks.General.Class.STACK_CONTENTS,
-        );
-        // Remove all child elements from host and then append the new grid:
-        parentElem.querySelectorAll(`.${OHG.Class.IMPL_BODY}`).forEach((node) => node.remove());
-        parentElem.insertAdjacentElement("afterbegin", gridImplElem);
-        (this as TU.NoRo<Grid<S>> as TU.NoRo<VisibleGrid<S>>).baseElem = gridImplElem;
-        {
-            // Add a "keyboard-disconnected" icon if not added already:
-            // This needs to be a _later_ sibling of gridImplElem.
-            let kbdDcBase: HTMLElement | null = parentElem
-                .querySelector(`:scope .${OHG.Class.KBD_DC_BASE}`);
-            if (!kbdDcBase) {
-                const kbdDcBase = document.createElement("div");
-                kbdDcBase.classList.add(
-                    OHG.Class.KBD_DC_BASE,
-                    OmHooks.General.Class.CENTER_CONTENTS,
-                );
-                // TODO.impl Add an <svg> with icon instead please.
-                {
-                    const kbdDcIcon = document.createElement("div");
-                    kbdDcIcon.classList.add(OHG.Class.KBD_DC_ICON);
-                    kbdDcIcon.innerText = "(click grid to continue typing)";
-                    kbdDcBase.appendChild(kbdDcIcon);
-                }
-                parentElem.appendChild(kbdDcBase);
-            }
-        }
-    }
-
 }
 export namespace Grid {
 
@@ -207,13 +151,12 @@ export namespace Grid {
     // the additions of new coordinate systems.
     // ==============================================================
 
-    export type CtorArgs<S extends Coord.System> = {
+    export type CtorArgs<S extends Coord.System> = Readonly<{
         gridClass: Grid.ClassIf<S>;
         tileClass: Tile.ClassIf<S>;
         coordSys: S;
         dimensions: Dimensions<S>;
-        domParentHtmlIdHook: string;
-    };
+    }>;
 
     /**
      * Used to simulate abstract static methods.

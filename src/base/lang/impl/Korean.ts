@@ -20,24 +20,15 @@ export namespace Korean {
 
         private static SINGLETON?: Dubeolsik = undefined;
 
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.KOREAN__DUBEOLSIK;
-        }
-
-        public static getBlurb(): string {
-            // A paraphrase of a segment from Wikipedia:
-            return "The most common keyboard layout, and South Korea's only Hangul"
-            + " standard since 1969. Consonants are on the left, and vowels on"
-            + " the right.";
-        }
-
         public static getInstance(): Dubeolsik {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Dubeolsik();
-                delete this.KEYBOARD;
+                (this.KEYBOARD as any) = undefined;
             }
             return this.SINGLETON;
         }
+
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-dub");
 
         private static KEYBOARD = Object.freeze(<const>{
             "": "",
@@ -54,10 +45,13 @@ export namespace Korean {
         private constructor() {
             super(
                 Dubeolsik,
-                INITIALIZE((ij, mj, fj) => {
-                    const atoms = [ij, mj, fj,].flatMap((jamos) => jamos.atoms.split(""));
+                INITIALIZE(((ij, mj, fj) => {
+                    const atoms = [ij, mj, fj,].flatMap((jamos) => {
+                        return (jamos.value in Dubeolsik.KEYBOARD)
+                            ? [jamos.value,] : jamos.atoms.split("");
+                    }) as Array<keyof typeof Dubeolsik.KEYBOARD>;
                     return atoms.map((atom) => Dubeolsik.KEYBOARD[atom]).join("");
-                }),
+                }) as SeqBuilder),
             );
         }
     }
@@ -79,32 +73,22 @@ export namespace Korean {
 
         private static SINGLETON?: Sebeolsik = undefined;
 
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.KOREAN__SEBEOLSIK;
-        }
-
-        public static getBlurb(): string {
-            // A paraphrase of a segment from Wikipedia:
-            return "Another Hangul keyboard layout used in South Korea, and the"
-            + " final Sebeolsik layout designed by Dr. Kong Byung Woo, hence"
-            + " the name. Syllable-initial consonants are on the right, final"
-            + " consonants on the left, and vowels in the middle. It is more"
-            + " ergonomic than the dubeolsik, but not widely used.";
-        }
-
         public static getInstance(): Sebeolsik {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Sebeolsik();
-                delete this.KEYBOARD;
+                (this.SEB_KEYBOARD as any) = undefined;
             }
             return this.SINGLETON;
         }
 
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-sub");
+
         /**
          *
          */
-        private static KEYBOARD = Object.freeze(<const>{
-            "FINALS": {
+        private static SEB_KEYBOARD = Object.freeze(<const>{
+            // Finals and consonant clusters are found on the left.
+            FINALS: {
                 "": "",
                 "ㅎ": "1", "ㅆ": "2", "ㅂ": "3", // 1-row
                 "ㅅ": "q", "ㄹ": "w", // q-row
@@ -115,29 +99,36 @@ export namespace Korean {
                 "ㄷ": "A", "ㄶ": "S", "ㄼ": "D", "ㄻ": "F", // A-row
                 "ㅊ": "Z", "ㅄ": "X", "ㅋ": "C", "ㄳ": "V", // Z-row
             },
-            "MEDIALS": {
-                "ㅛ": "4", "ㅠ": "5", "ㅑ": "6", "ㅖ": "7", "ᅴ": "8", // "ㅜ": "9",
+            // Medials are found in the middle.
+            MEDIALS: {
+                "ㅛ": "4", "ㅠ": "5", "ㅑ": "6", "ㅖ": "7", "ㅢ": "8", // "ㅜ": "9",
                 "ㅕ": "e", "ㅐ": "r", "ㅓ": "t", // q-row
                 "ㅣ": "d", "ㅏ": "f", "ㅡ": "g", // a-row
                 "ㅔ": "c", "ㅗ": "v", "ㅜ": "b", // z-row
                 "ㅒ": "G",
+                // Things that don't have dedicated keys:
+                "ㅘ": "vf", "ㅙ": "vr", "ㅚ": "vd", "ㅝ": "bt", "ㅞ": "bc", "ㅟ": "bd"
             },
-            "INITIALS": {
+            // Initials are found on the right.
+            INITIALS: {
                 "ㅋ": "0", // 1-row
                 "ㄹ": "y", "ㄷ": "u", "ㅁ": "i", "ㅊ": "o", "ㅍ": "p", // q-row
                 "ㄴ": "h", "ㅇ": "j", "ㄱ": "k", "ㅈ": "l", "ㅂ": ";", "ㅌ": "'", // a-row
                 "ㅅ": "n", "ㅎ": "m", // z-row
+                "ㄲ": "!",  // !-row
                 // NOTE: If we included numbers, this is where they would go.
+                // Things that don't have dedicated keys:
+                "ㄸ": "uu", "ㅃ": ";;", "ㅆ": "nn", "ㅉ": "l",
             },
         });
 
         private constructor() { super(
             Sebeolsik,
-            INITIALIZE((ij, mj, fj) => {
-                return Sebeolsik.KEYBOARD.INITIALS[ij.value]
-                    + Sebeolsik.KEYBOARD.MEDIALS[mj.value]
-                    + Sebeolsik.KEYBOARD.FINALS[fj.value];
-            }),
+            INITIALIZE(((ij, mj, fj) => {
+                return Sebeolsik.SEB_KEYBOARD.INITIALS[ij.value]
+                    + Sebeolsik.SEB_KEYBOARD.MEDIALS[mj.value]
+                    + Sebeolsik.SEB_KEYBOARD.FINALS[fj.value];
+            }) as SeqBuilder),
         ); }
     }
     Sebeolsik as Lang.ClassIf;
@@ -154,26 +145,14 @@ export namespace Korean {
     export class Romanization extends Lang {
 
         private static SINGLETON?: Romanization = undefined;
-
-        public static getName(): Lang.Names.Value {
-            return Lang.Names.KOREAN__ROMANIZATION;
-        }
-
-        public static getBlurb(): string {
-            // A paraphrase of a segment from Wikipedia:
-            return "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
-            + " 表記法) is the official South Korean language romanization system. It"
-            + " was developed by the National Academy of the Korean Language from 1995,"
-            + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
-            + " and Tourism";
-        }
-
         public static getInstance(): Romanization {
             if (!Romanization.SINGLETON) {
                 Romanization.SINGLETON = new Romanization();
             }
             return Romanization.SINGLETON;
         }
+
+        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-rom");
 
         /**
          * Does nothing.
@@ -186,9 +165,9 @@ export namespace Korean {
 
         private constructor() { super(
             Romanization,
-            INITIALIZE((ij, mj, fj) => {
+            INITIALIZE(((ij, mj, fj) => {
                 return ij.roman + mj.roman + fj.roman;
-            }),
+            }) as SeqBuilder),
         ); }
     }
     Romanization as Lang.ClassIf;
@@ -213,11 +192,7 @@ export namespace Korean {
      *      suitable for consumption by the {@link Lang} constructor.
      */
     const INITIALIZE = (
-        seqBuilder: { (
-            ij: typeof INITIALS[number],
-            mj: typeof MEDIALS[number],
-            fj: typeof FINALS[number],
-        ): Lang.Seq, }
+        seqBuilder: SeqBuilder,
     ): Lang.CharSeqPair.WeightedForwardMap => {
         const forwardDict: Lang.CharSeqPair.WeightedForwardMap = {};
         INITIALS.forEach((initialJamo, initialIdx) => {
@@ -237,6 +212,11 @@ export namespace Korean {
         });
         return forwardDict;
     };
+    type SeqBuilder = { (
+        ij: typeof INITIALS[number],
+        mj: typeof MEDIALS[number],
+        fj: typeof FINALS[number],
+    ): Lang.Seq, };
 
     /**
      * # Initial Jamo (Choseong)
@@ -331,9 +311,9 @@ export namespace Korean {
      *
      */
     // TODO.learn
-    const WEIGHTS = {
+    const WEIGHTS = Object.freeze({
         "": 1,
-    };
+    }) as Record<string, number>;
 
 }
 Object.freeze(Korean);

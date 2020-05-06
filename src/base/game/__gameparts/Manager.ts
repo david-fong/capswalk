@@ -7,8 +7,8 @@ import { Player } from "../player/Player";
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
 
-import { English } from "lang/impl/English"; // NOTE: temporary placeholder.
-import { GameEvents } from "game/__gameparts/Events";
+import { GameEvents } from "./Events";
+import { ScoreInfo } from "game/ScoreInfo";
 
 
 /**
@@ -22,6 +22,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
     readonly #freeHealthTiles: Set<Tile<S>>;
 
     public readonly lang: Lang;
+    readonly #langImportPromise: Promise<Lang>;
 
     /**
      * NOTE: Shuffling operations and the
@@ -33,9 +34,9 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      */
     protected readonly langBalancingScheme: Lang.BalancingScheme;
 
+    private readonly scoreInfo: ScoreInfo;
+
     /**
-     * _Does not call reset._
-     *
      * Performs the "no invincible player" check (See {@link Player#teamSet}).
      *
      * @param gameType -
@@ -44,7 +45,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      */
     public constructor(
         gameType: G,
-        impl: Game.ImplArgs<S>,
+        impl: Game.ImplArgs<G,S>,
         desc: Game.CtorArgs<G,S>,
     ) {
         super(gameType, impl, desc);
@@ -52,30 +53,41 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         this.averageFreeHealthPerTile = desc.averageFreeHealthPerTile;
         this.#freeHealthTiles = new Set();
 
-        // TODO.impl Change this to use a dynamic import for a Lang registry dict.
-        // We need to make that registry dict first!
-        this.lang = English.Lowercase.getInstance();
+        // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+        this.#langImportPromise = (import(
+            /* webpackChunkName: "lang/[request]" */
+            `lang/impl/${this.langFrontend.module}.ts`
+        ) /* as Promise<{ readonly [K in Lang.FrontendDesc["export"]]: Lang; }> */)
+        .then((module) => {
+            (this.lang as Lang) = (module
+                [this.langFrontend.module]
+                [this.langFrontend.export]
+            ).getInstance();
 
-        // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
-        const minLangLeaves = this.grid.static.getAmbiguityThreshold();
-        if (this.lang.numLeaves < minLangLeaves) {
-            throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
-            + ` least ${minLangLeaves} were required. The provided mappings`
-            + ` composing the current Lang-under-construction are not`
-            + ` sufficient to ensure that a shuffling operation will always`
-            + ` be able to find a safe candidate to use as a replacement.`
-            + ` Please see the spec for Lang.getNonConflictingChar.`
-            );
-        }
+            // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
+            const minLangLeaves = this.grid.static.getAmbiguityThreshold();
+            if (this.lang.numLeaves < minLangLeaves) {
+                throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
+                + ` least ${minLangLeaves} were required. The provided mappings`
+                + ` composing the current Lang-under-construction are not`
+                + ` sufficient to ensure that a shuffling operation will always`
+                + ` be able to find a safe candidate to use as a replacement.`
+                + ` Please see the spec for Lang.getNonConflictingChar.`
+                );
+            }
+            return this.lang;
+        });
         this.langBalancingScheme = desc.langBalancingScheme;
+
+        this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
     }
 
     /**
      *
      */
-    public reset(): void {
+    public async reset(): Promise<void> {
         // Reset the grid and event record:
-        super.reset();
+        await super.reset();
 
         this.#currentFreeHealth = 0.0;
         this.#freeHealthTiles.clear();
@@ -83,6 +95,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // Reset hit-counters in the current language:
         // This must be done before shuffling so that the previous
         // history of shuffle-ins has no effects on the new pairs.
+        await this.#langImportPromise;
         this.lang.reset();
         // Shuffle everything:
         this.grid.forEachTile((tile) => {
@@ -99,7 +112,8 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             team.members.forEach((member, memberIndex) => {
                 member.reset(this.grid.tile.at(spawnPoints[teamIndex][memberIndex]));
             });
-        })
+        });
+        this.scoreInfo.reset();
 
         // NOTE: This is currently commented out because they'll just
         // spawn as the players start moving. It's not necessary.
@@ -108,6 +122,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         // this.dryRunSpawnFreeHealth([])?.forEach((tileModDesc) => {
         //     this.executeTileModEvent(tileModDesc);
         // })
+        return Promise.resolve();
     }
 
 
@@ -196,7 +211,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
                         lastKnownUpdateId: 1 + tile.lastKnownUpdateId,
                         newCharSeqPair: undefined, // "do not change".
                         newFreeHealth: tile.freeHealth + tileHealthToAdd,
-                    })
+                    });
                 }
             }
             healthToSpawn -= tileHealthToAdd;
@@ -218,10 +233,14 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
      * @override
      */
     protected executeTileModEvent(
-        desc: TileModEvent<S>,
+        desc: Readonly<TileModEvent<S>>,
         doCheckOperatorSeqBuffer: boolean = true,
-    ): void {
+    ): Tile<S> {
+        Object.freeze(desc);
         const tile = this.grid.tile.at(desc.coord);
+        // NOTE: This assertion must be performed before executing
+        // changes by making a supercall or else the previous state
+        // will be gone.
         if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
             // We literally just specified this in processMoveRequest.
             throw new Error("this never happens. see comment in source.");
@@ -233,6 +252,7 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
             this.#freeHealthTiles.add(tile);
         }
         super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
+        return tile;
     }
 
     /**
@@ -288,17 +308,17 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         const player = this.managerCheckGamePlayingRequest(desc);
         if (!player) {
             // Reject the request:
-            this.processMoveExecute(desc);
+            this.executePlayerMoveEvent(desc);
             return;
         }
-        const dest = this.grid.tile.at(desc.dest.coord);
+        const dest = this.grid.tile.at(desc.destModDesc.coord);
         if (dest.isOccupied ||
-            dest.lastKnownUpdateId !== desc.dest.lastKnownUpdateId) {
+            dest.lastKnownUpdateId !== desc.destModDesc.lastKnownUpdateId) {
             // The update ID check is not essential, but it helps
             // enforce stronger client-experience consistency: they cannot
             // move somewhere where they have not realized the `LangSeq` has
             // changed.
-            this.processMoveExecute(desc); // Reject the request.
+            this.executePlayerMoveEvent(desc); // Reject the request.
             return;
         }
         const newPlayerHealthValue
@@ -308,25 +328,33 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         if (newPlayerHealthValue < 0) {
             // Reject a boost-type movement request if it would make
             // the player become downed (or if they are already downed):
-            this.processMoveExecute(desc);
+            this.executePlayerMoveEvent(desc);
             return;
         }
+
+        // Update stats records:
+        const playerScoreInfo = this.scoreInfo.entries[player.playerId];
+        playerScoreInfo.totalHealthPickedUp += dest.freeHealth;
+        playerScoreInfo.moveCounts[desc.moveType] += 1;
 
         // Set response fields according to spec in `PlayerMovementEvent`:
         desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
         desc.newPlayerHealth = {
-            score:  player.status.score  + dest.freeHealth,
             health: newPlayerHealthValue,
         };
-        desc.dest.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
-        desc.dest.newFreeHealth     = 0;
-        desc.dest.newCharSeqPair    = this.dryRunShuffleLangCharSeqAt(dest);
-        desc.tilesWithHealthUpdates = this.dryRunSpawnFreeHealth([desc.dest,]);
+        desc.destModDesc.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
+        desc.destModDesc.newFreeHealth     = 0;
+        desc.destModDesc.newCharSeqPair    = this.dryRunShuffleLangCharSeqAt(dest);
+        desc.tileHealthModDescs = this.dryRunSpawnFreeHealth([desc.destModDesc,]);
 
         // Accept the request, and trigger calculation
         // and enactment of the requested changes:
         desc.eventId = this.nextUnusedEventId;
-        this.processMoveExecute(desc);
+        this.executePlayerMoveEvent(desc);
+    }
+
+    private processPlayerContact(sourceP: Player<S>): PlayerActionEvent.Movement<S>["playerHealthModDescs"] {
+        return undefined!;
     }
 
 
@@ -342,14 +370,14 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         const bubbler = this.managerCheckGamePlayingRequest(desc);
         if (!bubbler) {
             // Reject the request:
-            this.processBubbleExecute(desc);
+            this.executePlayerBubbleEvent(desc);
             return;
         }
         desc.playerLastAcceptedRequestId = (1 + bubbler.lastAcceptedRequestId);
 
         // We are all go! Do it.
         desc.eventId = this.nextUnusedEventId;
-        this.processBubbleExecute(desc);
+        this.executePlayerBubbleEvent(desc);
     }
 
 }

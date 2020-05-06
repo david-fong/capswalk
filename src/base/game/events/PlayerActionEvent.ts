@@ -122,18 +122,22 @@ export namespace PlayerActionEvent {
          * values taken on by the player for these fields.
          */
         public newPlayerHealth?: {
-            score:  Player.Health;
             health: Player.Health;
         } = undefined;
 
-        public readonly dest: TileModEvent<S>;
+        public readonly destModDesc: TileModEvent<S>;
 
         public readonly moveType: Player.MoveType;
 
         /**
          * Undefined is equivalent to an empty array.
          */
-        public tilesWithHealthUpdates?: TU.RoArr<TileModEvent<S>> = undefined;
+        public tileHealthModDescs?: TU.RoArr<TileModEvent<S>> = undefined;
+
+        public playerHealthModDescs?: TU.RoArr<{
+            playerId:  Player.Id;
+            newHealth: Player.Health;
+        }>;
 
         public constructor(
             playerId: Player.Id,
@@ -142,7 +146,7 @@ export namespace PlayerActionEvent {
             moveType: Player.MoveType
         ) {
             super(playerId, lastAcceptedRequestId);
-            this.dest = {
+            this.destModDesc = {
                 coord:              destTile.coord,
                 lastKnownUpdateId:  destTile.lastKnownUpdateId,
                 newCharSeqPair:     undefined,

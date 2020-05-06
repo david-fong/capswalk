@@ -3,12 +3,14 @@
     /* DO NOT create a new stacking context, which
     breaks the spotlight display. */
     pointer-events: none;
+    contain:        size;
 }
 .tile * {
     height: 100%; width: 100%;
 }
 .tile__pointer-hitbox {
     pointer-events: initial;
+    contain:        strict;
     top: 40%; left: 40%;
     /* border-color: black; */
 }
@@ -16,20 +18,23 @@
 .tile__char, .tile__seq, .player__face {
     box-sizing: border-box;
     border: 0.14em solid transparent;
-    border-radius: 16%;
+    border-radius: 0.35em;
 }
+
 .tile__char {
     background-color: var(--colour-tileBg);
     overflow: hidden hidden;
-    transition-property: color, background-color;
-    transition-duration: 0.5s;
-    transition-timing-function: ease-in;
 }
 .tile[data-health] .tile__char {
     border-color:     var(--colour-tileBd);
     color:            var(--colour-healthFg);
     background-color: var(--colour-healthBg);
+
+    transition-property: color, background-color;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in;
 }
+
 .tile__seq {
     padding:    0ch  0.4ch;
     /* bottom:     0%; */
@@ -40,9 +45,12 @@
     border-color: white;
     visibility: hidden;
 }
-.tile__pointer-hitbox:hover ~ .tile__seq {
-    visibility: visible;
+.tile__pointer-hitbox:hover ~ .player > .player__face {
+    visibility: hidden;
 }
 .tile__pointer-hitbox:hover ~ .tile__char {
     color:      transparent;
+}
+.tile__pointer-hitbox:hover ~ .tile__seq {
+    visibility: visible;
 }

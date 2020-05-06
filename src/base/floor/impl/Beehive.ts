@@ -1,7 +1,7 @@
+import { applyMixins } from 'defs/TypeDefs';
 import { Coord as BaseCoord, Tile } from "../Tile";
-import type { VisibleTile } from "floor/VisibleTile";
 import { Grid as AbstractGrid } from "../Grid";
-import { VisibleGrid } from "../VisibleGrid";
+import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
 
 
 type S = BaseCoord.System.BEEHIVE;
@@ -204,7 +204,6 @@ export namespace Beehive {
         };
 
         export class Visible extends Grid implements VisibleGrid<S> {
-            public readonly baseElem: HTMLElement;
             public constructor(desc: AbstractGrid.CtorArgs<S>) {
                 super(desc);
                 const domGrid: HTMLElement = undefined!;
@@ -212,6 +211,10 @@ export namespace Beehive {
                 this.__VisibleGrid_super(desc, domGrid);
             }
         }
+        export interface Visible extends VisibleGridMixin<S> { };
+        applyMixins(Visible, [VisibleGridMixin,]);
+        Object.freeze(Visible);
+        Object.freeze(Visible.prototype);
     }
     Object.freeze(Grid);
     Object.freeze(Grid.prototype);

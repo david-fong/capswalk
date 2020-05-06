@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "CommonJS",
+        "rootDir": ".",
+        "outDir": ".",
+        "listEmittedFiles": true,
+        "incremental": true,
+
+        "removeComments": true,
+        "alwaysStrict": true,
+        "skipLibCheck": true, // time-saving measure.
+
+        // Grammar Checking:
+        "strictNullChecks":     true,
+        "strictFunctionTypes":  true,
+        "noImplicitReturns":    true,
+        "strictBindCallApply":  true,
+        "noImplicitThis":       true,
+    },
+    "files": [
+        "webpack.config.ts"
+    ]
+}

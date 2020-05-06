@@ -10,8 +10,8 @@ import { Player } from "./Player";
 
 
 /**
- *
- * @extends Player
+ * There is at least one in online-client-side and offline games.
+ * There are none for online-server-side games.
  */
 export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
@@ -43,7 +43,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     public constructor(game: GameBase<any,S>, desc: Player.__CtorArgs<"HUMAN">) {
         super(game, desc);
-        this.langRemappingFunc = Lang.RemappingFunctions[this.game.langName];
+        this.langRemappingFunc = this.game.langFrontend.remapFunc;
     }
 
     public reset(spawnTile: Tile<S>): void {
@@ -142,7 +142,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         }
         // Operator's new `seqBuffer` didn't match anything.
         this.#seqBuffer = "";
-        this.hostTile.visualBell();
+        this.status.visualBell();
     }
 
     /**
@@ -155,6 +155,10 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         this.#seqBuffer = "";
         this.prevCoord = this.coord;
         super.moveTo(dest);
+    }
+
+    public __abstractNotifyBecomeCurrent(): void {
+        this.status.__notifyBecomeCurrent(this.game.grid.spotlightElems);
     }
 
 

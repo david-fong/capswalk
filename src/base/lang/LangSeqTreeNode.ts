@@ -1,4 +1,4 @@
-import { Lang as __Lang } from "utils/TypeDefs";
+import { Lang as __Lang } from "defs/TypeDefs";
 import type { Lang } from "./Lang";
 
 
@@ -38,8 +38,6 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
 
 
     /**
-     * _Does not call reset._
-     *
      * @param forwardDict -
      * @returns The root node of a new tree map.
      */
@@ -125,6 +123,9 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      */
     protected addCharMapping(seq: Lang.Seq, chars: TU.RoArr<WeightedLangChar>): void {
         if (!(__Lang.Seq.REGEXP.test(seq))) {
+            // If this errs, and the offending character is one that can
+            // be easily entered on a generic keyboard, don't be afraid
+            // to just add it to the regexp.
             throw new RangeError(`Mapping-sequence \"${seq}\" did not match the`
             + ` required regular expression \"${__Lang.Seq.REGEXP.source}\".`
             );

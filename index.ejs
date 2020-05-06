@@ -1,25 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <title>SnaKey v3</title>
         <meta name="author"         content="David Fong"/>
         <meta name="description"    content="A multiplayer typing game for learning written languages."/>
         <meta name="viewport"       content="width=device-width, initial-scale=1.0"/>
         <meta charset="UTF-8"/>
+        <link rel="manifest" href="manifest.webmanifest"/>
 
         <%= htmlWebpackPlugin.tags.headTags.join("\n        ") %>
         <meta name="og:title"  content="SnaKey v3"/>
         <meta name="og:description" content="A multiplayer typing game for learning written languages."/>
         <meta name="og:image"  content="./assets/images/screenshots/snakey_version3_blanktitle.png"/>
-        <link rel="manifest"   href="manifest.webmanifest"/>
     </head>
 
 
     <body style="margin:0;">
-        <div id="background" class="screen"></div>
-        <div id="game-grid-container" class="center-contents">
-            <div id="game-grid"></div>
-        </div>
+<script>
+{// Load up last used colour scheme (or default):
+const cssl = localStorage.getItem("colourSchemeStyleLiteral");
+const root = document.documentElement;
+if (cssl) { root.setAttribute("style", cssl); }
+else { root.dataset["skColourScheme"] = "snakey"; }
+}</script>
+        <div id="background"  class="sk-screen"></div>
+        <div id="screen-tint" class="sk-screen"></div>
+        <div id="all-screens-container"></div>
         <%= htmlWebpackPlugin.tags.bodyTags.join("\n        ") %>
     </body>
 </html>

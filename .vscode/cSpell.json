@@ -17,6 +17,7 @@
         "typescriptreact"
     ],
     "words": [
+        // Project-specific Terms:
         "snakey",
         "fong",
         "artif",
@@ -29,12 +30,15 @@
         "typeable",
         "unts",
         "engl", "japn", "kore",
+        "smoothstone",
 
+        // Programming terminology:
+        // (Functions and Variables)
         "coord",
         "dict",
         "desc", "descs",
         "dests",
-        "elem",
+        "elem", "elems",
         "minmax",
         "nsps",
         "retval",
@@ -44,6 +48,7 @@
         "typeof",
         "unshift",
 
+        // Tooling and Programming Languages:
         "API's",
         "devtool",
         "entrypoint",
@@ -61,6 +66,7 @@
         "hiragana" , "katakana" ,
         "dubeolsik", "sebeolsik",
 
+        // English:
         "constraining",
         "gameplay",
         "hinderance",
@@ -72,6 +78,7 @@
         "ness",
         "pipelining",
         "placeholder",
+        "presets",
         "programmatically",
         "requester's",
         "screenshots",

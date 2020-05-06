@@ -29,10 +29,13 @@ log("" == null)
 log("" + null)
 
 // what is the length of an array with leading holes?
+// and what does Object.getOwnPropertyNames return on an array?
 a = []
 a[5] = "hi this is five"
 log(a[5], a.length)
-// one plus the index of the last defined entry.
+log(Object.getOwnPropertyNames(a));
+log(Object.keys(a));
+// the length is one plus the index of the last defined entry.
 
 // what is in the `undefined` key of a plain object?
 e = [1, 2, 3,]
@@ -52,9 +55,11 @@ const f = () => {
 }
 log(f());
 e.push("4")
+f().addedtoreturnvalue = "hello?"
 log(f());
-// darn. it does it by value... good to know.
-// well, I guess that's the whole basis of Javascript OOP :/
+// The returned object literal is a new object each time.
+// Of course, the property `e` only _refers_ to an array.
+// The arrow-function does not make a deep copy of `e` unless I tell it to.
 
 // What is the truthiness of an empty array?
 if ([]) {
