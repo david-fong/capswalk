@@ -333,7 +333,9 @@ export abstract class GameManager<G extends Game.Type, S extends Coord.System> e
         }
 
         // Update stats records:
-        this.scoreInfo.entries[player.playerId].totalHealthPickedUp += dest.freeHealth;
+        const playerScoreInfo = this.scoreInfo.entries[player.playerId];
+        playerScoreInfo.totalHealthPickedUp += dest.freeHealth;
+        playerScoreInfo.moveCounts[desc.moveType] += 1;
 
         // Set response fields according to spec in `PlayerMovementEvent`:
         desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);

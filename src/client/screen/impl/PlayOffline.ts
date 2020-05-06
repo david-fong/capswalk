@@ -38,7 +38,15 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
                 familyId:   <const>"HUMAN",
                 teamId:     0,
                 socketId:   undefined,
-                username:   "hello world",
+                username:   "hello world 1",
+                noCheckGameOver: false,
+                familyArgs: { },
+            }, {
+                isALocalOperator: true,
+                familyId:   <const>"HUMAN",
+                teamId:     0,
+                socketId:   undefined,
+                username:   "hello world 2",
                 noCheckGameOver: false,
                 familyArgs: { },
             }, {
@@ -46,7 +54,20 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
                 familyId:   <const>"CHASER",
                 teamId:     1,
                 socketId:   undefined,
-                username:   "chaser test",
+                username:   "chaser test 1",
+                noCheckGameOver: true,
+                familyArgs: {
+                    fearDistance: 5,
+                    bloodThirstDistance: 7,
+                    healthReserve: 3.0,
+                    movesPerSecond: 2.0,
+                }
+            }, {
+                isALocalOperator: false,
+                familyId:   <const>"CHASER",
+                teamId:     1,
+                socketId:   undefined,
+                username:   "chaser test 2",
                 noCheckGameOver: true,
                 familyArgs: {
                     fearDistance: 5,
