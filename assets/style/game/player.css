@@ -29,10 +29,10 @@
 using certain properties will create a new stacking
 context, and we decided that we will allow this for
 such players' face element. */
-.player[data-face="me"] > .anim-player__on-move {
+/* .player[data-face="me"] > .anim-player__on-move {
     animation: 0.2s
             anim-frames-player__on-move;
-}@keyframes anim-frames-player__on-move {
+} */@keyframes anim-frames-player__on-move {
      0% { transform: scale(1.1); }
     37% { transform: scale(1.3); }
 }

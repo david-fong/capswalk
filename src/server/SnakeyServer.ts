@@ -50,7 +50,8 @@ export class SnakeyServer {
         this.app.use("/assets", express.static(path.resolve(PROJECT_ROOT, "assets")));
 
         this.http.listen(<net.ListenOptions>{ port, host, }, (): void => {
-            console.log(`Server mounted to: ${this.http.address()?.toString()}.`);
+            const info = <net.AddressInfo>this.http.address();
+            console.log(`Server mounted to: \`${info.family}${info.address}${info.port}\`.`);
         });
 
         this.io.of(SnakeyNsps.HOST_REGISTRATION)

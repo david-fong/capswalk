@@ -19,6 +19,10 @@ type SID_options = SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE;
 // so that we can disable the pause button.
 export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID> {
 
+    /**
+     * Hosts the implementation-specific grid element, as well as some
+     * other overlays.
+     */
     protected readonly gridElem: HTMLElement;
 
     private readonly backToHomeButton: HTMLButtonElement;
@@ -160,20 +164,33 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
 
 
     private statusBecomePlaying(): void {
+        const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePlaying();
         this.pauseButton.innerText  = "Pause";
         this.#pauseReason           = undefined;
+        this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
+
         this.pauseButton.onclick    = this.statusBecomePaused.bind(this);
         this.resetButton.disabled   = true;
         this.gridElem.focus();
     }
 
     private statusBecomePaused(): void {
+        const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePaused();
-        this.pauseButton.innerText  = "Unpause";
-        this.#pauseReason           = document.hidden ? "page-hide" : "other";
+        this.pauseButton.innerText = "Unpause";
+        this.#pauseReason = document.hidden ? "page-hide" : "other";
+        this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
+
         this.pauseButton.onclick    = this.statusBecomePlaying.bind(this);
         this.resetButton.disabled   = false;
+    }
+
+    // TODO.impl pass this to the created game.
+    public __onGameBecomeOver(): void {
+        const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
+        this.pauseButton.disabled = true;
+        this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.OVER;
     }
 
     /**
@@ -256,7 +273,7 @@ export namespace __PlayScreen {
             const kbdDcBase = document.createElement("div");
             kbdDcBase.classList.add(
                 CssFx.CENTER_CONTENTS,
-                OmHooks.Grid.Class.KBD_DC_BASE,
+                OmHooks.Grid.Class.KBD_DC,
             );
             // TODO.impl Add an <svg> with icon instead please.
             {
@@ -266,6 +283,21 @@ export namespace __PlayScreen {
                 kbdDcBase.appendChild(kbdDcIcon);
             }
             gridElem.appendChild(kbdDcBase);
+        } {
+            // Add a "keyboard-disconnected" overlay if not added already:
+            const pauseOl = document.createElement("div");
+            pauseOl.classList.add(
+                CssFx.CENTER_CONTENTS,
+                OmHooks.Grid.Class.PAUSE_OL,
+            );
+            // TODO.impl Add an <svg> with icon instead please.
+            {
+                const pauseIcon = document.createElement("div");
+                pauseIcon.classList.add(OmHooks.Grid.Class.PAUSE_OL_ICON);
+                pauseIcon.innerText = "(The Game is Paused)";
+                pauseOl.appendChild(pauseIcon);
+            }
+            gridElem.appendChild(pauseOl);
         }
         centerColElem.appendChild(gridElem);
 

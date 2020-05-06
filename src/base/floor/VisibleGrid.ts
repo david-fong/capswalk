@@ -61,7 +61,7 @@ export class VisibleGridMixin<S extends Coord.System> {
     public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridImplElem: HTMLElement): void {
         const OHG = OmHooks.Grid;
         gridImplElem.classList.add(OHG.Class.IMPL_BODY);
-        gridImplElem.dataset[OHG.Dataset.COORD_SYS] = desc.coordSys;
+        gridImplElem.dataset[OHG.Dataset.IMPL_COORD_SYS] = desc.coordSys;
         (this.baseElem as HTMLElement) = gridImplElem;
     }
 }

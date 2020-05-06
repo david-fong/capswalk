@@ -20,3 +20,4 @@ Turn on "Paint Flashing" in a browser inspector. */
 .player__spotlight-short        { z-index:  10; } /* SPOTLIGHT (short-range) */
 
 .game-grid-kbd-dc               { z-index:   1; }
+.game-grid-pause-overlay        { z-index:   2; }

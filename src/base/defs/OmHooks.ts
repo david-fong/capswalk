@@ -45,15 +45,24 @@ export namespace OmHooks {
         export const Class = <const>{
             GRID:           "game-grid",
             IMPL_BODY:      "game-grid-impl-body",
-            KBD_DC_BASE:    "game-grid-kbd-dc",
+            KBD_DC:         "game-grid-kbd-dc",
             KBD_DC_ICON:    "game-grid-kbd-dc__icon",
+            PAUSE_OL:       "game-grid-pause-overlay",
+            PAUSE_OL_ICON:  "game-grid-pause-overlay__icon",
         };
         export const Dataset = <const>{
             /**
              * Used as a part of CSS selector queries to specify coord-
-             * system-specific styling.
+             * system-specific styling. This is set on the `impl-body`
+             * element. See `VisibleGridMixin`.
              */
-            COORD_SYS:  "coordSys",
+            IMPL_COORD_SYS:  "coordSys",
+            /**
+             * This is set on the `game-grid` element by `__PlayScreen`.
+             */
+            GAME_STATE: { KEY: "gameState", VALUES: <const>{
+                PLAYING: "playing", PAUSED: "paused", OVER: "over",
+            },},
         };
     }
 
@@ -66,9 +75,9 @@ export namespace OmHooks {
             LONG_SPOTLIGHT: "player__spotlight-long",
         };
         export const Dataset = <const>{
-            DOWNED: Object.assign("downed", <const>{
+            DOWNED: { KEY: "downed", VALUES: <const>{
                 TEAM: "team", SELF: "self", NO: "no",
-            }),
+            },},
             FACE_SWATCH:    "face",
         };
     }
@@ -90,8 +99,7 @@ export namespace OmHooks {
                     SCREEN:         "screen-home",
                     NAV:            "screen-home--nav",
                     NAV_PLAY_OFFLINE:"screen-home--nav--play-offline",
-                    NAV_JOIN_ONLINE:"screen-home--nav--join-online",
-                    NAV_HOST_ONLINE:"screen-home--nav--host-online",
+                    NAV_PLAY_ONLINE:"screen-home--nav--play-online",
                     NAV_TUTORIAL:   "screen-home--nav--tutorial",
                     NAV_COLOURS:    "screen-home--nav--colour-scheme",
                     NAV_VIEW_REPO:  "screen-home--nav--goto-repo",
