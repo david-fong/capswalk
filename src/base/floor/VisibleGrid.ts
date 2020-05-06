@@ -48,7 +48,8 @@ export class VisibleGridMixin<S extends Coord.System> {
      * Contains the implementation-dependant HTML representation of
      * the grid.
      */
-    readonly baseElem: HTMLElement;
+    public readonly baseElem: HTMLElement;
+    public readonly spotlightElems: TU.RoArr<HTMLElement>;
 
     /**
      * Note: I would rather have this implementation go under the
@@ -63,6 +64,13 @@ export class VisibleGridMixin<S extends Coord.System> {
         gridImplElem.classList.add(OHG.Class.IMPL_BODY);
         gridImplElem.dataset[OHG.Dataset.IMPL_COORD_SYS] = desc.coordSys;
         (this.baseElem as HTMLElement) = gridImplElem;
+
+        // Initialize spotlight elements:
+        const sslElem = document.createElement("div");
+        sslElem.classList.add(OmHooks.Player.Class.SHORT_SPOTLIGHT);
+        const lslElem = document.createElement("div");
+        lslElem.classList.add(OmHooks.Player.Class.LONG_SPOTLIGHT);
+        (this.spotlightElems as TU.RoArr<HTMLElement>) = Object.freeze([ sslElem, lslElem, ]);
     }
 }
 Object.freeze(VisibleGridMixin);

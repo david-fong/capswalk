@@ -38,7 +38,7 @@
         "dict",
         "desc", "descs",
         "dests",
-        "elem",
+        "elem", "elems",
         "minmax",
         "nsps",
         "retval",

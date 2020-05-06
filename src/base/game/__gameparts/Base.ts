@@ -24,7 +24,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly players: TU.RoArr<Player<S>>;
 
-    // TODO.design a method to rotate the current operator.
     public readonly operators: TU.RoArr<OperatorPlayer<S>>;
     #currentOperator: OperatorPlayer<S> | undefined;
 
@@ -66,7 +65,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.players = this.createPlayers(desc);
 
         this.operators = this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[];
-        this.#currentOperator = this.operators[0];
+        this.currentOperator = this.operators[0];
         if (this.operators.some((op) => op.teamId !== this.operators[0].teamId)) {
             // Currently requiring this because the current visual colouring
             // is initialized based on whether a player is on the operator's
@@ -183,6 +182,18 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
 
     public get currentOperator(): OperatorPlayer<S> | undefined {
         return this.#currentOperator;
+    }
+    /**
+     * Passing `undefined` or the current operator has no effect.
+     */
+    public set currentOperator(nextOperator: OperatorPlayer<S> | undefined) {
+        if (nextOperator
+            && this.currentOperator !== nextOperator
+            && this.operators.includes(nextOperator))
+        {
+            this.#currentOperator = nextOperator;
+            nextOperator.__abstractNotifyBecomeCurrent();
+        }
     }
 
 

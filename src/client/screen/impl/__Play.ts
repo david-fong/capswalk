@@ -15,8 +15,7 @@ type SID_options = SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE;
  * which are bound to buttons and maintain other invariants between
  * the game's state and the UI's state.
  */
-// TODO: make a hook in the Game class hierarchy that gets called when the game is over
-// so that we can disable the pause button.
+// TODO.impl change the document title base on game state.
 export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID> {
 
     /**
@@ -52,10 +51,14 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     protected abstract readonly wantsAutoPause: boolean;
     /**
      * Automatically added and removed from listeners when entering
-     * and leaving this screen. Automatically removed before leaving
-     * the webpage to improve performance.
+     * and leaving this screen.
      */
     readonly #onVisibilityChange: VoidFunction;
+    /**
+     * Automatically added and removed from listeners when entering
+     * and leaving this screen.
+     */
+    readonly #gridOnKeyDown: (ev: KeyboardEvent) => boolean;
     /**
      * Undefined when the game is playing.
      */
@@ -71,7 +74,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         );
         this.baseElem.setAttribute("aria-label", "Play Game Screen");
 
-        const centerColItems = __PlayScreen.createCenterColElem(this.gridKeyDownCallback.bind(this));
+        const centerColItems = __PlayScreen.createCenterColElem();
         (this.gridElem as HTMLElement) = centerColItems.gridElem;
         this.baseElem.appendChild(centerColItems.baseElem);
         // ^Purposely make the grid the first child so it gets tabbed to first.
@@ -80,6 +83,8 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         this.initializeScoresBar();
 
         // @ts-ignore Assignment to readonly property.
+        // We can't use a type assertion to cast off the readonly-ness
+        // because it messed up the transpilation for #private fields.
         this.#onVisibilityChange = () => {
             if (!this.wantsAutoPause) return;
             if (document.hidden) {
@@ -88,6 +93,9 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
                 if (this.#pauseReason === "page-hide") this.statusBecomePlaying();
             }
         }
+        // @ts-ignore Assignment to readonly property.
+        // See above note.
+        this.#gridOnKeyDown = this.__gridKeyDownCallback.bind(this);
     }
 
     /**
@@ -102,6 +110,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
             // TODO.design Are there ways we can share more code between
             // implementations by passing common arguments?
             this.#currentGame = await this.__createNewGame();
+            this.gridElem.addEventListener("keydown", this.#gridOnKeyDown);
             const resetPromise = this.currentGame!.reset();
 
             // Wait until resetting has finished before attaching the
@@ -131,7 +140,13 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
             return false;
         }
         document.removeEventListener("visibilitychange", this.#onVisibilityChange);
-        this.releaseCurrentGame();
+
+        // Release the game:
+        for (const elem of Object.values(this.currentGame!.htmlElements)) {
+            elem.remove();
+        }
+        this.gridElem.removeEventListener("keydown", this.#gridOnKeyDown);
+        this.#currentGame = undefined;
         return true;
     }
 
@@ -142,19 +157,32 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
 
     protected abstract async __createNewGame(): Promise<Game>;
 
-    protected releaseCurrentGame(): void {
-        for (const elem of Object.values(this.currentGame!.htmlElements)) {
-            elem.remove();
-        }
-        this.#currentGame = undefined;
-    }
 
-
-    private gridKeyDownCallback(ev: KeyboardEvent): boolean {
+    /**
+     * Do not use this directly. See `this.#gridOnKeyDown`.
+     *
+     * Note the uses of typescript `!` assertion instead of the nullish
+     * coalescing operator for `this.currentGame`. This is safe because
+     * this callback is managed by the screen-enter and leave hooks to
+     * only be registered when the current game is defined.
+     *
+     * @param ev -
+     */
+    private __gridKeyDownCallback(ev: KeyboardEvent): boolean {
         // console.log(`key: ${ev.key}, code: ${ev.code},`
         // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
         // + ` charCode: ${ev.charCode}`);
-        this.currentGame?.currentOperator.processKeyboardInput(ev);
+        if (ev.ctrlKey && ev.key === " ") {
+            // If switching operator:
+            const operators = this.currentGame!.operators;
+            this.currentGame!.currentOperator = operators[
+                (operators.indexOf(this.currentGame!.currentOperator) + 1)
+                % operators.length
+            ];
+        } else {
+            // Process event as regular typing:
+            this.currentGame!.currentOperator.processKeyboardInput(ev);
+        }
         // Disable scroll-down via spacebar:
         if (ev.key === " ") {
             ev.preventDefault();
@@ -250,9 +278,8 @@ export namespace __PlayScreen {
     /**
      *
      */
-    export function createCenterColElem(
-        gridKeyDownCallback: GlobalEventHandlers["onkeydown"],
-    ): { baseElem: HTMLElement, gridElem: HTMLElement, }
+    export function createCenterColElem():
+    { baseElem: HTMLElement, gridElem: HTMLElement, }
     {
         const CssFx = OmHooks.General.Class;
         const centerColElem = document.createElement("div");
@@ -270,7 +297,6 @@ export namespace __PlayScreen {
             CssFx.TEXT_SELECT_DISABLED,
             OmHooks.Grid.Class.GRID,
         );
-        gridElem.onkeydown = gridKeyDownCallback;
         {
             // Add a "keyboard-disconnected" overlay if not added already:
             const kbdDcBase = document.createElement("div");

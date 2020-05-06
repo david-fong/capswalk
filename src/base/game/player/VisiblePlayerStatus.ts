@@ -5,6 +5,9 @@ import type { Player } from "./Player";
 import { PlayerStatus } from "./PlayerStatus";
 
 
+/**
+ *
+ */
 export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
 
     readonly #baseElem: HTMLElement;
@@ -57,16 +60,6 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         = (player.isALocalOperator) ? "me"
         : (player.teamId === operatorTeamId) ? "teammate" : "opponent";
 
-        // Setup spotlight element:
-        if (player.isALocalOperator) {
-            const sslElem = document.createElement("div");
-            sslElem.classList.add(OmHooks.Player.Class.SHORT_SPOTLIGHT);
-            this.#baseElem.appendChild(sslElem);
-
-            const lslElem = document.createElement("div");
-            lslElem.classList.add(OmHooks.Player.Class.LONG_SPOTLIGHT);
-            this.#baseElem.appendChild(lslElem);
-        }
         (this.__immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
             playerElem: this.#baseElem,
             username: player.username,
@@ -84,6 +77,12 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
     public get immigrantInfo(): Tile.VisibleImmigrantInfo {
         return this.__immigrantInfoCache;
+    }
+
+    public __notifyBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
+        spotlightElems.forEach((elem) => {
+            this.#baseElem.appendChild(elem);
+        });
     }
 
     public visualBell(): void {

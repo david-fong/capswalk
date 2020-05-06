@@ -27,7 +27,7 @@ type G = Game.Type.ONLINE;
 export class OnlineGame<S extends Coord.System>
 extends GameEvents<G,S> implements VisibleGame {
 
-    declare public readonly currentOperator: NonNullable<GameEvents<G,S>["currentOperator"]>;
+    declare public currentOperator: NonNullable<GameEvents<G,S>["currentOperator"]>;
 
     public htmlElements: VisibleGame["htmlElements"];
 

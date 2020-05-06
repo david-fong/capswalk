@@ -26,7 +26,7 @@ type G = Game.Type.OFFLINE;
 export class OfflineGame<S extends Coord.System>
 extends GameManager<G,S> implements VisibleGame {
 
-    declare public readonly currentOperator: NonNullable<GameManager<G,S>["currentOperator"]>;
+    declare public currentOperator: NonNullable<GameManager<G,S>["currentOperator"]>;
 
     public htmlElements: VisibleGame["htmlElements"];
 

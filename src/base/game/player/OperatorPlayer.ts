@@ -10,8 +10,8 @@ import { Player } from "./Player";
 
 
 /**
- *
- * @extends Player
+ * There is at least one in online-client-side and offline games.
+ * There are none for online-server-side games.
  */
 export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
@@ -155,6 +155,10 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         this.#seqBuffer = "";
         this.prevCoord = this.coord;
         super.moveTo(dest);
+    }
+
+    public __abstractNotifyBecomeCurrent(): void {
+        this.status.__notifyBecomeCurrent(this.game.grid.spotlightElems);
     }
 
 
