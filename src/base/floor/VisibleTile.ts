@@ -65,7 +65,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     ): void {
         super.__setOccupant(playerId, immigrantInfo);
         // It must go at least before the langChar element so that the
-        // CSS can create a fading trail effect.
+        // CSS can create a fading trail effect. It must go after the
+        // hitbox so that it can be hidden to avoid covering the tooltip.
         this.#baseElem.insertBefore(immigrantInfo.playerElem, this.langCharElem);
         this.langSeqElem.innerText = immigrantInfo.username;
     }

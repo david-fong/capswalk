@@ -33,17 +33,13 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         // NOTE: Define array entries in order that their
         // buttons should be tabbed through via keyboard.
         (<const>[{
-            text:    "Play Offline", // TODO.impl this should go to the game setup screen.
+            text:    "Offline Single-player", // TODO.impl this should go to the game setup screen.
             cssClass: OMHC.NAV_PLAY_OFFLINE,
             screenId: SkScreen.Id.PLAY_OFFLINE,
         },{
-            text:    "Join an Online Game",
-            cssClass: OMHC.NAV_JOIN_ONLINE,
-            screenId: SkScreen.Id.SESH_JOINER,
-        },{
-            text:    "Host an Online Game",
-            cssClass: OMHC.NAV_HOST_ONLINE,
-            screenId: SkScreen.Id.HOW_TO_HOST,
+            text:    "Online Multi-player",
+            cssClass: OMHC.NAV_PLAY_ONLINE,
+            screenId: (ev: MouseEvent) => {},
         },{
             text:    "Tutorial",
             cssClass: OMHC.NAV_TUTORIAL,
@@ -56,13 +52,13 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         .map<Readonly<{
             text: string;
             cssClass: OMHC[keyof OMHC];
-            screenId: SkScreen.Id;
+            screenId: SkScreen.Id | ((ev: MouseEvent) => void);
         }>>((desc) => Object.freeze(desc))
         .forEach((desc) => {
             const button = document.createElement("button");
-            button.onclick = () => {
+            button.onclick = (desc.screenId instanceof Function) ? desc.screenId : () => {
                 // TODO.impl play a health-up sound.
-                this.requestGoToScreen(desc.screenId, {});
+                this.requestGoToScreen(desc.screenId as SkScreen.Id, {});
             };
             addToNav(button, desc);
         });
@@ -88,9 +84,11 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             a.target = "_blank";
             addToNav(a, desc);
         });
+
         function addToNav(elem: HTMLElement, desc: { text: string, cssClass: string; }): void {
             elem.classList.add(
                 OmHooks.General.Class.CENTER_CONTENTS,
+                OmHooks.General.Class.TEXT_SELECT_DISABLED,
                 desc.cssClass,
             );
             elem.innerText = desc.text;

@@ -8,6 +8,8 @@ import { PlayerStatus } from "./PlayerStatus";
 export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
 
     readonly #baseElem: HTMLElement;
+    readonly #faceElem: HTMLElement;
+    readonly #visualBellAnimations: Animation[];
 
     private readonly __immigrantInfoCache: Tile.VisibleImmigrantInfo;
 
@@ -15,23 +17,32 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     public constructor(player: Player<S>, noCheckGameOver: boolean) {
         super(player, noCheckGameOver);
         {
-            const baseElem = document.createElement("div");
+            const baseElem
+                = this.#baseElem
+                = document.createElement("div");
             baseElem.classList.add(
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
                 OmHooks.Player.Class.BASE,
             );
-            this.#baseElem = baseElem;
         } {
             // Setup face element:
-            const faceElem = document.createElement("div");
+            const faceElem
+                = this.#faceElem
+                = document.createElement("div");
             faceElem.classList.add(OmHooks.Player.Class.FACE);
             this.#baseElem.appendChild(faceElem);
-        } {
-            // Setup downedOverlay element:
-            const dOverlayElem = document.createElement("div");
-            dOverlayElem.classList.add(OmHooks.Player.Class.DOWNED_OVERLAY);
-            this.#baseElem.appendChild(dOverlayElem);
+            const anim = this.#visualBellAnimations = [
+            faceElem.animate(
+                { filter: ["brightness(0.7)", "brightness(1.0)",], },
+                { duration: 300, easing: "ease-out", },
+            ),];
+            {
+                // Setup downedOverlay element:
+                const dOverlayElem = document.createElement("div");
+                dOverlayElem.classList.add(OmHooks.Player.Class.DOWNED_OVERLAY);
+                faceElem.appendChild(dOverlayElem);
+            }
         }
     }
 
@@ -64,7 +75,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     public reset(): void {
         super.reset();
         const DDH = OmHooks.Player.Dataset.DOWNED
-        this.#baseElem.dataset[DDH] = DDH.NO;
+        this.#baseElem.dataset[DDH.KEY] = DDH.VALUES.NO;
         // ^We need to do this explicitly. It won't be done
         // automatically when setting `health` because of the short-
         // circuit=optimization made when `isDowned` hasn't changed.
@@ -75,9 +86,9 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
     public visualBell(): void {
-        this.#baseElem.style.animation = "none";
-        this.#baseElem.offsetHeight; // force reflow O_o
-        this.#baseElem.style.animation = "";
+        window.requestAnimationFrame((time) => {
+            this.#visualBellAnimations.forEach((anim) => anim.play());
+        });
     }
 
 
@@ -91,11 +102,11 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         if (oldIsDowned !== this.isDowned) {
             // CSS integration for Player.isDowned rendering.
             const DDH = OmHooks.Player.Dataset.DOWNED;
-            this.#baseElem.dataset[DDH] = (this.isDowned)
+            this.#baseElem.dataset[DDH.KEY] = (this.isDowned)
                 ? ((this.player.team.elimOrder)
-                    ? DDH.TEAM
-                    : DDH.SELF
-                ) : DDH.NO;
+                    ? DDH.VALUES.TEAM
+                    : DDH.VALUES.SELF
+                ) : DDH.VALUES.NO;
         }
     }
 }
