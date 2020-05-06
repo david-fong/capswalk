@@ -1,6 +1,6 @@
 
 .game-grid-impl-body[data-coord-sys="EUCLID2"] {
-    --track-size: minmax(27px, 1fr);
+    --track-size: minmax(1.67em, 1fr);
     display:    grid;
     grid-template-columns:
         repeat(var(--euclid2-grid-width), var(--track-size));

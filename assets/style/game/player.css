@@ -7,18 +7,34 @@
     child of a tile instead of a player (would double
     the number of DOM operations per operator movement. */
     --colour-spotlight: var(--colour-mainBg);
+    contain: size;
 }
 .player__face {
-    border-color: var(--colour-tileBd);
+    border-color:   var(--colour-tileBd);
+    /* Both the following properties are required
+    to constrain repainting from animations on this
+    element to the smallest possible box: */
+    contain:        strict;
+    will-change:    transform;
 }
 .player__downed-overlay {
     background-color: red;
     opacity: 0.2;
 }
-@keyframes player-visual-bell {
-    from {
+.player[data-downed="no"] .player__downed-overlay {
+    visibility: hidden;
+}
 
-    }
+/* Only applied for client-side operator player since
+using certain properties will create a new stacking
+context, and we decided that we will allow this for
+such players' face element. */
+.player[data-face="me"] > .anim-player__on-move {
+    animation: 0.2s
+            anim-frames-player__on-move;
+}@keyframes anim-frames-player__on-move {
+     0% { transform: scale(1.1); }
+    37% { transform: scale(1.3); }
 }
 
 
@@ -53,9 +69,6 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
     }
 }
 
-.player[data-downed="no"] > .player__downed-overlay {
-    visibility: hidden;
-}
 
 .player[data-face="me"] > .player__face/* ,
 .player[data-face="me"] ~ .tile__char */ {
