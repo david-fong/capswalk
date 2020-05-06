@@ -11,10 +11,18 @@
 }
 .player__face {
     border-color:   var(--colour-tileBd);
-    /* Both the following properties are required
-    to constrain repainting from animations on this
-    element to the smallest possible box: */
     contain:        strict;
+}
+.player__spotlight-short,
+.player__spotlight-long {
+    will-change: transform;
+}
+.player[data-face="me"] > .player__face {
+    /* Both `contain` and `will-change` are required
+    here to constrain repaints (due to animations) on
+    this element to the smallest possible box. It is
+    also required to put the spotlights on separate
+    compositing layers. */
     will-change:    transform;
 }
 .player__downed-overlay {

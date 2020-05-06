@@ -62,8 +62,10 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         await this.__abstractOnBeforeEnter(ctorArgs);
         // ^Wait until the screen has finished setting itself up
         // before entering it.
-        this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
-        this.baseElem.setAttribute("aria-hidden", "false");
+        window.requestAnimationFrame((time) => {
+            this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
+            this.baseElem.setAttribute("aria-hidden", "false");
+        });
     }
 
     /**

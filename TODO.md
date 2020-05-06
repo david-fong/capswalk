@@ -14,6 +14,8 @@
 
 ### High Priority
 
+1. Implement operator switching.
+    - Make the whole client-side only have one copy of the spotlight elements and always give it to the current operator.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.

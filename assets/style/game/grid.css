@@ -8,7 +8,6 @@
     border: 5px double var(--colour-tileBd);
     border-radius:  15px;
     padding: 5px;
-    background-color: var(--colour-mainBg);
 }
 
 .game-grid-impl-body {
@@ -18,12 +17,17 @@
 
 .game-grid-kbd-dc,
 .game-grid-pause-overlay {
-    cursor:     pointer;
     top: 0; left: 0; bottom: 0; right: 0;
     color: var(--colour-tileBd);
     text-shadow: 0em 0.01em  0.5em black;
     background-color: #00000040;
     visibility: hidden;
+}
+.game-grid-kbd-dc {
+    cursor: pointer;
+}
+.game-grid-pause-overlay {
+    cursor: not-allowed;
 }
 
 @media screen {

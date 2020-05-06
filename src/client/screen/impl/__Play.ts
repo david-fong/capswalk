@@ -52,7 +52,8 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     protected abstract readonly wantsAutoPause: boolean;
     /**
      * Automatically added and removed from listeners when entering
-     * and leaving this screen.
+     * and leaving this screen. Automatically removed before leaving
+     * the webpage to improve performance.
      */
     readonly #onVisibilityChange: VoidFunction;
     /**
@@ -116,7 +117,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
             if (this.wantsAutoPause) {
                 setTimeout(() => {
                     if (!document.hidden) this.statusBecomePlaying();
-                }, 1500);
+                }, 1000);
             }
             return;
         })();
@@ -170,9 +171,11 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         this.#pauseReason           = undefined;
         this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
-        this.pauseButton.onclick    = this.statusBecomePaused.bind(this);
-        this.resetButton.disabled   = true;
-        this.gridElem.focus();
+        window.requestAnimationFrame((time) => {
+            this.pauseButton.onclick = this.statusBecomePaused.bind(this);
+            this.resetButton.disabled = true;
+            this.gridElem.focus();
+        });
     }
 
     private statusBecomePaused(): void {

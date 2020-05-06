@@ -8,7 +8,6 @@ import { PlayerStatus } from "./PlayerStatus";
 export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
 
     readonly #baseElem: HTMLElement;
-    readonly #faceElem: HTMLElement;
     readonly #visualBellAnimations: Animation[];
 
     private readonly __immigrantInfoCache: Tile.VisibleImmigrantInfo;
@@ -27,22 +26,24 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
             );
         } {
             // Setup face element:
-            const faceElem
-                = this.#faceElem
-                = document.createElement("div");
+            const faceElem = document.createElement("div");
             faceElem.classList.add(OmHooks.Player.Class.FACE);
-            this.#baseElem.appendChild(faceElem);
-            const anim = this.#visualBellAnimations = [
-            faceElem.animate(
-                { filter: ["brightness(0.7)", "brightness(1.0)",], },
-                { duration: 300, easing: "ease-out", },
-            ),];
+            const anims = this.#visualBellAnimations = (this.player.isALocalOperator) ? [
+                faceElem.animate({
+                    filter: ["brightness(0.7)", "brightness(1.0)",],
+                },{ duration: 300, easing: "ease-in", }),
+                faceElem.animate({
+                    transform: VisiblePlayerStatus.makeWiggleAnimation(10, 2),
+                },{ duration: 270, easing: "ease-out", }),
+            ] : [];
+            // anims.forEach((anim) => anim.pause());
             {
                 // Setup downedOverlay element:
                 const dOverlayElem = document.createElement("div");
                 dOverlayElem.classList.add(OmHooks.Player.Class.DOWNED_OVERLAY);
                 faceElem.appendChild(dOverlayElem);
             }
+            this.#baseElem.appendChild(faceElem);
         }
     }
 
@@ -108,6 +109,13 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
                     : DDH.VALUES.SELF
                 ) : DDH.VALUES.NO;
         }
+    }
+}
+export namespace VisiblePlayerStatus {
+    export function makeWiggleAnimation(pctX: number, numWiggles: number): string[] {
+        const arr = Array(numWiggles * 2).fill(pctX);
+        arr.unshift(0); arr.push(0);
+        return arr.map((n,i) => `translate(${(i%2)?n:-n}%)`);
     }
 }
 Object.freeze(VisiblePlayerStatus);
