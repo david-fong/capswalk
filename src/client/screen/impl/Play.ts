@@ -16,6 +16,7 @@ type SID_options = SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE;
  * the game's state and the UI's state.
  */
 // TODO.impl change the document title base on game state.
+// TODO.impl Allow users to change the spotlight radius via slider.
 export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID> {
 
     /**
@@ -69,9 +70,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
      * @override
      */
     protected __lazyLoad(): void {
-        this.baseElem.classList.add(
-            OmHooks.Screen.Impl.PlayGame.Class.SCREEN,
-        );
+        this.baseElem.classList.add(OmHooks.Screen.Impl.PlayGame.Class.BASE);
         this.baseElem.setAttribute("aria-label", "Play Game Screen");
 
         const centerColItems = __PlayScreen.createCenterColElem();
@@ -101,7 +100,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     /**
      * @override
      */
-    protected __abstractOnBeforeEnter(): Promise<void> {
+    protected __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
         return (async () => {
             document.addEventListener("visibilitychange", this.#onVisibilityChange);
             this.pauseButton.disabled = true;

@@ -1,4 +1,5 @@
 import { SkScreen } from "./SkScreen";
+import { TopLevel } from "../TopLevel";
 
 import {         HomeScreen } from "./impl/Home";
 import {    HowToPlayScreen } from "./impl/HowToPlay";
@@ -25,23 +26,24 @@ export class AllSkScreens {
 
     #currentScreen: SkScreen<SkScreen.Id>;
 
-    public constructor(baseElem: HTMLElement) {
+    public constructor(toplevel: TopLevel, baseElem: HTMLElement) {
         baseElem.setAttribute("role", "presentation");
         // Setting role="presentation" is similar to setting "display: content"
         // Setting aria-hidden="true" is similar to setting "visibility: hidden"
+        const t = toplevel;
         const p = baseElem;
         const f = this.goToScreen.bind(this);
         this.dict = Object.freeze({
-            [ SkScreen.Id.HOME          ]: new         HomeScreen(p,f),
-            [ SkScreen.Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(p,f),
-            [ SkScreen.Id.HOW_TO_HOST   ]: new    HowToHostScreen(p,f),
-            [ SkScreen.Id.COLOUR_CTRL   ]: new   ColourCtrlScreen(p,f),
-            [ SkScreen.Id.SETUP_OFFLINE ]: new SetupOfflineScreen(p,f),
-            [ SkScreen.Id.PLAY_OFFLINE  ]: new  PlayOfflineScreen(p,f),
-            [ SkScreen.Id.GROUP_JOINER  ]: new  GroupJoinerScreen(p,f),
-            [ SkScreen.Id.SETUP_ONLINE  ]: new  SetupOnlineScreen(p,f),
-            [ SkScreen.Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(p,f),
-            [ SkScreen.Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(p,f),
+            [ SkScreen.Id.HOME          ]: new         HomeScreen(t,p,f),
+            [ SkScreen.Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(t,p,f),
+            [ SkScreen.Id.HOW_TO_HOST   ]: new    HowToHostScreen(t,p,f),
+            [ SkScreen.Id.COLOUR_CTRL   ]: new   ColourCtrlScreen(t,p,f),
+            [ SkScreen.Id.SETUP_OFFLINE ]: new SetupOfflineScreen(t,p,f),
+            [ SkScreen.Id.PLAY_OFFLINE  ]: new  PlayOfflineScreen(t,p,f),
+            [ SkScreen.Id.GROUP_JOINER  ]: new  GroupJoinerScreen(t,p,f),
+            [ SkScreen.Id.SETUP_ONLINE  ]: new  SetupOnlineScreen(t,p,f),
+            [ SkScreen.Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(t,p,f),
+            [ SkScreen.Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(t,p,f),
         });
         this.goToScreen(SkScreen.Id.HOME, {});
     }

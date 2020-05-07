@@ -22,12 +22,17 @@ export function applyMixins(derivedCtor: any, baseCtors: any[]) {
 }
 
 
-/**
- *
- */
-export const enum SnakeyNsps {
-    HOST_REGISTRATION = "/host-reg",
-    GROUP_PREFIX = "/group",
+export class SnakeyServer { }
+export namespace SnakeyServer {
+    export const DEFAULT_PORT = 8080;
+    /**
+     * This is placed in this file so that it gets bundled into both the
+     * client and the server code, which both require access to it.
+     */
+    export const enum Nsps {
+        HOST_REGISTRATION   = "/host-reg",
+        GROUP_PREFIX        = "/group",
+    }
 }
 
 

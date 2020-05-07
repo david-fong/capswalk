@@ -18,7 +18,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         type  OMHC = typeof OMHC;
         this.baseElem.classList.add(
             OmHooks.General.Class.CENTER_CONTENTS,
-            OMHC.SCREEN,
+            OMHC.BASE,
         );
         this.baseElem.setAttribute("aria-label", "Home Page Screen");
 

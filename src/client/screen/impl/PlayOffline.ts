@@ -25,8 +25,11 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
         super.__lazyLoad();
     }
 
+    /**
+     * @override
+     */
     protected async __createNewGame(): Promise<OfflineGame<any>> {
-        // TODO.impl fetch special game preset "forNextGame".
+        // TODO.impl use game-setup args passed in from __abstractOnBeforeEnter
         return new (await import(
             /* webpackChunkName: "game/offline" */
             "../../game/OfflineGame"

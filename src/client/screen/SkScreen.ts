@@ -1,13 +1,6 @@
 import { OmHooks } from "defs/OmHooks";
 import type { AllSkScreens } from "./AllSkScreens";
-
-import type {        HomeScreen } from "./impl/Home";
-import type {   HowToPlayScreen } from "./impl/HowToPlay";
-import type {   HowToHostScreen } from "./impl/HowToHost";
-import type {  ColourCtrlScreen } from "./impl/ColourCtrl";
-import type { PlayOfflineScreen } from "./impl/PlayOffline";
-import type { GroupJoinerScreen } from "./impl/GroupJoiner";
-import type {  PlayOnlineScreen } from "./impl/PlayOnline";
+import type { TopLevel } from "../TopLevel";
 
 
 /**
@@ -18,6 +11,8 @@ import type {  PlayOnlineScreen } from "./impl/PlayOnline";
  * references it.
  */
 export abstract class SkScreen<SID extends SkScreen.Id> {
+
+    protected readonly toplevel: TopLevel;
 
     readonly #parentElem: HTMLElement;
 
@@ -37,18 +32,21 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * @param requestGoToDisplay -
      */
     public constructor(
+        toplevel: TopLevel,
         parentElem: HTMLElement,
         requestGoToDisplay: AllSkScreens["goToScreen"],
     ) {
-        this.#hasLazyLoaded = false;
-        this.requestGoToScreen = requestGoToDisplay;
-        this.#parentElem = parentElem;
+        this.toplevel          = toplevel;
+        this.#parentElem        = parentElem;
+        this.requestGoToScreen  = requestGoToDisplay;
+        this.#hasLazyLoaded     = false;
     }
 
     /**
      * **Do not override.**
      */
-    public async enter(ctorArgs: SkScreen.CtorArgs<SID>): Promise<void> {
+    // TODO.learn https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState
+    public async enter(args: SkScreen.CtorArgs<SID>): Promise<void> {
         if (!this.#hasLazyLoaded) {
             const baseElem
                 = (this.baseElem as HTMLElement)
@@ -58,7 +56,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             this.#parentElem.appendChild(baseElem);
         this.#hasLazyLoaded = true;
         }
-        await this.__abstractOnBeforeEnter(ctorArgs);
+        await this.__abstractOnBeforeEnter(args);
         // ^Wait until the screen has finished setting itself up
         // before entering it.
         window.requestAnimationFrame((time) => {
@@ -92,7 +90,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * The default implementation does nothing. Overriding implementations
      * from direct subclasses can safely skip making a supercall.
      */
-    protected async __abstractOnBeforeEnter(ctorArgs: SkScreen.CtorArgs<SID>): Promise<void> { }
+    protected async __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> { }
 
     /**
      * Return false if the leave should be cancelled. This functionality
@@ -124,10 +122,12 @@ export namespace SkScreen {
         PLAY_ONLINE     = "playOnline",
     }
 
-    export type CtorArgs<SID_group extends SkScreen.Id> = any extends SID_group ? never
+    export type CtorArgs<SID_group extends SkScreen.Id>
+    = any extends SID_group ? never
     : { [SID in SID_group]:
-        SID extends SkScreen.Id.PLAY_ONLINE ? PlayOnlineScreen.CtorArgs
-        : SID extends SkScreen.Id ? {} // Placeholder for screens that haven't defined their ctor arg types yet.
+        /* : */ SID extends SkScreen.Id ? {}
+        // ^Placeholder for screens that don't
+        // require any entrance arguments.
         : never
     }[SID_group];
 }

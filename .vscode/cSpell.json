@@ -49,6 +49,7 @@
         "supercall",
         "spec",
         "typeof",
+        "toplevel",
         "unshift",
 
         // Tooling and Programming Languages:

@@ -96,22 +96,27 @@ export namespace OmHooks {
         export namespace Impl {
             export namespace Home {
                 export const Class = <const>{
-                    SCREEN:         "screen-home",
-                    NAV:            "screen-home--nav",
-                    NAV_PLAY_OFFLINE:"screen-home--nav--play-offline",
-                    NAV_PLAY_ONLINE:"screen-home--nav--play-online",
-                    NAV_HOW_TO_PLAY:"screen-home--nav--how-to-play",
-                    NAV_HOW_TO_HOST:"screen-home--nav--how-to-host",
-                    NAV_COLOURS:    "screen-home--nav--colour-scheme",
-                    NAV_VIEW_REPO:  "screen-home--nav--goto-repo",
-                    NAV_RPT_ISSUE:  "screen-home--nav--report-issue",
+                    BASE:               "screen-home",
+                    NAV:                "screen-home--nav",
+                    NAV_PLAY_OFFLINE:   "screen-home--nav--play-offline",
+                    NAV_PLAY_ONLINE:    "screen-home--nav--play-online",
+                    NAV_HOW_TO_PLAY:    "screen-home--nav--how-to-play",
+                    NAV_HOW_TO_HOST:    "screen-home--nav--how-to-host",
+                    NAV_COLOURS:        "screen-home--nav--colour-scheme",
+                    NAV_VIEW_REPO:      "screen-home--nav--goto-repo",
+                    NAV_RPT_ISSUE:      "screen-home--nav--report-issue",
                 };
             }
             export namespace PlayGame {
                 export const Class = <const>{
-                    SCREEN:         "screen-play",
-                    GRID_CONTAINER: "screen-play--grid-container",
-                    CONTROLS_BAR:   "screen-play--controls-bar",
+                    BASE:               "screen-play",
+                    GRID_CONTAINER:     "screen-play--grid-container",
+                    CONTROLS_BAR:       "screen-play--controls-bar",
+                };
+            }
+            export namespace GroupJoiner {
+                export const Class = <const>{
+                    BASE:               "screen-group-joiner",
                 };
             }
         }

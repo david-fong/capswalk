@@ -14,6 +14,7 @@
 
 ### High Priority
 
+1. Make the current screen part of the URL... The hash? Or would I rather use the hash for something else?
 1. Implement the scores/player-listing sidebar in __PlayScreen.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
