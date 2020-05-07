@@ -15,6 +15,9 @@ export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
 
     public readonly sel: ColourCtrlScreen.PickOne;
 
+    /**
+     * @override
+     */
     protected __lazyLoad(): void {
         const sel = new ColourCtrlScreen.PickOne();
         this.baseElem.appendChild(sel.baseElem);

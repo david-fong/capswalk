@@ -1,15 +1,22 @@
 import { SkScreen } from "./SkScreen";
 
-import {        HomeScreen } from "./impl/Home";
-import {   HowToPlayScreen } from "./impl/HowToPlay";
-import {   HowToHostScreen } from "./impl/HowToHost";
-import {  ColourCtrlScreen } from "./impl/ColourCtrl";
-import {   GameSetupScreen } from "./impl/GameSetup";
-import {  SeshJoinerScreen } from "./impl/SeshJoiner";
-import { PlayOfflineScreen } from "./impl/PlayOffline";
-import {  PlayOnlineScreen } from "./impl/PlayOnline";
+import {         HomeScreen } from "./impl/Home";
+import {    HowToPlayScreen } from "./impl/HowToPlay";
+import {    HowToHostScreen } from "./impl/HowToHost";
+import {   ColourCtrlScreen } from "./impl/ColourCtrl";
+// ====:   ~~~ OFFLINE ~~~  :============================
+import { SetupOfflineScreen } from "./impl/SetupOffline";
+import {  PlayOfflineScreen } from "./impl/PlayOffline";
+// ====:   ~~~ ONLINE ~~~~  :============================
+import {  GroupJoinerScreen } from "./impl/GroupJoiner";
+import {  SetupOnlineScreen } from "./impl/SetupOnline";
+import {   GroupLobbyScreen } from "./impl/GroupLobby";
+import {   PlayOnlineScreen } from "./impl/PlayOnline";
 
 
+/**
+ *
+ */
 export class AllSkScreens {
 
     private readonly dict: {
@@ -25,14 +32,16 @@ export class AllSkScreens {
         const p = baseElem;
         const f = this.goToScreen.bind(this);
         this.dict = Object.freeze({
-            [ SkScreen.Id.HOME         ]: new        HomeScreen(p,f),
-            [ SkScreen.Id.HOW_TO_PLAY  ]: new   HowToPlayScreen(p,f),
-            [ SkScreen.Id.HOW_TO_HOST  ]: new   HowToHostScreen(p,f),
-            [ SkScreen.Id.COLOUR_CTRL  ]: new  ColourCtrlScreen(p,f),
-            [ SkScreen.Id.GAME_SETUP   ]: new   GameSetupScreen(p,f),
-            [ SkScreen.Id.PLAY_OFFLINE ]: new PlayOfflineScreen(p,f),
-            [ SkScreen.Id.PLAY_ONLINE  ]: new  PlayOnlineScreen(p,f),
-            [ SkScreen.Id.SESH_JOINER  ]: new  SeshJoinerScreen(p,f),
+            [ SkScreen.Id.HOME          ]: new         HomeScreen(p,f),
+            [ SkScreen.Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(p,f),
+            [ SkScreen.Id.HOW_TO_HOST   ]: new    HowToHostScreen(p,f),
+            [ SkScreen.Id.COLOUR_CTRL   ]: new   ColourCtrlScreen(p,f),
+            [ SkScreen.Id.SETUP_OFFLINE ]: new SetupOfflineScreen(p,f),
+            [ SkScreen.Id.PLAY_OFFLINE  ]: new  PlayOfflineScreen(p,f),
+            [ SkScreen.Id.GROUP_JOINER  ]: new  GroupJoinerScreen(p,f),
+            [ SkScreen.Id.SETUP_ONLINE  ]: new  SetupOnlineScreen(p,f),
+            [ SkScreen.Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(p,f),
+            [ SkScreen.Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(p,f),
         });
         this.goToScreen(SkScreen.Id.HOME, {});
     }

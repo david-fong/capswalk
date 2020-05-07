@@ -5,9 +5,8 @@ import type {        HomeScreen } from "./impl/Home";
 import type {   HowToPlayScreen } from "./impl/HowToPlay";
 import type {   HowToHostScreen } from "./impl/HowToHost";
 import type {  ColourCtrlScreen } from "./impl/ColourCtrl";
-import type {   GameSetupScreen } from "./impl/GameSetup";
-import type {  SeshJoinerScreen } from "./impl/SeshJoiner";
 import type { PlayOfflineScreen } from "./impl/PlayOffline";
+import type { GroupJoinerScreen } from "./impl/GroupJoiner";
 import type {  PlayOnlineScreen } from "./impl/PlayOnline";
 
 
@@ -115,10 +114,14 @@ export namespace SkScreen {
         HOW_TO_PLAY     = "howToPlay",
         HOW_TO_HOST     = "howToHost",
         COLOUR_CTRL     = "colourControl",
-        GAME_SETUP      = "gameSetup",
+        // Offline:     ===================
+        SETUP_OFFLINE   = "setupOffline",
         PLAY_OFFLINE    = "playOffline",
+        // Online:      ===================
+        GROUP_JOINER    = "groupJoiner",
+        SETUP_ONLINE    = "setupOnline",
+        GROUP_LOBBY     = "groupLobby",
         PLAY_ONLINE     = "playOnline",
-        SESH_JOINER     = "sessionJoiner",
     }
 
     export type CtorArgs<SID_group extends SkScreen.Id> = any extends SID_group ? never

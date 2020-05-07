@@ -16,6 +16,9 @@
         "typescript",
         "typescriptreact"
     ],
+    "flagWords": [
+        "hte", "teh"
+    ],
     "words": [
         // Project-specific Terms:
         "snakey",
@@ -76,6 +79,7 @@
         "millis",
         "multiplayer",
         "ness",
+        "passphrase",
         "pipelining",
         "placeholder",
         "presets",

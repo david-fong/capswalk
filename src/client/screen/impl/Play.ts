@@ -164,7 +164,8 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
      * Note the uses of typescript `!` assertion instead of the nullish
      * coalescing operator for `this.currentGame`. This is safe because
      * this callback is managed by the screen-enter and leave hooks to
-     * only be registered when the current game is defined.
+     * only be registered when the current game is defined, since it
+     * doesn't make sense to be called when the game is not defined.
      *
      * @param ev -
      */

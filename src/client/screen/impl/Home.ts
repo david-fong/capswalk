@@ -10,6 +10,9 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 
     private readonly navElem: HTMLElement;
 
+    /**
+     * @override
+     */
     protected __lazyLoad(): void {
         const OMHC = OmHooks.Screen.Impl.Home.Class;
         type  OMHC = typeof OMHC;
@@ -39,11 +42,15 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         },{
             text:    "Online Multi-player",
             cssClass: OMHC.NAV_PLAY_ONLINE,
-            screenId: (ev: MouseEvent) => {},
+            screenId: SkScreen.Id.GROUP_JOINER,
         },{
-            text:    "Tutorial",
-            cssClass: OMHC.NAV_TUTORIAL,
+            text:    "How To Play",
+            cssClass: OMHC.NAV_HOW_TO_PLAY,
             screenId: SkScreen.Id.HOW_TO_PLAY,
+        },{
+            text:    "How To Host",
+            cssClass: OMHC.NAV_HOW_TO_HOST,
+            screenId: SkScreen.Id.HOW_TO_HOST,
         },{
             text:    "Colour Schemes",
             cssClass: OMHC.NAV_COLOURS,

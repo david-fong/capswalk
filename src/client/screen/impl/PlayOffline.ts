@@ -3,7 +3,7 @@ import type { OfflineGame } from "../../game/OfflineGame";
 import { Lang }             from "defs/TypeDefs";
 
 import type { SkScreen } from '../SkScreen';
-import { __PlayScreen } from "./__Play";
+import { __PlayScreen } from "./Play";
 
 
 /**
@@ -13,8 +13,14 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
 
     declare public readonly currentGame: OfflineGame<any> | undefined;
 
+    /**
+     * @override
+     */
     protected readonly wantsAutoPause = true;
 
+    /**
+     * @override
+     */
     protected __lazyLoad(): void {
         super.__lazyLoad();
     }

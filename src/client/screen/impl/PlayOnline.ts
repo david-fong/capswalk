@@ -6,7 +6,7 @@ import type { Coord }       from "floor/Tile";
 import type { OnlineGame } from "../../game/OnlineGame";
 
 import type { SkScreen } from "../SkScreen";
-import { __PlayScreen } from "./__Play";
+import { __PlayScreen } from "./Play";
 
 
 /**
@@ -16,6 +16,9 @@ export class PlayOnlineScreen extends __PlayScreen<SkScreen.Id.PLAY_ONLINE> {
 
     declare public readonly currentGame: OnlineGame<any> | undefined;
 
+    /**
+     * @override
+     */
     protected readonly wantsAutoPause = false;
 
     protected __lazyLoad(): void {
