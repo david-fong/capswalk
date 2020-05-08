@@ -6,6 +6,8 @@ import { SetupScreen } from "./Setup";
  *
  */
 export class SetupOnlineScreen extends SetupScreen<SkScreen.Id.SETUP_ONLINE> {
+
+    public readonly canBeInitialScreen = false;
     ;
 }
 Object.freeze(SetupOnlineScreen);

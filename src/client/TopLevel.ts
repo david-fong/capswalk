@@ -30,7 +30,7 @@ export class TopLevel {
     public get socketIo(): Promise<typeof import("socket.io-client")> {
         return this.#socketIoChunk
         || (this.#socketIoChunk = import(
-            /* webpackChunkName: "vendor/[request]" */
+            /* webpackChunkName: "[request]" */
             "socket.io-client"
         ));
     }

@@ -41,6 +41,9 @@ const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.Plugin>> => { return [
  * https://webpack.js.org/loaders/
  */
 const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
+    test: /\.(md)$/,
+    use: "null-loader",
+},{
     // With ts-loader@7.0.0, you need to set:
     // options.compilerOptions.emitDeclarationsOnly: false
     // options.transpileOnly: false
@@ -63,10 +66,11 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
             // https://github.com/TypeStrong/ts-loader#faster-builds
             transpileOnly: true,
             experimentalWatchApi: true,
+            experimentalFileCaching: true,
         },
     },
     exclude: /node_modules/,
-}, {
+},{
     test: /\.css$/,
     use: ((): webpack.RuleSetUseItem[] => {
         const retval: webpack.RuleSetUse = [ "css-loader", ];
@@ -114,9 +118,10 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
         ], // match tsconfig.baseUrl
     },
     module: { rules: MODULE_RULES(), },
+    // https://webpack.js.org/plugins/source-map-dev-tool-plugin/
     devtool: <webpack.Options.Devtool>(PACK_MODE === "production")
         ? "nosources-source-map"
-        : "eval-source-map",
+        : "cheap-eval-source-map",
     output: {
         path:           path.resolve(PROJECT_ROOT, "dist", distSubFolder),
         publicPath:     `dist/${distSubFolder}/`, // need trailing "/".
@@ -173,6 +178,9 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
         //hash: true,
     };
     config.entry["index"] = `./src/client/index.ts`;
+    config.externals = [ nodeExternals({
+        whitelist: ["socket.io-client",],
+    }), ],
     config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
     config.plugins.push(new HtmlPlugin(htmlPluginArgs));
     config.plugins.push(new MiniCssExtractPlugin({

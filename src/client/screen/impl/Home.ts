@@ -8,6 +8,8 @@ import { SkScreen } from "../SkScreen";
  */
 export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 
+    public readonly canBeInitialScreen = true;
+
     private readonly navElem: HTMLElement;
 
     /**
@@ -88,6 +90,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             const a = document.createElement("a");
             a.href = (desc.href).toString();
             a.referrerPolicy = "strict-origin-when-cross-origin";
+            a.rel = "noopener"; // Defaulted on modern browsers when target === "_blank".
             a.target = "_blank";
             addToNav(a, desc);
         });

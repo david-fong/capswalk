@@ -30,22 +30,29 @@ export class AllSkScreens {
         baseElem.setAttribute("role", "presentation");
         // Setting role="presentation" is similar to setting "display: content"
         // Setting aria-hidden="true" is similar to setting "visibility: hidden"
+        const Id = SkScreen.Id;
         const t = toplevel;
         const p = baseElem;
         const f = this.goToScreen.bind(this);
         this.dict = Object.freeze({
-            [ SkScreen.Id.HOME          ]: new         HomeScreen(t,p,f),
-            [ SkScreen.Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(t,p,f),
-            [ SkScreen.Id.HOW_TO_HOST   ]: new    HowToHostScreen(t,p,f),
-            [ SkScreen.Id.COLOUR_CTRL   ]: new   ColourCtrlScreen(t,p,f),
-            [ SkScreen.Id.SETUP_OFFLINE ]: new SetupOfflineScreen(t,p,f),
-            [ SkScreen.Id.PLAY_OFFLINE  ]: new  PlayOfflineScreen(t,p,f),
-            [ SkScreen.Id.GROUP_JOINER  ]: new  GroupJoinerScreen(t,p,f),
-            [ SkScreen.Id.SETUP_ONLINE  ]: new  SetupOnlineScreen(t,p,f),
-            [ SkScreen.Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(t,p,f),
-            [ SkScreen.Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(t,p,f),
+            [ Id.HOME          ]: new         HomeScreen(Id.HOME         ,t,p,f),
+            [ Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(Id.HOW_TO_PLAY  ,t,p,f),
+            [ Id.HOW_TO_HOST   ]: new    HowToHostScreen(Id.HOW_TO_HOST  ,t,p,f),
+            [ Id.COLOUR_CTRL   ]: new   ColourCtrlScreen(Id.COLOUR_CTRL  ,t,p,f),
+            [ Id.SETUP_OFFLINE ]: new SetupOfflineScreen(Id.SETUP_OFFLINE,t,p,f),
+            [ Id.PLAY_OFFLINE  ]: new  PlayOfflineScreen(Id.PLAY_OFFLINE ,t,p,f),
+            [ Id.GROUP_JOINER  ]: new  GroupJoinerScreen(Id.GROUP_JOINER ,t,p,f),
+            [ Id.SETUP_ONLINE  ]: new  SetupOnlineScreen(Id.SETUP_ONLINE ,t,p,f),
+            [ Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(Id.GROUP_LOBBY  ,t,p,f),
+            [ Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(Id.PLAY_ONLINE  ,t,p,f),
         });
-        this.goToScreen(SkScreen.Id.HOME, {});
+        const isrId = window.location.hash.slice(1) as SkScreen.Id;
+        const initialScreen = this.dict[isrId];
+        if (initialScreen && initialScreen.canBeInitialScreen) {
+            this.goToScreen(initialScreen.screenId, {});
+        } else {
+            this.goToScreen(SkScreen.Id.HOME, {});
+        }
     }
 
     public goToScreen<SID extends [SkScreen.Id]>(

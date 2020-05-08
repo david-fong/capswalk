@@ -11,6 +11,8 @@ import { SkScreen } from "../SkScreen";
 // we will probably make use of the num-attempts/retries option.
 export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
+    public readonly canBeInitialScreen = false;
+
     private readonly netScopeSwitch:  HTMLElement;
     private readonly hostUrlInput:    HTMLInputElement; // TODO.impl make sure autocomplete is off for all of these.
     private readonly groupNameInput:  HTMLInputElement;

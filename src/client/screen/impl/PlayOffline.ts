@@ -11,6 +11,8 @@ import { __PlayScreen } from "./Play";
  */
 export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
 
+    public readonly canBeInitialScreen = true;
+
     declare public readonly currentGame: OfflineGame<any> | undefined;
 
     /**

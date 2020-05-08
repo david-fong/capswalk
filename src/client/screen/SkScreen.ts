@@ -12,6 +12,8 @@ import type { TopLevel } from "../TopLevel";
  */
 export abstract class SkScreen<SID extends SkScreen.Id> {
 
+    public readonly screenId: SID;
+
     protected readonly toplevel: TopLevel;
 
     readonly #parentElem: HTMLElement;
@@ -19,6 +21,11 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     protected readonly baseElem: HTMLElement;
 
     #hasLazyLoaded: boolean;
+
+    /**
+     * This should be `false` if the screen requires connection to a game server.
+     */
+    public abstract canBeInitialScreen: boolean;
 
     /**
      * Implementations can use this as part of navigation button
@@ -32,11 +39,13 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * @param requestGoToDisplay -
      */
     public constructor(
+        screenId: SID,
         toplevel: TopLevel,
         parentElem: HTMLElement,
         requestGoToDisplay: AllSkScreens["goToScreen"],
     ) {
-        this.toplevel          = toplevel;
+        this.screenId           = screenId;
+        this.toplevel           = toplevel;
         this.#parentElem        = parentElem;
         this.requestGoToScreen  = requestGoToDisplay;
         this.#hasLazyLoaded     = false;
@@ -54,8 +63,11 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             baseElem.classList.add(OmHooks.Screen.Class.BASE);
             this.__lazyLoad();
             this.#parentElem.appendChild(baseElem);
-        this.#hasLazyLoaded = true;
+            this.#hasLazyLoaded = true;
         }
+        const location = new window.URL(window.location.href);
+        location.hash = this.screenId;
+        history.replaceState(null, "", location.href);
         await this.__abstractOnBeforeEnter(args);
         // ^Wait until the screen has finished setting itself up
         // before entering it.
@@ -107,7 +119,8 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 }
 export namespace SkScreen {
 
-    export const enum Id {
+    export enum Id {
+        // General:     ===================
         HOME            = "home",
         HOW_TO_PLAY     = "howToPlay",
         HOW_TO_HOST     = "howToHost",
@@ -120,6 +133,7 @@ export namespace SkScreen {
         SETUP_ONLINE    = "setupOnline",
         GROUP_LOBBY     = "groupLobby",
         PLAY_ONLINE     = "playOnline",
+        // =======      ===================
     }
 
     export type CtorArgs<SID_group extends SkScreen.Id>

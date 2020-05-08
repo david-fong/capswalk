@@ -6,6 +6,8 @@ import { SkScreen } from "../SkScreen";
  */
 export class HowToHostScreen extends SkScreen<SkScreen.Id.HOW_TO_HOST> {
 
+    public readonly canBeInitialScreen = true;
+
     /**
      * @override
      */
