@@ -9,6 +9,10 @@
  */
 export namespace OmHooks {
 
+    export const GLOBAL_IDS = <const>{
+        PUBLIC_GAME_HOST_URLS: "public-game-hosts-list",
+    };
+
     /**
      * See `:/assets/style/utils.css`.
      */
@@ -116,7 +120,13 @@ export namespace OmHooks {
             }
             export namespace GroupJoiner {
                 export const Class = <const>{
-                    BASE:               "screen-group-joiner",
+                    BASE:               "screen-joiner",
+                    CONTENT_WRAPPER:    "screen-joiner--content-wrapper",
+                    LAN_HOST_URL:       "screen-joiner--lan-host-url",
+                    EXISTING_GROUP_SEL: "screen-joiner--group-select",
+                    NEW_GROUP_NAME:     "screen-joiner--new-group-name",
+                    PASSPHRASE:         "screen-joiner--passphrase",
+                    NEXT_BUTTON:        "screen-joiner--next-button",
                 };
             }
         }

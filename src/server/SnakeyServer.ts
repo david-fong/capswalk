@@ -5,7 +5,7 @@ import express  = require("express");
 import io       = require("socket.io");
 import type * as net from "net";
 
-import { SnakeyServer as __SnakeyServer } from "defs/TypeDefs";
+import { SnakeyServer as __SnakeyServer } from "defs/OnlineDefs";
 import { GroupSession } from "./GroupSession";
 
 
@@ -43,8 +43,8 @@ export class SnakeyServer extends __SnakeyServer {
             // Do not server socket.io-client. It is bundled into a
             // client chunk on purpose so that a client can choose to
             // fetch all static page resources from another server,
-            // namely, GitHub Pages, in order to reduce serving load
-            // on a locally hosted SnakeyServer.
+            // namely, GitHub Pages, in order to reduce the downstream
+            // load on a LAN-hosted SnakeyServer.
         });
 
         // At runtime, __dirname resolves to ":/dist/server/"
@@ -58,10 +58,11 @@ export class SnakeyServer extends __SnakeyServer {
 
         this.http.listen(<net.ListenOptions>{ port, host, }, (): void => {
             const info = <net.AddressInfo>this.http.address();
-            console.log(`Server mounted to: \`${info.family}${info.address}${info.port}\`.`);
+            console.log(`Server mounted to: \`${info.address}${info.port}\` using ${info.family}.`);
+            // TODO.impl print a list of ip addresses that clients can use to reach this server.
         });
 
-        this.io.of(SnakeyServer.Nsps.HOST_REGISTRATION)
+        this.io.of(SnakeyServer.Nsps.GROUP_JOINER)
             .on("connection", this.onHostsConnection.bind(this));
     }
 
@@ -76,10 +77,7 @@ export class SnakeyServer extends __SnakeyServer {
             const groupNspsName = this.createUniqueSessionName(desc.groupName);
             if (!(groupNspsName)) {
                 // The name was not accepted. Notify the client:
-                socket.emit(
-                    GroupSession.CtorArgs.EVENT_NAME,
-                    new GroupSession.CtorArgs(""),
-                );
+                socket.emit(GroupSession.CtorArgs.EVENT_NAME, undefined);
                 return;
             }
             // Create a new group session:
@@ -96,13 +94,9 @@ export class SnakeyServer extends __SnakeyServer {
                     desc.initialTtl,
                 ),
             );
-
-            // Notify the host of the namespace created for the
-            // requested group session so they can connect to it:
-            socket.emit(
-                GroupSession.CtorArgs.EVENT_NAME,
-                desc,
-            );
+            // Notify all sockets connected to the joiner namespace
+            // of the new namespace created for the new group session:
+            socket.broadcast.emit(GroupSession.CtorArgs.EVENT_NAME, desc);
         });
     }
 
@@ -113,11 +107,11 @@ export class SnakeyServer extends __SnakeyServer {
      *      which happens if `groupName` is already taken, or if it
      *      does not match the required regular expression.
      */
-    protected createUniqueSessionName(groupName: GroupSession.SessionName): string | undefined {
-        if (!(GroupSession.SessionName.REGEXP.test(groupName))) {
+    protected createUniqueSessionName(groupName: GroupSession.GroupNspsName): string | undefined {
+        if (!(GroupSession.GroupNspsName.REGEXP.test(groupName))) {
             return undefined;
         }
-        const sessionName: string = `${SnakeyServer.Nsps.GROUP_PREFIX}/${groupName}`;
+        const sessionName: string = `${SnakeyServer.Nsps.GROUP_LOBBY}/${groupName}`;
         if (this.allGroupSessions.has(sessionName)) {
             return undefined;
         }

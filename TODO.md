@@ -15,6 +15,8 @@
 ### High Priority
 
 1. Implement the scores/player-listing sidebar in __PlayScreen.
+    - Also show scores very small on top of player faces.
+1. Display the operator's current sequence buffer.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.

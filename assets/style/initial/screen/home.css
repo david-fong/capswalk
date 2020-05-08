@@ -5,7 +5,7 @@
 
 .screen-home--nav {
     --spacing: 6px;
-    --border-radius: 15px;
+    --border-radius: 15px; /* Intentional use of pixel units. */
     height: 30em; max-height: 80vmin;
     width:  30em; max-width:  80vmin;
     display:        grid;
@@ -26,7 +26,7 @@
     position:       relative;
     border-radius:  var(--border-radius);
     margin:         var(--spacing);
-    border:  0px double var(--colour-tileBg);
+    border:  0em double var(--colour-tileBg);
     color:              var(--colour-mainFg);
     background-color:   var(--colour-tileBg);
     transition: all 0.15s ease-in;

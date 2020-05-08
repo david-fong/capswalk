@@ -1,5 +1,6 @@
 import { OmHooks } from "defs/OmHooks";
-import { SnakeyServer } from "defs/TypeDefs";
+import { GroupSession } from "defs/OnlineDefs";
+import { SnakeyServer } from "defs/OnlineDefs";
 
 import { SkScreen } from "../SkScreen";
 
@@ -13,10 +14,9 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
     public readonly canBeInitialScreen = false;
 
-    private readonly netScopeSwitch:  HTMLElement;
-    private readonly hostUrlInput:    HTMLInputElement; // TODO.impl make sure autocomplete is off for all of these.
-    private readonly groupNameInput:  HTMLInputElement;
-    private readonly passphraseInput: HTMLInputElement;
+    private readonly hostUrlInput:      HTMLInputElement;
+    private readonly nspsNameInput:     HTMLInputElement;
+    private readonly passphraseInput:   HTMLInputElement;
 
     private readonly backButton: HTMLButtonElement;
     private readonly nextButton: HTMLButtonElement;
@@ -25,12 +25,62 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
      * @override
      */
     protected __lazyLoad(): void {
-        this.baseElem.classList.add(OmHooks.Screen.Impl.GroupJoiner.Class.BASE);
+        const OMHC = OmHooks.Screen.Impl.GroupJoiner.Class;
+        this.baseElem.classList.add(
+            OmHooks.General.Class.CENTER_CONTENTS,
+            OMHC.BASE,
+        );
         this.baseElem.setAttribute("aria-label", "Group Joiner Screen");
 
-        // Connect to a host on ["a public server" | "the local network"]
-
-        const suggestedHostUrl = GroupJoinerScreen.SUGGEST_LAN_HOST_URL();
+        const contentWrapper = document.createElement("div");
+        contentWrapper.classList.add(OMHC.CONTENT_WRAPPER);
+        {
+            const hostUrl
+                = (this.hostUrlInput as HTMLInputElement)
+                = document.createElement("input");
+            hostUrl.type = "url";
+            hostUrl.classList.add(OMHC.LAN_HOST_URL);
+            hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
+            hostUrl.value = GroupJoinerScreen.SUGGEST_LAN_HOST_URL();
+            hostUrl.maxLength = 128;
+            const hostUrlLabel = document.createElement("label"); // <-- Label.
+            hostUrlLabel.innerText = "Host Url";
+            hostUrlLabel.appendChild(hostUrl);
+            contentWrapper.appendChild(hostUrlLabel);
+        }{
+            const nspsName
+                = (this.nspsNameInput as HTMLInputElement)
+                = document.createElement("input");
+            nspsName.type = "text";
+            nspsName.classList.add(OMHC.NEW_GROUP_NAME);
+            nspsName.autocomplete = "off";
+            nspsName.maxLength = GroupSession.CtorArgs.GroupNspsNameMaxLength;
+            // Label:
+            const nspsNameLabel = document.createElement("label"); // <-- Label.
+            nspsNameLabel.innerText = "Group Name";
+            nspsNameLabel.appendChild(nspsName);
+            contentWrapper.appendChild(nspsNameLabel);
+        }{
+            const pass
+                = (this.passphraseInput as HTMLInputElement)
+                = document.createElement("input");
+            pass.type = "text";
+            pass.classList.add(OMHC.PASSPHRASE);
+            pass.autocomplete = "off";
+            pass.maxLength = GroupSession.CtorArgs.PassphraseMaxLength;
+            // Label:
+            const passLabel = document.createElement("label"); // <-- Label.
+            passLabel.innerText = "Passphrase";
+            passLabel.appendChild(pass);
+            contentWrapper.appendChild(passLabel);
+        }{
+            const nextBtn
+                = (this.nextButton as HTMLButtonElement)
+                = document.createElement("button");
+            nextBtn.classList.add(OMHC.NEXT_BUTTON);
+            contentWrapper.appendChild(nextBtn);
+        }
+        this.baseElem.appendChild(contentWrapper);
     }
 
     /**
@@ -52,7 +102,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             top.socket.close();
         }
         top.socketIo.then((io) => {
-            top.socket = io(url, {
+            top.socket = io(`${url}/${SnakeyServer.Nsps.GROUP_JOINER}`, {
                 //query: {},
                 //timeout:
             });
