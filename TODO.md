@@ -14,6 +14,8 @@
 
 ### High Priority
 
+1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay ligther.
+1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores very small on top of player faces.
 1. Display the operator's current sequence buffer.

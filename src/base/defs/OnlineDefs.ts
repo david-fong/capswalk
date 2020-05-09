@@ -10,8 +10,8 @@ export namespace SnakeyServer {
      * client and the server code, which both require access to it.
      */
     export const enum Nsps {
-        GROUP_LOBBY     = "/group",
-        GROUP_JOINER    = "/joiner",
+        GROUP_LOBBY_PREFIX  = "/group-",
+        GROUP_JOINER        = "/joiner",
     }
 }
 Object.freeze(SnakeyServer);
@@ -28,7 +28,6 @@ export namespace GroupSession {
      * An extension of {@link io.Socket}. It is very convenient to tack
      * these fields directly onto the socket objects.
      */
-    export type Socket = Socket.ClientSide | Socket.ServerSide;
     export namespace Socket {
         type Base = {
             username?: string;
@@ -36,7 +35,6 @@ export namespace GroupSession {
             updateId: number; // initial value = 0
         };
         export type ServerSide = Base & import("socket.io").Socket;
-        export type ClientSide = Base & typeof io.Socket;
     }
 
     export type GroupNspsName = string;
@@ -52,11 +50,6 @@ export namespace GroupSession {
     }
 
     export class CtorArgs {
-
-        public static EVENT_NAME = <const>"group-create";
-
-        public static DEFAULT_INITIAL_TTL = <const>60;
-
         /**
          * The client should set this to a string to use as a group
          * name. They should try to satisfy {@link SessionName.REGEXP},
@@ -69,32 +62,32 @@ export namespace GroupSession {
          */
         public readonly passphrase: string;
 
-        /**
-         * The Server should ignore any value set here by the client.
-         *
-         * The Server should respond to the client setting this value
-         * to an approximate number of _seconds_ before the created
-         * {@link GroupSession} will decide it was abandoned at birth
-         * and get cleaned up (if nobody connects to it in that time).
-         *
-         * If the request was rejected, the client should ignore any
-         * value set here by the Server.
-         */
-        public initialTtl: number;
-
         public constructor(
             groupName: GroupNspsName,
             passphrase: string,
-            initialTtl: number = CtorArgs.DEFAULT_INITIAL_TTL
         ) {
             this.groupName = groupName;
             this.passphrase = passphrase;
-            this.initialTtl = initialTtl;
         }
     };
     export namespace CtorArgs {
         export const GroupNspsNameMaxLength = 30;
         export const PassphraseMaxLength = 30;
+        export const DEFAULT_TTL = 60;
+
+        /**
+         * The client uses this event name when requesting creation
+         * of a new group.
+         *
+         * The server uses this event name to notify clients of the
+         * life stage of existing groups.
+         */
+        export const EVENT_NAME = "group-exist";
+        export const enum LifeStage {
+            JOINABLE    = "JOINABLE",
+            CLOSED      = "CLOSED",
+            DELETE      = "DELETE",
+        };
     }
 }
 Object.freeze(GroupSession);

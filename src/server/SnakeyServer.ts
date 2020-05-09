@@ -63,7 +63,7 @@ export class SnakeyServer extends __SnakeyServer {
         });
 
         this.io.of(SnakeyServer.Nsps.GROUP_JOINER)
-            .on("connection", this.onHostsConnection.bind(this));
+            .on("connection", this.onJoinerNspsConnection.bind(this));
     }
 
     /**
@@ -72,7 +72,16 @@ export class SnakeyServer extends __SnakeyServer {
      *
      * @param socket - The socket from the game host.
      */
-    protected onHostsConnection(socket: io.Socket): void {
+    protected onJoinerNspsConnection(socket: io.Socket): void {
+        socket.emit(
+            GroupSession.CtorArgs.EVENT_NAME,
+            Array.from(this.allGroupSessions).map((entry) => {
+                const [groupName, group] = entry;
+                return (group.isCurrentlyPlayingAGame)
+                    ? GroupSession.CtorArgs.LifeStage.CLOSED
+                    : GroupSession.CtorArgs.LifeStage.JOINABLE;
+            }),
+        );
         socket.on(GroupSession.CtorArgs.EVENT_NAME, (desc: GroupSession.CtorArgs): void => {
             const groupNspsName = this.createUniqueSessionName(desc.groupName);
             if (!(groupNspsName)) {
@@ -85,18 +94,17 @@ export class SnakeyServer extends __SnakeyServer {
             this.allGroupSessions.set(
                 groupNspsName,
                 new GroupSession(
-                    this.io.of(groupNspsName),
-                    (): void => {
-                        // Once this reference is deleted, the object
-                        // is elegible for garbage-collection.
-                        this.allGroupSessions.delete(groupNspsName);
-                    },
-                    desc.initialTtl,
+                    this.io.of(groupNspsName), // <-- create a namespace.
+                    desc,
+                    () => this.allGroupSessions.delete(groupNspsName),
+                    GroupSession.CtorArgs.DEFAULT_TTL,
                 ),
             );
             // Notify all sockets connected to the joiner namespace
             // of the new namespace created for the new group session:
-            socket.broadcast.emit(GroupSession.CtorArgs.EVENT_NAME, desc);
+            socket.nsp.emit(GroupSession.CtorArgs.EVENT_NAME, {
+                [groupNspsName]: GroupSession.CtorArgs.LifeStage.JOINABLE,
+            });
         });
     }
 
@@ -111,7 +119,7 @@ export class SnakeyServer extends __SnakeyServer {
         if (!(GroupSession.GroupNspsName.REGEXP.test(groupName))) {
             return undefined;
         }
-        const sessionName: string = `${SnakeyServer.Nsps.GROUP_LOBBY}/${groupName}`;
+        const sessionName = SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + groupName;
         if (this.allGroupSessions.has(sessionName)) {
             return undefined;
         }

@@ -22,8 +22,9 @@ export { ServerGame } from "./ServerGame";
 export class GroupSession extends __GroupSession {
 
     public readonly namespace: io.Namespace;
-    protected currentGame?: ServerGame<any>;
-    protected sessionHost: io.Socket;
+    public readonly passphrase: string;
+    #currentGame: ServerGame<any> | undefined;
+    private sessionHost: io.Socket;
 
     private readonly initialTtlTimeout: NodeJS.Timeout;
     private readonly deleteExternalRefs: VoidFunction;
@@ -43,12 +44,14 @@ export class GroupSession extends __GroupSession {
      */
     public constructor(
         namespace: io.Namespace,
+        desc: GroupSession.CtorArgs,
         deleteExternalRefs: VoidFunction,
         initialTtl: number,
     ) {
         super();
         this.namespace   = namespace;
-        this.currentGame = undefined;
+        this.passphrase  = desc.passphrase;
+        this.#currentGame = undefined;
 
         this.initialTtlTimeout = setTimeout(() => {
             if (Object.keys(this.namespace.connected).length === 0) {
@@ -60,32 +63,31 @@ export class GroupSession extends __GroupSession {
         this.deleteExternalRefs = deleteExternalRefs;
 
         // Call the connection-event handler:
-        this.namespace.on("connection", this.onConnection);
+        this.namespace.use((socket, next) => {
+            const handshake = socket.handshake;
+            if (handshake.query.passphrase !== this.passphrase) {
+                next(new Error("Incorrect passphrase"));
+            }
+            return next();
+        }).on("connection", this.onConnection.bind(this));
     }
 
     /**
      *
      * @param socket -
      */
-    protected onConnection(
-        socket: io.Socket,
-        otherSocketParts: Exclude<GroupSession.Socket, io.Socket>,
-    ): void {
-        function rebuildSocket(socket: io.Socket,
-            otherSocketParts: Exclude<GroupSession.Socket, io.Socket>,
-        ): asserts socket is GroupSession.Socket {
-            Object.assign(socket, otherSocketParts);
-        }
-        rebuildSocket(socket, otherSocketParts);
+    protected onConnection(socket: GroupSession.Socket): void {
         console.log("A user has connected.");
         socket.join(GroupSession.RoomNames.MAIN);
-        socket.teamId = undefined;
+        socket.username = undefined;
+        socket.teamId   = undefined;
         socket.updateId = 0;
 
         if (Object.keys(this.namespace.connected).length === 0) {
             // Nobody has connected yet.
             // The first socket becomes the session host.
             clearTimeout(this.initialTtlTimeout);
+            (this.initialTtlTimeout as NodeJS.Timeout) = undefined!;
             this.sessionHost = socket;
             // TODO.impl set socket.isPrivileged
         }
@@ -98,7 +100,14 @@ export class GroupSession extends __GroupSession {
                 // the host?
                 this.terminate();
             }
+            if (Object.keys(this.namespace.sockets).length === 1) {
+                this.terminate();
+            }
         });
+    }
+
+    public get isCurrentlyPlayingAGame(): boolean {
+        return this.#currentGame !== undefined;
     }
 
     /**
@@ -110,7 +119,7 @@ export class GroupSession extends __GroupSession {
      */
     protected terminate(): void {
         // TODO.impl notify clients?
-        delete this.currentGame;
+        this.#currentGame = undefined;
         const nsps: io.Namespace = this.namespace;
         nsps.removeAllListeners("connect");
         nsps.removeAllListeners("connection");
@@ -152,7 +161,7 @@ export class GroupSession extends __GroupSession {
         }
         // Everything needed to create a game exists. Let's do it!
         // TODO.impl Everything with current placeholder of `undefined!`.
-        this.currentGame = new ServerGame(this.namespace, {
+        this.#currentGame = new ServerGame(this.namespace, {
             coordSys,
             gridDimensions,
             averageFreeHealthPerTile: undefined!,

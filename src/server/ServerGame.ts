@@ -86,13 +86,13 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
             socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Movement);
             socket.on(
                 PlayerActionEvent.EVENT_NAME.Movement,
-                this.processMoveRequest,
+                this.processMoveRequest.bind(this),
             );
             // Attach the bubble-making request handler:
             socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Bubble);
             socket.on(
                 PlayerActionEvent.EVENT_NAME.Bubble,
-                this.processBubbleRequest,
+                this.processBubbleRequest.bind(this),
             );
             // TODO.impl pause-request handler:
         });
@@ -107,7 +107,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
                 Game.CtorArgs.EVENT_NAME,
                 gameDesc,
             );
-        }, this);
+        });
     }
 
     /**
@@ -169,6 +169,9 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         }
     }
 
+    /**
+     * @override
+     */
     public executePlayerBubbleEvent(desc: Readonly<PlayerActionEvent.Bubble>): void {
         super.executePlayerBubbleEvent(desc);
 

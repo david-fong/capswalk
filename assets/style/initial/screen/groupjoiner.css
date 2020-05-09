@@ -2,6 +2,9 @@
 .screen-joiner {
 }
 .screen-joiner--content-wrapper {
+    display:        flex;
+    flex-direction: column;
+    align-items:    stretch;
 }
 
 .screen-joiner--lan-host-url {

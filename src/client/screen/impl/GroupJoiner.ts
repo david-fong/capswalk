@@ -54,6 +54,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             nspsName.type = "text";
             nspsName.classList.add(OMHC.NEW_GROUP_NAME);
             nspsName.autocomplete = "off";
+            nspsName.pattern = GroupSession.GroupNspsName.REGEXP.source;
             nspsName.maxLength = GroupSession.CtorArgs.GroupNspsNameMaxLength;
             // Label:
             const nspsNameLabel = document.createElement("label"); // <-- Label.
@@ -102,13 +103,16 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             top.socket.close();
         }
         top.socketIo.then((io) => {
-            top.socket = io(`${url}/${SnakeyServer.Nsps.GROUP_JOINER}`, {
-                //query: {},
-                //timeout:
-            });
+            top.socket = io(url + SnakeyServer.Nsps.GROUP_JOINER, {});
             top.socket.once("connect", this.onHostConnectionSuccess.bind(this));
             top.socket.once("connect", this.onHostConnectionFailure.bind(this));
         });
+    }
+
+    private attemptToJoinGroup(url: string, passphrase: string): void {
+        // TODO.design I don't need those arguments... I can just read direct from the input elements.
+        // TODO. make sure to set query.passphrase.
+        // See OnlineDefs.ts -> SnakeyServer.Nsps.GROUP_LOBBY_PREFIX
     }
 
     private onHostConnectionSuccess(): void {
