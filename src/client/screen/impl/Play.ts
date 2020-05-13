@@ -71,7 +71,6 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
      */
     protected __lazyLoad(): void {
         this.baseElem.classList.add(OmHooks.Screen.Impl.PlayGame.Class.BASE);
-        this.baseElem.setAttribute("aria-label", "Play Game Screen");
 
         const centerColItems = __PlayScreen.createCenterColElem();
         (this.gridElem as HTMLElement) = centerColItems.gridElem;
@@ -100,35 +99,31 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     /**
      * @override
      */
-    protected __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
-        return (async () => {
-            document.addEventListener("visibilitychange", this.#onVisibilityChange);
-            this.pauseButton.disabled = true;
-            this.statusBecomePaused(); // <-- Leverage some state initialization.
+    protected async __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+        document.addEventListener("visibilitychange", this.#onVisibilityChange);
+        this.pauseButton.disabled = true;
+        this.statusBecomePaused(); // <-- Leverage some state initialization.
 
-            // TODO.design Are there ways we can share more code between
-            // implementations by passing common arguments?
-            this.#currentGame = await this.__createNewGame();
-            this.gridElem.addEventListener("keydown", this.#gridOnKeyDown);
-            const resetPromise = this.currentGame!.reset();
+        // TODO.design Are there ways we can share more code between
+        // implementations by passing common arguments?
+        this.#currentGame = await this.__createNewGame();
+        this.gridElem.addEventListener("keydown", this.#gridOnKeyDown);
+        await this.currentGame!.reset();
+        // ^Wait until resetting has finished before attaching the
+        // grid element to the screen so that the DOM changes made
+        // by populating tiles with CSP's can be done all at once.
+        this.gridElem.insertAdjacentElement("afterbegin",
+            this.currentGame!.htmlElements.gridImplElem,
+        ); // ^The order of insertion does not matter (it used to).
 
-            // Wait until resetting has finished before attaching the
-            // grid element to the screen so that the DOM changes made
-            // by populating tiles with CSP's can be done all at once.
-            await resetPromise;
-            this.gridElem.insertAdjacentElement("afterbegin",
-                this.currentGame!.htmlElements.gridImplElem,
-            ); // ^The order of insertion does not matter (it used to).
-
-            this.pauseButton.onclick = this.statusBecomePlaying.bind(this);
-            this.pauseButton.disabled = false;
-            if (this.wantsAutoPause) {
-                setTimeout(() => {
-                    if (!document.hidden) this.statusBecomePlaying();
-                }, 1000);
-            }
-            return;
-        })();
+        this.pauseButton.onclick = this.statusBecomePlaying.bind(this);
+        this.pauseButton.disabled = false;
+        if (this.wantsAutoPause) {
+            setTimeout(() => {
+                if (!document.hidden) this.statusBecomePlaying();
+            }, 500);
+        }
+        return;
     }
 
     /**

@@ -35,6 +35,8 @@
 
 ### Low Priority
 
+- Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
+  - Also see [this](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
 - Tell WebPack to split out styling for each screen?
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
@@ -161,6 +163,7 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
 https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Backgrounds_and_borders
 https://developer.mozilla.org/en-US/docs/Web/CSS/display
 flex playground: https://codepen.io/enxaneta/full/adLPwv/
+https://developers.google.com/web/updates/2018/01/paintapi
 ```
 
 ### ARIA

@@ -30,6 +30,7 @@ export class AllSkScreens {
         baseElem.setAttribute("role", "presentation");
         // Setting role="presentation" is similar to setting "display: content"
         // Setting aria-hidden="true" is similar to setting "visibility: hidden"
+        baseElem.insertAdjacentHTML("beforebegin", "<!-- ALL SCREENS CONTAINER -->");
         const Id = SkScreen.Id;
         const t = toplevel;
         const p = baseElem;

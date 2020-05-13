@@ -63,6 +63,16 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             baseElem.classList.add(OmHooks.Screen.Class.BASE);
             this.__lazyLoad();
             this.#parentElem.appendChild(baseElem);
+            const spaceyCamelName = this.screenId.replace(/[A-Z]/g, (letter) => " " + letter);
+            { // "<SCREEN NAME> SCREEN"
+                const str = spaceyCamelName.toUpperCase();
+                baseElem.insertAdjacentHTML("beforebegin", `<!-- ${str} SCREEN -->`)
+            }{ // "<Screen Name> Screen"
+                const str = spaceyCamelName.split(' ').map((word) =>
+                    word.charAt(0).toUpperCase()
+                    + word.substring(1)).join(' ');
+                baseElem.setAttribute("aria-label", str + " Screen");
+            }
             this.#hasLazyLoaded = true;
         }
         const location = new window.URL(window.location.href);
@@ -90,8 +100,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     }
 
     /**
-     * Implementations should set the CSS class for the base element,
-     * and also set its aria label to an appropriate string.
+     * Implementations should set the CSS class for the base element.
      */
     protected abstract __lazyLoad(): void;
 

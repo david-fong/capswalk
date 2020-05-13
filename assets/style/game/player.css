@@ -54,9 +54,9 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
 .player__spotlight-short {
     background-image: radial-gradient(
         farthest-side,
-        transparent 30%, var(--colour-spotlight)
+        transparent 21%, 46%, var(--colour-spotlight)
     );
-    padding:    1100%;
+    padding:    1400%;
     border:     100vmax solid var(--colour-spotlight);
 }
 .player__spotlight-long {

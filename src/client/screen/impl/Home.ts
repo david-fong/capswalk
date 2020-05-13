@@ -22,12 +22,14 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             OmHooks.General.Class.CENTER_CONTENTS,
             OMHC.BASE,
         );
-        this.baseElem.setAttribute("aria-label", "Home Page Screen");
 
         const nav
             = (this.navElem as HTMLElement)
             = document.createElement("div");
-        nav.classList.add(OMHC.NAV);
+        nav.classList.add(
+            OmHooks.General.Class.TEXT_SELECT_DISABLED,
+            OMHC.NAV,
+        );
         nav.setAttribute("role", "navigation");
         nav.addEventListener("pointerleave", () => {
             if (document.activeElement?.parentElement === nav) {
@@ -73,11 +75,11 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         });
 
         (<const>[{
-            text:    "Visit Repo",
+            text:    "Visit\nRepo",
             cssClass: OMHC.NAV_VIEW_REPO,
             href:     new window.URL("https://github.com/david-fong/SnaKey-NTS"),
         },{
-            text:    "Report Issue",
+            text:    "Report\nIssue",
             cssClass: OMHC.NAV_RPT_ISSUE,
             href:     new window.URL("https://github.com/david-fong/SnaKey-NTS/issues"),
         },])
@@ -98,7 +100,6 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         function addToNav(elem: HTMLElement, desc: { text: string, cssClass: string; }): void {
             elem.classList.add(
                 OmHooks.General.Class.CENTER_CONTENTS,
-                OmHooks.General.Class.TEXT_SELECT_DISABLED,
                 desc.cssClass,
             );
             elem.innerText = desc.text;

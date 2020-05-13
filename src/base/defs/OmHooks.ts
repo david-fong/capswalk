@@ -123,8 +123,7 @@ export namespace OmHooks {
                     BASE:               "screen-joiner",
                     CONTENT_WRAPPER:    "screen-joiner--content-wrapper",
                     LAN_HOST_URL:       "screen-joiner--lan-host-url",
-                    EXISTING_GROUP_SEL: "screen-joiner--group-select",
-                    NEW_GROUP_NAME:     "screen-joiner--new-group-name",
+                    GROUP_NAME:         "screen-joiner--group-name",
                     PASSPHRASE:         "screen-joiner--passphrase",
                     NEXT_BUTTON:        "screen-joiner--next-button",
                 };

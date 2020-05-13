@@ -5,7 +5,7 @@
 
 .screen-home--nav {
     --spacing: 6px;
-    --border-radius: 15px; /* Intentional use of pixel units. */
+    --border-radius: 1rem;
     height: 30em; max-height: 80vmin;
     width:  30em; max-width:  80vmin;
     display:        grid;

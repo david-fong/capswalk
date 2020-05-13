@@ -15,6 +15,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
     public readonly canBeInitialScreen = false;
 
     private readonly hostUrlInput:      HTMLInputElement;
+    private readonly nspsNameDataList:  HTMLDataListElement;
     private readonly nspsNameInput:     HTMLInputElement;
     private readonly passphraseInput:   HTMLInputElement;
 
@@ -30,7 +31,6 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             OmHooks.General.Class.CENTER_CONTENTS,
             OMHC.BASE,
         );
-        this.baseElem.setAttribute("aria-label", "Group Joiner Screen");
 
         const contentWrapper = document.createElement("div");
         contentWrapper.classList.add(OMHC.CONTENT_WRAPPER);
@@ -43,21 +43,27 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
             hostUrl.value = GroupJoinerScreen.SUGGEST_LAN_HOST_URL();
             hostUrl.maxLength = 128;
-            const hostUrlLabel = document.createElement("label"); // <-- Label.
+            // Label:
+            const hostUrlLabel = document.createElement("label");
             hostUrlLabel.innerText = "Host Url";
             hostUrlLabel.appendChild(hostUrl);
             contentWrapper.appendChild(hostUrlLabel);
+        }{
+            const nspsList
+                = (this.nspsNameDataList as HTMLDataListElement)
+                = document.createElement("datalist");
+            this.baseElem.appendChild(nspsList);
         }{
             const nspsName
                 = (this.nspsNameInput as HTMLInputElement)
                 = document.createElement("input");
             nspsName.type = "text";
-            nspsName.classList.add(OMHC.NEW_GROUP_NAME);
+            nspsName.classList.add(OMHC.GROUP_NAME);
             nspsName.autocomplete = "off";
             nspsName.pattern = GroupSession.GroupNspsName.REGEXP.source;
             nspsName.maxLength = GroupSession.CtorArgs.GroupNspsNameMaxLength;
             // Label:
-            const nspsNameLabel = document.createElement("label"); // <-- Label.
+            const nspsNameLabel = document.createElement("label");
             nspsNameLabel.innerText = "Group Name";
             nspsNameLabel.appendChild(nspsName);
             contentWrapper.appendChild(nspsNameLabel);
@@ -70,7 +76,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             pass.autocomplete = "off";
             pass.maxLength = GroupSession.CtorArgs.PassphraseMaxLength;
             // Label:
-            const passLabel = document.createElement("label"); // <-- Label.
+            const passLabel = document.createElement("label");
             passLabel.innerText = "Passphrase";
             passLabel.appendChild(pass);
             contentWrapper.appendChild(passLabel);
@@ -79,6 +85,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 = (this.nextButton as HTMLButtonElement)
                 = document.createElement("button");
             nextBtn.classList.add(OMHC.NEXT_BUTTON);
+            nextBtn.innerText = "Next";
             contentWrapper.appendChild(nextBtn);
         }
         this.baseElem.appendChild(contentWrapper);
@@ -89,6 +96,10 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
      */
     protected async __abstractOnBeforeEnter(args: {}): Promise<void> {
         this.nextButton.disabled = !(this.socket);
+        window.setTimeout(() => {
+            // ^Setting a timeout is required for some reason...
+            this.hostUrlInput.focus();
+        }, 100);
     }
 
     /**
@@ -105,7 +116,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
         top.socketIo.then((io) => {
             top.socket = io(url + SnakeyServer.Nsps.GROUP_JOINER, {});
             top.socket.once("connect", this.onHostConnectionSuccess.bind(this));
-            top.socket.once("connect", this.onHostConnectionFailure.bind(this));
+            top.socket.once("connect_error", this.onHostConnectionFailure.bind(this));
         });
     }
 
