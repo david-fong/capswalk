@@ -28,6 +28,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             = document.createElement("div");
         nav.classList.add(
             OmHooks.General.Class.TEXT_SELECT_DISABLED,
+            OmHooks.General.Class.INPUT_GROUP,
             OMHC.NAV,
         );
         nav.setAttribute("role", "navigation");
@@ -100,6 +101,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         function addToNav(elem: HTMLElement, desc: { text: string, cssClass: string; }): void {
             elem.classList.add(
                 OmHooks.General.Class.CENTER_CONTENTS,
+                OmHooks.General.Class.INPUT_GROUP_ITEM,
                 desc.cssClass,
             );
             elem.innerText = desc.text;

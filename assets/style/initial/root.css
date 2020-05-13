@@ -32,12 +32,4 @@ input {
     font:           inherit;
     text-align:     inherit;
     box-sizing:     border-box;
-    padding:        0.5em;
-    border-radius:  0.8em;
-    border:         0em solid transparent;
-    color:              var(--colour-mainFg);
-    background-color:   var(--colour-tileBg);
-}
-input:focus {
-    outline:        none;
 }

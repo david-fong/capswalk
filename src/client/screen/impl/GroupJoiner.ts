@@ -33,13 +33,19 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
         );
 
         const contentWrapper = document.createElement("div");
-        contentWrapper.classList.add(OMHC.CONTENT_WRAPPER);
+        contentWrapper.classList.add(
+            OmHooks.General.Class.INPUT_GROUP,
+            OMHC.CONTENT_WRAPPER,
+        );
         {
             const hostUrl
                 = (this.hostUrlInput as HTMLInputElement)
                 = document.createElement("input");
             hostUrl.type = "url";
-            hostUrl.classList.add(OMHC.LAN_HOST_URL);
+            hostUrl.classList.add(
+                OmHooks.General.Class.INPUT_GROUP_ITEM,
+                OMHC.LAN_HOST_URL,
+            );
             hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
             hostUrl.value = GroupJoinerScreen.SUGGEST_LAN_HOST_URL();
             hostUrl.maxLength = 128;
@@ -58,7 +64,10 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 = (this.nspsNameInput as HTMLInputElement)
                 = document.createElement("input");
             nspsName.type = "text";
-            nspsName.classList.add(OMHC.GROUP_NAME);
+            nspsName.classList.add(
+                OmHooks.General.Class.INPUT_GROUP_ITEM,
+                OMHC.GROUP_NAME,
+            );
             nspsName.autocomplete = "off";
             nspsName.pattern = GroupSession.GroupNspsName.REGEXP.source;
             nspsName.maxLength = GroupSession.CtorArgs.GroupNspsNameMaxLength;
@@ -72,7 +81,10 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 = (this.passphraseInput as HTMLInputElement)
                 = document.createElement("input");
             pass.type = "text";
-            pass.classList.add(OMHC.PASSPHRASE);
+            pass.classList.add(
+                OmHooks.General.Class.INPUT_GROUP_ITEM,
+                OMHC.PASSPHRASE,
+            );
             pass.autocomplete = "off";
             pass.maxLength = GroupSession.CtorArgs.PassphraseMaxLength;
             // Label:

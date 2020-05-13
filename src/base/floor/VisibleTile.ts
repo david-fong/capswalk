@@ -13,7 +13,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     readonly #baseElem:             HTMLDivElement;
     private readonly langCharElem:  HTMLDivElement;
-    private readonly langSeqElem:   HTMLDivElement;
+    private readonly langSeqElem:   HTMLElement;
 
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
@@ -45,7 +45,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         } {
             const seqElem
                 = this.langSeqElem
-                = document.createElement("div");
+                = document.createElement("kbd");
             seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             seqElem.setAttribute("role", "tooltip");
             this.#baseElem.appendChild(seqElem);

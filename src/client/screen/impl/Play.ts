@@ -239,6 +239,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     protected initializeControlsBar(): void {
         const controlsBar = document.createElement("div");
         controlsBar.classList.add(
+            OmHooks.General.Class.INPUT_GROUP,
             OmHooks.Screen.Impl.PlayGame.Class.CONTROLS_BAR,
         );
         controlsBar.setAttribute("role", "menu");
@@ -246,6 +247,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         { const bth
             = (this.backToHomeButton as HTMLButtonElement)
             = document.createElement("button");
+        bth.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         bth.innerText = "Return To Homepage";
         bth.onclick = this.requestGoToScreen.bind(this, SkScreen.Id.HOME);
         controlsBar.appendChild(bth); }
@@ -253,11 +255,13 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         { const pause
             = (this.pauseButton as HTMLButtonElement)
             = document.createElement("button");
+        pause.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         controlsBar.appendChild(pause); }
 
         { const reset
             = (this.resetButton as HTMLButtonElement)
             = document.createElement("button");
+        reset.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         reset.innerText = "Reset";
         reset.onclick = this.__resetGame.bind(this);
         controlsBar.appendChild(reset); }

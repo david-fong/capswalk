@@ -19,9 +19,11 @@ export namespace OmHooks {
     export namespace General {
         export const Class = <const>{
             TEXT_SELECT_DISABLED: "text-select-disabled",
-            FILL_PARENT: "fill-parent",
-            CENTER_CONTENTS: "center-contents",
-            STACK_CONTENTS: "stack-contents",
+            FILL_PARENT:        "fill-parent",
+            CENTER_CONTENTS:    "center-contents",
+            STACK_CONTENTS:     "stack-contents",
+            INPUT_GROUP:        "sk-input-group",
+            INPUT_GROUP_ITEM:   "sk-input-group-item",
         };
         export const Dataset = <const>{
             COLOUR_SCHEME: "skColourScheme",

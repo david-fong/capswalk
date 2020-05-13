@@ -24,3 +24,50 @@
     position:   absolute;
 }
 
+
+/* Does not imposes effects on external sizing
+calculations except by setting its own items'
+margins and padding, and its own padding. */
+.sk-input-group {
+    background-color: var(--colour-mainBg);
+    padding: var(--spacing);
+    border-radius: calc(
+        var(--border-radius) + (2.0 * var(--spacing))
+    );
+}
+.sk-input-group > * {
+    contain:        strict;
+    position:       relative;
+}
+.sk-input-group * {
+    transition: all 0.15s ease-in;
+}
+.sk-input-group .sk-input-group-item {
+    border-radius:  var(--border-radius);
+    margin:         var(--spacing);
+    border:  0px solid var(--colour-tileBg);
+    color:              var(--colour-mainFg);
+    background-color:   var(--colour-tileBg);
+}
+/* Note: The javascript focuses these on pointer entry. */
+.sk-input-group .sk-input-group-item:focus {
+    outline:        none;
+    border-color:   var(--colour-tileBd);
+    box-shadow: inset 0px 0px 20px #00000040;
+    text-shadow: 0px 0px 8px #000000ff;
+    animation: 0.4s ease-in-out -0.5s infinite alternate sk-input-group-item-focus;
+}
+.sk-input-group:focus-within > :not(:focus-within) {
+    filter:         brightness(0.9);
+    opacity:        0.6;
+}
+@keyframes sk-input-group-item-focus {
+    from {
+        margin: calc(var(--spacing) / 3.0);
+        border-width: calc(1.2 * var(--spacing));
+    }
+    to {
+        margin: calc(var(--spacing) * 2.0 / 3.0);
+        border-width: calc(1.4 * var(--spacing));
+    }
+}
