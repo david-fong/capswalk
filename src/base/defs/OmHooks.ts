@@ -137,7 +137,7 @@ export namespace OmHooks {
     export namespace SkPickOne {
         export const Class = <const>{
             BASE:           "sk-pick-one",
-            OPT_BASE:       "sk-pick-one--opt"
+            OPT_BASE:       "sk-pick-one--opt",
         };
     }
 }

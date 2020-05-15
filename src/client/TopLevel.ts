@@ -36,9 +36,9 @@ export class TopLevel {
                 return TopLevel.WebpageHostType.LAN_SERVER;
             }
         })();
-        console.log("%c🩺 welcome! 🐍", "font:700 3em /1.5 monospace;"
-        + " border:0.3em solid black; border-radius:0.7em; padding:0.4em;"
-        + " color:white;background-color:#3f5e77;")
+        console.log("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
+        + " margin:0.4em; border:0.3em solid black;padding:0.4em;"
+        + " color:white; background-color:#3f5e77; border-radius:0.7em; ");
     }
 
     public get socketIo(): Promise<typeof import("socket.io-client")> {
@@ -47,7 +47,7 @@ export class TopLevel {
         //     /* webpackChunkName: "[request]" */
         //     "socket.io-client"
         // ));
-        return new Promise<typeof import("socket.io-client")>((resolve, reject) => {
+        return new Promise<typeof import("socket.io-client")>((resolve, reject): void => {
             const script = document.getElementById("socket.io")!;
             if (io) return resolve(io);
             script.onload = () => {

@@ -27,7 +27,7 @@ if (top.webpageHostType === TopLevel.WebpageHostType.GITHUB && "serviceWorker" i
         },
         (err) => {
             console.log('ServiceWorker registration failed: ', err);
-        },);
+        });
         // TODO.learn Using Service Workers to make an offline-friendly PWA.
         // https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
     });

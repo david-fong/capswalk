@@ -50,12 +50,12 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                     top.socket.once("connect_error", this.onHostConnectionFailure.bind(this));
                 });
             }
-        }
+        };
 
         this.groupNameInput.oninput  = (ev) => this.setState(State.CHOOSING_GROUP);
         this.groupNameInput.onchange = (ev) => {
             this.passphraseInput.focus();
-        }
+        };
 
         this.setState(State.CHOOSING_HOST);
         this.baseElem.appendChild(contentWrapper);
@@ -134,7 +134,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             });
             top.socket.once("connect", () => this.setState(State.READY_TO_PROCEED));
             top.socket.once("connect_error", () => this.onGroupJoinFailure.bind(this));
-        })
+        });
     }
     private onGroupJoinFailure(): void {
         // TODO.impl make some visual indication.

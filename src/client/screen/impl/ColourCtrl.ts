@@ -50,7 +50,7 @@ export namespace ColourCtrlScreen {
             this.garageDoorElem.style.transitionDuration = `${Colour.SMOOTH_CHANGE_DURATION/3.0}ms`;
 
             for (const schemeDesc of Colour.Schemes) {
-                this.addOption(new PickOne.Option(schemeDesc))
+                this.addOption(new PickOne.Option(schemeDesc));
             }
             this.selectOpt(this.getOptById("snakey")!, false);
         }

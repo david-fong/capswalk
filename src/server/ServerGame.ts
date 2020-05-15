@@ -102,7 +102,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
             gameDesc.playerDescs.forEach((playerDesc) => {
                 (playerDesc.isALocalOperator as boolean) =
                 (playerDesc.socketId === this.playerSockets[player.playerId].id);
-            })
+            });
             this.playerSockets[player.playerId].emit(
                 Game.CtorArgs.EVENT_NAME,
                 gameDesc,

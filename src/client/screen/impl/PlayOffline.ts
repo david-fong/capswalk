@@ -72,7 +72,7 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
                     bloodThirstDistance: 7,
                     healthReserve: 3.0,
                     movesPerSecond: 2.0,
-                }
+                },
             }, {
                 isALocalOperator: false,
                 familyId:   <const>"CHASER",
@@ -85,8 +85,8 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
                     bloodThirstDistance: 7,
                     healthReserve: 3.0,
                     movesPerSecond: 2.0,
-                }
-            }],
+                },
+            },],
         });
     }
 }

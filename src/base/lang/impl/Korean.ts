@@ -23,14 +23,14 @@ export namespace Korean {
         public static getInstance(): Dubeolsik {
             if (!this.SINGLETON) {
                 this.SINGLETON = new Dubeolsik();
-                (this.KEYBOARD as any) = undefined;
+                (this.DUB_KEYBOARD as any) = undefined;
             }
             return this.SINGLETON;
         }
 
         public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-dub");
 
-        private static KEYBOARD = Object.freeze(<const>{
+        private static readonly DUB_KEYBOARD = Object.freeze(<const>{
             "": "",
             "ㅂ": "q", "ㅈ": "w", "ㄷ": "e", "ㄱ": "r", "ㅅ": "t",
             "ㅛ": "y", "ㅕ": "u", "ㅑ": "i", "ㅐ": "o", "ㅔ": "p",
@@ -47,10 +47,10 @@ export namespace Korean {
                 Dubeolsik,
                 INITIALIZE(((ij, mj, fj) => {
                     const atoms = [ij, mj, fj,].flatMap((jamos) => {
-                        return (jamos.value in Dubeolsik.KEYBOARD)
+                        return (jamos.value in Dubeolsik.DUB_KEYBOARD)
                             ? [jamos.value,] : jamos.atoms.split("");
-                    }) as Array<keyof typeof Dubeolsik.KEYBOARD>;
-                    return atoms.map((atom) => Dubeolsik.KEYBOARD[atom]).join("");
+                    }) as Array<keyof typeof Dubeolsik.DUB_KEYBOARD>;
+                    return atoms.map((atom) => Dubeolsik.DUB_KEYBOARD[atom]).join("");
                 }) as SeqBuilder),
             );
         }
@@ -86,7 +86,7 @@ export namespace Korean {
         /**
          *
          */
-        private static SEB_KEYBOARD = Object.freeze(<const>{
+        private static readonly SEB_KEYBOARD = Object.freeze(<const>{
             // Finals and consonant clusters are found on the left.
             FINALS: {
                 "": "",

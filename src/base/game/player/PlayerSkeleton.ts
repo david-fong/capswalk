@@ -20,7 +20,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
 
     public readonly playerId: Player.Id;
 
-    readonly isALocalOperator: boolean;
+    public readonly isALocalOperator: boolean;
 
     /**
      * The game object that this player belongs to.
