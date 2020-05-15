@@ -16,6 +16,9 @@
 .screen-joiner--content-wrapper input {
     padding:        0px;
 }
+.screen-joiner--content-wrapper input:invalid {
+    border-style:   dotted;
+}
 
 .screen-joiner--host-url {
 }

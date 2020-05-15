@@ -106,7 +106,9 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 "entry" | "plugins" | "resolve" | "output"> => { return {
     mode: PACK_MODE,
     name: `\n\n${"=".repeat(32)} ${distSubFolder.toUpperCase()} ${"=".repeat(32)}\n`,
-    stats: { /* https://webpack.js.org/configuration/stats/ */ },
+    stats: { /* https://webpack.js.org/configuration/stats/ */
+        children: false,
+    },
 
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
     entry: { /* Left to each branch config */ },
@@ -193,8 +195,12 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
         chunkFilename: "chunk/[name].css"
     }));
     config.plugins.push(new CopyWebpackPlugin([{
-        from: path.resolve(PROJECT_ROOT,
-        "node_modules/socket.io-client/dist/socket.io.js"),
+        from: path.resolve(
+            PROJECT_ROOT, "node_modules",
+            "socket.io-client/dist/socket.io.js",
+        ) + "*",
+        to: "vendor/",
+        flatten: true,
     }]));
     if (PACK_MODE === "production") {
         config.plugins.push(new OptimizeCssAssetsPlugin({

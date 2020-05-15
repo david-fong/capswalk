@@ -14,7 +14,6 @@
 
 ### High Priority
 
-1. Use CopyWebpackPlugin to copy socket.io to the dist folder.
 1. See which usages of setting/getting `innerText` can be switched to use `textContent`, which performs better because it doesn't force reflows.
 1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay ligther.
 1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.

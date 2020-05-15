@@ -10,7 +10,8 @@
 export namespace OmHooks {
 
     export const GLOBAL_IDS = <const>{
-        PUBLIC_GAME_HOST_URLS: "public-game-hosts-list",
+        PUBLIC_GAME_HOST_URLS:  "public-game-hosts-list",
+        CURRENT_HOST_GROUPS:    "current-host-groups-list",
     };
 
     /**

@@ -38,10 +38,12 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
         this.hostUrlInput.oninput  = (ev) => this.setState(State.CHOOSING_HOST);
         this.hostUrlInput.onchange = (ev) => {
-            if (this.hostUrlInput.validity.valid) {
+            const val = this.hostUrlInput.value;
+            if (this.hostUrlInput.validity.valid && val.length) {
                 const top = this.toplevel;
                 top.socketIo.then((io) => {
-                    top.socket = io(this.hostUrlInput.value + SnakeyServer.Nsps.GROUP_JOINER, {
+                    const url = ((val.startsWith("http") ? "" : "http://")) + val;
+                    top.socket = io(url + SnakeyServer.Nsps.GROUP_JOINER, {
                         reconnectionAttempts: GroupSession.CtorArgs.JoinerReconnectionAttempts,
                     });
                     top.socket.once("connect", () => this.setState(State.CHOOSING_GROUP));
@@ -52,7 +54,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
         this.groupNameInput.oninput  = (ev) => this.setState(State.CHOOSING_GROUP);
         this.groupNameInput.onchange = (ev) => {
-
+            this.passphraseInput.focus();
         }
 
         this.setState(State.CHOOSING_HOST);
@@ -86,6 +88,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 throw new Error("never");
             }
             this.nextButton.disabled = false;
+            this.nextButton.focus();
 
         } else {
             this.nextButton.disabled = true;
@@ -113,13 +116,28 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
         // TODO.impl make some visual indication.
     }
 
-    private attemptToJoinGroup(url: string, passphrase: string): void {
-        // TODO.design I don't need those arguments... I can just read direct from the input elements.
-        // TODO. make sure to set query.passphrase.
+    private attemptToJoinGroup(): void {
+        const hostUrlVal = this.hostUrlInput.value;
+        const hostUrl = (hostUrlVal.startsWith("http") ? "" : "http://") + hostUrlVal;
+        const passphrase = this.passphraseInput.value;
         // See OnlineDefs.ts -> SnakeyServer.Nsps.GROUP_LOBBY_PREFIX
         if (this.state !== State.CHOOSING_GROUP) {
             throw new Error("never");
         }
+        this.toplevel.socket?.close();
+        this.toplevel.socketIo.then((io) => {
+            const url = new window.URL(hostUrl);
+            url.pathname += SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + this.groupNameInput.value;
+            const top = this.toplevel;
+            top.socket = io(url.toString(), {
+                query: { passphrase, },
+            });
+            top.socket.once("connect", () => this.setState(State.READY_TO_PROCEED));
+            top.socket.once("connect_error", () => this.onGroupJoinFailure.bind(this));
+        })
+    }
+    private onGroupJoinFailure(): void {
+        // TODO.impl make some visual indication.
     }
 
     public get socket(): SocketIOClient.Socket | undefined {
@@ -149,15 +167,13 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 OmHooks.General.Class.INPUT_GROUP_ITEM,
                 OMHC.HOST_URL,
             );
-            {
-                const suggestedHost = GroupJoinerScreen.SUGGEST_LAN_HOST_URL(this.toplevel.webpageHostType);
-                if (suggestedHost) {
-                    const suggestedHostOption = document.createElement("option");
-                    suggestedHostOption.value = suggestedHost;
-                    document.getElementById(OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS)!.appendChild(
-                        suggestedHostOption,
-                    );
-                }
+            const suggestedHost = GroupJoinerScreen.SUGGEST_LAN_HOST_URL(this.toplevel.webpageHostType);
+            if (suggestedHost) {
+                const suggestedHostOption = document.createElement("option");
+                suggestedHostOption.value = suggestedHost;
+                document.getElementById(OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS)!.appendChild(
+                    suggestedHostOption,
+                );
             }
             hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
             hostUrl.maxLength = 128;
@@ -171,6 +187,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             const nspsList
                 = (this.groupNameDataList as HTMLDataListElement)
                 = document.createElement("datalist");
+            nspsList.id = OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS;
             this.baseElem.appendChild(nspsList);
         }{
             const nspsName
@@ -184,6 +201,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             nspsName.autocomplete = "off";
             nspsName.pattern = GroupSession.GroupNspsName.REGEXP.source;
             nspsName.maxLength = GroupSession.CtorArgs.GroupNspsNameMaxLength;
+            nspsName.setAttribute("list", OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS);
             // Label:
             const nspsNameLabel = document.createElement("label");
             nspsNameLabel.innerText = "Group Name";

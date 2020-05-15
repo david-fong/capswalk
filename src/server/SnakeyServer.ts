@@ -60,6 +60,7 @@ export class SnakeyServer extends __SnakeyServer {
         this.http.listen(<net.ListenOptions>{ port, host, }, (): void => {
             const info = <net.AddressInfo>this.http.address();
             console.log(`Server mounted to: \`${info.address}${info.port}\` using ${info.family}.`);
+            console.log("");
             // TODO.impl print a list of ip addresses that clients can use to reach this server.
         });
 
