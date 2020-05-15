@@ -24,18 +24,13 @@
         "extraFileExtensions": [".json"]
     },
     "plugins": [
-        "@typescript-eslint",
-        "jsdoc"
+        "@typescript-eslint"
     ],
     "env": {
         "es6": true,
         "browser": false
     },
 
-
-    "extends": [
-        "plugin:jsdoc/recommended"
-    ],
     "rules": {
         // regular javascript linting:
         "no-eval": "error",
@@ -91,16 +86,5 @@
                 "@typescript-eslint/explicit-function-return-type": ["error", { "allowExpressions": true }]
             }
         }
-    ],
-    "settings": {
-        "jsdoc": {
-            "mode": "typescript",
-            "tagNamePreference": {
-                "augments": {
-                  "message": "@extends is more evocative of classes",
-                  "replacement": "extends"
-                }
-            }
-        }
-    }
+    ]
 }

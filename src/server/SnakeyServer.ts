@@ -78,7 +78,7 @@ export class SnakeyServer extends __SnakeyServer {
         socket.emit(
             GroupSession.CtorArgs.EVENT_NAME,
             Array.from(this.allGroupSessions).map((entry) => {
-                const [groupName, group] = entry;
+                const [groupName, group,] = entry;
                 return (group.isCurrentlyPlayingAGame)
                     ? GroupSession.CtorArgs.LifeStage.CLOSED
                     : GroupSession.CtorArgs.LifeStage.JOINABLE;
@@ -138,7 +138,8 @@ export namespace SnakeyServer {
      * https://en.wikipedia.org/wiki/Private_network
      */
     export const chooseIPv4Address = (): TU.RoArr<string> => {
-        return Object.values(os.networkInterfaces()).flat().filter((info) => {
+        return (Object.values(os.networkInterfaces()).flat() as os.NetworkInterfaceInfo[])
+        .filter((info) => {
             return !(info.internal) && info.family === "IPv4";
         }).map((info) => info.address);
     };

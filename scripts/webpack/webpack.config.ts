@@ -194,14 +194,11 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
         filename: "index.css",
         chunkFilename: "chunk/[name].css"
     }));
-    config.plugins.push(new CopyWebpackPlugin([{
-        from: path.resolve(
-            PROJECT_ROOT, "node_modules",
-            "socket.io-client/dist/socket.io.js",
-        ) + "*",
+    config.plugins.push(new CopyWebpackPlugin({ patterns: [{
+        from: "node_modules/socket.io-client/dist/socket.io.js" + "*",
         to: "vendor/",
         flatten: true,
-    }]));
+    }],}));
     if (PACK_MODE === "production") {
         config.plugins.push(new OptimizeCssAssetsPlugin({
             cssProcessorPluginOptions: {
