@@ -36,6 +36,9 @@ export class TopLevel {
                 return TopLevel.WebpageHostType.LAN_SERVER;
             }
         })();
+        console.log("%c🩺 welcome! 🐍", "font:700 3em /1.5 monospace;"
+        + " border:0.3em solid black; border-radius:0.7em; padding:0.4em;"
+        + " color:white;background-color:#3f5e77;")
     }
 
     public get socketIo(): Promise<typeof import("socket.io-client")> {

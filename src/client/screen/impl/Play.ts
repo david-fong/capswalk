@@ -190,7 +190,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     private statusBecomePlaying(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePlaying();
-        this.pauseButton.innerText  = "Pause";
+        this.pauseButton.textContent  = "Pause";
         this.#pauseReason           = undefined;
         this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
@@ -204,7 +204,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     private statusBecomePaused(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePaused();
-        this.pauseButton.innerText = "Unpause";
+        this.pauseButton.textContent = "Unpause";
         this.#pauseReason = document.hidden ? "page-hide" : "other";
         this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
 
@@ -248,7 +248,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
             = (this.backToHomeButton as HTMLButtonElement)
             = document.createElement("button");
         bth.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-        bth.innerText = "Return To Homepage";
+        bth.textContent = "Return To Homepage";
         bth.onclick = this.requestGoToScreen.bind(this, SkScreen.Id.HOME);
         controlsBar.appendChild(bth); }
 
@@ -262,7 +262,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
             = (this.resetButton as HTMLButtonElement)
             = document.createElement("button");
         reset.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-        reset.innerText = "Reset";
+        reset.textContent = "Reset";
         reset.onclick = this.__resetGame.bind(this);
         controlsBar.appendChild(reset); }
 
@@ -307,7 +307,7 @@ export namespace __PlayScreen {
             {
                 const kbdDcIcon = document.createElement("div");
                 kbdDcIcon.classList.add(OmHooks.Grid.Class.KBD_DC_ICON);
-                kbdDcIcon.innerText = "(click here to continue typing)";
+                kbdDcIcon.textContent = "(click here to continue typing)";
                 kbdDcBase.appendChild(kbdDcIcon);
             }
             gridElem.appendChild(kbdDcBase);
@@ -322,7 +322,7 @@ export namespace __PlayScreen {
             {
                 const pauseIcon = document.createElement("div");
                 pauseIcon.classList.add(OmHooks.Grid.Class.PAUSE_OL_ICON);
-                pauseIcon.innerText = "(The Game is Paused)";
+                pauseIcon.textContent = "(The Game is Paused)";
                 pauseOl.appendChild(pauseIcon);
             }
             gridElem.appendChild(pauseOl);

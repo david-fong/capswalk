@@ -104,7 +104,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
                 OmHooks.General.Class.INPUT_GROUP_ITEM,
                 desc.cssClass,
             );
-            elem.innerText = desc.text;
+            elem.textContent = desc.text;
             elem.addEventListener("pointerenter", () => {
                 elem.focus();
                 // TODO.impl play a keyboard click sound.

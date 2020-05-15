@@ -26,7 +26,7 @@ export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID>
         for (const langName of Object.values(Lang.FrontendDescs)) {
             const opt = document.createElement("option");
             opt.value = langName.id;
-            opt.innerText = langName.display;
+            opt.textContent = langName.display;
             langSel.add(opt);
         }
         langSel.onchange = (): void => {

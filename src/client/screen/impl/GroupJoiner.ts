@@ -180,7 +180,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             hostUrl.minLength = 1;
             // Label:
             const hostUrlLabel = document.createElement("label");
-            hostUrlLabel.innerText = "Host Url";
+            hostUrlLabel.textContent = "Host Url";
             hostUrlLabel.appendChild(hostUrl);
             contentWrapper.appendChild(hostUrlLabel);
         }{
@@ -204,7 +204,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             nspsName.setAttribute("list", OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS);
             // Label:
             const nspsNameLabel = document.createElement("label");
-            nspsNameLabel.innerText = "Group Name";
+            nspsNameLabel.textContent = "Group Name";
             nspsNameLabel.appendChild(nspsName);
             contentWrapper.appendChild(nspsNameLabel);
         }{
@@ -220,7 +220,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             pass.maxLength = GroupSession.CtorArgs.PassphraseMaxLength;
             // Label:
             const passLabel = document.createElement("label");
-            passLabel.innerText = "Passphrase";
+            passLabel.textContent = "Passphrase";
             passLabel.appendChild(pass);
             contentWrapper.appendChild(passLabel);
         }{
@@ -228,7 +228,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 = (this.nextButton as HTMLButtonElement)
                 = document.createElement("button");
             nextBtn.classList.add(OMHC.NEXT_BUTTON);
-            nextBtn.innerText = "Next";
+            nextBtn.textContent = "Next";
             contentWrapper.appendChild(nextBtn);
         }
         return contentWrapper;
