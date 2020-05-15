@@ -28,11 +28,18 @@ export class TopLevel {
     }
 
     public get socketIo(): Promise<typeof import("socket.io-client")> {
-        return this.#socketIoChunk
-        || (this.#socketIoChunk = import(
-            /* webpackChunkName: "[request]" */
-            "socket.io-client"
-        ));
+        // return this.#socketIoChunk
+        // || (this.#socketIoChunk = import(
+        //     /* webpackChunkName: "[request]" */
+        //     "socket.io-client"
+        // ));
+        return new Promise<typeof import("socket.io-client")>((resolve, reject) => {
+            const script = document.getElementById("socket.io")!;
+            if (io) return resolve(io);
+            script.onload = () => {
+                resolve(io);
+            };
+        });
     }
 }
 export namespace TopLevel {

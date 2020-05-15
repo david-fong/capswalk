@@ -114,7 +114,7 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
         extensions: [ ".ts", ".css", ".js", ],
         modules: [
             path.resolve(PROJECT_ROOT, "src", "base"),
-            "node_modules",
+            path.resolve(PROJECT_ROOT, "node_modules"),
         ], // match tsconfig.baseUrl
     },
     module: { rules: MODULE_RULES(), },
@@ -179,9 +179,13 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     };
     config.entry["index"] = `./src/client/index.ts`;
     config.externals = [ nodeExternals({
-        whitelist: ["socket.io-client",],
+        // whitelist: ["socket.io-client"],
+        importType: "root",
     }), ],
     config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
+    // config.resolve.alias = config.resolve.alias || {
+    //     "socket.io-client": "socket.io-client/dist/socket.io.slim.js",
+    // };
     config.plugins.push(new HtmlPlugin(htmlPluginArgs));
     config.plugins.push(new MiniCssExtractPlugin({
         filename: "index.css",

@@ -124,7 +124,7 @@ export namespace OmHooks {
                 export const Class = <const>{
                     BASE:               "screen-joiner",
                     CONTENT_WRAPPER:    "screen-joiner--content-wrapper",
-                    LAN_HOST_URL:       "screen-joiner--lan-host-url",
+                    HOST_URL:           "screen-joiner--host-url",
                     GROUP_NAME:         "screen-joiner--group-name",
                     PASSPHRASE:         "screen-joiner--passphrase",
                     NEXT_BUTTON:        "screen-joiner--next-button",

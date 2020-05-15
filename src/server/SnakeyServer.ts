@@ -46,6 +46,7 @@ export class SnakeyServer extends __SnakeyServer {
             // namely, GitHub Pages, in order to reduce the downstream
             // load on a LAN-hosted SnakeyServer.
         });
+        this.allGroupSessions = new Map();
 
         // At runtime, __dirname resolves to ":/dist/server/"
         const PROJECT_ROOT = path.resolve(__dirname, "../..");

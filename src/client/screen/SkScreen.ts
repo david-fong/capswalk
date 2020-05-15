@@ -54,7 +54,6 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     /**
      * **Do not override.**
      */
-    // TODO.learn https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState
     public async enter(args: SkScreen.CtorArgs<SID>): Promise<void> {
         if (!this.#hasLazyLoaded) {
             const baseElem
@@ -110,6 +109,9 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      *
      * The default implementation does nothing. Overriding implementations
      * from direct subclasses can safely skip making a supercall.
+     *
+     * Important: Calls to `HTMLElement.focus` may require a small delay
+     * via setTimeout. The reason for this is currently unknown.
      */
     protected async __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> { }
 

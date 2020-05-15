@@ -14,9 +14,11 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
     public readonly canBeInitialScreen = false;
 
+    #state: GroupJoinerScreen.State;
+
     private readonly hostUrlInput:      HTMLInputElement;
-    private readonly nspsNameDataList:  HTMLDataListElement;
-    private readonly nspsNameInput:     HTMLInputElement;
+    private readonly groupNameDataList: HTMLDataListElement;
+    private readonly groupNameInput:    HTMLInputElement;
     private readonly passphraseInput:   HTMLInputElement;
 
     private readonly backButton: HTMLButtonElement;
@@ -31,7 +33,104 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             OmHooks.General.Class.CENTER_CONTENTS,
             OMHC.BASE,
         );
+        const contentWrapper = this.__initializeScreenContents();
 
+        this.hostUrlInput.oninput  = (ev) => this.setState(State.CHOOSING_HOST);
+        this.hostUrlInput.onchange = (ev) => {
+            console.log("hi");
+            if (this.hostUrlInput.validity.valid) {
+                const top = this.toplevel;
+                top.socketIo.then((io) => {
+                    top.socket = io(this.hostUrlInput.value + SnakeyServer.Nsps.GROUP_JOINER, {});
+                    top.socket.once("connect", () => this.setState(State.CHOOSING_GROUP));
+                    top.socket.once("connect_error", this.onHostConnectionFailure.bind(this));
+                });
+            }
+        }
+
+        this.groupNameInput.oninput  = (ev) => this.setState(State.CHOOSING_GROUP);
+        this.groupNameInput.onchange = (ev) => {
+            ;
+        }
+
+        this.setState(State.CHOOSING_HOST);
+        this.baseElem.appendChild(contentWrapper);
+    }
+
+    /**
+     * @override
+     */
+    protected async __abstractOnBeforeEnter(args: {}): Promise<void> {
+        window.setTimeout(() => {
+            // ^Setting a timeout is required for some reason...
+            this.hostUrlInput.focus();
+        }, 100);
+    }
+
+    public get state(): State {
+        return this.#state;
+    }
+    /**
+     * Throws an error if the `newState` argument is the same as the
+     * current state. (Does not throw on cold-set (ie. current state is
+     * undefined)).
+     *
+     * @param newState -
+     */
+    private setState(newState: State): void {
+        if (this.state && this.state === newState) {
+            throw new Error("never");
+        }
+        if (newState === State.READY_TO_PROCEED) {
+            if (this.state !== State.CHOOSING_GROUP) {
+                throw new Error("never");
+            }
+            this.nextButton.disabled = false;
+
+        } else {
+            this.nextButton.disabled = true;
+
+            if (newState === State.CHOOSING_HOST) {
+                this.toplevel.socket?.close();
+                this.groupNameInput.disabled    = true;
+                this.groupNameInput.value       = "";
+                Array.from(this.groupNameDataList.children).forEach((child) => child.remove());
+                this.passphraseInput.disabled   = true;
+                this.passphraseInput.value      = "";
+                this.hostUrlInput.focus();
+                ;
+            } else if (newState === State.CHOOSING_GROUP) {
+                this.groupNameInput.disabled    = false;
+                this.passphraseInput.disabled   = false;
+                this.passphraseInput.value      = "";
+                this.groupNameInput.focus();
+            }
+        }
+        this.#state = newState;
+    }
+
+    private onHostConnectionFailure(): void {
+        // TODO.impl make some visual indication.
+    }
+
+    private attemptToJoinGroup(url: string, passphrase: string): void {
+        // TODO.design I don't need those arguments... I can just read direct from the input elements.
+        // TODO. make sure to set query.passphrase.
+        // See OnlineDefs.ts -> SnakeyServer.Nsps.GROUP_LOBBY_PREFIX
+        if (this.state !== State.CHOOSING_GROUP) {
+            throw new Error("never");
+        }
+    }
+
+    public get socket(): SocketIOClient.Socket | undefined {
+        return this.toplevel.socket;
+    }
+
+    /**
+     * A helper for `__lazyLoad`. Does not hook up event processors.
+     */
+    private __initializeScreenContents(): HTMLElement {
+        const OMHC = OmHooks.Screen.Impl.GroupJoiner.Class;
         const contentWrapper = document.createElement("div");
         contentWrapper.classList.add(
             OmHooks.General.Class.INPUT_GROUP,
@@ -44,11 +143,21 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             hostUrl.type = "url";
             hostUrl.classList.add(
                 OmHooks.General.Class.INPUT_GROUP_ITEM,
-                OMHC.LAN_HOST_URL,
+                OMHC.HOST_URL,
             );
+            {
+                const suggestedHost = GroupJoinerScreen.SUGGEST_LAN_HOST_URL();
+                if (suggestedHost) {
+                    const suggestedHostOption = document.createElement("option");
+                    suggestedHostOption.value = suggestedHost;
+                    document.getElementById(OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS)!.appendChild(
+                        suggestedHostOption,
+                    );
+                }
+            }
             hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
-            hostUrl.value = GroupJoinerScreen.SUGGEST_LAN_HOST_URL();
             hostUrl.maxLength = 128;
+            hostUrl.minLength = 1;
             // Label:
             const hostUrlLabel = document.createElement("label");
             hostUrlLabel.innerText = "Host Url";
@@ -56,12 +165,12 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             contentWrapper.appendChild(hostUrlLabel);
         }{
             const nspsList
-                = (this.nspsNameDataList as HTMLDataListElement)
+                = (this.groupNameDataList as HTMLDataListElement)
                 = document.createElement("datalist");
             this.baseElem.appendChild(nspsList);
         }{
             const nspsName
-                = (this.nspsNameInput as HTMLInputElement)
+                = (this.groupNameInput as HTMLInputElement)
                 = document.createElement("input");
             nspsName.type = "text";
             nspsName.classList.add(
@@ -100,57 +209,15 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             nextBtn.innerText = "Next";
             contentWrapper.appendChild(nextBtn);
         }
-        this.baseElem.appendChild(contentWrapper);
-    }
-
-    /**
-     * @override
-     */
-    protected async __abstractOnBeforeEnter(args: {}): Promise<void> {
-        this.nextButton.disabled = !(this.socket);
-        window.setTimeout(() => {
-            // ^Setting a timeout is required for some reason...
-            this.hostUrlInput.focus();
-        }, 100);
-    }
-
-    /**
-     * Always closes the current socket, if there is one.
-     *
-     * @param url -
-     */
-    private attemptConnectToHost(url: string): void {
-        const top = this.toplevel;
-        if (top.socket) {
-            top.socket.removeAllListeners();
-            top.socket.close();
-        }
-        top.socketIo.then((io) => {
-            top.socket = io(url + SnakeyServer.Nsps.GROUP_JOINER, {});
-            top.socket.once("connect", this.onHostConnectionSuccess.bind(this));
-            top.socket.once("connect_error", this.onHostConnectionFailure.bind(this));
-        });
-    }
-
-    private attemptToJoinGroup(url: string, passphrase: string): void {
-        // TODO.design I don't need those arguments... I can just read direct from the input elements.
-        // TODO. make sure to set query.passphrase.
-        // See OnlineDefs.ts -> SnakeyServer.Nsps.GROUP_LOBBY_PREFIX
-    }
-
-    private onHostConnectionSuccess(): void {
-        this.nextButton.disabled = false;
-    }
-
-    private onHostConnectionFailure(): void {
-        ;
-    }
-
-    public get socket(): typeof io.Socket | undefined {
-        return this.toplevel.socket;
+        return contentWrapper;
     }
 }
 export namespace GroupJoinerScreen {
+    export enum State {
+        CHOOSING_HOST,
+        CHOOSING_GROUP,
+        READY_TO_PROCEED,
+    };
     /**
      *
      */
@@ -177,5 +244,7 @@ export namespace GroupJoinerScreen {
         }
     }
 }
+const State = GroupJoinerScreen.State;
+type  State = GroupJoinerScreen.State;
 Object.freeze(GroupJoinerScreen);
 Object.freeze(GroupJoinerScreen.prototype);
