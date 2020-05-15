@@ -39,7 +39,6 @@
 
 - Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
   - Also see [this](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
-- Tell WebPack to split out styling for each screen?
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
@@ -57,8 +56,9 @@
     - [](https://devcenter.heroku.com/articles/nodejs-support)
     - [](https://medium.com/deployplace/heroku-vs-docker-the-ultimate-comparison-with-hidden-pitfalls-revealed-f6b7f4075de5)
   - [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+- Make a nicely styled console-log greeting on the client side.
+  - List common variables in the program that they might like to look at.
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
-- For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 - Look into switching from JsDoc to TsDoc
   - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
 - [custom mouse images!](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Basic_User_Interface/Using_URL_values_for_the_cursor_property)

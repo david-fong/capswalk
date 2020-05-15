@@ -7,6 +7,8 @@ import { AllSkScreens } from "./screen/AllSkScreens";
  */
 export class TopLevel {
 
+    public readonly webpageHostType: TopLevel.WebpageHostType;
+
     /**
      * Purposely made private. Screens are intended to navigate
      * between each other without reference to this field.
@@ -25,6 +27,15 @@ export class TopLevel {
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
         if (!allScreensElem) { throw new Error; }
         this.allScreens = new AllSkScreens(this, allScreensElem);
+        this.webpageHostType = (() => {
+            if (window.location.origin.match(/github\.io/)) {
+                return TopLevel.WebpageHostType.GITHUB;
+            } else if (window.location.protocol.startsWith("file")) {
+                return TopLevel.WebpageHostType.FILESYSTEM;
+            } else {
+                return TopLevel.WebpageHostType.LAN_SERVER;
+            }
+        })();
     }
 
     public get socketIo(): Promise<typeof import("socket.io-client")> {
@@ -43,6 +54,11 @@ export class TopLevel {
     }
 }
 export namespace TopLevel {
+    export const enum WebpageHostType {
+        GITHUB      = "github",
+        FILESYSTEM  = "filesystem",
+        LAN_SERVER  = "lan-server",
+    }
 }
 Object.freeze(TopLevel);
 Object.freeze(TopLevel.prototype);

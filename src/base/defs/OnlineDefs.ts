@@ -71,6 +71,7 @@ export namespace GroupSession {
         }
     };
     export namespace CtorArgs {
+        export const JoinerReconnectionAttempts = 2;
         export const GroupNspsNameMaxLength = 30;
         export const PassphraseMaxLength = 30;
         export const DEFAULT_TTL = 60;

@@ -1,3 +1,4 @@
+import type { TopLevel } from "../../TopLevel";
 import { OmHooks } from "defs/OmHooks";
 import { GroupSession } from "defs/OnlineDefs";
 import { SnakeyServer } from "defs/OnlineDefs";
@@ -37,11 +38,12 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
         this.hostUrlInput.oninput  = (ev) => this.setState(State.CHOOSING_HOST);
         this.hostUrlInput.onchange = (ev) => {
-            console.log("hi");
             if (this.hostUrlInput.validity.valid) {
                 const top = this.toplevel;
                 top.socketIo.then((io) => {
-                    top.socket = io(this.hostUrlInput.value + SnakeyServer.Nsps.GROUP_JOINER, {});
+                    top.socket = io(this.hostUrlInput.value + SnakeyServer.Nsps.GROUP_JOINER, {
+                        reconnectionAttempts: GroupSession.CtorArgs.JoinerReconnectionAttempts,
+                    });
                     top.socket.once("connect", () => this.setState(State.CHOOSING_GROUP));
                     top.socket.once("connect_error", this.onHostConnectionFailure.bind(this));
                 });
@@ -50,7 +52,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
         this.groupNameInput.oninput  = (ev) => this.setState(State.CHOOSING_GROUP);
         this.groupNameInput.onchange = (ev) => {
-            ;
+
         }
 
         this.setState(State.CHOOSING_HOST);
@@ -71,16 +73,14 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
         return this.#state;
     }
     /**
-     * Throws an error if the `newState` argument is the same as the
-     * current state. (Does not throw on cold-set (ie. current state is
-     * undefined)).
+     * Does nothing if the `newState` argument is the same as the
+     * current state.
      *
      * @param newState -
      */
     private setState(newState: State): void {
-        if (this.state && this.state === newState) {
-            throw new Error("never");
-        }
+        if (this.state === newState) return;
+
         if (newState === State.READY_TO_PROCEED) {
             if (this.state !== State.CHOOSING_GROUP) {
                 throw new Error("never");
@@ -129,6 +129,10 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
     /**
      * A helper for `__lazyLoad`. Does not hook up event processors.
      */
+    // TODO.impl change this into a form and move input tags outside of their label tags.
+    // This will allow us to use more appropriate styling control for their track sizes
+    // _when_ we add description parts for each input. Size the description tracks using
+    // `auto`, and everything else (ie. labels and inputs) using `fr` units.
     private __initializeScreenContents(): HTMLElement {
         const OMHC = OmHooks.Screen.Impl.GroupJoiner.Class;
         const contentWrapper = document.createElement("div");
@@ -146,7 +150,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 OMHC.HOST_URL,
             );
             {
-                const suggestedHost = GroupJoinerScreen.SUGGEST_LAN_HOST_URL();
+                const suggestedHost = GroupJoinerScreen.SUGGEST_LAN_HOST_URL(this.toplevel.webpageHostType);
                 if (suggestedHost) {
                     const suggestedHostOption = document.createElement("option");
                     suggestedHostOption.value = suggestedHost;
@@ -221,26 +225,26 @@ export namespace GroupJoinerScreen {
     /**
      *
      */
-    export function SUGGEST_LAN_HOST_URL(): string {
-        if (window.location.origin.match(/github\.io/)) {
-            // Use case: production. Load page resources from GitHub
-            // Pages to reduce load on the game server, which is on
-            // on the LAN. Only use the server for game management.
-            return ""; // No suggestion.
-
-        } else if (window.location.protocol.startsWith("file")) {
-            // Use case: development. Load page resources directly from
-            // the local filesystem. Server only used as a game manager.
-            // In this case, suggest connecting to `localhost`.
-            return "localhost:" + SnakeyServer.DEFAULT_PORT;
-
-        } else {
-            // Use case: production. Page resources are probably being
-            // served by the LAN server already. Suggest connecting
-            // Socket.IO to that same host. Just give origin (exclude
-            // the URI's path, since Socket.IO interprets the path as
-            // a namespace specifier).
-            return window.location.origin;
+    export function SUGGEST_LAN_HOST_URL(webpageHostType: TopLevel.WebpageHostType): string {
+        switch (webpageHostType) {
+            case "github":
+                // Use case: production. Load page resources from GitHub
+                // Pages to reduce load on the game server, which is on
+                // on the LAN. Only use the server for game management.
+                return "";
+            case "filesystem":
+                // Use case: development. Load page resources directly from
+                // the local filesystem. Server only used as a game manager.
+                // In this case, suggest connecting to `localhost`.
+                return "localhost:" + SnakeyServer.DEFAULT_PORT;
+            case "lan-server":
+                // Use case: production. Page resources are probably being
+                // served by the LAN server already. Suggest connecting
+                // Socket.IO to that same host. Just give origin (exclude
+                // the URI's path, since Socket.IO interprets the path as
+                // a namespace specifier).
+                return window.location.origin;
+            default: return "";
         }
     }
 }

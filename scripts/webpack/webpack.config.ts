@@ -4,7 +4,8 @@ import webpack  = require("webpack");
 // https://github.com/TypeStrong/ts-loader#loader-options
 import type * as tsloader from "ts-loader/dist/interfaces";
 
-import nodeExternals = require("webpack-node-externals")
+import nodeExternals = require("webpack-node-externals");
+import CopyWebpackPlugin = require("copy-webpack-plugin");
 import HtmlPlugin = require("html-webpack-plugin");
 import MiniCssExtractPlugin = require("mini-css-extract-plugin");
 import OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
@@ -191,10 +192,14 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
         filename: "index.css",
         chunkFilename: "chunk/[name].css"
     }));
-    if (PACK_MODE === 'production') {
+    config.plugins.push(new CopyWebpackPlugin([{
+        from: path.resolve(PROJECT_ROOT,
+        "node_modules/socket.io-client/dist/socket.io.js"),
+    }]));
+    if (PACK_MODE === "production") {
         config.plugins.push(new OptimizeCssAssetsPlugin({
             cssProcessorPluginOptions: {
-                preset: ['default', { discardComments: { removeAll: true, },},],
+                preset: ["default", { discardComments: { removeAll: true, },},],
             },
         }));
     }
