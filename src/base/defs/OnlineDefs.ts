@@ -21,8 +21,8 @@ Object.freeze(SnakeyServer.prototype);
 /**
  *
  */
-export class GroupSession { }
-export namespace GroupSession {
+export class Group { }
+export namespace Group {
 
     /**
      * An extension of {@link io.Socket}. It is very convenient to tack
@@ -37,59 +37,54 @@ export namespace GroupSession {
         export type ServerSide = Base & import("socket.io").Socket;
     }
 
-    export type GroupNspsName = string;
-    export namespace GroupNspsName {
-        /**
-         * @see Player.Username.REGEXP
-         */
-        export const REGEXP = /[a-zA-Z](?:[a-zA-Z0-9:-]+?){4,}/;
+    export type Name = string;
+    export namespace Name {
+        export const REGEXP = /(?:[a-zA-Z0-9:-]+)/;
+        export const MaxLength = 30;
+    }
+    export type Passphrase = string;
+    export namespace Passphrase {
+        export const REGEXP = /(?:[a-zA-Z0-9:-]+)/;
+        export const MaxLength = 30;
     }
 
-    export const enum RoomNames {
-        MAIN = "main",
-    }
+    export const JoinerReconnectionAttempts = 2;
+    export const DEFAULT_TTL = 60;
 
-    export class CtorArgs {
-        /**
-         * The client should set this to a string to use as a group
-         * name. They should try to satisfy {@link SessionName.REGEXP},
-         * although that is not mandatory.
-         */
-        public groupName: GroupNspsName;
-
-        /**
-         * An empty string is allowed.
-         */
-        public readonly passphrase: string;
-
-        public constructor(
-            groupName: GroupNspsName,
-            passphrase: string,
-        ) {
-            this.groupName = groupName;
-            this.passphrase = passphrase;
-        }
-    };
-    export namespace CtorArgs {
-        export const JoinerReconnectionAttempts = 2;
-        export const GroupNspsNameMaxLength = 30;
-        export const PassphraseMaxLength = 30;
-        export const DEFAULT_TTL = 60;
-
-        /**
-         * The client uses this event name when requesting creation
-         * of a new group.
-         *
-         * The server uses this event name to notify clients of the
-         * life stage of existing groups.
-         */
+    export namespace Exist {
         export const EVENT_NAME = "group-exist";
-        export const enum LifeStage {
-            JOINABLE    = "JOINABLE",
-            CLOSED      = "CLOSED",
-            DELETE      = "DELETE",
+        /**
+         * Sent by the client to request the creation of a new group.
+         *
+         * Do not use this to request joining a group - That is done
+         * by opening a socket to that group's namespace and putting
+         * the passphrase in the request's query.
+         */
+        export class RequestCreate {
+            public constructor(
+                public readonly groupName: Name,
+                public readonly passphrase: string,
+            ) {}
+        };
+        export namespace RequestCreate {
+            export const enum Response {
+                OKAY = "okay",
+                NOPE = "nope",
+            };
+        }
+        /**
+         * Initiated by the server to notify clients of the status of
+         * existing groups.
+         */
+        export type NotifyStatus = RequestCreate.Response | {
+            [groupNspsName : string]: Status;
+        };
+        export const enum Status {
+            IN_LOBBY    = "in-lobby",
+            IN_GAME     = "in-game",
+            DELETE      = "delete",
         };
     }
 }
-Object.freeze(GroupSession);
-Object.freeze(GroupSession.prototype);
+Object.freeze(Group);
+Object.freeze(Group.prototype);

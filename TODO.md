@@ -14,7 +14,7 @@
 
 ### High Priority
 
-1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay ligther.
+1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay lighter.
 1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores very small on top of player faces.
@@ -67,7 +67,6 @@
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
 - WebPack 5:
-  - [Magic dynamic import strings](https://webpack.js.org/migrate/5/#cleanup-the-code) will start getting useful values by default.
   - `output.ecmaVersion` is `6` by default. If we have set it to `6` manually, we can delete the manual field specification.
 - [TypeScript / tslib bug](https://github.com/microsoft/TypeScript/issues/36841)
   - This is on the roadmap for TypeScript 2.9.1... That may be a while.

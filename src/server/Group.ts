@@ -6,7 +6,7 @@ import type { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 import type { Player, Team } from "game/player/Player";
 
-import { GroupSession as __GroupSession } from "defs/OnlineDefs";
+import { Group as __Group } from "defs/OnlineDefs";
 
 export { ServerGame } from "./ServerGame";
 
@@ -14,12 +14,8 @@ export { ServerGame } from "./ServerGame";
 /**
  * Manages communication between the server, and clients who play in
  * the same game together.
- *
- * There is no explicit linking back to the {@link Server}. The only
- * such linkage is from our {@link GroupSession#namespace} to its
- * `io.Server`.
  */
-export class GroupSession extends __GroupSession {
+export class Group extends __Group {
 
     public readonly namespace: io.Namespace;
     public readonly passphrase: string;
@@ -44,19 +40,17 @@ export class GroupSession extends __GroupSession {
      */
     public constructor(
         namespace: io.Namespace,
-        desc: GroupSession.CtorArgs,
+        passphrase: Group.Passphrase,
         deleteExternalRefs: VoidFunction,
         initialTtl: number,
     ) {
         super();
         this.namespace   = namespace;
-        this.passphrase  = desc.passphrase;
+        this.passphrase  = passphrase;
         this.#currentGame = undefined;
 
         this.initialTtlTimeout = setTimeout(() => {
             if (Object.keys(this.namespace.connected).length === 0) {
-                // If nobody connects to this session in the specified
-                // ammount of time, then close the session.
                 this.terminate();
             }
         }, (initialTtl * 1000)).unref();
@@ -76,9 +70,8 @@ export class GroupSession extends __GroupSession {
      *
      * @param socket -
      */
-    protected onConnection(socket: GroupSession.Socket): void {
+    protected onConnection(socket: Group.Socket): void {
         console.log("A user has connected.");
-        socket.join(GroupSession.RoomNames.MAIN);
         socket.username = undefined;
         socket.teamId   = undefined;
         socket.updateId = 0;
@@ -184,14 +177,18 @@ export class GroupSession extends __GroupSession {
         return undefined;
     }
 
-    public get sockets(): Record<string, GroupSession.Socket> {
-        return this.namespace.sockets as Record<io.Socket["id"], GroupSession.Socket>;
+    public get sockets(): Record<string, Group.Socket> {
+        return this.namespace.sockets as Record<io.Socket["id"], Group.Socket>;
     }
 }
-export namespace GroupSession {
-    export type Socket      = __GroupSession.Socket.ServerSide;
-    export type CtorArgs    = __GroupSession.CtorArgs;
-    export type GroupNspsName = __GroupSession.GroupNspsName;
+export namespace Group {
+    export type Socket      = __Group.Socket.ServerSide;
+    export type Name        = __Group.Name;
+    export type Passphrase  = __Group.Passphrase;
+    export namespace Query {
+        export type RequestCreate   = __Group.Exist.RequestCreate;
+        export type NotifyStatus    = __Group.Exist.NotifyStatus;
+    }
 }
-Object.freeze(GroupSession);
-Object.freeze(GroupSession.prototype);
+Object.freeze(Group);
+Object.freeze(Group.prototype);

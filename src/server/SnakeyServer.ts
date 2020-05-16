@@ -5,8 +5,8 @@ import express  = require("express");
 import io       = require("socket.io");
 import type * as net from "net";
 
+import { Group } from "./Group";
 import { SnakeyServer as __SnakeyServer } from "defs/OnlineDefs";
-import { GroupSession } from "./GroupSession";
 
 
 /**
@@ -23,7 +23,7 @@ export class SnakeyServer extends __SnakeyServer {
      * not garbage-collection eligible. Keys are Socket.IO namespace
      * names corresponding the the mapped value.
      */
-    private readonly allGroupSessions: Map<string, GroupSession>;
+    private readonly allGroups: Map<string, Group>;
 
     /**
      *
@@ -46,7 +46,7 @@ export class SnakeyServer extends __SnakeyServer {
             // namely, GitHub Pages, in order to reduce the downstream
             // load on a LAN-hosted SnakeyServer.
         });
-        this.allGroupSessions = new Map();
+        this.allGroups = new Map();
 
         // At runtime, __dirname resolves to ":/dist/server/"
         const PROJECT_ROOT = path.resolve(__dirname, "../..");
@@ -75,57 +75,52 @@ export class SnakeyServer extends __SnakeyServer {
      * @param socket - The socket from the game host.
      */
     protected onJoinerNspsConnection(socket: io.Socket): void {
+        // Upon connection, immediately send a list of existing groups:
         socket.emit(
-            GroupSession.CtorArgs.EVENT_NAME,
-            Array.from(this.allGroupSessions).map((entry) => {
-                const [groupName, group,] = entry;
-                return (group.isCurrentlyPlayingAGame)
-                    ? GroupSession.CtorArgs.LifeStage.CLOSED
-                    : GroupSession.CtorArgs.LifeStage.JOINABLE;
-            }),
+            Group.Exist.EVENT_NAME,
+            (() => {
+                const build: Group.Query.NotifyStatus = {};
+                Array.from(this.allGroups).map((entry) => {
+                    const [groupName, group,] = entry;
+                    build[groupName] = (group.isCurrentlyPlayingAGame)
+                    ? Group.Exist.Status.IN_GAME
+                    : Group.Exist.Status.IN_LOBBY;
+                });
+                return build;
+            })(),
         );
-        socket.on(GroupSession.CtorArgs.EVENT_NAME, (desc: GroupSession.CtorArgs): void => {
-            const groupNspsName = this.createUniqueSessionName(desc.groupName);
-            if (!(groupNspsName)) {
-                // The name was not accepted. Notify the client:
-                socket.emit(GroupSession.CtorArgs.EVENT_NAME, undefined);
-                return;
+        socket.on(Group.Exist.EVENT_NAME, (desc: Group.Query.RequestCreate): void => {
+            // A client is requesting a new group to be created.
+            // If a group with such a name already exists, or if the
+            // requested name or pass-phrases don't follow the required
+            // format, completely ignore the request.
+            if (this.allGroups.has(desc.groupName)
+            ||  desc.groupName.length > Group.Name.MaxLength
+            || !desc.groupName.match(Group.Name.REGEXP)
+            ||  desc.passphrase.length > Group.Passphrase.MaxLength
+            || !desc.passphrase.match(Group.Passphrase.REGEXP)
+            ) {
+                socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.NOPE);
             }
+
+            const nspsName = SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + desc.groupName;
             // Create a new group session:
-            desc.groupName = groupNspsName;
-            this.allGroupSessions.set(
-                groupNspsName,
-                new GroupSession(
-                    this.io.of(groupNspsName), // <-- create a namespace.
-                    desc,
-                    () => this.allGroupSessions.delete(groupNspsName),
-                    GroupSession.CtorArgs.DEFAULT_TTL,
+            this.allGroups.set(
+                nspsName,
+                new Group(
+                    this.io.of(nspsName), // <-- create a namespace.
+                    desc.passphrase,
+                    () => this.allGroups.delete(nspsName),
+                    Group.DEFAULT_TTL,
                 ),
             );
             // Notify all sockets connected to the joiner namespace
             // of the new namespace created for the new group session:
-            socket.nsp.emit(GroupSession.CtorArgs.EVENT_NAME, {
-                [groupNspsName]: GroupSession.CtorArgs.LifeStage.JOINABLE,
+            socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
+            socket.broadcast.emit(Group.Exist.EVENT_NAME, {
+                [nspsName]: Group.Exist.Status.IN_LOBBY,
             });
         });
-    }
-
-    /**
-     * @returns The Socket.IO namespace using the provided `groupName`.
-     *
-     * @param groupName - A name to give the group. `null` if rejected,
-     *      which happens if `groupName` is already taken, or if it
-     *      does not match the required regular expression.
-     */
-    protected createUniqueSessionName(groupName: GroupSession.GroupNspsName): string | undefined {
-        if (!(GroupSession.GroupNspsName.REGEXP.test(groupName))) {
-            return undefined;
-        }
-        const sessionName = SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + groupName;
-        if (this.allGroupSessions.has(sessionName)) {
-            return undefined;
-        }
-        return sessionName;
     }
 }
 export namespace SnakeyServer {
