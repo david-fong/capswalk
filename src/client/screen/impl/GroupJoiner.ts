@@ -35,53 +35,103 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             OMHC.BASE,
         );
         const contentWrapper = this.__initializeFormContents();
+        const top = this.toplevel;
         {
-            const top = this.toplevel;
-            const input = this.hostUrlInput;
-            input.oninput = (ev) => this.__setState(State.CHOOSING_HOST);
-            input.onkeydown = (ev) => {
-                if (ev.key === "Enter"
-                && (top.socket ? top.socket.connected : true)
-                ) input.dispatchEvent(new Event("change"));
-                // Force the change event on pressing enter, but don't
-                // do it if we are currently trying to connect to a host.
-            };
-            input.onchange = async (ev) => {
-                if (input.value || !input.validity.valid) return;
-                const origin = ((input.value.startsWith("http") ? "" : "http://")) + input.value;
-                top.socket?.close();
-                top.socket = (await top.socketIo)(origin + SnakeyServer.Nsps.GROUP_JOINER, {
-                    reconnectionAttempts: Group.JoinerReconnectionAttempts,
-                });
-                top.socket.on("connect", () => {
-                    this.__setState(State.CHOOSING_GROUP);
-                    // Listen for group creation / deletion events.
-                    top.socket!.on(Group.Exist.EVENT_NAME, (response: Group.Exist.NotifyStatus) => {
-                        // TODO
-                    })
-                });
-                top.socket.on("connect_error", this.onHostConnectionFailure.bind(this));
-            };
+        const input = this.hostUrlInput;
+        input.oninput = (ev) => this.__setFormState(State.CHOOSING_HOST);
+        input.onkeydown = (ev) => {
+            if (ev.key === "Enter"
+            && (top.socket ? top.socket.connected : true)
+            ) input.dispatchEvent(new Event("change"));
+            // Force the change event on pressing enter, but don't
+            // do it if we are currently trying to connect to a host.
+        };
+        input.onchange = async (ev) => {
+            if (!input.value || !input.validity.valid) return;
+            const origin = ((input.value.startsWith("http") ? "" : "http://")) + input.value;
+            top.socket?.close();
+            top.socket = (await top.socketIo)(origin + SnakeyServer.Nsps.GROUP_JOINER, {
+                reconnectionAttempts: Group.JoinerReconnectionAttempts,
+            });
+            top.socket.on("connect", () => {
+              this.__setFormState(State.CHOOSING_GROUP);
+              // Listen for group creation / deletion events.
+              top.socket!.on(Group.Exist.EVENT_NAME, (response: Group.Exist.NotifyStatus) => {
+                if (response === Group.Exist.RequestCreate.Response.NOPE) {
+                    // TODO.design what to do here
+                    console.info(`server rejected request to create new group \`${this.groupNameInput.value}\`.`);
+                } else if (response === Group.Exist.RequestCreate.Response.OKAY) {
+                    console.info(`server accepted request to create new group \`${this.groupNameInput.value}\`.`);
+                    this.attemptToJoinExistingGroup();
+                } else {
+                    for (const [groupName, status,] of Object.entries(response)) {
+                    const optElem
+                        = (Array.from(this.groupNameDataList.children) as HTMLOptionElement[])
+                        .find((opt: HTMLOptionElement) => opt.value === groupName)
+                        || (() => {
+                            const newOpt = document.createElement("option");
+                            newOpt.value = groupName;
+                            this.groupNameDataList.appendChild(newOpt);
+                            return newOpt;
+                        })();
+                    switch (status) {
+                        case Group.Exist.Status.IN_LOBBY: {
+                        optElem.remove(); break;
+                      } case Group.Exist.Status.IN_GAME: {
+                        optElem.textContent = "In Game";
+                        break;
+                      } case Group.Exist.Status.DELETE: {
+                        optElem.textContent = "In Lobby";
+                        break;
+                      } // AAAAAAAAA THERE'S SO MUCH NESTING!!
+                    }}
+                }
+              });
+            });
+            top.socket.on("connect_error", this.onHostConnectionFailure.bind(this));
+        };
         }
 
-        this.groupNameInput.oninput  = (ev) => this.__setState(State.CHOOSING_GROUP);
+        this.groupNameInput.oninput  = (ev) => {
+            // TODO.fix we also need to switch back to the joiner namespace!!!
+            this.__setFormState(State.CHOOSING_GROUP);
+        }
         this.groupNameInput.onchange = (ev) => {
             const input = this.groupNameInput;
             if (input.value && input.validity.valid) {
                 this.passphraseInput.focus();
             }
         };
+
         this.passphraseInput.onkeydown = (ev) => {
-            if (ev.key === "Enter") this.passphraseInput.dispatchEvent(new Event("change"));
+            if (ev.key === "Enter"
+            && (top.socket ? top.socket.connected : true)
+            ) this.passphraseInput.dispatchEvent(new Event("change"));
+            // Force the change event on pressing enter, but don't
+            // do it if we are currently trying to connect to a host.
         }
         this.passphraseInput.onchange = async (ev) => {
             const input = this.passphraseInput;
-            if (input.value && input.validity.valid) {
-                await this.attemptToJoinGroup();
+            if (input.validity.valid) {
+                const groupExists = (Array.from(this.groupNameDataList.children) as HTMLOptionElement[])
+                    .some((opt) => opt.value === this.groupNameInput.value);
+                if (groupExists) {
+                    await this.attemptToJoinExistingGroup();
+                } else {
+                    this.toplevel.socket!.emit(Group.Exist.EVENT_NAME,
+                        new Group.Exist.RequestCreate(
+                            this.groupNameInput.value,
+                            this.passphraseInput.value,
+                        ),
+                    );
+                }
             }
         };
 
-        this.__setState(State.CHOOSING_HOST);
+        this.__setFormState(State.CHOOSING_HOST);
+        contentWrapper.onsubmit = (ev) => {
+            this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {});
+        }
         this.baseElem.appendChild(contentWrapper);
     }
 
@@ -103,7 +153,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
      *
      * @param newState -
      */
-    private __setState(newState: State): void {
+    private __setFormState(newState: State): void {
         if (this.state === newState) return;
 
         if (newState === State.IN_GROUP) {
@@ -139,22 +189,26 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
         // TODO.impl make some visual indication.
     }
 
-    private async attemptToJoinGroup(): Promise<void> {
-        const hostUrlVal = this.hostUrlInput.value;
-        const hostUrl = (hostUrlVal.startsWith("http") ? "" : "http://") + hostUrlVal;
+    private async attemptToJoinExistingGroup(): Promise<void> {
+        const url = (() => {
+            const input = this.hostUrlInput.value;
+            const origin = (input.startsWith("http") ? "" : "http://") + input;
+            const url = new window.URL(origin);
+            url.pathname = SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + this.groupNameInput.value;
+            return url.toString();
+        })();
         const passphrase = this.passphraseInput.value;
-        // See OnlineDefs.ts -> SnakeyServer.Nsps.GROUP_LOBBY_PREFIX
         if (this.state !== State.CHOOSING_GROUP) {
             throw new Error("never");
         }
         this.toplevel.socket?.close();
-        const url = new window.URL(hostUrl);
-        url.pathname += SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + this.groupNameInput.value;
         const top = this.toplevel;
-        top.socket = (await top.socketIo)(url.toString(), {
+        top.socket = (await top.socketIo)(url, {
             query: { passphrase, },
         });
-        top.socket.on("connect", () => this.__setState(State.IN_GROUP));
+        top.socket.on("connect", () => {
+            this.__setFormState(State.IN_GROUP);
+        });
         top.socket.on("connect_error", () => this.onGroupJoinFailure.bind(this));
     }
     private onGroupJoinFailure(): void {
@@ -172,7 +226,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
     // This will allow us to use more appropriate styling control for their track sizes
     // _when_ we add description parts for each input. Size the description tracks using
     // `auto`, and everything else (ie. labels and inputs) using `fr` units.
-    private __initializeFormContents(): HTMLElement {
+    private __initializeFormContents(): HTMLFormElement {
         const OMHC = OmHooks.Screen.Impl.GroupJoiner.Class;
         const contentWrapper = document.createElement("form");
         contentWrapper.classList.add(
@@ -257,9 +311,9 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 }
 export namespace GroupJoinerScreen {
     export enum State {
-        CHOOSING_HOST,
-        CHOOSING_GROUP,
-        IN_GROUP,
+        CHOOSING_HOST   = "choosing-host",
+        CHOOSING_GROUP  = "choosing-group",
+        IN_GROUP        = "in-group",
     };
     /**
      *

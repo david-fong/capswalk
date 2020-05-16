@@ -104,7 +104,6 @@ export class SnakeyServer extends __SnakeyServer {
             }
 
             const nspsName = SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + desc.groupName;
-            // Create a new group session:
             this.allGroups.set(
                 nspsName,
                 new Group(
