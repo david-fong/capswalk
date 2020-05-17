@@ -1,4 +1,5 @@
 import { OmHooks } from "defs/OmHooks";
+import { Game } from 'game/Game';
 import type { Coord } from "floor/Tile";
 import type { OnlineGame } from "../../game/OnlineGame";
 
@@ -31,10 +32,17 @@ export class PlayOnlineScreen extends __PlayScreen<SkScreen.Id.PLAY_ONLINE> {
      * @override
      */
     protected async __createNewGame(): Promise<OnlineGame<any>> {
-        return new (await import(
-            /* webpackChunkName: "game/online" */
-            "../../game/OnlineGame"
-        )).OnlineGame(this.toplevel.socket!, undefined!);
+        type G = Game.Type.ONLINE;
+        return new Promise((resolve, reject): void => {
+            // TODO.design should we use `.on` or `.once`?
+            this.toplevel.socket!.on(Game.CtorArgs.EVENT_NAME, async (gameCtorArgs: Game.CtorArgs<G,any>) => {
+                const game = new (await import(
+                    /* webpackChunkName: "game/online" */
+                    "../../game/OnlineGame"
+                )).OnlineGame(this.toplevel.socket!, gameCtorArgs);
+                resolve(game);
+            })
+        });
     }
 }
 export namespace PlayOnlineScreen {

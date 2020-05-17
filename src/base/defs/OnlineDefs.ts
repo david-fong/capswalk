@@ -2,8 +2,9 @@
 /**
  *
  */
-export class SnakeyServer { }
-export namespace SnakeyServer {
+export class SkServer { }
+export namespace SkServer {
+    export const PROTOCOL = "http://";
     export const DEFAULT_PORT = 8080;
     /**
      * This is placed in this file so that it gets bundled into both the
@@ -14,8 +15,8 @@ export namespace SnakeyServer {
         GROUP_JOINER        = "/joiner",
     }
 }
-Object.freeze(SnakeyServer);
-Object.freeze(SnakeyServer.prototype);
+Object.freeze(SkServer);
+Object.freeze(SkServer.prototype);
 
 
 /**

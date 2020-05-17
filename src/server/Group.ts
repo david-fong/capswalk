@@ -71,7 +71,7 @@ export class Group extends __Group {
      * @param socket -
      */
     protected onConnection(socket: Group.Socket): void {
-        console.log("A user has connected.");
+        console.log(`socket ${socket.id} connected.`);
         socket.username = undefined;
         socket.teamId   = undefined;
         socket.updateId = 0;
