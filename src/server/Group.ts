@@ -18,7 +18,8 @@ export { ServerGame } from "./ServerGame";
 export class Group extends __Group {
 
     public readonly namespace: io.Namespace;
-    public readonly passphrase: string;
+    public readonly name: Group.Name;
+    public readonly passphrase: Group.Passphrase;
     #currentGame: ServerGame<any> | undefined;
     private sessionHost: io.Socket;
 
@@ -38,23 +39,24 @@ export class Group extends __Group {
      * If no sockets connect to this `GameSession` in this many seconds,
      * it will close and clean itself up.
      */
-    public constructor(
+    public constructor(desc: Readonly<{
         namespace: io.Namespace,
+        name: Group.Name,
         passphrase: Group.Passphrase,
         deleteExternalRefs: VoidFunction,
         initialTtl: number,
-    ) {
+    }>) {
         super();
-        this.namespace   = namespace;
-        this.passphrase  = passphrase;
+        this.namespace   = desc.namespace;
+        this.passphrase  = desc.passphrase;
         this.#currentGame = undefined;
 
         this.initialTtlTimeout = setTimeout(() => {
             if (Object.keys(this.namespace.connected).length === 0) {
                 this.terminate();
             }
-        }, (initialTtl * 1000)).unref();
-        this.deleteExternalRefs = deleteExternalRefs;
+        }, (desc.initialTtl * 1000)).unref();
+        this.deleteExternalRefs = desc.deleteExternalRefs;
 
         // Call the connection-event handler:
         this.namespace.use((socket, next) => {
@@ -71,7 +73,7 @@ export class Group extends __Group {
      * @param socket -
      */
     protected onConnection(socket: Group.Socket): void {
-        console.log(`socket ${socket.id} connected.`);
+        console.log(`socket    connect: ${socket.id}`);
         socket.username = undefined;
         socket.teamId   = undefined;
         socket.updateId = 0;
@@ -83,6 +85,9 @@ export class Group extends __Group {
             (this.initialTtlTimeout as NodeJS.Timeout) = undefined!;
             this.sessionHost = socket;
             // TODO.impl set socket.isPrivileged
+            socket.broadcast.emit(Group.Exist.EVENT_NAME, {
+                [this.name]: Group.Exist.Status.IN_LOBBY,
+            });
         }
 
         socket.on("disconnect", (...args: any[]): void => {
@@ -113,15 +118,17 @@ export class Group extends __Group {
     protected terminate(): void {
         // TODO.impl notify clients?
         this.#currentGame = undefined;
-        const nsps: io.Namespace = this.namespace;
+        const nsps = this.namespace;
         nsps.removeAllListeners("connect");
         nsps.removeAllListeners("connection");
         Object.values(nsps.connected).forEach((socket) => {
-            socket.disconnect();
+            socket.disconnect(); // TODO.learn should we pass `true` here?
         });
         nsps.removeAllListeners();
         delete nsps.server.nsps[nsps.name];
+        (this.namespace as io.Namespace) = undefined!;
         (this.deleteExternalRefs)();
+        console.log(`terminated group: \`${this.name}\``);
     }
 
 

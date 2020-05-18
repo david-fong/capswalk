@@ -6,7 +6,7 @@ import io       = require("socket.io");
 import type * as net from "net";
 
 import { Group } from "./Group";
-import { SkServer as __SnakeyServer } from "defs/OnlineDefs";
+import { SkServer as __SnakeyServer, SkServer } from "defs/OnlineDefs";
 
 
 /**
@@ -59,10 +59,11 @@ export class SnakeyServer extends __SnakeyServer {
 
         this.http.listen(<net.ListenOptions>{ port, host, }, (): void => {
             const info = <net.AddressInfo>this.http.address();
-            console.log(`Server mounted to: \`${info.address}${info.port}\` using ${info.family}.\n`);
-            console.log("This host can be reached at any of the following addresses:");
-            SnakeyServer.chooseIPAddress().forEach((address) => {
-                console.log(`- ${address}`);
+            console.log(`\n\nServer mounted to: \`${info.address}${info.port}\` using ${info.family}.\n`);
+            console.log("This host can be reached at any of the following addresses:\n");
+            SnakeyServer.chooseIPAddress().sort().forEach((address) => {
+                console.log(/* ${SkServer.PROTOCOL} */`${address}:${port}`);
+                // ^We can exclude the protocol since it will get defaulted by the client side.
             });
             console.log("");
         });
@@ -74,20 +75,20 @@ export class SnakeyServer extends __SnakeyServer {
     /**
      * Other sockets connected to this namespace will not be notified
      * of a newly existing group until the creator of that group has
-     * successfully connected to it. This simplifies the implementation
-     * of ensuring that we can assume that lsjdhfaklsdjhflaskdhf
+     * successfully connected to it. This allows us to know that the
+     * first socket that joins that group is its creator. (Even if a
+     * sneaky friend )
      *
      * @param socket - The socket from the game host.
      */
     protected onJoinerNspsConnection(socket: io.Socket): void {
-        console.log(`socket \`${socket.id}\` connected.`);
+        console.log(`socket    connect: ${socket.id}`);
         // Upon connection, immediately send a list of existing groups:
         socket.emit(
             Group.Exist.EVENT_NAME,
             (() => {
                 const build: Group.Query.NotifyStatus = {};
-                Array.from(this.allGroups).map((entry) => {
-                    const [groupName, group,] = entry;
+                Array.from(this.allGroups).forEach(([groupName, group,]) => {
                     build[groupName] = (group.isCurrentlyPlayingAGame)
                     ? Group.Exist.Status.IN_GAME
                     : Group.Exist.Status.IN_LOBBY;
@@ -111,20 +112,17 @@ export class SnakeyServer extends __SnakeyServer {
 
             this.allGroups.set(
                 desc.groupName,
-                new Group(
-                    this.io.of(SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + desc.groupName), // <-- create a namespace.
-                    desc.passphrase,
-                    () => this.allGroups.delete(desc.groupName),
-                    Group.DEFAULT_TTL,
-                ),
+                new Group(Object.freeze({
+                    namespace:  this.io.of(SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + desc.groupName),
+                    name:       desc.groupName,
+                    passphrase: desc.passphrase,
+                    deleteExternalRefs: () => this.allGroups.delete(desc.groupName),
+                    initialTtl: Group.DEFAULT_TTL,
+                })),
             );
             // Notify all sockets connected to the joiner namespace
             // of the new namespace created for the new group session:
             socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
-            // TODO.impl don't notify others until the creator has joined.
-            socket.broadcast.emit(Group.Exist.EVENT_NAME, {
-                [desc.groupName]: Group.Exist.Status.IN_LOBBY,
-            });
         });
     }
 }
@@ -137,11 +135,18 @@ export namespace SnakeyServer {
      * TODO: change to return a map from each of "public" and "private" to a list of addresses
      * https://en.wikipedia.org/wiki/Private_network
      */
-    export const chooseIPAddress = (): TU.RoArr<string> => {
+    export const chooseIPAddress = (): Array<string> => {
         return (Object.values(os.networkInterfaces()).flat() as os.NetworkInterfaceInfo[])
         .filter((info) => {
             return !(info.internal) /* && info.family === "IPv4" */;
-        }).map((info) => info.address);
+        })
+        .map((info) => {
+            if (info.family === "IPv6") {
+                return `[${info.address}]`;
+            } else {
+                return info.address;
+            }
+        });
     };
 }
 Object.freeze(SnakeyServer);

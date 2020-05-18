@@ -27,27 +27,15 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
      * @override
      */
     protected __lazyLoad(): void {
-        const OMHC = OmHooks.Screen.Impl.GroupJoiner.Class;
         this.baseElem.classList.add(
             OmHooks.General.Class.CENTER_CONTENTS,
-            OMHC.BASE,
+            OmHooks.Screen.Impl.GroupJoiner.Class.BASE,
         );
         const contentWrapper = this.__initializeFormContents();
-        this.__initializeHostUrlHandlers();
-
-        this.groupNameInput.oninput  = (ev) => {
-            // TODO.fix we also need to switch back to the joiner namespace!!!
-            this.__setFormState(State.CHOOSING_GROUP);
-        }
-        this.groupNameInput.onchange = (ev) => {
-            const input = this.groupNameInput;
-            if (input.value && input.validity.valid) {
-                this.passphraseInput.focus();
-            }
-        };
+        const huiSubmit = this.__initializeHostUrlHandlers();
+        this.__initializeGroupNameHandlers(huiSubmit);
         this.__initializePassphraseHandlers();
 
-        this.__setFormState(State.CHOOSING_HOST);
         contentWrapper.onsubmit = (ev) => {
             // TODO change the screen nav flow to use the correct (commented out) values.
             if (false /* TODO this.isGroupOwner */) {
@@ -58,6 +46,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 //this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {});
             }
         }
+        this.__setFormState(State.CHOOSING_HOST);
         this.baseElem.appendChild(contentWrapper);
     }
 
@@ -92,6 +81,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             if (this.state !== State.CHOOSING_GROUP) {
                 throw new Error("never"); // Illegal state transition.
             }
+            this.passphraseInput.disabled = true;
             this.nextButton.disabled = false;
             this.nextButton.focus();
 
@@ -99,10 +89,9 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             this.nextButton.disabled = true;
 
             if (newState === State.CHOOSING_HOST) {
-                this.socket = undefined;
                 this.groupNameInput.disabled    = true;
                 this.groupNameInput.value       = "";
-                Array.from(this.groupNameDataList.children).forEach((child) => child.remove());
+                this.groupNameDataList.replaceWith(this.groupNameDataList.cloneNode());
                 this.passphraseInput.disabled   = true;
                 this.passphraseInput.value      = "";
                 this.hostUrlInput.focus();
@@ -110,7 +99,6 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             } else if (newState === State.CHOOSING_GROUP) {
                 this.groupNameInput.disabled    = false;
                 this.passphraseInput.disabled   = false;
-                this.passphraseInput.value      = "";
                 this.groupNameInput.focus();
             }
         }
@@ -120,24 +108,33 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
     /**
      *
      */
-    private __initializeHostUrlHandlers(): void {
+    private __initializeHostUrlHandlers(): () => Promise<void> {
         const top = this.toplevel;
         const input = this.hostUrlInput;
-        input.oninput = (ev) => this.__setFormState(State.CHOOSING_HOST);
-        input.onkeydown = (ev) => {
-            if (ev.key === "Enter"
-            && (this.socket ? this.socket.connected : true)
-            ) input.dispatchEvent(new Event("change"));
-            // Force the change event on pressing enter, but don't
-            // do it if we are currently trying to connect to a host.
-        };
-        input.onchange = async (ev) => {
+        const submitInput = async () => {
+            // Minor cleaning: default the protocol and only use the origin:
+            if (!input.value.startsWith(SkServer.PROTOCOL)) {
+                input.value = new URL(SkServer.PROTOCOL + input.value).origin;
+            }
+            // Short-circuit on invalid input:
             if (!input.value || !input.validity.valid) return;
-            if (!input.value.match(/^https?:\/\//)) {
-                input.value = SkServer.PROTOCOL + input.value;
+
+            // Short-circuit when no change has occurred:
+            const targetSocketUri = new URL(input.value + SkServer.Nsps.GROUP_JOINER);
+            if (this.socket
+            && this.socket.nsp === SkServer.Nsps.GROUP_JOINER
+            && this.socket.io.opts.hostname === targetSocketUri.hostname
+            ) {
+                if (this.socket!.connected) {
+                    this.__setFormState(State.CHOOSING_GROUP);
+                    this.groupNameInput.focus(); // No changes have occurred.
+                    return;
+                } else {
+                    return; // Impatient client is spamming.
+                }
             }
             this.socket?.close();
-            this.socket = (await top.socketIo)(input.value + SkServer.Nsps.GROUP_JOINER, {
+            this.socket = (await top.socketIo)(targetSocketUri.toString(), {
                 reconnectionAttempts: Group.JoinerReconnectionAttempts,
             });
             this.socket.on("connect", () => {
@@ -145,70 +142,122 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 // Listen for group creation / deletion events.
                 this.socket!.on(Group.Exist.EVENT_NAME, this.onNotifyGroupExist.bind(this));
             });
-            this.socket.on("connect_error", this.onHostConnectionFailure.bind(this));
+            this.socket.on("connect_error", (error: object) => {
+                this.socket = undefined;
+                this.toplevel.toast("Unable to connected to the specified server.");
+            });
+            this.socket.on("disconnect", (reason: string) => {
+                if (reason === "io server disconnect") {
+                    this.socket = undefined;
+                    this.__setFormState(State.CHOOSING_HOST);
+                    input.value = "";
+                    top.toast("The server disconnected you from the group joiner.");
+                }
+            });
         };
+        // Link handler to events:
+        input.oninput = (ev) => this.__setFormState(State.CHOOSING_HOST);
+        input.onkeydown = (ev) => { if (ev.key === "Enter") {
+            submitInput();
+        }};
+        input.onpaste = (ev) => {
+            window.setTimeout(() => submitInput(), 0);
+        };
+        input.onchange = () => {
+            submitInput();
+        };
+        return submitInput;
     }
+    /**
+     *
+     */
     private onNotifyGroupExist(response: Group.Exist.NotifyStatus): void {
         if (response === Group.Exist.RequestCreate.Response.NOPE) {
-            // TODO.design what to do here
-            console.info(`server rejected request to create new group \`${this.groupNameInput.value}\`.`);
-        } else {
-            for (const [groupName, status,] of Object.entries(response)) {
-                const optElem
-                    = (Array.from(this.groupNameDataList.children) as HTMLOptionElement[])
-                    .find((opt: HTMLOptionElement) => opt.value === groupName)
-                    || (() => {
-                        const newOpt = document.createElement("option");
-                        newOpt.value = groupName;
-                        this.groupNameDataList.appendChild(newOpt);
-                        return newOpt;
-                    })();
-                switch (status) {
-                case Group.Exist.Status.IN_LOBBY:
-                    optElem.remove(); break;
-                case Group.Exist.Status.IN_GAME:
-                    optElem.textContent = "In Game";
-                    break;
-                case Group.Exist.Status.DELETE:
-                    optElem.textContent = "In Lobby";
-                    break;
-                }
-            }
-            if (response === Group.Exist.RequestCreate.Response.OKAY) {
-                console.info(`server accepted request to create new group \`${this.groupNameInput.value}\`.`);
-                console.log("connecting to new group...");
-                this.attemptToJoinExistingGroup();
+            this.toplevel.toast(`The server rejected your request to`
+            + ` create a new group \"${this.groupNameInput.value}\".`);
+            return;
+        }
+        const dataList = this.groupNameDataList;
+        const dataListArr = Array.from(dataList.children) as HTMLOptionElement[];
+        for (const [groupName, status,] of Object.entries(response)) {
+            const optElem
+                = dataListArr.find((opt: HTMLOptionElement) => opt.value === groupName)
+                || (() => {
+                    // If we didn't know about this group yet, create a new
+                    // option for it (Insert into list in alphabetical order):
+                    const newOpt = document.createElement("option");
+                    newOpt.value = groupName;
+                    for (const otherOpt of dataListArr) {
+                        if (newOpt.value.localeCompare(otherOpt.value) < 0) {
+                            dataList.insertBefore(newOpt, otherOpt);
+                            break;
+                        }
+                    }
+                    if (!newOpt.parentElement) {
+                        dataList.appendChild(newOpt);
+                    }
+                    return newOpt;
+                })();
+            switch (status) {
+            case Group.Exist.Status.IN_LOBBY:
+                optElem.remove();
+                break;
+            case Group.Exist.Status.IN_GAME:
+                optElem.textContent = "In Game";
+                break;
+            case Group.Exist.Status.DELETE:
+                optElem.textContent = "In Lobby";
+                break;
             }
         }
-    }
-    private onHostConnectionFailure(): void {
-        this.socket = undefined;
-        // TODO.impl make some visual indication.
+        if (response === Group.Exist.RequestCreate.Response.OKAY) {
+            console.info(`server accepted request to create new group \`${this.groupNameInput.value}\`.`);
+            console.log("connecting to new group...");
+            this.attemptToJoinExistingGroup();
+        }
     }
 
+    private __initializeGroupNameHandlers(huiSubmit: () => Promise<void>): void {
+        const input = this.groupNameInput;
+        const submitInput = () => {
+            if (!input.value || !input.validity.valid) return;
+            if (this.state === State.IN_GROUP) {
+                this.nextButton.focus();
+            } else {
+                this.passphraseInput.focus();
+            }
+        }
+        this.groupNameInput.oninput = async (ev) => {
+            if (this.state === State.IN_GROUP) {
+                await huiSubmit();
+                // ^This will take us back to the state `CHOOSING_GROUP`.
+            }
+            this.passphraseInput.value = "";
+        }
+        input.onkeydown = (ev) => { if (ev.key === "Enter") {
+            submitInput();
+        }};
+        input.onchange = (ev) => {
+            submitInput();
+        };
+    }
+
+    /**
+     *
+     */
     private __initializePassphraseHandlers(): void {
-        this.passphraseInput.onkeydown = (ev) => { if (ev.key === "Enter") {
-            const socket = this.socket!;
-            const inputNsps = SkServer.Nsps.GROUP_LOBBY_PREFIX + this.groupNameInput.value;
-            if (socket.nsp === inputNsps) {
-                if (socket.connected) {
-                    // The client (for some reason) reselected the passphrase
-                    // input, made no changes, and then pressed enter again.
-                    this.nextButton.focus();
+        const submitInput = async () => {
+            if (!this.passphraseInput.validity.valid) return;
+            // Short-circuit when no change has occurred:
+            if (this.socket!.nsp === SkServer.Nsps.GROUP_LOBBY_PREFIX + this.groupNameInput.value) {
+                if (this.socket!.connected) {
+                    this.__setFormState(State.IN_GROUP);
+                    this.nextButton.focus(); // No changes have occurred.
                     return;
                 } else {
-                    // The client is impatient and is spamming the enter button
-                    // while we are trying to connect to the group.
-                    return;
+                    return; // Impatient client is spamming.
                 }
             }
-            this.passphraseInput.dispatchEvent(new Event("change"));
-            // Force the change event on pressing enter, but don't
-            // do it if we are currently trying to connect to a host.
-        }}
-        this.passphraseInput.onchange = async (ev) => {
-            const input = this.passphraseInput;
-            if (!input.validity.valid) return;
 
             const groupExists = (Array.from(this.groupNameDataList.children) as HTMLOptionElement[])
                 .some((opt) => opt.value === this.groupNameInput.value);
@@ -223,6 +272,9 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 );
             }
         };
+        this.passphraseInput.onkeydown = (ev) => { if (ev.key === "Enter") {
+            submitInput();
+        }};
     }
 
     /**
@@ -230,27 +282,28 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
      */
     private async attemptToJoinExistingGroup(): Promise<void> {
         const url = (() => {
-            const url = new window.URL(this.hostUrlInput.value);
+            const url = new URL(this.hostUrlInput.value);
             url.pathname = SkServer.Nsps.GROUP_LOBBY_PREFIX + this.groupNameInput.value;
             return url.toString();
         })();
-        const passphrase = this.passphraseInput.value;
-        if (this.state !== State.CHOOSING_GROUP) {
-            throw new Error("never");
-        }
         this.socket?.close();
         const top = this.toplevel;
         this.socket = (await top.socketIo)(url, {
-            query: { passphrase, },
+            query: { passphrase: this.passphraseInput.value, },
         });
         this.socket.on("connect", () => {
             this.__setFormState(State.IN_GROUP);
         });
-        this.socket.on("connect_error", () => this.onGroupJoinFailure.bind(this));
-    }
-    private onGroupJoinFailure(): void {
-        this.socket = undefined;
-        // TODO.impl make some visual indication.
+        this.socket.on("connect_error", (error: object) => {
+            this.socket = undefined;
+            top.toast("Unable to connect to the specified group.");
+        });
+        this.socket.on("disconnect", (reason: string) => {
+            if (reason === "io server disconnect") {
+                this.socket = undefined;
+                top.toast("The server disconnected you from your group.");
+            }
+        });
     }
 
     private get socket(): SocketIOClient.Socket | undefined {
@@ -289,22 +342,16 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             hostUrl.type = "url";
             hostUrl.classList.add(OMHC.HOST_URL);
             hostUrl.autocomplete = "on";
-            const suggestedHost = GroupJoinerScreen.SUGGEST_LAN_HOST_URL(this.toplevel.webpageHostType);
-            if (suggestedHost) {
-                const suggestedHostOption = document.createElement("option");
-                suggestedHostOption.value = suggestedHost;
-                document.getElementById(OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS)!.appendChild(
-                    suggestedHostOption,
-                );
+            const suggestedHostDesc = GroupJoinerScreen.SUGGEST_HOST(this.toplevel.webpageHostType);
+            if (suggestedHostDesc) {
+                const suggestOpt = document.createElement("option");
+                suggestOpt.value = suggestedHostDesc.value;
+                suggestOpt.textContent = suggestedHostDesc.description;
+                document.getElementById(OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS)!
+                    .insertAdjacentElement("afterbegin", suggestOpt);
             }
             hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
             hostUrl.maxLength = 128;
-        }{
-            const nspsList
-                = (this.groupNameDataList as HTMLElement)
-                = document.createElement("datalist");
-            nspsList.id = OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS;
-            this.baseElem.appendChild(nspsList);
         }{
             const nspsName
                 = (this.groupNameInput as HTMLElement)
@@ -312,7 +359,12 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             nspsName.classList.add(OMHC.GROUP_NAME);
             nspsName.pattern   = Group.Name.REGEXP.source;
             nspsName.maxLength = Group.Name.MaxLength;
-            nspsName.setAttribute("list", OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS);
+            const nspsList
+                = (this.groupNameDataList as HTMLElement)
+                = document.createElement("datalist");
+            nspsList.id = OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS;
+            this.baseElem.appendChild(nspsList);
+            nspsName.setAttribute("list", nspsList.id);
         }{
             const pass
                 = (this.passphraseInput as HTMLElement)
@@ -344,26 +396,36 @@ export namespace GroupJoinerScreen {
     /**
      *
      */
-    export function SUGGEST_LAN_HOST_URL(webpageHostType: TopLevel.WebpageHostType): string {
+    export function SUGGEST_HOST(webpageHostType: TopLevel.WebpageHostType): ({
+        readonly value: string;
+        readonly description: string;
+    } | undefined) {
         switch (webpageHostType) {
             case "github":
                 // Use case: production. Load page resources from GitHub
                 // Pages to reduce load on the game server, which is on
                 // on the LAN. Only use the server for game management.
-                return "";
+                return undefined;
             case "filesystem":
                 // Use case: development. Load page resources directly from
                 // the local filesystem. Server only used as a game manager.
                 // In this case, suggest connecting to `localhost`.
-                return "localhost:" + SkServer.DEFAULT_PORT;
+                return {
+                    value: "localhost:" + SkServer.DEFAULT_PORT,
+                    description: "dev shortcut :)",
+                };
             case "lan-server":
                 // Use case: production. Page resources are probably being
                 // served by the LAN server already. Suggest connecting
                 // Socket.IO to that same host. Just give origin (exclude
                 // the URI's path, since Socket.IO interprets the path as
                 // a namespace specifier).
-                return window.location.origin;
-            default: return "";
+                return {
+                    value: window.location.origin,
+                    description: "this page's server",
+                };
+            default:
+                return undefined;
         }
     }
 }

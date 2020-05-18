@@ -41,6 +41,11 @@ export class TopLevel {
         + " color:white; background-color:#3f5e77; border-radius:0.7em; ");
     }
 
+    public toast(message: string): void {
+        // TODO.impl
+        console.info(message);
+    }
+
     public get socketIo(): Promise<typeof import("socket.io-client")> {
         // return this.#socketIoChunk
         // || (this.#socketIoChunk = import(
