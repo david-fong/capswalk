@@ -40,17 +40,18 @@
     /* bottom:     0%; */
     min-height: 100%; height: max-content;
     min-width:  100%; width:  max-content;
-    color:      white;
+    color:          white;
     background-color: rgba(0, 0, 0, 0.5);
-    border-color: white;
-    visibility: hidden;
+    border-color:   white;
+    font-family:    inherit;
+    visibility:     hidden;
 }
 .tile__pointer-hitbox:hover ~ .player > .player__face {
-    visibility: hidden;
+    visibility:     hidden;
 }
 .tile__pointer-hitbox:hover ~ .tile__char {
-    color:      transparent;
+    color:          transparent;
 }
 .tile__pointer-hitbox:hover ~ .tile__seq {
-    visibility: visible;
+    visibility:     visible;
 }

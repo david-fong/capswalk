@@ -1,14 +1,6 @@
 import { OmHooks } from "defs/OmHooks";
 import type { AllSkScreens } from "./AllSkScreens";
-
-import type {        HomeScreen } from "./impl/Home";
-import type {   HowToPlayScreen } from "./impl/HowToPlay";
-import type {   HowToHostScreen } from "./impl/HowToHost";
-import type {  ColourCtrlScreen } from "./impl/ColourCtrl";
-import type {   GameSetupScreen } from "./impl/GameSetup";
-import type {  SeshJoinerScreen } from "./impl/SeshJoiner";
-import type { PlayOfflineScreen } from "./impl/PlayOffline";
-import type {  PlayOnlineScreen } from "./impl/PlayOnline";
+import type { TopLevel } from "../TopLevel";
 
 
 /**
@@ -20,11 +12,20 @@ import type {  PlayOnlineScreen } from "./impl/PlayOnline";
  */
 export abstract class SkScreen<SID extends SkScreen.Id> {
 
+    public readonly screenId: SID;
+
+    protected readonly toplevel: TopLevel;
+
     readonly #parentElem: HTMLElement;
 
     protected readonly baseElem: HTMLElement;
 
     #hasLazyLoaded: boolean;
+
+    /**
+     * This should be `false` if the screen requires connection to a game server.
+     */
+    public abstract canBeInitialScreen: boolean;
 
     /**
      * Implementations can use this as part of navigation button
@@ -38,18 +39,22 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * @param requestGoToDisplay -
      */
     public constructor(
+        screenId: SID,
+        toplevel: TopLevel,
         parentElem: HTMLElement,
         requestGoToDisplay: AllSkScreens["goToScreen"],
     ) {
-        this.#hasLazyLoaded = false;
-        this.requestGoToScreen = requestGoToDisplay;
-        this.#parentElem = parentElem;
+        this.screenId           = screenId;
+        this.toplevel           = toplevel;
+        this.#parentElem        = parentElem;
+        this.requestGoToScreen  = requestGoToDisplay;
+        this.#hasLazyLoaded     = false;
     }
 
     /**
      * **Do not override.**
      */
-    public async enter(ctorArgs: SkScreen.CtorArgs<SID>): Promise<void> {
+    public async enter(args: SkScreen.CtorArgs<SID>): Promise<void> {
         if (!this.#hasLazyLoaded) {
             const baseElem
                 = (this.baseElem as HTMLElement)
@@ -57,9 +62,22 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             baseElem.classList.add(OmHooks.Screen.Class.BASE);
             this.__lazyLoad();
             this.#parentElem.appendChild(baseElem);
-        this.#hasLazyLoaded = true;
+            const spaceyCamelName = this.screenId.replace(/[A-Z]/g, (letter) => " " + letter);
+            { // "<SCREEN NAME> SCREEN"
+                const str = spaceyCamelName.toUpperCase();
+                baseElem.insertAdjacentHTML("beforebegin", `<!-- ${str} SCREEN -->`)
+            }{ // "<Screen Name> Screen"
+                const str = spaceyCamelName.split(' ').map((word) =>
+                    word.charAt(0).toUpperCase()
+                    + word.substring(1)).join(' ');
+                baseElem.setAttribute("aria-label", str + " Screen");
+            }
+            this.#hasLazyLoaded = true;
         }
-        await this.__abstractOnBeforeEnter(ctorArgs);
+        const location = new window.URL(window.location.href);
+        location.hash = this.screenId;
+        history.replaceState(null, "", location.href);
+        await this.__abstractOnBeforeEnter(args);
         // ^Wait until the screen has finished setting itself up
         // before entering it.
         window.requestAnimationFrame((time) => {
@@ -81,8 +99,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     }
 
     /**
-     * Implementations should set the CSS class for the base element,
-     * and also set its aria label to an appropriate string.
+     * Implementations should set the CSS class for the base element.
      */
     protected abstract __lazyLoad(): void;
 
@@ -92,8 +109,11 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      *
      * The default implementation does nothing. Overriding implementations
      * from direct subclasses can safely skip making a supercall.
+     *
+     * Important: Calls to `HTMLElement.focus` may require a small delay
+     * via setTimeout. The reason for this is currently unknown.
      */
-    protected async __abstractOnBeforeEnter(ctorArgs: SkScreen.CtorArgs<SID>): Promise<void> { }
+    protected async __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> { }
 
     /**
      * Return false if the leave should be cancelled. This functionality
@@ -110,21 +130,29 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 }
 export namespace SkScreen {
 
-    export const enum Id {
+    export enum Id {
+        // General:     ===================
         HOME            = "home",
         HOW_TO_PLAY     = "howToPlay",
         HOW_TO_HOST     = "howToHost",
         COLOUR_CTRL     = "colourControl",
-        GAME_SETUP      = "gameSetup",
+        // Offline:     ===================
+        SETUP_OFFLINE   = "setupOffline",
         PLAY_OFFLINE    = "playOffline",
+        // Online:      ===================
+        GROUP_JOINER    = "groupJoiner",
+        SETUP_ONLINE    = "setupOnline",
+        GROUP_LOBBY     = "groupLobby",
         PLAY_ONLINE     = "playOnline",
-        SESH_JOINER     = "sessionJoiner",
+        // =======      ===================
     }
 
-    export type CtorArgs<SID_group extends SkScreen.Id> = any extends SID_group ? never
+    export type CtorArgs<SID_group extends SkScreen.Id>
+    = any extends SID_group ? never
     : { [SID in SID_group]:
-        SID extends SkScreen.Id.PLAY_ONLINE ? PlayOnlineScreen.CtorArgs
-        : SID extends SkScreen.Id ? {} // Placeholder for screens that haven't defined their ctor arg types yet.
+        /* : */ SID extends SkScreen.Id ? {}
+        // ^Placeholder for screens that don't
+        // require any entrance arguments.
         : never
     }[SID_group];
 }

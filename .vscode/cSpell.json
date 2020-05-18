@@ -16,6 +16,9 @@
         "typescript",
         "typescriptreact"
     ],
+    "flagWords": [
+        "hte", "teh"
+    ],
     "words": [
         // Project-specific Terms:
         "snakey",
@@ -46,6 +49,7 @@
         "supercall",
         "spec",
         "typeof",
+        "toplevel",
         "unshift",
 
         // Tooling and Programming Languages:
@@ -67,6 +71,7 @@
         "dubeolsik", "sebeolsik",
 
         // English:
+        "broadcasted",
         "constraining",
         "gameplay",
         "hinderance",
@@ -76,6 +81,7 @@
         "millis",
         "multiplayer",
         "ness",
+        "passphrase",
         "pipelining",
         "placeholder",
         "presets",
@@ -84,6 +90,7 @@
         "screenshots",
         "setup", "setups",
         "spacebar",
+        "spellcheck", // <-- how ironic
         "teammate", "teammates",
         "tradeoff",
         "turtling"

@@ -5,15 +5,14 @@ import express  = require("express");
 import io       = require("socket.io");
 import type * as net from "net";
 
-import { SnakeyNsps } from "defs/TypeDefs";
-
-import { GroupSession } from "./GroupSession";
+import { Group } from "./Group";
+import { SkServer as __SnakeyServer, SkServer } from "defs/OnlineDefs";
 
 
 /**
  * Creates and performs management operations on {@link ServerGame}s.
  */
-export class SnakeyServer {
+export class SnakeyServer extends __SnakeyServer {
 
     protected readonly http: http.Server;
     protected readonly app:  express.Application;
@@ -24,7 +23,7 @@ export class SnakeyServer {
      * not garbage-collection eligible. Keys are Socket.IO namespace
      * names corresponding the the mapped value.
      */
-    private readonly allGroupSessions: Map<string, GroupSession>;
+    private readonly allGroups: Map<string, Group>;
 
     /**
      *
@@ -36,9 +35,18 @@ export class SnakeyServer {
         port: number = SnakeyServer.DEFAULT_PORT,
         host: string | undefined = undefined,
     ) {
+        super();
         this.app    = express();
         this.http   = http.createServer({}, this.app);
-        this.io     = io(this.http);
+        this.io     = io(this.http, {
+            serveClient: false,
+            // Do not server socket.io-client. It is bundled into a
+            // client chunk on purpose so that a client can choose to
+            // fetch all static page resources from another server,
+            // namely, GitHub Pages, in order to reduce the downstream
+            // load on a LAN-hosted SnakeyServer.
+        });
+        this.allGroups = new Map();
 
         // At runtime, __dirname resolves to ":/dist/server/"
         const PROJECT_ROOT = path.resolve(__dirname, "../..");
@@ -51,88 +59,94 @@ export class SnakeyServer {
 
         this.http.listen(<net.ListenOptions>{ port, host, }, (): void => {
             const info = <net.AddressInfo>this.http.address();
-            console.log(`Server mounted to: \`${info.family}${info.address}${info.port}\`.`);
+            console.log(`\n\nServer mounted to: \`${info.address}${info.port}\` using ${info.family}.\n`);
+            console.log("This host can be reached at any of the following addresses:\n");
+            SnakeyServer.chooseIPAddress().sort().forEach((address) => {
+                console.log(/* ${SkServer.PROTOCOL} */`${address}:${port}`);
+                // ^We can exclude the protocol since it will get defaulted by the client side.
+            });
+            console.log("");
         });
 
-        this.io.of(SnakeyNsps.HOST_REGISTRATION)
-            .on("connection", this.onHostsConnection.bind(this));
+        this.io.of(SnakeyServer.Nsps.GROUP_JOINER)
+            .on("connection", this.onJoinerNspsConnection.bind(this));
     }
 
     /**
-     * All connections to the root are assumed to be for the purpose
-     * of starting a new session for games.
+     * Other sockets connected to this namespace will not be notified
+     * of a newly existing group until the creator of that group has
+     * successfully connected to it. This allows us to know that the
+     * first socket that joins that group is its creator. (Even if a
+     * sneaky friend )
      *
      * @param socket - The socket from the game host.
      */
-    protected onHostsConnection(socket: io.Socket): void {
-        socket.on(GroupSession.CtorArgs.EVENT_NAME, (desc: GroupSession.CtorArgs): void => {
-            // Create a new group session:
-            const groupName = this.createUniqueSessionName(desc.groupName);
-            if (!(groupName)) {
-                // The name was not accepted. Notify the client:
-                socket.emit(
-                    GroupSession.CtorArgs.EVENT_NAME,
-                    new GroupSession.CtorArgs(""),
-                );
-                return;
+    protected onJoinerNspsConnection(socket: io.Socket): void {
+        console.log(`socket    connect: ${socket.id}`);
+        // Upon connection, immediately send a list of existing groups:
+        socket.emit(
+            Group.Exist.EVENT_NAME,
+            (() => {
+                const build: Group.Query.NotifyStatus = {};
+                Array.from(this.allGroups).forEach(([groupName, group,]) => {
+                    build[groupName] = (group.isCurrentlyPlayingAGame)
+                    ? Group.Exist.Status.IN_GAME
+                    : Group.Exist.Status.IN_LOBBY;
+                });
+                return build;
+            })(),
+        );
+        socket.on(Group.Exist.EVENT_NAME, (desc: Group.Query.RequestCreate): void => {
+            // A client is requesting a new group to be created.
+            // If a group with such a name already exists, or if the
+            // requested name or pass-phrases don't follow the required
+            // format, completely ignore the request.
+            if (!desc.groupName || this.allGroups.has(desc.groupName)
+            ||  desc.groupName.length > Group.Name.MaxLength
+            || !desc.groupName.match(Group.Name.REGEXP)
+            ||  desc.passphrase.length > Group.Passphrase.MaxLength
+            || !desc.passphrase.match(Group.Passphrase.REGEXP)
+            ) {
+                socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.NOPE);
             }
-            desc.groupName = groupName;
-            const namespace: io.Namespace = this.io.of(groupName);
-            this.allGroupSessions.set(
-                namespace.name,
-                new GroupSession(
-                    namespace,
-                    (): void => {
-                        // Once this reference is deleted, the object
-                        // is elegible for garbage-collection.
-                        this.allGroupSessions.delete(namespace.name);
-                    },
-                    desc.initialTtl,
-                )
-            );
 
-            // Notify the host of the namespace created for the
-            // requested group session so they can connect to it:
-            socket.emit(
-                GroupSession.CtorArgs.EVENT_NAME,
-                desc,
+            this.allGroups.set(
+                desc.groupName,
+                new Group(Object.freeze({
+                    namespace:  this.io.of(SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + desc.groupName),
+                    name:       desc.groupName,
+                    passphrase: desc.passphrase,
+                    deleteExternalRefs: () => this.allGroups.delete(desc.groupName),
+                    initialTtl: Group.DEFAULT_TTL,
+                })),
             );
+            // Notify all sockets connected to the joiner namespace
+            // of the new namespace created for the new group session:
+            socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
         });
-    }
-
-    /**
-     * @returns The Socket.IO namespace using the provided `groupName`.
-     *
-     * @param groupName - A name to give the group. `null` if rejected,
-     *      which happens if `groupName` is already taken, or if it
-     *      does not match the required regular expression.
-     */
-    protected createUniqueSessionName(groupName: GroupSession.SessionName): string | undefined {
-        if (!(GroupSession.SessionName.REGEXP.test(groupName))) {
-            return undefined;
-        }
-        const sessionName: string = `${SnakeyNsps.GROUP_PREFIX}/${groupName}`;
-        if (this.allGroupSessions.has(sessionName)) {
-            return undefined;
-        }
-        return sessionName;
     }
 }
 export namespace SnakeyServer {
 
-    export const DEFAULT_PORT = <const>8080;
-
     /**
-     * @returns An array of non-internal IPv4 addresses from any of the
-     * local hosts' network interfaces.
+     * @returns An array of non-internal IP addresses from any of the
+     * local host's network interfaces.
      *
      * TODO: change to return a map from each of "public" and "private" to a list of addresses
      * https://en.wikipedia.org/wiki/Private_network
      */
-    export const chooseIPv4Address = (): TU.RoArr<string> => {
-        return Object.values(os.networkInterfaces()).flat().filter((info) => {
-            return !(info.internal) && info.family === "IPv4";
-        }).map((info) => info.address);
+    export const chooseIPAddress = (): Array<string> => {
+        return (Object.values(os.networkInterfaces()).flat() as os.NetworkInterfaceInfo[])
+        .filter((info) => {
+            return !(info.internal) /* && info.family === "IPv4" */;
+        })
+        .map((info) => {
+            if (info.family === "IPv6") {
+                return `[${info.address}]`;
+            } else {
+                return info.address;
+            }
+        });
     };
 }
 Object.freeze(SnakeyServer);

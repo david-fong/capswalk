@@ -11,7 +11,7 @@ export namespace SkErrors {
  * @param derivedCtor -
  * @param baseCtors -
  */
-export function applyMixins(derivedCtor: any, baseCtors: any[]) {
+export function applyMixins(derivedCtor: any, baseCtors: any[]): void {
     baseCtors.forEach((baseCtor) => {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
             Object.defineProperty(derivedCtor.prototype, name,
@@ -19,15 +19,6 @@ export function applyMixins(derivedCtor: any, baseCtors: any[]) {
             );
         });
     });
-}
-
-
-/**
- *
- */
-export const enum SnakeyNsps {
-    HOST_REGISTRATION = "/host-reg",
-    GROUP_PREFIX = "/group",
 }
 
 
@@ -218,7 +209,7 @@ export namespace Lang {
         + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
         + " and Tourism",
     },
-    ].map((desc) => Object.freeze(desc)),);
+    ].map((desc) => Object.freeze(desc)));
     FrontendDescs as TU.RoArr<Required<Readonly<{
         id:         string;
         module:     string;

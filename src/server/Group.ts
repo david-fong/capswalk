@@ -6,22 +6,22 @@ import type { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 import type { Player, Team } from "game/player/Player";
 
+import { Group as __Group } from "defs/OnlineDefs";
+
 export { ServerGame } from "./ServerGame";
 
 
 /**
  * Manages communication between the server, and clients who play in
  * the same game together.
- *
- * There is no explicit linking back to the {@link Server}. The only
- * such linkage is from our {@link GroupSession#namespace} to its
- * `io.Server`.
  */
-export class GroupSession {
+export class Group extends __Group {
 
     public readonly namespace: io.Namespace;
-    protected currentGame?: ServerGame<any>;
-    protected sessionHost: io.Socket;
+    public readonly name: Group.Name;
+    public readonly passphrase: Group.Passphrase;
+    #currentGame: ServerGame<any> | undefined;
+    private sessionHost: io.Socket;
 
     private readonly initialTtlTimeout: NodeJS.Timeout;
     private readonly deleteExternalRefs: VoidFunction;
@@ -39,43 +39,55 @@ export class GroupSession {
      * If no sockets connect to this `GameSession` in this many seconds,
      * it will close and clean itself up.
      */
-    public constructor(
+    public constructor(desc: Readonly<{
         namespace: io.Namespace,
+        name: Group.Name,
+        passphrase: Group.Passphrase,
         deleteExternalRefs: VoidFunction,
         initialTtl: number,
-    ) {
-        this.namespace   = namespace;
-        this.currentGame = undefined;
+    }>) {
+        super();
+        this.namespace   = desc.namespace;
+        this.passphrase  = desc.passphrase;
+        this.#currentGame = undefined;
 
         this.initialTtlTimeout = setTimeout(() => {
             if (Object.keys(this.namespace.connected).length === 0) {
-                // If nobody connects to this session in the specified
-                // ammount of time, then close the session.
                 this.terminate();
             }
-        }, (initialTtl * 1000)).unref();
-        this.deleteExternalRefs = deleteExternalRefs;
+        }, (desc.initialTtl * 1000)).unref();
+        this.deleteExternalRefs = desc.deleteExternalRefs;
 
         // Call the connection-event handler:
-        this.namespace.on("connection", this.onConnection);
+        this.namespace.use((socket, next) => {
+            const handshake = socket.handshake;
+            if (handshake.query.passphrase !== this.passphrase) {
+                next(new Error("Incorrect passphrase"));
+            }
+            return next();
+        }).on("connection", this.onConnection.bind(this));
     }
 
     /**
      *
      * @param socket -
      */
-    protected onConnection(socket: GroupSession.Socket): void {
-        console.log("A user has connected.");
-        socket.join(GroupSession.RoomNames.MAIN);
-        socket.teamId = undefined;
+    protected onConnection(socket: Group.Socket): void {
+        console.log(`socket    connect: ${socket.id}`);
+        socket.username = undefined;
+        socket.teamId   = undefined;
         socket.updateId = 0;
 
         if (Object.keys(this.namespace.connected).length === 0) {
             // Nobody has connected yet.
             // The first socket becomes the session host.
             clearTimeout(this.initialTtlTimeout);
+            (this.initialTtlTimeout as NodeJS.Timeout) = undefined!;
             this.sessionHost = socket;
             // TODO.impl set socket.isPrivileged
+            socket.broadcast.emit(Group.Exist.EVENT_NAME, {
+                [this.name]: Group.Exist.Status.IN_LOBBY,
+            });
         }
 
         socket.on("disconnect", (...args: any[]): void => {
@@ -86,7 +98,14 @@ export class GroupSession {
                 // the host?
                 this.terminate();
             }
+            if (Object.keys(this.namespace.sockets).length === 1) {
+                this.terminate();
+            }
         });
+    }
+
+    public get isCurrentlyPlayingAGame(): boolean {
+        return this.#currentGame !== undefined;
     }
 
     /**
@@ -98,16 +117,18 @@ export class GroupSession {
      */
     protected terminate(): void {
         // TODO.impl notify clients?
-        delete this.currentGame;
-        const nsps: io.Namespace = this.namespace;
+        this.#currentGame = undefined;
+        const nsps = this.namespace;
         nsps.removeAllListeners("connect");
         nsps.removeAllListeners("connection");
         Object.values(nsps.connected).forEach((socket) => {
-            socket.disconnect();
+            socket.disconnect(); // TODO.learn should we pass `true` here?
         });
         nsps.removeAllListeners();
         delete nsps.server.nsps[nsps.name];
+        (this.namespace as io.Namespace) = undefined!;
         (this.deleteExternalRefs)();
+        console.log(`terminated group: \`${this.name}\``);
     }
 
 
@@ -140,7 +161,7 @@ export class GroupSession {
         }
         // Everything needed to create a game exists. Let's do it!
         // TODO.impl Everything with current placeholder of `undefined!`.
-        this.currentGame = new ServerGame(this.namespace, {
+        this.#currentGame = new ServerGame(this.namespace, {
             coordSys,
             gridDimensions,
             averageFreeHealthPerTile: undefined!,
@@ -163,83 +184,18 @@ export class GroupSession {
         return undefined;
     }
 
-    public get sockets(): Record<string, GroupSession.Socket> {
-        return this.namespace.sockets as Record<io.Socket["id"], GroupSession.Socket>;
+    public get sockets(): Record<string, Group.Socket> {
+        return this.namespace.sockets as Record<io.Socket["id"], Group.Socket>;
     }
-
 }
-
-
-export namespace GroupSession {
-
-    /**
-     * An extension of {@link io.Socket}. It is very convenient to tack
-     * these fields directly onto the socket objects.
-     */
-    export type Socket = io.Socket & {
-        username?: Player.Username;
-        teamId?: Team.Id; // These input values can be messy and non-continuous. They will be cleaned later.
-        updateId: number; // initial value = 0
-    };
-
-    export type SessionName = string;
-    export namespace SessionName {
-        /**
-         * @see Player.Username.REGEXP
-         */
-        export const REGEXP = /[a-zA-Z](?:[a-zA-Z0-9:-]+?){4,}/;
+export namespace Group {
+    export type Socket      = __Group.Socket.ServerSide;
+    export type Name        = __Group.Name;
+    export type Passphrase  = __Group.Passphrase;
+    export namespace Query {
+        export type RequestCreate   = __Group.Exist.RequestCreate;
+        export type NotifyStatus    = __Group.Exist.NotifyStatus;
     }
-
-    /**
-     *
-     */
-    export const enum RoomNames {
-        MAIN = "main",
-    }
-
-
-    /**
-     *
-     */
-    export class CtorArgs {
-
-        public static EVENT_NAME = <const>"group-session-create";
-
-        public static DEFAULT_INITIAL_TTL = <const>60;
-
-        /**
-         * The client should set this to a string to use as a group
-         * name. They should try to satisfy {@link SessionName.REGEXP},
-         * although that is not manditory.
-         *
-         * The Server should respond with this field set either to be
-         * a Socket.IO namespace based off the client's request that
-         * is open for connecting, or to the empty string to indicate
-         * that the request was rejected.
-         */
-        public groupName: SessionName;
-
-        /**
-         * The Server should ignore any value set here by the client.
-         *
-         * The Server should respond to the client setting this value
-         * to an approximate number of _seconds_ before the created
-         * {@link GroupSession} will decide it was abandoned at birth
-         * and get cleaned up (if nobody connects to it in that time).
-         *
-         * If the request was rejected, the client should ignore any
-         * value set here by the Server.
-         */
-        public initialTtl: number;
-
-        public constructor(
-            groupName: SessionName,
-            initialTtl: number = CtorArgs.DEFAULT_INITIAL_TTL
-        ) {
-            this.groupName = groupName;
-            this.initialTtl = initialTtl;
-        }
-    };
 }
-Object.freeze(GroupSession);
-Object.freeze(GroupSession.prototype);
+Object.freeze(Group);
+Object.freeze(Group.prototype);

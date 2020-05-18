@@ -14,8 +14,11 @@
 
 ### High Priority
 
-1. Implement operator switching.
-    - Make the whole client-side only have one copy of the spotlight elements and always give it to the current operator.
+1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay lighter.
+1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
+1. Implement the scores/player-listing sidebar in __PlayScreen.
+    - Also show scores very small on top of player faces.
+1. Display the operator's current sequence buffer.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
@@ -32,7 +35,8 @@
 
 ### Low Priority
 
-- Tell WebPack to split out styling for each screen?
+- Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
+  - Also see [this](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
@@ -50,8 +54,9 @@
     - [](https://devcenter.heroku.com/articles/nodejs-support)
     - [](https://medium.com/deployplace/heroku-vs-docker-the-ultimate-comparison-with-hidden-pitfalls-revealed-f6b7f4075de5)
   - [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+- Make a nicely styled console-log greeting on the client side.
+  - List common variables in the program that they might like to look at.
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
-- For classes implementing some swappable component or ones in a long class hierarchy, see if there are elegance-improvements to be made by using re-exports.
 - Look into switching from JsDoc to TsDoc
   - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
 - [custom mouse images!](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Basic_User_Interface/Using_URL_values_for_the_cursor_property)
@@ -62,7 +67,6 @@
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
 - WebPack 5:
-  - [Magic dynamic import strings](https://webpack.js.org/migrate/5/#cleanup-the-code) will start getting useful values by default.
   - `output.ecmaVersion` is `6` by default. If we have set it to `6` manually, we can delete the manual field specification.
 - [TypeScript / tslib bug](https://github.com/microsoft/TypeScript/issues/36841)
   - This is on the roadmap for TypeScript 2.9.1... That may be a while.
@@ -158,6 +162,7 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
 https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Backgrounds_and_borders
 https://developer.mozilla.org/en-US/docs/Web/CSS/display
 flex playground: https://codepen.io/enxaneta/full/adLPwv/
+https://developers.google.com/web/updates/2018/01/paintapi
 ```
 
 ### ARIA

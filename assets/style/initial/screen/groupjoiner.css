@@ -1,0 +1,31 @@
+
+.screen-joiner {
+}
+.screen-joiner--content-wrapper {
+    --spacing:       0.2em;
+    --border-radius: 1.2em;
+    height: 27em; max-height: 80vh;
+    width:  27em; max-width:  90vw;
+    display:        grid;
+    grid-template-rows: repeat(3, 2fr) 1fr;
+    gap:            7.0%;
+}
+.screen-joiner--content-wrapper > label {
+    display:        grid;
+    grid-template-rows: 1fr 2.0fr;
+}
+.screen-joiner--content-wrapper input {
+    padding:        0px;
+}
+.screen-joiner--content-wrapper input:invalid {
+    border-style:   dotted;
+}
+
+.screen-joiner--host-url {
+}
+.screen-joiner--group-name {
+}
+.screen-joiner--passphrase {
+}
+.screen-joiner--next-button {
+}

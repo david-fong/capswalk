@@ -16,6 +16,7 @@ type SID_options = SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE;
  * the game's state and the UI's state.
  */
 // TODO.impl change the document title base on game state.
+// TODO.impl Allow users to change the spotlight radius via slider.
 export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID> {
 
     /**
@@ -69,10 +70,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
      * @override
      */
     protected __lazyLoad(): void {
-        this.baseElem.classList.add(
-            OmHooks.Screen.Impl.PlayGame.Class.SCREEN,
-        );
-        this.baseElem.setAttribute("aria-label", "Play Game Screen");
+        this.baseElem.classList.add(OmHooks.Screen.Impl.PlayGame.Class.BASE);
 
         const centerColItems = __PlayScreen.createCenterColElem();
         (this.gridElem as HTMLElement) = centerColItems.gridElem;
@@ -101,35 +99,31 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     /**
      * @override
      */
-    protected __abstractOnBeforeEnter(): Promise<void> {
-        return (async () => {
-            document.addEventListener("visibilitychange", this.#onVisibilityChange);
-            this.pauseButton.disabled = true;
-            this.statusBecomePaused(); // <-- Leverage some state initialization.
+    protected async __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+        document.addEventListener("visibilitychange", this.#onVisibilityChange);
+        this.pauseButton.disabled = true;
+        this.statusBecomePaused(); // <-- Leverage some state initialization.
 
-            // TODO.design Are there ways we can share more code between
-            // implementations by passing common arguments?
-            this.#currentGame = await this.__createNewGame();
-            this.gridElem.addEventListener("keydown", this.#gridOnKeyDown);
-            const resetPromise = this.currentGame!.reset();
+        // TODO.design Are there ways we can share more code between
+        // implementations by passing common arguments?
+        this.#currentGame = await this.__createNewGame();
+        this.gridElem.addEventListener("keydown", this.#gridOnKeyDown);
+        await this.currentGame!.reset();
+        // ^Wait until resetting has finished before attaching the
+        // grid element to the screen so that the DOM changes made
+        // by populating tiles with CSP's can be done all at once.
+        this.gridElem.insertAdjacentElement("afterbegin",
+            this.currentGame!.htmlElements.gridImplElem,
+        ); // ^The order of insertion does not matter (it used to).
 
-            // Wait until resetting has finished before attaching the
-            // grid element to the screen so that the DOM changes made
-            // by populating tiles with CSP's can be done all at once.
-            await resetPromise;
-            this.gridElem.insertAdjacentElement("afterbegin",
-                this.currentGame!.htmlElements.gridImplElem,
-            ); // ^The order of insertion does not matter (it used to).
-
-            this.pauseButton.onclick = this.statusBecomePlaying.bind(this);
-            this.pauseButton.disabled = false;
-            if (this.wantsAutoPause) {
-                setTimeout(() => {
-                    if (!document.hidden) this.statusBecomePlaying();
-                }, 1000);
-            }
-            return;
-        })();
+        this.pauseButton.onclick = this.statusBecomePlaying.bind(this);
+        this.pauseButton.disabled = false;
+        if (this.wantsAutoPause) {
+            setTimeout(() => {
+                if (!document.hidden) this.statusBecomePlaying();
+            }, 500);
+        }
+        return;
     }
 
     /**
@@ -164,7 +158,8 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
      * Note the uses of typescript `!` assertion instead of the nullish
      * coalescing operator for `this.currentGame`. This is safe because
      * this callback is managed by the screen-enter and leave hooks to
-     * only be registered when the current game is defined.
+     * only be registered when the current game is defined, since it
+     * doesn't make sense to be called when the game is not defined.
      *
      * @param ev -
      */
@@ -195,7 +190,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     private statusBecomePlaying(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePlaying();
-        this.pauseButton.innerText  = "Pause";
+        this.pauseButton.textContent  = "Pause";
         this.#pauseReason           = undefined;
         this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
@@ -209,7 +204,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     private statusBecomePaused(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePaused();
-        this.pauseButton.innerText = "Unpause";
+        this.pauseButton.textContent = "Unpause";
         this.#pauseReason = document.hidden ? "page-hide" : "other";
         this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
 
@@ -244,6 +239,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     protected initializeControlsBar(): void {
         const controlsBar = document.createElement("div");
         controlsBar.classList.add(
+            OmHooks.General.Class.INPUT_GROUP,
             OmHooks.Screen.Impl.PlayGame.Class.CONTROLS_BAR,
         );
         controlsBar.setAttribute("role", "menu");
@@ -251,19 +247,22 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         { const bth
             = (this.backToHomeButton as HTMLButtonElement)
             = document.createElement("button");
-        bth.innerText = "Return To Homepage";
+        bth.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+        bth.textContent = "Return To Homepage";
         bth.onclick = this.requestGoToScreen.bind(this, SkScreen.Id.HOME);
         controlsBar.appendChild(bth); }
 
         { const pause
             = (this.pauseButton as HTMLButtonElement)
             = document.createElement("button");
+        pause.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         controlsBar.appendChild(pause); }
 
         { const reset
             = (this.resetButton as HTMLButtonElement)
             = document.createElement("button");
-        reset.innerText = "Reset";
+        reset.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+        reset.textContent = "Reset";
         reset.onclick = this.__resetGame.bind(this);
         controlsBar.appendChild(reset); }
 
@@ -308,7 +307,7 @@ export namespace __PlayScreen {
             {
                 const kbdDcIcon = document.createElement("div");
                 kbdDcIcon.classList.add(OmHooks.Grid.Class.KBD_DC_ICON);
-                kbdDcIcon.innerText = "(click here to continue typing)";
+                kbdDcIcon.textContent = "(click here to continue typing)";
                 kbdDcBase.appendChild(kbdDcIcon);
             }
             gridElem.appendChild(kbdDcBase);
@@ -323,7 +322,7 @@ export namespace __PlayScreen {
             {
                 const pauseIcon = document.createElement("div");
                 pauseIcon.classList.add(OmHooks.Grid.Class.PAUSE_OL_ICON);
-                pauseIcon.innerText = "(The Game is Paused)";
+                pauseIcon.textContent = "(The Game is Paused)";
                 pauseOl.appendChild(pauseIcon);
             }
             gridElem.appendChild(pauseOl);

@@ -13,10 +13,11 @@
     min-width:      max-content;
 }
 .screen-play--controls-bar {
+    --spacing:      0.3rem;
+    --border-radius: 0.7rem;
     grid-area:      controls;
-    display:        flex;
-    flex-direction: column;
-    align-items:    stretch;
+    display:        grid;
+    grid-auto-rows: 1fr;
 }
 .screen-play--scoreboard-bar {
     grid-area:      scoreboard;

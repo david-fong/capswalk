@@ -3,7 +3,7 @@ import type { OfflineGame } from "../../game/OfflineGame";
 import { Lang }             from "defs/TypeDefs";
 
 import type { SkScreen } from '../SkScreen';
-import { __PlayScreen } from "./__Play";
+import { __PlayScreen } from "./Play";
 
 
 /**
@@ -11,16 +11,27 @@ import { __PlayScreen } from "./__Play";
  */
 export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
 
+    public readonly canBeInitialScreen = true;
+
     declare public readonly currentGame: OfflineGame<any> | undefined;
 
+    /**
+     * @override
+     */
     protected readonly wantsAutoPause = true;
 
+    /**
+     * @override
+     */
     protected __lazyLoad(): void {
         super.__lazyLoad();
     }
 
+    /**
+     * @override
+     */
     protected async __createNewGame(): Promise<OfflineGame<any>> {
-        // TODO.impl fetch special game preset "forNextGame".
+        // TODO.impl use game-setup args passed in from __abstractOnBeforeEnter
         return new (await import(
             /* webpackChunkName: "game/offline" */
             "../../game/OfflineGame"
@@ -61,7 +72,7 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
                     bloodThirstDistance: 7,
                     healthReserve: 3.0,
                     movesPerSecond: 2.0,
-                }
+                },
             }, {
                 isALocalOperator: false,
                 familyId:   <const>"CHASER",
@@ -74,8 +85,8 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
                     bloodThirstDistance: 7,
                     healthReserve: 3.0,
                     movesPerSecond: 2.0,
-                }
-            }],
+                },
+            },],
         });
     }
 }

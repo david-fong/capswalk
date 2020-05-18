@@ -16,6 +16,10 @@ body {
     transition:     filter 0.5s ease-in-out;
 }
 
+:disabled {
+    cursor:         not-allowed;
+}
+
 table {
     border-spacing: 0;
 }
@@ -27,4 +31,9 @@ button {
 }
 button:disabled {
     opacity:    0.7;
+}
+input {
+    font:           inherit;
+    text-align:     inherit;
+    box-sizing:     border-box;
 }

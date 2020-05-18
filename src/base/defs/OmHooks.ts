@@ -9,15 +9,22 @@
  */
 export namespace OmHooks {
 
+    export const GLOBAL_IDS = <const>{
+        PUBLIC_GAME_HOST_URLS:  "public-game-hosts-list",
+        CURRENT_HOST_GROUPS:    "current-host-groups-list",
+    };
+
     /**
      * See `:/assets/style/utils.css`.
      */
     export namespace General {
         export const Class = <const>{
             TEXT_SELECT_DISABLED: "text-select-disabled",
-            FILL_PARENT: "fill-parent",
-            CENTER_CONTENTS: "center-contents",
-            STACK_CONTENTS: "stack-contents",
+            FILL_PARENT:        "fill-parent",
+            CENTER_CONTENTS:    "center-contents",
+            STACK_CONTENTS:     "stack-contents",
+            INPUT_GROUP:        "sk-input-group",
+            INPUT_GROUP_ITEM:   "sk-input-group-item",
         };
         export const Dataset = <const>{
             COLOUR_SCHEME: "skColourScheme",
@@ -96,21 +103,32 @@ export namespace OmHooks {
         export namespace Impl {
             export namespace Home {
                 export const Class = <const>{
-                    SCREEN:         "screen-home",
-                    NAV:            "screen-home--nav",
-                    NAV_PLAY_OFFLINE:"screen-home--nav--play-offline",
-                    NAV_PLAY_ONLINE:"screen-home--nav--play-online",
-                    NAV_TUTORIAL:   "screen-home--nav--tutorial",
-                    NAV_COLOURS:    "screen-home--nav--colour-scheme",
-                    NAV_VIEW_REPO:  "screen-home--nav--goto-repo",
-                    NAV_RPT_ISSUE:  "screen-home--nav--report-issue",
+                    BASE:               "screen-home",
+                    NAV:                "screen-home--nav",
+                    NAV_PLAY_OFFLINE:   "screen-home--nav--play-offline",
+                    NAV_PLAY_ONLINE:    "screen-home--nav--play-online",
+                    NAV_HOW_TO_PLAY:    "screen-home--nav--how-to-play",
+                    NAV_HOW_TO_HOST:    "screen-home--nav--how-to-host",
+                    NAV_COLOURS:        "screen-home--nav--colour-scheme",
+                    NAV_VIEW_REPO:      "screen-home--nav--goto-repo",
+                    NAV_RPT_ISSUE:      "screen-home--nav--report-issue",
                 };
             }
             export namespace PlayGame {
                 export const Class = <const>{
-                    SCREEN:         "screen-play",
-                    GRID_CONTAINER: "screen-play--grid-container",
-                    CONTROLS_BAR:   "screen-play--controls-bar",
+                    BASE:               "screen-play",
+                    GRID_CONTAINER:     "screen-play--grid-container",
+                    CONTROLS_BAR:       "screen-play--controls-bar",
+                };
+            }
+            export namespace GroupJoiner {
+                export const Class = <const>{
+                    BASE:               "screen-joiner",
+                    CONTENT_WRAPPER:    "screen-joiner--content-wrapper",
+                    HOST_URL:           "screen-joiner--host-url",
+                    GROUP_NAME:         "screen-joiner--group-name",
+                    PASSPHRASE:         "screen-joiner--passphrase",
+                    NEXT_BUTTON:        "screen-joiner--next-button",
                 };
             }
         }
@@ -119,7 +137,7 @@ export namespace OmHooks {
     export namespace SkPickOne {
         export const Class = <const>{
             BASE:           "sk-pick-one",
-            OPT_BASE:       "sk-pick-one--opt"
+            OPT_BASE:       "sk-pick-one--opt",
         };
     }
 }

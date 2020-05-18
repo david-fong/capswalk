@@ -3,15 +3,20 @@ import { Lang } from "defs/TypeDefs";
 import { SkScreen } from "../SkScreen";
 
 
+type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
+
 /**
  * What coordinate systems are available will depend on what language
  * the user chooses.
  */
 // TODO.learn how to use the IndexDB web API.
-export class GameSetupScreen extends SkScreen<SkScreen.Id.GAME_SETUP> {
+export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID> {
 
     private readonly langSel: HTMLSelectElement;
 
+    /**
+     * @override
+     */
     protected __lazyLoad(): void {
         this.createLangSelector();
     }
@@ -21,7 +26,7 @@ export class GameSetupScreen extends SkScreen<SkScreen.Id.GAME_SETUP> {
         for (const langName of Object.values(Lang.FrontendDescs)) {
             const opt = document.createElement("option");
             opt.value = langName.id;
-            opt.innerText = langName.display;
+            opt.textContent = langName.display;
             langSel.add(opt);
         }
         langSel.onchange = (): void => {
@@ -34,5 +39,5 @@ export class GameSetupScreen extends SkScreen<SkScreen.Id.GAME_SETUP> {
 }
 export namespace GameSetupScreen {
 }
-Object.freeze(GameSetupScreen);
-Object.freeze(GameSetupScreen.prototype);
+Object.freeze(SetupScreen);
+Object.freeze(SetupScreen.prototype);

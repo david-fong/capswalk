@@ -13,7 +13,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     readonly #baseElem:             HTMLDivElement;
     private readonly langCharElem:  HTMLDivElement;
-    private readonly langSeqElem:   HTMLDivElement;
+    private readonly langSeqElem:   HTMLElement;
 
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
@@ -45,7 +45,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         } {
             const seqElem
                 = this.langSeqElem
-                = document.createElement("div");
+                = document.createElement("kbd");
             seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             seqElem.setAttribute("role", "tooltip");
             this.#baseElem.appendChild(seqElem);
@@ -68,7 +68,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         // CSS can create a fading trail effect. It must go after the
         // hitbox so that it can be hidden to avoid covering the tooltip.
         this.#baseElem.insertBefore(immigrantInfo.playerElem, this.langCharElem);
-        this.langSeqElem.innerText = immigrantInfo.username;
+        this.langSeqElem.textContent = immigrantInfo.username;
     }
 
 
@@ -79,7 +79,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         super.evictOccupant();
         // Undo setting mouseover text to something player-related
         // (See `__setOccupant` for what we did and now need to undo):
-        this.langSeqElem.innerText = this.langSeq;
+        this.langSeqElem.textContent = this.langSeq;
     }
 
     /**
@@ -109,8 +109,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
      */
     public setLangCharSeqPair(charSeqPair: Lang.CharSeqPair): void {
         super.setLangCharSeqPair(charSeqPair);
-        this.langCharElem.innerText = this.langChar;
-        this.langSeqElem.innerText  = this.langSeq;
+        this.langCharElem.textContent = this.langChar;
+        this.langSeqElem.textContent  = this.langSeq;
     }
 
 }

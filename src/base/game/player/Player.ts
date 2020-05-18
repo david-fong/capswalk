@@ -188,7 +188,7 @@ export namespace Player {
             .map<CtorArgs>((playerDesc, index) => Object.assign(playerDesc, {
                 playerId:   index,
                 teamId:     teamIdCleaner[playerDesc.teamId],
-            }, ), );
+            }));
         };
     }
     Object.freeze(CtorArgs);
