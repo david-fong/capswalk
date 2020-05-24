@@ -29,7 +29,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
      * of the `Player` class, but it is only used for players of the
      * `HUMAN` family, which is designated by field and not by class.
      */
-    protected readonly playerSockets: Readonly<Record<Player.Id, io.Socket>>;
+    protected readonly playerSockets: TU.RoArr<io.Socket>;
 
     /**
      * @override
@@ -60,21 +60,16 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         );
         this.namespace = namespace;
 
-        {
-            const playerSockets: Record<Player.Id, io.Socket> = {};
-            gameDesc.playerDescs.forEach((playerDesc) => {
-                if (playerDesc.familyId === Player.Family.HUMAN) {
-                    if (!playerDesc.socketId) { throw new Error; }
-                }
-                // The below cast is safe because GameBase reassigns
-                // `gameDesc.playerDescs` the result of `Player.finalize`.
-                // (Otherwise, `playerDesc` would still be a
-                // `Player.CtorArgs.PreIdAssignment`).
-                playerSockets[(playerDesc as Player.CtorArgs).playerId]
-                    = this.namespace.sockets[playerDesc.socketId!];
-            });
-            this.playerSockets = playerSockets;
-        }
+        // The below cast is safe because GameBase reassigns
+        // `gameDesc.playerDescs` the result of `Player.finalize`.
+        // (Otherwise, `playerDesc` would still be a
+        // `Player.CtorArgs.PreIdAssignment`).
+        this.playerSockets = (gameDesc.playerDescs as Player.CtorArgs[])
+        .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN)
+        .map((playerDesc) => {
+            if (!playerDesc.socketId) { throw new Error; }
+            return this.namespace.sockets[playerDesc.socketId!];
+        });
 
         const humanPlayers = this.players
         .filter((player) => player.familyId === Player.Family.HUMAN);
@@ -98,12 +93,15 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         });
 
         // Pass on Game constructor arguments to each client:
-        humanPlayers.forEach((player) => {
+        // We need to go by sockets since each client may be operating
+        // upon (controlling) several of its own players.
+        Object.values(this.namespace.sockets).forEach((socket) => {
+            // Set `isALocalOperator` flags to match what this socket should see:
             gameDesc.playerDescs.forEach((playerDesc) => {
                 (playerDesc.isALocalOperator as boolean) =
-                (playerDesc.socketId === this.playerSockets[player.playerId].id);
+                (playerDesc.socketId === socket.id);
             });
-            this.playerSockets[player.playerId].emit(
+            socket.emit(
                 Game.CtorArgs.EVENT_NAME,
                 gameDesc,
             );

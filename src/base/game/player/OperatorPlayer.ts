@@ -157,8 +157,8 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         super.moveTo(dest);
     }
 
-    public __abstractNotifyBecomeCurrent(): void {
-        this.status.__notifyBecomeCurrent(this.game.grid.spotlightElems);
+    public __notifyWillBecomeCurrent(): void {
+        this.status.__notifyWillBecomeCurrent(this.game.grid.spotlightElems);
     }
 
 

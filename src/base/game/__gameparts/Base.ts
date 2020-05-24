@@ -64,14 +64,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.__playerStatusCtor = impl.playerStatusCtor;
         this.players = this.createPlayers(desc);
 
-        this.operators = this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[];
-        this.currentOperator = this.operators[0];
-        if (this.operators.some((op) => op.teamId !== this.operators[0].teamId)) {
-            // Currently requiring this because the current visual colouring
-            // is initialized based on whether a player is on the operator's
-            // team. Otherwise, we'd have to re-colour when rotating operator.
-            throw new Error("All local operators must be on the same team.");
-        } {
+        this.operators = Object.freeze(
+            this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[]
+        );
+        this.setCurrentOperator(0);
+        {
             const teams: Array<Array<Player<S>>> = [];
             this.players.forEach((player) => {
                 if (!teams[player.teamId]) {
@@ -183,16 +180,14 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     public get currentOperator(): OperatorPlayer<S> | undefined {
         return this.#currentOperator;
     }
-    /**
-     * Passing `undefined` or the current operator has no effect.
-     */
-    public set currentOperator(nextOperator: OperatorPlayer<S> | undefined) {
-        if (nextOperator
-            && this.currentOperator !== nextOperator
-            && this.operators.includes(nextOperator))
+    public setCurrentOperator(nextOperatorIndex: number): void {
+        const nextOperator = this.operators[nextOperatorIndex];
+        if (nextOperator && this.currentOperator !== nextOperator)
         {
+            nextOperator.__notifyWillBecomeCurrent();
             this.#currentOperator = nextOperator;
-            nextOperator.__abstractNotifyBecomeCurrent();
+            // IMPORTANT: The order of the above lines matters
+            // (hence the method name "notifyWillBecomeCurrent").
         }
     }
 

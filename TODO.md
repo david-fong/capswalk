@@ -37,6 +37,13 @@
 
 - Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
   - Also see [this](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
+  - Steps:
+    - Set .game-grid contain to content and make it control its sizing (ex. 70vmin).
+    - Put .game-grid-impl-body inside a new wrapper that is sized according to its content.
+    - Put the sizing wrapper inside a new "scroll" wrapper.
+      - Make this scrolling wrapper control padding instead of .game-grid.
+        - This is so that the scroll bars will hug the grid viewport.
+      - Size the scrolling wrapper according to its parent, which is .game-grid.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.

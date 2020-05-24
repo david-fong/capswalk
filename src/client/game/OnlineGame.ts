@@ -1,8 +1,6 @@
 // Tell WebPack about the CSS chunk we want:
 require("assets/style/game/index.css");
 
-import * as io from "socket.io-client";
-
 import { Game }                 from "game/Game";
 import { Coord, VisibleTile }   from "floor/VisibleTile";
 import { VisibleGrid }          from "floor/VisibleGrid";
@@ -27,7 +25,7 @@ type G = Game.Type.ONLINE;
 export class OnlineGame<S extends Coord.System>
 extends GameEvents<G,S> implements VisibleGame {
 
-    declare public currentOperator: NonNullable<GameEvents<G,S>["currentOperator"]>;
+    declare public readonly currentOperator: OperatorPlayer<S>;
 
     public htmlElements: VisibleGame["htmlElements"];
 

@@ -167,16 +167,17 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         // console.log(`key: ${ev.key}, code: ${ev.code},`
         // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
         // + ` charCode: ${ev.charCode}`);
+        const game = this.currentGame!;
         if (ev.ctrlKey && ev.key === " ") {
             // If switching operator:
-            const operators = this.currentGame!.operators;
-            this.currentGame!.currentOperator = operators[
-                (operators.indexOf(this.currentGame!.currentOperator) + 1)
+            const operators = game.operators;
+            game.setCurrentOperator(
+                (operators.indexOf(game.currentOperator) + 1)
                 % operators.length
-            ];
+            );
         } else {
             // Process event as regular typing:
-            this.currentGame!.currentOperator.processKeyboardInput(ev);
+            game.currentOperator.processKeyboardInput(ev);
         }
         // Disable scroll-down via spacebar:
         if (ev.key === " ") {

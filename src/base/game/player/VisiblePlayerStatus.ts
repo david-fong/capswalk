@@ -54,15 +54,9 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
      * @override
      */
     public __afterAllPlayersConstruction(): void {
-        const player = this.player;
-        const operatorTeamId = this.player.game.operators[0].teamId;
-        this.#baseElem.dataset[OmHooks.Player.Dataset.FACE_SWATCH]
-        = (player.isALocalOperator) ? "me"
-        : (player.teamId === operatorTeamId) ? "teammate" : "opponent";
-
         (this.__immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
             playerElem: this.#baseElem,
-            username: player.username,
+            username: this.player.username,
         });
     }
 
@@ -79,10 +73,21 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         return this.__immigrantInfoCache;
     }
 
-    public __notifyBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
+    public __notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
         spotlightElems.forEach((elem) => {
             this.#baseElem.appendChild(elem);
         });
+        const currOperator = this.player.game.currentOperator;
+        const nextOperator = this.player;
+        if (nextOperator.teamId !== currOperator?.teamId) {
+            // Must use the above nullish coalesce operator for first call to setCurrentOperator.
+            nextOperator.game.players.forEach((otherPlayer) => {
+                (otherPlayer.status as VisiblePlayerStatus<S>).#baseElem.dataset[OmHooks.Player.Dataset.FACE_SWATCH]
+                    = (otherPlayer.isALocalOperator) ? "me"
+                    : (otherPlayer.teamId === nextOperator.teamId) ? "teammate" : "opponent";
+                ;
+            });
+        }
     }
 
     public visualBell(): void {

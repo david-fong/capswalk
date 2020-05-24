@@ -1,10 +1,8 @@
 import * as io from "socket.io";
 
-import type { Coord } from "floor/Tile";
-import type { Grid } from "floor/Grid";
-import type { Game } from "game/Game";
+import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
-import type { Player, Team } from "game/player/Player";
+import type { Player } from "game/player/Player";
 
 import { Group as __Group } from "defs/OnlineDefs";
 
@@ -78,15 +76,20 @@ export class Group extends __Group {
         socket.teamId   = undefined;
         socket.updateId = 0;
 
+        /**
+         * Nobody has connected yet.
+         * The first socket becomes the session host.
+         */
         if (Object.keys(this.namespace.connected).length === 0) {
-            // Nobody has connected yet.
-            // The first socket becomes the session host.
             clearTimeout(this.initialTtlTimeout);
             (this.initialTtlTimeout as NodeJS.Timeout) = undefined!;
             this.sessionHost = socket;
             // TODO.impl set socket.isPrivileged
             socket.broadcast.emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_LOBBY,
+            });
+            socket.on(Game.CtorArgs.EVENT_NAME, (ctorArgs: Game.CtorArgs<Game.Type.SERVER,any>) => {
+                this.createGameInstance(ctorArgs);
             });
         }
 
@@ -116,7 +119,6 @@ export class Group extends __Group {
      * - Deletes the only external reference so this can be garbage collected.
      */
     protected terminate(): void {
-        // TODO.impl notify clients?
         this.#currentGame = undefined;
         const nsps = this.namespace;
         nsps.removeAllListeners("connect");
@@ -143,9 +145,8 @@ export class Group extends __Group {
      * @param gridDimensions -
      * @returns false if the passed arguments were incomplete or invalid.
      */
-    private createGameInstance<S extends Coord.System>(
-        coordSys: S,
-        gridDimensions: Grid.Dimensions<S>,
+    private createGameInstance(
+        ctorArgs: Game.CtorArgs<Game.Type.SERVER,any>,
     ): Readonly<Game.CtorArgs.FailureReasons> | undefined {
         const failureReasons: Game.CtorArgs.FailureReasons = {
             undefinedUsername: Object.values(this.sockets)
@@ -160,27 +161,21 @@ export class Group extends __Group {
             return failureReasons;
         }
         // Everything needed to create a game exists. Let's do it!
-        // TODO.impl Everything with current placeholder of `undefined!`.
-        this.#currentGame = new ServerGame(this.namespace, {
-            coordSys,
-            gridDimensions,
-            averageFreeHealthPerTile: undefined!,
-            langId: undefined!,
-            langBalancingScheme: undefined!,
-            playerDescs: {
-                ...Object.values(this.sockets).map((socket) => {
-                    return <Player.CtorArgs>{
-                        isALocalOperator: false,
-                        familyId: "HUMAN",
-                        teamId: socket.teamId!,
-                        socketId: socket.id,
-                        username: socket.username!, // checked above.
-                        noCheckGameOver: false,
-                        familyArgs: {},
-                    };
-                }),
-            },
-        });
+        (ctorArgs.playerDescs as Player.CtorArgs.PreIdAssignment[]) = [
+            ...ctorArgs.playerDescs,
+            ...Object.values(this.sockets).map((socket) => {
+                return Object.freeze(<Player.CtorArgs>{
+                    isALocalOperator: false,
+                    familyId: "HUMAN",
+                    teamId: socket.teamId!,
+                    socketId: socket.id,
+                    username: socket.username!, // checked above.
+                    noCheckGameOver: false,
+                    familyArgs: {},
+                });
+            }),
+        ];
+        this.#currentGame = new ServerGame(this.namespace, ctorArgs);
         return undefined;
     }
 
