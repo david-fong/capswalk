@@ -12,6 +12,9 @@ import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
 import { GameManager } from "game/__gameparts/Manager";
 
+import { IndexTasks } from "game/IndexTasks";
+IndexTasks.INIT_CLASS_REGISTRIES();
+
 
 type G = Game.Type.SERVER;
 
@@ -125,15 +128,8 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
     /**
      * @override
      */
-    protected __createOperatorPlayer(desc: Player.CtorArgs): never {
+    public __createOperatorPlayer(desc: Player.CtorArgs): never {
         throw new TypeError("This should never be called for a ServerGame.");
-    }
-
-    /**
-     * @override
-     */
-    protected __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>): ArtificialPlayer<S> {
-        return ArtificialPlayer.of(this, desc);
     }
 
 

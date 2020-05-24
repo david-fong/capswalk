@@ -14,6 +14,10 @@
 
 ### High Priority
 
+1. Try putting some fabric-texture overlay on the screen.
+    - Check how repainting occurs (and hope it is cheap).
+1. Rename `IndexTasks` to `GameBootstrap` and the `__gameparts` classes to start with `Gameparts`.
+    - This will probably require manually deleting the old-named versions from the gh-pages branch.
 1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay lighter.
 1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 1. Implement the scores/player-listing sidebar in __PlayScreen.

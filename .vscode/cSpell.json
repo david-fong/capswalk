@@ -43,6 +43,7 @@
         "dests",
         "elem", "elems",
         "minmax",
+        "mixins",
         "nsps",
         "retval",
         "refs",

@@ -2,6 +2,7 @@ import { OmHooks } from "defs/OmHooks";
 
 
 /**
+ * **IMPORTANT:**
  * Consumers and implementers of this utility widget must ensure that
  * a call to `selectOpt` is made with valid arguments before it becomes
  * interfaceable to a browser user.
@@ -33,6 +34,8 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
     public addOption(opt: O): void {
         this.options.push(opt);
         this.baseElem.appendChild(opt.baseElem);
+        opt.baseElem.addEventListener("hover", this.__onHoverOpt.bind(this, opt));
+        opt.baseElem.addEventListener("click", this.__onSelectOpt.bind(this, opt));
         opt.__registerParent(this.onOptDisabledChange.bind(this));
     }
 
@@ -91,7 +94,6 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
         }
     }
 
-    // TODO.impl skip disabled options.
     private onKeyDown(ev: KeyboardEvent): boolean {
         if (ev.key === " " || ev.key === "Enter") {
             this.selectOpt(this.hoveredOpt);
@@ -100,14 +102,18 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
         } else {
             const hoverOptIndex = this.options.indexOf(this.hoveredOpt);
             if (ev.key === "ArrowDown" || ev.key === "Down") {
-                if (hoverOptIndex < (this.options.length - 1)) {
-                    this.hoverOpt(this.options[hoverOptIndex + 1]);
+                for (let i = hoverOptIndex + 1; i < (this.options.length); i++) {
+                    const opt = this.options[i];
+                    if (opt.disabled) continue;
+                    this.hoverOpt(opt);
                     ev.preventDefault();
                     return false;
                 }
             } else if (ev.key === "ArrowUp" || ev.key === "Up") {
-                if (hoverOptIndex > 0) {
-                    this.hoverOpt(this.options[hoverOptIndex - 1]);
+                for (let i = hoverOptIndex - 1; i >= 0; i--) {
+                    const opt = this.options[i];
+                    if (opt.disabled) continue;
+                    this.hoverOpt(opt);
                     ev.preventDefault();
                     return false;
                 }

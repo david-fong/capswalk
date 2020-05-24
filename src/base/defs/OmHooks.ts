@@ -119,6 +119,7 @@ export namespace OmHooks {
                     BASE:               "screen-play",
                     GRID_CONTAINER:     "screen-play--grid-container",
                     CONTROLS_BAR:       "screen-play--controls-bar",
+                    PLAYERS_BAR:        "screen-play--players-bar",
                 };
             }
             export namespace GroupJoiner {

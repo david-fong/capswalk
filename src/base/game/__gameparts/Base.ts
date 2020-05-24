@@ -138,9 +138,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             }
         }));
     }
-    protected abstract __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S>;
-    protected abstract __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>):
-    (G extends Game.Type.Manager ? ArtificialPlayer<S> : Player<S>);
+    public abstract __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S>;
+    protected abstract __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>): Player<S>;
 
     public serializeResetState(): Game.ResetSer<S> {
         const csps: Array<Lang.CharSeqPair> = [];
@@ -258,12 +257,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     protected __abstractStatusBecomePlaying(): void {}
     protected __abstractStatusBecomePaused(): void {}
     protected __abstractStatusBecomeOver(): void {}
-
-
-    public abstract setTimeout(callback: Function, millis: number, ...args: any[])
-    : G extends Game.Type.SERVER ? NodeJS.Timeout : number;
-
-    public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
 
  /* The implementations are fully defined and publicly exposed by
     GameManager. These protected declarations higher up the class

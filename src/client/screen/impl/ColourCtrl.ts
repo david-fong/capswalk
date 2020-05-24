@@ -49,9 +49,9 @@ export namespace ColourCtrlScreen {
             if (!this.garageDoorElem) throw new Error;
             this.garageDoorElem.style.transitionDuration = `${Colour.SMOOTH_CHANGE_DURATION/3.0}ms`;
 
-            for (const schemeDesc of Colour.Schemes) {
+            Colour.Schemes.forEach((schemeDesc) => {
                 this.addOption(new PickOne.Option(schemeDesc));
-            }
+            });
             this.selectOpt(this.getOptById("snakey")!, false);
         }
 
@@ -118,7 +118,7 @@ export namespace Colour {
         "mainFg", "mainBg",
         "tileFg", "tileBg", "tileBd",
         "healthFg", "healthBg",
-        "pFaceMe",
+        "pFaceMe", "pFaceMeOpp",
         "pFaceTeammate", "pFaceImtlTeammate",
         "pFaceOpponent", "pFaceImtlOpponent",
     ]);

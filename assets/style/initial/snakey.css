@@ -7,8 +7,9 @@
     --colour-healthFg: #21352e;
     --colour-healthBg: #4edf8f;
     --colour-pFaceMe: #35e7ff;
-    --colour-pFaceTeammate: #f8df50;
-    --colour-pFaceImtlTeammate: #f8df50;
+    --colour-pFaceMeOppo: #937ad8;
+    --colour-pFaceTeammate: #f8d150;
+    --colour-pFaceImtlTeammate: #f8d150;
     --colour-pFaceOpponent: #ec4daf;
     --colour-pFaceImtlOpponent: #e23fa3;
 }

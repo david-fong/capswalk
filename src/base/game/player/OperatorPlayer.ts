@@ -18,7 +18,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
-    declare public readonly game: GameBase<(Game.Type.OFFLINE|Game.Type.ONLINE),S>;
+    declare public readonly game: GameBase<(Game.Type.Browser),S>;
 
     /**
      * @override
@@ -73,14 +73,14 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         if (!this.requestInFlight) {
             // Only process movement-type input if the last request got
             // acknowledged by the Game Manager and the game is playing.
-            if (event.keyCode === 32) {
+            if (event.key === " ") {
                 // TODO.learn why isn't TypeScript able to figure the below line out?
                 if (!this.coord.equals(this.prevCoord as any)) {
                     this.makeMovementRequest(this.game.grid.getUntAwayFrom(
                         this.coord, this.prevCoord,
                     ), Player.MoveType.BOOST);
                 }
-            } else if (event.key.length === 1) {
+            } else if (event.key.length === 1 && !event.repeat) {
                 // TODO.design is the above condition okay? will any
                 // languages require different behaviour?
                 this.seqBufferAcceptKey(event.key);

@@ -29,6 +29,7 @@ export namespace Game {
     }
     export namespace Type {
         export type Manager = Type.OFFLINE | Type.SERVER;
+        export type Browser = Type.OFFLINE | Type.ONLINE;
     }
 
     /**

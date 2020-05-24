@@ -82,9 +82,10 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         if (nextOperator.teamId !== currOperator?.teamId) {
             // Must use the above nullish coalesce operator for first call to setCurrentOperator.
             nextOperator.game.players.forEach((otherPlayer) => {
+                const isTeammate = (otherPlayer.teamId === nextOperator.teamId);
                 (otherPlayer.status as VisiblePlayerStatus<S>).#baseElem.dataset[OmHooks.Player.Dataset.FACE_SWATCH]
-                    = (otherPlayer.isALocalOperator) ? "me"
-                    : (otherPlayer.teamId === nextOperator.teamId) ? "teammate" : "opponent";
+                    = (otherPlayer.isALocalOperator) ? (isTeammate ? "me" : "meOppo")
+                    : isTeammate ? "teammate" : "opponent";
                 ;
             });
         }
@@ -120,6 +121,28 @@ export namespace VisiblePlayerStatus {
         const arr = Array(numWiggles * 2).fill(pctX);
         arr.unshift(0); arr.push(0);
         return arr.map((n,i) => `translate(${(i%2)?n:-n}%)`);
+    }
+
+    /**
+     * Append the base element to the players bar in the play-screen.
+     * This is internally managed by the VisiblePlayerStatus class.
+     */
+    // TODO.impl Give each VisiblePlayerStatus one and update it within VisiblePlayerStatus' setters.
+    export class Card {
+        public readonly baseElem: HTMLElement;
+        readonly #nameElem:  HTMLElement;
+        readonly #scoreElem: HTMLElement;
+        readonly #teamElem:  HTMLElement;
+
+        public constructor(playerName: Player.Username) {
+            this.baseElem = document.createElement("div");
+            this.baseElem.setAttribute("label", "Player");
+
+            this.#nameElem = document.createElement("div");
+            const name = this.#nameElem;
+            name.textContent = playerName;
+            this.baseElem.appendChild(name);
+        }
     }
 }
 Object.freeze(VisiblePlayerStatus);

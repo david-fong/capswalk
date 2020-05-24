@@ -55,7 +55,7 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
             }, {
                 isALocalOperator: true,
                 familyId:   <const>"HUMAN",
-                teamId:     0,
+                teamId:     1,
                 socketId:   undefined,
                 username:   "hello world 2",
                 noCheckGameOver: false,

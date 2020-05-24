@@ -25,6 +25,8 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
      */
     protected readonly gridElem: HTMLElement;
 
+    private readonly playersBar: HTMLElement;
+
     private readonly backToHomeButton: HTMLButtonElement;
 
     /**
@@ -78,7 +80,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         // ^Purposely make the grid the first child so it gets tabbed to first.
 
         this.initializeControlsBar();
-        this.initializeScoresBar();
+        this.initializePlayersBar();
 
         // @ts-ignore Assignment to readonly property.
         // We can't use a type assertion to cast off the readonly-ness
@@ -112,9 +114,10 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
         // by populating tiles with CSP's can be done all at once.
-        this.gridElem.insertAdjacentElement("afterbegin",
-            this.currentGame!.htmlElements.gridImplElem,
-        ); // ^The order of insertion does not matter (it used to).
+        const html = this.currentGame!.htmlElements;
+        this.gridElem.insertAdjacentElement("afterbegin", html.gridImpl);
+        // ^The order of insertion does not matter (it used to).
+        this.playersBar.appendChild(html.playersBar);
 
         this.pauseButton.onclick = this.statusBecomePlaying.bind(this);
         this.pauseButton.disabled = false;
@@ -168,7 +171,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
         // + ` charCode: ${ev.charCode}`);
         const game = this.currentGame!;
-        if (ev.ctrlKey && ev.key === " ") {
+        if (ev.ctrlKey && ev.key === " " && !ev.repeat) {
             // If switching operator:
             const operators = game.operators;
             game.setCurrentOperator(
@@ -191,8 +194,8 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     private statusBecomePlaying(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePlaying();
-        this.pauseButton.textContent  = "Pause";
-        this.#pauseReason           = undefined;
+        this.pauseButton.textContent = "Pause";
+        this.#pauseReason = undefined;
         this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
         window.requestAnimationFrame((time) => {
@@ -245,33 +248,50 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         );
         controlsBar.setAttribute("role", "menu");
 
+        function createControlButton(buttonText: string): HTMLButtonElement {
+            const button = document.createElement("button");
+            button.textContent = buttonText;
+            button.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+            button.addEventListener("pointerenter", (ev) => {
+                window.requestAnimationFrame((time) => {
+                    button.focus();
+                });
+            });
+            controlsBar.appendChild(button);
+            return button;
+        }
+        controlsBar.addEventListener("pointerleave", (ev) => {
+            window.requestAnimationFrame((time) => {
+                this.gridElem.focus();
+            });
+        });
+
         { const bth
             = (this.backToHomeButton as HTMLButtonElement)
-            = document.createElement("button");
-        bth.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-        bth.textContent = "Return To Homepage";
+            = createControlButton("Return To Homepage");
         bth.onclick = this.requestGoToScreen.bind(this, SkScreen.Id.HOME);
-        controlsBar.appendChild(bth); }
+        }
 
         { const pause
             = (this.pauseButton as HTMLButtonElement)
-            = document.createElement("button");
-        pause.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-        controlsBar.appendChild(pause); }
+            = createControlButton("");
+        }
 
         { const reset
             = (this.resetButton as HTMLButtonElement)
-            = document.createElement("button");
-        reset.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-        reset.textContent = "Reset";
+            = createControlButton("Reset");
         reset.onclick = this.__resetGame.bind(this);
-        controlsBar.appendChild(reset); }
+        }
 
         this.baseElem.appendChild(controlsBar);
     }
 
-    protected initializeScoresBar(): void {
-        ;
+    protected initializePlayersBar(): void {
+        const playersBar
+            = (this.playersBar as HTMLElement)
+            = document.createElement("div");
+        playersBar.classList.add(OmHooks.Screen.Impl.PlayGame.Class.PLAYERS_BAR);
+        this.baseElem.appendChild(playersBar);
     }
 }
 export namespace __PlayScreen {
