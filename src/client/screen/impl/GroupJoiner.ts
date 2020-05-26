@@ -414,7 +414,7 @@ export namespace GroupJoinerScreen {
                     value: "localhost:" + SkServer.DEFAULT_PORT,
                     description: "dev shortcut :)",
                 };
-            case "lan-server":
+            case "sk-server":
                 // Use case: production. Page resources are probably being
                 // served by the LAN server already. Suggest connecting
                 // Socket.IO to that same host. Just give origin (exclude

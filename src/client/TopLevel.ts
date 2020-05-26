@@ -1,5 +1,7 @@
-import { OmHooks } from "defs/OmHooks";
+import { OmHooks }      from "defs/OmHooks";
 import { AllSkScreens } from "./screen/AllSkScreens";
+import { BgMusic }      from "./audio/BgMusic";
+import { SoundEffects } from "./audio/SoundEffects";
 
 
 /**
@@ -15,6 +17,9 @@ export class TopLevel {
      */
     private readonly allScreens: AllSkScreens;
 
+    public readonly bgMusic: BgMusic;
+    public readonly sfx: SoundEffects;
+
     /**
      * This is managed by the `GroupJoiner` screen.
      */
@@ -24,18 +29,24 @@ export class TopLevel {
 
 
     public constructor() {
-        const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
-        if (!allScreensElem) { throw new Error; }
-        this.allScreens = new AllSkScreens(this, allScreensElem);
         this.webpageHostType = (() => {
             if (window.location.origin.match(/github\.io/)) {
                 return TopLevel.WebpageHostType.GITHUB;
             } else if (window.location.protocol.startsWith("file")) {
                 return TopLevel.WebpageHostType.FILESYSTEM;
             } else {
-                return TopLevel.WebpageHostType.LAN_SERVER;
+                return TopLevel.WebpageHostType.SNAKEY_SERVER;
             }
         })();
+        //
+        const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
+        if (!allScreensElem) { throw new Error; }
+        this.allScreens = new AllSkScreens(this, allScreensElem);
+
+        //
+        this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
+        this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
+
         console.log("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
         + " margin:0.4em; border:0.3em solid black;padding:0.4em;"
         + " color:white; background-color:#3f5e77; border-radius:0.7em; ");
@@ -63,9 +74,9 @@ export class TopLevel {
 }
 export namespace TopLevel {
     export const enum WebpageHostType {
-        GITHUB      = "github",
-        FILESYSTEM  = "filesystem",
-        LAN_SERVER  = "lan-server",
+        GITHUB        = "github",
+        FILESYSTEM    = "filesystem",
+        SNAKEY_SERVER = "sk-server",
     }
 }
 Object.freeze(TopLevel);

@@ -119,7 +119,7 @@ https://opensource.org/licenses
 
 ### Dynamic imports
 
-Links no longer needed. Good things to know: both TypeScript and WebPack implement handling for dynamic imports. TypeScript will provide type information about the exports from a module, and WebPack will intercept the dynamic import to create a deferred-loading split chunk.
+Links no longer needed. Good things to know: both TypeScript and WebPack implement handling for dynamic imports. TypeScript will provide type information about the exports from a module, and WebPack will intercept the dynamic import to create a deferred-loading split chunk (A WebPack-internal mechanism).
 
 ### Web API's
 
