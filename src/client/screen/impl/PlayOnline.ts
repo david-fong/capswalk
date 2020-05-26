@@ -39,7 +39,11 @@ export class PlayOnlineScreen extends __PlayScreen<SkScreen.Id.PLAY_ONLINE> {
                 const game = new (await import(
                     /* webpackChunkName: "game/online" */
                     "../../game/OnlineGame"
-                )).OnlineGame(this.toplevel.socket!, gameCtorArgs);
+                )).OnlineGame(
+                    this.__onGameBecomeOver.bind(this),
+                    this.toplevel.socket!,
+                    gameCtorArgs,
+                );
                 resolve(game);
             })
         });

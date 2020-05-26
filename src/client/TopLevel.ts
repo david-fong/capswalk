@@ -44,8 +44,8 @@ export class TopLevel {
         this.allScreens = new AllSkScreens(this, allScreensElem);
 
         //
-        this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
-        this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
+        // this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
+        // this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
 
         console.log("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
         + " margin:0.4em; border:0.3em solid black;padding:0.4em;"

@@ -43,11 +43,13 @@ extends GameEvents<G,S> implements BrowserGameMixin<G,S> {
      *      {@link Game.CtorArgs.EVENT_NAME}.
      */
     public constructor(
+        onGameBecomeOver: () => void,
         socket: SocketIOClient.Socket,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(
             Game.Type.ONLINE, {
+            onGameBecomeOver,
             tileClass: VisibleTile,
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,

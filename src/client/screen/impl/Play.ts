@@ -3,6 +3,7 @@ import type { OfflineGame } from "../../game/OfflineGame";
 import type { OnlineGame }  from "../../game/OnlineGame";
 
 import { SkScreen } from "../SkScreen";
+import { Game } from "../../game/BrowserGame";
 
 
 type Game = (OfflineGame<any> | OnlineGame<any>);
@@ -82,18 +83,23 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         this.initializeControlsBar();
         this.initializePlayersBar();
 
-        // @ts-ignore Assignment to readonly property.
+        // @ts-expect-error Assignment to readonly property.
         // We can't use a type assertion to cast off the readonly-ness
         // because it messed up the transpilation for #private fields.
         this.#onVisibilityChange = () => {
             if (!this.wantsAutoPause) return;
             if (document.hidden) {
-                if (this.#pauseReason === undefined) this.statusBecomePaused();
+                if (this.#pauseReason === undefined) {
+                    const game = this.currentGame
+                    if (!game || (game && game.status !== Game.Status.OVER)) {
+                        this.statusBecomePaused();
+                    }
+                }
             } else {
                 if (this.#pauseReason === "page-hide") this.statusBecomePlaying();
             }
         }
-        // @ts-ignore Assignment to readonly property.
+        // @ts-expect-error Assignment to readonly property.
         // See above note.
         this.#gridOnKeyDown = this.__gridKeyDownCallback.bind(this);
     }
@@ -220,6 +226,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
     public __onGameBecomeOver(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.pauseButton.disabled = true;
+        this.resetButton.disabled = false;
         this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.OVER;
     }
 

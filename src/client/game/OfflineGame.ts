@@ -36,10 +36,12 @@ extends GameManager<G,S> implements BrowserGameMixin<G,S> {
      * @param gameDesc -
      */
     public constructor(
+        onGameBecomeOver: () => void,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(
             Game.Type.OFFLINE, {
+            onGameBecomeOver,
             tileClass: VisibleTile,
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,

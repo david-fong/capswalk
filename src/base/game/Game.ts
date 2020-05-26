@@ -42,6 +42,7 @@ export namespace Game {
         G extends Game.Type,
         S extends Coord.System,
     > = {
+        onGameBecomeOver: () => void,
         tileClass: Tile.ClassIf<S>,
         playerStatusCtor: typeof PlayerStatus,
     };

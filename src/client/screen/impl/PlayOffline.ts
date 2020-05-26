@@ -35,7 +35,7 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE> {
         return new (await import(
             /* webpackChunkName: "game/offline" */
             "../../game/OfflineGame"
-        )).OfflineGame({
+        )).OfflineGame(this.__onGameBecomeOver.bind(this), {
             coordSys: "EUCLID2" as Coord.System.EUCLID2,
             gridDimensions: {
                 height: 21,

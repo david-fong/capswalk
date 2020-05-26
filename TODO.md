@@ -138,6 +138,12 @@ https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
 https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API
 ```
 
+Presentation API:
+
+- [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Presentation_API)
+- [W3C](https://www.w3.org/TR/presentation-api)
+- [Google Example](https://googlechrome.github.io/samples/presentation-api/)
+
 ### Audio
 
 [AudioContextOptions](https://devdocs.io/dom/audiocontextoptions): I should make two separate contexts: one for the layered music optimized for playback and lower power consumption, and one for sound effects optimized for low latency.

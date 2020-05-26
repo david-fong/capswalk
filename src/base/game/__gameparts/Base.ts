@@ -7,7 +7,6 @@ import type { VisibleGrid } from "floor/VisibleGrid";
 
 import { Player, PlayerStatus, Team } from "../player/Player";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
-import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
 
@@ -19,6 +18,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     public readonly gameType: G;
 
     public readonly grid: G extends Game.Type.SERVER ? Grid<S> : VisibleGrid<S>;
+
+    readonly #onGameBecomeOver: () => void;
 
     public readonly langFrontend: Lang.FrontendDesc;
 
@@ -57,6 +58,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
         }) as GameBase<G,S>["grid"];
+        this.#onGameBecomeOver = impl.onGameBecomeOver;
 
         this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId);
 
@@ -252,6 +254,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         });
         this.__abstractStatusBecomeOver();
         this.#status = Game.Status.OVER;
+        this.#onGameBecomeOver();
         console.log("game is over!");
     }
     protected __abstractStatusBecomePlaying(): void {}
