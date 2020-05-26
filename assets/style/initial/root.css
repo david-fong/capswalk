@@ -9,6 +9,7 @@ html {
 }
 
 body {
+    margin:         0;
     font-family:    "Trebuchet MS", "Lucida Sans Unicode";
     font-weight:    bold;
     color:          var(--colour-mainFg);

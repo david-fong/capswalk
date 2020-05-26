@@ -17,7 +17,7 @@
     </head>
 
 
-    <body style="margin:0;">
+    <body class="fill-parent">
         <script id="socket.io" src="dist/client/vendor/socket.io.js"></script>
         <datalist id="public-game-hosts-list">
             <!-- default protocol is http -->
@@ -29,9 +29,10 @@
             if (cssl) { root.setAttribute("style", cssl); }
             else { root.dataset["skColourScheme"] = "snakey"; }
         } </script>
-        <div id="background"  class="sk-screen"></div>
-        <div id="screen-tint" class="sk-screen"></div>
+        <div id="background" class="sk-screen"></div>
         <div id="all-screens-container"></div>
+        <div id="screen-tint" class="sk-screen"></div>
+        <div id="screen-texture" class="sk-screen"><!-- Courtesy of Toptal Patterns --></div>
         <script defer src="dist/client/index.js"></script>
     </body>
 </html>

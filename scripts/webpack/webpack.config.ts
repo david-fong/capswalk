@@ -80,6 +80,15 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
         });
         return retval;
     })(),
+},{
+    // https://webpack.js.org/loaders/file-loader/
+    test: /\.(png|svg|jpg|gif)$/,
+    use: [{
+        loader: "file-loader",
+        options: {
+            publicPath: "./",
+        },
+    }],
 }, ]};
 
 /**
