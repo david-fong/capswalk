@@ -10,7 +10,7 @@ import {
 } from "./BrowserGame";
 
 import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
-import { GameEvents }           from "game/__gameparts/Events";
+import { GamepartEvents }       from "game/gameparts/GamepartEvents";
 
 
 type G = Game.Type.ONLINE;
@@ -19,7 +19,7 @@ type G = Game.Type.ONLINE;
  *
  */
 export class OnlineGame<S extends Coord.System>
-extends GameEvents<G,S> implements BrowserGameMixin<G,S> {
+extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 
     declare public readonly currentOperator: OperatorPlayer<S>;
 

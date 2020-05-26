@@ -8,9 +8,8 @@ import {
     BrowserGameMixin,
     Player, OperatorPlayer, VisiblePlayerStatus,
 } from "./BrowserGame";
-import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
-import { GameManager } from "game/__gameparts/Manager";
+import { GamepartManager } from "game/gameparts/GamepartManager";
 
 
 type G = Game.Type.OFFLINE;
@@ -19,9 +18,9 @@ type G = Game.Type.OFFLINE;
  *
  */
 export class OfflineGame<S extends Coord.System>
-extends GameManager<G,S> implements BrowserGameMixin<G,S> {
+extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
 
-    declare public currentOperator: NonNullable<GameManager<G,S>["currentOperator"]>;
+    declare public currentOperator: NonNullable<GamepartManager<G,S>["currentOperator"]>;
 
     public htmlElements: BrowserGameMixin.HtmlElements;
 
@@ -49,7 +48,7 @@ extends GameManager<G,S> implements BrowserGameMixin<G,S> {
         this.__BrowserGame_Ctor();
     }
 
-    declare public readonly __createArtifPlayer: GameManager<G,S>["__createArtifPlayer"];
+    declare public readonly __createArtifPlayer: GamepartManager<G,S>["__createArtifPlayer"];
 
     public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
         return setTimeout(callback, millis, args);
@@ -61,7 +60,7 @@ extends GameManager<G,S> implements BrowserGameMixin<G,S> {
 
     // NOTE: We need to declare this for OfflineGame
     // to be able to use this Mixin for some reason...
-    declare public readonly processBubbleRequest: GameManager<G,S>["processBubbleRequest"];
+    declare public readonly processBubbleRequest: GamepartManager<G,S>["processBubbleRequest"];
 }
 export interface OfflineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
 applyMixins(OfflineGame, [BrowserGameMixin,]);

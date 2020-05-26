@@ -27,7 +27,7 @@
         "bubbler",
         "csps",
         "elim",
-        "gameparts",
+        "gamepart", "gameparts",
         "sesh",
         "sysname",
         "typeable",

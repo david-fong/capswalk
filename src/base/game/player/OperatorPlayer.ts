@@ -4,7 +4,7 @@ import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { VisibleTile } from "floor/VisibleTile";
 import type { VisiblePlayerStatus } from "./VisiblePlayerStatus";
-import type { GameBase } from "game/__gameparts/Base";
+import type { GamepartBase } from "game/gameparts/GamepartBase";
 
 import { Player } from "./Player";
 
@@ -18,7 +18,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
-    declare public readonly game: GameBase<(Game.Type.Browser),S>;
+    declare public readonly game: GamepartBase<(Game.Type.Browser),S>;
 
     /**
      * @override
@@ -41,7 +41,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     private prevCoord: Coord<S>;
 
 
-    public constructor(game: GameBase<any,S>, desc: Player.__CtorArgs<"HUMAN">) {
+    public constructor(game: GamepartBase<any,S>, desc: Player.__CtorArgs<"HUMAN">) {
         super(game, desc);
         this.langRemappingFunc = this.game.langFrontend.remapFunc;
     }

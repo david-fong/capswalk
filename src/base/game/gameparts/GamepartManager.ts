@@ -7,7 +7,7 @@ import { Player } from "../player/Player";
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
 
-import { GameEvents } from "./Events";
+import { GamepartEvents } from "./GamepartEvents";
 import { ScoreInfo } from "game/ScoreInfo";
 import { ArtificialPlayer } from 'game/player/ArtificialPlayer';
 
@@ -15,7 +15,7 @@ import { ArtificialPlayer } from 'game/player/ArtificialPlayer';
 /**
  *
  */
-export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.System> extends GameEvents<G,S> {
+export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coord.System> extends GamepartEvents<G,S> {
 
     public readonly averageFreeHealth: Player.Health;
     public readonly averageFreeHealthPerTile: Player.Health;
@@ -394,5 +394,5 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
 }
-Object.freeze(GameManager);
-Object.freeze(GameManager.prototype);
+Object.freeze(GamepartManager);
+Object.freeze(GamepartManager.prototype);

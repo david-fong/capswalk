@@ -1,7 +1,6 @@
 import { Coord }                from "floor/VisibleTile";
 import { Game }                 from "game/Game";
-import { GameBase }             from "game/__gameparts/Base";
-import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
+import { GamepartBase }         from "game/gameparts/GamepartBase";
 import { Player }               from "game/player/Player";
 import { OperatorPlayer }       from "game/player/OperatorPlayer";
 
@@ -14,8 +13,8 @@ export { Player }               from "game/player/Player";
 export { OperatorPlayer }       from "game/player/OperatorPlayer";
 export { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
 
-import { IndexTasks } from "game/IndexTasks";
-IndexTasks.INIT_CLASS_REGISTRIES();
+import { GameBootstrap } from "game/GameBootstrap";
+GameBootstrap.INIT_CLASS_REGISTRIES();
 
 
 /**
@@ -34,7 +33,7 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
         return new OperatorPlayer<S>(this, desc);
     }
 }
-export interface BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> extends GameBase<G,S> {};
+export interface BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> extends GamepartBase<G,S> {};
 export namespace BrowserGameMixin {
     export type HtmlElements = Readonly<{
         gridImpl:   HTMLElement;

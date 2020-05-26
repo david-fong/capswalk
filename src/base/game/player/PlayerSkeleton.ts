@@ -3,7 +3,7 @@ import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
-import type { GameBase } from "game/__gameparts/Base";
+import type { GamepartBase } from "game/gameparts/GamepartBase";
 
 import { PlayerStatus } from "./PlayerStatus";
 import { TileGetter } from "floor/TileGetter";
@@ -25,7 +25,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
     /**
      * The game object that this player belongs to.
      */
-    public readonly game: GameBase<any,S>;
+    public readonly game: GamepartBase<any,S>;
 
     public readonly status: PlayerStatus<S>;
 
@@ -35,7 +35,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
 
 
 
-    protected constructor(game: GameBase<any,S>, desc: Player.CtorArgs) {
+    protected constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
         super();
         if (Math.trunc(desc.playerId) !== desc.playerId) {
             throw new RangeError("Player ID's must be integer values.");

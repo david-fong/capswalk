@@ -1,6 +1,6 @@
 import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
-import type { GameManager } from "game/__gameparts/Manager";
+import type { GamepartManager } from "game/gameparts/GamepartManager";
 
 import type { Chaser } from './artificials/Chaser';
 
@@ -18,7 +18,7 @@ import { Player } from "./Player";
  */
 export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S> {
 
-    declare public readonly game: GameManager<any,S>;
+    declare public readonly game: GamepartManager<any,S>;
 
     private scheduledMovementCallbackId: number | NodeJS.Timeout;
 
@@ -29,7 +29,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      * @param game -
      * @param desc -
      */
-    protected constructor(game: GameManager<any,S>, desc: Player.CtorArgs) {
+    protected constructor(game: GamepartManager<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
         if (game.gameType === Game.Type.ONLINE) {
             throw new TypeError("OnlineGames should be using regular Players instead.");
@@ -88,7 +88,7 @@ export namespace ArtificialPlayer {
     export declare const __Constructors: Readonly<{
         [ F in Player.FamilyArtificial ]: {
             new<S extends Coord.System>(
-                game: GameManager<any,S>, desc: Player.__CtorArgs<F>
+                game: GamepartManager<any,S>, desc: Player.__CtorArgs<F>
             ): ArtificialPlayer<S>;
         };
     }>;
@@ -99,7 +99,7 @@ export namespace ArtificialPlayer {
     );
 
     export const of = <S extends Coord.System>(
-        game: GameManager<any,S>,
+        game: GamepartManager<any,S>,
         playerDesc: Player.__CtorArgs<Player.FamilyArtificial>,
     ): ArtificialPlayer<S> => {
         const familyId = playerDesc.familyId as Player.FamilyArtificial;

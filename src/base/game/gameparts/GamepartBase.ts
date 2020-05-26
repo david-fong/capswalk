@@ -13,7 +13,7 @@ import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
 /**
  * Foundational parts of a Game that are not related to event handling.
  */
-export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
+export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly gameType: G;
 
@@ -57,7 +57,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             tileClass:  impl.tileClass,
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
-        }) as GameBase<G,S>["grid"];
+        }) as GamepartBase<G,S>["grid"];
         this.#onGameBecomeOver = impl.onGameBecomeOver;
 
         this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId);
@@ -121,7 +121,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * @param gameDesc -
      * @returns A bundle of the constructed players.
      */
-    private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameBase<G,S>["players"] {
+    private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GamepartBase<G,S>["players"] {
         type pCtorArgs = TU.RoArr<Player.CtorArgs>;
         const playerDescs: pCtorArgs
             = (gameDesc.playerDescs as pCtorArgs)
@@ -267,7 +267,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     a request to the ServerGame. */
     public abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
     protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
-
 }
-Object.freeze(GameBase);
-Object.freeze(GameBase.prototype);
+Object.freeze(GamepartBase);
+Object.freeze(GamepartBase.prototype);

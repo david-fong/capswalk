@@ -11,7 +11,7 @@ import { Chaser } from "./player/artificials/Chaser";
 /**
  *
  */
-export namespace IndexTasks {
+export namespace GameBootstrap {
 
     /**
      * This function should be imported and run at the beginning of each
@@ -54,4 +54,4 @@ export namespace IndexTasks {
     } }
     Object.freeze(INIT_CLASS_REGISTRIES);
 }
-Object.freeze(IndexTasks);
+Object.freeze(GameBootstrap);

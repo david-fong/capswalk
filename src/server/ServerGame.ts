@@ -10,10 +10,10 @@ import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 import { EventRecordEntry } from "game/events/EventRecordEntry";
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
-import { GameManager } from "game/__gameparts/Manager";
+import { GamepartManager } from "game/gameparts/GamepartManager";
 
-import { IndexTasks } from "game/IndexTasks";
-IndexTasks.INIT_CLASS_REGISTRIES();
+import { GameBootstrap } from "game/GameBootstrap";
+GameBootstrap.INIT_CLASS_REGISTRIES();
 
 
 type G = Game.Type.SERVER;
@@ -22,7 +22,7 @@ type G = Game.Type.SERVER;
  * Handles game-related events and attaches listeners to each client
  * socket.
  */
-export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
+export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
     public readonly namespace: io.Namespace;
 
@@ -57,6 +57,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
         // Start with a call to the super constructor:
         super(
             Game.Type.SERVER, {
+            onGameBecomeOver: () => {},
             tileClass: Tile,
             playerStatusCtor: PlayerStatus,
             }, gameDesc,

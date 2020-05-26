@@ -1,5 +1,5 @@
 import type { Coord, Tile } from "floor/Tile";
-import type { GameManager } from "game/__gameparts/Manager";
+import type { GamepartManager } from "game/gameparts/GamepartManager";
 
 import { Player } from "game/player/Player";
 import { ArtificialPlayer } from "../ArtificialPlayer";
@@ -20,7 +20,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     private readonly grid: Chaser<S>["game"]["grid"];
     #prevCoord: Coord<S>;
 
-    public constructor(game: GameManager<any,S>, desc: Player.__CtorArgs<"CHASER">) {
+    public constructor(game: GamepartManager<any,S>, desc: Player.__CtorArgs<"CHASER">) {
         super(game, desc);
         this.behaviour = Object.freeze(desc.familyArgs);
         this.grid = this.game.grid;

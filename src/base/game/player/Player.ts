@@ -3,7 +3,7 @@ import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { Player as __Player } from "defs/TypeDefs";
 import type { ArtificialPlayer } from "./ArtificialPlayer";
-import type { GameBase } from "game/__gameparts/Base";
+import type { GamepartBase } from "game/gameparts/GamepartBase";
 
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 import { PlayerSkeleton } from "./PlayerSkeleton";
@@ -31,7 +31,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     public requestInFlight: boolean;
 
 
-    public constructor(game: GameBase<any,S>, desc: Player.CtorArgs) {
+    public constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
 
         if (!(Player.Username.REGEXP.test(desc.username))) {
