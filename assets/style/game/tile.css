@@ -23,7 +23,12 @@
 
 .tile__char {
     background-color: var(--colour-tileBg);
-    overflow: hidden hidden;
+    overflow:       hidden hidden;
+    display:        grid;
+    align-items:    center;
+}
+.tile__char > * {
+    height:         initial;
 }
 .tile[data-health] .tile__char {
     border-color:     var(--colour-tileBd);

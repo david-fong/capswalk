@@ -41,7 +41,7 @@ export namespace OmHooks {
              * selection operator ("~").
              */
             POINTER_HB:     "tile__pointer-hitbox",
-            LANG_CHAR:      "tile__char",
+            LANG_CHAR_WRAP: "tile__char",
             LANG_SEQ:       "tile__seq",
         };
         export const Dataset = <const>{

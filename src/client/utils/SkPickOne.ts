@@ -21,12 +21,18 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
     #validity: boolean;
 
     public constructor() {
-        const baseElem = document.createElement("div");
-        baseElem.tabIndex = 0;
-        baseElem.classList.add(OmHooks.SkPickOne.Class.BASE);
-        baseElem.addEventListener("keydown", this.onKeyDown.bind(this));
-        baseElem.setAttribute("role", "listbox");
-        this.baseElem = baseElem;
+        const base = document.createElement("div");
+        base.tabIndex = 0;
+        base.classList.add(OmHooks.SkPickOne.Class.BASE);
+        base.addEventListener("keydown", this.onKeyDown.bind(this));
+        base.setAttribute("role", "listbox");
+        base.addEventListener("pointerenter", (ev) => {
+            window.requestAnimationFrame((time) => {
+                // Autofocus on pointerenter to hear keyboard events:
+                base.focus();
+            });
+        });
+        this.baseElem = base;
 
         this.options = [];
     }
@@ -34,8 +40,8 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
     public addOption(opt: O): void {
         this.options.push(opt);
         this.baseElem.appendChild(opt.baseElem);
-        opt.baseElem.addEventListener("hover", this.__onHoverOpt.bind(this, opt));
-        opt.baseElem.addEventListener("click", this.__onSelectOpt.bind(this, opt));
+        opt.baseElem.addEventListener("pointerenter", this.hoverOpt.bind(this, opt));
+        opt.baseElem.addEventListener("click", this.selectOpt.bind(this, opt, true));
         opt.__registerParent(this.onOptDisabledChange.bind(this));
     }
 
@@ -92,6 +98,9 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
             this.#validity = newValidity;
             // TODO.impl styling.
         }
+    }
+    private get validity(): boolean {
+        return this.#validity;
     }
 
     private onKeyDown(ev: KeyboardEvent): boolean {

@@ -13,7 +13,7 @@ type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
 // TODO.learn how to use the IndexDB web API.
 export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID> {
 
-    private readonly langSel: SetupScreen.LangPickOne;
+    protected readonly langSel: SetupScreen.LangPickOne;
 
     protected readonly nextBtn: HTMLButtonElement;
 

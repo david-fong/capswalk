@@ -10,7 +10,7 @@ html {
 
 body {
     margin:         0;
-    font-family:    "Trebuchet MS", "Lucida Sans Unicode";
+    font-family:    "Trebuchet MS", "Lucida Sans Unicode", "MS PGothic";
     font-weight:    bold;
     color:          var(--colour-mainFg);
     text-align:     center;

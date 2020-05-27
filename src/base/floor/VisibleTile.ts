@@ -35,17 +35,17 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             pthb.setAttribute("aria-hidden", "true");
             this.#baseElem.appendChild(pthb);
         } {
+            const charWrap = document.createElement("div");
+            charWrap.classList.add(OmHooks.Tile.Class.LANG_CHAR_WRAP);
             const charElem
                 = this.langCharElem
                 = document.createElement("div");
-            charElem.classList.add(
-                OmHooks.Tile.Class.LANG_CHAR,
-            );
-            this.#baseElem.appendChild(charElem);
+            charWrap.appendChild(charElem);
+            this.#baseElem.appendChild(charWrap);
         } {
             const seqElem
                 = this.langSeqElem
-                = document.createElement("kbd");
+                = document.createElement("div"); // Purposely don't use `kbd`.
             seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             seqElem.setAttribute("role", "tooltip");
             this.#baseElem.appendChild(seqElem);
@@ -67,7 +67,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         // It must go at least before the langChar element so that the
         // CSS can create a fading trail effect. It must go after the
         // hitbox so that it can be hidden to avoid covering the tooltip.
-        this.#baseElem.insertBefore(immigrantInfo.playerElem, this.langCharElem);
+        this.langCharElem.parentElement!.insertAdjacentElement("beforebegin", immigrantInfo.playerElem);
         this.langSeqElem.textContent = immigrantInfo.username;
     }
 
