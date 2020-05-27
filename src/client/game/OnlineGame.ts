@@ -1,22 +1,16 @@
 // Tell WebPack about the CSS chunk we want:
 require("assets/style/game/index.css");
 
-import * as io from "socket.io-client";
-
-import { Game }                 from "game/Game";
-import { Coord, VisibleTile }   from "floor/VisibleTile";
-import { VisibleGrid }          from "floor/VisibleGrid";
-import { VisibleGame }          from "./VisibleGame";
-
-import { Player }               from "game/player/Player";
-import { OperatorPlayer }       from "game/player/OperatorPlayer";
-import { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
+import {
+    applyMixins,
+    Game,
+    Coord, VisibleTile, VisibleGrid,
+    BrowserGameMixin,
+    Player, OperatorPlayer, VisiblePlayerStatus,
+} from "./BrowserGame";
 
 import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
-import { GameEvents }           from "game/__gameparts/Events";
-
-import { IndexTasks } from "game/IndexTasks";
-IndexTasks.INIT_CLASS_REGISTRIES();
+import { GamepartEvents }       from "game/gameparts/GamepartEvents";
 
 
 type G = Game.Type.ONLINE;
@@ -25,11 +19,11 @@ type G = Game.Type.ONLINE;
  *
  */
 export class OnlineGame<S extends Coord.System>
-extends GameEvents<G,S> implements VisibleGame {
+extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 
-    declare public currentOperator: NonNullable<GameEvents<G,S>["currentOperator"]>;
+    declare public readonly currentOperator: OperatorPlayer<S>;
 
-    public htmlElements: VisibleGame["htmlElements"];
+    declare public htmlElements: BrowserGameMixin.HtmlElements;
 
     public readonly socket: SocketIOClient.Socket;
 
@@ -49,19 +43,19 @@ extends GameEvents<G,S> implements VisibleGame {
      *      {@link Game.CtorArgs.EVENT_NAME}.
      */
     public constructor(
+        onGameBecomeOver: () => void,
         socket: SocketIOClient.Socket,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(
             Game.Type.ONLINE, {
+            onGameBecomeOver,
             tileClass: VisibleTile,
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,
         );
         this.socket = socket;
-        this.htmlElements = Object.freeze(<VisibleGame["htmlElements"]>{
-            gridImplElem: this.grid.baseElem,
-        });
+        this.__BrowserGame_Ctor();
 
         this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);
         this.socket.on(
@@ -77,37 +71,17 @@ extends GameEvents<G,S> implements VisibleGame {
         // TODO.impl Send ack?
         this.socket.on(
             Game.Serialization.EVENT_NAME,
-            (ser: Game.ResetSer<S>) => {
-                this.reset();
+            async (ser: Game.ResetSer<S>) => {
+                await this.reset();
                 this.deserializeResetState(ser);
             },
         );
-    }
-
-    /**
-     * @override
-     */
-    public async reset(): Promise<void> {
-        return super.reset();
-    }
-
-    protected __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S> {
-        return new OperatorPlayer(this, desc);
     }
 
     protected __createArtifPlayer(desc: Player.CtorArgs): Player<S> {
         return new Player(this, desc);
     }
 
-
-
-    public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
-        return setTimeout(callback, millis, args);
-    }
-
-    public cancelTimeout(handle: number): void {
-        clearTimeout(handle);
-    }
 
     /**
      * Normally calls {@link Game#processMoveExecute}. However, here,
@@ -130,7 +104,8 @@ extends GameEvents<G,S> implements VisibleGame {
     public processBubbleRequest(desc: PlayerActionEvent.Bubble): void {
         this.socket.emit(PlayerActionEvent.EVENT_NAME.Bubble, desc);
     }
-
 }
+export interface OnlineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
+applyMixins(OnlineGame, [BrowserGameMixin,]);
 Object.freeze(OnlineGame);
 Object.freeze(OnlineGame.prototype);

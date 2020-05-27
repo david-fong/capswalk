@@ -8,8 +8,6 @@ import { SkScreen } from "../SkScreen";
  */
 export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 
-    public readonly canBeInitialScreen = true;
-
     private readonly navElem: HTMLElement;
 
     /**
@@ -37,13 +35,29 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
                 (document.activeElement as HTMLElement).blur();
             }
         });
+        const addToNav = (elem: HTMLElement, desc: { text: string, cssClass: string; }): void => {
+            elem.classList.add(
+                OmHooks.General.Class.CENTER_CONTENTS,
+                OmHooks.General.Class.INPUT_GROUP_ITEM,
+                desc.cssClass,
+            );
+            elem.textContent = desc.text;
+            elem.addEventListener("pointerenter", () => {
+                window.requestAnimationFrame((time) => {
+                    elem.focus();
+                });
+                // TODO.impl play a keyboard click sound.
+                this.toplevel.sfx;
+            });
+            nav.appendChild(elem);
+        }
 
         // NOTE: Define array entries in order that their
         // buttons should be tabbed through via keyboard.
         (<const>[{
-            text:    "Offline Single-player", // TODO.impl this should go to the game setup screen.
+            text:    "Offline Single-player",
             cssClass: OMHC.NAV_PLAY_OFFLINE,
-            screenId: SkScreen.Id.PLAY_OFFLINE,
+            screenId: SkScreen.Id.SETUP_OFFLINE,
         },{
             text:    "Online Multi-player",
             cssClass: OMHC.NAV_PLAY_ONLINE,
@@ -98,19 +112,6 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             addToNav(a, desc);
         });
 
-        function addToNav(elem: HTMLElement, desc: { text: string, cssClass: string; }): void {
-            elem.classList.add(
-                OmHooks.General.Class.CENTER_CONTENTS,
-                OmHooks.General.Class.INPUT_GROUP_ITEM,
-                desc.cssClass,
-            );
-            elem.textContent = desc.text;
-            elem.addEventListener("pointerenter", () => {
-                elem.focus();
-                // TODO.impl play a keyboard click sound.
-            });
-            nav.appendChild(elem);
-        }
         this.baseElem.appendChild(nav);
     }
 }

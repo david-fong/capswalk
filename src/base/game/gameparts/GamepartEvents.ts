@@ -4,7 +4,7 @@ import { Game } from "../Game";
 import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
 import { EventRecordEntry } from "../events/EventRecordEntry";
 
-import { GameBase } from "./Base";
+import { GamepartBase } from "./GamepartBase";
 
 
 /**
@@ -29,7 +29,7 @@ import { GameBase } from "./Base";
  *
  * Updates the event record if the response is accepted.
  */
-export abstract class GameEvents<G extends Game.Type, S extends Coord.System> extends GameBase<G,S> {
+export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System> extends GamepartBase<G,S> {
 
     /**
      * All copies of the game should contain identical entries. That
@@ -212,5 +212,5 @@ export abstract class GameEvents<G extends Game.Type, S extends Coord.System> ex
     }
 
 }
-Object.freeze(GameEvents);
-Object.freeze(GameEvents.prototype);
+Object.freeze(GamepartEvents);
+Object.freeze(GamepartEvents.prototype);

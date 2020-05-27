@@ -1,18 +1,21 @@
 import { OmHooks } from "defs/OmHooks";
-import { Game } from 'game/Game';
-import type { Coord } from "floor/Tile";
+import type { Game } from "game/Game";
 import type { OnlineGame } from "../../game/OnlineGame";
 
-import type { SkScreen } from "../SkScreen";
+import { SkScreen } from "../SkScreen";
 import { __PlayScreen } from "./Play";
 
+
+type G = Game.Type.ONLINE;
 
 /**
  *
  */
-export class PlayOnlineScreen extends __PlayScreen<SkScreen.Id.PLAY_ONLINE> {
+export class PlayOnlineScreen extends __PlayScreen<SkScreen.Id.PLAY_ONLINE, G> {
 
-    public readonly canBeInitialScreen = false;
+    public get initialScreen(): SkScreen.Id {
+        return SkScreen.Id.GROUP_JOINER;
+    };
 
     declare public readonly currentGame: OnlineGame<any> | undefined;
 
@@ -31,18 +34,16 @@ export class PlayOnlineScreen extends __PlayScreen<SkScreen.Id.PLAY_ONLINE> {
     /**
      * @override
      */
-    protected async __createNewGame(): Promise<OnlineGame<any>> {
-        type G = Game.Type.ONLINE;
-        return new Promise((resolve, reject): void => {
-            // TODO.design should we use `.on` or `.once`?
-            this.toplevel.socket!.on(Game.CtorArgs.EVENT_NAME, async (gameCtorArgs: Game.CtorArgs<G,any>) => {
-                const game = new (await import(
-                    /* webpackChunkName: "game/online" */
-                    "../../game/OnlineGame"
-                )).OnlineGame(this.toplevel.socket!, gameCtorArgs);
-                resolve(game);
-            })
-        });
+    protected async __createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<OnlineGame<any>> {
+        const game = new (await import(
+            /* webpackChunkName: "game/online" */
+            "../../game/OnlineGame"
+        )).OnlineGame(
+            this.__onGameBecomeOver.bind(this),
+            this.toplevel.socket!,
+            ctorArgs,
+        );
+        return Promise.resolve(game);
     }
 }
 export namespace PlayOnlineScreen {

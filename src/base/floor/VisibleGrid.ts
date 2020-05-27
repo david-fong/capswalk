@@ -48,8 +48,8 @@ export class VisibleGridMixin<S extends Coord.System> {
      * Contains the implementation-dependant HTML representation of
      * the grid.
      */
-    public readonly baseElem: HTMLElement;
-    public readonly spotlightElems: TU.RoArr<HTMLElement>;
+    declare public readonly baseElem: HTMLElement;
+    declare public readonly spotlightElems: TU.RoArr<HTMLElement>;
 
     /**
      * Note: I would rather have this implementation go under the
@@ -73,5 +73,6 @@ export class VisibleGridMixin<S extends Coord.System> {
         (this.spotlightElems as TU.RoArr<HTMLElement>) = Object.freeze([ sslElem, lslElem, ]);
     }
 }
+export interface VisibleGridMixin<S extends Coord.System> {};
 Object.freeze(VisibleGridMixin);
 Object.freeze(VisibleGridMixin.prototype);

@@ -5,8 +5,23 @@
     align-items:    stretch;
     overflow-x:     hidden;
     overflow-y:     auto;
+
+    text-align:     start;
+}
+.sk-pick-one:focus {
+    outline:        none;
 }
 
 .sk-pick-one--opt {
-    overflow: hidden hidden;
+    overflow:   hidden hidden;
+    cursor:     default;
+    transition-property: opacity;
+    transition-duration: 0.35s;
+    transition-timing-function: ease-out;
+}
+.sk-pick-one--opt:not([aria-active-descendant="true"]):not([aria-selected="true"]) {
+    opacity:    0.4;
+}
+.sk-pick-one--opt[aria-selected="true"] {
+    text-decoration: underline;
 }

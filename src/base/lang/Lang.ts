@@ -159,7 +159,7 @@ export abstract class Lang extends __Lang {
     public simpleView(): object {
         return Object.assign(Object.create(null), {
             id: this.static.frontend.id,
-            displayName: this.static.frontend.display,
+            displayName: this.static.frontend.displayName,
             root: this.treeMap.simpleView(),
             numLeaves: this.leafNodes.length,
         });

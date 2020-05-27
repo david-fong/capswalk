@@ -1,3 +1,4 @@
+import { deepFreeze } from "defs/TypeDefs";
 
 /**
  * # DOM / CSSOM Hook Strings
@@ -40,7 +41,7 @@ export namespace OmHooks {
              * selection operator ("~").
              */
             POINTER_HB:     "tile__pointer-hitbox",
-            LANG_CHAR:      "tile__char",
+            LANG_CHAR_WRAP: "tile__char",
             LANG_SEQ:       "tile__seq",
         };
         export const Dataset = <const>{
@@ -119,6 +120,7 @@ export namespace OmHooks {
                     BASE:               "screen-play",
                     GRID_CONTAINER:     "screen-play--grid-container",
                     CONTROLS_BAR:       "screen-play--controls-bar",
+                    PLAYERS_BAR:        "screen-play--players-bar",
                 };
             }
             export namespace GroupJoiner {
@@ -142,13 +144,4 @@ export namespace OmHooks {
     }
 }
 Object.freeze(OmHooks.Player.Dataset.DOWNED); // String with properties.
-function deepFreeze(obj: any): void {
-    for (const key of Object.getOwnPropertyNames(obj)) {
-        const val = obj[key];
-        if (typeof val === "object") {
-            deepFreeze(val);
-        }
-    }
-    return Object.freeze(obj);
-}
 deepFreeze(OmHooks);

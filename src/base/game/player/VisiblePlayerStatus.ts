@@ -54,15 +54,9 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
      * @override
      */
     public __afterAllPlayersConstruction(): void {
-        const player = this.player;
-        const operatorTeamId = this.player.game.operators[0].teamId;
-        this.#baseElem.dataset[OmHooks.Player.Dataset.FACE_SWATCH]
-        = (player.isALocalOperator) ? "me"
-        : (player.teamId === operatorTeamId) ? "teammate" : "opponent";
-
         (this.__immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
             playerElem: this.#baseElem,
-            username: player.username,
+            username: this.player.username,
         });
     }
 
@@ -79,10 +73,22 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
         return this.__immigrantInfoCache;
     }
 
-    public __notifyBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
+    public __notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
         spotlightElems.forEach((elem) => {
             this.#baseElem.appendChild(elem);
         });
+        const currOperator = this.player.game.currentOperator;
+        const nextOperator = this.player;
+        if (nextOperator.teamId !== currOperator?.teamId) {
+            // Must use the above nullish coalesce operator for first call to setCurrentOperator.
+            nextOperator.game.players.forEach((otherPlayer) => {
+                const isTeammate = (otherPlayer.teamId === nextOperator.teamId);
+                (otherPlayer.status as VisiblePlayerStatus<S>).#baseElem.dataset[OmHooks.Player.Dataset.FACE_SWATCH]
+                    = (otherPlayer.isALocalOperator) ? (isTeammate ? "me" : "meOppo")
+                    : isTeammate ? "teammate" : "opponent";
+                ;
+            });
+        }
     }
 
     public visualBell(): void {
@@ -115,6 +121,28 @@ export namespace VisiblePlayerStatus {
         const arr = Array(numWiggles * 2).fill(pctX);
         arr.unshift(0); arr.push(0);
         return arr.map((n,i) => `translate(${(i%2)?n:-n}%)`);
+    }
+
+    /**
+     * Append the base element to the players bar in the play-screen.
+     * This is internally managed by the VisiblePlayerStatus class.
+     */
+    // TODO.impl Give each VisiblePlayerStatus one and update it within VisiblePlayerStatus' setters.
+    export class Card {
+        public readonly baseElem: HTMLElement;
+        readonly #nameElem:  HTMLElement;
+        readonly #scoreElem: HTMLElement;
+        readonly #teamElem:  HTMLElement;
+
+        public constructor(playerName: Player.Username) {
+            this.baseElem = document.createElement("div");
+            this.baseElem.setAttribute("label", "Player");
+
+            this.#nameElem = document.createElement("div");
+            const name = this.#nameElem;
+            name.textContent = playerName;
+            this.baseElem.appendChild(name);
+        }
     }
 }
 Object.freeze(VisiblePlayerStatus);

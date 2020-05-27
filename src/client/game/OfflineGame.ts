@@ -1,21 +1,15 @@
 // Tell WebPack about the CSS chunk we want:
 require("assets/style/game/index.css");
 
-import { Game }                 from "game/Game";
-import type { Coord }           from "floor/Tile";
-import { VisibleTile }          from "floor/VisibleTile";
-import { VisibleGrid }          from "floor/VisibleGrid";
-import { VisibleGame }          from "./VisibleGame";
+import {
+    applyMixins,
+    Game,
+    Coord, VisibleTile, VisibleGrid,
+    BrowserGameMixin,
+    Player, OperatorPlayer, VisiblePlayerStatus,
+} from "./BrowserGame";
 
-import type { Player }          from "game/player/Player";
-import { OperatorPlayer }       from "game/player/OperatorPlayer";
-import { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
-import { ArtificialPlayer }     from "game/player/ArtificialPlayer";
-
-import { GameManager } from "game/__gameparts/Manager";
-
-import { IndexTasks } from "game/IndexTasks";
-IndexTasks.INIT_CLASS_REGISTRIES();
+import { GamepartManager } from "game/gameparts/GamepartManager";
 
 
 type G = Game.Type.OFFLINE;
@@ -24,11 +18,11 @@ type G = Game.Type.OFFLINE;
  *
  */
 export class OfflineGame<S extends Coord.System>
-extends GameManager<G,S> implements VisibleGame {
+extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
 
-    declare public currentOperator: NonNullable<GameManager<G,S>["currentOperator"]>;
+    declare public currentOperator: NonNullable<GamepartManager<G,S>["currentOperator"]>;
 
-    public htmlElements: VisibleGame["htmlElements"];
+    public htmlElements: BrowserGameMixin.HtmlElements;
 
     /**
      * @override
@@ -41,26 +35,20 @@ extends GameManager<G,S> implements VisibleGame {
      * @param gameDesc -
      */
     public constructor(
+        onGameBecomeOver: () => void,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(
             Game.Type.OFFLINE, {
+            onGameBecomeOver,
             tileClass: VisibleTile,
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,
         );
-        this.htmlElements = Object.freeze(<VisibleGame["htmlElements"]>{
-            gridImplElem: this.grid.baseElem,
-        });
+        this.__BrowserGame_Ctor();
     }
 
-    protected __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S> {
-        return new OperatorPlayer<S>(this, desc);
-    }
-
-    protected __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>): ArtificialPlayer<S> {
-        return ArtificialPlayer.of(this, desc);
-    }
+    declare public readonly __createArtifPlayer: GamepartManager<G,S>["__createArtifPlayer"];
 
     public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
         return setTimeout(callback, millis, args);
@@ -69,6 +57,12 @@ extends GameManager<G,S> implements VisibleGame {
     public cancelTimeout(handle: number): void {
         clearTimeout(handle);
     }
+
+    // NOTE: We need to declare this for OfflineGame
+    // to be able to use this Mixin for some reason...
+    declare public readonly processBubbleRequest: GamepartManager<G,S>["processBubbleRequest"];
 }
+export interface OfflineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
+applyMixins(OfflineGame, [BrowserGameMixin,]);
 Object.freeze(OfflineGame);
 Object.freeze(OfflineGame.prototype);

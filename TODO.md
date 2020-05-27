@@ -14,10 +14,11 @@
 
 ### High Priority
 
+1. Style active-descendant in SkPickOne
+1. Implement game creation event communications for online game.
 1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay lighter.
-1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
-    - Also show scores very small on top of player faces.
+    - Also show scores (very small size) on top of player faces.
 1. Display the operator's current sequence buffer.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
@@ -35,8 +36,16 @@
 
 ### Low Priority
 
+1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 - Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
   - Also see [this](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
+  - Steps:
+    - Set .game-grid contain to content and make it control its sizing (ex. 70vmin).
+    - Put .game-grid-impl-body inside a new wrapper that is sized according to its content.
+    - Put the sizing wrapper inside a new "scroll" wrapper.
+      - Make this scrolling wrapper control padding instead of .game-grid.
+        - This is so that the scroll bars will hug the grid viewport.
+      - Size the scrolling wrapper according to its parent, which is .game-grid.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
@@ -108,7 +117,7 @@ https://opensource.org/licenses
 
 ### Dynamic imports
 
-Links no longer needed. Good things to know: both TypeScript and WebPack implement handling for dynamic imports. TypeScript will provide type information about the exports from a module, and WebPack will intercept the dynamic import to create a deferred-loading split chunk.
+Links no longer needed. Good things to know: both TypeScript and WebPack implement handling for dynamic imports. TypeScript will provide type information about the exports from a module, and WebPack will intercept the dynamic import to create a deferred-loading split chunk (A WebPack-internal mechanism).
 
 ### Web API's
 
@@ -126,6 +135,12 @@ Navigator.{keyboard,online,connection,language,languages,battery}
 https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
 https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API
 ```
+
+Presentation API:
+
+- [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Presentation_API)
+- [W3C](https://www.w3.org/TR/presentation-api)
+- [Google Example](https://googlechrome.github.io/samples/presentation-api/)
 
 ### Audio
 

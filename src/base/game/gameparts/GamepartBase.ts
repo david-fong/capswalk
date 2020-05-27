@@ -7,18 +7,19 @@ import type { VisibleGrid } from "floor/VisibleGrid";
 
 import { Player, PlayerStatus, Team } from "../player/Player";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
-import type { ArtificialPlayer } from "../player/ArtificialPlayer";
 import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
 
 /**
  * Foundational parts of a Game that are not related to event handling.
  */
-export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
+export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> {
 
     public readonly gameType: G;
 
     public readonly grid: G extends Game.Type.SERVER ? Grid<S> : VisibleGrid<S>;
+
+    readonly #onGameBecomeOver: () => void;
 
     public readonly langFrontend: Lang.FrontendDesc;
 
@@ -56,7 +57,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             tileClass:  impl.tileClass,
             coordSys:   desc.coordSys,
             dimensions: desc.gridDimensions,
-        }) as GameBase<G,S>["grid"];
+        }) as GamepartBase<G,S>["grid"];
+        this.#onGameBecomeOver = impl.onGameBecomeOver;
 
         this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId);
 
@@ -64,14 +66,11 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         this.__playerStatusCtor = impl.playerStatusCtor;
         this.players = this.createPlayers(desc);
 
-        this.operators = this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[];
-        this.currentOperator = this.operators[0];
-        if (this.operators.some((op) => op.teamId !== this.operators[0].teamId)) {
-            // Currently requiring this because the current visual colouring
-            // is initialized based on whether a player is on the operator's
-            // team. Otherwise, we'd have to re-colour when rotating operator.
-            throw new Error("All local operators must be on the same team.");
-        } {
+        this.operators = Object.freeze(
+            this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[]
+        );
+        this.setCurrentOperator(0);
+        {
             const teams: Array<Array<Player<S>>> = [];
             this.players.forEach((player) => {
                 if (!teams[player.teamId]) {
@@ -122,7 +121,7 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
      * @param gameDesc -
      * @returns A bundle of the constructed players.
      */
-    private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameBase<G,S>["players"] {
+    private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GamepartBase<G,S>["players"] {
         type pCtorArgs = TU.RoArr<Player.CtorArgs>;
         const playerDescs: pCtorArgs
             = (gameDesc.playerDescs as pCtorArgs)
@@ -141,9 +140,8 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
             }
         }));
     }
-    protected abstract __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S>;
-    protected abstract __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>):
-    (G extends Game.Type.Manager ? ArtificialPlayer<S> : Player<S>);
+    public abstract __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S>;
+    protected abstract __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>): Player<S>;
 
     public serializeResetState(): Game.ResetSer<S> {
         const csps: Array<Lang.CharSeqPair> = [];
@@ -183,16 +181,14 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     public get currentOperator(): OperatorPlayer<S> | undefined {
         return this.#currentOperator;
     }
-    /**
-     * Passing `undefined` or the current operator has no effect.
-     */
-    public set currentOperator(nextOperator: OperatorPlayer<S> | undefined) {
-        if (nextOperator
-            && this.currentOperator !== nextOperator
-            && this.operators.includes(nextOperator))
+    public setCurrentOperator(nextOperatorIndex: number): void {
+        const nextOperator = this.operators[nextOperatorIndex];
+        if (nextOperator && this.currentOperator !== nextOperator)
         {
+            nextOperator.__notifyWillBecomeCurrent();
             this.#currentOperator = nextOperator;
-            nextOperator.__abstractNotifyBecomeCurrent();
+            // IMPORTANT: The order of the above lines matters
+            // (hence the method name "notifyWillBecomeCurrent").
         }
     }
 
@@ -258,17 +254,12 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
         });
         this.__abstractStatusBecomeOver();
         this.#status = Game.Status.OVER;
+        this.#onGameBecomeOver();
         console.log("game is over!");
     }
     protected __abstractStatusBecomePlaying(): void {}
     protected __abstractStatusBecomePaused(): void {}
     protected __abstractStatusBecomeOver(): void {}
-
-
-    public abstract setTimeout(callback: Function, millis: number, ...args: any[])
-    : G extends Game.Type.SERVER ? NodeJS.Timeout : number;
-
-    public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
 
  /* The implementations are fully defined and publicly exposed by
     GameManager. These protected declarations higher up the class
@@ -276,7 +267,6 @@ export abstract class GameBase<G extends Game.Type, S extends Coord.System> {
     a request to the ServerGame. */
     public abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
     protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
-
 }
-Object.freeze(GameBase);
-Object.freeze(GameBase.prototype);
+Object.freeze(GamepartBase);
+Object.freeze(GamepartBase.prototype);

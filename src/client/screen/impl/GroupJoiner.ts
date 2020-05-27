@@ -11,8 +11,6 @@ import { SkScreen } from "../SkScreen";
  */
 export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
-    public readonly canBeInitialScreen = false;
-
     #state: GroupJoinerScreen.State;
 
     private readonly hostUrlInput:      HTMLInputElement;
@@ -414,7 +412,7 @@ export namespace GroupJoinerScreen {
                     value: "localhost:" + SkServer.DEFAULT_PORT,
                     description: "dev shortcut :)",
                 };
-            case "lan-server":
+            case "sk-server":
                 // Use case: production. Page resources are probably being
                 // served by the LAN server already. Suggest connecting
                 // Socket.IO to that same host. Just give origin (exclude

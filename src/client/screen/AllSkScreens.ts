@@ -20,7 +20,7 @@ import {   PlayOnlineScreen } from "./impl/PlayOnline";
  */
 export class AllSkScreens {
 
-    private readonly dict: {
+    public readonly dict: {
         readonly [SID in SkScreen.Id]: SkScreen<SID>;
     };
 
@@ -47,10 +47,11 @@ export class AllSkScreens {
             [ Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(Id.GROUP_LOBBY  ,t,p,f),
             [ Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(Id.PLAY_ONLINE  ,t,p,f),
         });
+        // note: "isr" as in "Initial Screen Request".
         const isrId = window.location.hash.slice(1) as SkScreen.Id;
-        const initialScreen = this.dict[isrId];
-        if (initialScreen && initialScreen.canBeInitialScreen) {
-            this.goToScreen(initialScreen.screenId, {});
+        const isr = this.dict[isrId];
+        if (isr && isr.initialScreen) {
+            this.goToScreen(isr.initialScreen, {});
         } else {
             this.goToScreen(SkScreen.Id.HOME, {});
         }

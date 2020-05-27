@@ -82,6 +82,10 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
 .player[data-face="me"] ~ .tile__char */ {
     background-color: var(--colour-pFaceMe);
 }
+.player[data-face="meOppo"] > .player__face/* ,
+.player[data-face="meOppo"] ~ .tile__char */ {
+    background-color: var(--colour-pFaceMeOppo);
+}
 .player[data-face="teammate"] > .player__face/* ,
 .player[data-face="teammate"] ~ .tile__char */ {
     background-color: var(--colour-pFaceTeammate);
