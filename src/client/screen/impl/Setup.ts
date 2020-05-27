@@ -15,15 +15,26 @@ export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID>
 
     private readonly langSel: SetupScreen.LangPickOne;
 
+    protected readonly nextBtn: HTMLButtonElement;
+
     /**
      * @override
      */
     protected __lazyLoad(): void {
         (this.langSel as SetupScreen.LangPickOne) = new SetupScreen.LangPickOne();
         this.baseElem.appendChild(this.langSel.baseElem);
+
+        const nextBtn
+            = (this.nextBtn as HTMLButtonElement)
+            = document.createElement("button");
+        nextBtn.textContent = "Next";
+        this.baseElem.appendChild(nextBtn);
     }
 }
 export namespace SetupScreen {
+    /**
+     *
+     */
     export class LangPickOne extends SkPickOne<LangPickOne.Option> {
         public constructor() {
             super();
@@ -52,7 +63,7 @@ export namespace SetupScreen {
             public constructor(desc: Lang.FrontendDesc) {
                 super();
                 this.desc = desc;
-                this.baseElem.textContent = desc.display;
+                this.baseElem.textContent = desc.displayName;
             }
         }
         Object.freeze(Option);

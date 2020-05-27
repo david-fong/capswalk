@@ -21,7 +21,11 @@ GameBootstrap.INIT_CLASS_REGISTRIES();
  *
  */
 export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> {
+
+    declare public readonly currentOperator: OperatorPlayer<S>;
+
     public readonly htmlElements: BrowserGameMixin.HtmlElements;
+
     public __BrowserGame_Ctor(): void {
         (this.htmlElements as BrowserGameMixin.HtmlElements) = Object.freeze({
             gridImpl: this.grid.baseElem,

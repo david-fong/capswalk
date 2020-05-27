@@ -1,13 +1,11 @@
 import { OmHooks } from "defs/OmHooks";
-import type { OfflineGame } from "../../game/OfflineGame";
-import type { OnlineGame }  from "../../game/OnlineGame";
+import { Game } from "game/Game";
+// import type { OfflineGame } from "../../game/OfflineGame";
+// import type { OnlineGame }  from "../../game/OnlineGame";
+import type { BrowserGameMixin } from "../../game/BrowserGame";
 
 import { SkScreen } from "../SkScreen";
-import { Game } from "../../game/BrowserGame";
 
-
-type Game = (OfflineGame<any> | OnlineGame<any>);
-type SID_options = SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE;
 
 /**
  * If and only if this screen is the current screen, then its
@@ -18,7 +16,11 @@ type SID_options = SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE;
  */
 // TODO.impl change the document title base on game state.
 // TODO.impl Allow users to change the spotlight radius via slider.
-export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID> {
+export abstract class __PlayScreen<
+    SID extends SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE,
+    G extends Game.Type.Browser,
+    Game extends BrowserGameMixin<G,any> = BrowserGameMixin<G,any>,
+> extends SkScreen<SID> {
 
     /**
      * Hosts the implementation-specific grid element, as well as some
@@ -50,7 +52,12 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
      * so there's no question that it can, under certain conditions be
      * undefined.
      */
-    #currentGame: Game | undefined;
+    // #currentGame: undefined | any extends G ? never : {[G_ in G]:
+    //       G extends Game.Type.OFFLINE ? OfflineGame<any>
+    //     : G extends Game.Type.ONLINE  ? OnlineGame<any>
+    //     : never
+    // }[G];
+    #currentGame: undefined | Game;
 
     protected abstract readonly wantsAutoPause: boolean;
     /**
@@ -114,7 +121,9 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
 
         // TODO.design Are there ways we can share more code between
         // implementations by passing common arguments?
-        this.#currentGame = await this.__createNewGame();
+        this.#currentGame = await this.__createNewGame(
+            args as (typeof args & Game.CtorArgs<G,any>)
+        );
         this.gridElem.addEventListener("keydown", this.#gridOnKeyDown);
         await this.currentGame!.reset();
         // ^Wait until resetting has finished before attaching the
@@ -158,7 +167,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
         return this.#currentGame;
     }
 
-    protected abstract async __createNewGame(): Promise<Game>;
+    protected abstract async __createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<Game>;
 
 
     /**
@@ -181,7 +190,7 @@ export abstract class __PlayScreen<SID extends SID_options> extends SkScreen<SID
             // If switching operator:
             const operators = game.operators;
             game.setCurrentOperator(
-                (operators.indexOf(game.currentOperator) + 1)
+                (1 + operators.indexOf(game.currentOperator))
                 % operators.length
             );
         } else {

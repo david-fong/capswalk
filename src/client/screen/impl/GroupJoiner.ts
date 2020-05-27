@@ -11,8 +11,6 @@ import { SkScreen } from "../SkScreen";
  */
 export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
-    public readonly canBeInitialScreen = false;
-
     #state: GroupJoinerScreen.State;
 
     private readonly hostUrlInput:      HTMLInputElement;

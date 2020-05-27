@@ -1,4 +1,5 @@
-import type { SkScreen } from "../SkScreen";
+import { SkScreen } from "../SkScreen";
+
 import { SetupScreen } from "./Setup";
 
 
@@ -7,7 +8,9 @@ import { SetupScreen } from "./Setup";
  */
 export class SetupOnlineScreen extends SetupScreen<SkScreen.Id.SETUP_ONLINE> {
 
-    public readonly canBeInitialScreen = false;
+    public get initialScreen(): SkScreen.Id {
+        return SkScreen.Id.GROUP_JOINER;
+    }
     ;
 }
 Object.freeze(SetupOnlineScreen);

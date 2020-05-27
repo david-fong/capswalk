@@ -1,4 +1,5 @@
 import { OmHooks } from "defs/OmHooks";
+import type { Game } from "game/Game";
 import type { AllSkScreens } from "./AllSkScreens";
 import type { TopLevel } from "../TopLevel";
 
@@ -23,9 +24,11 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     #hasLazyLoaded: boolean;
 
     /**
-     * This should be `false` if the screen requires connection to a game server.
+     * Returns this screen's own id by default.
      */
-    public abstract canBeInitialScreen: boolean;
+    public get initialScreen(): SkScreen.Id {
+        return this.screenId;
+    }
 
     /**
      * Implementations can use this as part of navigation button
@@ -150,7 +153,9 @@ export namespace SkScreen {
     export type CtorArgs<SID_group extends SkScreen.Id>
     = any extends SID_group ? never
     : { [SID in SID_group]:
-        /* : */ SID extends SkScreen.Id ? {}
+          SID extends SkScreen.Id.PLAY_OFFLINE ? Game.CtorArgs<Game.Type.OFFLINE,any>
+        : SID extends SkScreen.Id.PLAY_ONLINE  ? Game.CtorArgs<Game.Type.ONLINE,any>
+        : SID extends SkScreen.Id ? {}
         // ^Placeholder for screens that don't
         // require any entrance arguments.
         : never

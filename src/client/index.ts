@@ -1,7 +1,7 @@
 // Tell WebPack we want CSS:
 require("assets/style/initial/index.css");
 
-import { TopLevel } from '../client/TopLevel';
+import { TopLevel } from "./TopLevel";
 
 export { OmHooks } from "defs/OmHooks";
 

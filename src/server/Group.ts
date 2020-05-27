@@ -170,7 +170,7 @@ export class Group extends __Group {
                     teamId: socket.teamId!,
                     socketId: socket.id,
                     username: socket.username!, // checked above.
-                    noCheckGameOver: false,
+                    noCheckGameOver: false, // TODO.design add a Group.Socket field for this.
                     familyArgs: {},
                 });
             }),

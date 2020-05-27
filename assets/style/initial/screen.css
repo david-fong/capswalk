@@ -44,6 +44,7 @@ takes a long time to arrive. */
     opacity:        0.0;
 }
 #screen-texture {
+    background-size: 13.5rem;
     mix-blend-mode: overlay;
     background-color: #919191;
     background-image: url(../../images/textures/cheap_diagonal_fabric.png);

@@ -14,12 +14,11 @@
 
 ### High Priority
 
-1. Rename `IndexTasks` to `GameBootstrap` and the `__gameparts` classes to start with `Gameparts`.
-    - This will probably require manually deleting the old-named versions from the gh-pages branch.
+1. Style active-descendant in SkPickOne
+1. Implement game creation event communications for online game.
 1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay lighter.
-1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
-    - Also show scores very small on top of player faces.
+    - Also show scores (very small size) on top of player faces.
 1. Display the operator's current sequence buffer.
 1. Fill in implementation of bubble event handler.
 1. Design decision: Change bubble mechanism:
@@ -37,6 +36,7 @@
 
 ### Low Priority
 
+1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 - Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
   - Also see [this](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
   - Steps:

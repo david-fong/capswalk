@@ -35,8 +35,8 @@
         1fr;
     }
     .screen-play--controls-bar {
-        grid-auto-flow:     column;
-        grid-auto-columns:  var(--track-size);
+        /* grid-auto-flow:     column; */
+        grid-template-columns:  repeat(3, var(--track-size));
         grid-template-rows: var(--track-size);
     }
 }

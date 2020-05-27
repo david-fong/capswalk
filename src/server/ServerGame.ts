@@ -5,7 +5,6 @@ import { Game } from "game/Game";
 import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
 import { Player, PlayerStatus } from "game/player/Player";
-import { ArtificialPlayer } from "game/player/ArtificialPlayer";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
 import { PlayerActionEvent } from "game/events/PlayerActionEvent";

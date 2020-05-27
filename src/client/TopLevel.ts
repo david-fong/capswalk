@@ -1,4 +1,7 @@
-import { OmHooks }      from "defs/OmHooks";
+import { OmHooks } from "defs/OmHooks";
+import type { BrowserGameMixin } from "./game/BrowserGame";
+import type { __PlayScreen } from "./screen/impl/Play";
+
 import { AllSkScreens } from "./screen/AllSkScreens";
 import { BgMusic }      from "./audio/BgMusic";
 import { SoundEffects } from "./audio/SoundEffects";
@@ -70,6 +73,14 @@ export class TopLevel {
                 resolve(io);
             };
         });
+    }
+
+    /**
+     * For debugging purposes- especially in the browser console.
+     */
+    public get game(): BrowserGameMixin<any,any> | undefined {
+        return (this.allScreens.dict.playOffline as __PlayScreen<any,any>).currentGame
+            || (this.allScreens.dict.playOnline  as __PlayScreen<any,any>).currentGame;
     }
 }
 export namespace TopLevel {

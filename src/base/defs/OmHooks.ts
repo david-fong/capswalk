@@ -1,3 +1,4 @@
+import { deepFreeze } from "defs/TypeDefs";
 
 /**
  * # DOM / CSSOM Hook Strings
@@ -143,13 +144,4 @@ export namespace OmHooks {
     }
 }
 Object.freeze(OmHooks.Player.Dataset.DOWNED); // String with properties.
-function deepFreeze(obj: any): void {
-    for (const key of Object.getOwnPropertyNames(obj)) {
-        const val = obj[key];
-        if (typeof val === "object") {
-            deepFreeze(val);
-        }
-    }
-    return Object.freeze(obj);
-}
 deepFreeze(OmHooks);
