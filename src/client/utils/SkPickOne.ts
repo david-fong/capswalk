@@ -10,7 +10,7 @@ import { OmHooks } from "defs/OmHooks";
  * https://www.w3.org/TR/wai-aria-1.1/#listbox
  */
 // TODO.learn https://www.w3.org/TR/wai-aria-1.1/#managingfocus
-export abstract class SkPickOne<O extends SkPickOne.__Option> {
+export abstract class SkPickOne<O extends SkPickOne._Option> {
 
     public readonly baseElem: HTMLElement;
 
@@ -42,7 +42,7 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
         this.baseElem.appendChild(opt.baseElem);
         opt.baseElem.addEventListener("pointerenter", this.hoverOpt.bind(this, opt));
         opt.baseElem.addEventListener("click", this.selectOpt.bind(this, opt, true));
-        opt.__registerParent(this.onOptDisabledChange.bind(this));
+        opt._registerParent(this.onOptDisabledChange.bind(this));
     }
 
     public hoverOpt(opt: O): void {
@@ -53,7 +53,7 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
             this.hoveredOpt.baseElem.setAttribute("aria-active-descendant", "true");
         }
     }
-    protected abstract __onHoverOpt(opt: O): void;
+    protected abstract _onHoverOpt(opt: O): void;
 
     public selectOpt(opt: O, doCallback: boolean = true): void {
         if (!opt) throw new Error("opt must be defined");
@@ -66,7 +66,7 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
             this.#confirmedOpt = opt;
             this.confirmedOpt.baseElem.setAttribute("aria-selected", "true");
             if (doCallback) {
-                this.__onSelectOpt(opt);
+                this._onSelectOpt(opt);
             }
         }
     }
@@ -77,7 +77,7 @@ export abstract class SkPickOne<O extends SkPickOne.__Option> {
      * description element (use described-by) that is made visible
      * in a separate pane (use aria-controls) when selected.
      */
-    protected abstract __onSelectOpt(opt: O): void;
+    protected abstract _onSelectOpt(opt: O): void;
 
     public get confirmedOpt(): O {
         return this.#confirmedOpt;
@@ -136,18 +136,18 @@ export namespace SkPickOne {
      *
      * https://www.w3.org/TR/wai-aria-1.1/#option
      */
-    export abstract class __Option {
+    export abstract class _Option {
         public readonly baseElem: HTMLElement;
         #disabled: boolean;
-        #notifyParentOfDisabledChange: (me: __Option) => void;
+        #notifyParentOfDisabledChange: (me: _Option) => void;
         public constructor() {
             const base = this.baseElem = document.createElement("div");
             base.classList.add(OmHooks.SkPickOne.Class.OPT_BASE);
             base.setAttribute("role", "option");
             this.#disabled = false;
         }
-        public __registerParent<__O extends __Option>(onDisabledChange: (me: __O) => void): void {
-            this.#notifyParentOfDisabledChange = onDisabledChange as (me: __Option) => void;
+        public _registerParent<_O extends _Option>(onDisabledChange: (me: _O) => void): void {
+            this.#notifyParentOfDisabledChange = onDisabledChange as (me: _Option) => void;
         }
         public get disabled(): boolean {
             return this.#disabled;

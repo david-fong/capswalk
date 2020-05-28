@@ -52,14 +52,14 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      */
     protected abstract computeNextMovementTimer(): number;
 
-    public __abstractNotifyThatGameStatusBecamePlaying(): void {
+    public _abstractNotifyThatGameStatusBecamePlaying(): void {
         this.movementContinueWithInitialDelay();
     }
-    public __abstractNotifyThatGameStatusBecamePaused(): void {
+    public _abstractNotifyThatGameStatusBecamePaused(): void {
         this.game.cancelTimeout(this.scheduledMovementCallbackId);
         this.scheduledMovementCallbackId = undefined!;
     }
-    public __abstractNotifyThatGameStatusBecameOver(): void {
+    public _abstractNotifyThatGameStatusBecameOver(): void {
         this.game.cancelTimeout(this.scheduledMovementCallbackId);
         this.scheduledMovementCallbackId = undefined!;
     }
@@ -85,10 +85,10 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
 export namespace ArtificialPlayer {
 
-    export declare const __Constructors: Readonly<{
+    export declare const _Constructors: Readonly<{
         [ F in Player.FamilyArtificial ]: {
             new<S extends Coord.System>(
-                game: GamepartManager<any,S>, desc: Player.__CtorArgs<F>
+                game: GamepartManager<any,S>, desc: Player._CtorArgs<F>
             ): ArtificialPlayer<S>;
         };
     }>;
@@ -100,10 +100,10 @@ export namespace ArtificialPlayer {
 
     export const of = <S extends Coord.System>(
         game: GamepartManager<any,S>,
-        playerDesc: Player.__CtorArgs<Player.FamilyArtificial>,
+        playerDesc: Player._CtorArgs<Player.FamilyArtificial>,
     ): ArtificialPlayer<S> => {
         const familyId = playerDesc.familyId as Player.FamilyArtificial;
-        return new (__Constructors[familyId])(game, playerDesc);
+        return new (_Constructors[familyId])(game, playerDesc);
     };
 }
-// ArtificialPlayer gets frozen in PostInit after __Constructors get initialized.
+// ArtificialPlayer gets frozen in PostInit after _Constructors get initialized.

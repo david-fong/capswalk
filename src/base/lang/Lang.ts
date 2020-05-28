@@ -1,4 +1,4 @@
-import { Lang as __Lang } from "defs/TypeDefs";
+import { Lang as _Lang } from "defs/TypeDefs";
 
 import { LangSeqTreeNode } from "lang/LangSeqTreeNode";
 
@@ -19,7 +19,7 @@ import { LangSeqTreeNode } from "lang/LangSeqTreeNode";
  * See the readme in [the implementations folder](./impl/readme.md)
  * for a guide on writing implementations of this class.
  */
-export abstract class Lang extends __Lang {
+export abstract class Lang extends _Lang {
 
     /**
      * The abstract, static object for this language.
@@ -182,7 +182,7 @@ export namespace Lang {
      * character. It is completely unique in its language, and has a
      * single corresponding sequence (string) typeable on a keyboard.
      */
-    export type Char = __Lang.Char;
+    export type Char = _Lang.Char;
 
     /**
      * A sequence of characters each matching {@link SEQ_REGEXP}
@@ -190,13 +190,13 @@ export namespace Lang {
      * and a `LangChar`. The immediate interface is through the `Lang`
      * implementation's {@link Lang#remapKey} method.
      */
-    export type Seq = __Lang.Seq;
+    export type Seq = _Lang.Seq;
 
     /**
      * A key-value pair containing a `LangChar` and its corresponding
      * `LangSeq`.
      */
-    export type CharSeqPair = __Lang.CharSeqPair;
+    export type CharSeqPair = _Lang.CharSeqPair;
     export namespace CharSeqPair {
         /**
          * A map from written characters to their corresponding typeable
@@ -209,9 +209,9 @@ export namespace Lang {
         export type WeightedForwardMap = Record<Lang.Char, Readonly<{seq: Lang.Seq, weight: number,}>>;
     }
 
-    export type BalancingScheme = __Lang.BalancingScheme;
+    export type BalancingScheme = _Lang.BalancingScheme;
 
-    export type FrontendDesc = __Lang.FrontendDesc;
+    export type FrontendDesc = _Lang.FrontendDesc;
 }
 Object.freeze(Lang);
 Object.freeze(Lang.prototype);

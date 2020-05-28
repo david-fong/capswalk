@@ -20,7 +20,7 @@ export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID>
     /**
      * @override
      */
-    protected __lazyLoad(): void {
+    protected _lazyLoad(): void {
         (this.langSel as SetupScreen.LangPickOne) = new SetupScreen.LangPickOne();
         this.baseElem.appendChild(this.langSel.baseElem);
 
@@ -45,10 +45,10 @@ export namespace SetupScreen {
             // Below line is a placeholder.
             this.selectOpt(this.options[0]);
         }
-        public __onHoverOpt(opt: LangPickOne.Option): void {
+        public _onHoverOpt(opt: LangPickOne.Option): void {
             ;
         }
-        public __onSelectOpt(opt: LangPickOne.Option): void {
+        public _onSelectOpt(opt: LangPickOne.Option): void {
             ;
         }
     }
@@ -56,7 +56,7 @@ export namespace SetupScreen {
         /**
          *
          */
-        export class Option extends SkPickOne.__Option {
+        export class Option extends SkPickOne._Option {
 
             public readonly desc: Lang.FrontendDesc;
 

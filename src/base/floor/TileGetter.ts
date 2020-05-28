@@ -27,13 +27,13 @@ export class TileGetter<S extends CoordSys, A extends Arguments<S>> {
     public constructor(protected readonly source: TileGetter.Source<S,A>) { }
 
     public at(...args: A): Tile<S> {
-        return this.source.__getTileAt(...args);
+        return this.source._getTileAt(...args);
     }
     public destsFrom(...args: A): Query<S> {
-        return new Query(this.source.__getTileDestsFrom(...args));
+        return new Query(this.source._getTileDestsFrom(...args));
     }
     public sourcesTo(...args: A): Query<S> {
-        return new Query(this.source.__getTileSourcesTo(...args));
+        return new Query(this.source._getTileSourcesTo(...args));
     }
 }
 
@@ -42,11 +42,11 @@ export namespace TileGetter {
      * A Tile should always be a source-to and destination-from itself.
      */
     export interface Source<S extends CoordSys, A extends Arguments<S> = [Coord.Bare<S>]> {
-        __getTileAt(...args: A): Tile<S>;
+        _getTileAt(...args: A): Tile<S>;
         // NOTE: do we need to add an optional argument for range?
         // If so, document that it must default to `1` if unspecified.
-        __getTileDestsFrom(...args: A): Array<Tile<S>>;
-        __getTileSourcesTo(...args: A): Array<Tile<S>>;
+        _getTileDestsFrom(...args: A): Array<Tile<S>>;
+        _getTileSourcesTo(...args: A): Array<Tile<S>>;
     }
 }
 Object.freeze(TileGetter);

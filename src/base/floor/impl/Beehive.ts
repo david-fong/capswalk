@@ -155,15 +155,15 @@ export namespace Beehive {
         }
 
 
-        public __getTileAt(coord: Coord.Bare): Tile<S> {
+        public _getTileAt(coord: Coord.Bare): Tile<S> {
             return undefined!;
         }
 
-        public __getTileDestsFrom(coord: Coord.Bare): Array<Tile<S>> {
+        public _getTileDestsFrom(coord: Coord.Bare): Array<Tile<S>> {
             return undefined!;
         }
 
-        public __getTileSourcesTo(coord: Coord.Bare): Array<Tile<S>> {
+        public _getTileSourcesTo(coord: Coord.Bare): Array<Tile<S>> {
             return undefined!;
         }
 
@@ -208,7 +208,7 @@ export namespace Beehive {
                 super(desc);
                 const domGrid: HTMLElement = undefined!;
                 // TODO.impl Beehive VisibleGrid ctor.
-                this.__VisibleGrid_super(desc, domGrid);
+                this._superVisibleGrid(desc, domGrid);
             }
         }
         export interface Visible extends VisibleGridMixin<S> { };

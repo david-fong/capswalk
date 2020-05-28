@@ -41,7 +41,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     private prevCoord: Coord<S>;
 
 
-    public constructor(game: GamepartBase<any,S>, desc: Player.__CtorArgs<"HUMAN">) {
+    public constructor(game: GamepartBase<any,S>, desc: Player._CtorArgs<"HUMAN">) {
         super(game, desc);
         this.langRemappingFunc = this.game.langFrontend.remapFunc;
     }
@@ -157,8 +157,8 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         super.moveTo(dest);
     }
 
-    public __notifyWillBecomeCurrent(): void {
-        this.status.__notifyWillBecomeCurrent(this.game.grid.spotlightElems);
+    public _notifyWillBecomeCurrent(): void {
+        this.status._notifyWillBecomeCurrent(this.game.grid.spotlightElems);
     }
 
 

@@ -1,6 +1,6 @@
 import { OmHooks } from "defs/OmHooks";
 import type { BrowserGameMixin } from "./game/BrowserGame";
-import type { __PlayScreen } from "./screen/impl/Play";
+import type { _PlayScreen } from "./screen/impl/Play";
 
 import { AllSkScreens } from "./screen/AllSkScreens";
 import { BgMusic }      from "./audio/BgMusic";
@@ -69,9 +69,10 @@ export class TopLevel {
         return new Promise<typeof import("socket.io-client")>((resolve, reject): void => {
             const script = document.getElementById("socket.io")!;
             if (io) return resolve(io);
-            script.onload = () => {
+            script.onload = (): void => {
                 resolve(io);
             };
+            return;
         });
     }
 
@@ -79,8 +80,8 @@ export class TopLevel {
      * For debugging purposes- especially in the browser console.
      */
     public get game(): BrowserGameMixin<any,any> | undefined {
-        return (this.allScreens.dict.playOffline as __PlayScreen<any,any>).currentGame
-            || (this.allScreens.dict.playOnline  as __PlayScreen<any,any>).currentGame;
+        return (this.allScreens.dict.playOffline as _PlayScreen<any,any>).currentGame
+            ?? (this.allScreens.dict.playOnline  as _PlayScreen<any,any>).currentGame;
     }
 }
 export namespace TopLevel {

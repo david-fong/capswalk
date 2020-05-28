@@ -107,7 +107,7 @@ export namespace Korean {
                 "ㅔ": "c", "ㅗ": "v", "ㅜ": "b", // z-row
                 "ㅒ": "G",
                 // Things that don't have dedicated keys:
-                "ㅘ": "vf", "ㅙ": "vr", "ㅚ": "vd", "ㅝ": "bt", "ㅞ": "bc", "ㅟ": "bd"
+                "ㅘ": "vf", "ㅙ": "vr", "ㅚ": "vd", "ㅝ": "bt", "ㅞ": "bc", "ㅟ": "bd",
             },
             // Initials are found on the right.
             INITIALS: {

@@ -13,12 +13,12 @@ type SID = SkScreen.Id.SETUP_OFFLINE;
  */
 export class SetupOfflineScreen extends SetupScreen<SID> {
 
-    public __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+    public _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
         this.nextBtn.onclick = (ev) => {
             const ctorArgs = Object.assign({}, SetupOfflineScreen.DEFAULT_PRESET);
             (ctorArgs.langId as string) = this.langSel.confirmedOpt.desc.id;
             this.requestGoToScreen(SkScreen.Id.PLAY_OFFLINE, ctorArgs);
-        }
+        };
         return Promise.resolve();
     }
 }

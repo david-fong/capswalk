@@ -37,13 +37,13 @@
         "eqeqeq": ["error", "smart"],
         "consistent-return": "error",
 
-        "getter-return": "error",
-        "array-callback-return": "error",
+        "getter-return": ["error"],
+        "array-callback-return": ["error"],
         "no-invalid-regexp": ["error", { "allowConstructorFlags": ["u", "y"] }],
-        "no-invalid-this": "error",
-        "no-unreachable": "error",
-        "no-useless-catch": "error",
-        "no-throw-literal": "error",
+        "no-invalid-this": ["error"],
+        "no-unreachable": ["error"],
+        "no-useless-catch": ["error"],
+        "no-throw-literal": ["error"],
 
         "yoda": ["error", "never", { "exceptRange": true }],
         "no-trailing-spaces": ["error", { "ignoreComments": true }],
@@ -63,13 +63,29 @@
         }],
 
         // typescript linting:
-        "@typescript-eslint/explicit-member-accessibility": ["error"],
-        "@typescript-eslint/prefer-readonly": ["warn"],
-        "@typescript-eslint/explicit-function-return-type": "error",
         "@typescript-eslint/no-misused-new": ["error"],
+        "@typescript-eslint/prefer-readonly": ["warn"],
+        "@typescript-eslint/explicit-member-accessibility": ["error"],
         "@typescript-eslint/adjacent-overload-signatures": ["error"],
-        "camelcase": "error",
-        "@typescript-eslint/class-name-casing": ["error", { "allowUnderscorePrefix": true }],
+        "@typescript-eslint/explicit-function-return-type": ["error"],
+        // TODO.learn https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/naming-convention.md
+        "@typescript-eslint/naming-convention": ["error", {
+            "selector": "variableLike",
+            "format": ["camelCase", "PascalCase", "UPPER_CASE"],
+            "leadingUnderscore": "allow"
+        },{
+            "selector": "memberLike",
+            "format": ["camelCase", "UPPER_CASE"],
+            "leadingUnderscore": "allow"
+        },{
+            "selector": "typeLike",
+            "format": ["PascalCase"],
+            "leadingUnderscore": "allow"
+        },{
+            "selector": "enumMember",
+            "format": ["UPPER_CASE"]
+        }],
+
         "semi": "error"
     },
     "overrides": [
@@ -80,7 +96,6 @@
                 "jsdoc/require-param-type": 0,
                 "jsdoc/require-returns-type": 0,
                 "camelcase": "off",
-                "@typescript-eslint/camelcase": ["error", { "properties": "always" }],
                 "semi": "off",
                 "@typescript-eslint/semi": ["error", "always"],
                 "@typescript-eslint/explicit-function-return-type": ["error", { "allowExpressions": true }]

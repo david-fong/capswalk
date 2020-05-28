@@ -115,21 +115,21 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
     /**
      * @override
      */
-    public abstract __getTileAt(coord: Coord.Bare<S>): Tile<S>;
+    public abstract _getTileAt(coord: Coord.Bare<S>): Tile<S>;
 
     /**
      * @override
      */
-    public abstract __getTileDestsFrom(coord: Coord.Bare<S>): Array<Tile<S>>;
+    public abstract _getTileDestsFrom(coord: Coord.Bare<S>): Array<Tile<S>>;
 
     /**
      * @override
      */
-    public abstract __getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
+    public abstract _getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
 
     /**
      * The returned value must be consistent with results from the
-     * methods `__getTileDestsFrom` and `__getTileSourcesTo`.
+     * methods `_getTileDestsFrom` and `_getTileSourcesTo`.
      *
      * @param source -
      * @param dest -
@@ -219,7 +219,7 @@ export namespace Grid {
     };
 
     // Each implementation must register itself into this dictionary.
-    export declare const __Constructors: {
+    export declare const _Constructors: {
         readonly [ S in Coord.System ]: Grid.ClassIf<S>
     };
 
@@ -233,7 +233,7 @@ export namespace Grid {
         // Note: At the time of writing this, separating this into
         // two lines is necessary (otherwise Typescript will feel
         // overwhelmed)
-        const ctor = __Constructors[coordSys];
+        const ctor = _Constructors[coordSys];
         return ctor as unknown as ClassIf<S>;
     };
 
@@ -250,4 +250,4 @@ export namespace Grid {
     }>;
 
 }
-// Grid gets frozen in PostInit after __Constructors get initialized.
+// Grid gets frozen in PostInit after _Constructors get initialized.

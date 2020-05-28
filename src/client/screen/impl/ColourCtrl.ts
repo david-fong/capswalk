@@ -20,7 +20,7 @@ export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
     /**
      * @override
      */
-    protected __lazyLoad(): void {
+    protected _lazyLoad(): void {
         const sel = new ColourCtrlScreen.PickOne();
         this.baseElem.appendChild(sel.baseElem);
         (this.sel as ColourCtrlScreen.PickOne) = sel;
@@ -55,11 +55,11 @@ export namespace ColourCtrlScreen {
             this.selectOpt(this.getOptById("snakey")!, false);
         }
 
-        public __onHoverOpt(opt: O): void {
+        public _onHoverOpt(opt: O): void {
             ;
         }
 
-        public __onSelectOpt(opt: O): void {
+        public _onSelectOpt(opt: O): void {
             localStorage.setItem(
                 StorageHooks.LocalKeys.COLOUR_ID,
                 opt.desc.id,
@@ -88,7 +88,7 @@ export namespace ColourCtrlScreen {
         /**
          *
          */
-        export class Option extends SkPickOne.__Option {
+        export class Option extends SkPickOne._Option {
 
             public readonly desc: Colour.Scheme;
 

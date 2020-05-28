@@ -4,7 +4,7 @@ import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 import type { Player } from "game/player/Player";
 
-import { Group as __Group } from "defs/OnlineDefs";
+import { Group as _Group } from "defs/OnlineDefs";
 
 export { ServerGame } from "./ServerGame";
 
@@ -13,7 +13,7 @@ export { ServerGame } from "./ServerGame";
  * Manages communication between the server, and clients who play in
  * the same game together.
  */
-export class Group extends __Group {
+export class Group extends _Group {
 
     public readonly namespace: io.Namespace;
     public readonly name: Group.Name;
@@ -184,12 +184,12 @@ export class Group extends __Group {
     }
 }
 export namespace Group {
-    export type Socket      = __Group.Socket.ServerSide;
-    export type Name        = __Group.Name;
-    export type Passphrase  = __Group.Passphrase;
+    export type Socket      = _Group.Socket.ServerSide;
+    export type Name        = _Group.Name;
+    export type Passphrase  = _Group.Passphrase;
     export namespace Query {
-        export type RequestCreate   = __Group.Exist.RequestCreate;
-        export type NotifyStatus    = __Group.Exist.NotifyStatus;
+        export type RequestCreate   = _Group.Exist.RequestCreate;
+        export type NotifyStatus    = _Group.Exist.NotifyStatus;
     }
 }
 Object.freeze(Group);

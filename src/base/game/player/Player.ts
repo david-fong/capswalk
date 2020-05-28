@@ -1,7 +1,7 @@
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
-import type { Player as __Player } from "defs/TypeDefs";
+import type { Player as _Player } from "defs/TypeDefs";
 import type { ArtificialPlayer } from "./ArtificialPlayer";
 import type { GamepartBase } from "game/gameparts/GamepartBase";
 
@@ -52,9 +52,9 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.requestInFlight = false;
     }
 
-    public __abstractNotifyThatGameStatusBecamePlaying(): void {}
-    public __abstractNotifyThatGameStatusBecamePaused():  void {}
-    public __abstractNotifyThatGameStatusBecameOver():    void {}
+    public _abstractNotifyThatGameStatusBecamePlaying(): void {}
+    public _abstractNotifyThatGameStatusBecamePaused():  void {}
+    public _abstractNotifyThatGameStatusBecameOver():    void {}
 
 
     /**
@@ -98,10 +98,10 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
 export namespace Player {
 
-    export type Family = __Player.Family;
+    export type Family = _Player.Family;
     export type FamilyArtificial = Exclude<Player.Family, typeof Player.Family.HUMAN>;
 
-    export type Id = __Player.Id;
+    export type Id = _Player.Id;
 
     export type SocketId = string;
 
@@ -110,7 +110,7 @@ export namespace Player {
      * by the game manager. It can be used to attack enemy players, or
      * to heal teammates.
      */
-    export type Health = __Player.Health;
+    export type Health = _Player.Health;
 
     export type Username = string;
 
@@ -128,15 +128,15 @@ export namespace Player {
         export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
     }
 
-    export type MoveType = __Player.MoveType;
+    export type MoveType = _Player.MoveType;
 
     /**
      * # Player Constructor Arguments
      */
-    export type CtorArgs = __CtorArgs<Player.Family>;
-    export type __CtorArgs<F_group extends Player.Family> = any extends F_group ? never
+    export type CtorArgs = _CtorArgs<Player.Family>;
+    export type _CtorArgs<F_group extends Player.Family> = any extends F_group ? never
     : { [F in F_group]: F extends Player.Family
-        ? (CtorArgs.__PreIdAssignment<F> & Readonly<{
+        ? (CtorArgs._PreIdAssignment<F> & Readonly<{
             playerId: Player.Id;
         }>)
         : never
@@ -144,8 +144,8 @@ export namespace Player {
 
     export namespace CtorArgs {
 
-        export type PreIdAssignment = __PreIdAssignment<Player.Family>;
-        export type __PreIdAssignment<F_group extends Player.Family> = any extends F_group ? never
+        export type PreIdAssignment = _PreIdAssignment<Player.Family>;
+        export type _PreIdAssignment<F_group extends Player.Family> = any extends F_group ? never
         : { [F in F_group]: F extends Player.Family
             ? (Readonly<{
                 isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;

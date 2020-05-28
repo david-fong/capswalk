@@ -60,11 +60,11 @@ export class Tile<S extends Coord.System> {
     /**
      * Any overrides must make a supercall to this implementation.
      *
-     * Must be followed by a call to `PlayerStatus.__onAfterOccupy()`.
+     * Must be followed by a call to `PlayerStatus._onAfterOccupy()`.
      *
      * @param playerId -
      */
-    public __setOccupant(
+    public _setOccupant(
         playerId: Player.Id,
         immigrantInfo: Tile.VisibleImmigrantInfo | undefined,
     ): void {

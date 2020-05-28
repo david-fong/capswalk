@@ -21,6 +21,20 @@ body {
     cursor:         not-allowed;
 }
 
+::-webkit-scrollbar {
+    width:  8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background:     var(--colour-tileBd);
+}
+::-webkit-scrollbar-corner {
+    visibility:     hidden;
+}
+
 table {
     border-spacing: 0;
 }

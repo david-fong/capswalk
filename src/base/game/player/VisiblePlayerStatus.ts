@@ -13,7 +13,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     readonly #baseElem: HTMLElement;
     readonly #visualBellAnimations: Animation[];
 
-    private readonly __immigrantInfoCache: Tile.VisibleImmigrantInfo;
+    private readonly _immigrantInfoCache: Tile.VisibleImmigrantInfo;
 
 
     public constructor(player: Player<S>, noCheckGameOver: boolean) {
@@ -53,8 +53,8 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     /**
      * @override
      */
-    public __afterAllPlayersConstruction(): void {
-        (this.__immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
+    public _afterAllPlayersConstruction(): void {
+        (this._immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
             playerElem: this.#baseElem,
             username: this.player.username,
         });
@@ -62,7 +62,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
     public reset(): void {
         super.reset();
-        const DDH = OmHooks.Player.Dataset.DOWNED
+        const DDH = OmHooks.Player.Dataset.DOWNED;
         this.#baseElem.dataset[DDH.KEY] = DDH.VALUES.NO;
         // ^We need to do this explicitly. It won't be done
         // automatically when setting `health` because of the short-
@@ -70,10 +70,10 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
     public get immigrantInfo(): Tile.VisibleImmigrantInfo {
-        return this.__immigrantInfoCache;
+        return this._immigrantInfoCache;
     }
 
-    public __notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
+    public _notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
         spotlightElems.forEach((elem) => {
             this.#baseElem.appendChild(elem);
         });

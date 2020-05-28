@@ -1,4 +1,4 @@
-import { Player as __Player } from "defs/TypeDefs";
+import { Player as _Player } from "defs/TypeDefs";
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
@@ -14,9 +14,9 @@ import { TileGetter } from "floor/TileGetter";
  * field. Enforces / exposes the {@link PlayerSkeleton#moveTo} method as
  * the interface to any such operations.
  *
- * @extends __Player to intake its namespace exports.
+ * @extends Player to intake its namespace exports.
  */
-export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S> {
+export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> {
 
     public readonly playerId: Player.Id;
 
@@ -43,15 +43,15 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
         this.playerId = desc.playerId;
         this.isALocalOperator = desc.isALocalOperator;
         this.game = game;
-        this.status = new (this.game.__playerStatusCtor)(
+        this.status = new (this.game._playerStatusCtor)(
             this as PlayerSkeleton<S> as Player<S>,
             desc.noCheckGameOver,
         );
         this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
     }
 
-    public __afterAllPlayersConstruction(): void {
-        this.status.__afterAllPlayersConstruction();
+    public _afterAllPlayersConstruction(): void {
+        this.status._afterAllPlayersConstruction();
     }
 
     /**
@@ -63,7 +63,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
      */
     protected reset(spawnTile: Tile<S>): void {
         this.#hostTile = spawnTile;
-        this.hostTile.__setOccupant(
+        this.hostTile._setOccupant(
             this.playerId,
             this.status.immigrantInfo,
         );
@@ -130,7 +130,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
         else {
             // Move to occupy the destination `Tile`:
             this.#hostTile = dest;
-            dest.__setOccupant(this.playerId, this.status.immigrantInfo);
+            dest._setOccupant(this.playerId, this.status.immigrantInfo);
         }
     }
 }
@@ -142,15 +142,15 @@ export namespace PlayerSkeleton {
 
         public constructor(private readonly player: PlayerSkeleton<S>) { }
 
-        public __getTileAt(): Tile<S> {
+        public _getTileAt(): Tile<S> {
             return this.player.game.grid.tile.at(this.player.coord);
         }
 
-        public __getTileDestsFrom(): Array<Tile<S>> {
+        public _getTileDestsFrom(): Array<Tile<S>> {
             return this.player.game.grid.tile.destsFrom(this.player.coord).get;
         }
 
-        public __getTileSourcesTo(): Array<Tile<S>> {
+        public _getTileSourcesTo(): Array<Tile<S>> {
             return this.player.game.grid.tile.sourcesTo(this.player.coord).get;
         }
     }

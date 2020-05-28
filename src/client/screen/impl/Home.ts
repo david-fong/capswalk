@@ -13,7 +13,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
     /**
      * @override
      */
-    protected __lazyLoad(): void {
+    protected _lazyLoad(): void {
         const OMHC = OmHooks.Screen.Impl.Home.Class;
         type  OMHC = typeof OMHC;
         this.baseElem.classList.add(
@@ -50,7 +50,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
                 this.toplevel.sfx;
             });
             nav.appendChild(elem);
-        }
+        };
 
         // NOTE: Define array entries in order that their
         // buttons should be tabbed through via keyboard.

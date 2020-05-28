@@ -1,4 +1,4 @@
-import { Lang as __Lang } from "defs/TypeDefs";
+import { Lang as _Lang } from "defs/TypeDefs";
 import type { Lang } from "./Lang";
 
 
@@ -122,12 +122,12 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @param chars A collection of unique characters in a written language.
      */
     protected addCharMapping(seq: Lang.Seq, chars: TU.RoArr<WeightedLangChar>): void {
-        if (!(__Lang.Seq.REGEXP.test(seq))) {
+        if (!(_Lang.Seq.REGEXP.test(seq))) {
             // If this errs, and the offending character is one that can
             // be easily entered on a generic keyboard, don't be afraid
             // to just add it to the regexp.
             throw new RangeError(`Mapping-sequence \"${seq}\" did not match the`
-            + ` required regular expression \"${__Lang.Seq.REGEXP.source}\".`
+            + ` required regular expression \"${_Lang.Seq.REGEXP.source}\".`
             );
         } else if (chars.length === 0) {
             throw new Error("Must not make mapping without written characters.");
@@ -175,12 +175,12 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
     }
     private incrementNumHits(hitWeightedChar: WeightedLangChar): void {
         hitWeightedChar.incrementNumHits();
-        this.__recursiveIncrementNumHits(hitWeightedChar.weightInv);
+        this._recursiveIncrementNumHits(hitWeightedChar.weightInv);
     }
-    private __recursiveIncrementNumHits(weightInv: number): void {
+    private _recursiveIncrementNumHits(weightInv: number): void {
         this.inheritingHitCount += 1;
         this.inheritingWeightedHitCount += weightInv;
-        this.children.forEach((child) => child.__recursiveIncrementNumHits(weightInv));
+        this.children.forEach((child) => child._recursiveIncrementNumHits(weightInv));
     }
 
     /**
@@ -221,13 +221,13 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
 
     public getLeafNodes(): Array<LangSeqTreeNode> {
         const leafNodes: Array<LangSeqTreeNode> = [];
-        this.__recursiveGetLeafNodes(leafNodes);
+        this._recursiveGetLeafNodes(leafNodes);
         return leafNodes;
     }
-    private __recursiveGetLeafNodes(leafNodes: Array<LangSeqTreeNode>): void {
+    private _recursiveGetLeafNodes(leafNodes: Array<LangSeqTreeNode>): void {
         if (this.children.length) {
             this.children.forEach((child) => {
-                child.__recursiveGetLeafNodes(leafNodes);
+                child._recursiveGetLeafNodes(leafNodes);
             });
         } else {
             leafNodes.push(this as LangSeqTreeNode);
@@ -253,9 +253,9 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @returns -
      */
     public static readonly LEAF_CMP: SorterMap<LangSeqTreeNode> = Object.freeze({
-        [ __Lang.BalancingScheme.SEQ ]:    ((a, b) => a.inheritingHitCount - b.inheritingHitCount),
-        [ __Lang.BalancingScheme.CHAR ]:   ((a, b) => a.inheritingHitCount - b.inheritingHitCount),
-        [ __Lang.BalancingScheme.WEIGHT ]: ((a, b) => a.inheritingWeightedHitCount - b.inheritingWeightedHitCount),
+        [ _Lang.BalancingScheme.SEQ ]:    ((a, b) => a.inheritingHitCount - b.inheritingHitCount),
+        [ _Lang.BalancingScheme.CHAR ]:   ((a, b) => a.inheritingHitCount - b.inheritingHitCount),
+        [ _Lang.BalancingScheme.WEIGHT ]: ((a, b) => a.inheritingWeightedHitCount - b.inheritingWeightedHitCount),
     });
 
     /**
@@ -264,9 +264,9 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
      * @returns -
      */
     public static readonly PATH_CMP: SorterMap<LangSeqTreeNode> = Object.freeze({
-        [ __Lang.BalancingScheme.SEQ ]:    ((a, b) => a.personalHitCount - b.personalHitCount),
-        [ __Lang.BalancingScheme.CHAR ]:   ((a, b) => a.averageCharHitCount - b.averageCharHitCount),
-        [ __Lang.BalancingScheme.WEIGHT ]: ((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount),
+        [ _Lang.BalancingScheme.SEQ ]:    ((a, b) => a.personalHitCount - b.personalHitCount),
+        [ _Lang.BalancingScheme.CHAR ]:   ((a, b) => a.averageCharHitCount - b.averageCharHitCount),
+        [ _Lang.BalancingScheme.WEIGHT ]: ((a, b) => a.personalWeightedHitCount - b.personalWeightedHitCount),
     });
 
 }
@@ -382,9 +382,9 @@ class WeightedLangChar {
      * @returns -
      */
     public static readonly CMP: SorterMap<WeightedLangChar> = Object.freeze({
-        [ __Lang.BalancingScheme.SEQ ]:    (a, b) => a.hitCount - b.hitCount, // design choice.
-        [ __Lang.BalancingScheme.CHAR ]:   (a, b) => a.hitCount - b.hitCount,
-        [ __Lang.BalancingScheme.WEIGHT ]: (a, b) => a.weightedHitCount - b.weightedHitCount,
+        [ _Lang.BalancingScheme.SEQ ]:    (a, b) => a.hitCount - b.hitCount, // design choice.
+        [ _Lang.BalancingScheme.CHAR ]:   (a, b) => a.hitCount - b.hitCount,
+        [ _Lang.BalancingScheme.WEIGHT ]: (a, b) => a.weightedHitCount - b.weightedHitCount,
     });
 };
 Object.freeze(WeightedLangChar);

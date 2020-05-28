@@ -20,14 +20,14 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     private readonly grid: Chaser<S>["game"]["grid"];
     #prevCoord: Coord<S>;
 
-    public constructor(game: GamepartManager<any,S>, desc: Player.__CtorArgs<"CHASER">) {
+    public constructor(game: GamepartManager<any,S>, desc: Player._CtorArgs<"CHASER">) {
         super(game, desc);
         this.behaviour = Object.freeze(desc.familyArgs);
         this.grid = this.game.grid;
     }
 
-    public __afterAllPlayersConstruction(): void {
-        super.__afterAllPlayersConstruction();
+    public _afterAllPlayersConstruction(): void {
+        super._afterAllPlayersConstruction();
         // We need to cast off read-only-ness below.
         (this.threatProximity as Array<Player<S>>) = this.game.teams
             .filter((team) => team.id !== this.teamId)

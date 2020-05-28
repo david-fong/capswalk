@@ -27,7 +27,7 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
     /**
      * @override
      */
-    protected __getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
+    protected _getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
         return VisibleGrid.getImplementation(coordSys);
     }
 
@@ -45,10 +45,10 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,
         );
-        this.__BrowserGame_Ctor();
+        this._ctorBrowserGame();
     }
 
-    declare public readonly __createArtifPlayer: GamepartManager<G,S>["__createArtifPlayer"];
+    declare public readonly _createArtifPlayer: GamepartManager<G,S>["_createArtifPlayer"];
 
     public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
         return setTimeout(callback, millis, args);

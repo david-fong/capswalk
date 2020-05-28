@@ -129,7 +129,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
     /**
      * @override
      */
-    protected __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>): ArtificialPlayer<S> {
+    protected _createArtifPlayer(desc: Player._CtorArgs<Player.FamilyArtificial>): ArtificialPlayer<S> {
         return ArtificialPlayer.of(this, desc);
     }
 

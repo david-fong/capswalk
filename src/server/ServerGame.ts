@@ -36,7 +36,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     /**
      * @override
      */
-    protected __getGridImplementation(coordSys: S): Grid.ClassIf<S> {
+    protected _getGridImplementation(coordSys: S): Grid.ClassIf<S> {
         return Grid.getImplementation(coordSys);
     }
 
@@ -128,7 +128,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     /**
      * @override
      */
-    public __createOperatorPlayer(desc: Player.CtorArgs): never {
+    public _createOperatorPlayer(desc: Player.CtorArgs): never {
         throw new TypeError("This should never be called for a ServerGame.");
     }
 

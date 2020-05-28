@@ -16,7 +16,7 @@ import { SkScreen } from "../SkScreen";
  */
 // TODO.impl change the document title base on game state.
 // TODO.impl Allow users to change the spotlight radius via slider.
-export abstract class __PlayScreen<
+export abstract class _PlayScreen<
     SID extends SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE,
     G extends Game.Type.Browser,
     Game extends BrowserGameMixin<G,any> = BrowserGameMixin<G,any>,
@@ -79,10 +79,10 @@ export abstract class __PlayScreen<
     /**
      * @override
      */
-    protected __lazyLoad(): void {
+    protected _lazyLoad(): void {
         this.baseElem.classList.add(OmHooks.Screen.Impl.PlayGame.Class.BASE);
 
-        const centerColItems = __PlayScreen.createCenterColElem();
+        const centerColItems = _PlayScreen.createCenterColElem();
         (this.gridElem as HTMLElement) = centerColItems.gridElem;
         this.baseElem.appendChild(centerColItems.baseElem);
         // ^Purposely make the grid the first child so it gets tabbed to first.
@@ -97,7 +97,7 @@ export abstract class __PlayScreen<
             if (!this.wantsAutoPause) return;
             if (document.hidden) {
                 if (this.#pauseReason === undefined) {
-                    const game = this.currentGame
+                    const game = this.currentGame;
                     if (!game || (game && game.status !== Game.Status.OVER)) {
                         this.statusBecomePaused();
                     }
@@ -105,23 +105,23 @@ export abstract class __PlayScreen<
             } else {
                 if (this.#pauseReason === "page-hide") this.statusBecomePlaying();
             }
-        }
+        };
         // @ts-expect-error Assignment to readonly property.
         // See above note.
-        this.#gridOnKeyDown = this.__gridKeyDownCallback.bind(this);
+        this.#gridOnKeyDown = this._gridKeyDownCallback.bind(this);
     }
 
     /**
      * @override
      */
-    protected async __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+    protected async _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
         document.addEventListener("visibilitychange", this.#onVisibilityChange);
         this.pauseButton.disabled = true;
         this.statusBecomePaused(); // <-- Leverage some state initialization.
 
         // TODO.design Are there ways we can share more code between
         // implementations by passing common arguments?
-        this.#currentGame = await this.__createNewGame(
+        this.#currentGame = await this._createNewGame(
             args as (typeof args & Game.CtorArgs<G,any>)
         );
         this.gridElem.addEventListener("keydown", this.#gridOnKeyDown);
@@ -147,7 +147,7 @@ export abstract class __PlayScreen<
     /**
      * @override
      */
-    protected __abstractOnBeforeLeave(): boolean {
+    protected _abstractOnBeforeLeave(): boolean {
         if (!window.confirm("Are you sure you would like to leave?")) {
             return false;
         }
@@ -167,7 +167,7 @@ export abstract class __PlayScreen<
         return this.#currentGame;
     }
 
-    protected abstract async __createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<Game>;
+    protected abstract async _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<Game>;
 
 
     /**
@@ -181,7 +181,7 @@ export abstract class __PlayScreen<
      *
      * @param ev -
      */
-    private __gridKeyDownCallback(ev: KeyboardEvent): boolean {
+    private _gridKeyDownCallback(ev: KeyboardEvent): boolean {
         // console.log(`key: ${ev.key}, code: ${ev.code},`
         // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
         // + ` charCode: ${ev.charCode}`);
@@ -232,7 +232,7 @@ export abstract class __PlayScreen<
     }
 
     // TODO.impl pass this to the created game.
-    public __onGameBecomeOver(): void {
+    public _onGameBecomeOver(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.pauseButton.disabled = true;
         this.resetButton.disabled = false;
@@ -244,7 +244,7 @@ export abstract class __PlayScreen<
      * - The current game exists.
      * - The current game is paused or it is over.
      */
-    private __resetGame(): void {
+    private _resetGame(): void {
         this.currentGame!.reset();
         this.pauseButton.disabled = false;
         if (this.wantsAutoPause) {
@@ -296,7 +296,7 @@ export abstract class __PlayScreen<
         { const reset
             = (this.resetButton as HTMLButtonElement)
             = createControlButton("Reset");
-        reset.onclick = this.__resetGame.bind(this);
+        reset.onclick = this._resetGame.bind(this);
         }
 
         this.baseElem.appendChild(controlsBar);
@@ -310,17 +310,17 @@ export abstract class __PlayScreen<
         this.baseElem.appendChild(playersBar);
     }
 }
-export namespace __PlayScreen {
+export namespace _PlayScreen {
     /**
      *
      */
     export function createCenterColElem():
     { baseElem: HTMLElement, gridElem: HTMLElement, }
     {
-        const CssFx = OmHooks.General.Class;
+        const CSS_FX = OmHooks.General.Class;
         const centerColElem = document.createElement("div");
         centerColElem.classList.add(
-            CssFx.CENTER_CONTENTS,
+            CSS_FX.CENTER_CONTENTS,
             OmHooks.Screen.Impl.PlayGame.Class.GRID_CONTAINER,
         );
         const gridElem = document.createElement("div");
@@ -328,16 +328,16 @@ export namespace __PlayScreen {
         gridElem.setAttribute("role", "textbox");
         gridElem.setAttribute("aria-label", "Game Grid");
         gridElem.classList.add(
-            CssFx.CENTER_CONTENTS,
-            CssFx.STACK_CONTENTS,
-            CssFx.TEXT_SELECT_DISABLED,
+            CSS_FX.CENTER_CONTENTS,
+            CSS_FX.STACK_CONTENTS,
+            CSS_FX.TEXT_SELECT_DISABLED,
             OmHooks.Grid.Class.GRID,
         );
         {
             // Add a "keyboard-disconnected" overlay if not added already:
             const kbdDcBase = document.createElement("div");
             kbdDcBase.classList.add(
-                CssFx.CENTER_CONTENTS,
+                CSS_FX.CENTER_CONTENTS,
                 OmHooks.Grid.Class.KBD_DC,
             );
             // TODO.impl Add an <svg> with icon instead please.
@@ -352,7 +352,7 @@ export namespace __PlayScreen {
             // Add a "keyboard-disconnected" overlay if not added already:
             const pauseOl = document.createElement("div");
             pauseOl.classList.add(
-                CssFx.CENTER_CONTENTS,
+                CSS_FX.CENTER_CONTENTS,
                 OmHooks.Grid.Class.PAUSE_OL,
             );
             // TODO.impl Add an <svg> with icon instead please.
@@ -372,5 +372,5 @@ export namespace __PlayScreen {
         });
     }
 }
-Object.freeze(__PlayScreen);
-Object.freeze(__PlayScreen.prototype);
+Object.freeze(_PlayScreen);
+Object.freeze(_PlayScreen.prototype);

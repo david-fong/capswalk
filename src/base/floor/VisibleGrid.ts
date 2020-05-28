@@ -4,7 +4,7 @@ import { OmHooks } from 'defs/OmHooks';
 
 
 /**
- * All implementations must call `Grid.__VisibleGrid_super` at the end
+ * All implementations must call `Grid._superVisibleGrid` at the end
  * of their constructors.
  *
  * NOTE: As a design choice, this is put in a separate file from the
@@ -29,12 +29,12 @@ export namespace VisibleGrid {
     };
 
     // Each implementation must register itself into this dictionary.
-    export declare const __Constructors: {
+    export declare const _Constructors: {
         readonly [ S in Coord.System ]: Grid.ClassIf<S>
     };
 
     export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
-        const ctor = __Constructors[coordSys];
+        const ctor = _Constructors[coordSys];
         return ctor as unknown as ClassIf<S>;
     };
 }
@@ -59,7 +59,7 @@ export class VisibleGridMixin<S extends Coord.System> {
      * @param desc -
      * @param gridImplElem -
      */
-    public __VisibleGrid_super(desc: Grid.CtorArgs<S>, gridImplElem: HTMLElement): void {
+    public _superVisibleGrid(desc: Grid.CtorArgs<S>, gridImplElem: HTMLElement): void {
         const OHG = OmHooks.Grid;
         gridImplElem.classList.add(OHG.Class.IMPL_BODY);
         gridImplElem.dataset[OHG.Dataset.IMPL_COORD_SYS] = desc.coordSys;

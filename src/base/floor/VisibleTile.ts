@@ -52,18 +52,18 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         }
     }
 
-    public __addToDom(parent: HTMLElement): void {
+    public _addToDom(parent: HTMLElement): void {
         parent.appendChild(this.#baseElem);
     }
 
     /**
      * @override
      */
-    public __setOccupant(
+    public _setOccupant(
         playerId: Player.Id,
         immigrantInfo: Tile.VisibleImmigrantInfo,
     ): void {
-        super.__setOccupant(playerId, immigrantInfo);
+        super._setOccupant(playerId, immigrantInfo);
         // It must go at least before the langChar element so that the
         // CSS can create a fading trail effect. It must go after the
         // hitbox so that it can be hidden to avoid covering the tooltip.

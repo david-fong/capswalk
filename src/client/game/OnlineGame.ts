@@ -30,7 +30,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
     /**
      * @override
      */
-    protected __getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
+    protected _getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
         return VisibleGrid.getImplementation(coordSys);
     }
 
@@ -55,7 +55,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
             }, gameDesc,
         );
         this.socket = socket;
-        this.__BrowserGame_Ctor();
+        this._ctorBrowserGame();
 
         this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);
         this.socket.on(
@@ -78,7 +78,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
         );
     }
 
-    protected __createArtifPlayer(desc: Player.CtorArgs): Player<S> {
+    protected _createArtifPlayer(desc: Player.CtorArgs): Player<S> {
         return new Player(this, desc);
     }
 

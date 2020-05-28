@@ -6,13 +6,13 @@ import io       = require("socket.io");
 import type * as net from "net";
 
 import { Group } from "./Group";
-import { SkServer as __SnakeyServer, SkServer } from "defs/OnlineDefs";
+import { SkServer as _SnakeyServer } from "defs/OnlineDefs";
 
 
 /**
  * Creates and performs management operations on {@link ServerGame}s.
  */
-export class SnakeyServer extends __SnakeyServer {
+export class SnakeyServer extends _SnakeyServer {
 
     protected readonly http: http.Server;
     protected readonly app:  express.Application;
@@ -138,7 +138,7 @@ export namespace SnakeyServer {
     export const chooseIPAddress = (): Array<string> => {
         return (Object.values(os.networkInterfaces()).flat() as os.NetworkInterfaceInfo[])
         .filter((info) => {
-            return !(info.internal) /* && info.family === "IPv4" */;
+            return !(info.internal); /* && info.family === "IPv4" */
         })
         .map((info) => {
             if (info.family === "IPv6") {

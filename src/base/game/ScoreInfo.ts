@@ -1,5 +1,5 @@
 import type { Player } from "./player/Player";
-import { Player as __Player } from "defs/TypeDefs";
+import { Player as _Player } from "defs/TypeDefs";
 
 
 /**
@@ -43,7 +43,7 @@ export namespace ScoreInfo {
 
         public reset(): void {
             this.totalHealthPickedUp = 0.0;
-            (Object.getOwnPropertyNames(__Player.MoveType) as
+            (Object.getOwnPropertyNames(_Player.MoveType) as
                 Array<Player.MoveType>).forEach((key) => {
                 this.moveCounts[key] = 0;
             });

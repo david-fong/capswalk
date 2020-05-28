@@ -3,7 +3,7 @@ import { Game } from "game/Game";
 import { SkScreen } from "../SkScreen";
 
 
-type SID = SkScreen.Id.GROUP_LOBBY
+type SID = SkScreen.Id.GROUP_LOBBY;
 
 /**
  *
@@ -17,11 +17,11 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     /**
      * @override
      */
-    public __lazyLoad(): void {
+    public _lazyLoad(): void {
         ;
     }
 
-    public __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+    public _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
 
         // Listen for when the server sends tbe game constructor arguments:
         this.toplevel.socket!.once(

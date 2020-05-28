@@ -160,11 +160,11 @@ export namespace Lang {
      * @param input -
      * @returns
      */
-    export const __RemapTemplates = Object.freeze(<const>{
+    export const _RemapTemplates = Object.freeze(<const>{
         IDENTITY: (input: string): string => input,
         TO_LOWER: (input: string): string => input.toLowerCase(),
     });
-    __RemapTemplates as Readonly<Record<string, {(input: string): string}>>;
+    _RemapTemplates as Readonly<Record<string, {(input: string): string}>>;
 
     /**
      *
@@ -173,31 +173,31 @@ export namespace Lang {
        <const>{
         id: "engl-low",
         module: "English", export: "Lowercase", numLeaves: 26,
-        remapFunc: __RemapTemplates.TO_LOWER,
+        remapFunc: _RemapTemplates.TO_LOWER,
         displayName: "English Lowercase (QWERTY)",
         blurb: "",
     }, <const>{
         id: "engl-mix",
         module: "English", export: "MixedCase", numLeaves: 52,
-        remapFunc: __RemapTemplates.IDENTITY,
+        remapFunc: _RemapTemplates.IDENTITY,
         displayName: "English Mixed-Case (QWERTY)",
         blurb: "",
     }, <const>{
         id: "japn-hir",
         module: "Japanese", export: "Hiragana", numLeaves: 71,
-        remapFunc: __RemapTemplates.TO_LOWER,
+        remapFunc: _RemapTemplates.TO_LOWER,
         displayName: "Japanese Hiragana",
         blurb: "",
     }, <const>{
         id: "japn-kat",
         module: "Japanese", export: "Katakana", numLeaves: 70,
-        remapFunc: __RemapTemplates.TO_LOWER,
+        remapFunc: _RemapTemplates.TO_LOWER,
         displayName: "Japanese Katakana",
         blurb: "",
     }, <const>{
         id: "kore-dub",
         module: "Korean", export: "Dubeolsik", numLeaves: 9177,
-        remapFunc: __RemapTemplates.IDENTITY,
+        remapFunc: _RemapTemplates.IDENTITY,
         displayName: "Korean Dubeolsik (두벌식 키보드)",
         blurb: "The most common keyboard layout, and South Korea's only Hangul"
         + " standard since 1969. Consonants are on the left, and vowels on"
@@ -205,7 +205,7 @@ export namespace Lang {
     }, <const>{
         id: "kore-sub",
         module: "Korean", export: "Sebeolsik", numLeaves: 10206,
-        remapFunc: __RemapTemplates.IDENTITY,
+        remapFunc: _RemapTemplates.IDENTITY,
         displayName: "Korean Sebeolsik (세벌식 최종 키보드)",
         blurb: "Another Hangul keyboard layout used in South Korea, and the"
         + " final Sebeolsik layout designed by Dr. Kong Byung Woo, hence"
@@ -215,7 +215,7 @@ export namespace Lang {
     }, <const>{
         id: "kore-rom",
         module: "Korean", export: "Romanization", numLeaves: 3990,
-        remapFunc: __RemapTemplates.TO_LOWER,
+        remapFunc: _RemapTemplates.TO_LOWER,
         displayName: "Korean Revised Romanization",
         blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
         + " 表記法) is the official South Korean language romanization system. It"

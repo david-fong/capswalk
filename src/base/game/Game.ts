@@ -84,7 +84,7 @@ export namespace Game {
             undefinedTeamId:   TU.RoArr<Player.SocketId>;
         };
 
-        // export type __GameTypeDependantPart<G_group extends Game.Type, S extends Coord.System>
+        // export type _GameTypeDependantPart<G_group extends Game.Type, S extends Coord.System>
         // = any extends G_group ? any : {[G in G_group]:
         //     G extends Game.Type.Manager ? {
         //         playerDescs: TU.RoArr<Player.CtorArgs.PreIdAssignment>;

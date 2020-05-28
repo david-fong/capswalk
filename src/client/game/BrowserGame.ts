@@ -26,14 +26,14 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 
     public readonly htmlElements: BrowserGameMixin.HtmlElements;
 
-    public __BrowserGame_Ctor(): void {
+    public _ctorBrowserGame(): void {
         (this.htmlElements as BrowserGameMixin.HtmlElements) = Object.freeze({
             gridImpl: this.grid.baseElem,
             playersBar: document.createElement("div"), // TODO.design
         });
     }
 
-    public __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S> {
+    public _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S> {
         return new OperatorPlayer<S>(this, desc);
     }
 }

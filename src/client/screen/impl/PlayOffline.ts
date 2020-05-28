@@ -2,7 +2,7 @@ import { Game } from "game/Game";
 import type { OfflineGame } from "../../game/OfflineGame";
 
 import { SkScreen } from "../SkScreen";
-import { __PlayScreen } from "./Play";
+import { _PlayScreen as _PlayScreen } from "./Play";
 
 
 type G = Game.Type.OFFLINE;
@@ -10,7 +10,7 @@ type G = Game.Type.OFFLINE;
 /**
  *
  */
-export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> {
+export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> {
 
     public get initialScreen(): SkScreen.Id {
         return SkScreen.Id.SETUP_OFFLINE;
@@ -26,19 +26,19 @@ export class PlayOfflineScreen extends __PlayScreen<SkScreen.Id.PLAY_OFFLINE, G>
     /**
      * @override
      */
-    protected __lazyLoad(): void {
-        super.__lazyLoad();
+    protected _lazyLoad(): void {
+        super._lazyLoad();
     }
 
     /**
      * @override
      */
-    protected async __createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<OfflineGame<any>> {
-        // TODO.impl use game-setup args passed in from __abstractOnBeforeEnter
+    protected async _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<OfflineGame<any>> {
+        // TODO.impl use game-setup args passed in from _abstractOnBeforeEnter
         return new (await import(
             /* webpackChunkName: "game/offline" */
             "../../game/OfflineGame"
-        )).OfflineGame(this.__onGameBecomeOver.bind(this), ctorArgs);
+        )).OfflineGame(this._onGameBecomeOver.bind(this), ctorArgs);
     }
 }
 Object.freeze(PlayOfflineScreen);
