@@ -2,8 +2,7 @@ import { OmHooks } from "defs/OmHooks";
 import type { Lang, Player } from "defs/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
-
-export { Coord } from "./Tile";
+export { Coord };
 
 
 /**

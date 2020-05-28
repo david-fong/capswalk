@@ -6,7 +6,7 @@ import type { Player } from "game/player/Player";
 
 import { Group as _Group } from "defs/OnlineDefs";
 
-export { ServerGame } from "./ServerGame";
+export { ServerGame };
 
 
 /**

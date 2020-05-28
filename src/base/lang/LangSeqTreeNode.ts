@@ -110,7 +110,8 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
             // for a uniformly distributed random number of times.
             // The choice of the upper bound on the number of times
             // is rather arbitrary, but it should not be too small.
-            for (let i = 0; i < Math.random() * 10; i++) {
+            const hitSeedTimes = Math.ceil(Math.random() * _Lang.CHAR_HIT_SEED_CEILING);
+            for (let i = 0; i < hitSeedTimes; i++) {
                 this.incrementNumHits(char);
             }
         });
@@ -173,9 +174,9 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
         this.incrementNumHits(weightedChar);
         return pair;
     }
-    private incrementNumHits(hitWeightedChar: WeightedLangChar): void {
-        hitWeightedChar.incrementNumHits();
-        this._recursiveIncrementNumHits(hitWeightedChar.weightInv);
+    private incrementNumHits(wCharToHit: WeightedLangChar): void {
+        wCharToHit.incrementNumHits();
+        this._recursiveIncrementNumHits(wCharToHit.weightInv);
     }
     private _recursiveIncrementNumHits(weightInv: number): void {
         this.inheritingHitCount += 1;

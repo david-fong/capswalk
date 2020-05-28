@@ -2,7 +2,7 @@ import { Lang } from "defs/TypeDefs";
 import { Coord } from "floor/Tile";
 import type { Game } from "game/Game";
 
-import { SkScreen } from "../SkScreen";
+import { OmHooks, SkScreen } from "../SkScreen";
 import { SetupScreen } from "./Setup";
 
 
@@ -13,8 +13,14 @@ type SID = SkScreen.Id.SETUP_OFFLINE;
  */
 export class SetupOfflineScreen extends SetupScreen<SID> {
 
-    public _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+    protected _lazyLoad(): void {
+        super._lazyLoad();
+        this.baseElem.classList.add(OmHooks.Screen.Impl.SetupOffline.Class.BASE);
+    }
+
+    protected _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
         this.nextBtn.onclick = (ev) => {
+            // TODO.design create ctorArgs from user presets.
             const ctorArgs = Object.assign({}, SetupOfflineScreen.DEFAULT_PRESET);
             (ctorArgs.langId as string) = this.langSel.confirmedOpt.desc.id;
             this.requestGoToScreen(SkScreen.Id.PLAY_OFFLINE, ctorArgs);

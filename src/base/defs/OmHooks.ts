@@ -133,6 +133,11 @@ export namespace OmHooks {
                     NEXT_BUTTON:        "screen-joiner--next-button",
                 };
             }
+            export namespace SetupOffline {
+                export const Class = <const>{
+                    BASE:               "screen-setup-offline",
+                }
+            }
         }
     }
 

@@ -17,11 +17,11 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     /**
      * @override
      */
-    public _lazyLoad(): void {
+    protected _lazyLoad(): void {
         ;
     }
 
-    public _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+    protected _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
 
         // Listen for when the server sends tbe game constructor arguments:
         this.toplevel.socket!.once(

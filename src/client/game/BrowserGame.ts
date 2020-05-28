@@ -5,12 +5,12 @@ import { Player }               from "game/player/Player";
 import { OperatorPlayer }       from "game/player/OperatorPlayer";
 
 export { applyMixins }          from "defs/TypeDefs";
-export { Game }                 from "game/Game";
+export { Game };
 export { Coord, VisibleTile }   from "floor/VisibleTile";
 export { VisibleGrid }          from "floor/VisibleGrid";
 
-export { Player }               from "game/player/Player";
-export { OperatorPlayer }       from "game/player/OperatorPlayer";
+export { Player };
+export { OperatorPlayer };
 export { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
 
 import { GameBootstrap } from "game/GameBootstrap";

@@ -126,6 +126,7 @@ export namespace Lang {
             seq:  "",
         });
     }
+    export const CHAR_HIT_SEED_CEILING = 10;
 
     /**
      * Ways of choosing {@link LangCharSeqPair} to balance the frequency

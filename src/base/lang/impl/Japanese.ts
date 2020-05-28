@@ -52,7 +52,7 @@ export namespace Japanese {
             "て": { seq: "te", weight:  758316, },
             "な": { seq: "na", weight:  720156, },
             "か": { seq: "ka", weight:  537294, },
-          //"っ": { seq: "-",  weight:  467350, }, // TODO.design should we somehow incorporate this?
+          //"っ": { seq: "-",  weight:  467350, },
             "れ": { seq: "re", weight:  450805, },
             "ら": { seq: "ra", weight:  42329, },
             "も": { seq: "mo", weight:  396142, },
@@ -161,7 +161,7 @@ export namespace Japanese {
             "ラ": { seq: "ra", weight: 117203, },
             "リ": { seq: "ri", weight: 106744, },
             "ク": { seq: "ku", weight:  98209, },
-          //"ッ": { seq: "-",  weight:  86894, }, // TODO.design should we somehow incorporate this?
+          //"ッ": { seq: "-",  weight:  86894, },
             "カ": { seq: "ka", weight:  82982, },
             "シ": { seq: "shi",weight:  80626, },
             "タ": { seq: "ta", weight:  75319, },

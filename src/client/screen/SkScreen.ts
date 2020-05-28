@@ -3,6 +3,8 @@ import type { Game } from "game/Game";
 import type { AllSkScreens } from "./AllSkScreens";
 import type { TopLevel } from "../TopLevel";
 
+export { OmHooks };
+
 
 /**
  *

@@ -36,7 +36,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
         contentWrapper.onsubmit = (ev) => {
             // TODO change the screen nav flow to use the correct (commented out) values.
-            if (false /* TODO this.isGroupOwner */) {
+            if (false /* this.isGroupOwner */) {
                 this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, {});
                 //this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
             } else {
