@@ -13,31 +13,20 @@ export namespace English {
      */
     export class Lowercase extends Lang {
 
-        private static SINGLETON?: Lowercase = undefined;
-
-        public static getInstance(): Lowercase {
-            if (!this.SINGLETON) {
-                this.SINGLETON  = new Lowercase();
-            }
-            return this.SINGLETON;
-        }
-
         public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-low");
-
+        private static SINGLETON?: Lowercase = undefined;
+        public static getInstance(): Lowercase {
+            return this.SINGLETON ?? (this.SINGLETON = new Lowercase());
+        }
         // TODO.learn see https://wikipedia.org/wiki/Keyboard_layout#Dvorak
         // and https://wikipedia.org/wiki/Keyboard_layout#Colemak
-
         private constructor() { super(
             Lowercase,
             Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
-                (accumulator, current) => {
-                    const char: Lang.Char = current[0];
-                    const seq:  Lang.Seq  = current[0];
-                    const weight: number  = current[1];
-                    accumulator[char] = { seq, weight, };
+                (accumulator, [char,weight]) => {
+                    accumulator[char] = { seq: char, weight, };
                     return accumulator;
-                },
-                {},
+                }, {},
             ),
         ); }
     }
@@ -53,26 +42,18 @@ export namespace English {
      */
     export class MixedCase extends Lang {
 
-        private static SINGLETON?: MixedCase = undefined;
-
-        public static getInstance(): MixedCase {
-            if (!this.SINGLETON) {
-                this.SINGLETON = new MixedCase();
-            }
-            return this.SINGLETON;
-        }
-
         public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-mix");
-
+        private static SINGLETON?: MixedCase = undefined;
+        public static getInstance(): MixedCase {
+            return this.SINGLETON ?? (this.SINGLETON = new MixedCase());
+        }
         private constructor() {
             let initializer: Lang.CharSeqPair.WeightedForwardMap = {};
             const addMappings = (charSeqTransform: (cs: string) => string): void => {
                 initializer = Object.entries(LETTER_FREQUENCY).reduce(
-                    (accumulator, current) => {
-                        const char: Lang.Char = charSeqTransform(current[0]);
-                        const seq:  Lang.Seq  = charSeqTransform(current[0]);
-                        const weight: number  = current[1];
-                        accumulator[char] = { seq, weight, };
+                    (accumulator, [_char,weight]) => {
+                        const char: Lang.Char = charSeqTransform(_char);
+                        accumulator[char] = { seq: char, weight, };
                         return accumulator;
                     },
                     initializer,
@@ -89,6 +70,43 @@ export namespace English {
     MixedCase as Lang.ClassIf;
     Object.seal(MixedCase);
     Object.freeze(MixedCase.prototype);
+
+
+    export namespace OldCellphone {
+        /**
+         * You see letters and type as if on an old cellphone's numeric keypad.
+         */
+        export class Encode extends Lang {
+
+            public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-low");
+            private static SINGLETON?: Encode = undefined;
+            public static getInstance(): Encode {
+                return this.SINGLETON ?? (this.SINGLETON = new Encode());
+            }
+            private constructor() { super(
+                Lowercase,
+                Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
+                    (accumulator, [char,weight], index) => {
+                        accumulator[char] = { seq: NUMPAD[index], weight, };
+                        return accumulator;
+                    }, {},
+                ),
+            ); }
+        }
+        Encode as Lang.ClassIf;
+        Object.seal(Encode);
+        Object.freeze(Encode.prototype);
+
+        const NUMPAD = Object.freeze([3,3,3,3,3,4,3,4,]
+            .flatMap((val, idx) => {
+                const button = [];
+                for (let str = ""; str.length < val; str += 1+idx) {
+                    button.push(str);
+                }
+                return button;
+            })
+        );
+    }
 
 
     /**

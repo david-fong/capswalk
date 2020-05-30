@@ -1,9 +1,8 @@
-import { OmHooks } from "defs/OmHooks";
-import type { Game } from "game/Game";
+import type {  } from "game/Game";
 import type { OnlineGame } from "../../game/OnlineGame";
 
 import { SkScreen } from "../SkScreen";
-import { _PlayScreen } from "./Play";
+import { Game, _PlayScreen } from "./Play";
 
 
 type G = Game.Type.ONLINE;

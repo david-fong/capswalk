@@ -154,15 +154,6 @@ export namespace Korean {
 
         public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-rom");
 
-        /**
-         * Does nothing.
-         *
-         * @override
-         */
-        public static remapKey(input: string): string {
-            return input;
-        }
-
         private constructor() { super(
             Romanization,
             INITIALIZE(((ij, mj, fj) => {
@@ -314,6 +305,5 @@ export namespace Korean {
     const WEIGHTS = Object.freeze({
         "": 1,
     }) as Record<string, number>;
-
 }
 Object.freeze(Korean);

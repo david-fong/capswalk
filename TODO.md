@@ -14,7 +14,6 @@
 
 ### High Priority
 
-1. Style active-descendant in SkPickOne
 1. Implement game creation event communications for online game.
 1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay lighter.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
@@ -36,9 +35,8 @@
 
 ### Low Priority
 
-1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
+- Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 - Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
-  - Also see [this](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
   - Steps:
     - Set .game-grid contain to content and make it control its sizing (ex. 70vmin).
     - Put .game-grid-impl-body inside a new wrapper that is sized according to its content.
@@ -178,6 +176,7 @@ https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Backgrounds_a
 https://developer.mozilla.org/en-US/docs/Web/CSS/display
 flex playground: https://codepen.io/enxaneta/full/adLPwv/
 https://developers.google.com/web/updates/2018/01/paintapi
+https://drafts.csswg.org/mediaqueries-5/#custom-mq
 ```
 
 ### ARIA

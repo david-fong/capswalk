@@ -52,6 +52,8 @@ export namespace OmHooks {
     export namespace Grid {
         export const Class = <const>{
             GRID:           "game-grid",
+            SCROLL_OUTER:   "game-grid-scroll-outer",
+            SCROLL_INNER:   "game-grid-scroll-inner",
             IMPL_BODY:      "game-grid-impl-body",
             KBD_DC:         "game-grid-kbd-dc",
             KBD_DC_ICON:    "game-grid-kbd-dc__icon",

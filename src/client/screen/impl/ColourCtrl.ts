@@ -2,10 +2,9 @@
 require("assets/style/colour/index.css");
 
 import { StorageHooks } from "defs/StorageHooks";
-import { OmHooks } from "defs/OmHooks";
 import { SkPickOne } from "../../../client/utils/SkPickOne";
 
-import { SkScreen } from "../SkScreen";
+import { OmHooks, SkScreen } from "../SkScreen";
 
 
 /**

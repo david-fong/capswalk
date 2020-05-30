@@ -1,9 +1,8 @@
 import type { TopLevel } from "../../TopLevel";
-import { OmHooks } from "defs/OmHooks";
 import { Group } from "defs/OnlineDefs";
 import { SkServer } from "defs/OnlineDefs";
 
-import { SkScreen } from "../SkScreen";
+import { OmHooks, SkScreen } from "../SkScreen";
 
 
 /**
@@ -20,6 +19,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
     private readonly backButton: HTMLButtonElement;
     private readonly nextButton: HTMLInputElement;
+    private isGroupOwner: boolean;
 
     /**
      * @override
@@ -36,12 +36,10 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
         contentWrapper.onsubmit = (ev) => {
             // TODO change the screen nav flow to use the correct (commented out) values.
-            if (false /* this.isGroupOwner */) {
-                this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, {});
-                //this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
+            if (this.isGroupOwner) {
+                this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
             } else {
-                this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, {});
-                //this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {});
+                this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {});
             }
         };
         this._setFormState(State.CHOOSING_HOST);
@@ -231,6 +229,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 // ^This will take us back to the state `CHOOSING_GROUP`.
             }
             this.passphraseInput.value = "";
+            this.isGroupOwner = false; // <-- Not necessary. Just feels nice to do.
         };
         input.onkeydown = (ev) => { if (ev.key === "Enter") {
             submitInput();
@@ -260,8 +259,10 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             const groupExists = (Array.from(this.groupNameDataList.children) as HTMLOptionElement[])
                 .some((opt) => opt.value === this.groupNameInput.value);
             if (groupExists) {
+                this.isGroupOwner = false;
                 await this.attemptToJoinExistingGroup();
             } else {
+                this.isGroupOwner = true;
                 this.socket!.emit(Group.Exist.EVENT_NAME,
                     new Group.Exist.RequestCreate(
                         this.groupNameInput.value,

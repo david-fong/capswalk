@@ -1,6 +1,4 @@
-import { OmHooks } from "defs/OmHooks";
-
-import { SkScreen } from "../SkScreen";
+import { OmHooks, SkScreen } from "../SkScreen";
 
 
 /**

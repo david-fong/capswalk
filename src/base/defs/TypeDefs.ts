@@ -177,7 +177,7 @@ export namespace Lang {
         remapFunc: _RemapTemplates.TO_LOWER,
         displayName: "English Lowercase (QWERTY)",
         blurb: "",
-    }, <const>{
+    },<const>{
         id: "engl-mix",
         module: "English", export: "MixedCase", numLeaves: 52,
         remapFunc: _RemapTemplates.IDENTITY,
@@ -213,7 +213,7 @@ export namespace Lang {
         + " the name. Syllable-initial consonants are on the right, final"
         + " consonants on the left, and vowels in the middle. It is more"
         + " ergonomic than the dubeolsik, but not widely used.",
-    }, <const>{
+    },<const>{
         id: "kore-rom",
         module: "Korean", export: "Romanization", numLeaves: 3990,
         remapFunc: _RemapTemplates.TO_LOWER,
@@ -224,6 +224,13 @@ export namespace Lang {
         + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
         + " and Tourism",
     },
+    // <const>{
+    //     id: "engl-cell-enc",
+    //     module: "English", export: "Cellphone", numLeaves: 8,
+    //     remapFunc: _RemapTemplates.IDENTITY,
+    //     displayName: "Old Cellphone Keyboard",
+    //     blurb: "",
+    // },
     ].map((desc) => Object.freeze(desc)));
     FrontendDescs as TU.RoArr<FrontendDesc>;
 

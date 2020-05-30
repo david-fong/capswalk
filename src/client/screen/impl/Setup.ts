@@ -1,7 +1,9 @@
 import { Lang } from "defs/TypeDefs";
+import { Coord } from "floor/Tile";
+import type { Game } from "game/Game";
+import { SkPickOne } from "../../utils/SkPickOne";
 
 import { SkScreen } from "../SkScreen";
-import { SkPickOne } from "../../utils/SkPickOne";
 
 
 type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
@@ -32,6 +34,62 @@ export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID>
     }
 }
 export namespace SetupScreen {
+
+    // TODO.impl If we keep this, use a recursive Object.freeze.
+    // Currently not frozen to allow for easier testing.
+    export const DEFAULT_PRESET = <Game.CtorArgs<Game.Type.OFFLINE,any>>{
+        coordSys: Coord.System.EUCLID2,
+        gridDimensions: {
+            height: 21,
+            width:  21,
+        },
+        averageFreeHealthPerTile: 1.0 / 45.0,
+        langBalancingScheme: Lang.BalancingScheme.WEIGHT,
+        langId: "engl-low",
+        playerDescs: [{
+            isALocalOperator: true,
+            familyId:   <const>"HUMAN",
+            teamId:     0,
+            socketId:   undefined,
+            username:   "hello1",
+            noCheckGameOver: false,
+            familyArgs: { },
+        }, {
+            isALocalOperator: true,
+            familyId:   <const>"HUMAN",
+            teamId:     1,
+            socketId:   undefined,
+            username:   "hello2",
+            noCheckGameOver: false,
+            familyArgs: { },
+        }, {
+            isALocalOperator: false,
+            familyId:   <const>"CHASER",
+            teamId:     1,
+            socketId:   undefined,
+            username:   "chaser1",
+            noCheckGameOver: true,
+            familyArgs: {
+                fearDistance: 5,
+                bloodThirstDistance: 7,
+                healthReserve: 3.0,
+                movesPerSecond: 2.0,
+            },
+        }, {
+            isALocalOperator: false,
+            familyId:   <const>"CHASER",
+            teamId:     1,
+            socketId:   undefined,
+            username:   "chaser2",
+            noCheckGameOver: true,
+            familyArgs: {
+                fearDistance: 6,
+                bloodThirstDistance: 5,
+                healthReserve: 5.0,
+                movesPerSecond: 1.8,
+            },
+        },],
+    };
     /**
      *
      */

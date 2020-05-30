@@ -1,10 +1,10 @@
-import { OmHooks } from "defs/OmHooks";
 import { Game } from "game/Game";
+export { Game };
 // import type { OfflineGame } from "../../game/OfflineGame";
 // import type { OnlineGame }  from "../../game/OnlineGame";
 import type { BrowserGameMixin } from "../../game/BrowserGame";
 
-import { SkScreen } from "../SkScreen";
+import { OmHooks, SkScreen } from "../SkScreen";
 
 
 /**
@@ -23,10 +23,11 @@ export abstract class _PlayScreen<
 > extends SkScreen<SID> {
 
     /**
-     * Hosts the implementation-specific grid element, as well as some
-     * other overlays.
+     * Hosts the implementation-specific grid element's scroll-wrapper,
+     * as well as some other game-status overlays.
      */
-    protected readonly gridElem: HTMLElement;
+    protected readonly gridTopElem: HTMLElement;
+    private readonly gridImplHost:  HTMLElement;
 
     private readonly playersBar: HTMLElement;
 
@@ -83,8 +84,16 @@ export abstract class _PlayScreen<
         this.baseElem.classList.add(OmHooks.Screen.Impl.PlayGame.Class.BASE);
 
         const centerColItems = _PlayScreen.createCenterColElem();
-        (this.gridElem as HTMLElement) = centerColItems.gridElem;
+        (this.gridTopElem as HTMLElement) = centerColItems.gridElem;
+        (this.gridImplHost as HTMLElement) = centerColItems.gridScrollWrapInner;
         this.baseElem.appendChild(centerColItems.baseElem);
+        centerColItems.pauseOl.addEventListener("click", (ev) => {
+            // TODO.impl unpause the game if paused.
+            const game = this.currentGame;
+            if (game && game.status === Game.Status.PAUSED) {
+                this.statusBecomePlaying();
+            }
+        });
         // ^Purposely make the grid the first child so it gets tabbed to first.
 
         this.initializeControlsBar();
@@ -124,13 +133,13 @@ export abstract class _PlayScreen<
         this.#currentGame = await this._createNewGame(
             args as (typeof args & Game.CtorArgs<G,any>)
         );
-        this.gridElem.addEventListener("keydown", this.#gridOnKeyDown);
+        this.gridTopElem.addEventListener("keydown", this.#gridOnKeyDown);
         await this.currentGame!.reset();
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
         // by populating tiles with CSP's can be done all at once.
         const html = this.currentGame!.htmlElements;
-        this.gridElem.insertAdjacentElement("afterbegin", html.gridImpl);
+        this.gridImplHost.appendChild(html.gridImpl);
         // ^The order of insertion does not matter (it used to).
         this.playersBar.appendChild(html.playersBar);
 
@@ -157,7 +166,7 @@ export abstract class _PlayScreen<
         for (const elem of Object.values(this.currentGame!.htmlElements)) {
             elem.remove();
         }
-        this.gridElem.removeEventListener("keydown", this.#gridOnKeyDown);
+        this.gridTopElem.removeEventListener("keydown", this.#gridOnKeyDown);
         this.#currentGame = undefined;
         return true;
     }
@@ -211,12 +220,12 @@ export abstract class _PlayScreen<
         this.currentGame?.statusBecomePlaying();
         this.pauseButton.textContent = "Pause";
         this.#pauseReason = undefined;
-        this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
+        this.gridTopElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
         window.requestAnimationFrame((time) => {
             this.pauseButton.onclick = this.statusBecomePaused.bind(this);
             this.resetButton.disabled = true;
-            this.gridElem.focus();
+            this.gridTopElem.focus();
         });
     }
 
@@ -225,7 +234,7 @@ export abstract class _PlayScreen<
         this.currentGame?.statusBecomePaused();
         this.pauseButton.textContent = "Unpause";
         this.#pauseReason = document.hidden ? "page-hide" : "other";
-        this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
+        this.gridTopElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
 
         this.pauseButton.onclick    = this.statusBecomePlaying.bind(this);
         this.resetButton.disabled   = false;
@@ -236,7 +245,7 @@ export abstract class _PlayScreen<
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.pauseButton.disabled = true;
         this.resetButton.disabled = false;
-        this.gridElem.dataset[OHGD.KEY] = OHGD.VALUES.OVER;
+        this.gridTopElem.dataset[OHGD.KEY] = OHGD.VALUES.OVER;
     }
 
     /**
@@ -259,6 +268,7 @@ export abstract class _PlayScreen<
     protected initializeControlsBar(): void {
         const controlsBar = document.createElement("div");
         controlsBar.classList.add(
+            OmHooks.General.Class.CENTER_CONTENTS,
             OmHooks.General.Class.INPUT_GROUP,
             OmHooks.Screen.Impl.PlayGame.Class.CONTROLS_BAR,
         );
@@ -278,7 +288,7 @@ export abstract class _PlayScreen<
         }
         controlsBar.addEventListener("pointerleave", (ev) => {
             window.requestAnimationFrame((time) => {
-                this.gridElem.focus();
+                this.gridTopElem.focus();
             });
         });
 
@@ -314,61 +324,76 @@ export namespace _PlayScreen {
     /**
      *
      */
-    export function createCenterColElem():
-    { baseElem: HTMLElement, gridElem: HTMLElement, }
-    {
+    export function createCenterColElem():{
+        baseElem: HTMLElement,
+        gridElem: HTMLElement,
+        gridScrollWrapInner: HTMLElement,
+        pauseOl:  HTMLElement,
+    } {
+        const OMHC = OmHooks.Grid.Class;
         const CSS_FX = OmHooks.General.Class;
-        const centerColElem = document.createElement("div");
-        centerColElem.classList.add(
+        const centerCol = document.createElement("div");
+        centerCol.classList.add(
             CSS_FX.CENTER_CONTENTS,
             OmHooks.Screen.Impl.PlayGame.Class.GRID_CONTAINER,
         );
-        const gridElem = document.createElement("div");
-        gridElem.tabIndex = 0; // <-- allow focusing this element.
-        gridElem.setAttribute("role", "textbox");
-        gridElem.setAttribute("aria-label", "Game Grid");
-        gridElem.classList.add(
-            CSS_FX.CENTER_CONTENTS,
+        const grid = document.createElement("div");
+        grid.tabIndex = 0; // <-- allow focusing this element.
+        grid.setAttribute("role", "textbox");
+        grid.setAttribute("aria-label", "Game Grid");
+        grid.classList.add(
+            //CSS_FX.CENTER_CONTENTS,
             CSS_FX.STACK_CONTENTS,
             CSS_FX.TEXT_SELECT_DISABLED,
-            OmHooks.Grid.Class.GRID,
+            OMHC.GRID,
         );
-        {
+        // Grid Scroll Wrapper:
+        const scrollInner = document.createElement("div");
+        scrollInner.classList.add(OMHC.SCROLL_INNER); {
+            const scrollOuter = document.createElement("div");
+            scrollOuter.classList.add(OMHC.SCROLL_OUTER);
+            scrollOuter.appendChild(scrollInner);
+            grid.appendChild(scrollOuter);
+        } {
             // Add a "keyboard-disconnected" overlay if not added already:
             const kbdDcBase = document.createElement("div");
             kbdDcBase.classList.add(
+                CSS_FX.FILL_PARENT,
                 CSS_FX.CENTER_CONTENTS,
-                OmHooks.Grid.Class.KBD_DC,
+                OMHC.KBD_DC,
             );
             // TODO.impl Add an <svg> with icon instead please.
             {
                 const kbdDcIcon = document.createElement("div");
-                kbdDcIcon.classList.add(OmHooks.Grid.Class.KBD_DC_ICON);
+                kbdDcIcon.classList.add(OMHC.KBD_DC_ICON);
                 kbdDcIcon.textContent = "(click here to continue typing)";
                 kbdDcBase.appendChild(kbdDcIcon);
             }
-            gridElem.appendChild(kbdDcBase);
-        } {
+            grid.appendChild(kbdDcBase);
+        }
+        const pauseOl = document.createElement("div"); {
             // Add a "keyboard-disconnected" overlay if not added already:
-            const pauseOl = document.createElement("div");
             pauseOl.classList.add(
+                CSS_FX.FILL_PARENT,
                 CSS_FX.CENTER_CONTENTS,
-                OmHooks.Grid.Class.PAUSE_OL,
+                OMHC.PAUSE_OL,
             );
             // TODO.impl Add an <svg> with icon instead please.
             {
                 const pauseIcon = document.createElement("div");
-                pauseIcon.classList.add(OmHooks.Grid.Class.PAUSE_OL_ICON);
-                pauseIcon.textContent = "(The Game is Paused)";
+                pauseIcon.classList.add(OMHC.PAUSE_OL_ICON);
+                pauseIcon.textContent = "(Click to Unpause)";
                 pauseOl.appendChild(pauseIcon);
             }
-            gridElem.appendChild(pauseOl);
+            grid.appendChild(pauseOl);
         }
-        centerColElem.appendChild(gridElem);
+        centerCol.appendChild(grid);
 
         return Object.freeze({
-            baseElem: centerColElem,
-            gridElem,
+            baseElem: centerCol,
+            gridElem: grid,
+            gridScrollWrapInner: scrollInner,
+            pauseOl: pauseOl,
         });
     }
 }

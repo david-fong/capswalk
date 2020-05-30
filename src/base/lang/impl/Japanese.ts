@@ -245,6 +245,5 @@ export namespace Japanese {
     Katakana as Lang.ClassIf;
     Object.seal(Katakana);
     Object.freeze(Katakana.prototype);
-
 }
 Object.freeze(Japanese);
