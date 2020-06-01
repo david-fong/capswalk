@@ -14,11 +14,14 @@
         <meta name="og:title"  content="SnaKey v3"/>
         <meta name="og:description" content="A multiplayer typing game for learning written languages."/>
         <meta name="og:image"  content="./assets/images/screenshots/snakey_version3_blanktitle.png"/>
+
+        <link rel="prefetch" as="script" id="socket.io-preload" href="dist/client/vendor/socket.io.js"/>
+        <link rel="preload" as="script" href="dist/client/index.js"/>
+        <link rel="preload" as="style"  href="dist/client/index.css"/>
     </head>
 
 
     <body class="fill-parent">
-        <script id="socket.io" src="dist/client/vendor/socket.io.js"></script>
         <datalist id="public-game-hosts-list">
             <!-- default protocol is http -->
         </datalist>
@@ -32,7 +35,7 @@
         <div id="background" class="sk-screen"></div>
         <div id="all-screens-container"></div>
         <div id="screen-tint" class="sk-screen"></div>
-        <div id="screen-texture" class="sk-screen"><!-- Courtesy of Toptal Patterns --></div>
+        <div id="screen-texture" class="sk-screen"></div>
         <script defer src="dist/client/index.js"></script>
     </body>
 </html>

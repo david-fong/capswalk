@@ -74,14 +74,17 @@ export class TopLevel {
         //     /* webpackChunkName: "[request]" */
         //     "socket.io-client"
         // ));
-        return new Promise<typeof import("socket.io-client")>((resolve, reject): void => {
-            const script = document.getElementById("socket.io")!;
-            if (io) return resolve(io);
-            script.onload = (): void => {
-                resolve(io);
-            };
-            return;
-        });
+        return (() => {
+            let cached: undefined | Promise<typeof import("socket.io-client")>;
+            return cached || (cached = new Promise<typeof import("socket.io-client")>((resolve, reject): void => {
+                const script = document.createElement("script");
+                script.onload = (): void => {
+                    resolve(io);
+                };
+                script.src = (document.getElementById("socket.io-preload") as HTMLLinkElement).href;
+                document.body.appendChild(script);
+            }));
+        })();
     }
 
     /**
