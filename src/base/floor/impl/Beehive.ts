@@ -132,10 +132,17 @@ export namespace Beehive {
             // Initialize `grid`:
         }
 
-        public forEachTile(consumer: (tile: Tile<S>) => void, thisArg: object = this): void {
-            this.grid.forEach((row) => row.forEach((tile) => {
-                consumer(tile);
-            }, thisArg), thisArg);
+        public forEachTile(consumer: (tile: Tile<S>) => void): void {
+            for (const row of this.grid) {
+                for (const tile of row) {
+                    consumer(tile);
+                }
+            }
+        }
+        public shuffledForEachTile(consumer: (tile: Tile<S>) => void): void {
+            this.grid.flat()
+            .sort((a,b) => Math.random() - 0.5)
+            .forEach((tile) => consumer(tile));
         }
 
         public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {

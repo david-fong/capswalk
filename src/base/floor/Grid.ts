@@ -43,16 +43,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         this.forEachTile((tile) => tile.reset());
     }
 
-    /**
-     * Performs simple checks that the grid is playable.
-     *
-     * - Each tile in the grid has a non-self destination (coord#equals).
-     * - (compute-heavyish): Each tile follows Impl.getAmbiguityThreshold
-     */
-    protected check(): void {
-        // Check that
-    }
-
 
     /**
      * For BaseGame's implementation of SER/DES to work, the traversal
@@ -64,9 +54,10 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * function.
      *
      * @param consumer -
-     * @param thisArg -
      */
-    public abstract forEachTile(consumer: (tile: Tile<S>) => void, thisArg?: object): void;
+    public abstract forEachTile(consumer: (tile: Tile<S>) => void): void;
+
+    public abstract shuffledForEachTile(consumer: (tile: Tile<S>) => void): void;
 
     /**
      * @returns

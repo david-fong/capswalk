@@ -120,12 +120,8 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
             char.reset();
             // Seed with properly-weight-distributed hit counts
             // for a uniformly distributed random number of times.
-            // The choice of the upper bound on the number of times
-            // is rather arbitrary, but it should not be too small.
-            const hitSeedTimes = Math.ceil(Math.random() * _Lang.CHAR_HIT_SEED_CEILING);
-            for (let i = 0; i < hitSeedTimes; i++) {
-                this.incrementNumHits(char);
-            }
+            // const hitSeedTimes = Math.ceil(Math.random() * _Lang.CHAR_HIT_SEED_CEILING);
+            // this.incrementNumHits(char, hitSeedTimes);
         });
     }
 

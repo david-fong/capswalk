@@ -47,6 +47,7 @@ takes a long time to arrive. */
     background-size: 13.5rem;
     mix-blend-mode: overlay;
     background-color: #919191;
+    /* Image courtesy of toptal patterns: */
     background-image: url(../../images/textures/cheap_diagonal_fabric.png);
     background-blend-mode: color-burn;
     filter: contrast(2.3);

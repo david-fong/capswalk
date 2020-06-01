@@ -15,6 +15,7 @@
 ### High Priority
 
 1. Make grid forEach take an argument for whether to use a random order.
+    - Use this to prevent clear patterns from forming when populating a grid with CSP's during reset: Without a random order, the first row of tiles cycles through high-weight CSP nodes with zero resistance from existing neighbouring CSP's.
 1. Implement game creation event communications for online game.
 1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay lighter.
 1. Implement the scores/player-listing sidebar in __PlayScreen.

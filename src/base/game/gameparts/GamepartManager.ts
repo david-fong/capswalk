@@ -88,7 +88,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         await this.#langImportPromise;
         this.lang.reset();
         // Shuffle everything:
-        this.grid.forEachTile((tile) => {
+        this.grid.shuffledForEachTile((tile) => {
             tile.setLangCharSeqPair(this.dryRunShuffleLangCharSeqAt(tile));
         });
 
