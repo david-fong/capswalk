@@ -1,18 +1,14 @@
 import { Game } from "game/Game";
 
-import type { Coord, Tile } from "floor/Tile";
+import type { Coord, Tile }     from "floor/Tile";
 import type { Player as _Player } from "defs/TypeDefs";
 import type { ArtificialPlayer } from "./ArtificialPlayer";
-import type { GamepartBase } from "game/gameparts/GamepartBase";
+import type { GamepartBase }    from "game/gameparts/GamepartBase";
 
-import { PlayerActionEvent } from "game/events/PlayerActionEvent";
-import { PlayerSkeleton } from "./PlayerSkeleton";
-import { PlayerStatus } from "./PlayerStatus";
-import { Team } from "./Team";
-
-export { PlayerSkeleton };
-export { PlayerStatus };
-export { Team };
+import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
+import { PlayerSkeleton }       from "./PlayerSkeleton";    export { PlayerSkeleton };
+import { PlayerStatus }         from "./PlayerStatus";      export { PlayerStatus };
+import { Team }                 from "./Team";              export { Team };
 
 
 /**

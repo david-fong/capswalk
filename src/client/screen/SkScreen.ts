@@ -17,7 +17,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 
     public readonly screenId: SID;
 
-    protected readonly toplevel: TopLevel;
+    protected readonly top: TopLevel;
 
     readonly #parentElem: HTMLElement;
 
@@ -50,7 +50,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         requestGoToDisplay: AllSkScreens["goToScreen"],
     ) {
         this.screenId           = screenId;
-        this.toplevel           = toplevel;
+        this.top           = toplevel;
         this.#parentElem        = parentElem;
         this.requestGoToScreen  = requestGoToDisplay;
         this.#hasLazyLoaded     = false;
@@ -70,7 +70,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             const spaceyCamelName = this.screenId.replace(/[A-Z]/g, (letter) => " " + letter);
             { // "<SCREEN NAME> SCREEN"
                 const str = spaceyCamelName.toUpperCase();
-                baseElem.insertAdjacentHTML("beforebegin", `<!-- ${str} SCREEN -->`);
+                this.top.prependComment(baseElem, `${str} SCREEN`);
             }{ // "<Screen Name> Screen"
                 const str = spaceyCamelName.split(' ').map((word) =>
                     word.charAt(0).toUpperCase()

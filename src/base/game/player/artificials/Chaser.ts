@@ -1,8 +1,10 @@
-import type { Coord, Tile } from "floor/Tile";
-import type { GamepartManager } from "game/gameparts/GamepartManager";
 
-import { Player } from "game/player/Player";
-import { ArtificialPlayer } from "../ArtificialPlayer";
+import {
+    Coord, Tile,
+    Player,
+    GamepartManager,
+    ArtificialPlayer,
+} from "../ArtificialPlayer";
 
 
 /**

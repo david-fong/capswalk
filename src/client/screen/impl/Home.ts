@@ -45,7 +45,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
                     elem.focus();
                 });
                 // TODO.impl play a keyboard click sound.
-                this.toplevel.sfx;
+                this.top.sfx;
             });
             nav.appendChild(elem);
         };

@@ -26,13 +26,12 @@ export class AllSkScreens {
 
     #currentScreen: SkScreen<SkScreen.Id>;
 
-    public constructor(toplevel: TopLevel, baseElem: HTMLElement) {
+    public constructor(top: TopLevel, baseElem: HTMLElement) {
         baseElem.setAttribute("role", "presentation");
         // Setting role="presentation" is similar to setting "display: content"
         // Setting aria-hidden="true" is similar to setting "visibility: hidden"
-        baseElem.insertAdjacentHTML("beforebegin", "<!-- ALL SCREENS CONTAINER -->");
         const Id = SkScreen.Id;
-        const t = toplevel;
+        const t = top;
         const p = baseElem;
         const f = this.goToScreen.bind(this);
         this.dict = Object.freeze({

@@ -19,7 +19,7 @@
     transition-duration: 0.35s;
     transition-timing-function: ease-out;
 }
-.sk-pick-one--opt:not([aria-active-descendant="true"]):not([aria-selected="true"]) {
+.sk-pick-one:focus .sk-pick-one--opt:not([aria-active-descendant="true"]):not([aria-selected="true"]) {
     opacity:    0.4;
 }
 .sk-pick-one--opt[aria-selected="true"] {

@@ -3,7 +3,7 @@ import { Coord } from "floor/Tile";
 import type { Game } from "game/Game";
 import { SkPickOne } from "../../utils/SkPickOne";
 
-import { SkScreen } from "../SkScreen";
+import { OmHooks, SkScreen } from "../SkScreen";
 
 
 type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
@@ -23,12 +23,16 @@ export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID>
      * @override
      */
     protected _lazyLoad(): void {
+        this.baseElem.classList.add(OmHooks.Screen.Impl.Setup.Class.BASE);
+
+        // Language selection component:
         (this.langSel as SetupScreen.LangPickOne) = new SetupScreen.LangPickOne();
         this.baseElem.appendChild(this.langSel.baseElem);
 
         const nextBtn
             = (this.nextBtn as HTMLButtonElement)
             = document.createElement("button");
+        nextBtn.classList.add(OmHooks.Screen.Impl.Setup.Class.NEXT_BUTTON);
         nextBtn.textContent = "Next";
         this.baseElem.appendChild(nextBtn);
     }

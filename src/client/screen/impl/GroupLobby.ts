@@ -24,7 +24,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     protected _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
 
         // Listen for when the server sends tbe game constructor arguments:
-        this.toplevel.socket!.once(
+        this.top.socket!.once(
             Game.CtorArgs.EVENT_NAME,
             async (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,any>) => {
                 this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);

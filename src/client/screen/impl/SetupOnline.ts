@@ -16,7 +16,6 @@ export class SetupOnlineScreen extends SetupScreen<SID> {
 
     protected _lazyLoad(): void {
         super._lazyLoad();
-        this.baseElem.classList.add(OmHooks.Screen.Impl.SetupOffline.Class.BASE);
 
         this.nextBtn.onclick = (ev) => {
             // TODO.design create ctorArgs from user presets.

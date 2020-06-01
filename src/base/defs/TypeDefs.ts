@@ -224,19 +224,25 @@ export namespace Lang {
         + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
         + " and Tourism",
     },
-    // <const>{
-    //     id: "engl-cell-enc",
-    //     module: "English", export: "Cellphone", numLeaves: 8,
-    //     remapFunc: _RemapTemplates.IDENTITY,
-    //     displayName: "Old Cellphone Keyboard",
-    //     blurb: "",
-    // },
+    <const>{
+        id: "engl-cell-enc",
+        module: "English", export: "OldCellphone.Encode", numLeaves: 8,
+        remapFunc: _RemapTemplates.IDENTITY,
+        displayName: "Old Cellphone Keyboard",
+        blurb: "",
+    },
     ].map((desc) => Object.freeze(desc)));
     FrontendDescs as TU.RoArr<FrontendDesc>;
 
     export type FrontendDesc = Readonly<{
         id:         string;
+        /**
+         * Pretty much a file name.
+         */
         module:     string;
+        /**
+         * A property-access chain.
+         */
         export:     string;
         remapFunc:  {(input: string): string};
         numLeaves:  number;

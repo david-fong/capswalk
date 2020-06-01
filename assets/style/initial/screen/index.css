@@ -1,3 +1,4 @@
 @import "./home.css";
-@import "./__play.css";
+@import "./setup.css";
+@import "./play.css";
 @import "./groupjoiner.css";

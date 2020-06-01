@@ -117,12 +117,17 @@ export namespace OmHooks {
                     NAV_RPT_ISSUE:      "screen-home--nav--report-issue",
                 };
             }
-            export namespace PlayGame {
+            export namespace Play {
                 export const Class = <const>{
                     BASE:               "screen-play",
-                    GRID_CONTAINER:     "screen-play--grid-container",
                     CONTROLS_BAR:       "screen-play--controls-bar",
                     PLAYERS_BAR:        "screen-play--players-bar",
+                };
+            }
+            export namespace Setup {
+                export const Class = <const>{
+                    BASE:               "screen-setup",
+                    NEXT_BUTTON:        "screen-setup--next-button",
                 };
             }
             export namespace GroupJoiner {
@@ -134,11 +139,6 @@ export namespace OmHooks {
                     PASSPHRASE:         "screen-joiner--passphrase",
                     NEXT_BUTTON:        "screen-joiner--next-button",
                 };
-            }
-            export namespace SetupOffline {
-                export const Class = <const>{
-                    BASE:               "screen-setup-offline",
-                }
             }
         }
     }

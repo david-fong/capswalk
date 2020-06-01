@@ -3,13 +3,13 @@ import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
 import { Player } from "../player/Player";
+import { ArtificialPlayer } from "../player/ArtificialPlayer";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
 
 import { GamepartEvents } from "./GamepartEvents";
-import { ScoreInfo } from "game/ScoreInfo";
-import { ArtificialPlayer } from 'game/player/ArtificialPlayer';
+import { ScoreInfo } from "../ScoreInfo";
 
 
 /**
@@ -59,11 +59,12 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             /* webpackChunkName: "lang/[request]" */
             `lang/impl/${this.langFrontend.module}.ts`
         ) /* as Promise<{ readonly [K in Lang.FrontendDesc["export"]]: Lang; }> */)
-        .then((module) => {
-            (this.lang as Lang) = (module
-                [this.langFrontend.module]
-                [this.langFrontend.export]
-            ).getInstance();
+        .then((langModule) => {
+            (this.lang as Lang) = new
+            (this.langFrontend.export.split(".").reduce<any>(
+                (nsps, propName) => nsps[propName],
+                langModule[this.langFrontend.module],
+            ));
 
             // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
             const minLangLeaves = this.grid.static.getAmbiguityThreshold();

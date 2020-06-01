@@ -2,9 +2,14 @@ import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { GamepartManager } from "game/gameparts/GamepartManager";
 
-import type { Chaser } from './artificials/Chaser';
+export type { Coord, Tile };
+export type { GamepartManager };
+
+// Implementations:
+import type { Chaser } from "./artificials/Chaser";
 
 import { Player } from "./Player";
+export { Player };
 
 
 /**

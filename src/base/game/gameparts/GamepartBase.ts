@@ -109,8 +109,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         return Promise.resolve();
     }
 
-    protected abstract _getGridImplementation(coordSys: S):
-    G extends Game.Type.SERVER ? Grid.ClassIf<S> : VisibleGrid.ClassIf<S>;
+    protected abstract _getGridImplementation(coordSys: S): Grid.ClassIf<S> | VisibleGrid.ClassIf<S>;
 
 
     /**

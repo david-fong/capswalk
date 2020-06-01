@@ -1,5 +1,4 @@
-import { Game } from "game/Game";
-export { Game };
+import { Game } from "game/Game"; export { Game };
 // import type { OfflineGame } from "../../game/OfflineGame";
 // import type { OnlineGame }  from "../../game/OnlineGame";
 import type { BrowserGameMixin } from "../../game/BrowserGame";
@@ -81,14 +80,14 @@ export abstract class _PlayScreen<
      * @override
      */
     protected _lazyLoad(): void {
-        this.baseElem.classList.add(OmHooks.Screen.Impl.PlayGame.Class.BASE);
+        this.baseElem.classList.add(OmHooks.Screen.Impl.Play.Class.BASE);
 
         const centerColItems = _PlayScreen.createCenterColElem();
-        (this.gridTopElem as HTMLElement) = centerColItems.gridElem;
+        (this.gridTopElem  as HTMLElement) = centerColItems.gridElem;
         (this.gridImplHost as HTMLElement) = centerColItems.gridScrollWrapInner;
-        this.baseElem.appendChild(centerColItems.baseElem);
+        this.gridImplHost.appendChild(document.createComment("grid impl host"));
+        this.baseElem.appendChild(centerColItems.gridElem);
         centerColItems.pauseOl.addEventListener("click", (ev) => {
-            // TODO.impl unpause the game if paused.
             const game = this.currentGame;
             if (game && game.status === Game.Status.PAUSED) {
                 this.statusBecomePlaying();
@@ -270,7 +269,7 @@ export abstract class _PlayScreen<
         controlsBar.classList.add(
             OmHooks.General.Class.CENTER_CONTENTS,
             OmHooks.General.Class.INPUT_GROUP,
-            OmHooks.Screen.Impl.PlayGame.Class.CONTROLS_BAR,
+            OmHooks.Screen.Impl.Play.Class.CONTROLS_BAR,
         );
         controlsBar.setAttribute("role", "menu");
 
@@ -316,7 +315,7 @@ export abstract class _PlayScreen<
         const playersBar
             = (this.playersBar as HTMLElement)
             = document.createElement("div");
-        playersBar.classList.add(OmHooks.Screen.Impl.PlayGame.Class.PLAYERS_BAR);
+        playersBar.classList.add(OmHooks.Screen.Impl.Play.Class.PLAYERS_BAR);
         this.baseElem.appendChild(playersBar);
     }
 }
@@ -325,18 +324,12 @@ export namespace _PlayScreen {
      *
      */
     export function createCenterColElem():{
-        baseElem: HTMLElement,
         gridElem: HTMLElement,
         gridScrollWrapInner: HTMLElement,
         pauseOl:  HTMLElement,
     } {
         const OMHC = OmHooks.Grid.Class;
         const CSS_FX = OmHooks.General.Class;
-        const centerCol = document.createElement("div");
-        centerCol.classList.add(
-            CSS_FX.CENTER_CONTENTS,
-            OmHooks.Screen.Impl.PlayGame.Class.GRID_CONTAINER,
-        );
         const grid = document.createElement("div");
         grid.tabIndex = 0; // <-- allow focusing this element.
         grid.setAttribute("role", "textbox");
@@ -387,10 +380,8 @@ export namespace _PlayScreen {
             }
             grid.appendChild(pauseOl);
         }
-        centerCol.appendChild(grid);
 
         return Object.freeze({
-            baseElem: centerCol,
             gridElem: grid,
             gridScrollWrapInner: scrollInner,
             pauseOl: pauseOl,

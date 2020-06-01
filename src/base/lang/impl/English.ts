@@ -13,9 +13,9 @@ export namespace English {
      */
     export class Lowercase extends Lang {
 
-        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-low");
-        private static SINGLETON?: Lowercase = undefined;
-        public static getInstance(): Lowercase {
+        public  static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-low");
+        private static SINGLETON?: Lowercase;
+        public  static getInstance(): Lowercase {
             return this.SINGLETON ?? (this.SINGLETON = new Lowercase());
         }
         // TODO.learn see https://wikipedia.org/wiki/Keyboard_layout#Dvorak
@@ -42,9 +42,9 @@ export namespace English {
      */
     export class MixedCase extends Lang {
 
-        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-mix");
-        private static SINGLETON?: MixedCase = undefined;
-        public static getInstance(): MixedCase {
+        public  static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-mix");
+        private static SINGLETON?: MixedCase;
+        public  static getInstance(): MixedCase {
             return this.SINGLETON ?? (this.SINGLETON = new MixedCase());
         }
         private constructor() {
@@ -78,7 +78,7 @@ export namespace English {
          */
         export class Encode extends Lang {
 
-            public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-low");
+            public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("engl-cell-enc");
             private static SINGLETON?: Encode = undefined;
             public static getInstance(): Encode {
                 return this.SINGLETON ?? (this.SINGLETON = new Encode());
@@ -100,7 +100,8 @@ export namespace English {
         const NUMPAD = Object.freeze([3,3,3,3,3,4,3,4,]
             .flatMap((val, idx) => {
                 const button = [];
-                for (let str = ""; str.length < val; str += 1+idx) {
+                const numpadKey = (1+idx).toString();
+                for (let str = numpadKey; str.length <= val; str += numpadKey) {
                     button.push(str);
                 }
                 return button;
@@ -121,6 +122,5 @@ export namespace English {
         u: 2.758, v: 0.978, w: 2.560, x: 0.150,
         y: 1.994, z: 0.077,
     });
-
 }
 Object.seal(English);

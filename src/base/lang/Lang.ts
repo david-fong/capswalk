@@ -57,6 +57,7 @@ export abstract class Lang extends _Lang {
         this.static     = classIf;
         this.treeMap    = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
         this.leafNodes  = this.treeMap.getLeafNodes();
+
         if (this.leafNodes.length !== this.static.frontend.numLeaves) {
             throw new Error(`maintenance required: the frontend constant`
             + ` for the language \"${this.static.frontend.id}\" needs to`

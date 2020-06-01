@@ -44,6 +44,7 @@ export class TopLevel {
         //
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
         if (!allScreensElem) { throw new Error; }
+        this.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
         this.allScreens = new AllSkScreens(this, allScreensElem);
 
         //
@@ -58,6 +59,13 @@ export class TopLevel {
     public toast(message: string): void {
         // TODO.impl
         console.info(message);
+    }
+
+    /**
+     * A non-user-facing markup utility.
+     */
+    public prependComment(node: HTMLElement, commentStr: string): void {
+        node.parentNode!.insertBefore(document.createComment(commentStr), node);
     }
 
     public get socketIo(): Promise<typeof import("socket.io-client")> {

@@ -4,7 +4,7 @@ require("assets/style/game/index.css");
 import {
     applyMixins,
     Game,
-    Coord, VisibleTile, VisibleGrid,
+    Coord, VisibleTile,
     BrowserGameMixin,
     Player, OperatorPlayer, VisiblePlayerStatus,
 } from "./BrowserGame";
@@ -26,13 +26,6 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
     declare public htmlElements: BrowserGameMixin.HtmlElements;
 
     public readonly socket: SocketIOClient.Socket;
-
-    /**
-     * @override
-     */
-    protected _getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
-        return VisibleGrid.getImplementation(coordSys);
-    }
 
 
     /**
@@ -77,6 +70,8 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
             },
         );
     }
+
+    declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
 
     protected _createArtifPlayer(desc: Player.CtorArgs): Player<S> {
         return new Player(this, desc);

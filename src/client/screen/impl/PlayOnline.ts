@@ -1,4 +1,3 @@
-import type {  } from "game/Game";
 import type { OnlineGame } from "../../game/OnlineGame";
 
 import { SkScreen } from "../SkScreen";
@@ -39,7 +38,7 @@ export class PlayOnlineScreen extends _PlayScreen<SkScreen.Id.PLAY_ONLINE, G> {
             "../../game/OnlineGame"
         )).OnlineGame(
             this._onGameBecomeOver.bind(this),
-            this.toplevel.socket!,
+            this.top.socket!,
             ctorArgs,
         );
         return Promise.resolve(game);

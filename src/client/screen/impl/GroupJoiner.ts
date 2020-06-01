@@ -105,7 +105,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
      *
      */
     private _initializeHostUrlHandlers(): () => Promise<void> {
-        const top = this.toplevel;
+        const top = this.top;
         const input = this.hostUrlInput;
         const submitInput = async (): Promise<void> => {
             // Minor cleaning: default the protocol and only use the origin:
@@ -140,7 +140,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             });
             this.socket.on("connect_error", (error: object) => {
                 this.socket = undefined;
-                this.toplevel.toast("Unable to connected to the specified server.");
+                this.top.toast("Unable to connected to the specified server.");
             });
             this.socket.on("disconnect", (reason: string) => {
                 if (reason === "io server disconnect") {
@@ -169,7 +169,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
      */
     private onNotifyGroupExist(response: Group.Exist.NotifyStatus): void {
         if (response === Group.Exist.RequestCreate.Response.NOPE) {
-            this.toplevel.toast(`The server rejected your request to`
+            this.top.toast(`The server rejected your request to`
             + ` create a new group \"${this.groupNameInput.value}\".`);
             return;
         }
@@ -286,7 +286,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             return url.toString();
         })();
         this.socket?.close();
-        const top = this.toplevel;
+        const top = this.top;
         this.socket = (await top.socketIo)(url, {
             query: { passphrase: this.passphraseInput.value, },
         });
@@ -306,10 +306,10 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
     }
 
     private get socket(): SocketIOClient.Socket | undefined {
-        return this.toplevel.socket;
+        return this.top.socket;
     }
     private set socket(newSocket: SocketIOClient.Socket | undefined) {
-        this.toplevel.socket = newSocket;
+        this.top.socket = newSocket;
     }
 
     /**
@@ -341,7 +341,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             hostUrl.type = "url";
             hostUrl.classList.add(OMHC.HOST_URL);
             hostUrl.autocomplete = "on";
-            const suggestedHostDesc = GroupJoinerScreen.SUGGEST_HOST(this.toplevel.webpageHostType);
+            const suggestedHostDesc = GroupJoinerScreen.SUGGEST_HOST(this.top.webpageHostType);
             if (suggestedHostDesc) {
                 const suggestOpt = document.createElement("option");
                 suggestOpt.value = suggestedHostDesc.value;

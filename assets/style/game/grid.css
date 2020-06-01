@@ -15,10 +15,10 @@
     layout. That's why it's commented out right now. */
     /* overscroll-behavior: contain; */
 }
-/* .game-grid, */
+.game-grid,
 .game-grid-scroll-outer,
 .game-grid-scroll-inner {
-    contain: content style;
+    contain: content;
     position: relative;
 }
 

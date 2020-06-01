@@ -1,6 +1,6 @@
 
 .fill-parent {
-    position:   absolute;
+    position: absolute;
     top: 0; right: 0; bottom: 0; left: 0;
     overflow: hidden hidden;
 }
@@ -40,25 +40,23 @@ margins and padding, and its own padding. */
     contain:        strict;
     position:       relative;
 }
-.sk-input-group * {
-    transition: all 0.15s ease-in;
-}
 .sk-input-group .sk-input-group-item {
     border-radius:  var(--border-radius);
     margin:         var(--spacing);
     border:  0px solid var(--colour-tileBg);
     color:              var(--colour-mainFg);
     background-color:   var(--colour-tileBg);
+    transition: all 0.15s ease-in;
 }
 /* Note: The javascript focuses these on pointer entry. */
 .sk-input-group .sk-input-group-item:focus {
     outline:        none;
     border-color:   var(--colour-tileBd);
-    box-shadow: inset 0px 0px 20px #00000040;
-    text-shadow: 0px 0px 8px #000000ff;
+    box-shadow:     inset 0px 0px 20px #00000040;
+    text-shadow:    0px 0px 8px #000000ff;
     animation: 0.4s ease-in-out -0.5s infinite alternate sk-input-group-item-focus;
 }
-.sk-input-group:focus-within > :not(:focus-within) {
+.sk-input-group:focus-within .sk-input-group-item:not(:focus) {
     filter:         brightness(0.9);
     opacity:        0.6;
 }
