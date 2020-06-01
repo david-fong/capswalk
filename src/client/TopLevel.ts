@@ -65,7 +65,7 @@ export class TopLevel {
      * A non-user-facing markup utility.
      */
     public prependComment(node: HTMLElement, commentStr: string): void {
-        node.parentNode!.insertBefore(document.createComment(commentStr), node);
+        node.parentNode!.insertBefore(document.createComment(" " + commentStr + " "), node);
     }
 
     public get socketIo(): Promise<typeof import("socket.io-client")> {

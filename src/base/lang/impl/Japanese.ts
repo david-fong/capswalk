@@ -16,19 +16,6 @@ export namespace Japanese {
      * # Hiragana
      */
     export class Hiragana extends Lang {
-
-        private static SINGLETON?: Hiragana = undefined;
-
-        public static getInstance(): Hiragana {
-            if (!this.SINGLETON) {
-                this.SINGLETON = new Hiragana();
-                (this.INITIALIZER as any) = undefined;
-            }
-            return this.SINGLETON;
-        }
-
-        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("japn-hir");
-
         /**
          * Values obtained from page 18 of the below pdf (p.499 of text)
          * https://link.springer.com/content/pdf/10.3758/BF03200819.pdf
@@ -117,15 +104,16 @@ export namespace Japanese {
             "ぢ": { seq: "di", weight:      82, },
         });
 
-        private constructor() {
+        public constructor(weightScaling: number) {
             super(
-                Hiragana,
+                "japn-hir",
                 Hiragana.INITIALIZER,
+                weightScaling,
             );
         }
     }
-    Hiragana as Lang.ClassIf;
-    Object.seal(Hiragana);
+    Hiragana as Lang.ClassIf
+    Object.freeze(Hiragana);
     Object.freeze(Hiragana.prototype);
 
 
@@ -134,19 +122,6 @@ export namespace Japanese {
      * # Katakana
      */
     export class Katakana extends Lang {
-
-        private static SINGLETON?: Katakana = undefined;
-
-        public static getInstance(): Katakana {
-            if (!this.SINGLETON) {
-                this.SINGLETON = new Katakana();
-                (this.INITIALIZER as any) = undefined;
-            }
-            return this.SINGLETON;
-        }
-
-        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("japn-kat");
-
         /**
          * Values obtained from page 19 of the below pdf (p.500 of text)
          * https://link.springer.com/content/pdf/10.3758/BF03200819.pdf
@@ -235,15 +210,16 @@ export namespace Japanese {
             "ヲ": { seq: "wo", weight:    122, },
         });
 
-        private constructor() {
+        public constructor(weightScaling: number) {
             super(
-                Katakana,
+                "japn-kat",
                 Katakana.INITIALIZER,
+                weightScaling,
             );
         }
     }
     Katakana as Lang.ClassIf;
-    Object.seal(Katakana);
+    Object.freeze(Katakana);
     Object.freeze(Katakana.prototype);
 }
 Object.freeze(Japanese);

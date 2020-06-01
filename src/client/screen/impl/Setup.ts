@@ -13,9 +13,9 @@ type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
  * the user chooses.
  */
 // TODO.learn how to use the IndexDB web API.
-export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID> {
+export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID> {
 
-    protected readonly langSel: SetupScreen.LangPickOne;
+    protected readonly langSel: _SetupScreen.LangPickOne;
 
     protected readonly nextBtn: HTMLButtonElement;
 
@@ -26,7 +26,7 @@ export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID>
         this.baseElem.classList.add(OmHooks.Screen.Impl.Setup.Class.BASE);
 
         // Language selection component:
-        (this.langSel as SetupScreen.LangPickOne) = new SetupScreen.LangPickOne();
+        (this.langSel as _SetupScreen.LangPickOne) = new _SetupScreen.LangPickOne();
         this.baseElem.appendChild(this.langSel.baseElem);
 
         const nextBtn
@@ -37,7 +37,7 @@ export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID>
         this.baseElem.appendChild(nextBtn);
     }
 }
-export namespace SetupScreen {
+export namespace _SetupScreen {
 
     // TODO.impl If we keep this, use a recursive Object.freeze.
     // Currently not frozen to allow for easier testing.
@@ -48,7 +48,7 @@ export namespace SetupScreen {
             width:  21,
         },
         averageFreeHealthPerTile: 1.0 / 45.0,
-        langBalancingScheme: Lang.BalancingScheme.WEIGHT,
+        langWeightScaling: 1.0,
         langId: "engl-low",
         playerDescs: [{
             isALocalOperator: true,
@@ -132,5 +132,5 @@ export namespace SetupScreen {
         Object.freeze(Option.prototype);
     }
 }
-Object.freeze(SetupScreen);
-Object.freeze(SetupScreen.prototype);
+Object.freeze(_SetupScreen);
+Object.freeze(_SetupScreen.prototype);

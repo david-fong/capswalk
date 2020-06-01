@@ -18,7 +18,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
 
     #confirmedOpt: O;
     #hoveredOpt: O;
-    #validity: boolean;
+    #isValid: boolean;
 
     public constructor() {
         const base = document.createElement("div");
@@ -88,19 +88,19 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
 
     private onOptDisabledChange(opt: O): void {
         if (this.confirmedOpt === opt) {
-            this.validity = !opt.disabled;
+            this.isValid = !opt.disabled;
         }
     }
 
-    private set validity(newValidity: boolean) {
-        if (this.validity !== newValidity) {
-            this.baseElem.setAttribute("aria-invalid", (newValidity ? "false": "true"));
-            this.#validity = newValidity;
+    private set isValid(newIsValid: boolean) {
+        if (this.isValid !== newIsValid) {
+            this.baseElem.setAttribute("aria-invalid", (newIsValid ? "false": "true"));
+            this.#isValid = newIsValid;
             // TODO.impl styling.
         }
     }
-    private get validity(): boolean {
-        return this.#validity;
+    private get isValid(): boolean {
+        return this.#isValid;
     }
 
     private onKeyDown(ev: KeyboardEvent): boolean {

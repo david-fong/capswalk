@@ -17,19 +17,6 @@ export namespace Korean {
      * https://www.branah.com/korean
      */
     export class Dubeolsik extends Lang {
-
-        private static SINGLETON?: Dubeolsik = undefined;
-
-        public static getInstance(): Dubeolsik {
-            if (!this.SINGLETON) {
-                this.SINGLETON = new Dubeolsik();
-                (this.DUB_KEYBOARD as any) = undefined;
-            }
-            return this.SINGLETON;
-        }
-
-        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-dub");
-
         private static readonly DUB_KEYBOARD = Object.freeze(<const>{
             "": "",
             "ㅂ": "q", "ㅈ": "w", "ㄷ": "e", "ㄱ": "r", "ㅅ": "t",
@@ -42,9 +29,9 @@ export namespace Korean {
             "ㅒ": "O", "ㅖ": "P",
         });
 
-        private constructor() {
+        public constructor(weightScaling: number) {
             super(
-                Dubeolsik,
+                "kore-dub",
                 INITIALIZE(((ij, mj, fj) => {
                     const atoms = [ij, mj, fj,].flatMap((jamos) => {
                         return (jamos.value in Dubeolsik.DUB_KEYBOARD)
@@ -52,12 +39,13 @@ export namespace Korean {
                     }) as Array<keyof typeof Dubeolsik.DUB_KEYBOARD>;
                     return atoms.map((atom) => Dubeolsik.DUB_KEYBOARD[atom]).join("");
                 }) as SeqBuilder),
+                weightScaling,
             );
         }
     }
     Dubeolsik as Lang.ClassIf;
-    Object.seal(Dubeolsik);
-    Object.seal(Dubeolsik.prototype);
+    Object.freeze(Dubeolsik);
+    Object.freeze(Dubeolsik.prototype);
 
 
     /**
@@ -70,22 +58,6 @@ export namespace Korean {
      * https://www.branah.com/sebeolsik
      */
     export class Sebeolsik extends Lang {
-
-        private static SINGLETON?: Sebeolsik = undefined;
-
-        public static getInstance(): Sebeolsik {
-            if (!this.SINGLETON) {
-                this.SINGLETON = new Sebeolsik();
-                (this.SEB_KEYBOARD as any) = undefined;
-            }
-            return this.SINGLETON;
-        }
-
-        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-sub");
-
-        /**
-         *
-         */
         private static readonly SEB_KEYBOARD = Object.freeze(<const>{
             // Finals and consonant clusters are found on the left.
             FINALS: {
@@ -122,18 +94,19 @@ export namespace Korean {
             },
         });
 
-        private constructor() { super(
-            Sebeolsik,
+        public constructor(weightScaling: number) { super(
+            "kore-sub",
             INITIALIZE(((ij, mj, fj) => {
                 return Sebeolsik.SEB_KEYBOARD.INITIALS[ij.value]
                     + Sebeolsik.SEB_KEYBOARD.MEDIALS[mj.value]
                     + Sebeolsik.SEB_KEYBOARD.FINALS[fj.value];
             }) as SeqBuilder),
+            weightScaling,
         ); }
     }
     Sebeolsik as Lang.ClassIf;
-    Object.seal(Sebeolsik);
-    Object.seal(Sebeolsik.prototype);
+    Object.freeze(Sebeolsik);
+    Object.freeze(Sebeolsik.prototype);
 
 
     /**
@@ -143,27 +116,17 @@ export namespace Korean {
      * https://wikipedia.org/wiki/Romanization_of_Korean#Systems
      */
     export class Romanization extends Lang {
-
-        private static SINGLETON?: Romanization = undefined;
-        public static getInstance(): Romanization {
-            if (!Romanization.SINGLETON) {
-                Romanization.SINGLETON = new Romanization();
-            }
-            return Romanization.SINGLETON;
-        }
-
-        public static readonly frontend = Lang.GET_FRONTEND_DESC_BY_ID("kore-rom");
-
-        private constructor() { super(
-            Romanization,
+        public constructor(weightScaling: number) { super(
+            "kore-rom",
             INITIALIZE(((ij, mj, fj) => {
                 return ij.roman + mj.roman + fj.roman;
             }) as SeqBuilder),
+            weightScaling,
         ); }
     }
     Romanization as Lang.ClassIf;
-    Object.seal(Romanization);
-    Object.seal(Romanization.prototype);
+    Object.freeze(Romanization);
+    Object.freeze(Romanization.prototype);
 
 
     const UNICODE_HANGUL_SYLLABLES_BASE = 0xAC00;
@@ -196,7 +159,9 @@ export namespace Korean {
                     const char = String.fromCharCode(UNICODE_HANGUL_SYLLABLES_BASE + offset);
                     forwardDict[char] = {
                         seq: seqBuilder(initialJamo, medialJamo, finalJamo),
-                        weight: WEIGHTS[char],
+                        weight: WEIGHTS[char] || 1,
+                        // TODO.impl remove the above fallback once weights dict gets implemented.
+                        //   Also then fix the internal `averageWeight` argument in each implementation.
                     };
                 });
             });
@@ -301,7 +266,7 @@ export namespace Korean {
     /**
      *
      */
-    // TODO.learn
+    // TODO.learn Korean jamo frequency. This should probably go in its own json file.
     const WEIGHTS = Object.freeze({
         "": 1,
     }) as Record<string, number>;

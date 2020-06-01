@@ -10,21 +10,22 @@ import { LangSeqTreeNode } from "lang/LangSeqTreeNode";
  * 'shi'"). A character may have more than one corresponding sequence,
  * representing alternate "spellings" (ways of typing it).
  *
- * In the use-case of this game, it is more helpful to think in the
- * reverse direction: As a map from typeable-key-sequences to sets of
- * corresponding unique characters (no character is mapped by multiple
- * key-sequences). This game does not require support for retrieving
- * the `Lang.Seq` corresponding to a `LangChar`.
+ * ### From Typeable Sequences to Written Characters
+ *
+ * To the game internals, the reverse thinking is more important: As
+ * a map from typeable key-sequences to sets of language-unique written
+ * characters (no character is mapped by multiple key-sequences). We
+ * do not require support for retrieving the sequence corresponding to
+ * a written character.
+ *
+ * ### Implementation Guide
  *
  * See the readme in [the implementations folder](./impl/readme.md)
  * for a guide on writing implementations of this class.
  */
 export abstract class Lang extends _Lang {
 
-    /**
-     * The abstract, static object for this language.
-     */
-    public readonly static: Lang.ClassIf;
+    public readonly frontendDesc: Lang.FrontendDesc;
 
     /**
      * A "reverse" map from `LangSeq`s to `LangChar`s.
@@ -41,26 +42,39 @@ export abstract class Lang extends _Lang {
     public get numLeaves(): number { return this.leafNodes.length; }
 
 
-
     /**
      * @param classIf -
-     * @param forwardDict - Weights are _relative_ values handled by
-     *      {@link LangSeqTreeNode}, which requires the provided values
-     *      to all be strictly positive values. They do not all need
-     *      to sum to a specific value such as 100.
+     *
+     * @param forwardDict
+     * Weights are _relative_ values handled by tree nodes, which
+     * require the provided values to all be strictly positive values.
+     * Ie. They do not need to sum up to any specific value.
+     *
+     * @param averageWeight
+     * The cached result of computing the average of the language's
+     * innate, unadjusted weight distribution. This is used in the
+     * calculation for weight-scaling. It is not used anywhere else.
+     *
+     * @param weightScaling
+     * A value used to scale the variance in weights. Passing zero will
+     * cause all weights to be adjusted to equal the average weight.
+     * Passing `1` will cause no adjustment to be made to the weights.
+     * Passing a value greater than one will cause an exaggeration of
+     * the weight distribution.
      */
     protected constructor(
-        classIf: Lang.ClassIf,
-        forwardDict: Lang.CharSeqPair.WeightedForwardMap,
+        frontendDescId: typeof Lang.FrontendDescs[number]["id"],
+        forwardDict:    Lang.CharSeqPair.WeightedForwardMap,
+        weightScaling:  number,
     ) {
         super();
-        this.static     = classIf;
-        this.treeMap    = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict);
-        this.leafNodes  = this.treeMap.getLeafNodes();
+        this.frontendDesc = Lang.GET_FRONTEND_DESC_BY_ID(frontendDescId);
+        this.treeMap      = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict, weightScaling);
+        this.leafNodes    = this.treeMap.getLeafNodes();
 
-        if (this.leafNodes.length !== this.static.frontend.numLeaves) {
+        if (this.leafNodes.length !== this.frontendDesc.numLeaves) {
             throw new Error(`maintenance required: the frontend constant`
-            + ` for the language \"${this.static.frontend.id}\" needs to`
+            + ` for the language \"${this.frontendDesc.id}\" needs to`
             + ` be updated to the correct, computed value, which is`
             + ` \`${this.leafNodes.length}\`.`);
         }
@@ -73,39 +87,30 @@ export abstract class Lang extends _Lang {
 
     /**
      * @returns
-     * A random `Lang.Char` in this `Lang` whose corresponding
-     * `Lang.Seq` is not a prefix of any `Lang.Seq` in `avoid`, and vice
-     * versa. They may share a common prefix as long as they are both
-     * longer in length than the shared prefix, and they are not equal
-     * to one another.
+     * A random char in this language whose corresponding sequence is
+     * not a prefix of any `Lang.Seq` in `avoid`, and vice versa. Ie.
+     * They may share a common prefix as long as they are both longer
+     * than the shared prefix.
      *
-     * This method is called to shuffle the `Lang.Char` / `Lang.Seq`
-     * pair at some Tile `A`. `avoid` should contain the `LangSeq`s
-     * from all Tiles reachable by a human Player occupying a Tile
-     * `B` from which they can also reach `A`
+     * @description
+     * This method is called to shuffle the char-seq pair at some tile
+     * A. `avoid` should contain the lang-sequences from all tiles
+     * reachable by a player occupying any tile B from which they can
+     * also reach A (except for A itself).
      *
-     * In order for this `Lang` to satisfy these constraints, it must
-     * be true that the number of leaf nodes in this tree-structure must
-     * `avoid` argument.
-     *
-     * In this implementation, a human Player can only reach a
-     * Tile whose coord has an `infNorm` of `1` from
-     * that of the Tile they are currently occupying. That is,
-     * `avoid` contains `LangSeq`s from all Tiles with an `infNorm`
-     * <= `2` from the Tile to shuffle (not including itself).
-     * This means that here, the size of `avoid` is always bounded by
-     * `(2*2 + 1)^2 - 1 == 24`. Using the English alphabet (26 typeable-
-     * letters), this requirement is met by a hair.
+     * @requires
+     * In order for this language to satisfy these constraints, it must
+     * be true that the number of leaf nodes in its tree-structure must
+     * provably be greater than the number of entries in `avoid` for all
+     * expected combinations of internal state and passed-arguments under
+     * which it could be called.
      *
      * @param avoid
      * A collection of `Lang.Seq`s to avoid conflicts with when choosing
      * a `Lang.Char` to return.
-     *
-     * @param balancingScheme -
      */
     public getNonConflictingChar(
         avoid: TU.RoArr<Lang.Seq>,
-        balancingScheme: Lang.BalancingScheme,
     ): Lang.CharSeqPair {
         // Wording the spec closer to this implementation: We must find
         // characters from nodes that are not descendants or ancestors
@@ -113,7 +118,7 @@ export abstract class Lang extends _Lang {
         // the ancestors or descendants of avoid-nodes are avoid-nodes.
 
         // Start by sorting according to the desired balancing scheme:
-        this.leafNodes.sort(LangSeqTreeNode.LEAF_CMP[balancingScheme]);
+        this.leafNodes.sort(LangSeqTreeNode.LEAF_CMP);
 
         let nodeToHit: LangSeqTreeNode | undefined = undefined;
         for (const leaf of this.leafNodes) {
@@ -142,25 +147,25 @@ export abstract class Lang extends _Lang {
             if (upstreamNodes.length) {
                 // Found a non-conflicting upstream node.
                 // Find the node with the lowest personal hit-count:
-                upstreamNodes.sort(LangSeqTreeNode.PATH_CMP[balancingScheme]);
+                upstreamNodes.sort(LangSeqTreeNode.PATH_CMP);
                 nodeToHit = upstreamNodes[0];
                 break;
             }
         }
         if (!nodeToHit) {
             // Should never reach here because there is a check in the
-            // constructor checking for this invariant.
+            // constructor for this invariant.
             throw new Error(`Invariants guaranteeing that a LangSeq can`
             + `always be shuffled-in were not met.`
             );
         }
-        return nodeToHit.chooseOnePair(balancingScheme);
+        return nodeToHit.chooseOnePair();
     }
 
     public simpleView(): object {
         return Object.assign(Object.create(null), {
-            id: this.static.frontend.id,
-            displayName: this.static.frontend.displayName,
+            id: this.frontendDesc.id,
+            displayName: this.frontendDesc.displayName,
             root: this.treeMap.simpleView(),
             numLeaves: this.leafNodes.length,
         });
@@ -170,12 +175,10 @@ export abstract class Lang extends _Lang {
 export namespace Lang {
     /**
      * Every constructor function (class literal) implementing the
-     * `Lang` class must implement this interface. Ie. These will be
-     * implemented as static methods.
+     * `Lang` class must implement this interface.
      */
     export interface ClassIf {
-        getInstance(): Lang;
-        readonly frontend: Lang.FrontendDesc;
+        new (weightScaling: number): Lang;
     };
 
     /**
@@ -207,10 +210,11 @@ export namespace Lang {
          * `Record` type enforces the invariant that {@link Lang.Char}s are
          * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}.
          */
-        export type WeightedForwardMap = Record<Lang.Char, Readonly<{seq: Lang.Seq, weight: number,}>>;
+        export type WeightedForwardMap = Record<
+            Lang.Char,
+            Readonly<{seq: Lang.Seq, weight: number,}>
+        >;
     }
-
-    export type BalancingScheme = _Lang.BalancingScheme;
 
     export type FrontendDesc = _Lang.FrontendDesc;
 }

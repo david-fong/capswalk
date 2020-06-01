@@ -63,7 +63,7 @@ export namespace Game {
         averageFreeHealthPerTile: Player.Health;
 
         langId: Lang.FrontendDesc["id"];
-        langBalancingScheme: Lang.BalancingScheme;
+        langWeightScaling: number;
 
         playerDescs: TU.RoArr<(
             G extends Game.Type.Manager

@@ -14,7 +14,7 @@
 
 ### High Priority
 
-1. Langs should not use singleton pattern because they carry state about hit-counts in their tree.
+1. Make grid forEach take an argument for whether to use a random order.
 1. Implement game creation event communications for online game.
 1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay lighter.
 1. Implement the scores/player-listing sidebar in __PlayScreen.

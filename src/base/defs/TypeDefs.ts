@@ -129,17 +129,6 @@ export namespace Lang {
     export const CHAR_HIT_SEED_CEILING = 10;
 
     /**
-     * Ways of choosing {@link LangCharSeqPair} to balance the frequency
-     * of the selection of a result based on the results of all previous
-     * selections.
-     */
-    export const enum BalancingScheme {
-        SEQ     = "SEQ",
-        CHAR    = "CHAR",
-        WEIGHT  = "WEIGHT",
-    }
-
-    /**
      *
      * This can be used, for example, for basic practical purposes like
      * changing all letters to lowercase for the English language, or for

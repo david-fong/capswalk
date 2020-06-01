@@ -15,7 +15,7 @@ export namespace Lang {
         Korean.Romanization,
     ]
     .forEach((langImpl) => {
-        const inst = langImpl.getInstance();
+        const inst = new (langImpl)(1.0);
         inst.reset();
         console.log(inst.simpleView());
         debugger;
