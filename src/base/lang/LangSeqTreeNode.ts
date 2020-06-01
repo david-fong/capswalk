@@ -118,10 +118,15 @@ export class LangSeqTreeNode<ROOT extends boolean = false> {
         this.inheritingWeightedHitCount = 0.000;
         this.#characters.forEach((char) => {
             char.reset();
+
+            // The below shuffling code is a less-performant alternative
+            // to what is currently being done in the Lang.reset method.
             // Seed with properly-weight-distributed hit counts
             // for a uniformly distributed random number of times.
             // const hitSeedTimes = Math.ceil(Math.random() * _Lang.CHAR_HIT_SEED_CEILING);
-            // this.incrementNumHits(char, hitSeedTimes);
+            // for (let i = 0; i < hitSeedTimes; i++) {
+            //     this.incrementNumHits(char);
+            // }
         });
     }
 
@@ -298,7 +303,7 @@ export namespace LangSeqTreeNode {
             throw new TypeError("Must never hit on the root.");
         }
         public andNonRootParents(): never {
-            throw new TypeError();
+            throw new TypeError("Must never hit on the root.");
         }
         public simpleView(): object {
             return (super.simpleView() as any).kids;

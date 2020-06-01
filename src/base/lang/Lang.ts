@@ -82,6 +82,8 @@ export abstract class Lang extends _Lang {
 
     public reset(): void {
         this.treeMap.reset();
+        // Shuffle the initial leaf order:
+        this.leafNodes.sort((a,b) => Math.random() - 0.5);
     }
 
 

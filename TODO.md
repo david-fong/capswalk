@@ -14,10 +14,10 @@
 
 ### High Priority
 
-1. Make grid forEach take an argument for whether to use a random order.
-    - Use this to prevent clear patterns from forming when populating a grid with CSP's during reset: Without a random order, the first row of tiles cycles through high-weight CSP nodes with zero resistance from existing neighbouring CSP's.
+1. Make LangSeqTreeNode extend the Root variant.
+    - Make `inheritingWeightedHitCount` protected in the Root variant, and then use it in reset to weigh the shuffle sort toward weightier CSP's.
+1. Make artificial players' timers take into account how many keypresses the destination tile's sequence is.
 1. Implement game creation event communications for online game.
-1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay lighter.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores (very small size) on top of player faces.
 1. Display the operator's current sequence buffer.
@@ -30,6 +30,7 @@
       - If the attacker is downed (ie. everyone in the interaction is downed), no changes should be made. Just short circuit.
       - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
       - If it still has more health, it does something similar for its teammates.
+1. Use webpack replace plugin to change some assertions and checks to only be done during development.
 
 ### Routine Checkups
 
@@ -39,13 +40,6 @@
 
 - Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 - Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
-  - Steps:
-    - Set .game-grid contain to content and make it control its sizing (ex. 70vmin).
-    - Put .game-grid-impl-body inside a new wrapper that is sized according to its content.
-    - Put the sizing wrapper inside a new "scroll" wrapper.
-      - Make this scrolling wrapper control padding instead of .game-grid.
-        - This is so that the scroll bars will hug the grid viewport.
-      - Size the scrolling wrapper according to its parent, which is .game-grid.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
