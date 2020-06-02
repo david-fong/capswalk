@@ -14,8 +14,8 @@
 
 ### High Priority
 
-1. Make LangSeqTreeNode extend the Root variant.
-    - Make `inheritingWeightedHitCount` protected in the Root variant, and then use it in reset to weigh the shuffle sort toward weightier CSP's.
+1. ~Make LangSeqTreeNode extend the Root variant.~
+    - Make `inheritingWeightedHitCount` protected in the Root variant, and then use it in reset to weigh the shuffle sort toward weightier CSP's. Or maybe just go back to the slower shuffle method. That one has more accurate / desirable results with state setup.
 1. Make artificial players' timers take into account how many keypresses the destination tile's sequence is.
 1. Implement game creation event communications for online game.
 1. Implement the scores/player-listing sidebar in __PlayScreen.

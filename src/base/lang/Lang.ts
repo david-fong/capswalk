@@ -1,6 +1,6 @@
 import { Lang as _Lang } from "defs/TypeDefs";
 
-import { LangSeqTreeNode } from "lang/LangSeqTreeNode";
+import { LangSeqTree } from "lang/LangSeqTreeNode";
 
 
 /**
@@ -30,30 +30,25 @@ export abstract class Lang extends _Lang {
     /**
      * A "reverse" map from `LangSeq`s to `LangChar`s.
      */
-    private readonly treeMap: LangSeqTreeNode<true>;
+    private readonly treeMap: LangSeqTree.ParentNode;
 
     /**
      * A list of leaf nodes in `treeMap` sorted in ascending order by
      * hit-count. Entries should never be removed or added. They will
      * always be sorted in ascending order of `tricklingHitCount`.
      */
-    private readonly leafNodes: Array<LangSeqTreeNode>;
+    private readonly leafNodes: Array<LangSeqTree.ChildNode>;
 
     public get numLeaves(): number { return this.leafNodes.length; }
 
 
     /**
-     * @param classIf -
+     * @param frontendDescId -
      *
      * @param forwardDict
      * Weights are _relative_ values handled by tree nodes, which
      * require the provided values to all be strictly positive values.
      * Ie. They do not need to sum up to any specific value.
-     *
-     * @param averageWeight
-     * The cached result of computing the average of the language's
-     * innate, unadjusted weight distribution. This is used in the
-     * calculation for weight-scaling. It is not used anywhere else.
      *
      * @param weightScaling
      * A value used to scale the variance in weights. Passing zero will
@@ -69,7 +64,7 @@ export abstract class Lang extends _Lang {
     ) {
         super();
         this.frontendDesc = Lang.GET_FRONTEND_DESC_BY_ID(frontendDescId);
-        this.treeMap      = LangSeqTreeNode.CREATE_TREE_MAP(forwardDict, weightScaling);
+        this.treeMap      = LangSeqTree.ParentNode.CREATE_TREE_MAP(forwardDict, weightScaling);
         this.leafNodes    = this.treeMap.getLeafNodes();
 
         if (this.leafNodes.length !== this.frontendDesc.numLeaves) {
@@ -120,17 +115,17 @@ export abstract class Lang extends _Lang {
         // the ancestors or descendants of avoid-nodes are avoid-nodes.
 
         // Start by sorting according to the desired balancing scheme:
-        this.leafNodes.sort(LangSeqTreeNode.LEAF_CMP);
+        this.leafNodes.sort(LangSeqTree.ParentNode.LEAF_CMP);
 
-        let nodeToHit: LangSeqTreeNode | undefined = undefined;
+        let nodeToHit: LangSeqTree.ChildNode | undefined = undefined;
         for (const leaf of this.leafNodes) {
             // Take the next leaf node (don't remove it!), and if none of
             // its parents are avoid-nodes, then, from the set of nodes
             // including the leaf node and all its parents (minus the root),
             // choose the node with the least actual/personal hit-count.
-            const upstreamNodes: Array<LangSeqTreeNode> = leaf.andNonRootParents();
+            const upstreamNodes = leaf.andNonRootParents();
             for (let i = 0; i < upstreamNodes.length; i++) {
-                const conflictSeq: Lang.Seq | undefined = avoid.find(avoidSeq => {
+                const conflictSeq: Lang.Seq | undefined = avoid.find((avoidSeq) => {
                     return avoidSeq.startsWith(upstreamNodes[i].sequence);
                 });
                 if (conflictSeq) {
@@ -149,8 +144,12 @@ export abstract class Lang extends _Lang {
             if (upstreamNodes.length) {
                 // Found a non-conflicting upstream node.
                 // Find the node with the lowest personal hit-count:
-                upstreamNodes.sort(LangSeqTreeNode.PATH_CMP);
                 nodeToHit = upstreamNodes[0];
+                for (const node of upstreamNodes) {
+                    if (node.personalWeightedHitCount < nodeToHit.personalWeightedHitCount) {
+                        nodeToHit = node;
+                    }
+                }
                 break;
             }
         }
@@ -172,7 +171,6 @@ export abstract class Lang extends _Lang {
             numLeaves: this.leafNodes.length,
         });
     }
-
 }
 export namespace Lang {
     /**
