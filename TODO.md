@@ -14,8 +14,6 @@
 
 ### High Priority
 
-1. ~Make LangSeqTreeNode extend the Root variant.~
-    - Make `inheritingWeightedHitCount` protected in the Root variant, and then use it in reset to weigh the shuffle sort toward weightier CSP's. Or maybe just go back to the slower shuffle method. That one has more accurate / desirable results with state setup.
 1. Make artificial players' timers take into account how many keypresses the destination tile's sequence is.
 1. Implement game creation event communications for online game.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
@@ -38,6 +36,7 @@
 
 ### Low Priority
 
+- Reset offline games in a separate thread and then pass the result back to the main thread in serialized form.
 - Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 - Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.

@@ -130,7 +130,7 @@ export namespace Lang {
      * The choice of the upper bound on the number of times
      * is rather arbitrary, but it should not be too small.
      */
-    //export const CHAR_HIT_SEED_CEILING = 10;
+    export const CHAR_HIT_COUNT_SEED_CEILING = 5;
 
     /**
      *

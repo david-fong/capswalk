@@ -11,7 +11,7 @@ import { PlayerStatus } from "./PlayerStatus";
 export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
 
     readonly #baseElem: HTMLElement;
-    readonly #visualBellAnimations: Animation[];
+    readonly #vBellAnims: Animation[];
 
     private readonly _immigrantInfoCache: Tile.VisibleImmigrantInfo;
 
@@ -31,15 +31,17 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
             // Setup face element:
             const faceElem = document.createElement("div");
             faceElem.classList.add(OmHooks.Player.Class.FACE);
-            const anims = this.#visualBellAnimations = (this.player.isALocalOperator) ? [
+            const vBellAnims
+            = this.#vBellAnims
+            = (this.player.isALocalOperator) ? [
                 faceElem.animate({
                     filter: ["brightness(0.7)", "brightness(1.0)",],
-                },{ duration: 300, easing: "ease-in", }),
+                },{ duration: 300, easing: "ease-in", delay: 1, }),
                 faceElem.animate({
                     transform: VisiblePlayerStatus.makeWiggleAnimation(10, 2),
-                },{ duration: 270, easing: "ease-out", }),
+                },{ duration: 270, easing: "ease-out", delay: 1, }),
             ] : [];
-            // anims.forEach((anim) => anim.pause());
+            vBellAnims.forEach((anim) => anim.pause());
             {
                 // Setup downedOverlay element:
                 const dOverlayElem = document.createElement("div");
@@ -92,8 +94,10 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
     public visualBell(): void {
+        if (!this.#vBellAnims) {
+        }
         window.requestAnimationFrame((time) => {
-            this.#visualBellAnimations.forEach((anim) => anim.play());
+            this.#vBellAnims.forEach((anim) => anim.play());
         });
     }
 

@@ -4,7 +4,9 @@ import type { Lang } from "./Lang";
 
 type LangSorter<T> = (a: T, b: T) => number;
 
-
+/**
+ *
+ */
 export namespace LangSeqTree {
     /**
      *
@@ -176,8 +178,11 @@ export namespace LangSeqTree {
         }
 
         public reset(): void {
-            this.#characters.forEach((char) => char.reset());
-            super.reset()
+            super.reset();
+            this.#characters.forEach((char) => {
+                char.reset();
+                this.incrementNumHits(char, Math.random() * _Lang.CHAR_HIT_COUNT_SEED_CEILING);
+            });
         }
 
         /**
@@ -201,9 +206,9 @@ export namespace LangSeqTree {
             this.incrementNumHits(weightedChar);
             return pair;
         }
-        private incrementNumHits(wCharToHit: WeightedLangChar): void {
-            wCharToHit.incrementNumHits();
-            this._recursiveIncrementNumHits(wCharToHit.weightInv);
+        private incrementNumHits(wCharToHit: WeightedLangChar, numTimes: number = 1): void {
+            wCharToHit._incrementNumHits();
+            this._recursiveIncrementNumHits(wCharToHit.weightInv * numTimes);
         }
         private _recursiveIncrementNumHits(weightInv: number): void {
             this.inheritingWeightedHitCount += weightInv;
@@ -211,7 +216,8 @@ export namespace LangSeqTree {
         }
 
         public get personalWeightedHitCount(): number {
-            return this.inheritingWeightedHitCount - (this.#parent as ChildNode).inheritingWeightedHitCount;
+            return this.inheritingWeightedHitCount
+            - (this.#parent as ChildNode).inheritingWeightedHitCount;
             // The above cast is only to allow us to access a
             // protected property from the parent in this subclass.
         }
@@ -311,7 +317,7 @@ class WeightedLangChar {
         this.weightedHitCount = 0.000;
     }
 
-    public incrementNumHits(): void {
+    public _incrementNumHits(): void {
         this.hitCount += 1;
         this.weightedHitCount += this.weightInv;
     }
