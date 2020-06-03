@@ -24,7 +24,7 @@ export abstract class _PlayScreen<
      * Hosts the implementation-specific grid element's scroll-wrapper,
      * as well as some other game-status overlays.
      */
-    protected readonly gridTopElem: HTMLElement;
+    protected readonly gridBaseElem: HTMLElement;
     private readonly gridImplHost:  HTMLElement;
 
     private readonly playersBar: HTMLElement;
@@ -79,14 +79,17 @@ export abstract class _PlayScreen<
      * @override
      */
     protected _lazyLoad(): void {
-        this.baseElem.classList.add(OmHooks.Screen.Impl.Play.Class.BASE);
+        this.baseElem.classList.add(
+            OmHooks.General.Class.CENTER_CONTENTS,
+            OmHooks.Screen.Impl.Play.Class.BASE,
+        );
 
-        const centerColItems = _PlayScreen.createCenterColElem();
-        (this.gridTopElem  as HTMLElement) = centerColItems.gridElem;
-        (this.gridImplHost as HTMLElement) = centerColItems.gridScrollWrapInner;
+        const gridHtml = _PlayScreen.createCenterColElem();
+        (this.gridBaseElem as HTMLElement) = gridHtml.grid;
+        (this.gridImplHost as HTMLElement) = gridHtml.implHost;
         this.gridImplHost.appendChild(document.createComment("grid impl host"));
-        this.baseElem.appendChild(centerColItems.gridElem);
-        centerColItems.pauseOl.addEventListener("click", (ev) => {
+        this.baseElem.appendChild(gridHtml.top);
+        gridHtml.pauseOl.addEventListener("click", (ev) => {
             const game = this.currentGame;
             if (game && game.status === Game.Status.PAUSED) {
                 this.statusBecomePlaying();
@@ -131,7 +134,7 @@ export abstract class _PlayScreen<
         this.#currentGame = await this._createNewGame(
             args as (typeof args & Game.CtorArgs<G,any>),
         );
-        this.gridTopElem.addEventListener("keydown", this.#gridOnKeyDown);
+        this.gridBaseElem.addEventListener("keydown", this.#gridOnKeyDown);
         await this.currentGame!.reset();
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
@@ -164,7 +167,7 @@ export abstract class _PlayScreen<
         for (const elem of Object.values(this.currentGame!.htmlElements)) {
             elem.remove();
         }
-        this.gridTopElem.removeEventListener("keydown", this.#gridOnKeyDown);
+        this.gridBaseElem.removeEventListener("keydown", this.#gridOnKeyDown);
         this.#currentGame = undefined;
         return true;
     }
@@ -218,12 +221,12 @@ export abstract class _PlayScreen<
         this.currentGame?.statusBecomePlaying();
         this.pauseButton.textContent = "Pause";
         this.#pauseReason = undefined;
-        this.gridTopElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
+        this.gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
         window.requestAnimationFrame((time) => {
             this.pauseButton.onclick = this.statusBecomePaused.bind(this);
             this.resetButton.disabled = true;
-            this.gridTopElem.focus();
+            this.gridBaseElem.focus();
         });
     }
 
@@ -232,18 +235,17 @@ export abstract class _PlayScreen<
         this.currentGame?.statusBecomePaused();
         this.pauseButton.textContent = "Unpause";
         this.#pauseReason = document.hidden ? "page-hide" : "other";
-        this.gridTopElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
+        this.gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
 
         this.pauseButton.onclick    = this.statusBecomePlaying.bind(this);
         this.resetButton.disabled   = false;
     }
 
-    // TODO.impl pass this to the created game.
-    public _onGameBecomeOver(): void {
+    protected _onGameBecomeOver(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.pauseButton.disabled = true;
         this.resetButton.disabled = false;
-        this.gridTopElem.dataset[OHGD.KEY] = OHGD.VALUES.OVER;
+        this.gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.OVER;
     }
 
     /**
@@ -286,7 +288,7 @@ export abstract class _PlayScreen<
         }
         controlsBar.addEventListener("pointerleave", (ev) => {
             window.requestAnimationFrame((time) => {
-                this.gridTopElem.focus();
+                this.gridBaseElem.focus();
             });
         });
 
@@ -322,13 +324,18 @@ export namespace _PlayScreen {
     /**
      *
      */
-    export function createCenterColElem():{
-        gridElem: HTMLElement,
-        gridScrollWrapInner: HTMLElement,
-        pauseOl:  HTMLElement,
-    } {
+    export function createCenterColElem(): Readonly<{
+        top: HTMLElement,
+        grid: HTMLElement,
+        implHost: HTMLElement,
+        pauseOl: HTMLElement,
+    }> {
         const OMHC = OmHooks.Grid.Class;
         const CSS_FX = OmHooks.General.Class;
+
+        const base = document.createElement("div");
+        base.classList.add(OmHooks.Screen.Impl.Play.Class.GRID_WRAPPER);
+
         const grid = document.createElement("div");
         grid.tabIndex = 0; // <-- allow focusing this element.
         grid.setAttribute("role", "textbox");
@@ -380,9 +387,11 @@ export namespace _PlayScreen {
             grid.appendChild(pauseOl);
         }
 
-        return Object.freeze({
-            gridElem: grid,
-            gridScrollWrapInner: scrollInner,
+        base.appendChild(grid);
+        return Object.freeze(<ReturnType<typeof _PlayScreen.createCenterColElem>>{
+            top: base,
+            grid: grid,
+            implHost: scrollInner,
             pauseOl: pauseOl,
         });
     }

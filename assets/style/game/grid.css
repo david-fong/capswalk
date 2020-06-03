@@ -5,7 +5,8 @@
     up no space (its children all have their position
     property set to `absolute`). We rectify this case
     by giving `.game-grid-impl-body` `position: static`. */
-    box-sizing: border-box;
+    box-sizing:     border-box;
+    max-height:     100%;
     border: 5px double var(--colour-tileBd);
     border-radius:  15px;
     display:        grid;
@@ -18,10 +19,11 @@
 .game-grid,
 .game-grid-scroll-outer,
 .game-grid-scroll-inner {
-    contain: content;
-    position: relative;
+    contain:    content;
+    position:   relative;
 }
 
+/*  */
 .game-grid-scroll-outer {
     overflow: auto auto;
     /* overflow: overlay overlay; */
@@ -33,6 +35,7 @@
 }
 .game-grid-scroll-inner {
     padding: 5px;
+    /* Take up as much size as our contents: */
     height: fit-content;
     width:  fit-content;
 }

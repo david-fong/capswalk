@@ -120,6 +120,7 @@ export namespace OmHooks {
             export namespace Play {
                 export const Class = <const>{
                     BASE:               "screen-play",
+                    GRID_WRAPPER:       "screen-play--grid-wrapper",
                     CONTROLS_BAR:       "screen-play--controls-bar",
                     PLAYERS_BAR:        "screen-play--players-bar",
                 };

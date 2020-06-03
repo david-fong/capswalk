@@ -7,8 +7,11 @@
         auto
         minmax(auto, 1fr);
 }
-.game-grid {
-    margin:         1rem 0rem;
+.screen-play--grid-wrapper {
+    grid-area:      main;
+    box-sizing:     border-box;
+    height:         100%;
+    padding:        1rem 0rem;
 }
 .screen-play--controls-bar {
     --spacing:      0.3rem;
@@ -21,6 +24,7 @@
     display:        grid;
     grid-auto-rows: var(--track-size);
     grid-template-columns: minmax(var(--track-size), 1fr);
+    justify-items:  stretch;
     align-items:    stretch;
     font-size:      80%;
 }
@@ -33,19 +37,19 @@
 @media screen and (max-aspect-ratio: 1/1) {
     .screen-play {
         grid-template:
-        "main"          minmax(auto,calc(100vh - 6.0rem))
+        "main"          auto
         "controls"      max-content
         "players"       auto /
         1fr;
     }
-    .game-grid {
-        margin:         1rem;
-        margin-bottom:  0rem;
+    .screen-play--grid-wrapper {
+        padding:        1rem;
+        padding-bottom: 0rem;
+        max-height:     calc(100vh - 7.5rem);
     }
     .screen-play--controls-bar {
         /* grid-auto-flow:     column; */
         grid-template-columns:  repeat(3, var(--track-size));
         grid-template-rows: var(--track-size);
-        align-items: stretch;
     }
 }

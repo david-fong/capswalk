@@ -14,6 +14,9 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
         return SkScreen.Id.GROUP_JOINER;
     }
 
+    /**
+     * @override
+     */
     protected _lazyLoad(): void {
         super._lazyLoad();
 
@@ -25,6 +28,9 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
         };
     }
 
+    /**
+     * @override
+     */
     protected _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
         return Promise.resolve();
     }

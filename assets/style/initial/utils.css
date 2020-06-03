@@ -16,6 +16,7 @@
     display:            inline-flex;
     justify-content:    center;
     align-content:      center;
+    justify-items:      center;
     align-items:        center;
 }
 .stack-contents {
