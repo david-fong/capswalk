@@ -347,13 +347,15 @@ export namespace _PlayScreen {
             OMHC.GRID,
         );
         // Grid Scroll Wrapper:
+        const scrollOuter = document.createElement("div");
+        scrollOuter.classList.add(
+            //CSS_FX.FILL_PARENT,
+            OMHC.SCROLL_OUTER,
+        );
         const scrollInner = document.createElement("div");
-        scrollInner.classList.add(OMHC.SCROLL_INNER); {
-            const scrollOuter = document.createElement("div");
-            scrollOuter.classList.add(OMHC.SCROLL_OUTER);
-            scrollOuter.appendChild(scrollInner);
-            grid.appendChild(scrollOuter);
-        } {
+        scrollInner.classList.add(OMHC.SCROLL_INNER);
+        scrollOuter.appendChild(scrollInner);
+        {
             // Add a "keyboard-disconnected" overlay if not added already:
             const kbdDcBase = document.createElement("div");
             kbdDcBase.classList.add(
@@ -368,7 +370,7 @@ export namespace _PlayScreen {
                 kbdDcIcon.textContent = "(click here to continue typing)";
                 kbdDcBase.appendChild(kbdDcIcon);
             }
-            grid.appendChild(kbdDcBase);
+            scrollOuter.appendChild(kbdDcBase);
         }
         const pauseOl = document.createElement("div"); {
             // Add a "keyboard-disconnected" overlay if not added already:
@@ -384,9 +386,10 @@ export namespace _PlayScreen {
                 pauseIcon.textContent = "(Click to Unpause)";
                 pauseOl.appendChild(pauseIcon);
             }
-            grid.appendChild(pauseOl);
+            scrollOuter.appendChild(pauseOl);
         }
 
+        grid.appendChild(scrollOuter);
         base.appendChild(grid);
         return Object.freeze(<ReturnType<typeof _PlayScreen.createCenterColElem>>{
             top: base,

@@ -14,6 +14,8 @@
 
 ### High Priority
 
+1. Use `will-change: transform` to put the grid scroll in its own compositing layer.
+1. Use grid layout to implement starter padding
 1. Implement game creation event communications for online game.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores (very small size) on top of player faces.

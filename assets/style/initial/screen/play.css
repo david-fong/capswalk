@@ -9,6 +9,7 @@
 }
 .screen-play--grid-wrapper {
     grid-area:      main;
+    contain:        content;
     box-sizing:     border-box;
     height:         100%;
     padding:        1rem 0rem;
@@ -36,8 +37,9 @@
 }
 @media screen and (max-aspect-ratio: 1/1) {
     .screen-play {
+        align-content: flex-start;
         grid-template:
-        "main"          auto
+        "main"          calc(100vh - 7.5rem)
         "controls"      max-content
         "players"       auto /
         1fr;
@@ -45,7 +47,6 @@
     .screen-play--grid-wrapper {
         padding:        1rem;
         padding-bottom: 0rem;
-        max-height:     calc(100vh - 7.5rem);
     }
     .screen-play--controls-bar {
         /* grid-auto-flow:     column; */

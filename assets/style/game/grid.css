@@ -5,11 +5,10 @@
     up no space (its children all have their position
     property set to `absolute`). We rectify this case
     by giving `.game-grid-impl-body` `position: static`. */
-    box-sizing:     border-box;
-    max-height:     100%;
-    border: 5px double var(--colour-tileBd);
-    border-radius:  15px;
+    height:         100%;
+    /* width:          fit-content; */
     display:        grid;
+    align-content:  center;
 
     /* This would make it impossible to scroll if it
     covers the screen like it might in our vertical
@@ -25,9 +24,13 @@
 
 /*  */
 .game-grid-scroll-outer {
-    overflow: auto auto;
+    contain:        style; /* Do not use contain. */
+    overflow:       auto auto;
     /* overflow: overlay overlay; */
     scrollbar-width: none;
+    box-sizing:     border-box;
+    border:         5px double var(--colour-tileBd);
+    border-radius:  15px;
 }
 .game-grid-scroll-outer::-webkit-scrollbar {
     width:  0px;
@@ -47,7 +50,9 @@
 
 .game-grid-kbd-dc,
 .game-grid-pause-overlay {
-    cursor: pointer;
+    cursor:         pointer;
+    position:       fixed;
+    border-radius:  inherit;
     color:          white;
     text-shadow:    0em 0.01em  0.5em black;
     visibility:     hidden;
@@ -63,8 +68,8 @@
     .game-grid:focus {
         outline:    none;
     }
-    .game-grid[data-game-state="paused"] > .game-grid-pause-overlay,
-    .game-grid:not([data-game-state="paused"]):not(:focus) > .game-grid-kbd-dc {
+    .game-grid[data-game-state="paused"] .game-grid-pause-overlay,
+    .game-grid:not([data-game-state="paused"]):not(:focus) .game-grid-kbd-dc {
         visibility: visible;
     }
 }
