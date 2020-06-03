@@ -73,12 +73,7 @@ export namespace _SetupScreen {
             socketId:   undefined,
             username:   "chaser1",
             noCheckGameOver: true,
-            familyArgs: {
-                fearDistance: 5,
-                bloodThirstDistance: 7,
-                healthReserve: 3.0,
-                movesPerSecond: 2.0,
-            },
+            familyArgs: {/* Uses all defaults. */},
         }, {
             isALocalOperator: false,
             familyId:   <const>"CHASER",
@@ -90,7 +85,7 @@ export namespace _SetupScreen {
                 fearDistance: 6,
                 bloodThirstDistance: 5,
                 healthReserve: 5.0,
-                movesPerSecond: 1.8,
+                keyPressesPerSecond: 1.8,
             },
         },],
     };

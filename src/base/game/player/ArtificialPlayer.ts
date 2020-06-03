@@ -85,8 +85,8 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
         this.makeMovementRequest(
             this.game.grid.getUntToward(
-                this.coord,
                 desiredDest,
+                this.coord,
             ),
             this.getNextMoveType(),
         );
@@ -132,4 +132,4 @@ export namespace ArtificialPlayer {
         return new (_Constructors[familyId])(game, playerDesc);
     };
 }
-// ArtificialPlayer gets frozen in PostInit after _Constructors get initialized.
+// ArtificialPlayer is frozen in PostInit after _Constructors get initialized.

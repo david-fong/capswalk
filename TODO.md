@@ -14,8 +14,6 @@
 
 ### High Priority
 
-1. Switch the order of the pairs of arguments taken by both `getUntToward` and `getUntAwayFrom`.
-    - This allows calling `function.bind` with a fixed `intendedDest` or `avoidCoord` argument so calls on the resulting function can be easily chained.
 1. Implement game creation event communications for online game.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores (very small size) on top of player faces.

@@ -147,14 +147,15 @@ export namespace Beehive {
             .forEach((tile) => consumer(tile));
         }
 
-        public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
+        public getUntToward(intendedDest: Coord.Bare, sourceCoord: Coord): Tile<S> {
             return undefined!;
         }
 
-        public getUntAwayFrom(sourceCoord: Coord, avoidCoord: Coord): Tile<S> {
-            return this.getUntToward(sourceCoord, sourceCoord.add(
-                sourceCoord.sub(avoidCoord)
-            ));
+        public getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile<S> {
+            return this.getUntToward(
+                sourceCoord.add(sourceCoord.sub(avoidCoord)),
+                sourceCoord,
+            );
         }
 
         public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {

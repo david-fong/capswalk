@@ -126,10 +126,10 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
         }
     }
 }
-
-
 export namespace PlayerSkeleton {
-
+    /**
+     *
+     */
     export class TileGetterSource<S extends Coord.System> implements TileGetter.Source<S,[]> {
 
         readonly #player: PlayerSkeleton<S>
@@ -154,7 +154,6 @@ export namespace PlayerSkeleton {
     }
     Object.freeze(TileGetterSource);
     Object.freeze(TileGetterSource.prototype);
-
 }
 Object.freeze(PlayerSkeleton);
 Object.freeze(PlayerSkeleton.prototype);

@@ -76,9 +76,10 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
             if (event.key === " ") {
                 // TODO.learn why isn't TypeScript able to figure the below line out?
                 if (!this.coord.equals(this.prevCoord as any)) {
-                    this.makeMovementRequest(this.game.grid.getUntAwayFrom(
-                        this.coord, this.prevCoord,
-                    ), Player.MoveType.BOOST);
+                    this.makeMovementRequest(
+                        this.game.grid.getUntAwayFrom(this.prevCoord, this.coord),
+                        Player.MoveType.BOOST,
+                    );
                 }
             } else if (event.key.length === 1 && !event.repeat) {
                 // TODO.design is the above condition okay? will any

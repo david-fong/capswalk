@@ -181,7 +181,7 @@ export namespace Euclid2 {
             .forEach((tile) => consumer(tile));
         }
 
-        public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
+        public getUntToward(intendedDest: Coord.Bare, sourceCoord: Coord): Tile<S> {
             const options = this.tile.destsFrom(sourceCoord).unoccupied.get;
             if (options.length === 0) {
                 return this.tile.at(sourceCoord);
@@ -230,10 +230,11 @@ export namespace Euclid2 {
             return options[Math.floor(options.length * Math.random())];
         }
 
-        public getUntAwayFrom(sourceCoord: Coord, avoidCoord: Coord): Tile<S> {
-            return this.getUntToward(sourceCoord, sourceCoord.add(
-                sourceCoord.sub(avoidCoord)
-            ));
+        public getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile<S> {
+            return this.getUntToward(
+                sourceCoord.add(sourceCoord.sub(avoidCoord)),
+                sourceCoord,
+            );
         }
 
         public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {

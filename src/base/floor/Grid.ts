@@ -70,22 +70,22 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * (which includes `sourceCoord` itself), the implementation must
      * return `sourceCoord`.
      *
-     * @param sourceCoord
-     * The coordinate from which to find the next hop.
-     *
      * @param intendedDest
      * Does not need to be within the boundaries of the {@link Game}'s
      * grid, or have integer-valued coordinate values.
+     *
+     * @param sourceCoord
+     * The coordinate from which to find the next hop.
      */
-    public abstract getUntToward(sourceCoord: Coord<S>, intendedDest: Coord<S>): Tile<S>;
+    public abstract getUntToward(intendedDest: Coord<S>, sourceCoord: Coord<S>): Tile<S>;
 
     /**
      *
-     * @param sourceCoord -
      * @param avoidCoord -
+     * @param sourceCoord -
      */
     // TODO.doc
-    public abstract getUntAwayFrom(sourceCoord: Coord<S>, avoidCoord: Coord<S>): Tile<S>;
+    public abstract getUntAwayFrom(avoidCoord: Coord<S>, sourceCoord: Coord<S>): Tile<S>;
 
     public getRandomCoord(): Coord<S> {
         return this.static.getRandomCoord(this.dimensions);
