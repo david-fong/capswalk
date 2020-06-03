@@ -210,7 +210,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             throw new Error("Can only resume a game that is currently paused.");
         }
         this.players.forEach((player) => {
-            player._abstractNotifyThatGameStatusBecamePlaying();
+            player._notifyGameNowPlaying();
         });
         this._abstractStatusBecomePlaying();
         this.#status = Game.Status.PLAYING;
@@ -230,7 +230,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             throw new Error("Can only pause a game that is currently playing.");
         }
         this.players.forEach((player) => {
-            player._abstractNotifyThatGameStatusBecamePaused();
+            player._notifyGameNowPaused();
         });
         this._abstractStatusBecomePaused();
         this.#status = Game.Status.PAUSED;
@@ -249,7 +249,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             throw new Error("Can only end a game that is currently playing.");
         }
         this.players.forEach((player) => {
-            player._abstractNotifyThatGameStatusBecameOver();
+            player._notifyGameNowOver();
         });
         this._abstractStatusBecomeOver();
         this.#status = Game.Status.OVER;

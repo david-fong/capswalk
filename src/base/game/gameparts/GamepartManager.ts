@@ -4,12 +4,13 @@ import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
 import { Player } from "../player/Player";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
+import { ScoreInfo } from "../ScoreInfo";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
-import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
-
-import { GamepartEvents } from "./GamepartEvents";
-import { ScoreInfo } from "../ScoreInfo";
+import {
+    PlayerActionEvent, TileModEvent,
+    GamepartEvents,
+} from "./GamepartEvents";
 
 
 /**
@@ -317,11 +318,12 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             this.executePlayerMoveEvent(desc); // Reject the request.
             return;
         }
+        const moveIsBoost = (desc.moveType === Player.MoveType.BOOST);
         const newPlayerHealthValue
             = player.status.health
             + (dest.freeHealth * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
-            - ((desc.moveType === Player.MoveType.BOOST) ? this.getHealthCostOfBoost() : 0);
-        if (newPlayerHealthValue < 0) {
+            - (moveIsBoost ? this.getHealthCostOfBoost() : 0);
+        if (moveIsBoost && newPlayerHealthValue < 0) {
             // Reject a boost-type movement request if it would make
             // the player become downed (or if they are already downed):
             this.executePlayerMoveEvent(desc);

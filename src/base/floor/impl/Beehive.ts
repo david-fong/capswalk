@@ -130,6 +130,8 @@ export namespace Beehive {
             super(desc);
 
             // Initialize `grid`:
+            const grid = undefined!;
+            this.grid = Object.freeze(grid);
         }
 
         public forEachTile(consumer: (tile: Tile<S>) => void): void {

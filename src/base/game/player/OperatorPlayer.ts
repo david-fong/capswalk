@@ -36,14 +36,14 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
      */
     #seqBuffer: Lang.Seq;
 
-    private readonly langRemappingFunc: {(input: string): string};
+    readonly #langRemappingFunc: {(input: string): string};
 
     private prevCoord: Coord<S>;
 
 
     public constructor(game: GamepartBase<any,S>, desc: Player._CtorArgs<"HUMAN">) {
         super(game, desc);
-        this.langRemappingFunc = this.game.langFrontend.remapFunc;
+        this.#langRemappingFunc = this.game.langFrontend.remapFunc;
     }
 
     public reset(spawnTile: Tile<S>): void {
@@ -106,7 +106,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
             return;
         }
         if (key) {
-            key = this.langRemappingFunc(key);
+            key = this.#langRemappingFunc(key);
             if (!(Lang.Seq.REGEXP.test(key))) {
                 // throw new RangeError(`The implementation of input transformation`
                 // + ` in the currently selected language did not follow the rule`

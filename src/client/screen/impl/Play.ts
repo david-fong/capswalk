@@ -13,8 +13,7 @@ import { OmHooks, SkScreen } from "../SkScreen";
  * which are bound to buttons and maintain other invariants between
  * the game's state and the UI's state.
  */
-// TODO.impl change the document title base on game state.
-// TODO.impl Allow users to change the spotlight radius via slider.
+// TODO.impl Allow users to change the spotlight radius and grid zoom via slider.
 export abstract class _PlayScreen<
     SID extends SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE,
     G extends Game.Type.Browser,
@@ -130,7 +129,7 @@ export abstract class _PlayScreen<
         // TODO.design Are there ways we can share more code between
         // implementations by passing common arguments?
         this.#currentGame = await this._createNewGame(
-            args as (typeof args & Game.CtorArgs<G,any>)
+            args as (typeof args & Game.CtorArgs<G,any>),
         );
         this.gridTopElem.addEventListener("keydown", this.#gridOnKeyDown);
         await this.currentGame!.reset();

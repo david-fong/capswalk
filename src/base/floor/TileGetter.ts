@@ -24,16 +24,24 @@ type Arguments<S extends CoordSys> = [ Coord.Bare<S>, ] | [];
  */
 export class TileGetter<S extends CoordSys, A extends Arguments<S>> {
 
-    public constructor(protected readonly source: TileGetter.Source<S,A>) { }
+    readonly #source: TileGetter.Source<S,A>;
+    public get _source(): TileGetter.Source<S,A> {
+        return this.#source;
+    }
+
+    public constructor(source: TileGetter.Source<S,A>) {
+        this.#source = source;
+        Object.freeze(this);
+    }
 
     public at(...args: A): Tile<S> {
-        return this.source._getTileAt(...args);
+        return this.#source._getTileAt(...args);
     }
     public destsFrom(...args: A): Query<S> {
-        return new Query(this.source._getTileDestsFrom(...args));
+        return new Query(this.#source._getTileDestsFrom(...args));
     }
     public sourcesTo(...args: A): Query<S> {
-        return new Query(this.source._getTileSourcesTo(...args));
+        return new Query(this.#source._getTileSourcesTo(...args));
     }
 }
 

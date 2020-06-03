@@ -43,8 +43,8 @@ margins and padding, and its own padding. */
 .sk-input-group .sk-input-group-item {
     border-radius:  var(--border-radius);
     margin:         var(--spacing);
-    border:  0px solid var(--colour-tileBg);
-    color:              var(--colour-mainFg);
+    border:   0px solid var(--colour-tileBg);
+    color:              var(--colour-tileFg);
     background-color:   var(--colour-tileBg);
     transition: all 0.15s ease-in;
 }

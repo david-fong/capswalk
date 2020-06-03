@@ -33,7 +33,7 @@
 @media screen and (max-aspect-ratio: 1/1) {
     .screen-play {
         grid-template:
-        "main"          minmax(auto,calc(100vh - 5.8rem))
+        "main"          minmax(auto,calc(100vh - 6.0rem))
         "controls"      max-content
         "players"       auto /
         1fr;

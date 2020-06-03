@@ -107,7 +107,6 @@ export class Tile<S extends Coord.System> {
     public get langSeq(): Lang.Seq {
         return this.#langSeq;
     }
-
 }
 // If this errs when changing the constructor signature, then
 // the type definition being asserted should be updated to match.

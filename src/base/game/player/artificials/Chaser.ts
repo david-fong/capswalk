@@ -48,7 +48,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
         super.moveTo(dest);
     }
 
-    protected computeDesiredDestination(): Coord<S> {
+    protected computeDesiredDest(): Coord<S> {
         // Check if there is anyone to run away from:
         this.threatProximity.sort((pa,pb) => {
             return this.grid.minMovesFromTo(pa.coord, this.coord)
@@ -70,13 +70,14 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
                 -  this.grid.minMovesFromTo(this.coord, pb.coord);
         });
         if (this.status.isDowned) {
-        for (const targetP of this.targetProximity) {
-            if (this.grid.minMovesFromTo(this.coord, targetP.coord)
-                > this.behaviour.bloodThirstDistance) break;
-            if (targetP.status.health < this.status.health - this.behaviour.healthReserve) {
-                return targetP.coord;
+            for (const targetP of this.targetProximity) {
+                if (this.grid.minMovesFromTo(this.coord, targetP.coord)
+                    > this.behaviour.bloodThirstDistance) break;
+                if (targetP.status.health < this.status.health - this.behaviour.healthReserve) {
+                    return targetP.coord;
+                }
             }
-        } }
+        }
         // If there is nobody we want to chase after to attack,
         // Head toward the nearest free health if it exists.
         if (this.game.freeHealthTiles.size === 0) {

@@ -1,4 +1,4 @@
-import * as io from "socket.io";
+import type * as io from "socket.io";
 import { setTimeout } from "timers";
 
 import { Game } from "game/Game";

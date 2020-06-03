@@ -48,9 +48,18 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.requestInFlight = false;
     }
 
-    public _abstractNotifyThatGameStatusBecamePlaying(): void {}
-    public _abstractNotifyThatGameStatusBecamePaused():  void {}
-    public _abstractNotifyThatGameStatusBecameOver():    void {}
+    /**
+     * The default implementation does nothing.
+     */
+    public _notifyGameNowPlaying(): void { }
+    /**
+     * The default implementation does nothing.
+     */
+    public _notifyGameNowPaused(): void { }
+    /**
+     * The default implementation does nothing.
+     */
+    public _notifyGameNowOver(): void { }
 
 
     /**
@@ -61,10 +70,11 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
      *
      * @final
      * @param dest -
-     * @throws Error if the game is over or paused.
+     * @throws A previous request is still in flight (unacknowledged).
      */
     protected makeMovementRequest(dest: Tile<S>, type: Player.MoveType): void {
         if (this.game.status !== Game.Status.PLAYING) {
+            // TODO.build disable this check for production.
             throw new Error("This is not a necessary precondition, but we're doing it anyway.");
         } else if (this.requestInFlight) {
             throw new Error("Only one request should ever be in flight at a time.");

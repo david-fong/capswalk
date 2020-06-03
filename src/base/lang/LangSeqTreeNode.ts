@@ -45,8 +45,8 @@ export namespace LangSeqTree {
          * @param seq The typeable sequence corresponding to entries of `chars`.
          * @param chars A collection of unique characters in a written language.
          */
-        private addCharMapping(seq: Lang.Seq, chars: TU.RoArr<WeightedLangChar>): void {
-            if (!(_Lang.Seq.REGEXP.test(seq))) {
+        private _addCharMapping(seq: Lang.Seq, chars: TU.RoArr<WeightedLangChar>): void {
+            if (!(_Lang.Seq.REGEXP.test(seq))) { // TODO.build disable during development
                 // If this errs, and the offending character is one that can
                 // be easily entered on a generic keyboard, don't be afraid
                 // to just add it to the regexp.
@@ -64,7 +64,7 @@ export namespace LangSeqTree {
                     childNode = childNode.children.find((child) => seq.startsWith(child.sequence));
                 }
             }
-            if ((node as ChildNode).sequence === seq) {
+            if ((node as ChildNode).sequence === seq) { // TODO.build disable during development
                 // This should never happen.
                 throw new Error(`Mappings for all written-characters with a common`
                 + `corresponding typeable-sequence should be registered together,`
@@ -128,7 +128,7 @@ export namespace LangSeqTree {
               //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
                 .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
                 .forEach((mapping) => {
-                    rootNode.addCharMapping(...mapping);
+                    rootNode._addCharMapping(...mapping);
                 });
             rootNode._finalize();
             return rootNode;
@@ -300,7 +300,7 @@ class WeightedLangChar {
         char: Lang.Char,
         weight: number,
     ) {
-        if (weight <= 0) {
+        if (weight <= 0) { // TODO.build disable during development
             throw new RangeError(`All weights must be positive, but we`
             + ` were passed the value \"${weight}\" for the character`
             + ` \"${char}\".`);

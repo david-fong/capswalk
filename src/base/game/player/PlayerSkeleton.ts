@@ -10,8 +10,8 @@ import { TileGetter } from "floor/TileGetter";
 
 
 /**
- * Made to abstract all operations that change the {@link Player#hostTile}
- * field. Enforces / exposes the {@link PlayerSkeleton#moveTo} method as
+ * Made to abstract all operations that change the `hostTile`
+ * field. Enforces / exposes the `moveTo` method as
  * the interface to any such operations.
  *
  * @extends Player to intake its namespace exports.
@@ -32,7 +32,6 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
     #hostTile: Tile<S>;
 
     public readonly tile: TileGetter<S,[]>;
-
 
 
     protected constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
@@ -70,19 +69,12 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
     }
 
 
-
     public get coord(): Coord<S> {
         return this.hostTile.coord;
     }
 
     public get hostTile(): Tile<S> {
         return this.#hostTile;
-    }
-
-    // TODO.design Abstract hook called when go near other player.
-    // what qualifies "near"? Need to call this in moveTo.
-    protected onGoBesideOtherPlayer(): void {
-        // Does nothing by default.
     }
 
     /**
@@ -140,18 +132,24 @@ export namespace PlayerSkeleton {
 
     export class TileGetterSource<S extends Coord.System> implements TileGetter.Source<S,[]> {
 
-        public constructor(private readonly player: PlayerSkeleton<S>) { }
+        readonly #player: PlayerSkeleton<S>
+        readonly #superTileSrc: TileGetter.Source<S,[Coord.Bare<S>,]>;
+
+        public constructor(player: PlayerSkeleton<S>) {
+            this.#player = player;
+            this.#superTileSrc = player.game.grid.tile._source;
+        }
 
         public _getTileAt(): Tile<S> {
-            return this.player.game.grid.tile.at(this.player.coord);
+            return this.#superTileSrc._getTileAt(this.#player.coord);
         }
 
         public _getTileDestsFrom(): Array<Tile<S>> {
-            return this.player.game.grid.tile.destsFrom(this.player.coord).get;
+            return this.#superTileSrc._getTileDestsFrom(this.#player.coord);
         }
 
         public _getTileSourcesTo(): Array<Tile<S>> {
-            return this.player.game.grid.tile.sourcesTo(this.player.coord).get;
+            return this.#superTileSrc._getTileSourcesTo(this.#player.coord);
         }
     }
     Object.freeze(TileGetterSource);

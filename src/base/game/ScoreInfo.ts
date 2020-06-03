@@ -29,13 +29,13 @@ export namespace ScoreInfo {
      */
     export class Entry {
 
-        public totalHealthPickedUp: Player.Health;
+        public readonly moveCounts: {[M in Player.MoveType]: number};
 
-        // TODO.design how to send this imfo to the game manager?
+        // TODO.design how to send this info to the game manager?
         // It is currently checked on the client side.
         //public invalidKeyPresses
 
-        public readonly moveCounts: {[M in Player.MoveType]: number};
+        public totalHealthPickedUp: Player.Health;
 
         public constructor() {
             this.moveCounts = {} as any; // This will be initialized during reset.

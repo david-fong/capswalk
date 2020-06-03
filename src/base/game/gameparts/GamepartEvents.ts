@@ -1,8 +1,10 @@
 import type { Coord, Tile } from "floor/Tile";
 import { Game } from "../Game";
 
-import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
-import { EventRecordEntry } from "../events/EventRecordEntry";
+import { EventRecordEntry }     from "../events/EventRecordEntry";
+import { PlayerActionEvent }    from "../events/PlayerActionEvent";
+import type { TileModEvent }    from "../events/PlayerActionEvent";
+export { PlayerActionEvent, TileModEvent };
 
 import { GamepartBase } from "./GamepartBase";
 
@@ -86,7 +88,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
      * - RangeError if it is not a positive integer
      * - Error if another event was already recorded with the same ID.
      */
-    private recordEvent(desc: Readonly<EventRecordEntry>): void {
+    private _recordEvent(desc: Readonly<EventRecordEntry>): void {
         const id = desc.eventId;
         const wrappedId = id % Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH;
         if (id === EventRecordEntry.EVENT_ID_REJECT) {
@@ -157,7 +159,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
             }
             return; // Short-circuit!
         }
-        this.recordEvent(desc);
+        this._recordEvent(desc);
         const dest = this.executeTileModEvent(desc.destModDesc, player !== this.currentOperator);
         desc.tileHealthModDescs?.forEach((desc) => {
             this.executeTileModEvent(desc);
@@ -207,7 +209,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
         bubbler.requestInFlight = false;
 
         if (desc.eventId !== EventRecordEntry.EVENT_ID_REJECT) {
-            this.recordEvent(desc); // Record the event.
+            this._recordEvent(desc); // Record the event.
         }
     }
 

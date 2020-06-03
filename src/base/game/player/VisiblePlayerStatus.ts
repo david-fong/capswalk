@@ -34,6 +34,8 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
             const vBellAnims
             = this.#vBellAnims
             = (this.player.isALocalOperator) ? [
+                // Note the 1-millisecond start delays required to
+                // pause the animations before they start auto-playing.
                 faceElem.animate({
                     filter: ["brightness(0.7)", "brightness(1.0)",],
                 },{ duration: 300, easing: "ease-in", delay: 1, }),

@@ -14,7 +14,8 @@
 
 ### High Priority
 
-1. Make artificial players' timers take into account how many keypresses the destination tile's sequence is.
+1. Switch the order of the pairs of arguments taken by both `getUntToward` and `getUntAwayFrom`.
+    - This allows calling `function.bind` with a fixed `intendedDest` or `avoidCoord` argument so calls on the resulting function can be easily chained.
 1. Implement game creation event communications for online game.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores (very small size) on top of player faces.
@@ -56,8 +57,6 @@
     - [](https://devcenter.heroku.com/articles/nodejs-support)
     - [](https://medium.com/deployplace/heroku-vs-docker-the-ultimate-comparison-with-hidden-pitfalls-revealed-f6b7f4075de5)
   - [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
-- Make a nicely styled console-log greeting on the client side.
-  - List common variables in the program that they might like to look at.
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 - Look into switching from JsDoc to TsDoc
   - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
