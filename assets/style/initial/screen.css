@@ -36,12 +36,12 @@ takes a long time to arrive. */
     pointer-events: none;
     z-index:        10000;
     display:        initial;
-    transition-property: opacity, background-color;
-    /* transition-duration will be assigned programmatically. */
-    transition-timing-function: ease-in-out;
 }
 #screen-tint {
     opacity:        0.0;
+    transition-property: opacity, background-color;
+    /* transition-duration will be assigned programmatically. */
+    transition-timing-function: ease-in-out;
 }
 #screen-texture {
     background-size: 13.5rem;

@@ -1,0 +1,15 @@
+[data-sk-colour-scheme="murky-dive"] {
+    --colour-mainFg: #c3c5ce;
+    --colour-mainBg: #336465;
+    --colour-tileFg: #e7efef;
+    --colour-tileBg: #283e3f;
+    --colour-tileBd: #ffffff;
+    --colour-healthFg: #1d3633;
+    --colour-healthBg: #37dfc6;
+    --colour-pFaceMe: #03f9ed;
+    --colour-pFaceMeOppo: #898697;
+    --colour-pFaceTeammate: #ffbbaa;
+    --colour-pFaceImtlTeammate: #ffcabd;
+    --colour-pFaceOpponent: #ff4f6c;
+    --colour-pFaceImtlOpponent: #ff6d85;
+}

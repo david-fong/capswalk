@@ -2,9 +2,8 @@ import type { OnlineGame } from "../../game/OnlineGame";
 
 import { SkScreen } from "../SkScreen";
 import { Game, _PlayScreen } from "./Play";
-
-
 type G = Game.Type.ONLINE;
+
 
 /**
  *

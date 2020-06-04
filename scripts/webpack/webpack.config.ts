@@ -77,18 +77,33 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
         const retval: webpack.RuleSetUse = [ "css-loader", ];
         retval.unshift({
             loader: MiniCssExtractPlugin.loader,
+            options: {
+                publicPath: (resourcePath: string, context: string) => {
+                    // publicPath is the relative path of the resource to the context
+                    // e.g. for ./css/admin/main.css the publicPath will be ../../
+                    // while for ./css/main.css the publicPath will be ../
+                    // return path.relative(path.dirname(resourcePath), context).replace(/\\/g, "/") + "/";
+                },
+            }
         });
         return retval;
     })(),
 },{
     // https://webpack.js.org/loaders/file-loader/
-    test: /\.(png|svg|jpg|gif)$/,
-    use: [{
+    test: /\.(png|svg|jpe?g|gif)$/,
+    use: [(() => {
+        const pathFunc = (url: string, resourcePath: string, context: string) => {
+            return path.relative(context, resourcePath).replace(/\\/g, "/");
+        };
+        return {
         loader: "file-loader",
         options: {
-            publicPath: "./",
-        },
-    }],
+            context: path.resolve(PROJECT_ROOT, "assets"),
+            //name: "[name].[ext]",
+            outputPath: pathFunc,
+            publicPath: pathFunc,
+        },};
+    })()],
 }, ]};
 
 /**

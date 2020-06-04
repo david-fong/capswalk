@@ -2,8 +2,6 @@ import type { OfflineGame } from "../../game/OfflineGame";
 
 import { SkScreen } from "../SkScreen";
 import { Game, _PlayScreen } from "./Play";
-
-
 type G = Game.Type.OFFLINE;
 
 /**

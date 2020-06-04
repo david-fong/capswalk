@@ -1,9 +1,7 @@
 import { OmHooks, SkScreen } from "../SkScreen";
-
 import { _SetupScreen } from "./Setup";
-
-
 type SID = SkScreen.Id.SETUP_ONLINE;
+
 
 /**
  *
