@@ -1,5 +1,5 @@
 // Tell WebPack about the CSS chunk we want:
-require("assets/style/game/index.css");
+require("assets/style/game/.barrel.css");
 
 import {
     applyMixins,

@@ -193,7 +193,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
         template:   "./index.ejs",
         filename:   path.resolve(PROJECT_ROOT, "index.html"),
         base:       ".", // must play nice with path configs.
-        favicon:    "./assets/favicon.ico",
+        favicon:    "./assets/favicon.png",
         scriptLoading: "defer",
         inject: false, // (I specify where each injection goes in the template).
         templateParameters: (compilation, assets, assetTags, options) => { return {
@@ -215,8 +215,8 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     // };
     config.plugins.push(new HtmlPlugin(htmlPluginArgs));
     config.plugins.push(new MiniCssExtractPlugin({
-        filename: "index.css",
-        chunkFilename: "chunk/[name].css"
+        filename: ".barrel.css",
+        chunkFilename: "chunk/[name].css",
     }));
     config.plugins.push(new CopyWebpackPlugin({ patterns: [{
         from: "node_modules/socket.io-client/dist/socket.io.js" + "*",

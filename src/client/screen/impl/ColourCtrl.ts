@@ -1,5 +1,5 @@
 // Tell WebPack about the css we want:
-require("assets/style/colour/index.css");
+require("assets/style/colour/.barrel.css");
 
 import { StorageHooks } from "defs/StorageHooks";
 import { SkPickOne } from "../../../client/utils/SkPickOne";
@@ -160,7 +160,7 @@ export namespace Colour {
         "mainFg", "mainBg",
         "tileFg", "tileBg", "tileBd",
         "healthFg", "healthBg",
-        "pFaceMe", "pFaceMeOpp",
+        "pFaceMe", "pFaceMeOppo",
         "pFaceTeammate", "pFaceImtlTeammate",
         "pFaceOpponent", "pFaceImtlOpponent",
     ]);

@@ -3,5 +3,5 @@
 
 @import "./root.css";
 @import "./screen.css";
-@import "./screen/index.css";
-@import "./components/index.css";
+@import "./screen/.barrel.css";
+@import "./components/.barrel.css";
