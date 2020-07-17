@@ -1,5 +1,5 @@
 // Tell WebPack about the css we want:
-require("assets/style/colour/.barrel.css");
+require("assets/style/colour/_barrel.css");
 
 import { StorageHooks } from "defs/StorageHooks";
 import { SkPickOne } from "../../../client/utils/SkPickOne";

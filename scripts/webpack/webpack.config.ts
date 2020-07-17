@@ -215,7 +215,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     // };
     config.plugins.push(new HtmlPlugin(htmlPluginArgs));
     config.plugins.push(new MiniCssExtractPlugin({
-        filename: ".barrel.css",
+        filename: "_barrel.css",
         chunkFilename: "chunk/[name].css",
     }));
     config.plugins.push(new CopyWebpackPlugin({ patterns: [{

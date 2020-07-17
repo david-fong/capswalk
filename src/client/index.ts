@@ -1,5 +1,5 @@
 // Tell WebPack we want CSS:
-require("assets/style/initial/.barrel.css");
+require("assets/style/initial/_barrel.css");
 
 import { TopLevel } from "./TopLevel";
 
