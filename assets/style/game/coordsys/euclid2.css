@@ -8,6 +8,7 @@
 }
 .game-grid-impl-body[data-coord-sys="EUCLID2"] .tile {
     margin:     5%;
+    scroll-snap-align: center;
 }
 /* .game-grid[data-coord-sys="EUCLID2"] .tile > * {
 } */

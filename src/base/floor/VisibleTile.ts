@@ -20,21 +20,22 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             const baseElem
                 = this.#baseElem
                 = document.createElement("div");
+            baseElem.setAttribute("aria-label", "Tile");
             baseElem.classList.add(
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
                 OmHooks.Tile.Class.BASE,
             );
-            baseElem.setAttribute("aria-label", "Tile");
         } {
             // Pointer hitbox element.
             // Must be the first child. See note in CSS class hook.
             const pthb = document.createElement("div");
-            pthb.classList.add(OmHooks.Tile.Class.POINTER_HB);
             pthb.setAttribute("aria-hidden", "true");
+            pthb.classList.add(OmHooks.Tile.Class.POINTER_HB);
             this.#baseElem.appendChild(pthb);
         } {
             const charWrap = document.createElement("div");
+            charWrap.setAttribute("role", "presentation");
             charWrap.classList.add(OmHooks.Tile.Class.LANG_CHAR_WRAP);
             const charElem
                 = this.langCharElem
@@ -45,8 +46,8 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             const seqElem
                 = this.langSeqElem
                 = document.createElement("div"); // Purposely don't use `kbd`.
-            seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             seqElem.setAttribute("role", "tooltip");
+            seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             this.#baseElem.appendChild(seqElem);
         }
     }

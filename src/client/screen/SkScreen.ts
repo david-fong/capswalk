@@ -50,7 +50,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         requestGoToDisplay: AllSkScreens["goToScreen"],
     ) {
         this.screenId           = screenId;
-        this.top           = toplevel;
+        this.top                = toplevel;
         this.#parentElem        = parentElem;
         this.requestGoToScreen  = requestGoToDisplay;
         this.#hasLazyLoaded     = false;
@@ -93,6 +93,8 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 
     /**
      * **Do not override.**
+     *
+     * @returns false if the leave was cancelled.
      */
     public leave(): boolean {
         if (this._abstractOnBeforeLeave()) {

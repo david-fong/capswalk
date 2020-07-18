@@ -27,6 +27,7 @@
     contain:        style; /* Do not use contain. */
     overflow:       auto auto;
     /* overflow: overlay overlay; */
+    scroll-snap-type: both;
     scrollbar-width: none;
     box-sizing:     border-box;
     border:         5px double var(--colour-tileBd);

@@ -30,10 +30,10 @@
             if (cssl) { root.setAttribute("style", cssl); }
             else { root.dataset["skColourScheme"] = "snakey"; }
         } </script>
-        <div id="background" class="sk-screen"></div>
+        <div id="background"     class="sk-screen" aria-hidden="true"></div>
         <div id="all-screens-container"></div>
-        <div id="screen-tint" class="sk-screen"></div>
-        <div id="screen-texture" class="sk-screen"></div>
+        <div id="screen-tint"    class="sk-screen" aria-hidden="true"></div>
+        <div id="screen-texture" class="sk-screen" aria-hidden="true"></div>
         <%= htmlWebpackPlugin.tags.bodyTags.join("\n        ") %>
     </body>
 </html>

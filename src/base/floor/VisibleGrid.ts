@@ -57,20 +57,21 @@ export class VisibleGridMixin<S extends Coord.System> {
      * now to get around no-multiple-inheritance.
      *
      * @param desc -
-     * @param gridImplElem -
+     * @param gridImpl -
      */
-    public _superVisibleGrid(desc: Grid.CtorArgs<S>, gridImplElem: HTMLElement): void {
+    public _superVisibleGrid(desc: Grid.CtorArgs<S>, gridImpl: HTMLElement): void {
         const OHG = OmHooks.Grid;
-        gridImplElem.classList.add(OHG.Class.IMPL_BODY);
-        gridImplElem.dataset[OHG.Dataset.IMPL_COORD_SYS] = desc.coordSys;
-        (this.baseElem as HTMLElement) = gridImplElem;
+        gridImpl.setAttribute("role", "presentation");
+        gridImpl.classList.add(OHG.Class.IMPL_BODY);
+        gridImpl.dataset[OHG.Dataset.IMPL_COORD_SYS] = desc.coordSys;
+        (this.baseElem as HTMLElement) = gridImpl;
 
         // Initialize spotlight elements:
-        const sslElem = document.createElement("div");
-        sslElem.classList.add(OmHooks.Player.Class.SHORT_SPOTLIGHT);
-        const lslElem = document.createElement("div");
-        lslElem.classList.add(OmHooks.Player.Class.LONG_SPOTLIGHT);
-        (this.spotlightElems as TU.RoArr<HTMLElement>) = Object.freeze([ sslElem, lslElem, ]);
+        const shortSpotlight = document.createElement("div");
+        shortSpotlight.classList.add(OmHooks.Player.Class.SHORT_SPOTLIGHT);
+        const longSpotlight = document.createElement("div");
+        longSpotlight.classList.add(OmHooks.Player.Class.LONG_SPOTLIGHT);
+        (this.spotlightElems as TU.RoArr<HTMLElement>) = Object.freeze([ shortSpotlight, longSpotlight, ]);
     }
 }
 export interface VisibleGridMixin<S extends Coord.System> {};

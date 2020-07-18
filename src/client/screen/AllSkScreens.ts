@@ -56,14 +56,21 @@ export class AllSkScreens {
         }
     }
 
+    /**
+     * @returns false if the leaving of the current screen was cancelled.
+     * @param destId -
+     * @param ctorArgs -
+     */
     public goToScreen<SID extends [SkScreen.Id]>(
-        // NOTE: use a tuple wrapper to expand bundled type.
+        // NOTE: using a tuple wrapper to expand bundled type.
         destId: SID[0],
         ctorArgs: SkScreen.CtorArgs<SID[0]>,
-    ): void {
+    ): boolean {
         const destScreen = this.dict[destId] as SkScreen<SID[0]>;
         if (this.currentScreen === destScreen) {
             // I don't see why this would ever need to happen.
+            // If we find need to write code that allows for this,
+            // rewrite the return-value spec.
             throw new Error ("never happens. see comment in source.");
         }
         if ((!this.currentScreen) || this.currentScreen.leave()) {
@@ -72,7 +79,9 @@ export class AllSkScreens {
             // Any confirm-leave prompts made to the user were OK-ed.
             destScreen.enter(ctorArgs);
             this.#currentScreen = destScreen;
+            return true;
         }
+        return true;
     }
 
     public get currentScreen(): SkScreen<SkScreen.Id> {

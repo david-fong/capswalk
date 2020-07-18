@@ -92,13 +92,13 @@ export abstract class _PlayScreen<
         gridHtml.pauseOl.addEventListener("click", (ev) => {
             const game = this.currentGame;
             if (game && game.status === Game.Status.PAUSED) {
-                this.statusBecomePlaying();
+                this._statusBecomePlaying();
             }
         });
         // ^Purposely make the grid the first child so it gets tabbed to first.
 
-        this.initializeControlsBar();
-        this.initializePlayersBar();
+        this._initializeControlsBar();
+        this._initializePlayersBar();
 
         // @ts-expect-error Assignment to readonly property.
         // We can't use a type assertion to cast off the readonly-ness
@@ -109,11 +109,11 @@ export abstract class _PlayScreen<
                 if (this.#pauseReason === undefined) {
                     const game = this.currentGame;
                     if (!game || (game && game.status !== Game.Status.OVER)) {
-                        this.statusBecomePaused();
+                        this._statusBecomePaused();
                     }
                 }
             } else {
-                if (this.#pauseReason === "page-hide") this.statusBecomePlaying();
+                if (this.#pauseReason === "page-hide") { this._statusBecomePlaying(); }
             }
         };
         // @ts-expect-error Assignment to readonly property.
@@ -127,10 +127,8 @@ export abstract class _PlayScreen<
     protected async _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
         document.addEventListener("visibilitychange", this.#onVisibilityChange);
         this.pauseButton.disabled = true;
-        this.statusBecomePaused(); // <-- Leverage some state initialization.
+        this._statusBecomePaused(); // <-- Leverage some state initialization.
 
-        // TODO.design Are there ways we can share more code between
-        // implementations by passing common arguments?
         this.#currentGame = await this._createNewGame(
             args as (typeof args & Game.CtorArgs<G,any>),
         );
@@ -138,17 +136,17 @@ export abstract class _PlayScreen<
         await this.currentGame!.reset();
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
-        // by populating tiles with CSP's can be done all at once.
+        // by populating tiles with CSP's will have batched reflow.
         const html = this.currentGame!.htmlElements;
         this.gridImplHost.appendChild(html.gridImpl);
         // ^The order of insertion does not matter (it used to).
         this.playersBar.appendChild(html.playersBar);
 
-        this.pauseButton.onclick = this.statusBecomePlaying.bind(this);
+        this.pauseButton.onclick = this._statusBecomePlaying.bind(this);
         this.pauseButton.disabled = false;
         if (this.wantsAutoPause) {
             setTimeout(() => {
-                if (!document.hidden) this.statusBecomePlaying();
+                if (!document.hidden) { this._statusBecomePlaying(); }
             }, 500);
         }
         return;
@@ -164,10 +162,19 @@ export abstract class _PlayScreen<
         document.removeEventListener("visibilitychange", this.#onVisibilityChange);
 
         // Release the game:
-        for (const elem of Object.values(this.currentGame!.htmlElements)) {
+        // See docs in Game.ts : Pausing is done to cancel scheduled callbacks.
+        const game = this.currentGame!;
+        game.statusBecomePaused();
+        for (const elem of Object.values(game.htmlElements)) {
+            // IMPORTANT NOTE: For some reason, clearing children from the
+            // grid-impl element is necessary to allow for garbage collection
+            // of DOM nodes (at least on Chrome).
+            elem.textContent = "";
             elem.remove();
         }
         this.gridBaseElem.removeEventListener("keydown", this.#gridOnKeyDown);
+        //// @ts-expect-error Experiment with freeing grid reference to speed up garbage collection?
+        //game.grid = undefined;
         this.#currentGame = undefined;
         return true;
     }
@@ -216,7 +223,7 @@ export abstract class _PlayScreen<
     }
 
 
-    private statusBecomePlaying(): void {
+    private _statusBecomePlaying(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePlaying();
         this.pauseButton.textContent = "Pause";
@@ -224,20 +231,20 @@ export abstract class _PlayScreen<
         this.gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
         window.requestAnimationFrame((time) => {
-            this.pauseButton.onclick = this.statusBecomePaused.bind(this);
+            this.pauseButton.onclick = this._statusBecomePaused.bind(this);
             this.resetButton.disabled = true;
             this.gridBaseElem.focus();
         });
     }
 
-    private statusBecomePaused(): void {
+    private _statusBecomePaused(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePaused();
         this.pauseButton.textContent = "Unpause";
         this.#pauseReason = document.hidden ? "page-hide" : "other";
         this.gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
 
-        this.pauseButton.onclick    = this.statusBecomePlaying.bind(this);
+        this.pauseButton.onclick    = this._statusBecomePlaying.bind(this);
         this.resetButton.disabled   = false;
     }
 
@@ -257,7 +264,7 @@ export abstract class _PlayScreen<
         this.currentGame!.reset();
         this.pauseButton.disabled = false;
         if (this.wantsAutoPause) {
-            this.statusBecomePlaying();
+            this._statusBecomePlaying();
         }
     }
 
@@ -265,7 +272,7 @@ export abstract class _PlayScreen<
     /**
      *
      */
-    protected initializeControlsBar(): void {
+    private _initializeControlsBar(): void {
         const controlsBar = document.createElement("div");
         controlsBar.classList.add(
             OmHooks.General.Class.CENTER_CONTENTS,
@@ -312,7 +319,7 @@ export abstract class _PlayScreen<
         this.baseElem.appendChild(controlsBar);
     }
 
-    protected initializePlayersBar(): void {
+    private _initializePlayersBar(): void {
         const playersBar
             = (this.playersBar as HTMLElement)
             = document.createElement("div");
@@ -348,11 +355,13 @@ export namespace _PlayScreen {
         );
         // Grid Scroll Wrapper:
         const scrollOuter = document.createElement("div");
+        scrollOuter.setAttribute("role", "presentation");
         scrollOuter.classList.add(
             //CSS_FX.FILL_PARENT,
             OMHC.SCROLL_OUTER,
         );
         const scrollInner = document.createElement("div");
+        scrollInner.setAttribute("role", "presentation");
         scrollInner.classList.add(OMHC.SCROLL_INNER);
         scrollOuter.appendChild(scrollInner);
         {

@@ -136,7 +136,7 @@ export abstract class Lang extends _Lang {
                     if (conflictSeq === upstreamNodes[i].sequence) {
                         // Cannot use anything on this upstream path because
                         // an avoid-node is directly inside it.
-                        upstreamNodes.splice(0);
+                        upstreamNodes.length = 0;
                     } else {
                         // Found a node on an upstream path of an avoid-node.
                         // Doesn't stop us from using what we've found so far.

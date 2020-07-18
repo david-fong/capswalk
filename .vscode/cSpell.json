@@ -28,6 +28,8 @@
         "csp's",
         "elim",
         "gamepart", "gameparts",
+        "OMHC", // Object-Model Hook :: Classes
+        "OMHD", // Object-Model Hook :: Dataset Keys
         "sesh",
         "sysname",
         "typeable",

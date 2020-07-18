@@ -87,7 +87,8 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             if (newState === State.CHOOSING_HOST) {
                 this.groupNameInput.disabled    = true;
                 this.groupNameInput.value       = "";
-                this.groupNameDataList.replaceWith(this.groupNameDataList.cloneNode());
+                // Fun fact on an alternative for clearing children: https://stackoverflow.com/a/22966637/11107541
+                this.groupNameDataList.innerText = "";
                 this.passphraseInput.disabled   = true;
                 this.passphraseInput.value      = "";
                 this.hostUrlInput.focus();
@@ -301,6 +302,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             if (reason === "io server disconnect") {
                 this.socket = undefined;
                 top.toast("The server disconnected you from your group.");
+                this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {});
             }
         });
     }
