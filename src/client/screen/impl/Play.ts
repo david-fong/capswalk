@@ -1,10 +1,10 @@
 import { Game } from "game/Game"; export { Game };
+import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 // import type { OfflineGame } from "../../game/OfflineGame";
 // import type { OnlineGame }  from "../../game/OnlineGame";
 import type { BrowserGameMixin } from "../../game/BrowserGame";
 
 import { OmHooks, SkScreen } from "../SkScreen";
-
 
 /**
  * If and only if this screen is the current screen, then its
@@ -24,8 +24,9 @@ export abstract class _PlayScreen<
      * Hosts the implementation-specific grid element's scroll-wrapper,
      * as well as some other game-status overlays.
      */
-    protected readonly gridBaseElem: HTMLElement;
-    private readonly gridImplHost:  HTMLElement;
+    protected readonly _gridBaseElem: HTMLElement;
+    private   readonly _gridImplHost: HTMLElement;
+    //private   readonly _gridIsecObserver: IntersectionObserver;
 
     private readonly playersBar: HTMLElement;
 
@@ -85,9 +86,9 @@ export abstract class _PlayScreen<
         );
 
         const gridHtml = _PlayScreen.createCenterColElem();
-        (this.gridBaseElem as HTMLElement) = gridHtml.grid;
-        (this.gridImplHost as HTMLElement) = gridHtml.implHost;
-        this.gridImplHost.appendChild(document.createComment("grid impl host"));
+        (this._gridBaseElem as HTMLElement) = gridHtml.grid;
+        (this._gridImplHost as HTMLElement) = gridHtml.implHost;
+        this._gridImplHost.appendChild(document.createComment("grid impl host"));
         this.baseElem.appendChild(gridHtml.top);
         gridHtml.pauseOl.addEventListener("click", (ev) => {
             const game = this.currentGame;
@@ -96,6 +97,23 @@ export abstract class _PlayScreen<
             }
         });
         // ^Purposely make the grid the first child so it gets tabbed to first.
+
+        // See below link for an illustrative guide on the intersection observer API:
+        // https://blog.arnellebalane.com/the-intersection-observer-api-d441be0b088d
+        // Unfortunately, it seems like intersection observer is not able to do what
+        // I want. It will no trigger when the target's position changes.
+        // // @ts-expect-error Assignment to readonly property: `_gridIsecObserver`:
+        // this._gridIsecObserver = new IntersectionObserver((entries, observer) => {
+        //     entries.forEach((value) => {
+        //         console.log(value.intersectionRatio);
+        //         if (!value.isIntersecting) {
+        //             value.target.scrollIntoView(SCROLL_INTO_CENTER);
+        //         }
+        //     });
+        // }, {
+        //     root: gridHtml.intersectionRoot,
+        //     rootMargin: "-20%",
+        // });
 
         this._initializeControlsBar();
         this._initializePlayersBar();
@@ -132,13 +150,13 @@ export abstract class _PlayScreen<
         this.#currentGame = await this._createNewGame(
             args as (typeof args & Game.CtorArgs<G,any>),
         );
-        this.gridBaseElem.addEventListener("keydown", this.#gridOnKeyDown);
+        this._gridBaseElem.addEventListener("keydown", this.#gridOnKeyDown);
         await this.currentGame!.reset();
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
         // by populating tiles with CSP's will have batched reflow.
         const html = this.currentGame!.htmlElements;
-        this.gridImplHost.appendChild(html.gridImpl);
+        this._gridImplHost.appendChild(html.gridImpl);
         // ^The order of insertion does not matter (it used to).
         this.playersBar.appendChild(html.playersBar);
 
@@ -160,6 +178,7 @@ export abstract class _PlayScreen<
             return false;
         }
         document.removeEventListener("visibilitychange", this.#onVisibilityChange);
+        //this._gridIsecObserver.disconnect();
 
         // Release the game:
         // See docs in Game.ts : Pausing is done to cancel scheduled callbacks.
@@ -172,7 +191,7 @@ export abstract class _PlayScreen<
             elem.textContent = "";
             elem.remove();
         }
-        this.gridBaseElem.removeEventListener("keydown", this.#gridOnKeyDown);
+        this._gridBaseElem.removeEventListener("keydown", this.#gridOnKeyDown);
         //// @ts-expect-error Experiment with freeing grid reference to speed up garbage collection?
         //game.grid = undefined;
         this.#currentGame = undefined;
@@ -205,11 +224,17 @@ export abstract class _PlayScreen<
         const game = this.currentGame!;
         if (ev.ctrlKey && ev.key === " " && !ev.repeat) {
             // If switching operator:
+            function getOperatorElem(this: void): HTMLElement {
+                return game.currentOperator.status.immigrantInfo.playerElem;
+            };
+            //this._gridIsecObserver.unobserve(getOperatorElem());
             const operators = game.operators;
             game.setCurrentOperator(
                 (1 + operators.indexOf(game.currentOperator))
                 % operators.length
             );
+            //const operatorElem = getOperatorElem();
+            //this._gridIsecObserver.observe(operatorElem);
         } else {
             // Process event as regular typing:
             game.currentOperator.processKeyboardInput(ev);
@@ -228,12 +253,12 @@ export abstract class _PlayScreen<
         this.currentGame?.statusBecomePlaying();
         this.pauseButton.textContent = "Pause";
         this.#pauseReason = undefined;
-        this.gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
+        this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
         window.requestAnimationFrame((time) => {
             this.pauseButton.onclick = this._statusBecomePaused.bind(this);
             this.resetButton.disabled = true;
-            this.gridBaseElem.focus();
+            this._gridBaseElem.focus();
         });
     }
 
@@ -242,7 +267,7 @@ export abstract class _PlayScreen<
         this.currentGame?.statusBecomePaused();
         this.pauseButton.textContent = "Unpause";
         this.#pauseReason = document.hidden ? "page-hide" : "other";
-        this.gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
+        this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
 
         this.pauseButton.onclick    = this._statusBecomePlaying.bind(this);
         this.resetButton.disabled   = false;
@@ -252,7 +277,7 @@ export abstract class _PlayScreen<
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.pauseButton.disabled = true;
         this.resetButton.disabled = false;
-        this.gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.OVER;
+        this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.OVER;
     }
 
     /**
@@ -295,7 +320,7 @@ export abstract class _PlayScreen<
         }
         controlsBar.addEventListener("pointerleave", (ev) => {
             window.requestAnimationFrame((time) => {
-                this.gridBaseElem.focus();
+                this._gridBaseElem.focus();
             });
         });
 
@@ -334,6 +359,7 @@ export namespace _PlayScreen {
     export function createCenterColElem(): Readonly<{
         top: HTMLElement,
         grid: HTMLElement,
+        intersectionRoot: HTMLElement,
         implHost: HTMLElement,
         pauseOl: HTMLElement,
     }> {
@@ -360,10 +386,6 @@ export namespace _PlayScreen {
             //CSS_FX.FILL_PARENT,
             OMHC.SCROLL_OUTER,
         );
-        const scrollInner = document.createElement("div");
-        scrollInner.setAttribute("role", "presentation");
-        scrollInner.classList.add(OMHC.SCROLL_INNER);
-        scrollOuter.appendChild(scrollInner);
         {
             // Add a "keyboard-disconnected" overlay if not added already:
             const kbdDcBase = document.createElement("div");
@@ -397,13 +419,21 @@ export namespace _PlayScreen {
             }
             scrollOuter.appendChild(pauseOl);
         }
+        // const intersectionRoot = document.createElement("div");
+        // intersectionRoot.setAttribute("aria-hidden", "true");
+        // intersectionRoot.classList.add(
+        //     CSS_FX.FILL_PARENT,
+        //     OMHC.PLAYER_IOB_ROOT,
+        // );
+        // scrollOuter.appendChild(intersectionRoot);
 
         grid.appendChild(scrollOuter);
         base.appendChild(grid);
         return Object.freeze(<ReturnType<typeof _PlayScreen.createCenterColElem>>{
             top: base,
-            grid: grid,
-            implHost: scrollInner,
+            grid,
+            intersectionRoot: scrollOuter,
+            implHost: scrollOuter,
             pauseOl: pauseOl,
         });
     }

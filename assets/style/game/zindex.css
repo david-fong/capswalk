@@ -8,7 +8,7 @@ avoid performing unnecessary reflow calculations
 over the whole grid every time a player moves.
 Turn on "Paint Flashing" in a browser inspector. */
 
-.game-grid-impl-body            { z-index:   0; contain: strict; } /* ROOT */
+.game-grid-impl-body            { z-index:   0; } /* ROOT */
 .player__face[data-face="me"]   { z-index:  21; }
 .player__spotlight-long         { z-index:  20; } /* SPOTLIGHT (long-range) */
 .tile__seq                      { z-index:  13; }

@@ -59,6 +59,7 @@ export namespace Grid {
         KBD_DC_ICON:    "game-grid-kbd-dc__icon",
         PAUSE_OL:       "game-grid-pause-overlay",
         PAUSE_OL_ICON:  "game-grid-pause-overlay__icon",
+        PLAYER_IOB_ROOT:"grid-player-intersection-root"
     };
     export const Dataset = <const>{
         /**

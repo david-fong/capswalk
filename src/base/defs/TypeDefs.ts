@@ -5,6 +5,14 @@ export namespace SkErrors {
 }
 
 
+export const SCROLL_INTO_CENTER = Object.freeze(<const>{
+    behavior: "smooth",
+    block:    "center",
+    inline:   "center",
+});
+SCROLL_INTO_CENTER as ScrollIntoViewOptions;
+
+
 /**
  * Copied from TypeScript official docs.
  *
@@ -168,13 +176,13 @@ export namespace Lang {
         id: "engl-low",
         module: "English", export: "Lowercase", numLeaves: 26,
         remapFunc: _RemapTemplates.TO_LOWER,
-        displayName: "English Lowercase (QWERTY)",
+        displayName: "English Lowercase (qwerty)",
         blurb: "",
     },<const>{
         id: "engl-mix",
         module: "English", export: "MixedCase", numLeaves: 52,
         remapFunc: _RemapTemplates.IDENTITY,
-        displayName: "English Mixed-Case (QWERTY)",
+        displayName: "English Mixed-Case (Querty)",
         blurb: "",
     }, <const>{
         id: "japn-hir",

@@ -15,7 +15,6 @@
 ### High Priority
 
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
-1. See which usages of `forEach` can be simplified to `<Class>.prototype.<method>.bind` instead of using a single-line arrow function. One benefit of this is having a more readable stack trace. Be careful of how unbound arguments will be defaulted by default arguments passed to the lambda by forEach (Ie. index, array).
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
 1. Implement game creation event communications for online game.
@@ -42,8 +41,8 @@
 - Use [Constructable Stylesheets](https://developers.google.com/web/updates/2019/02/constructable-stylesheets) to scope CSS classes? Maybe? Am I sinking into the trap of just liking to add complications? Have I gone insane? What is wrong with me?
 - Reset offline games in a separate thread and then pass the result back to the main thread in serialized form.
 - Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
-- Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
-  - ~Use `scroll-snap-type: both` on `.grid-scroll-outer` and `scroll-snap-align: center` on euclid2 `.tile`.~
+- Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
+  - Note: The Intersection Observer API will not work here- it doesn't trigger on re-parenting the target node.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.

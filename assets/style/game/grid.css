@@ -5,6 +5,7 @@
     up no space (its children all have their position
     property set to `absolute`). We rectify this case
     by giving `.game-grid-impl-body` `position: static`. */
+    contain:        content;
     height:         100%;
     /* width:          fit-content; */
     display:        grid;
@@ -16,10 +17,14 @@
     /* overscroll-behavior: contain; */
 }
 .game-grid,
-.game-grid-scroll-outer,
-.game-grid-scroll-inner {
-    contain:    content;
-    position:   relative;
+.game-grid-scroll-outer {
+    position:       relative;
+}
+.grid-player-intersection-root {
+    position:       fixed;
+    z-index:        100;
+    pointer-events: none;
+    padding:        20%;
 }
 
 /*  */
@@ -37,16 +42,14 @@
     width:  0px;
     height: 0px;
 }
-.game-grid-scroll-inner {
-    padding: 5px;
-    /* Take up as much size as our contents: */
-    height: fit-content;
-    width:  fit-content;
-}
 
 .game-grid-impl-body {
-    position:   static;
-    color:      var(--colour-tileFg);
+    contain:        content;
+    position:       static;
+    color:          var(--colour-tileFg);
+    height:         fit-content;
+    width:          fit-content;
+    padding:        0.4em;
 }
 
 .game-grid-kbd-dc,

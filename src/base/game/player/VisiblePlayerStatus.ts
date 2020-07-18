@@ -1,4 +1,5 @@
 import { OmHooks } from "defs/OmHooks";
+import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
 
@@ -78,11 +79,14 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
     public _notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
-        spotlightElems.forEach((elem) => {
-            this.#baseElem.appendChild(elem);
-        });
         const currOperator = this.player.game.currentOperator;
         const nextOperator = this.player;
+        requestAnimationFrame((time) => {
+            spotlightElems.forEach((elem) => {
+                this.#baseElem.appendChild(elem);
+            });
+            currOperator?.status.immigrantInfo.playerElem.scrollIntoView(SCROLL_INTO_CENTER);
+        });
         if (nextOperator.teamId !== currOperator?.teamId) {
             // Must use the above nullish coalesce operator for first call to setCurrentOperator.
             nextOperator.game.players.forEach((otherPlayer) => {
