@@ -36,6 +36,11 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
         nextBtn.textContent = "Next";
         this.baseElem.appendChild(nextBtn);
     }
+
+    _abstractOnBeforeEnter(): Promise<void> {
+        this.nextBtn.focus();
+        return Promise.resolve();
+    }
 }
 export namespace _SetupScreen {
 

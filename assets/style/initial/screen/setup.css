@@ -1,6 +1,14 @@
 
 .screen-setup {
+    display: grid;
+    justify-content: center;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
+    gap: 1.0em;
 }
 
 .screen-setup--next-button {
+    padding: 0.3em 0.7em;
+    font-size: 2.0em;
 }

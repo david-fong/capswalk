@@ -206,7 +206,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     };
     config.entry["index"] = `./src/client/index.ts`;
     config.externals = [ nodeExternals({
-        // whitelist: ["socket.io-client"],
+        allowlist: ["tslib"],
         importType: "root",
     }), ],
     config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
