@@ -1,7 +1,9 @@
 import { Lang } from "defs/TypeDefs";
-
-import { SkScreen } from "../SkScreen";
+import { Coord } from "floor/Tile";
+import type { Game } from "game/Game";
 import { SkPickOne } from "../../utils/SkPickOne";
+
+import { OmHooks, SkScreen } from "../SkScreen";
 
 
 type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
@@ -11,27 +13,87 @@ type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
  * the user chooses.
  */
 // TODO.learn how to use the IndexDB web API.
-export abstract class SetupScreen<SID extends SID_options> extends SkScreen<SID> {
+export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID> {
 
-    protected readonly langSel: SetupScreen.LangPickOne;
+    protected readonly langSel: _SetupScreen.LangPickOne;
 
     protected readonly nextBtn: HTMLButtonElement;
 
     /**
      * @override
      */
-    protected __lazyLoad(): void {
-        (this.langSel as SetupScreen.LangPickOne) = new SetupScreen.LangPickOne();
+    protected _lazyLoad(): void {
+        this.baseElem.classList.add(OmHooks.Screen.Impl.Setup.Class.BASE);
+
+        // Language selection component:
+        (this.langSel as _SetupScreen.LangPickOne) = new _SetupScreen.LangPickOne();
         this.baseElem.appendChild(this.langSel.baseElem);
 
         const nextBtn
             = (this.nextBtn as HTMLButtonElement)
             = document.createElement("button");
+        nextBtn.classList.add(OmHooks.Screen.Impl.Setup.Class.NEXT_BUTTON);
         nextBtn.textContent = "Next";
         this.baseElem.appendChild(nextBtn);
     }
+
+    _abstractOnBeforeEnter(): Promise<void> {
+        this.nextBtn.focus();
+        return Promise.resolve();
+    }
 }
-export namespace SetupScreen {
+export namespace _SetupScreen {
+
+    // TODO.impl If we keep this, use a recursive Object.freeze.
+    // Currently not frozen to allow for easier testing.
+    export const DEFAULT_PRESET = <Game.CtorArgs<Game.Type.OFFLINE,any>>{
+        coordSys: Coord.System.EUCLID2,
+        gridDimensions: {
+            height: 21,
+            width:  21,
+        },
+        averageFreeHealthPerTile: 1.0 / 45.0,
+        langWeightScaling: 1.0,
+        langId: "engl-low",
+        playerDescs: [{
+            isALocalOperator: true,
+            familyId:   <const>"HUMAN",
+            teamId:     0,
+            socketId:   undefined,
+            username:   "hello1",
+            noCheckGameOver: false,
+            familyArgs: { },
+        }, {
+            isALocalOperator: true,
+            familyId:   <const>"HUMAN",
+            teamId:     1,
+            socketId:   undefined,
+            username:   "hello2",
+            noCheckGameOver: false,
+            familyArgs: { },
+        }, {
+            isALocalOperator: false,
+            familyId:   <const>"CHASER",
+            teamId:     1,
+            socketId:   undefined,
+            username:   "chaser1",
+            noCheckGameOver: true,
+            familyArgs: {/* Uses all defaults. */},
+        }, {
+            isALocalOperator: false,
+            familyId:   <const>"CHASER",
+            teamId:     1,
+            socketId:   undefined,
+            username:   "chaser2",
+            noCheckGameOver: true,
+            familyArgs: {
+                fearDistance: 6,
+                bloodThirstDistance: 5,
+                healthReserve: 5.0,
+                keyPressesPerSecond: 1.8,
+            },
+        },],
+    };
     /**
      *
      */
@@ -45,10 +107,10 @@ export namespace SetupScreen {
             // Below line is a placeholder.
             this.selectOpt(this.options[0]);
         }
-        public __onHoverOpt(opt: LangPickOne.Option): void {
+        public _onHoverOpt(opt: LangPickOne.Option): void {
             ;
         }
-        public __onSelectOpt(opt: LangPickOne.Option): void {
+        public _onSelectOpt(opt: LangPickOne.Option): void {
             ;
         }
     }
@@ -56,7 +118,7 @@ export namespace SetupScreen {
         /**
          *
          */
-        export class Option extends SkPickOne.__Option {
+        export class Option extends SkPickOne._Option {
 
             public readonly desc: Lang.FrontendDesc;
 
@@ -70,5 +132,5 @@ export namespace SetupScreen {
         Object.freeze(Option.prototype);
     }
 }
-Object.freeze(SetupScreen);
-Object.freeze(SetupScreen.prototype);
+Object.freeze(_SetupScreen);
+Object.freeze(_SetupScreen.prototype);

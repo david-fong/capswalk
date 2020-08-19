@@ -35,7 +35,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 
     #status: Game.Status;
 
-    public readonly __playerStatusCtor: typeof PlayerStatus;
+    public readonly _playerStatusCtor: typeof PlayerStatus;
 
 
     /**
@@ -51,7 +51,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         desc: Game.CtorArgs<G,S>,
     ) {
         this.gameType = gameType;
-        const gridClass = this.__getGridImplementation(desc.coordSys);
+        const gridClass = this._getGridImplementation(desc.coordSys);
         this.grid = new (gridClass)({
             gridClass:  gridClass,
             tileClass:  impl.tileClass,
@@ -63,7 +63,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId);
 
         // Construct players:
-        this.__playerStatusCtor = impl.playerStatusCtor;
+        this._playerStatusCtor = impl.playerStatusCtor;
         this.players = this.createPlayers(desc);
 
         this.operators = Object.freeze(
@@ -89,7 +89,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
                 throw new Error("All teams are immortal. The game will never end.");
             }
         }
-        this.players.forEach((player) => player.__afterAllPlayersConstruction());
+        this.players.forEach((player) => player._afterAllPlayersConstruction());
     }
 
     /**
@@ -109,8 +109,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         return Promise.resolve();
     }
 
-    protected abstract __getGridImplementation(coordSys: S):
-    G extends Game.Type.SERVER ? Grid.ClassIf<S> : VisibleGrid.ClassIf<S>;
+    protected abstract _getGridImplementation(coordSys: S): Grid.ClassIf<S> | VisibleGrid.ClassIf<S>;
 
 
     /**
@@ -133,15 +132,15 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         return Object.freeze(playerDescs.map((playerDesc) => {
             if (playerDesc.familyId === Player.Family.HUMAN) {
                 return (playerDesc.isALocalOperator)
-                    ? this.__createOperatorPlayer(playerDesc)
+                    ? this._createOperatorPlayer(playerDesc)
                     : new Player(this, playerDesc);
             } else {
-                return this.__createArtifPlayer(playerDesc) as Player<S>;
+                return this._createArtifPlayer(playerDesc) as Player<S>;
             }
         }));
     }
-    public abstract __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S>;
-    protected abstract __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>): Player<S>;
+    public abstract _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S>;
+    protected abstract _createArtifPlayer(desc: Player._CtorArgs<Player.FamilyArtificial>): Player<S>;
 
     public serializeResetState(): Game.ResetSer<S> {
         const csps: Array<Lang.CharSeqPair> = [];
@@ -185,7 +184,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         const nextOperator = this.operators[nextOperatorIndex];
         if (nextOperator && this.currentOperator !== nextOperator)
         {
-            nextOperator.__notifyWillBecomeCurrent();
+            nextOperator._notifyWillBecomeCurrent();
             this.#currentOperator = nextOperator;
             // IMPORTANT: The order of the above lines matters
             // (hence the method name "notifyWillBecomeCurrent").
@@ -211,9 +210,9 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             throw new Error("Can only resume a game that is currently paused.");
         }
         this.players.forEach((player) => {
-            player.__abstractNotifyThatGameStatusBecamePlaying();
+            player._notifyGameNowPlaying();
         });
-        this.__abstractStatusBecomePlaying();
+        this._abstractStatusBecomePlaying();
         this.#status = Game.Status.PLAYING;
     }
     /**
@@ -231,9 +230,9 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             throw new Error("Can only pause a game that is currently playing.");
         }
         this.players.forEach((player) => {
-            player.__abstractNotifyThatGameStatusBecamePaused();
+            player._notifyGameNowPaused();
         });
-        this.__abstractStatusBecomePaused();
+        this._abstractStatusBecomePaused();
         this.#status = Game.Status.PAUSED;
     }
     /**
@@ -250,16 +249,16 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             throw new Error("Can only end a game that is currently playing.");
         }
         this.players.forEach((player) => {
-            player.__abstractNotifyThatGameStatusBecameOver();
+            player._notifyGameNowOver();
         });
-        this.__abstractStatusBecomeOver();
+        this._abstractStatusBecomeOver();
         this.#status = Game.Status.OVER;
         this.#onGameBecomeOver();
         console.log("game is over!");
     }
-    protected __abstractStatusBecomePlaying(): void {}
-    protected __abstractStatusBecomePaused(): void {}
-    protected __abstractStatusBecomeOver(): void {}
+    protected _abstractStatusBecomePlaying(): void {}
+    protected _abstractStatusBecomePaused(): void {}
+    protected _abstractStatusBecomeOver(): void {}
 
  /* The implementations are fully defined and publicly exposed by
     GameManager. These protected declarations higher up the class

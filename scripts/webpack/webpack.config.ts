@@ -77,18 +77,33 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
         const retval: webpack.RuleSetUse = [ "css-loader", ];
         retval.unshift({
             loader: MiniCssExtractPlugin.loader,
+            options: {
+                publicPath: (resourcePath: string, context: string) => {
+                    // publicPath is the relative path of the resource to the context
+                    // e.g. for ./css/admin/main.css the publicPath will be ../../
+                    // while for ./css/main.css the publicPath will be ../
+                    // return path.relative(path.dirname(resourcePath), context).replace(/\\/g, "/") + "/";
+                },
+            }
         });
         return retval;
     })(),
 },{
     // https://webpack.js.org/loaders/file-loader/
-    test: /\.(png|svg|jpg|gif)$/,
-    use: [{
+    test: /\.(png|svg|jpe?g|gif)$/,
+    use: [(() => {
+        const pathFunc = (url: string, resourcePath: string, context: string) => {
+            return path.relative(context, resourcePath).replace(/\\/g, "/");
+        };
+        return {
         loader: "file-loader",
         options: {
-            publicPath: "./",
-        },
-    }],
+            context: path.resolve(PROJECT_ROOT, "assets"),
+            //name: "[name].[ext]",
+            outputPath: pathFunc,
+            publicPath: pathFunc,
+        },};
+    })()],
 }, ]};
 
 /**
@@ -178,7 +193,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
         template:   "./index.ejs",
         filename:   path.resolve(PROJECT_ROOT, "index.html"),
         base:       ".", // must play nice with path configs.
-        favicon:    "./assets/favicon.ico",
+        favicon:    "./assets/favicon.png",
         scriptLoading: "defer",
         inject: false, // (I specify where each injection goes in the template).
         templateParameters: (compilation, assets, assetTags, options) => { return {
@@ -191,7 +206,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     };
     config.entry["index"] = `./src/client/index.ts`;
     config.externals = [ nodeExternals({
-        // whitelist: ["socket.io-client"],
+        allowlist: ["tslib"],
         importType: "root",
     }), ],
     config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
@@ -200,8 +215,8 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     // };
     config.plugins.push(new HtmlPlugin(htmlPluginArgs));
     config.plugins.push(new MiniCssExtractPlugin({
-        filename: "index.css",
-        chunkFilename: "chunk/[name].css"
+        filename: "_barrel.css",
+        chunkFilename: "chunk/[name].css",
     }));
     config.plugins.push(new CopyWebpackPlugin({ patterns: [{
         from: "node_modules/socket.io-client/dist/socket.io.js" + "*",

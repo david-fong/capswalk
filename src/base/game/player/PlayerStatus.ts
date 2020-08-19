@@ -24,7 +24,7 @@ export class PlayerStatus<S extends Coord.System> {
         this.health = 0;
     }
 
-    public __afterAllPlayersConstruction(): void { }
+    public _afterAllPlayersConstruction(): void { }
 
     public get immigrantInfo(): Tile.VisibleImmigrantInfo | undefined {
         return undefined;

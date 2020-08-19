@@ -1,6 +1,4 @@
-import { OmHooks } from "defs/OmHooks";
-
-import { SkScreen } from "../SkScreen";
+import { OmHooks, SkScreen } from "../SkScreen";
 
 
 /**
@@ -13,7 +11,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
     /**
      * @override
      */
-    protected __lazyLoad(): void {
+    protected _lazyLoad(): void {
         const OMHC = OmHooks.Screen.Impl.Home.Class;
         type  OMHC = typeof OMHC;
         this.baseElem.classList.add(
@@ -47,10 +45,10 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
                     elem.focus();
                 });
                 // TODO.impl play a keyboard click sound.
-                this.toplevel.sfx;
+                this.top.sfx;
             });
             nav.appendChild(elem);
-        }
+        };
 
         // NOTE: Define array entries in order that their
         // buttons should be tabbed through via keyboard.

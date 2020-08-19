@@ -1,5 +1,5 @@
 import type { Player } from "./player/Player";
-import { Player as __Player } from "defs/TypeDefs";
+import { Player as _Player } from "defs/TypeDefs";
 
 
 /**
@@ -29,13 +29,13 @@ export namespace ScoreInfo {
      */
     export class Entry {
 
-        public totalHealthPickedUp: Player.Health;
+        public readonly moveCounts: {[M in Player.MoveType]: number};
 
-        // TODO.design how to send this imfo to the game manager?
+        // TODO.design how to send this info to the game manager?
         // It is currently checked on the client side.
         //public invalidKeyPresses
 
-        public readonly moveCounts: {[M in Player.MoveType]: number};
+        public totalHealthPickedUp: Player.Health;
 
         public constructor() {
             this.moveCounts = {} as any; // This will be initialized during reset.
@@ -43,7 +43,7 @@ export namespace ScoreInfo {
 
         public reset(): void {
             this.totalHealthPickedUp = 0.0;
-            (Object.getOwnPropertyNames(__Player.MoveType) as
+            (Object.getOwnPropertyNames(_Player.MoveType) as
                 Array<Player.MoveType>).forEach((key) => {
                 this.moveCounts[key] = 0;
             });

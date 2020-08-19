@@ -3,6 +3,8 @@ import type { Game } from "game/Game";
 import type { AllSkScreens } from "./AllSkScreens";
 import type { TopLevel } from "../TopLevel";
 
+export { OmHooks };
+
 
 /**
  *
@@ -15,7 +17,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 
     public readonly screenId: SID;
 
-    protected readonly toplevel: TopLevel;
+    protected readonly top: TopLevel;
 
     readonly #parentElem: HTMLElement;
 
@@ -48,7 +50,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         requestGoToDisplay: AllSkScreens["goToScreen"],
     ) {
         this.screenId           = screenId;
-        this.toplevel           = toplevel;
+        this.top                = toplevel;
         this.#parentElem        = parentElem;
         this.requestGoToScreen  = requestGoToDisplay;
         this.#hasLazyLoaded     = false;
@@ -63,12 +65,12 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
                 = (this.baseElem as HTMLElement)
                 = document.createElement("div");
             baseElem.classList.add(OmHooks.Screen.Class.BASE);
-            this.__lazyLoad();
+            this._lazyLoad();
             this.#parentElem.appendChild(baseElem);
             const spaceyCamelName = this.screenId.replace(/[A-Z]/g, (letter) => " " + letter);
             { // "<SCREEN NAME> SCREEN"
                 const str = spaceyCamelName.toUpperCase();
-                baseElem.insertAdjacentHTML("beforebegin", `<!-- ${str} SCREEN -->`)
+                this.top.prependComment(baseElem, `${str} SCREEN`);
             }{ // "<Screen Name> Screen"
                 const str = spaceyCamelName.split(' ').map((word) =>
                     word.charAt(0).toUpperCase()
@@ -80,7 +82,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         const location = new window.URL(window.location.href);
         location.hash = this.screenId;
         history.replaceState(null, "", location.href);
-        await this.__abstractOnBeforeEnter(args);
+        await this._abstractOnBeforeEnter(args);
         // ^Wait until the screen has finished setting itself up
         // before entering it.
         window.requestAnimationFrame((time) => {
@@ -91,9 +93,11 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 
     /**
      * **Do not override.**
+     *
+     * @returns false if the leave was cancelled.
      */
     public leave(): boolean {
-        if (this.__abstractOnBeforeLeave()) {
+        if (this._abstractOnBeforeLeave()) {
             delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT]; // non-existant.
             this.baseElem.setAttribute("aria-hidden", "true");
             return true;
@@ -104,7 +108,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     /**
      * Implementations should set the CSS class for the base element.
      */
-    protected abstract __lazyLoad(): void;
+    protected abstract _lazyLoad(): void;
 
     /**
      * This is a good place to start any `setInterval` schedules, and
@@ -116,7 +120,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * Important: Calls to `HTMLElement.focus` may require a small delay
      * via setTimeout. The reason for this is currently unknown.
      */
-    protected async __abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> { }
+    protected async _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> { }
 
     /**
      * Return false if the leave should be cancelled. This functionality
@@ -126,7 +130,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * This is a good place, for example, to stop any non-essential
      * `setInterval` schedules.
      */
-    protected __abstractOnBeforeLeave(): boolean {
+    protected _abstractOnBeforeLeave(): boolean {
         return true;
     }
 

@@ -8,7 +8,7 @@
         "games"
     ],
     "icons": [{
-        "src": "dist/favicon.ico",
+        "src": "dist/favicon.png",
         "sizes": "302x302"
     }],
     "screenshots": [{

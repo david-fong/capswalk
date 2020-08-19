@@ -12,6 +12,7 @@
 .player__face {
     border-color:   var(--colour-tileBd);
     contain:        strict;
+    transition:     background-color 0.7s ease-in-out;
 }
 .player__spotlight-short,
 .player__spotlight-long {

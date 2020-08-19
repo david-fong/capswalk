@@ -163,20 +163,25 @@ export namespace Euclid2 {
                     const newTile = new desc.tileClass(new Coord({ x: col, y: row, }));
                     newRow.push(newTile);
                 }
-                grid.push(newRow);
+                grid.push(Object.freeze(newRow));
             }
-            this.grid = grid;
+            this.grid = Object.freeze(grid);
         }
 
-        public forEachTile(consumer: (tile: Tile<S>) => void, thisArg: object = this): void {
+        public forEachTile(consumer: (tile: Tile<S>) => void): void {
             for (const row of this.grid) {
                 for (const tile of row) {
                     consumer(tile);
                 }
             }
         }
+        public shuffledForEachTile(consumer: (tile: Tile<S>) => void): void {
+            this.grid.flat()
+            .sort((a,b) => Math.random() - 0.5)
+            .forEach((tile) => consumer(tile));
+        }
 
-        public getUntToward(sourceCoord: Coord, intendedDest: Coord.Bare): Tile<S> {
+        public getUntToward(intendedDest: Coord.Bare, sourceCoord: Coord): Tile<S> {
             const options = this.tile.destsFrom(sourceCoord).unoccupied.get;
             if (options.length === 0) {
                 return this.tile.at(sourceCoord);
@@ -225,10 +230,11 @@ export namespace Euclid2 {
             return options[Math.floor(options.length * Math.random())];
         }
 
-        public getUntAwayFrom(sourceCoord: Coord, avoidCoord: Coord): Tile<S> {
-            return this.getUntToward(sourceCoord, sourceCoord.add(
-                sourceCoord.sub(avoidCoord)
-            ));
+        public getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile<S> {
+            return this.getUntToward(
+                sourceCoord.add(sourceCoord.sub(avoidCoord)),
+                sourceCoord,
+            );
         }
 
         public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {
@@ -239,7 +245,7 @@ export namespace Euclid2 {
         }
 
 
-        public __getTileAt(coord: Coord.Bare): Tile<S> {
+        public _getTileAt(coord: Coord.Bare): Tile<S> {
             if (coord.x < 0 || coord.x >= this.dimensions.width ||
                 coord.y < 0 || coord.y >= this.dimensions.height
             ) {
@@ -248,7 +254,7 @@ export namespace Euclid2 {
             return this.grid[coord.y][coord.x];
         }
 
-        public __getTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
+        public _getTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             let t = coord.y - radius;
             let b = coord.y + radius + 1;
             let l = coord.x - radius;
@@ -266,9 +272,9 @@ export namespace Euclid2 {
             ));
         }
 
-        public __getTileSourcesTo(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
+        public _getTileSourcesTo(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             // Same behaviour as getting destinations from `coord`.
-            return this.__getTileDestsFrom(coord, radius);
+            return this._getTileDestsFrom(coord, radius);
         }
 
         public minMovesFromTo(source: Coord.Bare, dest: Coord.Bare): number {
@@ -340,10 +346,10 @@ export namespace Euclid2 {
                 //gridElem.style.setProperty("--euclid2-grid-height", this.dimensions.height.toString());
                 for (const row of this.grid) {
                     for (const tile of row) {
-                        tile.__addToDom(gridElem);
+                        tile._addToDom(gridElem);
                     }
                 }
-                this.__VisibleGrid_super(desc, gridElem);
+                this._superVisibleGrid(desc, gridElem);
             }
         }
         export interface Visible extends VisibleGridMixin<S> { };

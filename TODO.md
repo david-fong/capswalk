@@ -14,9 +14,10 @@
 
 ### High Priority
 
-1. Style active-descendant in SkPickOne
+1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
+1. Disable colour schemes when media is print.
+    - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
 1. Implement game creation event communications for online game.
-1. Unpause game on clicking pause overlay. Make pause overlay darker and keyboard-dc overlay lighter.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores (very small size) on top of player faces.
 1. Display the operator's current sequence buffer.
@@ -29,6 +30,7 @@
       - If the attacker is downed (ie. everyone in the interaction is downed), no changes should be made. Just short circuit.
       - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
       - If it still has more health, it does something similar for its teammates.
+1. Use webpack replace plugin to change some assertions and checks to only be done during development.
 
 ### Routine Checkups
 
@@ -36,16 +38,11 @@
 
 ### Low Priority
 
-1. Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
-- Use [this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) with the .grid element to improve grid viewport. Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
-  - Also see [this](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
-  - Steps:
-    - Set .game-grid contain to content and make it control its sizing (ex. 70vmin).
-    - Put .game-grid-impl-body inside a new wrapper that is sized according to its content.
-    - Put the sizing wrapper inside a new "scroll" wrapper.
-      - Make this scrolling wrapper control padding instead of .game-grid.
-        - This is so that the scroll bars will hug the grid viewport.
-      - Size the scrolling wrapper according to its parent, which is .game-grid.
+- Use [Constructable Stylesheets](https://developers.google.com/web/updates/2019/02/constructable-stylesheets) to scope CSS classes? Maybe? Am I sinking into the trap of just liking to add complications? Have I gone insane? What is wrong with me?
+- Reset offline games in a separate thread and then pass the result back to the main thread in serialized form.
+- Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
+- Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
+  - Note: The Intersection Observer API will not work here- it doesn't trigger on re-parenting the target node.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
@@ -63,8 +60,6 @@
     - [](https://devcenter.heroku.com/articles/nodejs-support)
     - [](https://medium.com/deployplace/heroku-vs-docker-the-ultimate-comparison-with-hidden-pitfalls-revealed-f6b7f4075de5)
   - [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
-- Make a nicely styled console-log greeting on the client side.
-  - List common variables in the program that they might like to look at.
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 - Look into switching from JsDoc to TsDoc
   - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
@@ -78,7 +73,7 @@
 - WebPack 5:
   - `output.ecmaVersion` is `6` by default. If we have set it to `6` manually, we can delete the manual field specification.
 - [TypeScript / tslib bug](https://github.com/microsoft/TypeScript/issues/36841)
-  - This is on the roadmap for TypeScript 2.9.1... That may be a while.
+  - This is on the roadmap for TypeScript 4.0.1... That may be a while.
   - When it is fixed, we can take out the ts-loader compiler option forcing `importHelpers` to be off.
 - In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
 
@@ -178,6 +173,7 @@ https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Backgrounds_a
 https://developer.mozilla.org/en-US/docs/Web/CSS/display
 flex playground: https://codepen.io/enxaneta/full/adLPwv/
 https://developers.google.com/web/updates/2018/01/paintapi
+https://drafts.csswg.org/mediaqueries-5/#custom-mq
 ```
 
 ### ARIA

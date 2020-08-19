@@ -1,4 +1,4 @@
-import * as io from "socket.io";
+import type * as io from "socket.io";
 import { setTimeout } from "timers";
 
 import { Game } from "game/Game";
@@ -36,7 +36,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     /**
      * @override
      */
-    protected __getGridImplementation(coordSys: S): Grid.ClassIf<S> {
+    protected _getGridImplementation(coordSys: S): Grid.ClassIf<S> {
         return Grid.getImplementation(coordSys);
     }
 
@@ -77,17 +77,19 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         const humanPlayers = this.players
         .filter((player) => player.familyId === Player.Family.HUMAN);
 
+        // TODO.fix shouldn't this go in the below loop? Right now, if a client
+        // operates multiple players, the listener for their server-side socket
+        // will be registered multiple times...
         // Attach event listeners / handlers to each socket:
         humanPlayers.map((player) => this.playerSockets[player.playerId])
         .forEach((socket) => {
-            // Attach the movement request handler:
-            socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Movement);
+            // Attach the movement request handlers:
+            // (these are detached in `onReturnToLobby`).
             socket.on(
                 PlayerActionEvent.EVENT_NAME.Movement,
                 this.processMoveRequest.bind(this),
             );
             // Attach the bubble-making request handler:
-            socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Bubble);
             socket.on(
                 PlayerActionEvent.EVENT_NAME.Bubble,
                 this.processBubbleRequest.bind(this),
@@ -125,10 +127,17 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         return superPromise;
     }
 
+    public onReturnToLobby(): void {
+        Object.values(this.namespace.sockets).forEach((socket) => {
+            socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Movement);
+            socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Bubble);
+        });
+    }
+
     /**
      * @override
      */
-    public __createOperatorPlayer(desc: Player.CtorArgs): never {
+    public _createOperatorPlayer(desc: Player.CtorArgs): never {
         throw new TypeError("This should never be called for a ServerGame.");
     }
 

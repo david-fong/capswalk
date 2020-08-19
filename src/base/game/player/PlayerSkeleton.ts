@@ -1,4 +1,4 @@
-import { Player as __Player } from "defs/TypeDefs";
+import { Player as _Player } from "defs/TypeDefs";
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
@@ -10,13 +10,13 @@ import { TileGetter } from "floor/TileGetter";
 
 
 /**
- * Made to abstract all operations that change the {@link Player#hostTile}
- * field. Enforces / exposes the {@link PlayerSkeleton#moveTo} method as
+ * Made to abstract all operations that change the `hostTile`
+ * field. Enforces / exposes the `moveTo` method as
  * the interface to any such operations.
  *
- * @extends __Player to intake its namespace exports.
+ * @extends Player to intake its namespace exports.
  */
-export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S> {
+export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> {
 
     public readonly playerId: Player.Id;
 
@@ -34,7 +34,6 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
     public readonly tile: TileGetter<S,[]>;
 
 
-
     protected constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
         super();
         if (Math.trunc(desc.playerId) !== desc.playerId) {
@@ -43,15 +42,15 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
         this.playerId = desc.playerId;
         this.isALocalOperator = desc.isALocalOperator;
         this.game = game;
-        this.status = new (this.game.__playerStatusCtor)(
+        this.status = new (this.game._playerStatusCtor)(
             this as PlayerSkeleton<S> as Player<S>,
             desc.noCheckGameOver,
         );
         this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
     }
 
-    public __afterAllPlayersConstruction(): void {
-        this.status.__afterAllPlayersConstruction();
+    public _afterAllPlayersConstruction(): void {
+        this.status._afterAllPlayersConstruction();
     }
 
     /**
@@ -63,12 +62,11 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
      */
     protected reset(spawnTile: Tile<S>): void {
         this.#hostTile = spawnTile;
-        this.hostTile.__setOccupant(
+        this.hostTile._setOccupant(
             this.playerId,
             this.status.immigrantInfo,
         );
     }
-
 
 
     public get coord(): Coord<S> {
@@ -77,12 +75,6 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
 
     public get hostTile(): Tile<S> {
         return this.#hostTile;
-    }
-
-    // TODO.design Abstract hook called when go near other player.
-    // what qualifies "near"? Need to call this in moveTo.
-    protected onGoBesideOtherPlayer(): void {
-        // Does nothing by default.
     }
 
     /**
@@ -130,33 +122,38 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends __Player<S>
         else {
             // Move to occupy the destination `Tile`:
             this.#hostTile = dest;
-            dest.__setOccupant(this.playerId, this.status.immigrantInfo);
+            dest._setOccupant(this.playerId, this.status.immigrantInfo);
         }
     }
 }
-
-
 export namespace PlayerSkeleton {
-
+    /**
+     *
+     */
     export class TileGetterSource<S extends Coord.System> implements TileGetter.Source<S,[]> {
 
-        public constructor(private readonly player: PlayerSkeleton<S>) { }
+        readonly #player: PlayerSkeleton<S>
+        readonly #superTileSrc: TileGetter.Source<S,[Coord.Bare<S>,]>;
 
-        public __getTileAt(): Tile<S> {
-            return this.player.game.grid.tile.at(this.player.coord);
+        public constructor(player: PlayerSkeleton<S>) {
+            this.#player = player;
+            this.#superTileSrc = player.game.grid.tile._source;
         }
 
-        public __getTileDestsFrom(): Array<Tile<S>> {
-            return this.player.game.grid.tile.destsFrom(this.player.coord).get;
+        public _getTileAt(): Tile<S> {
+            return this.#superTileSrc._getTileAt(this.#player.coord);
         }
 
-        public __getTileSourcesTo(): Array<Tile<S>> {
-            return this.player.game.grid.tile.sourcesTo(this.player.coord).get;
+        public _getTileDestsFrom(): Array<Tile<S>> {
+            return this.#superTileSrc._getTileDestsFrom(this.#player.coord);
+        }
+
+        public _getTileSourcesTo(): Array<Tile<S>> {
+            return this.#superTileSrc._getTileSourcesTo(this.#player.coord);
         }
     }
     Object.freeze(TileGetterSource);
     Object.freeze(TileGetterSource.prototype);
-
 }
 Object.freeze(PlayerSkeleton);
 Object.freeze(PlayerSkeleton.prototype);

@@ -25,9 +25,11 @@
         "fong",
         "artif",
         "bubbler",
-        "csps",
+        "csp's",
         "elim",
         "gamepart", "gameparts",
+        "OMHC", // Object-Model Hook :: Classes
+        "OMHD", // Object-Model Hook :: Dataset Keys
         "sesh",
         "sysname",
         "typeable",
@@ -37,6 +39,7 @@
 
         // Programming terminology:
         // (Functions and Variables)
+        "anims",
         "coord",
         "dict",
         "desc", "descs",
@@ -46,6 +49,7 @@
         "mixins",
         "nsps",
         "retval",
+        "reflow",
         "refs",
         "supercall",
         "spec",
@@ -61,6 +65,7 @@
         "heroku",
         "javascript's",
         "linting",
+        "markup",
         "readmes",
         "todos",
         "transpiled",

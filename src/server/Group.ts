@@ -4,16 +4,16 @@ import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 import type { Player } from "game/player/Player";
 
-import { Group as __Group } from "defs/OnlineDefs";
+import { Group as _Group, SkServer } from "defs/OnlineDefs";
 
-export { ServerGame } from "./ServerGame";
+export { ServerGame };
 
 
 /**
  * Manages communication between the server, and clients who play in
  * the same game together.
  */
-export class Group extends __Group {
+export class Group extends _Group {
 
     public readonly namespace: io.Namespace;
     public readonly name: Group.Name;
@@ -72,6 +72,12 @@ export class Group extends __Group {
      */
     protected onConnection(socket: Group.Socket): void {
         console.log(`socket    connect: ${socket.id}`);
+        if (this.#currentGame) {
+            // TODO.design is there a good reason to do the below?
+            // Prevent new players from joining while the group is playing
+            // a game:
+            socket.disconnect();
+        }
         socket.username = undefined;
         socket.teamId   = undefined;
         socket.updateId = 0;
@@ -88,8 +94,22 @@ export class Group extends __Group {
             socket.broadcast.emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_LOBBY,
             });
-            socket.on(Game.CtorArgs.EVENT_NAME, (ctorArgs: Game.CtorArgs<Game.Type.SERVER,any>) => {
-                this.createGameInstance(ctorArgs);
+            socket.on(Game.CtorArgs.EVENT_NAME, (
+                ctorArgs: Game.CtorArgs<Game.Type.SERVER,any>
+                | typeof Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR
+            ) => {
+                // First, broadcast to the joiner namespace of this
+                // group's change in state:
+                this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
+                    [this.name]: (ctorArgs !== Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR)
+                    ? Group.Exist.Status.IN_GAME
+                    : Group.Exist.Status.IN_LOBBY,
+                });
+                if (ctorArgs !== Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR) {
+                    this._createGameInstance(ctorArgs);
+                } else {
+                    this.#currentGame!.onReturnToLobby();
+                }
             });
         }
 
@@ -130,6 +150,10 @@ export class Group extends __Group {
         delete nsps.server.nsps[nsps.name];
         (this.namespace as io.Namespace) = undefined!;
         (this.deleteExternalRefs)();
+
+        nsps.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
+            [this.name]: Group.Exist.Status.DELETE,
+        });
         console.log(`terminated group: \`${this.name}\``);
     }
 
@@ -145,7 +169,7 @@ export class Group extends __Group {
      * @param gridDimensions -
      * @returns false if the passed arguments were incomplete or invalid.
      */
-    private createGameInstance(
+    private _createGameInstance(
         ctorArgs: Game.CtorArgs<Game.Type.SERVER,any>,
     ): Readonly<Game.CtorArgs.FailureReasons> | undefined {
         const failureReasons: Game.CtorArgs.FailureReasons = {
@@ -184,12 +208,12 @@ export class Group extends __Group {
     }
 }
 export namespace Group {
-    export type Socket      = __Group.Socket.ServerSide;
-    export type Name        = __Group.Name;
-    export type Passphrase  = __Group.Passphrase;
+    export type Socket      = _Group.Socket.ServerSide;
+    export type Name        = _Group.Name;
+    export type Passphrase  = _Group.Passphrase;
     export namespace Query {
-        export type RequestCreate   = __Group.Exist.RequestCreate;
-        export type NotifyStatus    = __Group.Exist.NotifyStatus;
+        export type RequestCreate   = _Group.Exist.RequestCreate;
+        export type NotifyStatus    = _Group.Exist.NotifyStatus;
     }
 }
 Object.freeze(Group);

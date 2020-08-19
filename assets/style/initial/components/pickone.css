@@ -6,6 +6,7 @@
     overflow-x:     hidden;
     overflow-y:     auto;
 
+    border-color:   var(--colour-tileBd);
     text-align:     start;
 }
 .sk-pick-one:focus {
@@ -19,9 +20,14 @@
     transition-duration: 0.35s;
     transition-timing-function: ease-out;
 }
-.sk-pick-one--opt:not([aria-active-descendant="true"]):not([aria-selected="true"]) {
+.sk-pick-one:focus .sk-pick-one--opt:not([aria-active-descendant="true"]):not([aria-selected="true"]) {
     opacity:    0.4;
 }
 .sk-pick-one--opt[aria-selected="true"] {
     text-decoration: underline;
+}
+
+.sk-pick-one[aria-invalid="true"] {
+    border-style: dotted;
+    border-width: 0.3rem;
 }

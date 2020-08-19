@@ -5,37 +5,75 @@
     up no space (its children all have their position
     property set to `absolute`). We rectify this case
     by giving `.game-grid-impl-body` `position: static`. */
-    border: 5px double var(--colour-tileBd);
+    contain:        content;
+    height:         100%;
+    /* width:          fit-content; */
+    display:        grid;
+    align-content:  center;
+
+    /* This would make it impossible to scroll if it
+    covers the screen like it might in our vertical
+    layout. That's why it's commented out right now. */
+    /* overscroll-behavior: contain; */
+}
+.game-grid,
+.game-grid-scroll-outer {
+    position:       relative;
+}
+.grid-player-intersection-root {
+    position:       fixed;
+    z-index:        100;
+    pointer-events: none;
+    padding:        20%;
+}
+
+/*  */
+.game-grid-scroll-outer {
+    contain:        style; /* Do not use contain. */
+    overflow:       auto auto;
+    /* overflow: overlay overlay; */
+    scroll-snap-type: both;
+    scrollbar-width: none;
+    box-sizing:     border-box;
+    border:         5px double var(--colour-tileBd);
     border-radius:  15px;
-    padding: 5px;
+}
+.game-grid-scroll-outer::-webkit-scrollbar {
+    width:  0px;
+    height: 0px;
 }
 
 .game-grid-impl-body {
-    position:   static;
-    color:      var(--colour-tileFg);
+    contain:        content;
+    position:       static;
+    color:          var(--colour-tileFg);
+    height:         fit-content;
+    width:          fit-content;
+    padding:        0.4em;
 }
 
 .game-grid-kbd-dc,
 .game-grid-pause-overlay {
-    top: 0; left: 0; bottom: 0; right: 0;
-    color: var(--colour-tileBd);
-    text-shadow: 0em 0.01em  0.5em black;
-    background-color: #00000040;
-    visibility: hidden;
+    cursor:         pointer;
+    position:       fixed;
+    border-radius:  inherit;
+    color:          white;
+    text-shadow:    0em 0.01em  0.5em black;
+    visibility:     hidden;
 }
 .game-grid-kbd-dc {
-    cursor: pointer;
+    background-color: #00000020;
 }
 .game-grid-pause-overlay {
-    cursor: not-allowed;
+    background-color: #00000040;
 }
 
 @media screen {
     .game-grid:focus {
         outline:    none;
     }
-    .game-grid[data-game-state="paused"] > .game-grid-pause-overlay,
-    .game-grid:not([data-game-state="paused"]):not(:focus) > .game-grid-kbd-dc {
+    .game-grid[data-game-state="paused"] .game-grid-pause-overlay,
+    .game-grid:not([data-game-state="paused"]):not(:focus) .game-grid-kbd-dc {
         visibility: visible;
     }
 }

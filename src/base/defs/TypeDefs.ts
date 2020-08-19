@@ -5,6 +5,14 @@ export namespace SkErrors {
 }
 
 
+export const SCROLL_INTO_CENTER = Object.freeze(<const>{
+    behavior: "smooth",
+    block:    "center",
+    inline:   "center",
+});
+SCROLL_INTO_CENTER as ScrollIntoViewOptions;
+
+
 /**
  * Copied from TypeScript official docs.
  *
@@ -126,17 +134,11 @@ export namespace Lang {
             seq:  "",
         });
     }
-
     /**
-     * Ways of choosing {@link LangCharSeqPair} to balance the frequency
-     * of the selection of a result based on the results of all previous
-     * selections.
+     * The choice of the upper bound on the number of times
+     * is rather arbitrary, but it should not be too small.
      */
-    export const enum BalancingScheme {
-        SEQ     = "SEQ",
-        CHAR    = "CHAR",
-        WEIGHT  = "WEIGHT",
-    }
+    export const CHAR_HIT_COUNT_SEED_CEILING = 5;
 
     /**
      *
@@ -160,11 +162,11 @@ export namespace Lang {
      * @param input -
      * @returns
      */
-    export const __RemapTemplates = Object.freeze(<const>{
+    export const _RemapTemplates = Object.freeze(<const>{
         IDENTITY: (input: string): string => input,
         TO_LOWER: (input: string): string => input.toLowerCase(),
     });
-    __RemapTemplates as Readonly<Record<string, {(input: string): string}>>;
+    _RemapTemplates as Readonly<Record<string, {(input: string): string}>>;
 
     /**
      *
@@ -173,31 +175,31 @@ export namespace Lang {
        <const>{
         id: "engl-low",
         module: "English", export: "Lowercase", numLeaves: 26,
-        remapFunc: __RemapTemplates.TO_LOWER,
-        displayName: "English Lowercase (QWERTY)",
+        remapFunc: _RemapTemplates.TO_LOWER,
+        displayName: "English Lowercase (qwerty)",
         blurb: "",
-    }, <const>{
+    },<const>{
         id: "engl-mix",
         module: "English", export: "MixedCase", numLeaves: 52,
-        remapFunc: __RemapTemplates.IDENTITY,
-        displayName: "English Mixed-Case (QWERTY)",
+        remapFunc: _RemapTemplates.IDENTITY,
+        displayName: "English Mixed-Case (Querty)",
         blurb: "",
     }, <const>{
         id: "japn-hir",
         module: "Japanese", export: "Hiragana", numLeaves: 71,
-        remapFunc: __RemapTemplates.TO_LOWER,
+        remapFunc: _RemapTemplates.TO_LOWER,
         displayName: "Japanese Hiragana",
         blurb: "",
     }, <const>{
         id: "japn-kat",
         module: "Japanese", export: "Katakana", numLeaves: 70,
-        remapFunc: __RemapTemplates.TO_LOWER,
+        remapFunc: _RemapTemplates.TO_LOWER,
         displayName: "Japanese Katakana",
         blurb: "",
     }, <const>{
         id: "kore-dub",
         module: "Korean", export: "Dubeolsik", numLeaves: 9177,
-        remapFunc: __RemapTemplates.IDENTITY,
+        remapFunc: _RemapTemplates.IDENTITY,
         displayName: "Korean Dubeolsik (두벌식 키보드)",
         blurb: "The most common keyboard layout, and South Korea's only Hangul"
         + " standard since 1969. Consonants are on the left, and vowels on"
@@ -205,17 +207,17 @@ export namespace Lang {
     }, <const>{
         id: "kore-sub",
         module: "Korean", export: "Sebeolsik", numLeaves: 10206,
-        remapFunc: __RemapTemplates.IDENTITY,
+        remapFunc: _RemapTemplates.IDENTITY,
         displayName: "Korean Sebeolsik (세벌식 최종 키보드)",
         blurb: "Another Hangul keyboard layout used in South Korea, and the"
         + " final Sebeolsik layout designed by Dr. Kong Byung Woo, hence"
         + " the name. Syllable-initial consonants are on the right, final"
         + " consonants on the left, and vowels in the middle. It is more"
         + " ergonomic than the dubeolsik, but not widely used.",
-    }, <const>{
+    },<const>{
         id: "kore-rom",
         module: "Korean", export: "Romanization", numLeaves: 3990,
-        remapFunc: __RemapTemplates.TO_LOWER,
+        remapFunc: _RemapTemplates.TO_LOWER,
         displayName: "Korean Revised Romanization",
         blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
         + " 表記法) is the official South Korean language romanization system. It"
@@ -223,12 +225,25 @@ export namespace Lang {
         + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
         + " and Tourism",
     },
+    <const>{
+        id: "engl-cell-enc",
+        module: "English", export: "OldCellphone.Encode", numLeaves: 8,
+        remapFunc: _RemapTemplates.IDENTITY,
+        displayName: "Old Cellphone Keyboard",
+        blurb: "",
+    },
     ].map((desc) => Object.freeze(desc)));
     FrontendDescs as TU.RoArr<FrontendDesc>;
 
     export type FrontendDesc = Readonly<{
         id:         string;
+        /**
+         * Pretty much a file name.
+         */
         module:     string;
+        /**
+         * A property-access chain.
+         */
         export:     string;
         remapFunc:  {(input: string): string};
         numLeaves:  number;

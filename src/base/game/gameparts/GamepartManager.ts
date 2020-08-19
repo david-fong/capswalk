@@ -3,13 +3,14 @@ import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
 import { Player } from "../player/Player";
+import { ArtificialPlayer } from "../player/ArtificialPlayer";
+import { ScoreInfo } from "../ScoreInfo";
 
 import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
-import { PlayerActionEvent, TileModEvent } from "../events/PlayerActionEvent";
-
-import { GamepartEvents } from "./GamepartEvents";
-import { ScoreInfo } from "game/ScoreInfo";
-import { ArtificialPlayer } from 'game/player/ArtificialPlayer';
+import {
+    PlayerActionEvent, TileModEvent,
+    GamepartEvents,
+} from "./GamepartEvents";
 
 
 /**
@@ -24,16 +25,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 
     public readonly lang: Lang;
     readonly #langImportPromise: Promise<Lang>;
-
-    /**
-     * NOTE: Shuffling operations and the
-     * {@link Lang} implementation are able to support mid-game changes
-     * to the balancing behaviour. Making it fixed for the lifetime of
-     * a `Game` is a choice I made in order to make the user experience
-     * more simple. It's one less thing they'll see in the in-game UI,
-     * and I don't think they'd feel as if it were missing.
-     */
-    protected readonly langBalancingScheme: Lang.BalancingScheme;
 
     private readonly scoreInfo: ScoreInfo;
 
@@ -58,12 +49,12 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         this.#langImportPromise = (import(
             /* webpackChunkName: "lang/[request]" */
             `lang/impl/${this.langFrontend.module}.ts`
-        ) /* as Promise<{ readonly [K in Lang.FrontendDesc["export"]]: Lang; }> */)
-        .then((module) => {
-            (this.lang as Lang) = (module
-                [this.langFrontend.module]
-                [this.langFrontend.export]
-            ).getInstance();
+        )).then((langModule) => {
+            const LangConstructor = this.langFrontend.export.split(".").reduce<any>(
+                (nsps, propName) => nsps[propName],
+                langModule[this.langFrontend.module],
+            ) as Lang.ClassIf;
+            (this.lang as Lang) = new LangConstructor(desc.langWeightScaling);
 
             // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
             const minLangLeaves = this.grid.static.getAmbiguityThreshold();
@@ -78,7 +69,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             }
             return this.lang;
         });
-        this.langBalancingScheme = desc.langBalancingScheme;
 
         this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
     }
@@ -99,7 +89,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         await this.#langImportPromise;
         this.lang.reset();
         // Shuffle everything:
-        this.grid.forEachTile((tile) => {
+        this.grid.shuffledForEachTile((tile) => {
             tile.setLangCharSeqPair(this.dryRunShuffleLangCharSeqAt(tile));
         });
 
@@ -129,7 +119,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
     /**
      * @override
      */
-    protected __createArtifPlayer(desc: Player.__CtorArgs<Player.FamilyArtificial>): ArtificialPlayer<S> {
+    protected _createArtifPlayer(desc: Player._CtorArgs<Player.FamilyArtificial>): ArtificialPlayer<S> {
         return ArtificialPlayer.of(this, desc);
     }
 
@@ -156,9 +146,8 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             .flatMap((sourceToTarget) => this.grid.tile.destsFrom(sourceToTarget.coord).get)
         ));
         return this.lang.getNonConflictingChar(avoid
-                .map((tile) => tile.langSeq)
-                .filter((seq) => seq), // no falsy values.
-            this.langBalancingScheme,
+            .map((tile) => tile.langSeq)
+            .filter((seq) => seq), // no falsy values.
         );
     }
 
@@ -199,10 +188,10 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             let tile: Tile<S>;
             do {
                 tile = this.grid.tile.at(this.grid.getRandomCoord());
-                // The below equality check is necessary to prevent counting bugs.
-                // TODO.learn see other TODO about the type cast seen here on the below line.
             } while ((() => {
                 return tile.isOccupied
+                // The below equality check is necessary to prevent counting bugs.
+                // TODO.learn see other TODO about the type cast seen here on the below line.
                 || retval.find((desc) => tile.coord.equals(desc.coord as any));
                 // TODO.impl add other checks to improve distribution and reduce
                 // crowding of freeHealth. Make sure it is sensitive to
@@ -329,11 +318,12 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             this.executePlayerMoveEvent(desc); // Reject the request.
             return;
         }
+        const moveIsBoost = (desc.moveType === Player.MoveType.BOOST);
         const newPlayerHealthValue
             = player.status.health
             + (dest.freeHealth * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
-            - ((desc.moveType === Player.MoveType.BOOST) ? this.getHealthCostOfBoost() : 0);
-        if (newPlayerHealthValue < 0) {
+            - (moveIsBoost ? this.getHealthCostOfBoost() : 0);
+        if (moveIsBoost && newPlayerHealthValue < 0) {
             // Reject a boost-type movement request if it would make
             // the player become downed (or if they are already downed):
             this.executePlayerMoveEvent(desc);

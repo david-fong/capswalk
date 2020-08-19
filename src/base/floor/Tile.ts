@@ -1,6 +1,5 @@
 import { Lang, Player } from "defs/TypeDefs";
-import { Coord } from "./Coord";
-export { Coord };
+import { Coord } from "./Coord"; export { Coord };
 
 
 /**
@@ -60,11 +59,11 @@ export class Tile<S extends Coord.System> {
     /**
      * Any overrides must make a supercall to this implementation.
      *
-     * Must be followed by a call to `PlayerStatus.__onAfterOccupy()`.
+     * Must be followed by a call to `PlayerStatus._onAfterOccupy()`.
      *
      * @param playerId -
      */
-    public __setOccupant(
+    public _setOccupant(
         playerId: Player.Id,
         immigrantInfo: Tile.VisibleImmigrantInfo | undefined,
     ): void {
@@ -108,7 +107,6 @@ export class Tile<S extends Coord.System> {
     public get langSeq(): Lang.Seq {
         return this.#langSeq;
     }
-
 }
 // If this errs when changing the constructor signature, then
 // the type definition being asserted should be updated to match.

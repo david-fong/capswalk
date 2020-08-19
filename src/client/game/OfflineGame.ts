@@ -1,10 +1,10 @@
 // Tell WebPack about the CSS chunk we want:
-require("assets/style/game/index.css");
+require("assets/style/game/_barrel.css");
 
 import {
     applyMixins,
     Game,
-    Coord, VisibleTile, VisibleGrid,
+    Coord, VisibleTile,
     BrowserGameMixin,
     Player, OperatorPlayer, VisiblePlayerStatus,
 } from "./BrowserGame";
@@ -25,13 +25,6 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
     public htmlElements: BrowserGameMixin.HtmlElements;
 
     /**
-     * @override
-     */
-    protected __getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
-        return VisibleGrid.getImplementation(coordSys);
-    }
-
-    /**
      * @param gameDesc -
      */
     public constructor(
@@ -45,10 +38,12 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,
         );
-        this.__BrowserGame_Ctor();
+        this._ctorBrowserGame();
     }
 
-    declare public readonly __createArtifPlayer: GamepartManager<G,S>["__createArtifPlayer"];
+    declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
+
+    declare public readonly _createArtifPlayer: GamepartManager<G,S>["_createArtifPlayer"];
 
     public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
         return setTimeout(callback, millis, args);

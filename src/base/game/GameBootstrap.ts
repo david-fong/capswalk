@@ -26,7 +26,7 @@ export namespace GameBootstrap {
     export function INIT_CLASS_REGISTRIES(): void
     { {
         // Non-Visible Grid Implementation Registry:
-        (<TU.NoRo<typeof Grid.__Constructors>>Grid.__Constructors)
+        (<TU.NoRo<typeof Grid._Constructors>>Grid._Constructors)
         = Object.freeze({
             [ "EUCLID2" ]: Euclid2.Grid,
             [ "BEEHIVE" ]: Beehive.Grid,
@@ -36,7 +36,7 @@ export namespace GameBootstrap {
     } {
         // Visible Grid Implementation Registry:
         const VGr = VisibleGrid;
-        (<TU.NoRo<typeof VGr.__Constructors>>VGr.__Constructors)
+        (<TU.NoRo<typeof VGr._Constructors>>VGr._Constructors)
         = Object.freeze({
             [ "EUCLID2" ]: Euclid2.Grid.Visible,
             [ "BEEHIVE" ]: Beehive.Grid.Visible,
@@ -45,7 +45,7 @@ export namespace GameBootstrap {
         // This is just an interface. There is no instance prototype to freeze.
     } {
         const AP = ArtificialPlayer;
-        (<TU.NoRo<typeof AP.__Constructors>>AP.__Constructors)
+        (<TU.NoRo<typeof AP._Constructors>>AP._Constructors)
         = Object.freeze({
             CHASER: Chaser,
         });

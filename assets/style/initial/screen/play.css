@@ -1,0 +1,56 @@
+
+.screen-play {
+    display:        grid;
+    grid-template:
+        "controls main scoreboard" 100% /
+        minmax(auto, 1fr)
+        auto
+        minmax(auto, 1fr);
+}
+.screen-play--grid-wrapper {
+    grid-area:      main;
+    contain:        content;
+    box-sizing:     border-box;
+    height:         100%;
+    padding:        1rem 0rem;
+}
+.screen-play--controls-bar {
+    --spacing:      0.3rem;
+    --border-radius:0.7rem;
+    --track-size:   5rem;
+    position:       sticky;
+    top:            0;
+
+    grid-area:      controls;
+    display:        grid;
+    grid-auto-rows: var(--track-size);
+    grid-template-columns: minmax(var(--track-size), 1fr);
+    justify-items:  stretch;
+    align-items:    stretch;
+    font-size:      80%;
+}
+.screen-play--controls-bar > * {
+    padding:        0.35em;
+}
+.screen-play--players-bar {
+    grid-area:      players;
+}
+@media screen and (max-aspect-ratio: 1/1) {
+    .screen-play {
+        align-content: flex-start;
+        grid-template:
+        "main"          calc(100vh - 7.5rem)
+        "controls"      max-content
+        "players"       auto /
+        1fr;
+    }
+    .screen-play--grid-wrapper {
+        padding:        1rem;
+        padding-bottom: 0rem;
+    }
+    .screen-play--controls-bar {
+        /* grid-auto-flow:     column; */
+        grid-template-columns:  repeat(3, var(--track-size));
+        grid-template-rows: var(--track-size);
+    }
+}

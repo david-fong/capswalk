@@ -2,9 +2,14 @@ import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { GamepartManager } from "game/gameparts/GamepartManager";
 
-import type { Chaser } from './artificials/Chaser';
+export type { Coord, Tile };
+export type { GamepartManager };
+
+// Implementations:
+import type { Chaser } from "./artificials/Chaser";
 
 import { Player } from "./Player";
+export { Player };
 
 
 /**
@@ -20,7 +25,9 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
     declare public readonly game: GamepartManager<any,S>;
 
-    private scheduledMovementCallbackId: number | NodeJS.Timeout;
+    private _nextMovementTimerMultiplier: number;
+
+    private _scheduledMovementCallbackId: number | NodeJS.Timeout;
 
     /**
      * See {@link ArtificialPlayer.of} for the public constructor
@@ -43,7 +50,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      * movement request. Pos may contain non-integer coordinate values,
      * and it does not have to be inside the bounds of the {@link Grid}.
      */
-    protected abstract computeDesiredDestination(): Coord<S>;
+    protected abstract computeDesiredDest(): Coord<S>;
 
     protected abstract getNextMoveType(): Player.MoveType;
 
@@ -52,30 +59,49 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      */
     protected abstract computeNextMovementTimer(): number;
 
-    public __abstractNotifyThatGameStatusBecamePlaying(): void {
-        this.movementContinueWithInitialDelay();
+    public _notifyGameNowPlaying(): void {
+        this.delayedMovementContinue();
     }
-    public __abstractNotifyThatGameStatusBecamePaused(): void {
-        this.game.cancelTimeout(this.scheduledMovementCallbackId);
-        this.scheduledMovementCallbackId = undefined!;
+    public _notifyGameNowPaused(): void {
+        this.game.cancelTimeout(this._scheduledMovementCallbackId);
+        this._scheduledMovementCallbackId = undefined!;
     }
-    public __abstractNotifyThatGameStatusBecameOver(): void {
-        this.game.cancelTimeout(this.scheduledMovementCallbackId);
-        this.scheduledMovementCallbackId = undefined!;
+    public _notifyGameNowOver(): void {
+        this.game.cancelTimeout(this._scheduledMovementCallbackId);
+        this._scheduledMovementCallbackId = undefined!;
     }
 
+    /**
+     * Executes a single movement and then calls `delayedMovementContinue`.
+     */
     private movementContinue(): void {
-        this.makeMovementRequest(this.game.grid.getUntToward(
-            this.coord, this.computeDesiredDestination()
-        ), this.getNextMoveType());
-        this.movementContinueWithInitialDelay();
+        const desiredDest = this.computeDesiredDest();
+        // This is a little different than how human players experience
+        // "penalties" when moving to tiles with long language-sequences-
+        // humans must pay the penalty before landing on the tile, but
+        // in the implementation here, it's much easier to simulate such
+        // a penalty if it applies _after_ landing on the tile.
+        this._nextMovementTimerMultiplier = this.game.grid.tile.at(desiredDest).langSeq.length;
+
+        this.makeMovementRequest(
+            this.game.grid.getUntToward(
+                desiredDest,
+                this.coord,
+            ),
+            this.getNextMoveType(),
+        );
+        // Schedule a task to do this again:
+        this.delayedMovementContinue();
     }
 
-    private movementContinueWithInitialDelay(): void {
+    /**
+     * Schedules a call to `movementContinue`.
+     */
+    private delayedMovementContinue(): void {
         // Schedule the next movement.
-        this.scheduledMovementCallbackId = this.game.setTimeout(
-            () => this.movementContinue(),
-            this.computeNextMovementTimer(),
+        this._scheduledMovementCallbackId = this.game.setTimeout(
+            this.movementContinue.bind(this),
+            this.computeNextMovementTimer() * this._nextMovementTimerMultiplier,
             // * Callback function arguments go here.
         );
         return;
@@ -85,10 +111,10 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
 export namespace ArtificialPlayer {
 
-    export declare const __Constructors: Readonly<{
+    export declare const _Constructors: Readonly<{
         [ F in Player.FamilyArtificial ]: {
             new<S extends Coord.System>(
-                game: GamepartManager<any,S>, desc: Player.__CtorArgs<F>
+                game: GamepartManager<any,S>, desc: Player._CtorArgs<F>
             ): ArtificialPlayer<S>;
         };
     }>;
@@ -100,10 +126,10 @@ export namespace ArtificialPlayer {
 
     export const of = <S extends Coord.System>(
         game: GamepartManager<any,S>,
-        playerDesc: Player.__CtorArgs<Player.FamilyArtificial>,
+        playerDesc: Player._CtorArgs<Player.FamilyArtificial>,
     ): ArtificialPlayer<S> => {
         const familyId = playerDesc.familyId as Player.FamilyArtificial;
-        return new (__Constructors[familyId])(game, playerDesc);
+        return new (_Constructors[familyId])(game, playerDesc);
     };
 }
-// ArtificialPlayer gets frozen in PostInit after __Constructors get initialized.
+// ArtificialPlayer is frozen in PostInit after _Constructors get initialized.

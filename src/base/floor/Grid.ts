@@ -43,16 +43,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         this.forEachTile((tile) => tile.reset());
     }
 
-    /**
-     * Performs simple checks that the grid is playable.
-     *
-     * - Each tile in the grid has a non-self destination (coord#equals).
-     * - (compute-heavyish): Each tile follows Impl.getAmbiguityThreshold
-     */
-    protected check(): void {
-        // Check that
-    }
-
 
     /**
      * For BaseGame's implementation of SER/DES to work, the traversal
@@ -64,9 +54,10 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * function.
      *
      * @param consumer -
-     * @param thisArg -
      */
-    public abstract forEachTile(consumer: (tile: Tile<S>) => void, thisArg?: object): void;
+    public abstract forEachTile(consumer: (tile: Tile<S>) => void): void;
+
+    public abstract shuffledForEachTile(consumer: (tile: Tile<S>) => void): void;
 
     /**
      * @returns
@@ -79,22 +70,22 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * (which includes `sourceCoord` itself), the implementation must
      * return `sourceCoord`.
      *
-     * @param sourceCoord
-     * The coordinate from which to find the next hop.
-     *
      * @param intendedDest
      * Does not need to be within the boundaries of the {@link Game}'s
      * grid, or have integer-valued coordinate values.
+     *
+     * @param sourceCoord
+     * The coordinate from which to find the next hop.
      */
-    public abstract getUntToward(sourceCoord: Coord<S>, intendedDest: Coord<S>): Tile<S>;
+    public abstract getUntToward(intendedDest: Coord<S>, sourceCoord: Coord<S>): Tile<S>;
 
     /**
      *
-     * @param sourceCoord -
      * @param avoidCoord -
+     * @param sourceCoord -
      */
     // TODO.doc
-    public abstract getUntAwayFrom(sourceCoord: Coord<S>, avoidCoord: Coord<S>): Tile<S>;
+    public abstract getUntAwayFrom(avoidCoord: Coord<S>, sourceCoord: Coord<S>): Tile<S>;
 
     public getRandomCoord(): Coord<S> {
         return this.static.getRandomCoord(this.dimensions);
@@ -115,21 +106,21 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
     /**
      * @override
      */
-    public abstract __getTileAt(coord: Coord.Bare<S>): Tile<S>;
+    public abstract _getTileAt(coord: Coord.Bare<S>): Tile<S>;
 
     /**
      * @override
      */
-    public abstract __getTileDestsFrom(coord: Coord.Bare<S>): Array<Tile<S>>;
+    public abstract _getTileDestsFrom(coord: Coord.Bare<S>): Array<Tile<S>>;
 
     /**
      * @override
      */
-    public abstract __getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
+    public abstract _getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
 
     /**
      * The returned value must be consistent with results from the
-     * methods `__getTileDestsFrom` and `__getTileSourcesTo`.
+     * methods `_getTileDestsFrom` and `_getTileSourcesTo`.
      *
      * @param source -
      * @param dest -
@@ -219,7 +210,7 @@ export namespace Grid {
     };
 
     // Each implementation must register itself into this dictionary.
-    export declare const __Constructors: {
+    export declare const _Constructors: {
         readonly [ S in Coord.System ]: Grid.ClassIf<S>
     };
 
@@ -233,7 +224,7 @@ export namespace Grid {
         // Note: At the time of writing this, separating this into
         // two lines is necessary (otherwise Typescript will feel
         // overwhelmed)
-        const ctor = __Constructors[coordSys];
+        const ctor = _Constructors[coordSys];
         return ctor as unknown as ClassIf<S>;
     };
 
@@ -250,4 +241,4 @@ export namespace Grid {
     }>;
 
 }
-// Grid gets frozen in PostInit after __Constructors get initialized.
+// Grid gets frozen in PostInit after _Constructors get initialized.

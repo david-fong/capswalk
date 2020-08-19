@@ -1,33 +1,38 @@
-import type { Coord, Tile } from "floor/Tile";
-import type { GamepartManager } from "game/gameparts/GamepartManager";
 
-import { Player } from "game/player/Player";
-import { ArtificialPlayer } from "../ArtificialPlayer";
+import {
+    Coord, Tile,
+    Player,
+    GamepartManager,
+    ArtificialPlayer,
+} from "../ArtificialPlayer";
 
 
 /**
  *
  * @extends ArtificialPlayer
  */
-// TODO.impl
 export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 
     private readonly threatProximity: Array<Player<S>>;
     private readonly targetProximity: Array<Player<S>>;
 
-    private readonly behaviour: Chaser.Behaviour;
+    private readonly behaviour: Required<Readonly<Chaser.Behaviour>>;
 
     private readonly grid: Chaser<S>["game"]["grid"];
     #prevCoord: Coord<S>;
 
-    public constructor(game: GamepartManager<any,S>, desc: Player.__CtorArgs<"CHASER">) {
+    public constructor(game: GamepartManager<any,S>, desc: Player._CtorArgs<"CHASER">) {
         super(game, desc);
-        this.behaviour = Object.freeze(desc.familyArgs);
+        this.behaviour = Object.freeze(Object.assign(
+            Object.create(null),
+            Chaser.Behaviour.DEFAULT,
+            desc.familyArgs,
+        ));
         this.grid = this.game.grid;
     }
 
-    public __afterAllPlayersConstruction(): void {
-        super.__afterAllPlayersConstruction();
+    public _afterAllPlayersConstruction(): void {
+        super._afterAllPlayersConstruction();
         // We need to cast off read-only-ness below.
         (this.threatProximity as Array<Player<S>>) = this.game.teams
             .filter((team) => team.id !== this.teamId)
@@ -46,7 +51,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
         super.moveTo(dest);
     }
 
-    protected computeDesiredDestination(): Coord<S> {
+    protected computeDesiredDest(): Coord<S> {
         // Check if there is anyone to run away from:
         this.threatProximity.sort((pa,pb) => {
             return this.grid.minMovesFromTo(pa.coord, this.coord)
@@ -58,7 +63,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
             if (threatP.status.isDowned) continue;
             if (threatP.status.health > this.status.health) {
                 // TODO.design Something that avoids getting cornered.
-                return this.grid.getUntAwayFrom(this.coord, threatP.coord).coord;
+                return this.grid.getUntAwayFrom(threatP.coord, this.coord).coord;
             }
         }
         // If there is nobody to run away from,
@@ -68,26 +73,28 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
                 -  this.grid.minMovesFromTo(this.coord, pb.coord);
         });
         if (this.status.isDowned) {
-        for (const targetP of this.targetProximity) {
-            if (this.grid.minMovesFromTo(this.coord, targetP.coord)
-                > this.behaviour.bloodThirstDistance) break;
-            if (targetP.status.health < this.status.health - this.behaviour.healthReserve) {
-                return targetP.coord;
+            for (const targetP of this.targetProximity) {
+                if (this.grid.minMovesFromTo(this.coord, targetP.coord)
+                    > this.behaviour.bloodThirstDistance) break;
+                if (targetP.status.health < this.status.health - this.behaviour.healthReserve) {
+                    return targetP.coord;
+                }
             }
-        } }
+        }
         // If there is nobody we want to chase after to attack,
         // Head toward the nearest free health if it exists.
         if (this.game.freeHealthTiles.size === 0) {
             // No tiles close by. Wander around:
-            const chanceOfBigDirectionChange = 0.2;
-            if (Math.random() < chanceOfBigDirectionChange) {
+            if (Math.random() < this.behaviour.wanderingAimlessness) {
                 // Big direction change:
                 return this.grid.getRandomCoordAround(this.coord, 3);
             } else {
                 // Continue wandering with a subtle, random direction:
-                return this.grid.getRandomCoordAround(this.grid.getUntAwayFrom(
-                    this.grid.getUntAwayFrom(this.coord, this.#prevCoord).coord,
-                this.#prevCoord).coord, 1);
+                const awayFunc = this.grid.getUntAwayFrom.bind(this.grid, this.#prevCoord);
+                return this.grid.getRandomCoordAround(
+                    awayFunc(awayFunc(this.coord).coord).coord,
+                    1,
+                );
             }
         }
         let closestFht: Tile<S> = undefined!;
@@ -107,14 +114,14 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     }
 
     protected computeNextMovementTimer(): number {
-        return 1000 / this.behaviour.movesPerSecond;
+        return 1000 / this.behaviour.keyPressesPerSecond;
     }
 }
 export namespace Chaser {
     /**
      *
      */
-    export type Behaviour = Readonly<{
+    export type Behaviour = Partial<{
         /**
          * If the number of moves it would take for an opponent with
          * more health than this player to reach this player is less
@@ -138,8 +145,22 @@ export namespace Chaser {
         /**
          * How often this player moves in units of moves-per-second.
          */
-        movesPerSecond: number;
+        keyPressesPerSecond: number;
+        /**
+         * A value between zero and one. How often this player will
+         * make a drastic random change in direction when wandering.
+         */
+        wanderingAimlessness: number;
     }>;
+    export namespace Behaviour {
+        export const DEFAULT: Required<Readonly<Behaviour>> = Object.freeze({
+            fearDistance: 5,
+            bloodThirstDistance: 7,
+            healthReserve: 3.0,
+            keyPressesPerSecond: 2.0,
+            wanderingAimlessness: 0.2,
+        });
+    }
 }
 Object.freeze(Chaser);
 Object.freeze(Chaser.prototype);

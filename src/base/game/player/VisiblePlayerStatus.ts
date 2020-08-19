@@ -1,4 +1,5 @@
 import { OmHooks } from "defs/OmHooks";
+import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
 
@@ -11,9 +12,9 @@ import { PlayerStatus } from "./PlayerStatus";
 export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
 
     readonly #baseElem: HTMLElement;
-    readonly #visualBellAnimations: Animation[];
+    readonly #vBellAnims: Animation[];
 
-    private readonly __immigrantInfoCache: Tile.VisibleImmigrantInfo;
+    private readonly _immigrantInfoCache: Tile.VisibleImmigrantInfo;
 
 
     public constructor(player: Player<S>, noCheckGameOver: boolean) {
@@ -31,15 +32,19 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
             // Setup face element:
             const faceElem = document.createElement("div");
             faceElem.classList.add(OmHooks.Player.Class.FACE);
-            const anims = this.#visualBellAnimations = (this.player.isALocalOperator) ? [
+            const vBellAnims
+            = this.#vBellAnims
+            = (this.player.isALocalOperator) ? [
+                // Note the 1-millisecond start delays required to
+                // pause the animations before they start auto-playing.
                 faceElem.animate({
                     filter: ["brightness(0.7)", "brightness(1.0)",],
-                },{ duration: 300, easing: "ease-in", }),
+                },{ duration: 300, easing: "ease-in", delay: 1, }),
                 faceElem.animate({
                     transform: VisiblePlayerStatus.makeWiggleAnimation(10, 2),
-                },{ duration: 270, easing: "ease-out", }),
+                },{ duration: 270, easing: "ease-out", delay: 1, }),
             ] : [];
-            // anims.forEach((anim) => anim.pause());
+            vBellAnims.forEach((anim) => anim.pause());
             {
                 // Setup downedOverlay element:
                 const dOverlayElem = document.createElement("div");
@@ -53,8 +58,8 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     /**
      * @override
      */
-    public __afterAllPlayersConstruction(): void {
-        (this.__immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
+    public _afterAllPlayersConstruction(): void {
+        (this._immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
             playerElem: this.#baseElem,
             username: this.player.username,
         });
@@ -62,7 +67,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
     public reset(): void {
         super.reset();
-        const DDH = OmHooks.Player.Dataset.DOWNED
+        const DDH = OmHooks.Player.Dataset.DOWNED;
         this.#baseElem.dataset[DDH.KEY] = DDH.VALUES.NO;
         // ^We need to do this explicitly. It won't be done
         // automatically when setting `health` because of the short-
@@ -70,15 +75,18 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
     public get immigrantInfo(): Tile.VisibleImmigrantInfo {
-        return this.__immigrantInfoCache;
+        return this._immigrantInfoCache;
     }
 
-    public __notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
-        spotlightElems.forEach((elem) => {
-            this.#baseElem.appendChild(elem);
-        });
+    public _notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
         const currOperator = this.player.game.currentOperator;
         const nextOperator = this.player;
+        requestAnimationFrame((time) => {
+            spotlightElems.forEach((elem) => {
+                this.#baseElem.appendChild(elem);
+            });
+            currOperator?.status.immigrantInfo.playerElem.scrollIntoView(SCROLL_INTO_CENTER);
+        });
         if (nextOperator.teamId !== currOperator?.teamId) {
             // Must use the above nullish coalesce operator for first call to setCurrentOperator.
             nextOperator.game.players.forEach((otherPlayer) => {
@@ -92,8 +100,10 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
     public visualBell(): void {
+        if (!this.#vBellAnims) {
+        }
         window.requestAnimationFrame((time) => {
-            this.#visualBellAnimations.forEach((anim) => anim.play());
+            this.#vBellAnims.forEach((anim) => anim.play());
         });
     }
 

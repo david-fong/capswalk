@@ -1,10 +1,10 @@
 // Tell WebPack about the CSS chunk we want:
-require("assets/style/game/index.css");
+require("assets/style/game/_barrel.css");
 
 import {
     applyMixins,
     Game,
-    Coord, VisibleTile, VisibleGrid,
+    Coord, VisibleTile,
     BrowserGameMixin,
     Player, OperatorPlayer, VisiblePlayerStatus,
 } from "./BrowserGame";
@@ -27,13 +27,6 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 
     public readonly socket: SocketIOClient.Socket;
 
-    /**
-     * @override
-     */
-    protected __getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
-        return VisibleGrid.getImplementation(coordSys);
-    }
-
 
     /**
      * Note that this class does not extend `GameManager`.
@@ -55,7 +48,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
             }, gameDesc,
         );
         this.socket = socket;
-        this.__BrowserGame_Ctor();
+        this._ctorBrowserGame();
 
         this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);
         this.socket.on(
@@ -78,7 +71,9 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
         );
     }
 
-    protected __createArtifPlayer(desc: Player.CtorArgs): Player<S> {
+    declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
+
+    protected _createArtifPlayer(desc: Player.CtorArgs): Player<S> {
         return new Player(this, desc);
     }
 

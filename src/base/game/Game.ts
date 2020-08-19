@@ -6,7 +6,12 @@ import type { Player, PlayerStatus } from "./player/Player";
 
 
 /**
- *
+ * **Important** To be properly disposed of, a game must first have
+ * either naturally ended, or be paused- both operations of which will
+ * properly cancel all internal scheduled callbacks (the callbacks
+ * refer to players, which refer to their game, which refers to a
+ * whole lot of other things such as the language dictionary, which
+ * in some cases may be quite large.)
  *
  * These classes perform the majority of management over {@link Tile}
  * and {@link Player} objects. As a design choice, players can only join
@@ -63,7 +68,7 @@ export namespace Game {
         averageFreeHealthPerTile: Player.Health;
 
         langId: Lang.FrontendDesc["id"];
-        langBalancingScheme: Lang.BalancingScheme;
+        langWeightScaling: number;
 
         playerDescs: TU.RoArr<(
             G extends Game.Type.Manager
@@ -75,6 +80,12 @@ export namespace Game {
     export namespace CtorArgs {
 
         export const EVENT_NAME = "game-create";
+        /**
+         * This is used as the payload with the above event name when
+         * notifying the server's joiner namespace that the group is
+         * returning to their lobby from playing a game.
+         */
+        export const RETURN_TO_LOBBY_INDICATOR = "return-to-lobby";
 
         /**
          * Not used here, but used in {@link GroupSession#createGameInstance}.
@@ -84,7 +95,7 @@ export namespace Game {
             undefinedTeamId:   TU.RoArr<Player.SocketId>;
         };
 
-        // export type __GameTypeDependantPart<G_group extends Game.Type, S extends Coord.System>
+        // export type _GameTypeDependantPart<G_group extends Game.Type, S extends Coord.System>
         // = any extends G_group ? any : {[G in G_group]:
         //     G extends Game.Type.Manager ? {
         //         playerDescs: TU.RoArr<Player.CtorArgs.PreIdAssignment>;

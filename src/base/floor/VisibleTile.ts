@@ -2,8 +2,7 @@ import { OmHooks } from "defs/OmHooks";
 import type { Lang, Player } from "defs/TypeDefs";
 
 import { Coord, Tile } from "./Tile";
-
-export { Coord } from "./Tile";
+export { Coord };
 
 
 /**
@@ -21,21 +20,22 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             const baseElem
                 = this.#baseElem
                 = document.createElement("div");
+            baseElem.setAttribute("aria-label", "Tile");
             baseElem.classList.add(
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
                 OmHooks.Tile.Class.BASE,
             );
-            baseElem.setAttribute("aria-label", "Tile");
         } {
             // Pointer hitbox element.
             // Must be the first child. See note in CSS class hook.
             const pthb = document.createElement("div");
-            pthb.classList.add(OmHooks.Tile.Class.POINTER_HB);
             pthb.setAttribute("aria-hidden", "true");
+            pthb.classList.add(OmHooks.Tile.Class.POINTER_HB);
             this.#baseElem.appendChild(pthb);
         } {
             const charWrap = document.createElement("div");
+            charWrap.setAttribute("role", "presentation");
             charWrap.classList.add(OmHooks.Tile.Class.LANG_CHAR_WRAP);
             const charElem
                 = this.langCharElem
@@ -46,24 +46,24 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             const seqElem
                 = this.langSeqElem
                 = document.createElement("div"); // Purposely don't use `kbd`.
-            seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             seqElem.setAttribute("role", "tooltip");
+            seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             this.#baseElem.appendChild(seqElem);
         }
     }
 
-    public __addToDom(parent: HTMLElement): void {
+    public _addToDom(parent: HTMLElement): void {
         parent.appendChild(this.#baseElem);
     }
 
     /**
      * @override
      */
-    public __setOccupant(
+    public _setOccupant(
         playerId: Player.Id,
         immigrantInfo: Tile.VisibleImmigrantInfo,
     ): void {
-        super.__setOccupant(playerId, immigrantInfo);
+        super._setOccupant(playerId, immigrantInfo);
         // It must go at least before the langChar element so that the
         // CSS can create a fading trail effect. It must go after the
         // hitbox so that it can be hidden to avoid covering the tooltip.

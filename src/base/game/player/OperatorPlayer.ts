@@ -36,14 +36,14 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
      */
     #seqBuffer: Lang.Seq;
 
-    private readonly langRemappingFunc: {(input: string): string};
+    readonly #langRemappingFunc: {(input: string): string};
 
     private prevCoord: Coord<S>;
 
 
-    public constructor(game: GamepartBase<any,S>, desc: Player.__CtorArgs<"HUMAN">) {
+    public constructor(game: GamepartBase<any,S>, desc: Player._CtorArgs<"HUMAN">) {
         super(game, desc);
-        this.langRemappingFunc = this.game.langFrontend.remapFunc;
+        this.#langRemappingFunc = this.game.langFrontend.remapFunc;
     }
 
     public reset(spawnTile: Tile<S>): void {
@@ -76,9 +76,10 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
             if (event.key === " ") {
                 // TODO.learn why isn't TypeScript able to figure the below line out?
                 if (!this.coord.equals(this.prevCoord as any)) {
-                    this.makeMovementRequest(this.game.grid.getUntAwayFrom(
-                        this.coord, this.prevCoord,
-                    ), Player.MoveType.BOOST);
+                    this.makeMovementRequest(
+                        this.game.grid.getUntAwayFrom(this.prevCoord, this.coord),
+                        Player.MoveType.BOOST,
+                    );
                 }
             } else if (event.key.length === 1 && !event.repeat) {
                 // TODO.design is the above condition okay? will any
@@ -106,7 +107,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
             return;
         }
         if (key) {
-            key = this.langRemappingFunc(key);
+            key = this.#langRemappingFunc(key);
             if (!(Lang.Seq.REGEXP.test(key))) {
                 // throw new RangeError(`The implementation of input transformation`
                 // + ` in the currently selected language did not follow the rule`
@@ -157,8 +158,8 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         super.moveTo(dest);
     }
 
-    public __notifyWillBecomeCurrent(): void {
-        this.status.__notifyWillBecomeCurrent(this.game.grid.spotlightElems);
+    public _notifyWillBecomeCurrent(): void {
+        this.status._notifyWillBecomeCurrent(this.game.grid.spotlightElems);
     }
 
 

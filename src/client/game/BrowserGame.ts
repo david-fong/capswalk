@@ -1,16 +1,11 @@
-import { Coord }                from "floor/VisibleTile";
-import { Game }                 from "game/Game";
+import { Game }                 from "game/Game";                       export { Game };
+import { Coord, VisibleTile }   from "floor/VisibleTile";               export { Coord, VisibleTile };
+import { VisibleGrid }          from "floor/VisibleGrid";
 import { GamepartBase }         from "game/gameparts/GamepartBase";
-import { Player }               from "game/player/Player";
-import { OperatorPlayer }       from "game/player/OperatorPlayer";
+import { Player }               from "game/player/Player";              export { Player };
+import { OperatorPlayer }       from "game/player/OperatorPlayer";      export { OperatorPlayer };
 
 export { applyMixins }          from "defs/TypeDefs";
-export { Game }                 from "game/Game";
-export { Coord, VisibleTile }   from "floor/VisibleTile";
-export { VisibleGrid }          from "floor/VisibleGrid";
-
-export { Player }               from "game/player/Player";
-export { OperatorPlayer }       from "game/player/OperatorPlayer";
 export { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
 
 import { GameBootstrap } from "game/GameBootstrap";
@@ -26,14 +21,18 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 
     public readonly htmlElements: BrowserGameMixin.HtmlElements;
 
-    public __BrowserGame_Ctor(): void {
+    public _ctorBrowserGame(): void {
         (this.htmlElements as BrowserGameMixin.HtmlElements) = Object.freeze({
             gridImpl: this.grid.baseElem,
             playersBar: document.createElement("div"), // TODO.design
         });
     }
 
-    public __createOperatorPlayer(desc: Player.__CtorArgs<"HUMAN">): OperatorPlayer<S> {
+    protected _getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
+        return VisibleGrid.getImplementation(coordSys);
+    }
+
+    public _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S> {
         return new OperatorPlayer<S>(this, desc);
     }
 }
