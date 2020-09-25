@@ -1,0 +1,4 @@
+{
+    "//": "needed for node to not complain",
+    "type": "commonjs"
+}

@@ -21,8 +21,15 @@ type G = Game.Type.ONLINE;
 export class OnlineGame<S extends Coord.System>
 extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 
+    /**
+     * @override
+     */
+    // @ts-expect-error : Redeclaring accessor as property.
     declare public readonly currentOperator: OperatorPlayer<S>;
 
+    /**
+     * @override
+     */
     declare public htmlElements: BrowserGameMixin.HtmlElements;
 
     public readonly socket: SocketIOClient.Socket;

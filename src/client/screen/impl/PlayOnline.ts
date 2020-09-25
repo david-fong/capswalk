@@ -14,6 +14,10 @@ export class PlayOnlineScreen extends _PlayScreen<SkScreen.Id.PLAY_ONLINE, G> {
         return SkScreen.Id.GROUP_JOINER;
     };
 
+    /**
+     * @override
+     */
+    // @ts-expect-error : Redeclaring accessor as property.
     declare public readonly currentGame: OnlineGame<any> | undefined;
 
     /**

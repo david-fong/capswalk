@@ -37,7 +37,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
         this.baseElem.appendChild(nextBtn);
     }
 
-    _abstractOnBeforeEnter(): Promise<void> {
+    protected _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
         this.nextBtn.focus();
         return Promise.resolve();
     }

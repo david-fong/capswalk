@@ -23,7 +23,8 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
-    declare public readonly hostTile: VisibleTile<S>;
+    // @ts-expect-error : Redeclaring accessor as property.
+    declare public hostTile: VisibleTile<S>;
 
     /**
      * @override

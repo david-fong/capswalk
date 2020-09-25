@@ -20,9 +20,16 @@ type G = Game.Type.OFFLINE;
 export class OfflineGame<S extends Coord.System>
 extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
 
+    /**
+     * @override
+     */
+    // @ts-expect-error : Redeclaring accessor as property.
     declare public currentOperator: NonNullable<GamepartManager<G,S>["currentOperator"]>;
 
-    public htmlElements: BrowserGameMixin.HtmlElements;
+    /**
+     * @override
+     */
+    declare public htmlElements: BrowserGameMixin.HtmlElements;
 
     /**
      * @param gameDesc -

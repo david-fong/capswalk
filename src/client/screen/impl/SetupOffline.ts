@@ -21,7 +21,7 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
     }
 
     protected _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
-        return Promise.resolve();
+        return super._abstractOnBeforeEnter(args);
     }
 }
 export namespace SetupOfflineScreen {

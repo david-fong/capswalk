@@ -6,7 +6,6 @@
 
         // project specific excludes:
         "package-lock.json": true,
-        "scripts/webpack/webpack.config.js": true,
 
         // don't always need this:
         "node_modules/": true,
@@ -18,6 +17,7 @@
         "**/bower_components": true,
         "**/*.code-search": true,
         "{**/.templates/,**/tsconfig.json}": false,
+        "scripts/webpack/webpack.config.js": true,
     },
     "json.schemas": [
         {

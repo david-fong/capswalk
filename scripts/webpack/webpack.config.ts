@@ -58,10 +58,6 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
                 // so that magic comments in dynamic imports can be
                 // seen by webpack.
                 removeComments: false,
-                importHelpers: false, // :'(
-                // TODO.build get rid of the above line when
-                // https://github.com/microsoft/TypeScript/issues/36841
-                // is fixed. What an absolute tragedy T^T
                 //noEmit: true,
             },
             // https://github.com/TypeStrong/ts-loader#faster-builds

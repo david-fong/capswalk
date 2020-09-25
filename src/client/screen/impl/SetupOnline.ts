@@ -30,7 +30,7 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
      * @override
      */
     protected _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
-        return Promise.resolve();
+        return super._abstractOnBeforeEnter(args);
     }
 }
 Object.freeze(SetupOnlineScreen);

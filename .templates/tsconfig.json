@@ -13,11 +13,13 @@
         "target": "es6",
         "lib": [ "es6", "dom", "ES2019.Array" ],
         "module": "ES2020",
+        "experimentalDecorators": true,
 
         // Emit Flags:
         "sourceMap":      true,
         //"removeComments": true,
         "alwaysStrict":   true,
+        "preserveConstEnums": true,
 
         // Grammar Checking:
         "strictNullChecks":     true,
