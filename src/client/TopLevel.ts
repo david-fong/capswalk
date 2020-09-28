@@ -26,6 +26,8 @@ export class TopLevel {
     /**
      * This is managed by the `GroupJoiner` screen.
      */
+    // TODO.impl change this to just a getter, and implement a setter method
+    // that makes it clear that it is not generally safe to modify this field.
     public socket: typeof io.Socket | undefined;
 
     #socketIoChunk: Promise<typeof import("socket.io-client")>;

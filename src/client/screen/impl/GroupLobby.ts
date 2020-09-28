@@ -1,14 +1,19 @@
 import { Game } from "game/Game";
 
 import { OmHooks, SkScreen } from "../SkScreen";
-
-
 type SID = SkScreen.Id.GROUP_LOBBY;
 
 /**
  *
  */
 export class GroupLobbyScreen extends SkScreen<SID> {
+
+    private _gameCtorArgs?: Game.CtorArgs<Game.Type.SERVER,any>;
+
+    /**
+     * Automatically disabled if the client is not the group host.
+     */
+    private startBtn: HTMLButtonElement;
 
     public get initialScreen(): SkScreen.Id {
         return SkScreen.Id.GROUP_JOINER;
@@ -18,13 +23,24 @@ export class GroupLobbyScreen extends SkScreen<SID> {
      * @override
      */
     protected _lazyLoad(): void {
-        ;
+        {const startBtn
+            = (this.startBtn as HTMLButtonElement)
+            = document.createElement("button");
+        startBtn.textContent = "Start";
+        startBtn.onclick = () => {
+            if (this._gameCtorArgs) {
+                this.top.socket!.emit(Game.CtorArgs.EVENT_NAME, this._gameCtorArgs);
+            }
+        }
+        this.baseElem.appendChild(startBtn);}
     }
 
     /**
      * @override
      */
-    protected _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs<SID>): Promise<void> {
+        this._gameCtorArgs = args;
+        this.startBtn.disabled = (this._gameCtorArgs === undefined);
 
         // Listen for when the server sends tbe game constructor arguments:
         this.top.socket!.once(
@@ -33,7 +49,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                 this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
             },
         );
-        return Promise.resolve();
+        return;
     }
 
     /**

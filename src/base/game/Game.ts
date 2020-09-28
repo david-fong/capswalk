@@ -68,7 +68,7 @@ export namespace Game {
         averageFreeHealthPerTile: Player.Health;
 
         langId: Lang.FrontendDesc["id"];
-        langWeightScaling: number;
+        langWeightScaling: Lang.WeightExaggeration;
 
         playerDescs: TU.RoArr<(
             G extends Game.Type.Manager
@@ -76,7 +76,6 @@ export namespace Game {
             : Player.CtorArgs
         )>;
     }>;
-
     export namespace CtorArgs {
 
         export const EVENT_NAME = "game-create";

@@ -3,7 +3,8 @@ import { Coord } from "floor/Tile";
 import type { Game } from "game/Game";
 import { SkPickOne } from "../../utils/SkPickOne";
 
-import { OmHooks, SkScreen } from "../SkScreen";
+import { OmHooks, StorageHooks, SkScreen } from "../SkScreen";
+const OMHC = OmHooks.Screen.Impl.Setup.Class;
 
 
 type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
@@ -11,35 +12,104 @@ type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
 /**
  * What coordinate systems are available will depend on what language
  * the user chooses.
+ *
+ * Implementation Note: subclasses must implement the `onClick`
+ * behaviour of the `_nextBtn` and `_prevBtn` buttons.
  */
 // TODO.learn how to use the IndexDB web API.
 export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID> {
 
     protected readonly langSel: _SetupScreen.LangPickOne;
+    protected readonly langWeightExaggeration: HTMLInputElement;
 
-    protected readonly nextBtn: HTMLButtonElement;
+    protected readonly _nextBtn: HTMLButtonElement;
+    protected readonly _prevBtn: HTMLButtonElement;
 
     /**
      * @override
      */
     protected _lazyLoad(): void {
-        this.baseElem.classList.add(OmHooks.Screen.Impl.Setup.Class.BASE);
+        this.baseElem.classList.add(OMHC.BASE);
 
         // Language selection component:
         (this.langSel as _SetupScreen.LangPickOne) = new _SetupScreen.LangPickOne();
         this.baseElem.appendChild(this.langSel.baseElem);
 
-        const nextBtn
-            = (this.nextBtn as HTMLButtonElement)
+        this._createLangWeightExaggerationInput();
+
+        {const nextBtn
+            = (this._nextBtn as HTMLButtonElement)
             = document.createElement("button");
-        nextBtn.classList.add(OmHooks.Screen.Impl.Setup.Class.NEXT_BUTTON);
+        nextBtn.classList.add(OMHC.NEXT_BUTTON);
         nextBtn.textContent = "Next";
         this.baseElem.appendChild(nextBtn);
+        }
+
+        {const prevBtn
+            = (this._prevBtn as HTMLButtonElement)
+            = document.createElement("button");
+        prevBtn.classList.add(OMHC.PREV_BUTTON);
+        prevBtn.textContent = "Prev";
+        this.baseElem.appendChild(prevBtn);
+        }
+
+        this._loadLastUsedPreset();
     }
 
-    protected _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
-        this.nextBtn.focus();
-        return Promise.resolve();
+    private _createLangWeightExaggerationInput(): void {
+        const lwe
+            = (this.langWeightExaggeration as HTMLInputElement)
+            = document.createElement("input");
+        lwe.classList.add(OMHC.LANG_WEIGHT_EXAGG);
+        lwe.type = "range";
+        lwe.min = "0";
+        lwe.max = Lang.WeightExaggeration.MAX.toString();
+        lwe.step = "any";
+        lwe.value = "1";
+        {
+            const list = document.createElement("datalist");
+            list.id = OmHooks.Screen.Impl.Setup.Id.LANG_WEIGHT_EXAGGERATION_LIST;
+            [{val:0,label:"uniform",}, {val:1,label:"normal"},].forEach((tickDesc) => {
+                const opt = document.createElement("option");
+                opt.value = tickDesc.val.toString();
+                opt.label = tickDesc.label;
+                list.appendChild(opt);
+            });
+            this.baseElem.appendChild(list);
+        }
+        lwe.setAttribute("list", OmHooks.Screen.Impl.Setup.Id.LANG_WEIGHT_EXAGGERATION_LIST);
+        this.baseElem.appendChild(lwe);
+    }
+
+    /**
+     * @override
+     */
+    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs<SID>): Promise<void> {
+        window.setTimeout(() => {
+            this._nextBtn.focus();
+        }, 100); // <-- An arbitrary short period of time. See super doc.
+        return;
+    }
+
+    /**
+     * Load the user's last used preset to the gui controls.
+     */
+    private _loadLastUsedPreset(): void {
+        // TODO.impl
+        const lastUsedPresetId = localStorage.getItem(StorageHooks.LocalKeys.GAME_PRESET);
+    }
+
+    /**
+     * A helper for going to the next screen.
+     */
+    protected _parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,any> {
+        // TODO.impl
+        const args: TU.NoRo<Game.CtorArgs<Game.Type.OFFLINE,any>>
+            = Object.assign({}, _SetupScreen.DEFAULT_PRESET);
+            // ^temporary default until _loadLastUsedPreset is implemented.
+        args.langId = this.langSel.confirmedOpt.desc.id;
+        args.langWeightScaling = Number(this.langWeightExaggeration.value);
+        return args;
     }
 }
 export namespace _SetupScreen {
@@ -100,11 +170,10 @@ export namespace _SetupScreen {
     export class LangPickOne extends SkPickOne<LangPickOne.Option> {
         public constructor() {
             super();
+            this.baseElem.classList.add(OMHC.LANG_SEL)
             Lang.FrontendDescs.forEach((desc) => {
                 this.addOption(new LangPickOne.Option(desc));
             });
-            // TODO.impl set defaults from last used setup.
-            // Below line is a placeholder.
             this.selectOpt(this.options[0]);
         }
         public _onHoverOpt(opt: LangPickOne.Option): void {

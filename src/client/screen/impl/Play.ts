@@ -142,7 +142,7 @@ export abstract class _PlayScreen<
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs<SID>): Promise<void> {
         document.addEventListener("visibilitychange", this.#onVisibilityChange);
         this.pauseButton.disabled = true;
         this._statusBecomePaused(); // <-- Leverage some state initialization.
@@ -154,7 +154,7 @@ export abstract class _PlayScreen<
         await this.currentGame!.reset();
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
-        // by populating tiles with CSP's will have batched reflow.
+        // by populating tiles with CSP's will be batched.
         const html = this.currentGame!.htmlElements;
         this._gridImplHost.appendChild(html.gridImpl);
         // ^The order of insertion does not matter (it used to).
@@ -166,6 +166,7 @@ export abstract class _PlayScreen<
             setTimeout(() => {
                 if (!document.hidden) { this._statusBecomePlaying(); }
             }, 500);
+            // ^This delay is for "aesthetic" purposes (not functional).
         }
         return;
     }

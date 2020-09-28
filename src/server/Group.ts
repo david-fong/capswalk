@@ -165,9 +165,12 @@ export class Group extends _Group {
      * the Game constructor, which will in turn pass this information
      * to each client.
      *
-     * @param coordSys -
-     * @param gridDimensions -
-     * @returns false if the passed arguments were incomplete or invalid.
+     * @param ctorArgs
+     * The `playerDescs` field only contains descriptors for artificial
+     * players. Those for operated players are included by this method.
+     *
+     * @returns
+     * `false` if the passed arguments were incomplete or invalid.
      */
     private _createGameInstance(
         ctorArgs: Game.CtorArgs<Game.Type.SERVER,any>,

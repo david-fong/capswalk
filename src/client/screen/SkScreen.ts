@@ -1,9 +1,10 @@
 import { OmHooks } from "defs/OmHooks";
+import { StorageHooks } from "defs/StorageHooks";
 import type { Game } from "game/Game";
 import type { AllSkScreens } from "./AllSkScreens";
 import type { TopLevel } from "../TopLevel";
 
-export { OmHooks };
+export { OmHooks, StorageHooks };
 
 
 /**
@@ -59,7 +60,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     /**
      * **Do not override.**
      */
-    public async enter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+    public async enter(args: SkScreen.EntranceArgs<SID>): Promise<void> {
         if (!this.#hasLazyLoaded) {
             const baseElem
                 = (this.baseElem as HTMLElement)
@@ -81,7 +82,8 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         }
         const location = new window.URL(window.location.href);
         location.hash = this.screenId;
-        history.replaceState(null, "", location.href);
+        history.pushState(null, "", location.href);
+
         await this._abstractOnBeforeEnter(args);
         // ^Wait until the screen has finished setting itself up
         // before entering it.
@@ -120,7 +122,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * Important: Calls to `HTMLElement.focus` may require a small delay
      * via setTimeout. The reason for this is currently unknown.
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> { }
+    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs<SID>): Promise<void> { }
 
     /**
      * Return false if the leave should be cancelled. This functionality
@@ -154,15 +156,18 @@ export namespace SkScreen {
         // =======      ===================
     }
 
-    export type CtorArgs<SID_group extends SkScreen.Id>
+    export type EntranceArgs<SID_group extends SkScreen.Id>
     = any extends SID_group ? never
     : { [SID in SID_group]:
-          SID extends SkScreen.Id.PLAY_OFFLINE ? Game.CtorArgs<Game.Type.OFFLINE,any>
-        : SID extends SkScreen.Id.PLAY_ONLINE  ? Game.CtorArgs<Game.Type.ONLINE,any>
+          SID extends SkScreen.Id.SETUP_OFFLINE ? {}
+        : SID extends SkScreen.Id.PLAY_OFFLINE  ? Game.CtorArgs<Game.Type.OFFLINE,any>
+        : SID extends SkScreen.Id.GROUP_LOBBY   ? Game.CtorArgs<Game.Type.SERVER,any> | undefined
+        : SID extends SkScreen.Id.SETUP_ONLINE  ? {}
+        : SID extends SkScreen.Id.PLAY_ONLINE   ? Game.CtorArgs<Game.Type.ONLINE,any>
         : SID extends SkScreen.Id ? {}
+        : never
         // ^Placeholder for screens that don't
         // require any entrance arguments.
-        : never
     }[SID_group];
 }
 Object.freeze(SkScreen);

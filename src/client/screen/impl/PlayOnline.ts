@@ -10,6 +10,9 @@ type G = Game.Type.ONLINE;
  */
 export class PlayOnlineScreen extends _PlayScreen<SkScreen.Id.PLAY_ONLINE, G> {
 
+    /**
+     * @override
+     */
     public get initialScreen(): SkScreen.Id {
         return SkScreen.Id.GROUP_JOINER;
     };

@@ -9,7 +9,7 @@
   "author": "David Fong (https://github.com/david-fong)",
   "repository": "github:david-fong/SnaKey-NTS",
   "private": false,
-  "type": "module",
+  "type": "commonjs",
   "files": [
     "dist/",
     "!dist/ts/",

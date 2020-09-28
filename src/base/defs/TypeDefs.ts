@@ -135,6 +135,17 @@ export namespace Lang {
         });
     }
     /**
+     * See the main documentation in game/lang/Lang
+     */
+    export type WeightExaggeration = number;
+    export namespace WeightExaggeration {
+        /**
+         * The choice of this value is somewhat of an art.
+         * It must be greater than one.
+         */
+        export const MAX = 4;
+    }
+    /**
      * The choice of the upper bound on the number of times
      * is rather arbitrary, but it should not be too small.
      */

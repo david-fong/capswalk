@@ -98,7 +98,7 @@ export namespace LangSeqTree {
          */
         public static CREATE_TREE_MAP(
             forwardDict: Lang.CharSeqPair.WeightedForwardMap,
-            weightScaling: number,
+            weightScaling: Lang.WeightExaggeration,
         ): LangSeqTree.ParentNode {
             const averageWeight = Object.values(forwardDict).reduce((sum, next) => sum += next.weight, 0);
             const adjustedWeight = (function () {

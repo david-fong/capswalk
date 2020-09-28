@@ -9,6 +9,9 @@ type G = Game.Type.OFFLINE;
  */
 export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> {
 
+    /**
+     * @override
+     */
     public get initialScreen(): SkScreen.Id {
         return SkScreen.Id.SETUP_OFFLINE;
     }

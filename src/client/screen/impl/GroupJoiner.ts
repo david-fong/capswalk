@@ -3,12 +3,12 @@ import { Group } from "defs/OnlineDefs";
 import { SkServer } from "defs/OnlineDefs";
 
 import { OmHooks, SkScreen } from "../SkScreen";
-
+type SID = SkScreen.Id.GROUP_JOINER;
 
 /**
  * This screen is like a form for joining a session on a remote host.
  */
-export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
+export class GroupJoinerScreen extends SkScreen<SID> {
 
     #state: GroupJoinerScreen.State;
 
@@ -19,7 +19,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
 
     private readonly backButton: HTMLButtonElement;
     private readonly nextButton: HTMLInputElement;
-    private isGroupOwner: boolean;
+    #clientIsGroupHost: boolean;
 
     /**
      * @override
@@ -35,10 +35,11 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
         this._initializePassphraseHandlers();
 
         contentWrapper.onsubmit = (ev) => {
-            // TODO change the screen nav flow to use the correct (commented out) values.
-            if (this.isGroupOwner) {
+            if (this.#clientIsGroupHost) {
+                console.log("you are the group host! going to the setup-online screen...");
                 this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
             } else {
+                console.log("you are not the group host! going to the group-lobby screen...");
                 this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {});
             }
         };
@@ -49,7 +50,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(args: {}): Promise<void> {
+    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs<SID>): Promise<void> {
         window.setTimeout(() => {
             if (this.socket && this.socket.nsp.startsWith(SkServer.Nsps.GROUP_LOBBY_PREFIX)) {
                 // Default to switching groups under the same host:
@@ -59,6 +60,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 this.hostUrlInput.focus();
             }
         }, 100); // <-- An arbitrary short period of time. See super doc.
+        return;
     }
 
     public get state(): State {
@@ -230,7 +232,7 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
                 // ^This will take us back to the state `CHOOSING_GROUP`.
             }
             this.passphraseInput.value = "";
-            this.isGroupOwner = false; // <-- Not necessary. Just feels nice to do.
+            this.#clientIsGroupHost = false; // <-- Not necessary. Just feels nice to do.
         };
         input.onkeydown = (ev) => { if (ev.key === "Enter") {
             submitInput();
@@ -260,10 +262,10 @@ export class GroupJoinerScreen extends SkScreen<SkScreen.Id.GROUP_JOINER> {
             const groupExists = (Array.from(this.groupNameDataList.children) as HTMLOptionElement[])
                 .some((opt) => opt.value === this.groupNameInput.value);
             if (groupExists) {
-                this.isGroupOwner = false;
+                this.#clientIsGroupHost = false;
                 await this.attemptToJoinExistingGroup();
             } else {
-                this.isGroupOwner = true;
+                this.#clientIsGroupHost = true;
                 this.socket!.emit(Group.Exist.EVENT_NAME,
                     new Group.Exist.RequestCreate(
                         this.groupNameInput.value,

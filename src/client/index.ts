@@ -12,6 +12,7 @@ export { OmHooks } from "defs/OmHooks";
 //     return true;
 // }
 
+// TODO.design instead of exposing top, expose handy function for probing it.
 export const top = new TopLevel();
 
 /**

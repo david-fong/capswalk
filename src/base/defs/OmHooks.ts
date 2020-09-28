@@ -130,6 +130,12 @@ export namespace Screen {
         export const Class = <const>{
             BASE:               "screen-setup",
             NEXT_BUTTON:        "screen-setup--next-button",
+            PREV_BUTTON:        "screen-setup--prev-button",
+            LANG_SEL:           "screen-setup--lang-sel",
+            LANG_WEIGHT_EXAGG:  "screen-setup--lang-weight-exagg",
+        };
+        export const Id = <const>{
+            LANG_WEIGHT_EXAGGERATION_LIST: "screen-setup--lang-weight-exaggeration-list",
         };
     }
     export namespace GroupJoiner {

@@ -64,7 +64,7 @@ export class AllSkScreens {
     public goToScreen<SID extends [SkScreen.Id]>(
         // NOTE: using a tuple wrapper to expand bundled type.
         destId: SID[0],
-        ctorArgs: SkScreen.CtorArgs<SID[0]>,
+        ctorArgs: SkScreen.EntranceArgs<SID[0]>,
     ): boolean {
         const destScreen = this.dict[destId] as SkScreen<SID[0]>;
         if (this.currentScreen === destScreen) {

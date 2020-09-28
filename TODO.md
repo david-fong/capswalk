@@ -14,6 +14,7 @@
 
 ### High Priority
 
+1. Get intended type checking for `goToScreen` by using type mapping as seen in `document.createElement`.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
