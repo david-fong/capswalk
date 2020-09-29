@@ -20,9 +20,7 @@ import {   PlayOnlineScreen } from "./impl/PlayOnline";
  */
 export class AllSkScreens {
 
-    public readonly dict: {
-        readonly [SID in SkScreen.Id]: SkScreen<SID>;
-    };
+    public readonly dict: SkScreen.Dict;
 
     #currentScreen: SkScreen<SkScreen.Id>;
 
@@ -35,6 +33,8 @@ export class AllSkScreens {
         const p = baseElem;
         const f = this.goToScreen.bind(this);
         this.dict = Object.freeze({
+            // TODO.impl turn this into a class that dynamically imports js and css
+            // for all online-related modules together only once needed.
             [ Id.HOME          ]: new         HomeScreen(Id.HOME         ,t,p,f),
             [ Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(Id.HOW_TO_PLAY  ,t,p,f),
             [ Id.HOW_TO_HOST   ]: new    HowToHostScreen(Id.HOW_TO_HOST  ,t,p,f),
@@ -54,6 +54,20 @@ export class AllSkScreens {
         } else {
             this.goToScreen(SkScreen.Id.HOME, {});
         }
+        window.addEventListener("popstate", (ev: PopStateEvent) => {
+            // TODO.impl
+            // take careful consideration to navigating backward from online play screen
+            // make sure to identify whether the client is the group host by passing an
+            // empty object or something instead of undefined.
+
+            // const isr = this.dict[isrId];
+            // if (isr === undefined) return;
+            // if (isr.initialScreen !== ev.state.screenId) {
+            //     window.history.back();
+            //     return;
+            // }
+            // this.goToScreen(isr.screenId, {});
+        });
     }
 
     /**
@@ -61,23 +75,23 @@ export class AllSkScreens {
      * @param destId -
      * @param ctorArgs -
      */
-    public goToScreen<SID extends [SkScreen.Id]>(
+    public goToScreen<SID extends SkScreen.Id>(
         // NOTE: using a tuple wrapper to expand bundled type.
-        destId: SID[0],
-        ctorArgs: SkScreen.EntranceArgs<SID[0]>,
+        destId: SID,
+        ctorArgs: SkScreen.EntranceArgs[SID],
     ): boolean {
-        const destScreen = this.dict[destId] as SkScreen<SID[0]>;
+        const destScreen = this.dict[destId];
         if (this.currentScreen === destScreen) {
             // I don't see why this would ever need to happen.
             // If we find need to write code that allows for this,
             // rewrite the return-value spec.
-            throw new Error ("never happens. see comment in source.");
+            throw "never";
         }
         if ((!this.currentScreen) || this.currentScreen.leave()) {
             // Note on above nullish coalesce: Special case entered
             // during construction when there is no currentScreen yet.
             // Any confirm-leave prompts made to the user were OK-ed.
-            destScreen.enter(ctorArgs);
+            (destScreen.enter as (args: typeof ctorArgs) => void)(ctorArgs);
             this.#currentScreen = destScreen;
             return true;
         }

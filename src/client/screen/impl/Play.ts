@@ -30,8 +30,6 @@ export abstract class _PlayScreen<
 
     private readonly playersBar: HTMLElement;
 
-    private readonly backToHomeButton: HTMLButtonElement;
-
     /**
      * Must be disabled when
      * - The game does not exist.
@@ -142,7 +140,7 @@ export abstract class _PlayScreen<
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs<SID>): Promise<void> {
+    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> {
         document.addEventListener("visibilitychange", this.#onVisibilityChange);
         this.pauseButton.disabled = true;
         this._statusBecomePaused(); // <-- Leverage some state initialization.
@@ -307,13 +305,13 @@ export abstract class _PlayScreen<
         );
         controlsBar.setAttribute("role", "menu");
 
-        function createControlButton(buttonText: string): HTMLButtonElement {
-            const button = document.createElement("button");
+        function createControlButton(buttonText: string, button?: HTMLButtonElement): HTMLButtonElement {
+            button = button ?? document.createElement("button");
             button.textContent = buttonText;
             button.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
             button.addEventListener("pointerenter", (ev) => {
                 window.requestAnimationFrame((time) => {
-                    button.focus();
+                    button!.focus();
                 });
             });
             controlsBar.appendChild(button);
@@ -325,10 +323,8 @@ export abstract class _PlayScreen<
             });
         });
 
-        { const bth
-            = (this.backToHomeButton as HTMLButtonElement)
-            = createControlButton("Return To Homepage");
-        bth.onclick = this.requestGoToScreen.bind(this, SkScreen.Id.HOME);
+        { const bth = createControlButton("Return To Homepage", this.nav.prev);
+        bth.onclick = this.requestGoToScreen.bind(this, SkScreen.Id.HOME, {});
         }
 
         { const pause

@@ -21,19 +21,16 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
     protected _lazyLoad(): void {
         super._lazyLoad();
 
-        this._nextBtn.onclick = (ev) => {
+        this.nav.next.onclick = (ev) => {
             const args = this._parseArgsFromGui();
-            this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {});
-        };
-        this._prevBtn.onclick = (ev) => {
-            this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {});
+            this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, args);
         };
     }
 
     /**
      * @override
      */
-    protected _abstractOnBeforeEnter(args: SkScreen.EntranceArgs<SID>): Promise<void> {
+    protected _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> {
         return super._abstractOnBeforeEnter(args);
     }
 }

@@ -12,13 +12,13 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 
     #state: GroupJoinerScreen.State;
 
-    private readonly hostUrlInput:      HTMLInputElement;
+    private readonly in: Readonly<{
+        hostUrl:    HTMLInputElement;
+        groupName:  HTMLInputElement;
+        passphrase: HTMLInputElement;
+    }>;
     private readonly groupNameDataList: HTMLDataListElement;
-    private readonly groupNameInput:    HTMLInputElement;
-    private readonly passphraseInput:   HTMLInputElement;
 
-    private readonly backButton: HTMLButtonElement;
-    private readonly nextButton: HTMLInputElement;
     #clientIsGroupHost: boolean;
 
     /**
@@ -34,13 +34,19 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         this._initializeGroupNameHandlers(huiSubmit);
         this._initializePassphraseHandlers();
 
+        // Note: externalized from `_initializeFormContents` for visibility.
+        this.nav.next.onclick = (ev) => {
+            // Using a plain button instead of <input type="submit"> is
+            // better here since we don't want any magical form behaviour.
+            contentWrapper.submit();
+        }
         contentWrapper.onsubmit = (ev) => {
             if (this.#clientIsGroupHost) {
                 console.log("you are the group host! going to the setup-online screen...");
                 this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
             } else {
                 console.log("you are not the group host! going to the group-lobby screen...");
-                this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {});
+                this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, undefined);
             }
         };
         this._setFormState(State.CHOOSING_HOST);
@@ -50,14 +56,14 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs<SID>): Promise<void> {
+    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> {
         window.setTimeout(() => {
             if (this.socket && this.socket.nsp.startsWith(SkServer.Nsps.GROUP_LOBBY_PREFIX)) {
                 // Default to switching groups under the same host:
-                this.groupNameInput.focus();
+                this.in.groupName.focus();
             } else {
                 // We aren't connected to a host, or aren't yet in a group:
-                this.hostUrlInput.focus();
+                this.in.hostUrl.focus();
             }
         }, 100); // <-- An arbitrary short period of time. See super doc.
         return;
@@ -79,26 +85,26 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             if (this.state !== State.CHOOSING_GROUP) {
                 throw new Error("never"); // Illegal state transition.
             }
-            this.passphraseInput.disabled = true;
-            this.nextButton.disabled = false;
-            this.nextButton.focus();
+            this.in.passphrase.disabled = true;
+            this.nav.next.disabled = false;
+            this.nav.next.focus();
 
         } else {
-            this.nextButton.disabled = true;
+            this.nav.next.disabled = true;
 
             if (newState === State.CHOOSING_HOST) {
-                this.groupNameInput.disabled    = true;
-                this.groupNameInput.value       = "";
+                this.in.groupName.disabled    = true;
+                this.in.groupName.value       = "";
                 // Fun fact on an alternative for clearing children: https://stackoverflow.com/a/22966637/11107541
                 this.groupNameDataList.innerText = "";
-                this.passphraseInput.disabled   = true;
-                this.passphraseInput.value      = "";
-                this.hostUrlInput.focus();
+                this.in.passphrase.disabled   = true;
+                this.in.passphrase.value      = "";
+                this.in.hostUrl.focus();
                 ;
             } else if (newState === State.CHOOSING_GROUP) {
-                this.groupNameInput.disabled    = false;
-                this.passphraseInput.disabled   = false;
-                this.groupNameInput.focus();
+                this.in.groupName.disabled    = false;
+                this.in.passphrase.disabled   = false;
+                this.in.groupName.focus();
             }
         }
         this.#state = newState;
@@ -109,7 +115,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
      */
     private _initializeHostUrlHandlers(): () => Promise<void> {
         const top = this.top;
-        const input = this.hostUrlInput;
+        const input = this.in.hostUrl;
         const submitInput = async (): Promise<void> => {
             // Minor cleaning: default the protocol and only use the origin:
             if (!input.value.startsWith(SkServer.PROTOCOL)) {
@@ -126,7 +132,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             ) {
                 if (this.socket!.connected) {
                     this._setFormState(State.CHOOSING_GROUP);
-                    this.groupNameInput.focus(); // No changes have occurred.
+                    this.in.groupName.focus(); // No changes have occurred.
                     return;
                 } else {
                     return; // Impatient client is spamming.
@@ -139,7 +145,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             this.socket.on("connect", () => {
                 this._setFormState(State.CHOOSING_GROUP);
                 // Listen for group creation / deletion events.
-                this.socket!.on(Group.Exist.EVENT_NAME, this.onNotifyGroupExist.bind(this));
+                this.socket!.on(Group.Exist.EVENT_NAME, this._onNotifyGroupExist.bind(this));
             });
             this.socket.on("connect_error", (error: object) => {
                 this.socket = undefined;
@@ -170,10 +176,10 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     /**
      *
      */
-    private onNotifyGroupExist(response: Group.Exist.NotifyStatus): void {
+    private _onNotifyGroupExist(response: Group.Exist.NotifyStatus): void {
         if (response === Group.Exist.RequestCreate.Response.NOPE) {
             this.top.toast(`The server rejected your request to`
-            + ` create a new group \"${this.groupNameInput.value}\".`);
+            + ` create a new group \"${this.in.groupName.value}\".`);
             return;
         }
         const dataList = this.groupNameDataList;
@@ -210,28 +216,28 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             }
         }
         if (response === Group.Exist.RequestCreate.Response.OKAY) {
-            console.info(`server accepted request to create new group \`${this.groupNameInput.value}\`.`);
+            console.info(`server accepted request to create new group \"${this.in.groupName.value}\".`);
             console.log("connecting to new group...");
-            this.attemptToJoinExistingGroup();
+            this._attemptToJoinExistingGroup();
         }
     }
 
     private _initializeGroupNameHandlers(huiSubmit: () => Promise<void>): void {
-        const input = this.groupNameInput;
+        const input = this.in.groupName;
         const submitInput = (): void => {
             if (!input.value || !input.validity.valid) return;
             if (this.state === State.IN_GROUP) {
-                this.nextButton.focus();
+                this.nav.next.focus();
             } else {
-                this.passphraseInput.focus();
+                this.in.passphrase.focus();
             }
         };
-        this.groupNameInput.oninput = async (ev) => {
+        this.in.groupName.oninput = async (ev) => {
             if (this.state === State.IN_GROUP) {
                 await huiSubmit();
                 // ^This will take us back to the state `CHOOSING_GROUP`.
             }
-            this.passphraseInput.value = "";
+            this.in.passphrase.value = "";
             this.#clientIsGroupHost = false; // <-- Not necessary. Just feels nice to do.
         };
         input.onkeydown = (ev) => { if (ev.key === "Enter") {
@@ -247,12 +253,12 @@ export class GroupJoinerScreen extends SkScreen<SID> {
      */
     private _initializePassphraseHandlers(): void {
         const submitInput = async (): Promise<void> => {
-            if (!this.passphraseInput.validity.valid) return;
+            if (!this.in.passphrase.validity.valid) return;
             // Short-circuit when no change has occurred:
-            if (this.socket!.nsp === SkServer.Nsps.GROUP_LOBBY_PREFIX + this.groupNameInput.value) {
+            if (this.socket!.nsp === SkServer.Nsps.GROUP_LOBBY_PREFIX + this.in.groupName.value) {
                 if (this.socket!.connected) {
                     this._setFormState(State.IN_GROUP);
-                    this.nextButton.focus(); // No changes have occurred.
+                    this.nav.next.focus(); // No changes have occurred.
                     return;
                 } else {
                     return; // Impatient client is spamming.
@@ -260,21 +266,21 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             }
 
             const groupExists = (Array.from(this.groupNameDataList.children) as HTMLOptionElement[])
-                .some((opt) => opt.value === this.groupNameInput.value);
+                .some((opt) => opt.value === this.in.groupName.value);
             if (groupExists) {
                 this.#clientIsGroupHost = false;
-                await this.attemptToJoinExistingGroup();
+                await this._attemptToJoinExistingGroup();
             } else {
                 this.#clientIsGroupHost = true;
                 this.socket!.emit(Group.Exist.EVENT_NAME,
                     new Group.Exist.RequestCreate(
-                        this.groupNameInput.value,
-                        this.passphraseInput.value,
+                        this.in.groupName.value,
+                        this.in.passphrase.value,
                     ),
                 );
             }
         };
-        this.passphraseInput.onkeydown = (ev) => { if (ev.key === "Enter") {
+        this.in.passphrase.onkeydown = (ev) => { if (ev.key === "Enter") {
             submitInput();
         }};
     }
@@ -282,16 +288,16 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     /**
      *
      */
-    private async attemptToJoinExistingGroup(): Promise<void> {
+    private async _attemptToJoinExistingGroup(): Promise<void> {
         const url = (() => {
-            const url = new URL(this.hostUrlInput.value);
-            url.pathname = SkServer.Nsps.GROUP_LOBBY_PREFIX + this.groupNameInput.value;
+            const url = new URL(this.in.hostUrl.value);
+            url.pathname = SkServer.Nsps.GROUP_LOBBY_PREFIX + this.in.groupName.value;
             return url.toString();
         })();
         this.socket?.close();
         const top = this.top;
         this.socket = (await top.socketIo)(url, {
-            query: { passphrase: this.passphraseInput.value, },
+            query: { passphrase: this.in.passphrase.value, },
         });
         this.socket.on("connect", () => {
             this._setFormState(State.IN_GROUP);
@@ -320,6 +326,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
      * A helper for `_lazyLoad`. Does not hook up event processors.
      */
     private _initializeFormContents(): HTMLFormElement {
+        (this.in as any) = {};
         const OMHC = OmHooks.Screen.Impl.GroupJoiner.Class;
         const contentWrapper = document.createElement("form");
         contentWrapper.classList.add(
@@ -340,7 +347,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             return input;
         }{
             const hostUrl
-                = (this.hostUrlInput as HTMLElement)
+                = (this.in.hostUrl as HTMLElement)
                 = createGenericTextInput("Host URL");
             hostUrl.type = "url";
             hostUrl.classList.add(OMHC.HOST_URL);
@@ -357,7 +364,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             hostUrl.maxLength = 128;
         }{
             const nspsName
-                = (this.groupNameInput as HTMLElement)
+                = (this.in.groupName as HTMLElement)
                 = createGenericTextInput("Group Name");
             nspsName.classList.add(OMHC.GROUP_NAME);
             nspsName.pattern   = Group.Name.REGEXP.source;
@@ -370,23 +377,21 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             nspsName.setAttribute("list", nspsList.id);
         }{
             const pass
-                = (this.passphraseInput as HTMLElement)
+                = (this.in.passphrase as HTMLElement)
                 = createGenericTextInput("Group Passphrase");
             pass.classList.add(OMHC.PASSPHRASE);
             pass.pattern   = Group.Passphrase.REGEXP.source;
             pass.maxLength = Group.Passphrase.MaxLength;
         }{
-            const nextBtn
-                = (this.nextButton as HTMLElement)
-                = document.createElement("input");
-            nextBtn.type = "submit";
-            nextBtn.classList.add(
+            const next = this.nav.next;
+            next.classList.add(
                 OmHooks.General.Class.INPUT_GROUP_ITEM,
                 OMHC.NEXT_BUTTON,
             );
-            nextBtn.textContent = nextBtn.value = "Next";
-            contentWrapper.appendChild(nextBtn);
+            next.textContent = next.value = "Next";
+            contentWrapper.appendChild(next);
         }
+        Object.freeze(this.in);
         return contentWrapper;
     }
 }

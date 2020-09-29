@@ -4,6 +4,19 @@ import type { Game } from "game/Game";
 import type { AllSkScreens } from "./AllSkScreens";
 import type { TopLevel } from "../TopLevel";
 
+import type {         HomeScreen } from "./impl/Home";
+import type {    HowToPlayScreen } from "./impl/HowToPlay";
+import type {    HowToHostScreen } from "./impl/HowToHost";
+import type {   ColourCtrlScreen } from "./impl/ColourCtrl";
+// ======== :   ~~~ OFFLINE ~~~  :============================
+import type { SetupOfflineScreen } from "./impl/SetupOffline";
+import type {  PlayOfflineScreen } from "./impl/PlayOffline";
+// ======== :   ~~~ ONLINE ~~~~  :============================
+import type {  GroupJoinerScreen } from "./impl/GroupJoiner";
+import type {  SetupOnlineScreen } from "./impl/SetupOnline";
+import type {   GroupLobbyScreen } from "./impl/GroupLobby";
+import type {   PlayOnlineScreen } from "./impl/PlayOnline";
+
 export { OmHooks, StorageHooks };
 
 
@@ -25,6 +38,11 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     protected readonly baseElem: HTMLElement;
 
     #hasLazyLoaded: boolean;
+
+    protected readonly nav: Readonly<{
+        prev: HTMLButtonElement;
+        next: HTMLButtonElement;
+    }>;
 
     /**
      * Returns this screen's own id by default.
@@ -55,12 +73,19 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         this.#parentElem        = parentElem;
         this.requestGoToScreen  = requestGoToDisplay;
         this.#hasLazyLoaded     = false;
+        (this.nav as SkScreen<any>["nav"]) = Object.freeze({
+            next: document.createElement("button"),
+            prev: document.createElement("button"),
+        });
+        this.nav.prev.onclick = (ev) => {
+            this.requestGoToScreen(this.initialScreen, {});
+        };
     }
 
     /**
      * **Do not override.**
      */
-    public async enter(args: SkScreen.EntranceArgs<SID>): Promise<void> {
+    public async enter(args: SkScreen.EntranceArgs[SID]): Promise<void> {
         if (!this.#hasLazyLoaded) {
             const baseElem
                 = (this.baseElem as HTMLElement)
@@ -82,7 +107,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         }
         const location = new window.URL(window.location.href);
         location.hash = this.screenId;
-        history.pushState(null, "", location.href);
+        history.pushState({ screenId: this.screenId, }, "", location.href);
 
         await this._abstractOnBeforeEnter(args);
         // ^Wait until the screen has finished setting itself up
@@ -122,7 +147,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * Important: Calls to `HTMLElement.focus` may require a small delay
      * via setTimeout. The reason for this is currently unknown.
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs<SID>): Promise<void> { }
+    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> { }
 
     /**
      * Return false if the leave should be cancelled. This functionality
@@ -155,20 +180,34 @@ export namespace SkScreen {
         PLAY_ONLINE     = "playOnline",
         // =======      ===================
     }
-
-    export type EntranceArgs<SID_group extends SkScreen.Id>
-    = any extends SID_group ? never
-    : { [SID in SID_group]:
-          SID extends SkScreen.Id.SETUP_OFFLINE ? {}
-        : SID extends SkScreen.Id.PLAY_OFFLINE  ? Game.CtorArgs<Game.Type.OFFLINE,any>
-        : SID extends SkScreen.Id.GROUP_LOBBY   ? Game.CtorArgs<Game.Type.SERVER,any> | undefined
-        : SID extends SkScreen.Id.SETUP_ONLINE  ? {}
-        : SID extends SkScreen.Id.PLAY_ONLINE   ? Game.CtorArgs<Game.Type.ONLINE,any>
-        : SID extends SkScreen.Id ? {}
-        : never
-        // ^Placeholder for screens that don't
-        // require any entrance arguments.
-    }[SID_group];
+    export interface EntranceArgs {
+        [ SkScreen.Id.HOME          ]: {};
+        [ SkScreen.Id.HOW_TO_PLAY   ]: {};
+        [ SkScreen.Id.HOW_TO_HOST   ]: {};
+        [ SkScreen.Id.COLOUR_CTRL   ]: {};
+        // ==========================
+        [ SkScreen.Id.SETUP_OFFLINE ]: {};
+        [ SkScreen.Id.PLAY_OFFLINE  ]: Game.CtorArgs<Game.Type.OFFLINE,any>;
+        // ==========================
+        [ SkScreen.Id.GROUP_JOINER  ]: {};
+        [ SkScreen.Id.SETUP_ONLINE  ]: {};
+        [ SkScreen.Id.GROUP_LOBBY   ]: Game.CtorArgs<Game.Type.SERVER,any> | undefined;
+        [ SkScreen.Id.PLAY_ONLINE   ]: Game.CtorArgs<Game.Type.ONLINE,any>;
+    }
+    export interface Dict {
+        [ SkScreen.Id.HOME          ]: HomeScreen;
+        [ SkScreen.Id.HOW_TO_PLAY   ]: HowToPlayScreen;
+        [ SkScreen.Id.HOW_TO_HOST   ]: HowToHostScreen;
+        [ SkScreen.Id.COLOUR_CTRL   ]: ColourCtrlScreen;
+        // ==========================
+        [ SkScreen.Id.SETUP_OFFLINE ]: SetupOfflineScreen;
+        [ SkScreen.Id.PLAY_OFFLINE  ]: PlayOfflineScreen;
+        // ==========================
+        [ SkScreen.Id.GROUP_JOINER  ]: GroupJoinerScreen;
+        [ SkScreen.Id.SETUP_ONLINE  ]: SetupOnlineScreen;
+        [ SkScreen.Id.GROUP_LOBBY   ]: GroupLobbyScreen;
+        [ SkScreen.Id.PLAY_ONLINE   ]: PlayOnlineScreen;
+    }
 }
 Object.freeze(SkScreen);
 Object.freeze(SkScreen.prototype);

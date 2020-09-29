@@ -1,6 +1,7 @@
 import { OmHooks } from "defs/OmHooks";
 import type { BrowserGameMixin } from "./game/BrowserGame";
 import type { _PlayScreen } from "./screen/impl/Play";
+import type { SkScreen } from "../client/screen/SkScreen";
 
 import { AllSkScreens } from "./screen/AllSkScreens";
 import { BgMusic }      from "./audio/BgMusic";
@@ -18,7 +19,7 @@ export class TopLevel {
      * Purposely made private. Screens are intended to navigate
      * between each other without reference to this field.
      */
-    private readonly allScreens: AllSkScreens;
+    private readonly _allScreens: AllSkScreens;
 
     public readonly bgMusic: BgMusic;
     public readonly sfx: SoundEffects;
@@ -47,7 +48,7 @@ export class TopLevel {
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
         if (!allScreensElem) { throw new Error; }
         this.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
-        this.allScreens = new AllSkScreens(this, allScreensElem);
+        this._allScreens = new AllSkScreens(this, allScreensElem);
 
         //
         // this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
@@ -93,8 +94,15 @@ export class TopLevel {
      * For debugging purposes- especially in the browser console.
      */
     public get game(): BrowserGameMixin<any,any> | undefined {
-        return (this.allScreens.dict.playOffline as _PlayScreen<any,any>).currentGame
-            ?? (this.allScreens.dict.playOnline  as _PlayScreen<any,any>).currentGame;
+        return (this._allScreens.dict.playOffline as _PlayScreen<any,any>).currentGame
+            ?? (this._allScreens.dict.playOnline  as _PlayScreen<any,any>).currentGame;
+    }
+
+    /**
+     * For debugging purposes- especially in the browser console.
+     */
+    public get currentScreen(): SkScreen<SkScreen.Id> {
+        return this._allScreens.currentScreen;
     }
 }
 export namespace TopLevel {

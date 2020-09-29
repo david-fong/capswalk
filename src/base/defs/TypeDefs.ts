@@ -75,6 +75,23 @@ export namespace Player {
         export type Nullable = Player.Id | typeof Player.Id.NULL;
     }
 
+    export type Username = string;
+    export namespace Username {
+        // /**
+        //  * The choice of this is somewhat arbitrary. This should be enforced
+        //  * externally since player descriptors are passed to the constructor.
+        //  *
+        //  * Requirements:
+        //  * - Starts with a letter.
+        //  * - No whitespace except for non-consecutive space characters.
+        //  * - Must contain at least five non-space characters that are
+        //  *      either letters, numbers, or the dash character.
+        //  */
+        //export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
+        export const REGEXP = /[ a-zA-Z0-9:-]/;
+        export const MAX_LENGTH = 15; // rather arbitrary choice.
+    }
+
     /**
      * See the main documentation in game/player/Player.
      */

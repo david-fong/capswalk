@@ -14,11 +14,10 @@
 
 ### High Priority
 
-1. Get intended type checking for `goToScreen` by using type mapping as seen in `document.createElement`.
+1. Implement game creation event communications for online game.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
-1. Implement game creation event communications for online game.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores (very small size) on top of player faces.
 1. Display the operator's current sequence buffer.

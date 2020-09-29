@@ -29,13 +29,45 @@ export namespace Group {
      * An extension of {@link io.Socket}. It is very convenient to tack
      * these fields directly onto the socket objects.
      */
+    export type Socket = {
+        username?: string;
+        teamId?: number; // These input values can be messy and non-continuous. They will be cleaned later.
+        updateId: number; // initial value = 0
+    } & import("socket.io").Socket;
     export namespace Socket {
-        type Base = {
-            username?: string;
-            teamId?: number; // These input values can be messy and non-continuous. They will be cleaned later.
-            updateId: number; // initial value = 0
-        };
-        export type ServerSide = Base & import("socket.io").Socket;
+
+        export namespace UserInfoChange {
+            /**
+             * Client emits this with a descriptor of requested username and teamId.
+             * Server broadcasts a response
+             */
+            export const EVENT_NAME = "group-lobby-user-info-change";
+
+            /**
+             *
+             */
+            export type Req = Readonly<{
+                /**
+                 * Client passes null to indicate no change.
+                 */
+                unameNew: string | undefined,
+                teamId: number,
+            }>;
+            /**
+             *
+             */
+            export type Res = Readonly<{
+                /**
+                 * User by clients to identify this user experiencing changes.
+                 */
+                unameOld: string,
+                /**
+                 * Server passes null to indicate user left group.
+                 */
+                unameNew: string | undefined,
+                teamId: number,
+            }>;
+        }
     }
 
     export type Name = string;

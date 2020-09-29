@@ -22,9 +22,6 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
     protected readonly langSel: _SetupScreen.LangPickOne;
     protected readonly langWeightExaggeration: HTMLInputElement;
 
-    protected readonly _nextBtn: HTMLButtonElement;
-    protected readonly _prevBtn: HTMLButtonElement;
-
     /**
      * @override
      */
@@ -37,20 +34,15 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
 
         this._createLangWeightExaggerationInput();
 
-        {const nextBtn
-            = (this._nextBtn as HTMLButtonElement)
-            = document.createElement("button");
-        nextBtn.classList.add(OMHC.NEXT_BUTTON);
-        nextBtn.textContent = "Next";
-        this.baseElem.appendChild(nextBtn);
+        {const prev = this.nav.prev;
+        prev.classList.add(OMHC.PREV_BUTTON);
+        prev.textContent = "Prev";
+        this.baseElem.appendChild(prev);
         }
-
-        {const prevBtn
-            = (this._prevBtn as HTMLButtonElement)
-            = document.createElement("button");
-        prevBtn.classList.add(OMHC.PREV_BUTTON);
-        prevBtn.textContent = "Prev";
-        this.baseElem.appendChild(prevBtn);
+        {const next = this.nav.next;
+        next.classList.add(OMHC.NEXT_BUTTON);
+        next.textContent = "Next";
+        this.baseElem.appendChild(next);
         }
 
         this._loadLastUsedPreset();
@@ -84,9 +76,9 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs<SID>): Promise<void> {
+    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> {
         window.setTimeout(() => {
-            this._nextBtn.focus();
+            this.nav.next.focus();
         }, 100); // <-- An arbitrary short period of time. See super doc.
         return;
     }

@@ -94,25 +94,25 @@ export class Group extends _Group {
             socket.broadcast.emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_LOBBY,
             });
-            socket.on(Game.CtorArgs.EVENT_NAME, (
-                ctorArgs: Game.CtorArgs<Game.Type.SERVER,any>
-                | typeof Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR
-            ) => {
-                // First, broadcast to the joiner namespace of this
-                // group's change in state:
-                this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
-                    [this.name]: (ctorArgs !== Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR)
-                    ? Group.Exist.Status.IN_GAME
-                    : Group.Exist.Status.IN_LOBBY,
-                });
-                if (ctorArgs !== Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR) {
-                    this._createGameInstance(ctorArgs);
-                } else {
-                    this.#currentGame!.onReturnToLobby();
-                }
-            });
+            socket.on(Game.CtorArgs.EVENT_NAME, this._socketOnHostCreateGame.bind(this));
         }
 
+        socket.on(
+            Group.Socket.UserInfoChange.EVENT_NAME,
+            (req: _Group.Socket.UserInfoChange.Req) => {
+                if (Object.values(this.sockets).some((socket) => socket.username === req.unameNew)) {
+                    // Another player already has this username. Reject the request by ignoring it:
+                    return;
+                }
+                this.namespace.emit(Group.Socket.UserInfoChange.EVENT_NAME, <_Group.Socket.UserInfoChange.Res>{
+                    unameOld: socket.username, // TODO.impl set a default username and notify all players when user join.
+                    unameNew: req.unameNew,
+                    teamId:   req.teamId,
+                });
+                socket.username = req.unameNew;
+                socket.teamId   = req.teamId;
+            },
+        );
         socket.on("disconnect", (...args: any[]): void => {
             if (socket === this.sessionHost) {
                 // If the host disconnects, end the session.
@@ -120,11 +120,31 @@ export class Group extends _Group {
                 // that the host player has died, and choose another player to become
                 // the host?
                 this.terminate();
+                return;
             }
             if (Object.keys(this.namespace.sockets).length === 1) {
                 this.terminate();
+                return;
             }
+            socket.broadcast.emit(Group.Socket.UserInfoChange.EVENT_NAME, )
         });
+    }
+    private _socketOnHostCreateGame(
+        ctorArgs: Game.CtorArgs<Game.Type.SERVER,any>
+        | typeof Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR,
+    ): void {
+        // First, broadcast to the joiner namespace of this
+        // group's change in state:
+        this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
+            [this.name]: (ctorArgs !== Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR)
+            ? Group.Exist.Status.IN_GAME
+            : Group.Exist.Status.IN_LOBBY,
+        });
+        if (ctorArgs !== Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR) {
+            this._createGameInstance(ctorArgs);
+        } else {
+            this.#currentGame!.onReturnToLobby();
+        }
     }
 
     public get isCurrentlyPlayingAGame(): boolean {
@@ -185,8 +205,11 @@ export class Group extends _Group {
         };
         if (failureReasons.undefinedUsername.length ||
             failureReasons.undefinedTeamId.length) {
+            console.log(failureReasons);
             return failureReasons;
         }
+        console.log(`group ${this.name} new game`);
+
         // Everything needed to create a game exists. Let's do it!
         (ctorArgs.playerDescs as Player.CtorArgs.PreIdAssignment[]) = [
             ...ctorArgs.playerDescs,
@@ -211,7 +234,7 @@ export class Group extends _Group {
     }
 }
 export namespace Group {
-    export type Socket      = _Group.Socket.ServerSide;
+    export type Socket      = _Group.Socket;
     export type Name        = _Group.Name;
     export type Passphrase  = _Group.Passphrase;
     export namespace Query {
