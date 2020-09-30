@@ -30,8 +30,8 @@ export namespace Group {
      * these fields directly onto the socket objects.
      */
     export type Socket = {
-        username?: string;
-        teamId?: number; // These input values can be messy and non-continuous. They will be cleaned later.
+        username: string;
+        teamId: number;
         updateId: number; // initial value = 0
     } & import("socket.io").Socket;
     export namespace Socket {
@@ -56,15 +56,21 @@ export namespace Group {
             /**
              *
              */
-            export type Res = Readonly<{
+            export type Res = Readonly<({
                 /**
-                 * User by clients to identify this user experiencing changes.
+                 * Needed on client-side to identify the user experiencing changes.
+                 *
+                 * Server should pass `undefined` to indicate new user.
                  */
+                unameOld: string | undefined,
+                /**
+                 * Server passes `undefined` to indicate user left group.
+                 */
+                unameNew: string,
+            } | {
                 unameOld: string,
-                /**
-                 * Server passes null to indicate user left group.
-                 */
-                unameNew: string | undefined,
+                unameNew: undefined
+            }) & {
                 teamId: number,
             }>;
         }

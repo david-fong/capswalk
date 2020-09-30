@@ -1,8 +1,9 @@
 import * as io from "socket.io";
 
+import type { Coord } from "floor/Tile";
+import type { Player } from "game/player/Player";
 import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
-import type { Player } from "game/player/Player";
 
 import { Group as _Group, SkServer } from "defs/OnlineDefs";
 
@@ -18,7 +19,7 @@ export class Group extends _Group {
     public readonly namespace: io.Namespace;
     public readonly name: Group.Name;
     public readonly passphrase: Group.Passphrase;
-    #currentGame: ServerGame<any> | undefined;
+    #currentGame: ServerGame<Coord.System> | undefined;
     private sessionHost: io.Socket;
 
     private readonly initialTtlTimeout: NodeJS.Timeout;
@@ -78,9 +79,16 @@ export class Group extends _Group {
             // a game:
             socket.disconnect();
         }
-        socket.username = undefined;
-        socket.teamId   = undefined;
+        socket.username = "unnamed " + (Date.now()).toString();
+        socket.teamId   = 0;
         socket.updateId = 0;
+
+        // Notify all clients in this group of the new player:
+        this.namespace.emit(Group.Socket.UserInfoChange.EVENT_NAME, <_Group.Socket.UserInfoChange.Res>{
+            unameOld: undefined,
+            unameNew: socket.username,
+            teamId:   socket.teamId,
+        });
 
         /**
          * Nobody has connected yet.
@@ -104,12 +112,13 @@ export class Group extends _Group {
                     // Another player already has this username. Reject the request by ignoring it:
                     return;
                 }
-                this.namespace.emit(Group.Socket.UserInfoChange.EVENT_NAME, <_Group.Socket.UserInfoChange.Res>{
-                    unameOld: socket.username, // TODO.impl set a default username and notify all players when user join.
-                    unameNew: req.unameNew,
+                const res = <_Group.Socket.UserInfoChange.Res>{
+                    unameOld: socket.username,
+                    unameNew: req.unameNew ?? socket.username,
                     teamId:   req.teamId,
-                });
-                socket.username = req.unameNew;
+                };
+                this.namespace.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
+                socket.username = req.unameNew!;
                 socket.teamId   = req.teamId;
             },
         );
@@ -126,11 +135,16 @@ export class Group extends _Group {
                 this.terminate();
                 return;
             }
-            socket.broadcast.emit(Group.Socket.UserInfoChange.EVENT_NAME, )
+            const res = <_Group.Socket.UserInfoChange.Res>{
+                unameOld: socket.username,
+                unameNew: undefined,
+                teamId:   socket.teamId,
+            };
+            socket.broadcast.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
         });
     }
     private _socketOnHostCreateGame(
-        ctorArgs: Game.CtorArgs<Game.Type.SERVER,any>
+        ctorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System>
         | typeof Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR,
     ): void {
         // First, broadcast to the joiner namespace of this
@@ -193,7 +207,7 @@ export class Group extends _Group {
      * `false` if the passed arguments were incomplete or invalid.
      */
     private _createGameInstance(
-        ctorArgs: Game.CtorArgs<Game.Type.SERVER,any>,
+        ctorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System>,
     ): Readonly<Game.CtorArgs.FailureReasons> | undefined {
         const failureReasons: Game.CtorArgs.FailureReasons = {
             undefinedUsername: Object.values(this.sockets)

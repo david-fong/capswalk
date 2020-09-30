@@ -55,18 +55,9 @@ export class AllSkScreens {
             this.goToScreen(SkScreen.Id.HOME, {});
         }
         window.addEventListener("popstate", (ev: PopStateEvent) => {
-            // TODO.impl
-            // take careful consideration to navigating backward from online play screen
-            // make sure to identify whether the client is the group host by passing an
-            // empty object or something instead of undefined.
-
-            // const isr = this.dict[isrId];
-            // if (isr === undefined) return;
-            // if (isr.initialScreen !== ev.state.screenId) {
-            //     window.history.back();
-            //     return;
-            // }
-            // this.goToScreen(isr.screenId, {});
+            // For corresponding calls to pushState and replaceState,
+            // see SkScreen.enter.
+            this.goToScreen(...this.currentScreen.getNavPrevArgs())
         });
     }
 
@@ -79,6 +70,7 @@ export class AllSkScreens {
         // NOTE: using a tuple wrapper to expand bundled type.
         destId: SID,
         ctorArgs: SkScreen.EntranceArgs[SID],
+        historyDirection: "forward" | "backward" = "forward",
     ): boolean {
         const destScreen = this.dict[destId];
         if (this.currentScreen === destScreen) {
@@ -87,11 +79,12 @@ export class AllSkScreens {
             // rewrite the return-value spec.
             throw "never";
         }
-        if ((!this.currentScreen) || this.currentScreen.leave()) {
-            // Note on above nullish coalesce: Special case entered
+        if ((this.currentScreen === undefined) || this.currentScreen.leave()) {
+            // Note on above "nullish coalesce": Special case entered
             // during construction when there is no currentScreen yet.
             // Any confirm-leave prompts made to the user were OK-ed.
-            (destScreen.enter as (args: typeof ctorArgs) => void)(ctorArgs);
+            type enterFunc = (args: typeof ctorArgs, historyDirection: "forward" | "backward") => void;
+            (destScreen.enter as enterFunc)(ctorArgs, historyDirection);
             this.#currentScreen = destScreen;
             return true;
         }

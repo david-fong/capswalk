@@ -46,7 +46,9 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
             } else {
                 console.log("you are not the group host! going to the group-lobby screen...");
-                this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, undefined);
+                this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {
+                    manner: "non-group-host : join",
+                });
             }
         };
         this._setFormState(State.CHOOSING_HOST);
@@ -310,7 +312,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             if (reason === "io server disconnect") {
                 this.socket = undefined;
                 top.toast("The server disconnected you from your group.");
-                this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {});
+                this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {}, "backward");
             }
         });
     }

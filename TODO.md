@@ -14,6 +14,11 @@
 
 ### High Priority
 
+1. Don't use the `submit` method of the GroupJoiner form.
+    - It's inserting a `?` into the URL which is reloading the page :O
+1. Refactor `Coord<S>` and such to use Interface-style type mapping.
+1. Implement client send `RETURN_TO_LOBBY_INDICATOR`.
+1. Debug and handle goToScreen when user navigates forward in history.
 1. Implement game creation event communications for online game.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.

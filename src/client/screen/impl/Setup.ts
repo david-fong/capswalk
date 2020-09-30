@@ -61,7 +61,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
         {
             const list = document.createElement("datalist");
             list.id = OmHooks.Screen.Impl.Setup.Id.LANG_WEIGHT_EXAGGERATION_LIST;
-            [{val:0,label:"uniform",}, {val:1,label:"normal"},].forEach((tickDesc) => {
+            [{val:0,label:"0",}, {val:1,label:"1"},].forEach((tickDesc) => {
                 const opt = document.createElement("option");
                 opt.value = tickDesc.val.toString();
                 opt.label = tickDesc.label;
@@ -94,9 +94,9 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
     /**
      * A helper for going to the next screen.
      */
-    protected _parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,any> {
+    protected _parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
         // TODO.impl
-        const args: TU.NoRo<Game.CtorArgs<Game.Type.OFFLINE,any>>
+        const args: TU.NoRo<Game.CtorArgs<Game.Type.OFFLINE,Coord.System>>
             = Object.assign({}, _SetupScreen.DEFAULT_PRESET);
             // ^temporary default until _loadLastUsedPreset is implemented.
         args.langId = this.langSel.confirmedOpt.desc.id;
@@ -108,7 +108,7 @@ export namespace _SetupScreen {
 
     // TODO.impl If we keep this, use a recursive Object.freeze.
     // Currently not frozen to allow for easier testing.
-    export const DEFAULT_PRESET = <Game.CtorArgs<Game.Type.OFFLINE,any>>{
+    export const DEFAULT_PRESET = <Game.CtorArgs<Game.Type.OFFLINE,Coord.System>>{
         coordSys: Coord.System.EUCLID2,
         gridDimensions: {
             height: 21,

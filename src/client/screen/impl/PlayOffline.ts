@@ -1,6 +1,6 @@
 import type { OfflineGame } from "../../game/OfflineGame";
 
-import { SkScreen } from "../SkScreen";
+import { Coord, SkScreen } from "../SkScreen";
 import { Game, _PlayScreen } from "./Play";
 type G = Game.Type.OFFLINE;
 
@@ -20,7 +20,7 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
      * @override
      */
     // @ts-expect-error : Redeclaring accessor as property.
-    declare public readonly currentGame: OfflineGame<any> | undefined;
+    declare public readonly currentGame: OfflineGame<Coord.System> | undefined;
 
     /**
      * @override
@@ -32,12 +32,13 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
      */
     protected _lazyLoad(): void {
         super._lazyLoad();
+        this.nav.prev.textContent = "Return To Setup";
     }
 
     /**
      * @override
      */
-    protected async _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<OfflineGame<any>> {
+    protected async _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<OfflineGame<Coord.System>> {
         // TODO.impl use game-setup args passed in from _abstractOnBeforeEnter
         return new (await import(
             /* webpackChunkName: "game/offline" */

@@ -12,7 +12,7 @@ import { Coord } from "./Coord"; export { Coord };
  * From a caller's point of view, extending classes should have am
  * identical constructor signature as that of this base class. This
  * can be done by a type assertion statement: `<extension class> as
- * Tile.ConstructorType<any>`.
+ * Tile.ConstructorType<Coord.System>`.
  *
  * @template S
  * The coordinate system enum for this tile's coordinate.
@@ -110,7 +110,7 @@ export class Tile<S extends Coord.System> {
 }
 // If this errs when changing the constructor signature, then
 // the type definition being asserted should be updated to match.
-Tile as Tile.ClassIf<any>;
+Tile as Tile.ClassIf<Coord.System>;
 
 
 

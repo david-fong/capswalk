@@ -1,7 +1,7 @@
 import { OmHooks } from "defs/OmHooks";
-import type { BrowserGameMixin } from "./game/BrowserGame";
+import type { BrowserGameMixin, Game } from "./game/BrowserGame";
 import type { _PlayScreen } from "./screen/impl/Play";
-import type { SkScreen } from "../client/screen/SkScreen";
+import type { Coord, SkScreen } from "../client/screen/SkScreen";
 
 import { AllSkScreens } from "./screen/AllSkScreens";
 import { BgMusic }      from "./audio/BgMusic";
@@ -93,9 +93,9 @@ export class TopLevel {
     /**
      * For debugging purposes- especially in the browser console.
      */
-    public get game(): BrowserGameMixin<any,any> | undefined {
-        return (this._allScreens.dict.playOffline as _PlayScreen<any,any>).currentGame
-            ?? (this._allScreens.dict.playOnline  as _PlayScreen<any,any>).currentGame;
+    public get game(): BrowserGameMixin<Game.Type.Browser,Coord.System> | undefined {
+        return (this._allScreens.dict.playOffline).currentGame
+            ?? (this._allScreens.dict.playOnline ).currentGame;
     }
 
     /**

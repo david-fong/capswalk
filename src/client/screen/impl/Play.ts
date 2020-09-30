@@ -4,7 +4,7 @@ import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 // import type { OnlineGame }  from "../../game/OnlineGame";
 import type { BrowserGameMixin } from "../../game/BrowserGame";
 
-import { OmHooks, SkScreen } from "../SkScreen";
+import { OmHooks, Coord, SkScreen } from "../SkScreen";
 
 /**
  * If and only if this screen is the current screen, then its
@@ -17,7 +17,7 @@ import { OmHooks, SkScreen } from "../SkScreen";
 export abstract class _PlayScreen<
     SID extends SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE,
     G extends Game.Type.Browser,
-    Game extends BrowserGameMixin<G,any> = BrowserGameMixin<G,any>,
+    Game extends BrowserGameMixin<G,Coord.System> = BrowserGameMixin<G,Coord.System>,
 > extends SkScreen<SID> {
 
     /**
@@ -50,11 +50,6 @@ export abstract class _PlayScreen<
      * so there's no question that it can, under certain conditions be
      * undefined.
      */
-    // #currentGame: undefined | any extends G ? never : {[G_ in G]:
-    //       G extends Game.Type.OFFLINE ? OfflineGame<any>
-    //     : G extends Game.Type.ONLINE  ? OnlineGame<any>
-    //     : never
-    // }[G];
     #currentGame: undefined | Game;
 
     protected abstract readonly wantsAutoPause: boolean;
@@ -146,7 +141,7 @@ export abstract class _PlayScreen<
         this._statusBecomePaused(); // <-- Leverage some state initialization.
 
         this.#currentGame = await this._createNewGame(
-            args as (typeof args & Game.CtorArgs<G,any>),
+            args as (typeof args & Game.CtorArgs<G,Coord.System>),
         );
         this._gridBaseElem.addEventListener("keydown", this.#gridOnKeyDown);
         await this.currentGame!.reset();
@@ -202,7 +197,7 @@ export abstract class _PlayScreen<
         return this.#currentGame;
     }
 
-    protected abstract async _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<Game>;
+    protected abstract async _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<Game>;
 
 
     /**
@@ -305,7 +300,10 @@ export abstract class _PlayScreen<
         );
         controlsBar.setAttribute("role", "menu");
 
-        function createControlButton(buttonText: string, button?: HTMLButtonElement): HTMLButtonElement {
+        function createControlButton(
+            buttonText: string,
+            button?: TU.Omit<HTMLButtonElement, "onclick">,
+        ): HTMLButtonElement {
             button = button ?? document.createElement("button");
             button.textContent = buttonText;
             button.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
@@ -315,7 +313,7 @@ export abstract class _PlayScreen<
                 });
             });
             controlsBar.appendChild(button);
-            return button;
+            return button as HTMLButtonElement;
         }
         controlsBar.addEventListener("pointerleave", (ev) => {
             window.requestAnimationFrame((time) => {
@@ -323,8 +321,8 @@ export abstract class _PlayScreen<
             });
         });
 
-        { const bth = createControlButton("Return To Homepage", this.nav.prev);
-        bth.onclick = this.requestGoToScreen.bind(this, SkScreen.Id.HOME, {});
+        { const bth = createControlButton("<Back Button Text>", this.nav.prev);
+        //bth.onclick = this.requestGoToScreen.bind(this, SkScreen.Id.HOME, {});
         }
 
         { const pause

@@ -23,7 +23,10 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
 
         this.nav.next.onclick = (ev) => {
             const args = this._parseArgsFromGui();
-            this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, args);
+            this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {
+                manner: "group-host : join",
+                gameCtorArgs: args,
+            });
         };
     }
 
