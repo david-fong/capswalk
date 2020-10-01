@@ -119,10 +119,9 @@ export namespace ArtificialPlayer {
         };
     }>;
 
-    export type FamilySpecificPart<F extends Player.Family> =
-    ( F extends typeof Player.Family.CHASER ? Chaser.Behaviour
-    : never
-    );
+    export interface FamilySpecificPart {
+        [Player.Family.CHASER]: Chaser.Behaviour;
+    }
 
     export const of = <S extends Coord.System>(
         game: GamepartManager<any,S>,
