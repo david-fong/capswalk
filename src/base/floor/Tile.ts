@@ -19,7 +19,7 @@ import { Coord } from "./Coord"; export { Coord };
  */
 export class Tile<S extends Coord.System> {
 
-    public readonly coord: Coord<S>;
+    public readonly coord: Coord[S];
     #occupantId: Player.Id.Nullable;
     #freeHealth: Player.Health;
     #langChar:  Lang.Char;
@@ -38,7 +38,7 @@ export class Tile<S extends Coord.System> {
     /**
      * @param coord -
      */
-    public constructor(coord: Coord<S>) {
+    public constructor(coord: Coord[S]) {
         this.coord = coord;
         this.#occupantId = Player.Id.NULL;
     }

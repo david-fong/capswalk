@@ -50,7 +50,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      * movement request. Pos may contain non-integer coordinate values,
      * and it does not have to be inside the bounds of the {@link Grid}.
      */
-    protected abstract computeDesiredDest(): Coord<S>;
+    protected abstract computeDesiredDest(): Coord[S];
 
     protected abstract getNextMoveType(): Player.MoveType;
 

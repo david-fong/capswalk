@@ -20,7 +20,7 @@ export namespace SysName {
     type S = BaseCoord.System.SYSNAME;
 
     // optional documentation
-    export class Coord extends BaseCoord.Abstract<S> implements B {
+    export class Coord implements BaseCoord.Abstract<S>, B {
         // field declarations
         public constructor(desc: B) {
             super(desc);

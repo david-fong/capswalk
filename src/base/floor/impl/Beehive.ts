@@ -28,7 +28,7 @@ export namespace Beehive {
     /**
      * # Beehive Coord
      */
-    export class Coord extends BaseCoord.Abstract.Mathy<S> implements Coord.Bare {
+    export class Coord implements BaseCoord.Abstract.Mathy<S>, Coord.Bare {
 
         /**
          * # 🕒 3'o'clock direction
@@ -41,7 +41,6 @@ export namespace Beehive {
         public readonly bash: number;
 
         public constructor(desc: Coord.Bare) {
-            super(desc);
             this.dash = desc.dash;
             this.bash = desc.bash;
             Object.freeze(this);

@@ -39,7 +39,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     readonly #langRemappingFunc: {(input: string): string};
 
-    private prevCoord: Coord<S>;
+    private prevCoord: Coord[S];
 
 
     public constructor(game: GamepartBase<any,S>, desc: Player._CtorArgs<"HUMAN">) {

@@ -7,11 +7,10 @@ import type { Beehive } from "./impl/Beehive";
  * implementation's non-standard methods safely on coordinates retrieved
  * from Grid tiles.
  */
-export type Coord<S extends Coord.System> = (Coord.Bare<S>) &
-    ( S extends Coord.System.EUCLID2 ? Euclid2.Coord
-    : S extends Coord.System.BEEHIVE ? Beehive.Coord
-    : never
-    );
+export interface Coord {
+    [Coord.System.EUCLID2]: Euclid2.Coord;
+    [Coord.System.BEEHIVE]: Beehive.Coord;
+}
 
 /**
  *
@@ -23,11 +22,10 @@ export namespace Coord {
         BEEHIVE = "BEEHIVE",
     }
 
-    export type Bare<S extends System> =
-    ( S extends System.EUCLID2 ? Euclid2.Coord.Bare
-    : S extends System.BEEHIVE ? Beehive.Coord.Bare
-    : never
-    );
+    export interface Bare {
+        [System.EUCLID2]: Euclid2.Coord.Bare /* & Coord[System.EUCLID2] */;
+        [System.BEEHIVE]: Beehive.Coord.Bare /* & Coord[System.BEEHIVE] */;
+    }
 
     // ==============================================================
     // Note: The below exports do not require any modifications with
@@ -39,19 +37,16 @@ export namespace Coord {
      *
      * @template S - An enum identifying the unique implementation class.
      */
-    export abstract class Abstract<S extends Coord.System> {
-
+    export interface Abstract<S extends Coord.System> {
         /**
          * This does nothing. Subclass constructors should copy in the
          * fields specified by `desc` and end with a self-freezing call.
          *
          * @param desc - Untouched. Here as a reminder of what is needed.
          */
-        protected constructor(desc: Coord.Bare<S>) {
-            desc; // Prevents warning about unused parameter.
-        }
+        // new(desc: Coord.Bare[S]): Abstract<S>;
 
-        public abstract equals(other: Coord.Bare<S>): boolean;
+        equals(other: Bare[Coord.System]): boolean;
     }
 
     export namespace Abstract {
@@ -60,20 +55,20 @@ export namespace Coord {
          * basis of graph connections that cannot be represented by
          * lattices.
          */
-        export abstract class Mathy<S extends Coord.System> extends Coord.Abstract<S> {
+        export interface Mathy<S extends Coord.System> extends Coord.Abstract<S> {
             /**
              * For discrete-coordinate-based systems, this is used to round
              * non-discrete coordinates to discrete ones.
              */
-            public abstract round(): Coord<S>;
+            round(): Coord[S];
 
-            public abstract add(other: Coord.Bare<S>): Coord<S>;
-            public abstract sub(other: Coord.Bare<S>): Coord<S>;
-            public abstract mul(scalar: number): Coord<S>;
+            add(other: Bare[S]): Coord[S];
+            sub(other: Bare[S]): Coord[S];
+            mul(scalar: number): Coord[S];
         }
     }
-    Object.freeze(Abstract);
-    Object.freeze(Abstract.prototype);
+    // Object.freeze(Abstract);
+    // Object.freeze(Abstract.prototype);
 
 }
 Object.freeze(Coord);

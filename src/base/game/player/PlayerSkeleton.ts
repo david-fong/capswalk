@@ -69,7 +69,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
     }
 
 
-    public get coord(): Coord<S> {
+    public get coord(): Coord[S] {
         return this.hostTile.coord;
     }
 
@@ -133,7 +133,7 @@ export namespace PlayerSkeleton {
     export class TileGetterSource<S extends Coord.System> implements TileGetter.Source<S,[]> {
 
         readonly #player: PlayerSkeleton<S>
-        readonly #superTileSrc: TileGetter.Source<S,[Coord.Bare<S>,]>;
+        readonly #superTileSrc: TileGetter.Source<S,[Coord.Bare[S],]>;
 
         public constructor(player: PlayerSkeleton<S>) {
             this.#player = player;

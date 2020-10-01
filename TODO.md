@@ -14,7 +14,6 @@
 
 ### High Priority
 
-1. Refactor `Coord<S>` and such to use Interface-style type mapping.
 1. Implement client send `RETURN_TO_LOBBY_INDICATOR`.
 1. Debug and handle goToScreen when user navigates forward in history.
 1. Implement game creation event communications for online game.

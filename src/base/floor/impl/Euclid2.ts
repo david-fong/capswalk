@@ -15,13 +15,12 @@ export namespace Euclid2 {
     /**
      * # Euclid2 Coord
      */
-    export class Coord extends BaseCoord.Abstract.Mathy<S> implements Coord.Bare {
+    export class Coord implements BaseCoord.Abstract.Mathy<S>, Coord.Bare {
 
         public readonly x: number;
         public readonly y: number;
 
         public constructor(desc: Coord.Bare) {
-            super(desc);
             this.x = desc.x;
             this.y = desc.y;
             Object.freeze(this);

@@ -112,9 +112,9 @@ export namespace Game {
      */
     export type ResetSer<S extends Coord.System> = Readonly<{
         csps: TU.RoArr<Lang.CharSeqPair>;
-        playerCoords: TU.RoArr<Coord.Bare<S>>;
+        playerCoords: TU.RoArr<Coord.Bare[S]>;
         healthCoords: TU.RoArr<{
-            coord: Coord.Bare<S>;
+            coord: Coord.Bare[S];
             health: Player.Health;
         }>;
     }>;
