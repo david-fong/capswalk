@@ -20,6 +20,8 @@ import type {   PlayOnlineScreen } from "./impl/PlayOnline";
 
 export { OmHooks, Coord, StorageHooks };
 
+const OMHC = OmHooks.Screen.Class;
+
 
 /**
  *
@@ -79,6 +81,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      */
     protected readonly requestGoToScreen: AllSkScreens["goToScreen"];
 
+
     /**
      *
      * @param parentElem -
@@ -96,9 +99,13 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         this.requestGoToScreen  = requestGoToDisplay;
         this.#hasLazyLoaded     = false;
         (this.nav as SkScreen<SkScreen.Id>["nav"]) = Object.freeze({
-            next: document.createElement("button"),
             prev: document.createElement("button"),
+            next: document.createElement("button"),
         });
+        this.nav.prev.classList.add(OMHC.NAV_PREV);
+        this.nav.next.classList.add(OMHC.NAV_NEXT);
+        this.nav.prev.textContent = "Back";
+        this.nav.next.textContent = "Next";
         (this.nav.prev as HTMLButtonElement).onclick = (ev) => {
             this.requestGoToScreen(...this.getNavPrevArgs());
         };

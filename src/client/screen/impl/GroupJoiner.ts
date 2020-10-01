@@ -38,9 +38,12 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         this.nav.next.onclick = (ev) => {
             // Using a plain button instead of <input type="submit"> is
             // better here since we don't want any magical form behaviour.
-            contentWrapper.submit();
+            contentWrapperSubmit();
         }
-        contentWrapper.onsubmit = (ev) => {
+        const contentWrapperSubmit = () => {
+            // ev.preventDefault(); // Don't try sending anything to the server.
+
+            // No validation needed. The next button is only enabled if inputs are valid.
             if (this.#clientIsGroupHost) {
                 console.log("you are the group host! going to the setup-online screen...");
                 this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
@@ -327,14 +330,18 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     /**
      * A helper for `_lazyLoad`. Does not hook up event processors.
      */
-    private _initializeFormContents(): HTMLFormElement {
+    private _initializeFormContents(): HTMLElement {
         (this.in as any) = {};
         const OMHC = OmHooks.Screen.Impl.GroupJoiner.Class;
-        const contentWrapper = document.createElement("form");
+        const contentWrapper = document.createElement("div"/*"form"*/);
+        // contentWrapper.method = "POST"; // Not actually used, since the default onsubmit behaviour is prevented.
         contentWrapper.classList.add(
             OmHooks.General.Class.INPUT_GROUP,
             OMHC.CONTENT_WRAPPER,
         );
+        this.nav.prev.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+        contentWrapper.appendChild(this.nav.prev);
+
         function createGenericTextInput(labelText: string): HTMLInputElement {
             const input = document.createElement("input");
             input.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
@@ -385,13 +392,8 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             pass.pattern   = Group.Passphrase.REGEXP.source;
             pass.maxLength = Group.Passphrase.MaxLength;
         }{
-            const next = this.nav.next;
-            next.classList.add(
-                OmHooks.General.Class.INPUT_GROUP_ITEM,
-                OMHC.NEXT_BUTTON,
-            );
-            next.textContent = next.value = "Next";
-            contentWrapper.appendChild(next);
+            this.nav.next.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+            contentWrapper.appendChild(this.nav.next);
         }
         Object.freeze(this.in);
         return contentWrapper;

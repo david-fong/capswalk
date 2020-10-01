@@ -42,6 +42,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
      * @param gameDesc - This should come from a Server event by the name
      *      {@link Game.CtorArgs.EVENT_NAME}.
      */
+    // TODO.design @all these socket events: expose a way to remove them all when going back to the lobby.
     public constructor(
         onGameBecomeOver: () => void,
         socket: SocketIOClient.Socket,
@@ -69,6 +70,8 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
         );
 
         // TODO.impl Send ack?
+        // TODO.design The server must wait until all clients are ready to receive this event...
+        this.socket.off(Game.Serialization.EVENT_NAME);
         this.socket.on(
             Game.Serialization.EVENT_NAME,
             async (ser: Game.ResetSer<S>) => {

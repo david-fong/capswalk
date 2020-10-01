@@ -100,6 +100,8 @@ export namespace Screen {
     };
     export const Class = <const>{
         BASE:           "sk-screen",
+        NAV_NEXT:       "screen--next-button",
+        NAV_PREV:       "screen--back-button",
     };
     export const Dataset = <const>{
         CURRENT:        "current",
@@ -145,7 +147,6 @@ export namespace Screen {
             HOST_URL:           "screen-joiner--host-url",
             GROUP_NAME:         "screen-joiner--group-name",
             PASSPHRASE:         "screen-joiner--passphrase",
-            NEXT_BUTTON:        "screen-joiner--next-button",
         };
     }
     export namespace ColourCtrl {
