@@ -53,17 +53,17 @@ export abstract class Lang extends _Lang {
      * @param weightExaggeration -
      */
     protected constructor(
-        frontendDescId: typeof Lang.FrontendDescs[number]["id"],
+        frontendDescId: Lang.FrontendDesc["id"],
         forwardDict:    Lang.CharSeqPair.WeightedForwardMap,
         weightExaggeration: Lang.WeightExaggeration,
     ) {
         super();
-        this.frontendDesc = Lang.GET_FRONTEND_DESC_BY_ID(frontendDescId);
+        this.frontendDesc = Lang.GET_FRONTEND_DESC_BY_ID(frontendDescId)!;
         this.treeMap      = LangSeqTree.ParentNode.CREATE_TREE_MAP(forwardDict, weightExaggeration);
         this.leafNodes    = this.treeMap.getLeafNodes();
 
         if (this.leafNodes.length !== this.frontendDesc.numLeaves) {
-            throw new Error(`maintenance required: the frontend constant`
+            throw Error(`maintenance required: the frontend constant`
             + ` for the language \"${this.frontendDesc.id}\" needs to`
             + ` be updated to the correct, computed value, which is`
             + ` \`${this.leafNodes.length}\`.`);
@@ -155,7 +155,7 @@ export abstract class Lang extends _Lang {
         if (!nodeToHit) {
             // Should never reach here because there is a check in the
             // constructor for this invariant.
-            throw new Error(`Invariants guaranteeing that a LangSeq can`
+            throw Error(`Invariants guaranteeing that a LangSeq can`
             + `always be shuffled-in were not met.`
             );
         }

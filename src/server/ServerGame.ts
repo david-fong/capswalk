@@ -70,7 +70,9 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         this.playerSockets = (gameDesc.playerDescs as Player.CtorArgs[])
         .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN)
         .map((playerDesc) => {
-            if (!playerDesc.socketId) { throw new Error; }
+            if (!playerDesc.socketId) {
+                throw Error("missing socket ID for player " + playerDesc.playerId);
+            }
             return this.namespace.sockets[playerDesc.socketId!];
         });
 
@@ -138,7 +140,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * @override
      */
     public _createOperatorPlayer(desc: Player.CtorArgs): never {
-        throw new TypeError("This should never be called for a ServerGame.");
+        throw TypeError("This should never be called for a ServerGame.");
     }
 
 

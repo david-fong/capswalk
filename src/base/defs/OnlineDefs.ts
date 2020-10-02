@@ -31,7 +31,7 @@ export namespace Group {
      */
     export type Socket = {
         username: string;
-        teamId: number;
+        teamId:   number;
         updateId: number; // initial value = 0
     } & import("socket.io").Socket;
     export namespace Socket {
@@ -47,10 +47,7 @@ export namespace Group {
              *
              */
             export type Req = Readonly<{
-                /**
-                 * Client passes null to indicate no change.
-                 */
-                unameNew: string | undefined,
+                unameNew: string,
                 teamId: number,
             }>;
             /**

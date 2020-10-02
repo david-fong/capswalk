@@ -46,7 +46,7 @@ export class TopLevel {
         })();
         //
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
-        if (!allScreensElem) { throw new Error; }
+        if (!allScreensElem) { throw Error(); }
         this.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
         this._allScreens = new AllSkScreens(this, allScreensElem);
 

@@ -37,7 +37,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
     protected constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
         super();
         if (Math.trunc(desc.playerId) !== desc.playerId) {
-            throw new RangeError("Player ID's must be integer values.");
+            throw RangeError("Player ID's must be integer values.");
         }
         this.playerId = desc.playerId;
         this.isALocalOperator = desc.isALocalOperator;
@@ -91,7 +91,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
         if (this.hostTile.occupantId !== this.playerId) {
             if (this.game.gameType !== Game.Type.ONLINE) {
                 // Should never happen.
-                throw new Error("Linkage between player and occupied tile disagrees.");
+                throw Error("Linkage between player and occupied tile disagrees.");
             }
             /* Otherwise, this corner case is guaranteed to follow the events
             described in the below comment: at this `OnlineGame`, `p2` will
@@ -106,7 +106,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
             if (this.game.gameType !== Game.Type.ONLINE) {
                 // Should never happen because the Game Manager
                 // rejects requests to move onto an occupied `Tile`.
-                throw new Error("Only one player can occupy a tile at a time.");
+                throw Error("Only one player can occupy a tile at a time.");
             }
             /* Otherwise, this is actually possible in a variant of the _DAS_
             where another `Player` `p2` moves to `B`, I receive that update,

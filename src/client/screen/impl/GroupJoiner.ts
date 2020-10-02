@@ -88,7 +88,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 
         if (newState === State.IN_GROUP) {
             if (this.state !== State.CHOOSING_GROUP) {
-                throw new Error("never"); // Illegal state transition.
+                throw "never"; // Illegal state transition.
             }
             this.in.passphrase.disabled = true;
             this.nav.next.disabled = false;

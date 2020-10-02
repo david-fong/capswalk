@@ -27,6 +27,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
      */
     protected _lazyLoad(): void {
         this.baseElem.classList.add(OMHC.BASE);
+        this.baseElem.appendChild(this.nav.prev);
 
         // Language selection component:
         (this.langSel as _SetupScreen.LangPickOne) = new _SetupScreen.LangPickOne();
@@ -34,17 +35,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
 
         this._createLangWeightExaggerationInput();
 
-        {const prev = this.nav.prev;
-        prev.classList.add(OMHC.PREV_BUTTON);
-        prev.textContent = "Prev";
-        this.baseElem.appendChild(prev);
-        }
-        {const next = this.nav.next;
-        next.classList.add(OMHC.NEXT_BUTTON);
-        next.textContent = "Next";
-        this.baseElem.appendChild(next);
-        }
-
+        this.baseElem.appendChild(this.nav.next);
         this._loadLastUsedPreset();
     }
 
@@ -100,7 +91,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
             = Object.assign({}, _SetupScreen.DEFAULT_PRESET);
             // ^temporary default until _loadLastUsedPreset is implemented.
         args.langId = this.langSel.confirmedOpt.desc.id;
-        args.langWeightScaling = Number(this.langWeightExaggeration.value);
+        args.langWeightExaggeration = parseFloat(this.langWeightExaggeration.value);
         return args;
     }
 }
@@ -115,7 +106,7 @@ export namespace _SetupScreen {
             width:  21,
         },
         averageFreeHealthPerTile: 1.0 / 45.0,
-        langWeightScaling: 1.0,
+        langWeightExaggeration: 1.0,
         langId: "engl-low",
         playerDescs: [{
             isALocalOperator: true,

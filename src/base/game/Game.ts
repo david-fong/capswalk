@@ -53,7 +53,11 @@ export namespace Game {
     };
 
     /**
-     * # Game Constructor Arguments
+     * ## Game Constructor Arguments
+     *
+     * **IMPORTANT**: Upon modification, make appropriate changes to
+     * GamepartManager's function for verifying validity of client
+     * input on the server side.
      *
      * @template S
      * The coordinate system to use. The literal value must also be
@@ -68,7 +72,7 @@ export namespace Game {
         averageFreeHealthPerTile: Player.Health;
 
         langId: Lang.FrontendDesc["id"];
-        langWeightScaling: Lang.WeightExaggeration;
+        langWeightExaggeration: Lang.WeightExaggeration;
 
         playerDescs: TU.RoArr<(
             G extends Game.Type.Manager
@@ -87,11 +91,9 @@ export namespace Game {
         export const RETURN_TO_LOBBY_INDICATOR = "return-to-lobby";
 
         /**
-         * Not used here, but used in {@link GroupSession#createGameInstance}.
          */
         export type FailureReasons = {
-            undefinedUsername: TU.RoArr<Player.SocketId>; // socket ID's
-            undefinedTeamId:   TU.RoArr<Player.SocketId>;
+            missingFields: Array<keyof CtorArgs<Game.Type, Coord.System>>;
         };
 
         // export type _GameTypeDependantPart<G_group extends Game.Type, S extends Coord.System>

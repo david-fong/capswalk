@@ -12,7 +12,7 @@ export class SoundEffects {
     public constructor(sfxId: string) {
         const sfxDesc = SoundEffects.Descs.find((desc) => desc.id === sfxId)!;
         if (!sfxDesc) {
-            throw new Error(`sfxDesc with id \`${sfxId}\` does not exist`);
+            throw Error(`sfxDesc with id \`${sfxId}\` does not exist`);
         }
         const context = (this.context) = new AudioContext({
             latencyHint: "interactive",

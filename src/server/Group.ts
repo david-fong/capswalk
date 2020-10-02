@@ -6,6 +6,7 @@ import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 
 import { Group as _Group, SkServer } from "defs/OnlineDefs";
+import { GamepartManager } from '../../dist/ts/src/base/game/player/ArtificialPlayer';
 
 export { ServerGame };
 
@@ -112,9 +113,12 @@ export class Group extends _Group {
                     // Another player already has this username. Reject the request by ignoring it:
                     return;
                 }
+                if (typeof req.unameNew !== "string" || typeof req.teamId !== "number") {
+                    return;
+                }
                 const res = <_Group.Socket.UserInfoChange.Res>{
                     unameOld: socket.username,
-                    unameNew: req.unameNew ?? socket.username,
+                    unameNew: req.unameNew,
                     teamId:   req.teamId,
                 };
                 this.namespace.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
@@ -155,7 +159,10 @@ export class Group extends _Group {
             : Group.Exist.Status.IN_LOBBY,
         });
         if (ctorArgs !== Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR) {
-            this._createGameInstance(ctorArgs);
+            const failureReasons = this._createGameInstance(ctorArgs);
+            if (failureReasons) {
+                // TODO.impl handle failure reasons.
+            }
         } else {
             this.#currentGame!.onReturnToLobby();
         }
@@ -209,16 +216,8 @@ export class Group extends _Group {
     private _createGameInstance(
         ctorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System>,
     ): Readonly<Game.CtorArgs.FailureReasons> | undefined {
-        const failureReasons: Game.CtorArgs.FailureReasons = {
-            undefinedUsername: Object.values(this.sockets)
-                .filter((socket) => !socket.username)
-                .map((socket) => socket.id),
-            undefinedTeamId: Object.values(this.sockets)
-                .filter((socket) => !socket.teamId)
-                .map((socket) => socket.id),
-        };
-        if (failureReasons.undefinedUsername.length ||
-            failureReasons.undefinedTeamId.length) {
+        const failureReasons = GamepartManager.CHECK_VALID_CTOR_ARGS(ctorArgs);
+        if (failureReasons) {
             console.log(failureReasons);
             return failureReasons;
         }
@@ -231,9 +230,9 @@ export class Group extends _Group {
                 return Object.freeze(<Player.CtorArgs>{
                     isALocalOperator: false,
                     familyId: "HUMAN",
-                    teamId: socket.teamId!,
+                    teamId:   socket.teamId,
                     socketId: socket.id,
-                    username: socket.username!, // checked above.
+                    username: socket.username,
                     noCheckGameOver: false, // TODO.design add a Group.Socket field for this.
                     familyArgs: {},
                 });

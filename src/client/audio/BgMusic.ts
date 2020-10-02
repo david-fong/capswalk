@@ -17,7 +17,7 @@ export class BgMusic {
     public constructor(trackId: BgMusic.TrackDesc["id"]) {
         this.desc = BgMusic.TrackDescs.find((desc) => desc.id === trackId)!;
         if (!this.desc) {
-            throw new Error(`track with id \`${trackId}\` does not exist.`);
+            throw Error(`track with id \`${trackId}\` does not exist.`);
         }
         const tracksDesc = this.desc;
         const context = this.context = new AudioContext({
@@ -53,7 +53,7 @@ export class BgMusic {
             let bigBufferChannelIndex = 0;
             (this.layerFaders as BgMusic["layerFaders"]) = abs.map((ab, trackIndex) => {
                 if (ab.sampleRate !== tracksDesc.sampleRate) {
-                    throw new Error("never");
+                    throw "never";
                 }
                 const track = context.createChannelMerger(ab.numberOfChannels);
                 const fader = context.createGain(); // https://devdocs.io/dom/gainnode
@@ -75,7 +75,7 @@ export class BgMusic {
         });
     }
 
-    private reloadSource(): void {
+    private _reloadSource(): void {
         const source = this.context.createBufferSource();
         source.channelInterpretation = "discrete";
         source.loop = true;
@@ -86,7 +86,7 @@ export class BgMusic {
     }
 
     public play(): void {
-        this.reloadSource();
+        this._reloadSource();
         this.source.start();
     }
 

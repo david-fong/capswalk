@@ -131,8 +131,6 @@ export namespace Screen {
     export namespace Setup {
         export const Class = <const>{
             BASE:               "screen-setup",
-            NEXT_BUTTON:        "screen-setup--next-button",
-            PREV_BUTTON:        "screen-setup--prev-button",
             LANG_SEL:           "screen-setup--lang-sel",
             LANG_WEIGHT_EXAGG:  "screen-setup--lang-weight-exagg",
         };

@@ -60,7 +60,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         }) as GamepartBase<G,S>["grid"];
         this.#onGameBecomeOver = impl.onGameBecomeOver;
 
-        this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId);
+        this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId)!;
 
         // Construct players:
         this._playerStatusCtor = impl.playerStatusCtor;
@@ -86,7 +86,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
                 // The purpose of this restriction is to prevent DoS attacks on
                 // a hosting server by creating games that can never end and
                 // leaving them open forever, thus leaking the server's resources.
-                throw new Error("All teams are immortal. The game will never end.");
+                throw Error("All teams are immortal. The game will never end.");
             }
         }
         this.players.forEach((player) => player._afterAllPlayersConstruction());
@@ -207,7 +207,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             return;
         }
         if (this.status !== Game.Status.PAUSED) {
-            throw new Error("Can only resume a game that is currently paused.");
+            throw Error("Can only resume a game that is currently paused.");
         }
         this.players.forEach((player) => {
             player._notifyGameNowPlaying();
@@ -227,7 +227,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             return;
         }
         if (this.status !== Game.Status.PLAYING) {
-            throw new Error("Can only pause a game that is currently playing.");
+            throw Error("Can only pause a game that is currently playing.");
         }
         this.players.forEach((player) => {
             player._notifyGameNowPaused();
@@ -246,7 +246,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
      */
     public statusBecomeOver(): void {
         if (this.status !== Game.Status.PLAYING) {
-            throw new Error("Can only end a game that is currently playing.");
+            throw Error("Can only end a game that is currently playing.");
         }
         this.players.forEach((player) => {
             player._notifyGameNowOver();

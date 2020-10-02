@@ -30,12 +30,6 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     public constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
 
-        if (!(Player.Username.REGEXP.test(desc.username))) {
-            throw new RangeError(`Username \"${desc.username}\"`
-            + ` does not match the required regular expression,`
-            + ` \"${Player.Username.REGEXP.source}\".`
-            );
-        }
         this.familyId = desc.familyId;
         this.teamId   = desc.teamId;
         this.username = desc.username;
@@ -75,9 +69,9 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     protected makeMovementRequest(dest: Tile<S>, type: Player.MoveType): void {
         if (this.game.status !== Game.Status.PLAYING) {
             // TODO.build disable this check for production.
-            throw new Error("This is not a necessary precondition, but we're doing it anyway.");
+            throw Error("This is not a necessary precondition, but we're doing it anyway.");
         } else if (this.requestInFlight) {
-            throw new Error("Only one request should ever be in flight at a time.");
+            throw Error("Only one request should ever be in flight at a time.");
         }
         this.requestInFlight = true;
         this.game.processMoveRequest(

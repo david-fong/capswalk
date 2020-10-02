@@ -47,7 +47,6 @@ export namespace ColourCtrlScreen {
             super();
             this.baseElem.classList.add(OMHC.BASE);
             this.garageDoorElem = document.getElementById(OmHooks.Screen.Id.SCREEN_TINT)!;
-            if (!this.garageDoorElem) throw new Error;
             this.garageDoorElem.style.transitionDuration = (Colour.SMOOTH_CHANGE_DURATION/3.0) + "ms";
 
             Colour.Schemes.forEach((schemeDesc) => {

@@ -15,7 +15,7 @@ export class Team<S extends Coord.System> {
 
     public constructor(teamId: Team.Id, members: TU.RoArr<Player<S>>) {
         if (members.length === 0) {
-            throw new Error("teams must have at least one member.");
+            throw Error("Teams must have at least one member.");
         }
         this.id = teamId;
         this.members = members;
@@ -50,7 +50,7 @@ export class Team<S extends Coord.System> {
     }
     public set elimOrder(teamElimOrder: number) {
         if (this.elimOrder === Team.ElimOrder.IMMORTAL) {
-            throw new Error("Cannot change the elimination status of an immortal team.");
+            throw Error("Cannot change the elimination status of an immortal team.");
         }
         this.#elimOrder = teamElimOrder;
     }

@@ -264,7 +264,7 @@ export namespace Lang {
     FrontendDescs as TU.RoArr<FrontendDesc>;
 
     export type FrontendDesc = Readonly<{
-        id:         string;
+        id:         typeof FrontendDescs[number]["id"];
         /**
          * Pretty much a file name.
          */
@@ -280,14 +280,10 @@ export namespace Lang {
     }>;
 
     /**
-     *
-     * @param langId -
+     * @returns `undefined` if no such language descriptor is found.
      */
-    export function GET_FRONTEND_DESC_BY_ID(langId: FrontendDesc["id"]): FrontendDesc {
-        const desc = FrontendDescs.find((desc) => desc.id === langId);
-        if (!desc) throw new Error(`Frontend descriptor of language with id`
-        + ` \"${langId}\" not found.`);
-        return desc!;
+    export function GET_FRONTEND_DESC_BY_ID(langId: FrontendDesc["id"]): FrontendDesc | undefined {
+        return FrontendDescs.find((desc) => desc.id === langId);
     }
 }
 Object.freeze(Lang);

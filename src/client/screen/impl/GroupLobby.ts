@@ -63,7 +63,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
             }
             this.top.socket!.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
                 unameNew: this.in.username.value,
-                teamId: Number(this.in.teamId.value),
+                teamId: parseInt(this.in.teamId.value),
             });
         };
         const uname     = document.createElement("input");
@@ -78,6 +78,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         teamId.type     = "number";
         teamId.min      = "0";
         teamId.max      = "0";
+        teamId.step     = "1";
         uname.onchange  = reqUserInfoChange;
         this.baseElem.appendChild(teamId);
 
@@ -121,6 +122,8 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         return true;
     }
 
+    /**
+     */
     private _onUserInfoChange(res: Group.Socket.UserInfoChange.Res): void {
         if (res.unameOld === undefined) {
             // New player has joined the group:

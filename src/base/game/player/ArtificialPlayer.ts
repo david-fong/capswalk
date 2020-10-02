@@ -39,7 +39,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
     protected constructor(game: GamepartManager<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
         if (game.gameType === Game.Type.ONLINE) {
-            throw new TypeError("OnlineGames should be using regular Players instead.");
+            throw TypeError("OnlineGames should be using regular Players instead.");
         }
     }
 
