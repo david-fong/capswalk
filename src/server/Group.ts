@@ -6,7 +6,7 @@ import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 
 import { Group as _Group, SkServer } from "defs/OnlineDefs";
-import { GamepartManager } from '../../dist/ts/src/base/game/player/ArtificialPlayer';
+import { GamepartManager } from "game/gameparts/GamepartManager";
 
 export { ServerGame };
 
@@ -215,7 +215,7 @@ export class Group extends _Group {
      */
     private _createGameInstance(
         ctorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System>,
-    ): Readonly<Game.CtorArgs.FailureReasons> | undefined {
+    ): readonly string[] {
         const failureReasons = GamepartManager.CHECK_VALID_CTOR_ARGS(ctorArgs);
         if (failureReasons) {
             console.log(failureReasons);
@@ -239,7 +239,7 @@ export class Group extends _Group {
             }),
         ];
         this.#currentGame = new ServerGame(this.namespace, ctorArgs);
-        return undefined;
+        return [];
     }
 
     public get sockets(): Record<string, Group.Socket> {

@@ -1,10 +1,4 @@
 
-export namespace SkErrors {
-    // TODO.impl use these?
-    export const NEVER = <const>"Never happens. See comment in source.";
-}
-
-
 export const SCROLL_INTO_CENTER = Object.freeze(<const>{
     behavior: "smooth",
     block:    "center",

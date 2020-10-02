@@ -26,7 +26,7 @@ export namespace Euclid2 {
             Object.freeze(this);
         }
 
-        public equals(other: Coord.Bare): boolean {
+        public _equals(other: Coord.Bare): boolean {
             return (this.x === other.x) && (this.y === other.y);
         }
 
@@ -298,7 +298,7 @@ export namespace Euclid2 {
                     let coord: Coord;
                     do {
                         coord = Grid.getRandomCoord(dimensions);
-                    } while (avoidSet.find((other) => coord.equals(other)));
+                    } while (avoidSet.find((other) => coord._equals(other)));
                     teamSpawnCoords.push(coord);
                     avoidSet.push(coord);
                     numMembers--;

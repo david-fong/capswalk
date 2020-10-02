@@ -32,7 +32,8 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
      */
     protected _lazyLoad(): void {
         super._lazyLoad();
-        this.nav.prev.textContent = "Return To Setup";
+        this.nav.prev.innerHTML = "Return To&nbsp;Setup";
+        // ^Prevent jank due to pointer hover animation.
     }
 
     /**

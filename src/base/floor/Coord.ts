@@ -46,7 +46,21 @@ export namespace Coord {
          */
         // new(desc: Coord.Bare[S]): Abstract<S>;
 
-        equals(other: Bare[Coord.System]): boolean;
+        /**
+         * Must be reflexive and transitive. Must be symmetric if `other`
+         * is already (ir if not, if made into) and instance of Coord[S].
+         *
+         * For outside usage, it is recommended to use the static helper,
+         * which hides away some type-casting necessary for outside usage.
+         */
+        _equals(other: Bare[Coord.System]): boolean;
+    }
+    /**
+     * Helper function to abstract away some TypeScript casting due to
+     * the complexity of inheritance and mapped types.
+     */
+    export function equals<S extends Coord.System>(a: Coord[S], b: Coord.Bare[S]): boolean {
+        return a._equals(b as any);
     }
 
     export namespace Abstract {

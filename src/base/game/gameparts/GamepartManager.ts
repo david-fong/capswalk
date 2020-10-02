@@ -1,7 +1,7 @@
 import { Lang } from "lang/Lang";
 import { Game } from "game/Game";
 
-import type { Coord, Tile } from "floor/Tile";
+import { Coord, Tile } from "floor/Tile";
 import { Player } from "../player/Player";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { ScoreInfo } from "../ScoreInfo";
@@ -191,8 +191,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             } while ((() => {
                 return tile.isOccupied
                 // The below equality check is necessary to prevent counting bugs.
-                // TODO.learn see other TODO about the type cast seen here on the below line.
-                || retval.find((desc) => tile.coord.equals(desc.coord as any));
+                || retval.find((desc) => Coord.equals(tile.coord, desc.coord));
                 // TODO.impl add other checks to improve distribution and reduce
                 // crowding of freeHealth. Make sure it is sensitive to
                 // `this.averageFreeHealthPerTile`.
@@ -200,7 +199,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             const tileHealthToAdd = 1;
             if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
                 let otherDesc: TileModEvent<S> | undefined;
-                if (otherDesc = sameReqOtherModDescs.find((desc) => tile.coord.equals(desc.coord as any))) {
+                if (otherDesc = sameReqOtherModDescs.find((desc) => Coord.equals(tile.coord, desc.coord))) {
                     otherDesc.newFreeHealth = (otherDesc.newFreeHealth || 0) + tileHealthToAdd;
                 } else {
                     retval.push({

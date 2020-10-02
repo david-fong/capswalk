@@ -14,8 +14,6 @@
 
 ### High Priority
 
-1. Change `Coord.equals` into a static method taking two arguments.
-    - This will allow the TS compiler to understand what I want.
 1. ~Review all throw clauses and remove those declared in class constructors.~
     - The new approach is to put these checks in the UI input validators and on the receiving end of the server side.
 1. Implement client send `RETURN_TO_LOBBY_INDICATOR`.

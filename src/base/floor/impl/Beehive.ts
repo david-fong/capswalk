@@ -46,7 +46,7 @@ export namespace Beehive {
             Object.freeze(this);
         }
 
-        public equals(other: Coord.Bare): boolean {
+        public _equals(other: Coord.Bare): boolean {
             return (this.dash === other.dash) && (this.bash === other.bash);
         }
 
