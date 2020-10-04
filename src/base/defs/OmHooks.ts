@@ -120,6 +120,14 @@ export namespace Screen {
             NAV_RPT_ISSUE:      "screen-home--nav--report-issue",
         };
     }
+    export namespace ColourCtrl {
+        export const Class = <const>{
+            BASE:               "screen-colour",
+            OPTION:             "screen-colour--opt",
+            OPTION_LABEL:       "screen-colour--opt-label",
+            OPTION_PREVIEW:     "screen-colour--opt-preview",
+        };
+    }
     export namespace Play {
         export const Class = <const>{
             BASE:               "screen-play",
@@ -147,12 +155,12 @@ export namespace Screen {
             PASSPHRASE:         "screen-joiner--passphrase",
         };
     }
-    export namespace ColourCtrl {
+    export namespace GroupLobby {
         export const Class = <const>{
-            BASE:               "screen-colour",
-            OPTION:             "screen-colour--opt",
-            OPTION_LABEL:       "screen-colour--opt-label",
-            OPTION_PREVIEW:     "screen-colour--opt-preview",
+            BASE:               "screen-lobby",
+            SEC_CLIENT_INFO:    "screen-lobby--client-info-section",
+            SEC_PLAYERS:        "screen-lobby--players-section",
+            PLAYER:             "screen-lobby-player",
         };
     }
     }

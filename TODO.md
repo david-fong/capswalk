@@ -14,11 +14,11 @@
 
 ### High Priority
 
+1. Implement game creation event communications for online game.
 1. ~Review all throw clauses and remove those declared in class constructors.~
     - The new approach is to put these checks in the UI input validators and on the receiving end of the server side.
 1. Implement client send `RETURN_TO_LOBBY_INDICATOR`.
 1. Debug and handle goToScreen when user navigates forward in history.
-1. Implement game creation event communications for online game.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).

@@ -41,7 +41,7 @@ export function deepFreeze(obj: any): void {
 /**
  *
  */
-export class Player<S> { }
+export abstract class Player<S> { }
 export namespace Player {
 
     /**
@@ -86,6 +86,18 @@ export namespace Player {
         export const MAX_LENGTH = 15; // rather arbitrary choice.
     }
 
+    export enum Avatar {
+        LOREM_IPSUM = "lorem-ipsum",
+    }
+    export namespace Avatar {
+        const _values = Object.values(Avatar).filter((e) => typeof e === "string") as Avatar[];
+        /**
+         */
+        export function GET_RANDOM(): Avatar {
+            return _values[Math.random() * _values.length];
+        }
+    }
+
     /**
      * See the main documentation in game/player/Player.
      */
@@ -105,7 +117,7 @@ Object.freeze(Player.prototype);
 /**
  *
  */
-export class Lang {}
+export abstract class Lang {}
 export namespace Lang {
     /**
      * See the main documentation in game/lang/Lang

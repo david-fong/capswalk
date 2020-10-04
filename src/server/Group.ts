@@ -47,8 +47,8 @@ export class Group extends _Group {
         initialTtl: number,
     }>) {
         super();
-        this.namespace   = desc.namespace;
-        this.passphrase  = desc.passphrase;
+        this.namespace    = desc.namespace;
+        this.passphrase   = desc.passphrase;
         this.#currentGame = undefined;
 
         this.initialTtlTimeout = setTimeout(() => {
@@ -83,19 +83,30 @@ export class Group extends _Group {
         socket.username = "unnamed " + (Date.now()).toString();
         socket.teamId   = 0;
         socket.updateId = 0;
-
-        // Notify all clients in this group of the new player:
-        this.namespace.emit(Group.Socket.UserInfoChange.EVENT_NAME, <_Group.Socket.UserInfoChange.Res>{
-            unameOld: undefined,
-            unameNew: socket.username,
-            teamId:   socket.teamId,
-        });
+        {
+            type Res = _Group.Socket.UserInfoChange.Res;
+            const EVENT_NAME = Group.Socket.UserInfoChange.EVENT_NAME;
+            // Notify all other clients in this group of the new player:
+            socket.broadcast.emit(EVENT_NAME, <Res>[{
+                unameOld: undefined,
+                unameNew: socket.username,
+                teamId:   socket.teamId,
+            }]);
+            // Notify the new player of all other players:
+            socket.emit(EVENT_NAME, Object.values(this.sockets).map<Res[number]>((otherSocket) => {
+                return <Res[number]>{
+                    unameOld: undefined,
+                    unameNew: otherSocket.username,
+                    teamId: otherSocket.teamId,
+                };
+            }));
+        }
 
         /**
          * Nobody has connected yet.
          * The first socket becomes the session host.
          */
-        if (Object.keys(this.namespace.connected).length === 0) {
+        if (Object.keys(socket.nsp.connected).length === 0) {
             clearTimeout(this.initialTtlTimeout);
             (this.initialTtlTimeout as NodeJS.Timeout) = undefined!;
             this.sessionHost = socket;
@@ -116,13 +127,14 @@ export class Group extends _Group {
                 if (typeof req.unameNew !== "string" || typeof req.teamId !== "number") {
                     return;
                 }
-                const res = <_Group.Socket.UserInfoChange.Res>{
+                const res = <_Group.Socket.UserInfoChange.Res>[{
                     unameOld: socket.username,
                     unameNew: req.unameNew,
                     teamId:   req.teamId,
-                };
-                this.namespace.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
-                socket.username = req.unameNew!;
+                }];
+                socket.broadcast.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
+                socket.send();
+                socket.username = req.unameNew;
                 socket.teamId   = req.teamId;
             },
         );
@@ -135,16 +147,16 @@ export class Group extends _Group {
                 this.terminate();
                 return;
             }
-            if (Object.keys(this.namespace.sockets).length === 1) {
+            if (Object.keys(socket.nsp.sockets).length === 1) {
                 this.terminate();
                 return;
             }
-            const res = <_Group.Socket.UserInfoChange.Res>{
+            const res = <_Group.Socket.UserInfoChange.Res>[{
                 unameOld: socket.username,
                 unameNew: undefined,
                 teamId:   socket.teamId,
-            };
-            socket.broadcast.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
+            }];
+            socket.nsp.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
         });
     }
     private _socketOnHostCreateGame(

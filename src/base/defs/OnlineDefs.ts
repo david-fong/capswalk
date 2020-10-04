@@ -53,7 +53,7 @@ export namespace Group {
             /**
              *
              */
-            export type Res = Readonly<({
+            export type Res = Array<Readonly<({
                 /**
                  * Needed on client-side to identify the user experiencing changes.
                  *
@@ -69,7 +69,7 @@ export namespace Group {
                 unameNew: undefined
             }) & {
                 teamId: number,
-            }>;
+            }>>;
         }
     }
 

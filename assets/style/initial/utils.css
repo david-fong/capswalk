@@ -41,6 +41,12 @@ margins and padding, and its own padding. */
     contain:        strict;
     position:       relative;
 }
+.sk-input-group input.sk-input-group-item {
+    padding:        0px;
+}
+.sk-input-group input.sk-input-group-item:invalid {
+    border-style:   dotted;
+}
 .sk-input-group .sk-input-group-item {
     border-radius:  var(--border-radius);
     margin:         var(--spacing);

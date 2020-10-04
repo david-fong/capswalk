@@ -22,6 +22,8 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
 
     public readonly username: Player.Username;
 
+    public readonly avatar: Player.Avatar;
+
     public lastAcceptedRequestId: number;
 
     public requestInFlight: boolean;
@@ -33,6 +35,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
         this.familyId = desc.familyId;
         this.teamId   = desc.teamId;
         this.username = desc.username;
+        this.avatar   = desc.avatar ?? Player.Avatar.GET_RANDOM();
     }
 
     public reset(spawnTile: Tile<S>): void {
@@ -113,6 +116,7 @@ export namespace Player {
     export type Health = _Player.Health;
 
     export type Username = _Player.Username;
+    export type Avatar   = _Player.Avatar;
 
     export type MoveType = _Player.MoveType;
 
@@ -136,6 +140,7 @@ export namespace Player {
             teamId:   Team.Id;
             socketId: F extends typeof Player.Family.HUMAN ? (SocketId | undefined) : undefined;
             username: Username;
+            avatar:   Avatar | undefined;
             noCheckGameOver: boolean;
             familyArgs: CtorArgs.FamilySpecificPart[F];
         }>)

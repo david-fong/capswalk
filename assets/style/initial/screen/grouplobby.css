@@ -1,0 +1,24 @@
+.screen-lobby {
+    display:        grid;
+    justify-items:  center;
+    align-content:  center;
+}
+
+.screen-lobby--client-info-section {
+    --spacing:       0.2em;
+    --border-radius: 1.2em;
+    display:        grid;
+    max-width:      20em;
+}
+
+.screen-lobby--players-section {
+    display:        grid;
+}
+
+.screen-lobby-player {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+}
+.screen-lobby-player * {
+    pointer-events: none;
+}

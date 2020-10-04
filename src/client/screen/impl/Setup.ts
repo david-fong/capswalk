@@ -114,6 +114,7 @@ export namespace _SetupScreen {
             teamId:     0,
             socketId:   undefined,
             username:   "hello1",
+            avatar:     undefined,
             noCheckGameOver: false,
             familyArgs: { },
         }, {
@@ -122,6 +123,7 @@ export namespace _SetupScreen {
             teamId:     1,
             socketId:   undefined,
             username:   "hello2",
+            avatar:     undefined,
             noCheckGameOver: false,
             familyArgs: { },
         }, {
@@ -130,6 +132,7 @@ export namespace _SetupScreen {
             teamId:     1,
             socketId:   undefined,
             username:   "chaser1",
+            avatar:     undefined,
             noCheckGameOver: true,
             familyArgs: {/* Uses all defaults. */},
         }, {
@@ -138,6 +141,7 @@ export namespace _SetupScreen {
             teamId:     1,
             socketId:   undefined,
             username:   "chaser2",
+            avatar:     undefined,
             noCheckGameOver: true,
             familyArgs: {
                 fearDistance: 6,
