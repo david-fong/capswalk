@@ -23,8 +23,8 @@ export class Group extends _Group {
     #currentGame: ServerGame<Coord.System> | undefined;
     private sessionHost: io.Socket;
 
-    private readonly initialTtlTimeout: NodeJS.Timeout;
-    private readonly deleteExternalRefs: VoidFunction;
+    private readonly _initialTtlTimeout: NodeJS.Timeout;
+    private readonly _deleteExternalRefs: VoidFunction;
 
     /**
      *
@@ -51,18 +51,23 @@ export class Group extends _Group {
         this.passphrase   = desc.passphrase;
         this.#currentGame = undefined;
 
-        this.initialTtlTimeout = setTimeout(() => {
-            if (Object.keys(this.namespace.connected).length === 0) {
+        this._deleteExternalRefs = desc.deleteExternalRefs;
+        this._initialTtlTimeout = setTimeout(() => {
+            if (Object.keys(this.namespace.sockets).length === 0) {
                 this.terminate();
             }
         }, (desc.initialTtl * 1000)).unref();
-        this.deleteExternalRefs = desc.deleteExternalRefs;
 
         // Call the connection-event handler:
         this.namespace.use((socket, next) => {
             const handshake = socket.handshake;
             if (handshake.query.passphrase !== this.passphrase) {
                 next(new Error("Incorrect passphrase"));
+            }
+            const userInfo = socket.handshake.query as Player.UserInfo;
+            if (userInfo === undefined || userInfo.teamId !== 0) {
+                next(new Error(`a socket attempted to connect to group`
+                + ` \`${this.name}\` without providing userInfo.`));
             }
             return next();
         }).on("connection", this.onConnection.bind(this));
@@ -80,26 +85,21 @@ export class Group extends _Group {
             // a game:
             socket.disconnect();
         }
-        socket.username = "unnamed " + (Date.now()).toString();
-        socket.teamId   = 0;
-        socket.updateId = 0;
+        socket.userInfo = socket.handshake.query.userInfo;
         {
             type Res = _Group.Socket.UserInfoChange.Res;
             const EVENT_NAME = Group.Socket.UserInfoChange.EVENT_NAME;
             // Notify all other clients in this group of the new player:
-            socket.broadcast.emit(EVENT_NAME, <Res>[{
-                unameOld: undefined,
-                unameNew: socket.username,
-                teamId:   socket.teamId,
-            }]);
+            // NOTE: broadcast modifier not used since socket is not yet in this.sockets.
+            socket/* .broadcast */.emit(EVENT_NAME, <Res>{[socket.id]: socket.userInfo});
             // Notify the new player of all other players:
-            socket.emit(EVENT_NAME, Object.values(this.sockets).map<Res[number]>((otherSocket) => {
-                return <Res[number]>{
-                    unameOld: undefined,
-                    unameNew: otherSocket.username,
-                    teamId: otherSocket.teamId,
-                };
-            }));
+            socket.emit(EVENT_NAME, Object.entries(this.sockets).reduce<Res>((res, [otherSocketId, otherSocket]) => {
+                res[otherSocketId] = otherSocket.userInfo;
+                return res;
+                // TODO.design The group host will not receive this since
+                // it is not listening for this event until it goes to the
+                // GroupLobby screen...
+            }, {} as Res));
         }
 
         /**
@@ -107,11 +107,12 @@ export class Group extends _Group {
          * The first socket becomes the session host.
          */
         if (Object.keys(socket.nsp.connected).length === 0) {
-            clearTimeout(this.initialTtlTimeout);
-            (this.initialTtlTimeout as NodeJS.Timeout) = undefined!;
+            clearTimeout(this._initialTtlTimeout);
+            // @ts-expect-error : RO=
+            this._initialTtlTimeout = undefined!;
             this.sessionHost = socket;
             // TODO.impl set socket.isPrivileged
-            socket.broadcast.emit(Group.Exist.EVENT_NAME, {
+            this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_LOBBY,
             });
             socket.on(Game.CtorArgs.EVENT_NAME, this._socketOnHostCreateGame.bind(this));
@@ -120,22 +121,20 @@ export class Group extends _Group {
         socket.on(
             Group.Socket.UserInfoChange.EVENT_NAME,
             (req: _Group.Socket.UserInfoChange.Req) => {
-                if (Object.values(this.sockets).some((socket) => socket.username === req.unameNew)) {
-                    // Another player already has this username. Reject the request by ignoring it:
+                if (typeof req.username !== "string"
+                 || typeof req.teamId   !== "number"
+                 || typeof req.avatar   !== "string") {
+                    // User arguments did not match expected format.
+                    console.log(`bad format: username: \`${req.username}\``
+                    + `, teamId: \`${req.teamId}\`, avatar: \`${req.avatar}\`.`);
                     return;
                 }
-                if (typeof req.unameNew !== "string" || typeof req.teamId !== "number") {
-                    return;
-                }
-                const res = <_Group.Socket.UserInfoChange.Res>[{
-                    unameOld: socket.username,
-                    unameNew: req.unameNew,
-                    teamId:   req.teamId,
-                }];
-                socket.broadcast.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
-                socket.send();
-                socket.username = req.unameNew;
-                socket.teamId   = req.teamId;
+                socket.userInfo = req;
+                const res = <_Group.Socket.UserInfoChange.Res>{
+                    [socket.id]: req,
+                };
+                socket.nsp.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
+                //console.log("change ", res);
             },
         );
         socket.on("disconnect", (...args: any[]): void => {
@@ -151,11 +150,9 @@ export class Group extends _Group {
                 this.terminate();
                 return;
             }
-            const res = <_Group.Socket.UserInfoChange.Res>[{
-                unameOld: socket.username,
-                unameNew: undefined,
-                teamId:   socket.teamId,
-            }];
+            const res = <_Group.Socket.UserInfoChange.Res>{
+                [socket.id]: undefined,
+            };
             socket.nsp.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
         });
     }
@@ -201,8 +198,9 @@ export class Group extends _Group {
         });
         nsps.removeAllListeners();
         delete nsps.server.nsps[nsps.name];
-        (this.namespace as io.Namespace) = undefined!;
-        (this.deleteExternalRefs)();
+        // @ts-expect-error : RO=
+        this.namespace = undefined!;
+        (this._deleteExternalRefs)();
 
         nsps.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
             [this.name]: Group.Exist.Status.DELETE,
@@ -236,15 +234,17 @@ export class Group extends _Group {
         console.log(`group ${this.name} new game`);
 
         // Everything needed to create a game exists. Let's do it!
-        (ctorArgs.playerDescs as Player.CtorArgs.PreIdAssignment[]) = [
+        // @ts-expect-error : RO=
+        ctorArgs.playerDescs = [
             ...ctorArgs.playerDescs,
             ...Object.values(this.sockets).map((socket) => {
                 return Object.freeze(<Player.CtorArgs>{
                     isALocalOperator: false,
                     familyId: "HUMAN",
-                    teamId:   socket.teamId,
+                    teamId:   socket.userInfo.teamId,
                     socketId: socket.id,
-                    username: socket.username,
+                    username: socket.userInfo.username,
+                    avatar:   socket.userInfo.avatar,
                     noCheckGameOver: false, // TODO.design add a Group.Socket field for this.
                     familyArgs: {},
                 });

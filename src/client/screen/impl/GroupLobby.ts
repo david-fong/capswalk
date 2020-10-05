@@ -2,7 +2,7 @@ import { Player } from "defs/TypeDefs";
 import { Group } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 
-import { OmHooks, Coord, SkScreen } from "../SkScreen";
+import { OmHooks, Coord, SkScreen, StorageHooks } from "../SkScreen";
 type SID = SkScreen.Id.GROUP_LOBBY;
 const OMHC = OmHooks.Screen.Impl.GroupLobby.Class;
 
@@ -17,7 +17,8 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     private _gameCtorArgs?: Game.CtorArgs<Game.Type.SERVER,Coord.System>;
 
     private readonly _players: Record<string, GroupLobbyScreen.UserInfo>;
-    private readonly playersElem: HTMLElement;
+    private readonly teamsElem: HTMLElement;
+    private readonly teamElems: Record<number, HTMLElement>;
 
     private readonly in: Readonly<{
         username: HTMLInputElement;
@@ -43,12 +44,17 @@ export class GroupLobbyScreen extends SkScreen<SID> {
      * @override
      */
     protected _lazyLoad(): void {
-        (this._players as GroupLobbyScreen["_players"]) = {};
+        // @ts-expect-error : RO=
+        this._players = {};
         this._createInputs();
 
-        (this.playersElem as HTMLElement) = document.createElement("div");
-        this.playersElem.classList.add(OMHC.SEC_PLAYERS);
-        this.baseElem.appendChild(this.playersElem);
+        /* @ts-expect-error : RO= */
+        {this.teamsElem = document.createElement("div");
+        this.teamsElem.classList.add(OMHC.SEC_TEAMS);
+        this.baseElem.appendChild(this.teamsElem);}
+
+        // @ts-expect-error : RO=
+        this.teamElems = {};
 
         {const start = this.nav.next;
         start.textContent = "Start";
@@ -75,29 +81,38 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                 return;
             }
             this.top.socket!.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
-                unameNew: this.in.username.value,
+                username: this.in.username.value,
                 teamId: parseInt(this.in.teamId.value),
+                avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
             });
         };
-        const uname     = document.createElement("input");
+        const uname = Object.assign(document.createElement("input"), <Partial<HTMLInputElement>>{
+            type      : "text",
+            minLength : 1,
+            maxLength : Player.Username.MAX_LENGTH,
+            pattern   : Player.Username.REGEXP.source,
+            value     : localStorage.getItem(StorageHooks.LocalKeys.USERNAME) ?? "",
+            onchange  : reqUserInfoChange,
+        });
         uname.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-        uname.type      = "text";
-        uname.minLength = 1;
-        uname.maxLength = Player.Username.MAX_LENGTH;
-        uname.pattern   = Player.Username.REGEXP.source;
-        uname.onchange  = reqUserInfoChange;
         base.appendChild(uname);
 
-        const teamId    = document.createElement("input");
+        const teamId    = Object.assign(document.createElement("input"), <Partial<HTMLInputElement>>{
+            type     : "number",
+            min      : "0",
+            max      : "0",
+            step     : "1",
+            value    : "0",
+            onchange : reqUserInfoChange,
+        });
         teamId.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-        teamId.type     = "number";
-        teamId.min      = "0";
-        teamId.max      = "0";
-        teamId.step     = "1";
-        uname.onchange  = reqUserInfoChange;
         base.appendChild(teamId);
 
-        (this.in as GroupLobbyScreen["in"]) = Object.freeze({
+        const avatar    = document.createElement("select");
+        // TODO.impl avatar selection element
+
+        // @ts-expect-error : RO=
+        this.in = Object.freeze({
             username: uname,
             teamId,
         });
@@ -124,7 +139,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                 },
             );
 
-            this.playersElem.textContent = "";
+            this.teamsElem.textContent = "";
             // ^Make sure this element is clear of any players from previous, different groups.
             this.nav.prev.textContent = "Return To " + (this._gameCtorArgs) ? "Setup" : "Joiner";
         }
@@ -144,26 +159,40 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     /**
      */
     private _onUserInfoChange(res: Group.Socket.UserInfoChange.Res): void {
-        res.forEach((desc) => {
-            if (desc.unameOld === undefined) {
-                // New player has joined the group:
-                if (this._players[desc.unameNew!]) throw "never";
-                const userInfo
-                    = this._players[desc.unameNew!]
-                    = new GroupLobbyScreen.UserInfo(desc.unameNew!, desc.teamId);
-                this.playersElem.appendChild(userInfo.base);
-            } else if (desc.unameNew == undefined) {
-                // Player has left the group:
-                const el = this._players[desc.unameOld].base;
-                el.remove();
-                delete this._players[desc.unameOld];
-            } else {
-                // Player change their user information:
-                const pui = this._players[desc.unameOld];
-                pui.username = desc.unameNew;
-                pui.teamId   = desc.teamId;
+        Object.entries(res).forEach(([socketId, desc]) => {
+            const userInfo = this._players[socketId];
+
+            // If player is in a team on their own and they are leaving it:
+            if (userInfo && this.teamElems[userInfo.teamId].childElementCount === 1
+                && (desc === undefined || desc.teamId !== userInfo.teamId)) {
+                this.teamElems[userInfo.teamId].remove();
+                delete this.teamElems[userInfo.teamId];
             }
-            // TODO.impl If not deleting player, make sure items are sorted by teamId.
+
+            // If player is joining a team that has no HTML element yet:
+            if (desc && this.teamElems[desc.teamId] === undefined) {
+                const teamElem = this.teamElems[desc.teamId] = document.createElement("div");
+                teamElem.classList.add(OMHC.TEAM);
+                teamElem.onclick = (ev) => {
+                    this.in.teamId.value = desc.teamId.toString();
+                }
+                this.teamsElem.appendChild(teamElem);
+            }
+
+            if (desc === undefined) {
+                // Player has left the group:
+                userInfo.base.remove();
+                delete this._players[socketId];
+            } else if (userInfo === undefined) {
+                // New player has joined the group:
+                const userInfo
+                    = this._players[socketId]
+                    = new GroupLobbyScreen.UserInfo(desc);
+                this.teamElems[desc.teamId].appendChild(userInfo.base);
+            } else {
+                // Player changed their user information:
+                userInfo.update(desc);
+            }
         });
         this.in.teamId.max = Object.keys(this._players).length.toString();
     }
@@ -184,7 +213,7 @@ export namespace GroupLobbyScreen {
 
     /**
      */
-    export class UserInfo {
+    export class UserInfo implements Player.UserInfo {
         #username: Player.Username;
         #teamId:   number;
         #avatar: Player.Avatar;
@@ -196,8 +225,7 @@ export namespace GroupLobbyScreen {
             avatar: HTMLElement;
         }>;
 
-        // TODO.design upon clicking, attempt to join that player's team.
-        public constructor(username: Player.Username, teamId: number) {
+        public constructor(desc: Player.UserInfo) {
             this.base = document.createElement("div");
             this.base.classList.add(OMHC.PLAYER);
             this.el = Object.freeze(<UserInfo["el"]>{
@@ -208,9 +236,15 @@ export namespace GroupLobbyScreen {
             this.base.appendChild(this.el.avatar);
             this.base.appendChild(this.el.username);
             this.base.appendChild(this.el.teamId);
-            this.username = username;
-            this.teamId = teamId;
+            this.username = desc.username;
+            this.teamId = desc.teamId;
         }
+
+        public update(desc: Player.UserInfo): void {
+            this.username = desc.username;
+            this.teamId   = desc.teamId;
+            this.avatar   = desc.avatar;
+        };
 
         public get username(): Player.Username {
             return this.#username;

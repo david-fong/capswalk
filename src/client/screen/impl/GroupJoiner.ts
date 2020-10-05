@@ -2,7 +2,7 @@ import type { TopLevel } from "../../TopLevel";
 import { Group } from "defs/OnlineDefs";
 import { SkServer } from "defs/OnlineDefs";
 
-import { OmHooks, SkScreen } from "../SkScreen";
+import { OmHooks, SkScreen, StorageHooks } from "../SkScreen";
 type SID = SkScreen.Id.GROUP_JOINER;
 
 /**
@@ -122,15 +122,16 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         const top = this.top;
         const input = this.in.hostUrl;
         const submitInput = async (): Promise<void> => {
-            // Minor cleaning: default the protocol and only use the origin:
-            if (!input.value.startsWith(SkServer.PROTOCOL)) {
-                input.value = new URL(SkServer.PROTOCOL + input.value).origin;
-            }
             // Short-circuit on invalid input:
             if (!input.value || !input.validity.valid) return;
 
+            // Minor cleaning: default the protocol and only use the origin:
+            if (!input.value.startsWith(SkServer.PROTOCOL)) {
+                input.value = new window.URL(SkServer.PROTOCOL + input.value).origin;
+            }
+
             // Short-circuit when no change has occurred:
-            const targetSocketUri = new URL(input.value + SkServer.Nsps.GROUP_JOINER);
+            const targetSocketUri = new window.URL(input.value + SkServer.Nsps.GROUP_JOINER);
             if (this.socket
             && this.socket.nsp === SkServer.Nsps.GROUP_JOINER
             && this.socket.io.opts.hostname === targetSocketUri.hostname
@@ -189,7 +190,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         }
         const dataList = this.groupNameDataList;
         const dataListArr = Array.from(dataList.children) as HTMLOptionElement[];
-        for (const [groupName, status,] of Object.entries(response)) {
+        Object.entries(response).forEach(([groupName, status,]) => {
             const optElem
                 = dataListArr.find((opt: HTMLOptionElement) => opt.value === groupName)
                 || (() => {
@@ -197,6 +198,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                     // option for it (Insert into list in alphabetical order):
                     const newOpt = document.createElement("option");
                     newOpt.value = groupName;
+                    console.log(newOpt.value);
                     for (const otherOpt of dataListArr) {
                         if (newOpt.value.localeCompare(otherOpt.value) < 0) {
                             dataList.insertBefore(newOpt, otherOpt);
@@ -210,16 +212,16 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 })();
             switch (status) {
             case Group.Exist.Status.IN_LOBBY:
-                optElem.remove();
+                optElem.textContent = "In Lobby";
                 break;
             case Group.Exist.Status.IN_GAME:
                 optElem.textContent = "In Game";
                 break;
             case Group.Exist.Status.DELETE:
-                optElem.textContent = "In Lobby";
+                optElem.remove();
                 break;
             }
-        }
+        });
         if (response === Group.Exist.RequestCreate.Response.OKAY) {
             console.info(`server accepted request to create new group \"${this.in.groupName.value}\".`);
             console.log("connecting to new group...");
@@ -295,14 +297,18 @@ export class GroupJoinerScreen extends SkScreen<SID> {
      */
     private async _attemptToJoinExistingGroup(): Promise<void> {
         const url = (() => {
-            const url = new URL(this.in.hostUrl.value);
+            const url = new window.URL(this.in.hostUrl.value);
             url.pathname = SkServer.Nsps.GROUP_LOBBY_PREFIX + this.in.groupName.value;
             return url.toString();
         })();
         this.socket?.close();
         const top = this.top;
+        const userInfo = StorageHooks.getLastUserInfo();
         this.socket = (await top.socketIo)(url, {
-            query: { passphrase: this.in.passphrase.value, },
+            query: {
+                passphrase: this.in.passphrase.value,
+                userInfo,
+            },
         });
         this.socket.on("connect", () => {
             this._setFormState(State.IN_GROUP);
@@ -331,7 +337,8 @@ export class GroupJoinerScreen extends SkScreen<SID> {
      * A helper for `_lazyLoad`. Does not hook up event processors.
      */
     private _initializeFormContents(): HTMLElement {
-        (this.in as any) = {};
+        // @ts-expect-error : RO=
+        this.in = {};
         const OMHC = OmHooks.Screen.Impl.GroupJoiner.Class;
         const contentWrapper = document.createElement("div"/*"form"*/);
         // contentWrapper.method = "POST"; // Not actually used, since the default onsubmit behaviour is prevented.
@@ -342,9 +349,9 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         this.nav.prev.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         contentWrapper.appendChild(this.nav.prev);
 
-        function createGenericTextInput(labelText: string): HTMLInputElement {
+        function createGenericTextInput(labelText: string, classStr: string): HTMLInputElement {
             const input = document.createElement("input");
-            input.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+            input.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM, classStr);
             input.type = "text";
             input.autocomplete = "off";
             input.spellcheck = false;
@@ -355,12 +362,14 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             contentWrapper.appendChild(label);
             return input;
         }{
-            const hostUrl
-                = (this.in.hostUrl as HTMLElement)
-                = createGenericTextInput("Host URL");
-            hostUrl.type = "url";
-            hostUrl.classList.add(OMHC.HOST_URL);
-            hostUrl.autocomplete = "on";
+            // @ts-expect-error : RO=
+            const hostUrl = this.in.hostUrl
+            = Object.assign(createGenericTextInput("Host URL", OMHC.HOST_URL), <Partial<HTMLInputElement>>{
+                type: "url",
+                maxLength: 128,
+                autocomplete: "on",
+                required: true,
+            });
             const suggestedHostDesc = GroupJoinerScreen.SUGGEST_HOST(this.top.webpageHostType);
             if (suggestedHostDesc) {
                 const suggestOpt = document.createElement("option");
@@ -370,25 +379,28 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                     .insertAdjacentElement("afterbegin", suggestOpt);
             }
             hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
-            hostUrl.maxLength = 128;
         }{
-            const nspsName
-                = (this.in.groupName as HTMLElement)
-                = createGenericTextInput("Group Name");
-            nspsName.classList.add(OMHC.GROUP_NAME);
-            nspsName.pattern   = Group.Name.REGEXP.source;
-            nspsName.maxLength = Group.Name.MaxLength;
-            const nspsList
-                = (this.groupNameDataList as HTMLElement)
+            // @ts-expect-error : RO=
+            const nspsName = this.in.groupName
+            = Object.assign(createGenericTextInput("Group Name", OMHC.GROUP_NAME),
+            <Partial<HTMLInputElement>>{
+                pattern: Group.Name.REGEXP.source,
+                minLength: 1,
+                maxLength: Group.Name.MaxLength,
+                autocomplete: "on",
+                required: true,
+            });
+            // @ts-expect-error : RO=
+            const nspsList = this.groupNameDataList
                 = document.createElement("datalist");
             nspsList.id = OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS;
             this.baseElem.appendChild(nspsList);
             nspsName.setAttribute("list", nspsList.id);
         }{
             const pass
-                = (this.in.passphrase as HTMLElement)
-                = createGenericTextInput("Group Passphrase");
-            pass.classList.add(OMHC.PASSPHRASE);
+                // @ts-expect-error : RO=
+                = this.in.passphrase
+                = createGenericTextInput("Group Passphrase", OMHC.PASSPHRASE);
             pass.pattern   = Group.Passphrase.REGEXP.source;
             pass.maxLength = Group.Passphrase.MaxLength;
         }{

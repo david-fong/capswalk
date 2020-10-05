@@ -1,8 +1,9 @@
+import { Player } from 'defs/TypeDefs';
 
 /**
  *
  */
-export class SkServer { }
+export abstract class SkServer { }
 export namespace SkServer {
     export const PROTOCOL = "http://";
     export const DEFAULT_PORT = 8080;
@@ -22,18 +23,16 @@ Object.freeze(SkServer.prototype);
 /**
  *
  */
-export class Group { }
+export abstract class Group { }
 export namespace Group {
 
     /**
      * An extension of {@link io.Socket}. It is very convenient to tack
      * these fields directly onto the socket objects.
      */
-    export type Socket = {
-        username: string;
-        teamId:   number;
-        updateId: number; // initial value = 0
-    } & import("socket.io").Socket;
+    export type Socket = import("socket.io").Socket & {
+        userInfo: Player.UserInfo;
+    };
     export namespace Socket {
 
         export namespace UserInfoChange {
@@ -44,32 +43,11 @@ export namespace Group {
             export const EVENT_NAME = "group-lobby-user-info-change";
 
             /**
-             *
              */
-            export type Req = Readonly<{
-                unameNew: string,
-                teamId: number,
-            }>;
+            export type Req = Player.UserInfo;
             /**
-             *
              */
-            export type Res = Array<Readonly<({
-                /**
-                 * Needed on client-side to identify the user experiencing changes.
-                 *
-                 * Server should pass `undefined` to indicate new user.
-                 */
-                unameOld: string | undefined,
-                /**
-                 * Server passes `undefined` to indicate user left group.
-                 */
-                unameNew: string,
-            } | {
-                unameOld: string,
-                unameNew: undefined
-            }) & {
-                teamId: number,
-            }>>;
+            export type Res = Record<Socket["id"], Player.UserInfo | undefined>;
         }
     }
 

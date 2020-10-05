@@ -14,7 +14,7 @@ import { Team }                 from "./Team";              export { Team };
 /**
  *
  */
-export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
+export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements _Player.UserInfo {
 
     public readonly familyId: Player.Family;
 
@@ -117,6 +117,7 @@ export namespace Player {
 
     export type Username = _Player.Username;
     export type Avatar   = _Player.Avatar;
+    export type UserInfo = _Player.UserInfo;
 
     export type MoveType = _Player.MoveType;
 

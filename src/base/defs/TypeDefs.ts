@@ -82,7 +82,7 @@ export namespace Player {
         //  *      either letters, numbers, or the dash character.
         //  */
         //export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
-        export const REGEXP = /[ a-zA-Z0-9:-]/;
+        export const REGEXP = /[ a-zA-Z0-9:-]+/;
         export const MAX_LENGTH = 15; // rather arbitrary choice.
     }
 
@@ -96,6 +96,12 @@ export namespace Player {
         export function GET_RANDOM(): Avatar {
             return _values[Math.random() * _values.length];
         }
+    }
+
+    export interface UserInfo {
+        readonly username: Username;
+        readonly teamId:   number;
+        readonly avatar:   Avatar;
     }
 
     /**

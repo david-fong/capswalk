@@ -159,7 +159,8 @@ export namespace Screen {
         export const Class = <const>{
             BASE:               "screen-lobby",
             SEC_CLIENT_INFO:    "screen-lobby--client-info-section",
-            SEC_PLAYERS:        "screen-lobby--players-section",
+            SEC_TEAMS:          "screen-lobby--teams-section",
+            TEAM:               "screen-lobby-team",
             PLAYER:             "screen-lobby-player",
         };
     }
