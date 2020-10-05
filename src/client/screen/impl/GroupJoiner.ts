@@ -19,7 +19,10 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     }>;
     private readonly groupNameDataList: HTMLDataListElement;
 
-    #clientIsGroupHost: boolean;
+    #clientIsGroupHost: boolean = false;
+    public get clientIsGroupHost(): boolean {
+        return this.#clientIsGroupHost;
+    }
 
     /**
      * @override
@@ -42,17 +45,8 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         }
         const contentWrapperSubmit = () => {
             // ev.preventDefault(); // Don't try sending anything to the server.
-
             // No validation needed. The next button is only enabled if inputs are valid.
-            if (this.#clientIsGroupHost) {
-                console.log("you are the group host! going to the setup-online screen...");
-                this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
-            } else {
-                console.log("you are not the group host! going to the group-lobby screen...");
-                this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {
-                    manner: "non-group-host : join",
-                });
-            }
+            this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {});
         };
         this._setFormState(State.CHOOSING_HOST);
         this.baseElem.appendChild(contentWrapper);
@@ -61,7 +55,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> {
+    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
         window.setTimeout(() => {
             if (this.socket && this.socket.nsp.startsWith(SkServer.Nsps.GROUP_LOBBY_PREFIX)) {
                 // Default to switching groups under the same host:
@@ -188,28 +182,35 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             + ` create a new group \"${this.in.groupName.value}\".`);
             return;
         }
+        if (response === Group.Exist.RequestCreate.Response.OKAY) {
+            this.top.toast(`server accepted request to create new group \"${this.in.groupName.value}\".`);
+            this.top.toast("connecting to new group...");
+            this._attemptToJoinExistingGroup();
+            return;
+        }
+        const makeOption = (groupName: Group.Name): HTMLOptionElement => {
+            // If we didn't know about this group yet, create a new
+            // option for it (Insert into list in alphabetical order):
+            const newOpt = document.createElement("option");
+            newOpt.value = groupName;
+            //console.log(newOpt.value);
+            for (const otherOpt of dataListArr) {
+                if (newOpt.value.localeCompare(otherOpt.value) < 0) {
+                    dataList.insertBefore(newOpt, otherOpt);
+                    break;
+                }
+            }
+            if (!newOpt.parentElement) {
+                dataList.appendChild(newOpt);
+            }
+            return newOpt;
+        };
         const dataList = this.groupNameDataList;
         const dataListArr = Array.from(dataList.children) as HTMLOptionElement[];
         Object.entries(response).forEach(([groupName, status,]) => {
             const optElem
                 = dataListArr.find((opt: HTMLOptionElement) => opt.value === groupName)
-                || (() => {
-                    // If we didn't know about this group yet, create a new
-                    // option for it (Insert into list in alphabetical order):
-                    const newOpt = document.createElement("option");
-                    newOpt.value = groupName;
-                    console.log(newOpt.value);
-                    for (const otherOpt of dataListArr) {
-                        if (newOpt.value.localeCompare(otherOpt.value) < 0) {
-                            dataList.insertBefore(newOpt, otherOpt);
-                            break;
-                        }
-                    }
-                    if (!newOpt.parentElement) {
-                        dataList.appendChild(newOpt);
-                    }
-                    return newOpt;
-                })();
+                || makeOption(groupName);
             switch (status) {
             case Group.Exist.Status.IN_LOBBY:
                 optElem.textContent = "In Lobby";
@@ -222,11 +223,6 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 break;
             }
         });
-        if (response === Group.Exist.RequestCreate.Response.OKAY) {
-            console.info(`server accepted request to create new group \"${this.in.groupName.value}\".`);
-            console.log("connecting to new group...");
-            this._attemptToJoinExistingGroup();
-        }
     }
 
     private _initializeGroupNameHandlers(huiSubmit: () => Promise<void>): void {
@@ -321,7 +317,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             if (reason === "io server disconnect") {
                 this.socket = undefined;
                 top.toast("The server disconnected you from your group.");
-                this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {}, "backward");
+                this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {}, SkScreen.NavDir.BACKWARD);
             }
         });
     }

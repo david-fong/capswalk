@@ -53,6 +53,8 @@ export abstract class _PlayScreen<
     #currentGame: undefined | Game;
 
     protected abstract readonly wantsAutoPause: boolean;
+
+    protected abstract readonly askConfirmBeforeLeave: boolean;
     /**
      * Automatically added and removed from listeners when entering
      * and leaving this screen.
@@ -137,7 +139,7 @@ export abstract class _PlayScreen<
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> {
+    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
         document.addEventListener("visibilitychange", this.#onVisibilityChange);
         this.pauseButton.disabled = true;
         this._statusBecomePaused(); // <-- Leverage some state initialization.
@@ -169,8 +171,8 @@ export abstract class _PlayScreen<
     /**
      * @override
      */
-    protected _abstractOnBeforeLeave(): boolean {
-        if (!window.confirm("Are you sure you would like to leave?")) {
+    protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
+        if (this.askConfirmBeforeLeave && !window.confirm("Are you sure you would like to leave?")) {
             return false;
         }
         document.removeEventListener("visibilitychange", this.#onVisibilityChange);

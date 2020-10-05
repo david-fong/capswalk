@@ -69,7 +69,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> {
+    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
         window.setTimeout(() => {
             this.nav.next.focus();
         }, 100); // <-- An arbitrary short period of time. See super doc.

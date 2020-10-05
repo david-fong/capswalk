@@ -2,13 +2,18 @@ import type { OnlineGame } from "../../game/OnlineGame";
 
 import { Coord, SkScreen } from "../SkScreen";
 import { Game, _PlayScreen } from "./Play";
+type SID = SkScreen.Id.PLAY_ONLINE;
 type G = Game.Type.ONLINE;
 
 
 /**
  *
  */
-export class PlayOnlineScreen extends _PlayScreen<SkScreen.Id.PLAY_ONLINE, G> {
+export class PlayOnlineScreen extends _PlayScreen<SID, G> {
+    /**
+     * @override
+     */
+    protected readonly askConfirmBeforeLeave = false;
 
     /**
      * @override
@@ -20,7 +25,7 @@ export class PlayOnlineScreen extends _PlayScreen<SkScreen.Id.PLAY_ONLINE, G> {
      * @override
      */
     public getNavPrevArgs(): SkScreen.NavPrevRet<SkScreen.Id.GROUP_LOBBY> {
-        return [SkScreen.Id.GROUP_LOBBY, { manner: "anyone : return from game",}, "backward",];
+        return [SkScreen.Id.GROUP_LOBBY, {}, SkScreen.NavDir.BACKWARD,];
     };
 
     /**
@@ -40,6 +45,17 @@ export class PlayOnlineScreen extends _PlayScreen<SkScreen.Id.PLAY_ONLINE, G> {
     protected _lazyLoad(): void {
         super._lazyLoad();
         this.nav.prev.textContent = "Return To Lobby";
+    }
+
+    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
+        if (this.top.clientIsGroupHost) {
+            (this.nav.prev as HTMLButtonElement).onclick = (ev) => {
+                // TODO.impl ask first.
+                this.top.socket!.emit(Game.CtorArgs.EVENT_NAME, Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR);
+            };
+        } else {
+            // TODO.impl leave the game but stay in the group.
+        }
     }
 
     /**

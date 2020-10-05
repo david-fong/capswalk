@@ -21,7 +21,7 @@ export class Group extends _Group {
     public readonly name: Group.Name;
     public readonly passphrase: Group.Passphrase;
     #currentGame: ServerGame<Coord.System> | undefined;
-    private sessionHost: io.Socket;
+    private _sessionHost: Group.Socket;
 
     private readonly _initialTtlTimeout: NodeJS.Timeout;
     private readonly _deleteExternalRefs: VoidFunction;
@@ -96,9 +96,6 @@ export class Group extends _Group {
             socket.emit(EVENT_NAME, Object.entries(this.sockets).reduce<Res>((res, [otherSocketId, otherSocket]) => {
                 res[otherSocketId] = otherSocket.userInfo;
                 return res;
-                // TODO.design The group host will not receive this since
-                // it is not listening for this event until it goes to the
-                // GroupLobby screen...
             }, {} as Res));
         }
 
@@ -110,8 +107,7 @@ export class Group extends _Group {
             clearTimeout(this._initialTtlTimeout);
             // @ts-expect-error : RO=
             this._initialTtlTimeout = undefined!;
-            this.sessionHost = socket;
-            // TODO.impl set socket.isPrivileged
+            this._sessionHost = socket;
             this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_LOBBY,
             });
@@ -138,7 +134,7 @@ export class Group extends _Group {
             },
         );
         socket.on("disconnect", (...args: any[]): void => {
-            if (socket === this.sessionHost) {
+            if (socket === this._sessionHost) {
                 // If the host disconnects, end the session.
                 // TODO.impl this seems like a bad decision. What about just broadcasting
                 // that the host player has died, and choose another player to become

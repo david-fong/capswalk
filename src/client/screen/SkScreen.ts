@@ -64,12 +64,12 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     /**
      * Used to define the behaviour of the navigation buttons.
      *
-     * **IMPORTANT**: Must pass "backward" as the `historyDirection` argument.
+     * **IMPORTANT**: Must pass SkScreen.NavDir.BACKWARD as the `historyDirection` argument.
      */
     public getNavPrevArgs(): Parameters<AllSkScreens["goToScreen"]> {
         const defaultDest = SkScreen.NavPrevDest[this.screenId] as SkScreen.Id | undefined;
         if (defaultDest) {
-            return [defaultDest, {}, "backward"];
+            return [defaultDest, {}, SkScreen.NavDir.BACKWARD];
         } else {
             throw "never";
         }
@@ -114,9 +114,9 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     /**
      * **Do not override.**
      */
-    public async enter(
+    public async _enter(
+        navDir: SkScreen.NavDir,
         args: SkScreen.EntranceArgs[SID],
-        historyDirection: "forward" | "backward",
     ): Promise<void> {
         if (!this.#hasLazyLoaded) {
             const baseElem
@@ -141,14 +141,14 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             const location = new window.URL(window.location.href);
             location.hash = this.screenId;
             const args = <const>[{ screenId: this.screenId, }, "", location.href];
-            switch (historyDirection) {
-                case "forward":  history.pushState(   ...args);    break;
-                case "backward": history.replaceState(...args); break;
+            switch (navDir) {
+                case SkScreen.NavDir.BACKWARD: history.replaceState(...args); break;
+                case SkScreen.NavDir.FORWARD:  history.pushState(   ...args); break;
                 default: throw "never";
             }
         }
 
-        await this._abstractOnBeforeEnter(args);
+        await this._abstractOnBeforeEnter(navDir, args);
         // ^Wait until the screen has finished setting itself up
         // before entering it.
         window.requestAnimationFrame((time) => {
@@ -162,8 +162,8 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      *
      * @returns false if the leave was cancelled.
      */
-    public leave(): boolean {
-        if (this._abstractOnBeforeLeave()) {
+    public _leave(navDir: SkScreen.NavDir): boolean {
+        if (this._abstractOnBeforeLeave(navDir)) {
             delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT]; // non-existant.
             this.baseElem.setAttribute("aria-hidden", "true");
             return true;
@@ -186,7 +186,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * Important: Calls to `HTMLElement.focus` may require a small delay
      * via setTimeout. The reason for this is currently unknown.
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> { }
+    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> { }
 
     /**
      * Return false if the leave should be cancelled. This functionality
@@ -196,7 +196,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * This is a good place, for example, to stop any non-essential
      * `setInterval` schedules.
      */
-    protected _abstractOnBeforeLeave(): boolean {
+    protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
         return true;
     }
 
@@ -229,8 +229,8 @@ export namespace SkScreen {
         [ Id.PLAY_OFFLINE  ]: PlayOfflineScreen;
         //==================
         [ Id.GROUP_JOINER  ]: GroupJoinerScreen;
-        [ Id.SETUP_ONLINE  ]: SetupOnlineScreen;
         [ Id.GROUP_LOBBY   ]: GroupLobbyScreen;
+        [ Id.SETUP_ONLINE  ]: SetupOnlineScreen;
         [ Id.PLAY_ONLINE   ]: PlayOnlineScreen;
     }
     export interface EntranceArgs {
@@ -243,10 +243,15 @@ export namespace SkScreen {
         [ Id.PLAY_OFFLINE  ]: Game.CtorArgs<Game.Type.OFFLINE,Coord.System>;
         //==================
         [ Id.GROUP_JOINER  ]: {};
+        [ Id.GROUP_LOBBY   ]: {};
         [ Id.SETUP_ONLINE  ]: {};
-        [ Id.GROUP_LOBBY   ]: GroupLobbyScreen.EntranceArgs;
         [ Id.PLAY_ONLINE   ]: Game.CtorArgs<Game.Type.ONLINE,Coord.System>;
     }
+    /**
+     * Note: The fact that the lobby precedes the online setup screen
+     * for the group host is important, since the socket listener for
+     * UserInfoChange events is only registered in the lobby screen.
+     */
     export const NavPrevDest = Object.freeze(<const>{
         [ Id.HOME          ]: Id.HOME,
         [ Id.HOW_TO_PLAY   ]: Id.HOME,
@@ -257,16 +262,20 @@ export namespace SkScreen {
         [ Id.PLAY_OFFLINE  ]: Id.SETUP_OFFLINE,
         //==================
         [ Id.GROUP_JOINER  ]: Id.HOME,
-        [ Id.SETUP_ONLINE  ]: Id.GROUP_JOINER,
-        [ Id.GROUP_LOBBY   ]: undefined as never,
-        [ Id.PLAY_ONLINE   ]: undefined as never,
+        [ Id.GROUP_LOBBY   ]: Id.GROUP_JOINER,
+        [ Id.SETUP_ONLINE  ]: Id.GROUP_LOBBY,
+        [ Id.PLAY_ONLINE   ]: Id.SETUP_ONLINE,
     });
-    const a: {} = {hi: ""}
+
+    export const enum NavDir {
+        FORWARD  = "forward",
+        BACKWARD = "backward",
+    };
 
     /**
      * Helper type for overriding SkScreen.getNavPrevArgs.
      */
-    export type NavPrevRet<SID extends SkScreen.Id> = [SID, SkScreen.EntranceArgs[SID], "backward"];
+    export type NavPrevRet<SID extends SkScreen.Id> = [SID, SkScreen.EntranceArgs[SID], NavDir.BACKWARD];
 }
 Object.freeze(SkScreen);
 Object.freeze(SkScreen.prototype);

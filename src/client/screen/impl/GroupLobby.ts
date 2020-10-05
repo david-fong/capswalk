@@ -11,11 +11,6 @@ const OMHC = OmHooks.Screen.Impl.GroupLobby.Class;
  */
 export class GroupLobbyScreen extends SkScreen<SID> {
 
-    /**
-     * If not `undefined`, then the client is the group host.
-     */
-    private _gameCtorArgs?: Game.CtorArgs<Game.Type.SERVER,Coord.System>;
-
     private readonly _players: Record<string, GroupLobbyScreen.UserInfo>;
     private readonly teamsElem: HTMLElement;
     private readonly teamElems: Record<number, HTMLElement>;
@@ -23,6 +18,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     private readonly in: Readonly<{
         username: HTMLInputElement;
         teamId:   HTMLInputElement;
+        avatar:   HTMLSelectElement;
     }>;
 
     /**
@@ -31,14 +27,6 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     public get initialScreen(): SkScreen.Id {
         return SkScreen.Id.GROUP_JOINER;
     }
-    /**
-     * @override
-     */
-    public getNavPrevArgs(): SkScreen.NavPrevRet<SkScreen.Id.GROUP_JOINER | SkScreen.Id.SETUP_ONLINE> {
-        return (this._gameCtorArgs)
-            ? [SkScreen.Id.SETUP_ONLINE, {}, "backward",]
-            : [SkScreen.Id.GROUP_JOINER, {}, "backward",];
-    };
 
     /**
      * @override
@@ -56,15 +44,12 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         // @ts-expect-error : RO=
         this.teamElems = {};
 
-        {const start = this.nav.next;
-        start.textContent = "Start";
-        start.onclick = () => {
-            if (this._gameCtorArgs) {
-                console.log(this._gameCtorArgs);
-                this.top.socket!.emit(Game.CtorArgs.EVENT_NAME, this._gameCtorArgs);
-            }
+        {const goSetup = this.nav.next;
+        goSetup.textContent = "Setup Game";
+        goSetup.onclick = () => {
+            this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
         }
-        this.baseElem.appendChild(start);}
+        this.baseElem.appendChild(goSetup);}
     }
 
     /**
@@ -80,6 +65,8 @@ export class GroupLobbyScreen extends SkScreen<SID> {
             if (!this.in.username.validity.valid || !this.in.teamId.validity.valid) {
                 return;
             }
+            localStorage.setItem(StorageHooks.LocalKeys.USERNAME, this.in.username.value);
+            localStorage.setItem(StorageHooks.LocalKeys.AVATAR, this.in.avatar.value);
             this.top.socket!.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
                 username: this.in.username.value,
                 teamId: parseInt(this.in.teamId.value),
@@ -115,6 +102,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         this.in = Object.freeze({
             username: uname,
             teamId,
+            avatar,
         });
         this.baseElem.appendChild(base);
     }
@@ -122,10 +110,12 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> {
-        if (args.manner !== "anyone : return from game") {
-            this._gameCtorArgs = args.gameCtorArgs;
-            this.nav.next.disabled = (this._gameCtorArgs === undefined);
+    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
+        if (navDir === "forward") {
+            this.nav.next.disabled = !this.top.clientIsGroupHost;
+
+            this.teamsElem.textContent = "";
+            this.nav.prev.textContent = "Return To Joiner";
 
             this.top.socket!.on(
                 Group.Socket.UserInfoChange.EVENT_NAME,
@@ -138,17 +128,13 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                     this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
                 },
             );
-
-            this.teamsElem.textContent = "";
-            // ^Make sure this element is clear of any players from previous, different groups.
-            this.nav.prev.textContent = "Return To " + (this._gameCtorArgs) ? "Setup" : "Joiner";
         }
     }
 
     /**
      * @override
      */
-    protected _abstractOnBeforeLeave(): boolean {
+    protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
         // Make sure we stop listening for the game to start
         // in case it hasn't started yet:
         this.top.socket!.removeListener(Game.CtorArgs.EVENT_NAME);
@@ -200,19 +186,6 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 export namespace GroupLobbyScreen {
     /**
      */
-    export type EntranceArgs = Readonly<({
-        manner: "group-host : join";
-        gameCtorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System> | undefined;
-    } | {
-        manner: "non-group-host : join";
-        gameCtorArgs?: undefined;
-    } | {
-        manner: "anyone : return from game";
-        gameCtorArgs?: undefined;
-    })>;
-
-    /**
-     */
     export class UserInfo implements Player.UserInfo {
         #username: Player.Username;
         #teamId:   number;
@@ -233,9 +206,10 @@ export namespace GroupLobbyScreen {
                 teamId: document.createElement("div"),
                 avatar: document.createElement("div"),
             });
+            this.el.username.classList.add(OMHC.PLAYER_NAME);
+            this.base.appendChild(this.el.teamId);
             this.base.appendChild(this.el.avatar);
             this.base.appendChild(this.el.username);
-            this.base.appendChild(this.el.teamId);
             this.username = desc.username;
             this.teamId = desc.teamId;
         }

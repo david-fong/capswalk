@@ -18,8 +18,8 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
         };
     }
 
-    protected _abstractOnBeforeEnter(args: SkScreen.EntranceArgs[SID]): Promise<void> {
-        return super._abstractOnBeforeEnter(args);
+    protected _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
+        return super._abstractOnBeforeEnter(navDir, args);
     }
 }
 export namespace SetupOfflineScreen {

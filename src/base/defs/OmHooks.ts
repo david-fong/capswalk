@@ -160,8 +160,9 @@ export namespace Screen {
             BASE:               "screen-lobby",
             SEC_CLIENT_INFO:    "screen-lobby--client-info-section",
             SEC_TEAMS:          "screen-lobby--teams-section",
-            TEAM:               "screen-lobby-team",
-            PLAYER:             "screen-lobby-player",
+            TEAM:               "screen-lobby--team",
+            PLAYER:             "screen-lobby--player",
+            PLAYER_NAME:        "screen-lobby--player__name",
         };
     }
     }

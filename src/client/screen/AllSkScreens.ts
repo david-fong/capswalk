@@ -34,7 +34,7 @@ export class AllSkScreens {
         const f = this.goToScreen.bind(this);
         this.dict = Object.freeze({
             // TODO.impl turn this into a class that dynamically imports js and css
-            // for all online-related modules together only once needed.
+            // for all online-play-related modules together only once needed.
             [ Id.HOME          ]: new         HomeScreen(Id.HOME         ,t,p,f),
             [ Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(Id.HOW_TO_PLAY  ,t,p,f),
             [ Id.HOW_TO_HOST   ]: new    HowToHostScreen(Id.HOW_TO_HOST  ,t,p,f),
@@ -70,7 +70,7 @@ export class AllSkScreens {
         // NOTE: using a tuple wrapper to expand bundled type.
         destId: SID,
         ctorArgs: SkScreen.EntranceArgs[SID],
-        historyDirection: "forward" | "backward" = "forward",
+        navDir: SkScreen.NavDir = SkScreen.NavDir.FORWARD,
     ): boolean {
         const destScreen = this.dict[destId];
         if (this.currentScreen === destScreen) {
@@ -79,12 +79,12 @@ export class AllSkScreens {
             // rewrite the return-value spec.
             throw "never";
         }
-        if ((this.currentScreen === undefined) || this.currentScreen.leave()) {
+        if ((this.currentScreen === undefined) || this.currentScreen._leave(navDir)) {
             // Note on above "nullish coalesce": Special case entered
             // during construction when there is no currentScreen yet.
             // Any confirm-leave prompts made to the user were OK-ed.
-            type enterFunc = (args: typeof ctorArgs, historyDirection: "forward" | "backward") => void;
-            (destScreen.enter as enterFunc)(ctorArgs, historyDirection);
+            type enterFunc = (navDir: SkScreen.NavDir, args: typeof ctorArgs) => void;
+            (destScreen._enter as enterFunc)(navDir, ctorArgs);
             this.#currentScreen = destScreen;
             return true;
         }

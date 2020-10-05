@@ -19,7 +19,7 @@ export class TopLevel {
      * Purposely made private. Screens are intended to navigate
      * between each other without reference to this field.
      */
-    private readonly _allScreens: AllSkScreens;
+    readonly #allScreens: AllSkScreens;
 
     public readonly bgMusic: BgMusic;
     public readonly sfx: SoundEffects;
@@ -32,6 +32,12 @@ export class TopLevel {
     public socket: typeof io.Socket | undefined;
 
     #socketIoChunk: Promise<typeof import("socket.io-client")>;
+
+    /**
+     */
+    public get clientIsGroupHost(): boolean {
+        return this.#allScreens.dict.groupJoiner.clientIsGroupHost;
+    }
 
 
     public constructor() {
@@ -48,7 +54,7 @@ export class TopLevel {
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
         if (!allScreensElem) { throw Error(); }
         this.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
-        this._allScreens = new AllSkScreens(this, allScreensElem);
+        this.#allScreens = new AllSkScreens(this, allScreensElem);
 
         //
         // this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
@@ -94,15 +100,15 @@ export class TopLevel {
      * For debugging purposes- especially in the browser console.
      */
     public get game(): BrowserGameMixin<Game.Type.Browser,Coord.System> | undefined {
-        return (this._allScreens.dict.playOffline).currentGame
-            ?? (this._allScreens.dict.playOnline ).currentGame;
+        return (this.#allScreens.dict.playOffline).currentGame
+            ?? (this.#allScreens.dict.playOnline ).currentGame;
     }
 
     /**
      * For debugging purposes- especially in the browser console.
      */
     public get currentScreen(): SkScreen<SkScreen.Id> {
-        return this._allScreens.currentScreen;
+        return this.#allScreens.currentScreen;
     }
 }
 export namespace TopLevel {
