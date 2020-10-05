@@ -22,7 +22,8 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
     public readonly htmlElements: BrowserGameMixin.HtmlElements;
 
     public _ctorBrowserGame(): void {
-        (this.htmlElements as BrowserGameMixin.HtmlElements) = Object.freeze({
+        // @ts-expect-error : RO=
+        this.htmlElements = Object.freeze({
             gridImpl: this.grid.baseElem,
             playersBar: document.createElement("div"), // TODO.design
         });

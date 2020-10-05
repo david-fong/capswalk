@@ -34,11 +34,13 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     public _afterAllPlayersConstruction(): void {
         super._afterAllPlayersConstruction();
         // We need to cast off read-only-ness below.
-        (this.threatProximity as Array<Player<S>>) = this.game.teams
+        // @ts-expect-error : RO=
+        this.threatProximity = this.game.teams
             .filter((team) => team.id !== this.teamId)
             .flatMap((team) => team.members);
 
-        (this.targetProximity as Array<Player<S>>) = this.threatProximity.slice();
+        // @ts-expect-error : RO=
+        this.targetProximity = this.threatProximity.slice();
     }
 
     public reset(spawnTile: Tile<S>): void {

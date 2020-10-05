@@ -30,7 +30,8 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
         this.baseElem.appendChild(this.nav.prev);
 
         // Language selection component:
-        (this.langSel as _SetupScreen.LangPickOne) = new _SetupScreen.LangPickOne();
+        // @ts-expect-error : RO=
+        this.langSel = new _SetupScreen.LangPickOne();
         this.baseElem.appendChild(this.langSel.baseElem);
 
         this._createLangWeightExaggerationInput();
@@ -41,7 +42,8 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
 
     private _createLangWeightExaggerationInput(): void {
         const lwe
-            = (this.langWeightExaggeration as HTMLInputElement)
+            // @ts-expect-error : RO=
+            = this.langWeightExaggeration
             = document.createElement("input");
         lwe.classList.add(OMHC.LANG_WEIGHT_EXAGG);
         lwe.type = "range";

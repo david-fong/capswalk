@@ -44,14 +44,17 @@ export class BgMusic {
                 tracksDesc.bufferLength,
                 tracksDesc.sampleRate,
             );
-            (this.sourceBuffer as AudioBuffer) = bigBuffer;
+            // @ts-expect-error : RO=
+            this.sourceBuffer = bigBuffer;
 
             const split = context.createChannelSplitter(bigBufferNumChannels);
             const merge = context.createChannelMerger(this.layerFaders.length);
-            (this.sourceDestination as AudioNode) = split;
+            // @ts-expect-error : RO=
+            this.sourceDestination = split;
 
             let bigBufferChannelIndex = 0;
-            (this.layerFaders as BgMusic["layerFaders"]) = abs.map((ab, trackIndex) => {
+            // @ts-expect-error : RO=
+            this.layerFaders = abs.map((ab, trackIndex) => {
                 if (ab.sampleRate !== tracksDesc.sampleRate) {
                     throw "never";
                 }
@@ -69,7 +72,8 @@ export class BgMusic {
                 }
                 return fader;
             });
-            (this.masterFader as GainNode) = context.createGain();
+            // @ts-expect-error : RO=
+            this.masterFader = context.createGain();
             merge.connect(this.masterFader);
             this.masterFader.connect(context.destination);
         });
@@ -82,7 +86,8 @@ export class BgMusic {
 
         source.buffer = this.sourceBuffer;
         source.connect(this.sourceDestination);
-        (this.source as AudioBufferSourceNode) = source;
+        // @ts-expect-error : RO=
+        this.source = source;
     }
 
     public play(): void {

@@ -14,7 +14,6 @@
 
 ### High Priority
 
-1. Refactor sites of assigning to readonly properties to use `// @ts-expect-error : RO=` instead of casting.
 1. Implement game creation event communications for online game.
 1. ~Review all throw clauses and remove those declared in class constructors.~
     - The new approach is to put these checks in the UI input validators and on the receiving end of the server side.

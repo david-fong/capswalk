@@ -60,7 +60,8 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
      * @override
      */
     public _afterAllPlayersConstruction(): void {
-        (this._immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
+        // @ts-expect-error : RO=
+        this._immigrantInfoCache = Object.freeze({
             playerElem: this.#baseElem,
             username: this.player.username,
         });

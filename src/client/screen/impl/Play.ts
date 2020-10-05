@@ -79,8 +79,10 @@ export abstract class _PlayScreen<
         );
 
         const gridHtml = _PlayScreen.createCenterColElem();
-        (this._gridBaseElem as HTMLElement) = gridHtml.grid;
-        (this._gridImplHost as HTMLElement) = gridHtml.implHost;
+        // @ts-expect-error : RO=
+        this._gridBaseElem = gridHtml.grid;
+        // @ts-expect-error : RO=
+        this._gridImplHost = gridHtml.implHost;
         this._gridImplHost.appendChild(document.createComment("grid impl host"));
         this.baseElem.appendChild(gridHtml.top);
         gridHtml.pauseOl.addEventListener("click", (ev) => {
@@ -141,7 +143,7 @@ export abstract class _PlayScreen<
         this._statusBecomePaused(); // <-- Leverage some state initialization.
 
         this.#currentGame = await this._createNewGame(
-            args as (typeof args & Game.CtorArgs<G,Coord.System>),
+            args as Game.CtorArgs<G,Coord.System>,
         );
         this._gridBaseElem.addEventListener("keydown", this.#gridOnKeyDown);
         await this.currentGame!.reset();
@@ -326,12 +328,14 @@ export abstract class _PlayScreen<
         }
 
         { const pause
-            = (this.pauseButton as HTMLButtonElement)
+            // @ts-expect-error : RO=
+            = this.pauseButton
             = createControlButton("");
         }
 
         { const reset
-            = (this.resetButton as HTMLButtonElement)
+            // @ts-expect-error : RO=
+            = this.resetButton
             = createControlButton("Reset");
         reset.onclick = this._resetGame.bind(this);
         }
@@ -341,7 +345,8 @@ export abstract class _PlayScreen<
 
     private _initializePlayersBar(): void {
         const playersBar
-            = (this.playersBar as HTMLElement)
+            // @ts-expect-error : RO=
+            = this.playersBar
             = document.createElement("div");
         playersBar.classList.add(OmHooks.Screen.Impl.Play.Class.PLAYERS_BAR);
         this.baseElem.appendChild(playersBar);

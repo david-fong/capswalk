@@ -20,7 +20,8 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         );
 
         const nav
-            = (this.navElem as HTMLElement)
+            // @ts-expect-error : RO=
+            = this.navElem
             = document.createElement("div");
         nav.classList.add(
             OmHooks.General.Class.TEXT_SELECT_DISABLED,
