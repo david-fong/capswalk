@@ -1,4 +1,5 @@
 import { OmHooks } from "defs/OmHooks";
+import { StorageHooks } from "defs/StorageHooks";
 import type { BrowserGameMixin, Game } from "./game/BrowserGame";
 import type { _PlayScreen } from "./screen/impl/Play";
 import type { Coord, SkScreen } from "../client/screen/SkScreen";
@@ -14,6 +15,8 @@ import { SoundEffects } from "./audio/SoundEffects";
 export class TopLevel {
 
     public readonly webpageHostType: TopLevel.WebpageHostType;
+
+    public readonly storage: typeof StorageHooks;
 
     /**
      * Purposely made private. Screens are intended to navigate
@@ -50,6 +53,7 @@ export class TopLevel {
                 return TopLevel.WebpageHostType.SNAKEY_SERVER;
             }
         })();
+        this.storage = StorageHooks;
         //
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
         if (!allScreensElem) { throw Error(); }

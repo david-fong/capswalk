@@ -106,13 +106,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         });
         this.scoreInfo.reset();
 
-        // NOTE: This is currently commented out because they'll just
-        // spawn as the players start moving. It's not necessary.
-        // Targets should be spawned _after_ players have spawned so
-        // that they do not spawn in the same tile as any players.
-        // this.dryRunSpawnFreeHealth([])?.forEach((tileModDesc) => {
-        //     this.executeTileModEvent(tileModDesc);
-        // })
         return Promise.resolve();
     }
 

@@ -5,7 +5,7 @@ import { TopLevel } from "./TopLevel";
 
 export { OmHooks } from "defs/OmHooks";
 
-
+Object.freeze(Object.prototype);
 
 // window.onerror = (msg, url, lineNum) => {
 //     alert(`Error message: ${msg}\nURL: ${url}\nLine Number: ${lineNum}`);

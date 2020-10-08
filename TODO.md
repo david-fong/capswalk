@@ -14,6 +14,9 @@
 
 ### High Priority
 
+1. Move StorageHooks to `client/` and make it smarter.
+   - Make sure that index.ejs is updated for changes to colourSchemeStyleLiteral key name.
+1. Make window title indicate current screen.
 1. Implement game creation event communications for online game.
 1. ~Review all throw clauses and remove those declared in class constructors.~
     - The new approach is to put these checks in the UI input validators and on the receiving end of the server side.

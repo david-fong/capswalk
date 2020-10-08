@@ -35,6 +35,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         // @ts-expect-error : RO=
         this._players = {};
         this._createInputs();
+        this.nav.prev.textContent = "Return To Joiner";
 
         /* @ts-expect-error : RO= */
         {this.teamsElem = document.createElement("div");
@@ -61,25 +62,13 @@ export class GroupLobbyScreen extends SkScreen<SID> {
             OMHC.SEC_CLIENT_INFO,
         );
 
-        const reqUserInfoChange = (ev: Event): void => {
-            if (!this.in.username.validity.valid || !this.in.teamId.validity.valid) {
-                return;
-            }
-            localStorage.setItem(StorageHooks.LocalKeys.USERNAME, this.in.username.value);
-            localStorage.setItem(StorageHooks.LocalKeys.AVATAR, this.in.avatar.value);
-            this.top.socket!.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
-                username: this.in.username.value,
-                teamId: parseInt(this.in.teamId.value),
-                avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
-            });
-        };
         const uname = Object.assign(document.createElement("input"), <Partial<HTMLInputElement>>{
             type      : "text",
             minLength : 1,
             maxLength : Player.Username.MAX_LENGTH,
             pattern   : Player.Username.REGEXP.source,
             value     : localStorage.getItem(StorageHooks.LocalKeys.USERNAME) ?? "",
-            onchange  : reqUserInfoChange,
+            onchange  : this._submitInputs.bind(this),
         });
         uname.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         base.appendChild(uname);
@@ -90,7 +79,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
             max      : "0",
             step     : "1",
             value    : "0",
-            onchange : reqUserInfoChange,
+            onchange : this._submitInputs.bind(this),
         });
         teamId.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         base.appendChild(teamId);
@@ -106,6 +95,18 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         });
         this.baseElem.appendChild(base);
     }
+    private _submitInputs(): void {
+        if (!this.in.username.validity.valid || !this.in.teamId.validity.valid) {
+            return;
+        }
+        localStorage.setItem(StorageHooks.LocalKeys.USERNAME, this.in.username.value);
+        localStorage.setItem(StorageHooks.LocalKeys.AVATAR, this.in.avatar.value);
+        this.top.socket!.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
+            username: this.in.username.value,
+            teamId: parseInt(this.in.teamId.value),
+            avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
+        });
+    };
 
     /**
      * @override
@@ -113,9 +114,8 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
         if (navDir === "forward") {
             this.nav.next.disabled = !this.top.clientIsGroupHost;
-
             this.teamsElem.textContent = "";
-            this.nav.prev.textContent = "Return To Joiner";
+            this._submitInputs();
 
             this.top.socket!.on(
                 Group.Socket.UserInfoChange.EVENT_NAME,
@@ -135,10 +135,11 @@ export class GroupLobbyScreen extends SkScreen<SID> {
      * @override
      */
     protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
-        // Make sure we stop listening for the game to start
-        // in case it hasn't started yet:
-        this.top.socket!.removeListener(Game.CtorArgs.EVENT_NAME);
-
+        if (navDir === SkScreen.NavDir.BACKWARD) {
+            // Make sure we stop listening for the game to start
+            // in case it hasn't started yet:
+            this.top.socket!.removeListener(Game.CtorArgs.EVENT_NAME);
+        }
         return true;
     }
 
@@ -201,15 +202,17 @@ export namespace GroupLobbyScreen {
         public constructor(desc: Player.UserInfo) {
             this.base = document.createElement("div");
             this.base.classList.add(OMHC.PLAYER);
+            const mkDiv = (): HTMLDivElement => {
+                const div = document.createElement("div");
+                this.base.appendChild(div);
+                return div;
+            }
             this.el = Object.freeze(<UserInfo["el"]>{
-                username: document.createElement("div"),
-                teamId: document.createElement("div"),
-                avatar: document.createElement("div"),
+                username: mkDiv(),
+                teamId:   mkDiv(),
+                avatar:   mkDiv(),
             });
             this.el.username.classList.add(OMHC.PLAYER_NAME);
-            this.base.appendChild(this.el.teamId);
-            this.base.appendChild(this.el.avatar);
-            this.base.appendChild(this.el.username);
             this.username = desc.username;
             this.teamId = desc.teamId;
         }

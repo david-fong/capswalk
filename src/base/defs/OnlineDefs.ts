@@ -63,7 +63,7 @@ export namespace Group {
     }
 
     export const JoinerReconnectionAttempts = 2;
-    export const DEFAULT_TTL = 60;
+    export const DEFAULT_TTL = 20; // seconds
 
     export namespace Exist {
         export const EVENT_NAME = "group-exist";

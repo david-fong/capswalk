@@ -123,7 +123,8 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GamepartBase<G,S>["players"] {
         type pCtorArgs = TU.RoArr<Player.CtorArgs>;
         const playerDescs: pCtorArgs
-            = (gameDesc.playerDescs as pCtorArgs)
+            // @ts-expect-error : RO=
+            = gameDesc.playerDescs
             = (this.gameType === Game.Type.ONLINE)
             // The client receives these descriptors already finalized / cleaned by the server.
             ? (gameDesc.playerDescs as pCtorArgs)

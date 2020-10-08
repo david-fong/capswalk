@@ -103,7 +103,7 @@ export class Group extends _Group {
          * Nobody has connected yet.
          * The first socket becomes the session host.
          */
-        if (Object.keys(socket.nsp.connected).length === 0) {
+        if (Object.keys(socket.nsp.connected).length === 1) {
             clearTimeout(this._initialTtlTimeout);
             // @ts-expect-error : RO=
             this._initialTtlTimeout = undefined!;
@@ -165,7 +165,7 @@ export class Group extends _Group {
         });
         if (ctorArgs !== Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR) {
             const failureReasons = this._createGameInstance(ctorArgs);
-            if (failureReasons) {
+            if (failureReasons.length) {
                 // TODO.impl handle failure reasons.
             }
         } else {
@@ -223,7 +223,7 @@ export class Group extends _Group {
         ctorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System>,
     ): readonly string[] {
         const failureReasons = GamepartManager.CHECK_VALID_CTOR_ARGS(ctorArgs);
-        if (failureReasons) {
+        if (failureReasons.length) {
             console.log(failureReasons);
             return failureReasons;
         }

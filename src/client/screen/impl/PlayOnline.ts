@@ -48,14 +48,15 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     }
 
     protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
-        if (this.top.clientIsGroupHost) {
-            (this.nav.prev as HTMLButtonElement).onclick = (ev) => {
+        (this.nav.prev as HTMLButtonElement).onclick = (ev) => {
+            if (this.top.clientIsGroupHost) {
                 // TODO.impl ask first.
                 this.top.socket!.emit(Game.CtorArgs.EVENT_NAME, Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR);
-            };
-        } else {
-            // TODO.impl leave the game but stay in the group.
-        }
+            } else {
+                // TODO.impl leave the game but stay in the group.
+            }
+        };
+        return super._abstractOnBeforeEnter(navDir, args);
     }
 
     /**

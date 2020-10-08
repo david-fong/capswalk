@@ -163,9 +163,7 @@ export namespace Player {
          * @param playerDescs -
          * @param langName -
          */
-        export const finalize = (
-            playerDescs: TU.RoArr<CtorArgs.PreIdAssignment>,
-        ): TU.RoArr<CtorArgs> => {
+        export function finalize(playerDescs: TU.RoArr<CtorArgs.PreIdAssignment>): TU.RoArr<CtorArgs> {
             // Map team ID's to consecutive numbers
             // (to play nice with array representations):
             const teamIdCleaner: TU.RoArr<Team.Id>
@@ -175,9 +173,10 @@ export namespace Player {
                     prev[originalId] = squashedId;
                     return prev;
                 }, [] as Array<Team.Id>);
+
             return playerDescs.slice()
             .sort((pda, pdb) => teamIdCleaner[pda.teamId] - teamIdCleaner[pdb.teamId])
-            .map<CtorArgs>((playerDesc, index) => Object.assign(playerDesc, {
+            .map<CtorArgs>((playerDesc, index) => Object.assign({}, playerDesc, {
                 playerId:   index,
                 teamId:     teamIdCleaner[playerDesc.teamId],
             }));

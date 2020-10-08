@@ -30,6 +30,10 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * contain an `io.Socket` object. I could have made this a field
      * of the `Player` class, but it is only used for players of the
      * `HUMAN` family, which is designated by field and not by class.
+     *
+     * This does not update for players that join the group while the
+     * group is already in a game, which is currently the intended
+     * behaviour: players cannot join the game mid-game.
      */
     protected readonly playerSockets: TU.RoArr<io.Socket>;
 
@@ -79,12 +83,17 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         const humanPlayers = this.players
         .filter((player) => player.familyId === Player.Family.HUMAN);
 
-        // TODO.fix shouldn't this go in the below loop? Right now, if a client
-        // operates multiple players, the listener for their server-side socket
-        // will be registered multiple times...
-        // Attach event listeners / handlers to each socket:
-        humanPlayers.map((player) => this.playerSockets[player.playerId])
-        .forEach((socket) => {
+        // TODO.impl wait for all sockets to signal ready for game reset.
+        Promise.all(Object.values(this.namespace.sockets).map((socket) => {
+            return new Promise((resolve, reject) => {
+                ;
+            });
+        }));
+
+        // Pass on Game constructor arguments to each client:
+        // We need to go by sockets since each client may be operating
+        // upon (controlling) several of its own players.
+        Object.values(this.namespace.sockets).forEach((socket) => {
             // Attach the movement request handlers:
             // (these are detached in `onReturnToLobby`).
             socket.on(
@@ -97,12 +106,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 this.processBubbleRequest.bind(this),
             );
             // TODO.impl pause-request handler:
-        });
 
-        // Pass on Game constructor arguments to each client:
-        // We need to go by sockets since each client may be operating
-        // upon (controlling) several of its own players.
-        Object.values(this.namespace.sockets).forEach((socket) => {
             // Set `isALocalOperator` flags to match what this socket should see:
             gameDesc.playerDescs.forEach((playerDesc) => {
                 (playerDesc.isALocalOperator as boolean) =
@@ -113,12 +117,20 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 gameDesc,
             );
         });
+
+        // TODO.impl wait for all sockets to signal ready for game unpause.
+        Promise.all(Object.values(this.namespace.sockets).map((socket) => {
+            return new Promise((resolve, reject) => {
+                ;
+            });
+        }));
     }
 
     /**
      * @override
      */
     public async reset(): Promise<void> {
+        console.log("starting reset");
         const superPromise = super.reset();
         // TODO.design Should we wait for ACK's from all clients before
         // enabling the privileged users' `stateBecomePlaying` buttons?
