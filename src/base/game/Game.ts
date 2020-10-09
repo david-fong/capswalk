@@ -82,13 +82,19 @@ export namespace Game {
     }>;
     export namespace CtorArgs {
 
-        export const EVENT_NAME = "game-create";
-        /**
-         * This is used as the payload with the above event name when
-         * notifying the server's joiner namespace that the group is
-         * returning to their lobby from playing a game.
-         */
-        export const RETURN_TO_LOBBY_INDICATOR = "return-to-lobby";
+        export namespace Event {
+            export const NAME = "game-create";
+            /**
+             * This is used as the payload with the above event name when
+             * notifying the server's joiner namespace that the group is
+             * returning to their lobby from playing a game.
+             */
+            export const RETURN_TO_LOBBY_INDICATOR = "return-to-lobby";
+        }
+        export const EVENT_NAME_CLIENT_READY_RESET   = "client-ready-for-reset";
+        export const EVENT_NAME_CLIENT_READY_UNPAUSE = "client-ready-for-unpause";
+        export const EVENT_NAME_SERVER_APPROVE_UNPAUSE = "server-approve-unpause";
+        export const EVENT_NAME_SERVER_APPROVE_PAUSE = "server-approve-pause";
 
         /**
          */

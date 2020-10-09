@@ -55,7 +55,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      *
      * @param consumer -
      */
-    public abstract forEachTile(consumer: (tile: Tile<S>) => void): void;
+    public abstract forEachTile(consumer: (tile: Tile<S>, index: number) => void): void;
 
     public abstract shuffledForEachTile(consumer: (tile: Tile<S>) => void): void;
 

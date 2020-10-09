@@ -27,7 +27,7 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
         this.nav.next.onclick = (ev) => {
             const args = this._parseArgsFromGui();
             if (this.top.clientIsGroupHost) {
-                this.top.socket!.emit(Game.CtorArgs.EVENT_NAME, args);
+                this.top.socket!.emit(Game.CtorArgs.Event.NAME, args);
             }
         };
     }

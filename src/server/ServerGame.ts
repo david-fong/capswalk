@@ -80,15 +80,16 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             return this.namespace.sockets[playerDesc.socketId!];
         });
 
-        const humanPlayers = this.players
-        .filter((player) => player.familyId === Player.Family.HUMAN);
-
-        // TODO.impl wait for all sockets to signal ready for game reset.
+        // TODO.test wait for all sockets to signal ready for game reset.
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
             return new Promise((resolve, reject) => {
-                ;
+                socket.once(Game.CtorArgs.EVENT_NAME_CLIENT_READY_RESET, () => {
+                    resolve();
+                });
             });
-        }));
+        })).then(() => {
+            this.reset();
+        });
 
         // Pass on Game constructor arguments to each client:
         // We need to go by sockets since each client may be operating
@@ -113,17 +114,10 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 (playerDesc.socketId === socket.id);
             });
             socket.emit(
-                Game.CtorArgs.EVENT_NAME,
+                Game.CtorArgs.Event.NAME,
                 gameDesc,
             );
         });
-
-        // TODO.impl wait for all sockets to signal ready for game unpause.
-        Promise.all(Object.values(this.namespace.sockets).map((socket) => {
-            return new Promise((resolve, reject) => {
-                ;
-            });
-        }));
     }
 
     /**
@@ -131,9 +125,19 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      */
     public async reset(): Promise<void> {
         console.log("starting reset");
+        // TODO.test wait for all sockets to signal ready for game unpause.
+        Promise.all(Object.values(this.namespace.sockets).map((socket) => {
+            return new Promise((resolve, reject) => {
+                socket.once(Game.CtorArgs.EVENT_NAME_CLIENT_READY_UNPAUSE, () => {
+                    resolve();
+                });
+            });
+        })).then(() => {
+            this.namespace.emit(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_UNPAUSE);
+        });
         const superPromise = super.reset();
-        // TODO.design Should we wait for ACK's from all clients before
-        // enabling the privileged users' `stateBecomePlaying` buttons?
+        await superPromise;
+
         this.namespace.emit(
             Game.Serialization.EVENT_NAME,
             this.serializeResetState(),

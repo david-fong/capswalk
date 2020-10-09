@@ -167,10 +167,11 @@ export namespace Euclid2 {
             this.grid = Object.freeze(grid);
         }
 
-        public forEachTile(consumer: (tile: Tile<S>) => void): void {
+        public forEachTile(consumer: (tile: Tile<S>, index: number) => void): void {
+            let i = 0;
             for (const row of this.grid) {
                 for (const tile of row) {
-                    consumer(tile);
+                    consumer(tile, i++);
                 }
             }
         }

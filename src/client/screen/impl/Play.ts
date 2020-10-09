@@ -147,7 +147,11 @@ export abstract class _PlayScreen<
         this.#currentGame = await this._createNewGame(
             args as Game.CtorArgs<G,Coord.System>,
         );
-        this._gridBaseElem.addEventListener("keydown", this.#gridOnKeyDown);
+        this._gridBaseElem.addEventListener("keydown", this.#gridOnKeyDown, {
+            // the handler will call stopPropagation. As a result,
+            // nothing inside this element can ever receive keyboard events.
+            capture: true,
+        });
         await this.currentGame!.reset();
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
@@ -219,6 +223,7 @@ export abstract class _PlayScreen<
         // console.log(`key: ${ev.key}, code: ${ev.code},`
         // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
         // + ` charCode: ${ev.charCode}`);
+        ev.stopPropagation();
         const game = this.currentGame!;
         if (ev.ctrlKey && ev.key === " " && !ev.repeat) {
             // If switching operator:
@@ -246,21 +251,22 @@ export abstract class _PlayScreen<
     }
 
 
-    private _statusBecomePlaying(): void {
+    protected _statusBecomePlaying(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePlaying();
         this.pauseButton.textContent = "Pause";
         this.#pauseReason = undefined;
         this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
+        this.pauseButton.onclick = this._statusBecomePaused.bind(this);
+        this.resetButton.disabled = true;
+
         window.requestAnimationFrame((time) => {
-            this.pauseButton.onclick = this._statusBecomePaused.bind(this);
-            this.resetButton.disabled = true;
             this._gridBaseElem.focus();
         });
     }
 
-    private _statusBecomePaused(): void {
+    protected _statusBecomePaused(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePaused();
         this.pauseButton.textContent = "Unpause";
@@ -283,7 +289,7 @@ export abstract class _PlayScreen<
      * - The current game exists.
      * - The current game is paused or it is over.
      */
-    private _resetGame(): void {
+    protected _resetGame(): void {
         this.currentGame!.reset();
         this.pauseButton.disabled = false;
         if (this.wantsAutoPause) {
@@ -326,7 +332,6 @@ export abstract class _PlayScreen<
         });
 
         { const bth = createControlButton("<Back Button Text>", this.nav.prev);
-        //bth.onclick = this.requestGoToScreen.bind(this, SkScreen.Id.HOME, {});
         }
 
         { const pause

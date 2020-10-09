@@ -69,16 +69,18 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
             this.executePlayerBubbleEvent.bind(this),
         );
 
-        // TODO.impl Send ack?
-        // TODO.design The server must wait until all clients are ready to receive this event...
         this.socket.off(Game.Serialization.EVENT_NAME);
         this.socket.on(
             Game.Serialization.EVENT_NAME,
             async (ser: Game.ResetSer<S>) => {
                 await this.reset();
                 this.deserializeResetState(ser);
+                // See the PlayOnline screen for the registration of
+                // listeners for the event SERVER_APPROVE_UNPAUSE.
+                this.socket.emit(Game.CtorArgs.EVENT_NAME_CLIENT_READY_UNPAUSE);
             },
         );
+        this.socket.emit(Game.CtorArgs.EVENT_NAME_CLIENT_READY_RESET);
     }
 
     declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];

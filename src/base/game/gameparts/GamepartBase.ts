@@ -163,15 +163,14 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
     }
 
     public deserializeResetState(ser: Game.ResetSer<S>): void {
-        { let i = 0;
         // Could also use `csps.unshift`, but that may be slower
         // because it modifies csps, which we don't need to do.
-        this.grid.forEachTile((tile) => {
-            tile.setLangCharSeqPair(ser.csps[i++]);
+        this.grid.forEachTile((tile, index) => {
+            tile.setLangCharSeqPair(ser.csps[index]);
             tile.lastKnownUpdateId = 1;
-        }); }
+        });
         ser.playerCoords.forEach((coord, index) => {
-            this.players[index].moveTo(this.grid.tile.at(coord));
+            this.players[index].reset(this.grid.tile.at(coord));
         });
         ser.healthCoords.forEach((desc) => {
             this.grid.tile.at(desc.coord).freeHealth = desc.health;

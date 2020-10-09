@@ -123,7 +123,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
             );
             // Listen for when the server sends tbe game constructor arguments:
             this.top.socket!.once(
-                Game.CtorArgs.EVENT_NAME,
+                Game.CtorArgs.Event.NAME,
                 async (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
                     this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
                 },
@@ -138,7 +138,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         if (navDir === SkScreen.NavDir.BACKWARD) {
             // Make sure we stop listening for the game to start
             // in case it hasn't started yet:
-            this.top.socket!.removeListener(Game.CtorArgs.EVENT_NAME);
+            this.top.socket!.removeListener(Game.CtorArgs.Event.NAME);
         }
         return true;
     }

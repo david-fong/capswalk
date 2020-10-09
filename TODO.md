@@ -14,13 +14,14 @@
 
 ### High Priority
 
+1. Make circular references in `Player` non-enumerable and see if that improves the debug logging experience.
 1. Move StorageHooks to `client/` and make it smarter.
    - Make sure that index.ejs is updated for changes to colourSchemeStyleLiteral key name.
 1. Make window title indicate current screen.
 1. Implement game creation event communications for online game.
+1. Implement Pause and Unpause events over network.
 1. ~Review all throw clauses and remove those declared in class constructors.~
     - The new approach is to put these checks in the UI input validators and on the receiving end of the server side.
-1. Implement client send `RETURN_TO_LOBBY_INDICATOR`.
 1. Debug and handle goToScreen when user navigates forward in history.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
@@ -42,6 +43,7 @@
 ### Routine Checkups
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
+- Make sure all button elements have `type=button`, or else they will default to `type=submit`, which usually does not matter, but is also usually not my intention when it does matter (ie. when there are forms in the button' vicinity).
 
 ### Low Priority
 

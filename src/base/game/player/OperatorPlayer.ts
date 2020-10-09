@@ -65,12 +65,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
      * @param event - The object describing the `KeyboardEvent`.
      */
     public processKeyboardInput(event: KeyboardEvent): void {
-        if (false) {
-            return;
-        // @ Above: Conditional handlers for actions that are valid
-        // even when the game is over or paused.
-        // ==========================================================
-        } else if (this.game.status !== Game.Status.PLAYING) return;
+        if (this.game.status !== Game.Status.PLAYING) return;
         if (!this.requestInFlight) {
             // Only process movement-type input if the last request got
             // acknowledged by the Game Manager and the game is playing.

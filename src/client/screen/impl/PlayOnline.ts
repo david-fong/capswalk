@@ -51,7 +51,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
         (this.nav.prev as HTMLButtonElement).onclick = (ev) => {
             if (this.top.clientIsGroupHost) {
                 // TODO.impl ask first.
-                this.top.socket!.emit(Game.CtorArgs.EVENT_NAME, Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR);
+                this.top.socket!.emit(Game.CtorArgs.Event.NAME, Game.CtorArgs.Event.RETURN_TO_LOBBY_INDICATOR);
             } else {
                 // TODO.impl leave the game but stay in the group.
             }
@@ -71,6 +71,12 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
             this.top.socket!,
             ctorArgs,
         );
+        this.top.socket!.on(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_UNPAUSE, () => {
+            this._statusBecomePlaying;
+        });
+        this.top.socket!.on(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_PAUSE, () => {
+            this._statusBecomePaused;
+        });
         return Promise.resolve(game);
     }
 }

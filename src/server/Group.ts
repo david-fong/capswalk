@@ -111,7 +111,7 @@ export class Group extends _Group {
             this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_LOBBY,
             });
-            socket.on(Game.CtorArgs.EVENT_NAME, this._socketOnHostCreateGame.bind(this));
+            socket.on(Game.CtorArgs.Event.NAME, this._socketOnHostCreateGame.bind(this));
         }
 
         socket.on(
@@ -154,16 +154,16 @@ export class Group extends _Group {
     }
     private _socketOnHostCreateGame(
         ctorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System>
-        | typeof Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR,
+        | typeof Game.CtorArgs.Event.RETURN_TO_LOBBY_INDICATOR,
     ): void {
         // First, broadcast to the joiner namespace of this
         // group's change in state:
         this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
-            [this.name]: (ctorArgs !== Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR)
+            [this.name]: (ctorArgs !== Game.CtorArgs.Event.RETURN_TO_LOBBY_INDICATOR)
             ? Group.Exist.Status.IN_GAME
             : Group.Exist.Status.IN_LOBBY,
         });
-        if (ctorArgs !== Game.CtorArgs.RETURN_TO_LOBBY_INDICATOR) {
+        if (ctorArgs !== Game.CtorArgs.Event.RETURN_TO_LOBBY_INDICATOR) {
             const failureReasons = this._createGameInstance(ctorArgs);
             if (failureReasons.length) {
                 // TODO.impl handle failure reasons.
