@@ -1,8 +1,9 @@
+import { Player } from 'defs/TypeDefs';
 
 /**
  *
  */
-export class SkServer { }
+export abstract class SkServer { }
 export namespace SkServer {
     export const PROTOCOL = "http://";
     export const DEFAULT_PORT = 8080;
@@ -22,20 +23,32 @@ Object.freeze(SkServer.prototype);
 /**
  *
  */
-export class Group { }
+export abstract class Group { }
 export namespace Group {
 
     /**
      * An extension of {@link io.Socket}. It is very convenient to tack
      * these fields directly onto the socket objects.
      */
+    export type Socket = import("socket.io").Socket & {
+        userInfo: Player.UserInfo;
+    };
     export namespace Socket {
-        type Base = {
-            username?: string;
-            teamId?: number; // These input values can be messy and non-continuous. They will be cleaned later.
-            updateId: number; // initial value = 0
-        };
-        export type ServerSide = Base & import("socket.io").Socket;
+
+        export namespace UserInfoChange {
+            /**
+             * Client emits this with a descriptor of requested username and teamId.
+             * Server broadcasts a response
+             */
+            export const EVENT_NAME = "group-lobby-user-info-change";
+
+            /**
+             */
+            export type Req = Player.UserInfo;
+            /**
+             */
+            export type Res = Record<Socket["id"], Player.UserInfo | undefined>;
+        }
     }
 
     export type Name = string;
@@ -50,7 +63,7 @@ export namespace Group {
     }
 
     export const JoinerReconnectionAttempts = 2;
-    export const DEFAULT_TTL = 60;
+    export const DEFAULT_TTL = 20; // seconds
 
     export namespace Exist {
         export const EVENT_NAME = "group-exist";

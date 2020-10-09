@@ -1,10 +1,10 @@
 import { Lang } from "lang/Lang";
 import { Game } from "game/Game";
 
-import type { Coord, Tile } from "floor/Tile";
 import type { VisibleTile } from "floor/VisibleTile";
 import type { VisiblePlayerStatus } from "./VisiblePlayerStatus";
 import type { GamepartBase } from "game/gameparts/GamepartBase";
+import { Coord, Tile } from "floor/Tile";
 
 import { Player } from "./Player";
 
@@ -23,7 +23,8 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
     /**
      * @override
      */
-    declare public readonly hostTile: VisibleTile<S>;
+    // @ts-expect-error : Redeclaring accessor as property.
+    declare public hostTile: VisibleTile<S>;
 
     /**
      * @override
@@ -38,7 +39,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
     readonly #langRemappingFunc: {(input: string): string};
 
-    private prevCoord: Coord<S>;
+    private prevCoord: Coord[S];
 
 
     public constructor(game: GamepartBase<any,S>, desc: Player._CtorArgs<"HUMAN">) {
@@ -64,18 +65,12 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
      * @param event - The object describing the `KeyboardEvent`.
      */
     public processKeyboardInput(event: KeyboardEvent): void {
-        if (false) {
-            return;
-        // @ Above: Conditional handlers for actions that are valid
-        // even when the game is over or paused.
-        // ==========================================================
-        } else if (this.game.status !== Game.Status.PLAYING) return;
+        if (this.game.status !== Game.Status.PLAYING) return;
         if (!this.requestInFlight) {
             // Only process movement-type input if the last request got
             // acknowledged by the Game Manager and the game is playing.
             if (event.key === " ") {
-                // TODO.learn why isn't TypeScript able to figure the below line out?
-                if (!this.coord.equals(this.prevCoord as any)) {
+                if (!Coord.equals(this.coord, this.prevCoord)) {
                     this.makeMovementRequest(
                         this.game.grid.getUntAwayFrom(this.prevCoord, this.coord),
                         Player.MoveType.BOOST,
@@ -109,7 +104,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         if (key) {
             key = this.#langRemappingFunc(key);
             if (!(Lang.Seq.REGEXP.test(key))) {
-                // throw new RangeError(`The implementation of input transformation`
+                // throw RangeError(`The implementation of input transformation`
                 // + ` in the currently selected language did not follow the rule`
                 // + ` of producing output matching the regular expression`
                 // + ` \"${Lang.Seq.REGEXP.source}\".`

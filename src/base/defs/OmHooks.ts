@@ -100,6 +100,8 @@ export namespace Screen {
     };
     export const Class = <const>{
         BASE:           "sk-screen",
+        NAV_NEXT:       "screen--next-button",
+        NAV_PREV:       "screen--back-button",
     };
     export const Dataset = <const>{
         CURRENT:        "current",
@@ -118,6 +120,14 @@ export namespace Screen {
             NAV_RPT_ISSUE:      "screen-home--nav--report-issue",
         };
     }
+    export namespace ColourCtrl {
+        export const Class = <const>{
+            BASE:               "screen-colour",
+            OPTION:             "screen-colour--opt",
+            OPTION_LABEL:       "screen-colour--opt-label",
+            OPTION_PREVIEW:     "screen-colour--opt-preview",
+        };
+    }
     export namespace Play {
         export const Class = <const>{
             BASE:               "screen-play",
@@ -129,7 +139,11 @@ export namespace Screen {
     export namespace Setup {
         export const Class = <const>{
             BASE:               "screen-setup",
-            NEXT_BUTTON:        "screen-setup--next-button",
+            LANG_SEL:           "screen-setup--lang-sel",
+            LANG_WEIGHT_EXAGG:  "screen-setup--lang-weight-exagg",
+        };
+        export const Id = <const>{
+            LANG_WEIGHT_EXAGGERATION_LIST: "screen-setup--lang-weight-exaggeration-list",
         };
     }
     export namespace GroupJoiner {
@@ -139,15 +153,16 @@ export namespace Screen {
             HOST_URL:           "screen-joiner--host-url",
             GROUP_NAME:         "screen-joiner--group-name",
             PASSPHRASE:         "screen-joiner--passphrase",
-            NEXT_BUTTON:        "screen-joiner--next-button",
         };
     }
-    export namespace ColourCtrl {
+    export namespace GroupLobby {
         export const Class = <const>{
-            BASE:               "screen-colour",
-            OPTION:             "screen-colour--opt",
-            OPTION_LABEL:       "screen-colour--opt-label",
-            OPTION_PREVIEW:     "screen-colour--opt-preview",
+            BASE:               "screen-lobby",
+            SEC_CLIENT_INFO:    "screen-lobby--client-info-section",
+            SEC_TEAMS:          "screen-lobby--teams-section",
+            TEAM:               "screen-lobby--team",
+            PLAYER:             "screen-lobby--player",
+            PLAYER_NAME:        "screen-lobby--player__name",
         };
     }
     }

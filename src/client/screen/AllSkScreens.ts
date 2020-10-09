@@ -20,9 +20,7 @@ import {   PlayOnlineScreen } from "./impl/PlayOnline";
  */
 export class AllSkScreens {
 
-    public readonly dict: {
-        readonly [SID in SkScreen.Id]: SkScreen<SID>;
-    };
+    public readonly dict: SkScreen.Dict;
 
     #currentScreen: SkScreen<SkScreen.Id>;
 
@@ -35,6 +33,8 @@ export class AllSkScreens {
         const p = baseElem;
         const f = this.goToScreen.bind(this);
         this.dict = Object.freeze({
+            // TODO.impl turn this into a class that dynamically imports js and css
+            // for all online-play-related modules together only once needed.
             [ Id.HOME          ]: new         HomeScreen(Id.HOME         ,t,p,f),
             [ Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(Id.HOW_TO_PLAY  ,t,p,f),
             [ Id.HOW_TO_HOST   ]: new    HowToHostScreen(Id.HOW_TO_HOST  ,t,p,f),
@@ -54,6 +54,11 @@ export class AllSkScreens {
         } else {
             this.goToScreen(SkScreen.Id.HOME, {});
         }
+        window.addEventListener("popstate", (ev: PopStateEvent) => {
+            // For corresponding calls to pushState and replaceState,
+            // see SkScreen.enter.
+            this.goToScreen(...this.currentScreen.getNavPrevArgs())
+        });
     }
 
     /**
@@ -61,23 +66,25 @@ export class AllSkScreens {
      * @param destId -
      * @param ctorArgs -
      */
-    public goToScreen<SID extends [SkScreen.Id]>(
+    public goToScreen<SID extends SkScreen.Id>(
         // NOTE: using a tuple wrapper to expand bundled type.
-        destId: SID[0],
-        ctorArgs: SkScreen.CtorArgs<SID[0]>,
+        destId: SID,
+        ctorArgs: SkScreen.EntranceArgs[SID],
+        navDir: SkScreen.NavDir = SkScreen.NavDir.FORWARD,
     ): boolean {
-        const destScreen = this.dict[destId] as SkScreen<SID[0]>;
+        const destScreen = this.dict[destId];
         if (this.currentScreen === destScreen) {
             // I don't see why this would ever need to happen.
             // If we find need to write code that allows for this,
             // rewrite the return-value spec.
-            throw new Error ("never happens. see comment in source.");
+            throw "never";
         }
-        if ((!this.currentScreen) || this.currentScreen.leave()) {
-            // Note on above nullish coalesce: Special case entered
+        if ((this.currentScreen === undefined) || this.currentScreen._leave(navDir)) {
+            // Note on above "nullish coalesce": Special case entered
             // during construction when there is no currentScreen yet.
             // Any confirm-leave prompts made to the user were OK-ed.
-            destScreen.enter(ctorArgs);
+            type enterFunc = (navDir: SkScreen.NavDir, args: typeof ctorArgs) => void;
+            (destScreen._enter as enterFunc)(navDir, ctorArgs);
             this.#currentScreen = destScreen;
             return true;
         }

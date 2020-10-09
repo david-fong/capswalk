@@ -39,7 +39,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
     protected constructor(game: GamepartManager<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
         if (game.gameType === Game.Type.ONLINE) {
-            throw new TypeError("OnlineGames should be using regular Players instead.");
+            throw TypeError("OnlineGames should be using regular Players instead.");
         }
     }
 
@@ -50,7 +50,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      * movement request. Pos may contain non-integer coordinate values,
      * and it does not have to be inside the bounds of the {@link Grid}.
      */
-    protected abstract computeDesiredDest(): Coord<S>;
+    protected abstract computeDesiredDest(): Coord[S];
 
     protected abstract getNextMoveType(): Player.MoveType;
 
@@ -119,10 +119,9 @@ export namespace ArtificialPlayer {
         };
     }>;
 
-    export type FamilySpecificPart<F extends Player.Family> =
-    ( F extends typeof Player.Family.CHASER ? Chaser.Behaviour
-    : never
-    );
+    export interface FamilySpecificPart {
+        [Player.Family.CHASER]: Chaser.Behaviour;
+    }
 
     export const of = <S extends Coord.System>(
         game: GamepartManager<any,S>,

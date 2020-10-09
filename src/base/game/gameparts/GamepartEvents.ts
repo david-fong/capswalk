@@ -92,11 +92,11 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
         const id = desc.eventId;
         const wrappedId = id % Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH;
         if (id === EventRecordEntry.EVENT_ID_REJECT) {
-            throw new TypeError("Do not try to record events for rejected requests.");
+            throw TypeError("Do not try to record events for rejected requests.");
         } else if (id < 0 || id !== Math.trunc(id)) {
-            throw new RangeError("Event ID's must only be assigned positive, integer values.");
+            throw RangeError("Event ID's must only be assigned positive, integer values.");
         } else if (this.eventRecordBitmap[wrappedId]) {
-            throw new Error("Event ID's must be assigned unique values.");
+            throw Error("Event ID's must be assigned unique values.");
         }
         // TODO.impl Check for an OnlineGame that it is not far behind the Server.
         // also design what should be done to handle that... Do we really need to
@@ -117,7 +117,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
         Object.freeze(desc);
         const dest = this.grid.tile.at(desc.coord);
         if (dest.lastKnownUpdateId  >  desc.lastKnownUpdateId) return dest;
-        if (dest.lastKnownUpdateId === desc.lastKnownUpdateId) throw new Error("never.");
+        if (dest.lastKnownUpdateId === desc.lastKnownUpdateId) throw "never";
 
         if (desc.newCharSeqPair) {
             dest.setLangCharSeqPair(desc.newCharSeqPair);
@@ -148,6 +148,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
      * A descriptor for all changes mandated by the player-movement event.
      */
     protected executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
+        // console.log(desc);
         const player = this.players[desc.playerId];
         const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
 
@@ -172,7 +173,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
                 // Operator never receives their own updates out of
                 // order because they only have one unacknowledged
                 // in-flight request at a time.
-                throw new Error("This never happens. See comment in source.");
+                throw "never";
             }
             return; // Short-circuit!
         }
@@ -191,7 +192,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
         } else {
             // Apparent negative lag. The operator may somehow have
             // tampered with their player's request counter.
-            throw new Error("This never happens. See comment in source");
+            throw "never";
         }
     }
 

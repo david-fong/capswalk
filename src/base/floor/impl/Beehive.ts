@@ -28,7 +28,7 @@ export namespace Beehive {
     /**
      * # Beehive Coord
      */
-    export class Coord extends BaseCoord.Abstract.Mathy<S> implements Coord.Bare {
+    export class Coord implements BaseCoord.Abstract.Mathy<S>, Coord.Bare {
 
         /**
          * # 🕒 3'o'clock direction
@@ -41,13 +41,12 @@ export namespace Beehive {
         public readonly bash: number;
 
         public constructor(desc: Coord.Bare) {
-            super(desc);
             this.dash = desc.dash;
             this.bash = desc.bash;
             Object.freeze(this);
         }
 
-        public equals(other: Coord.Bare): boolean {
+        public _equals(other: Coord.Bare): boolean {
             return (this.dash === other.dash) && (this.bash === other.bash);
         }
 
@@ -134,10 +133,11 @@ export namespace Beehive {
             this.grid = Object.freeze(grid);
         }
 
-        public forEachTile(consumer: (tile: Tile<S>) => void): void {
+        public forEachTile(consumer: (tile: Tile<S>, index: number) => void): void {
+            let i = 0;
             for (const row of this.grid) {
                 for (const tile of row) {
-                    consumer(tile);
+                    consumer(tile, i++);
                 }
             }
         }

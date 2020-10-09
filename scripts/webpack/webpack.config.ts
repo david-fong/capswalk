@@ -58,10 +58,6 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
                 // so that magic comments in dynamic imports can be
                 // seen by webpack.
                 removeComments: false,
-                importHelpers: false, // :'(
-                // TODO.build get rid of the above line when
-                // https://github.com/microsoft/TypeScript/issues/36841
-                // is fixed. What an absolute tragedy T^T
                 //noEmit: true,
             },
             // https://github.com/TypeStrong/ts-loader#faster-builds
@@ -253,6 +249,12 @@ const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>
         __dirname: false,
         global: false,
     };
+    // https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_javascript-source-map-tips
+    // https://webpack.js.org/configuration/output/#outputdevtoolmodulefilenametemplate
+    config.output.devtoolModuleFilenameTemplate = "../[resource-path]?[loaders]";
+    config.devtool = <webpack.Options.Devtool>(PACK_MODE === "production")
+        ? "cheap-module-source-map"
+        : "cheap-module-eval-source-map";
 };
 
 /**

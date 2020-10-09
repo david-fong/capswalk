@@ -2,6 +2,7 @@ import { OmHooks } from "defs/OmHooks";
 import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
+import type { OperatorPlayer } from "game/player/OperatorPlayer";
 
 import { PlayerStatus } from "./PlayerStatus";
 
@@ -59,7 +60,8 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
      * @override
      */
     public _afterAllPlayersConstruction(): void {
-        (this._immigrantInfoCache as Tile.VisibleImmigrantInfo) = Object.freeze({
+        // @ts-expect-error : RO=
+        this._immigrantInfoCache = Object.freeze({
             playerElem: this.#baseElem,
             username: this.player.username,
         });
@@ -80,12 +82,12 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 
     public _notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
         const currOperator = this.player.game.currentOperator;
-        const nextOperator = this.player;
+        const nextOperator = this.player as OperatorPlayer<S>;
         requestAnimationFrame((time) => {
             spotlightElems.forEach((elem) => {
                 this.#baseElem.appendChild(elem);
             });
-            currOperator?.status.immigrantInfo.playerElem.scrollIntoView(SCROLL_INTO_CENTER);
+            nextOperator.status.immigrantInfo.playerElem.scrollIntoView(SCROLL_INTO_CENTER);
         });
         if (nextOperator.teamId !== currOperator?.teamId) {
             // Must use the above nullish coalesce operator for first call to setCurrentOperator.

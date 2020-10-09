@@ -1,0 +1,39 @@
+.screen-lobby {
+    display:        grid;
+    justify-items:  center;
+    align-content:  center;
+}
+
+.screen-lobby--client-info-section {
+    --spacing:       0.2em;
+    --border-radius: 0.8em;
+    gap: 0.2em; margin: 0.2em;
+    height:  6em; max-height: 80vh;
+    width:  15em; /* max-width:  30vw; */
+    display:        grid;
+    grid-template-rows: 1fr 1fr;
+}
+
+.screen-lobby--teams-section {
+    display:        grid;
+}
+
+.screen-lobby--team {
+}
+
+.screen-lobby--player {
+    max-width: 20em;
+    display: grid;
+    grid-template-columns: 3em 2em 1fr;
+}
+.screen-lobby--player * {
+    pointer-events: none;
+}
+.screen-lobby--player__name {
+    justify-self: start;
+    padding-inline-start: 0.5em;
+}
+
+.screen-lobby .screen--next-button:disabled {
+    display: none;
+}

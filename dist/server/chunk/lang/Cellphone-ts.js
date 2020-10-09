@@ -1,0 +1,2 @@
+exports.ids=[1],exports.modules={25:function(e,t,r){"use strict";r.r(t),r.d(t,"Cellphone",(function(){return o}));class o{}o||(o={}),Object.freeze(o),Object.freeze(o.prototype)}};
+//# sourceMappingURL=Cellphone-ts.js.map

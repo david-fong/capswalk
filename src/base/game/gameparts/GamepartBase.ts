@@ -60,7 +60,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         }) as GamepartBase<G,S>["grid"];
         this.#onGameBecomeOver = impl.onGameBecomeOver;
 
-        this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId);
+        this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId)!;
 
         // Construct players:
         this._playerStatusCtor = impl.playerStatusCtor;
@@ -86,7 +86,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
                 // The purpose of this restriction is to prevent DoS attacks on
                 // a hosting server by creating games that can never end and
                 // leaving them open forever, thus leaking the server's resources.
-                throw new Error("All teams are immortal. The game will never end.");
+                throw Error("All teams are immortal. The game will never end.");
             }
         }
         this.players.forEach((player) => player._afterAllPlayersConstruction());
@@ -123,7 +123,8 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GamepartBase<G,S>["players"] {
         type pCtorArgs = TU.RoArr<Player.CtorArgs>;
         const playerDescs: pCtorArgs
-            = (gameDesc.playerDescs as pCtorArgs)
+            // @ts-expect-error : RO=
+            = gameDesc.playerDescs
             = (this.gameType === Game.Type.ONLINE)
             // The client receives these descriptors already finalized / cleaned by the server.
             ? (gameDesc.playerDescs as pCtorArgs)
@@ -147,6 +148,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         const playerCoords = this.players.map((player) => player.coord);
         const healthCoords: TU.NoRo<Game.ResetSer<S>["healthCoords"]> = [];
         this.grid.forEachTile((tile) => {
+            tile.lastKnownUpdateId++;
             csps.push({
                 char: tile.langChar,
                 seq:  tile.langSeq,
@@ -162,15 +164,14 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
     }
 
     public deserializeResetState(ser: Game.ResetSer<S>): void {
-        { let i = 0;
         // Could also use `csps.unshift`, but that may be slower
         // because it modifies csps, which we don't need to do.
-        this.grid.forEachTile((tile) => {
-            tile.setLangCharSeqPair(ser.csps[i++]);
-            tile.lastKnownUpdateId = 1;
-        }); }
+        this.grid.forEachTile((tile, index) => {
+            tile.setLangCharSeqPair(ser.csps[index]);
+            tile.lastKnownUpdateId++;
+        });
         ser.playerCoords.forEach((coord, index) => {
-            this.players[index].moveTo(this.grid.tile.at(coord));
+            this.players[index].reset(this.grid.tile.at(coord));
         });
         ser.healthCoords.forEach((desc) => {
             this.grid.tile.at(desc.coord).freeHealth = desc.health;
@@ -207,7 +208,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             return;
         }
         if (this.status !== Game.Status.PAUSED) {
-            throw new Error("Can only resume a game that is currently paused.");
+            throw Error("Can only resume a game that is currently paused.");
         }
         this.players.forEach((player) => {
             player._notifyGameNowPlaying();
@@ -227,7 +228,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             return;
         }
         if (this.status !== Game.Status.PLAYING) {
-            throw new Error("Can only pause a game that is currently playing.");
+            throw Error("Can only pause a game that is currently playing.");
         }
         this.players.forEach((player) => {
             player._notifyGameNowPaused();
@@ -246,7 +247,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
      */
     public statusBecomeOver(): void {
         if (this.status !== Game.Status.PLAYING) {
-            throw new Error("Can only end a game that is currently playing.");
+            throw Error("Can only end a game that is currently playing.");
         }
         this.players.forEach((player) => {
             player._notifyGameNowOver();

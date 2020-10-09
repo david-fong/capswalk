@@ -17,7 +17,7 @@ export class BgMusic {
     public constructor(trackId: BgMusic.TrackDesc["id"]) {
         this.desc = BgMusic.TrackDescs.find((desc) => desc.id === trackId)!;
         if (!this.desc) {
-            throw new Error(`track with id \`${trackId}\` does not exist.`);
+            throw Error(`track with id \`${trackId}\` does not exist.`);
         }
         const tracksDesc = this.desc;
         const context = this.context = new AudioContext({
@@ -44,16 +44,19 @@ export class BgMusic {
                 tracksDesc.bufferLength,
                 tracksDesc.sampleRate,
             );
-            (this.sourceBuffer as AudioBuffer) = bigBuffer;
+            // @ts-expect-error : RO=
+            this.sourceBuffer = bigBuffer;
 
             const split = context.createChannelSplitter(bigBufferNumChannels);
             const merge = context.createChannelMerger(this.layerFaders.length);
-            (this.sourceDestination as AudioNode) = split;
+            // @ts-expect-error : RO=
+            this.sourceDestination = split;
 
             let bigBufferChannelIndex = 0;
-            (this.layerFaders as BgMusic["layerFaders"]) = abs.map((ab, trackIndex) => {
+            // @ts-expect-error : RO=
+            this.layerFaders = abs.map((ab, trackIndex) => {
                 if (ab.sampleRate !== tracksDesc.sampleRate) {
-                    throw new Error("never");
+                    throw "never";
                 }
                 const track = context.createChannelMerger(ab.numberOfChannels);
                 const fader = context.createGain(); // https://devdocs.io/dom/gainnode
@@ -69,24 +72,26 @@ export class BgMusic {
                 }
                 return fader;
             });
-            (this.masterFader as GainNode) = context.createGain();
+            // @ts-expect-error : RO=
+            this.masterFader = context.createGain();
             merge.connect(this.masterFader);
             this.masterFader.connect(context.destination);
         });
     }
 
-    private reloadSource(): void {
+    private _reloadSource(): void {
         const source = this.context.createBufferSource();
         source.channelInterpretation = "discrete";
         source.loop = true;
 
         source.buffer = this.sourceBuffer;
         source.connect(this.sourceDestination);
-        (this.source as AudioBufferSourceNode) = source;
+        // @ts-expect-error : RO=
+        this.source = source;
     }
 
     public play(): void {
-        this.reloadSource();
+        this._reloadSource();
         this.source.start();
     }
 

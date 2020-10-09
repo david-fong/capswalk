@@ -53,7 +53,11 @@ export namespace Game {
     };
 
     /**
-     * # Game Constructor Arguments
+     * ## Game Constructor Arguments
+     *
+     * **IMPORTANT**: Upon modification, make appropriate changes to
+     * GamepartManager's function for verifying validity of client
+     * input on the server side.
      *
      * @template S
      * The coordinate system to use. The literal value must also be
@@ -68,7 +72,7 @@ export namespace Game {
         averageFreeHealthPerTile: Player.Health;
 
         langId: Lang.FrontendDesc["id"];
-        langWeightScaling: number;
+        langWeightExaggeration: Lang.WeightExaggeration;
 
         playerDescs: TU.RoArr<(
             G extends Game.Type.Manager
@@ -76,23 +80,26 @@ export namespace Game {
             : Player.CtorArgs
         )>;
     }>;
-
     export namespace CtorArgs {
 
-        export const EVENT_NAME = "game-create";
-        /**
-         * This is used as the payload with the above event name when
-         * notifying the server's joiner namespace that the group is
-         * returning to their lobby from playing a game.
-         */
-        export const RETURN_TO_LOBBY_INDICATOR = "return-to-lobby";
+        export namespace Event {
+            export const NAME = "game-create";
+            /**
+             * This is used as the payload with the above event name when
+             * notifying the server's joiner namespace that the group is
+             * returning to their lobby from playing a game.
+             */
+            export const RETURN_TO_LOBBY_INDICATOR = "return-to-lobby";
+        }
+        export const EVENT_NAME_CLIENT_READY_RESET   = "client-ready-for-reset";
+        export const EVENT_NAME_CLIENT_READY_UNPAUSE = "client-ready-for-unpause";
+        export const EVENT_NAME_SERVER_APPROVE_UNPAUSE = "server-approve-unpause";
+        export const EVENT_NAME_SERVER_APPROVE_PAUSE = "server-approve-pause";
 
         /**
-         * Not used here, but used in {@link GroupSession#createGameInstance}.
          */
         export type FailureReasons = {
-            undefinedUsername: TU.RoArr<Player.SocketId>; // socket ID's
-            undefinedTeamId:   TU.RoArr<Player.SocketId>;
+            missingFields: Array<keyof CtorArgs<Game.Type, Coord.System>>;
         };
 
         // export type _GameTypeDependantPart<G_group extends Game.Type, S extends Coord.System>
@@ -113,9 +120,9 @@ export namespace Game {
      */
     export type ResetSer<S extends Coord.System> = Readonly<{
         csps: TU.RoArr<Lang.CharSeqPair>;
-        playerCoords: TU.RoArr<Coord.Bare<S>>;
+        playerCoords: TU.RoArr<Coord.Bare[S]>;
         healthCoords: TU.RoArr<{
-            coord: Coord.Bare<S>;
+            coord: Coord.Bare[S];
             health: Player.Health;
         }>;
     }>;

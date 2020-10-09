@@ -14,13 +14,15 @@ import { Team }                 from "./Team";              export { Team };
 /**
  *
  */
-export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
+export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements _Player.UserInfo {
 
     public readonly familyId: Player.Family;
 
     public readonly teamId: Team.Id;
 
     public readonly username: Player.Username;
+
+    public readonly avatar: Player.Avatar;
 
     public lastAcceptedRequestId: number;
 
@@ -30,15 +32,10 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     public constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
 
-        if (!(Player.Username.REGEXP.test(desc.username))) {
-            throw new RangeError(`Username \"${desc.username}\"`
-            + ` does not match the required regular expression,`
-            + ` \"${Player.Username.REGEXP.source}\".`
-            );
-        }
         this.familyId = desc.familyId;
         this.teamId   = desc.teamId;
         this.username = desc.username;
+        this.avatar   = desc.avatar ?? Player.Avatar.GET_RANDOM();
     }
 
     public reset(spawnTile: Tile<S>): void {
@@ -75,9 +72,9 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> {
     protected makeMovementRequest(dest: Tile<S>, type: Player.MoveType): void {
         if (this.game.status !== Game.Status.PLAYING) {
             // TODO.build disable this check for production.
-            throw new Error("This is not a necessary precondition, but we're doing it anyway.");
+            throw Error("This is not a necessary precondition, but we're doing it anyway.");
         } else if (this.requestInFlight) {
-            throw new Error("Only one request should ever be in flight at a time.");
+            throw Error("Only one request should ever be in flight at a time.");
         }
         this.requestInFlight = true;
         this.game.processMoveRequest(
@@ -118,21 +115,9 @@ export namespace Player {
      */
     export type Health = _Player.Health;
 
-    export type Username = string;
-
-    export namespace Username {
-        /**
-         * The choice of this is somewhat arbitrary. This should be enforced
-         * externally since player descriptors are passed to the constructor.
-         *
-         * Requirements:
-         * - Starts with a letter.
-         * - No whitespace except for non-consecutive space characters.
-         * - Must contain at least five non-space characters that are
-         *      either letters, numbers, or the dash character.
-         */
-        export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
-    }
+    export type Username = _Player.Username;
+    export type Avatar   = _Player.Avatar;
+    export type UserInfo = _Player.UserInfo;
 
     export type MoveType = _Player.MoveType;
 
@@ -142,33 +127,34 @@ export namespace Player {
     export type CtorArgs = _CtorArgs<Player.Family>;
     export type _CtorArgs<F_group extends Player.Family> = any extends F_group ? never
     : { [F in F_group]: F extends Player.Family
-        ? (CtorArgs._PreIdAssignment<F> & Readonly<{
+        ? (_PreIdAssignment<F> & Readonly<{
             playerId: Player.Id;
         }>)
         : never
     }[F_group];
 
+    type _PreIdAssignment<F_group extends Player.Family> = any extends F_group ? never
+    : { [F in F_group]: F extends Player.Family
+        ? (Readonly<{
+            isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
+            familyId: F;
+            teamId:   Team.Id;
+            socketId: F extends typeof Player.Family.HUMAN ? (SocketId | undefined) : undefined;
+            username: Username;
+            avatar:   Avatar | undefined;
+            noCheckGameOver: boolean;
+            familyArgs: CtorArgs.FamilySpecificPart[F];
+        }>)
+        : never;
+    }[F_group];
+
     export namespace CtorArgs {
 
         export type PreIdAssignment = _PreIdAssignment<Player.Family>;
-        export type _PreIdAssignment<F_group extends Player.Family> = any extends F_group ? never
-        : { [F in F_group]: F extends Player.Family
-            ? (Readonly<{
-                isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
-                familyId: F;
-                teamId:   Team.Id;
-                socketId: F extends typeof Player.Family.HUMAN ? (SocketId | undefined) : undefined;
-                username: Username;
-                noCheckGameOver: boolean;
-                familyArgs: FamilySpecificPart<F>;
-            }>)
-            : never;
-        }[F_group];
 
-        export type FamilySpecificPart<F extends Player.Family> =
-        ( F extends typeof Player.Family.HUMAN ? {}
-        : ArtificialPlayer.FamilySpecificPart<F>
-        );
+        export interface FamilySpecificPart extends ArtificialPlayer.FamilySpecificPart {
+            [Player.Family.HUMAN]: {};
+        }
 
         /**
          * @returns
@@ -177,9 +163,7 @@ export namespace Player {
          * @param playerDescs -
          * @param langName -
          */
-        export const finalize = (
-            playerDescs: TU.RoArr<CtorArgs.PreIdAssignment>,
-        ): TU.RoArr<CtorArgs> => {
+        export function finalize(playerDescs: TU.RoArr<CtorArgs.PreIdAssignment>): TU.RoArr<CtorArgs> {
             // Map team ID's to consecutive numbers
             // (to play nice with array representations):
             const teamIdCleaner: TU.RoArr<Team.Id>
@@ -189,9 +173,10 @@ export namespace Player {
                     prev[originalId] = squashedId;
                     return prev;
                 }, [] as Array<Team.Id>);
+
             return playerDescs.slice()
             .sort((pda, pdb) => teamIdCleaner[pda.teamId] - teamIdCleaner[pdb.teamId])
-            .map<CtorArgs>((playerDesc, index) => Object.assign(playerDesc, {
+            .map<CtorArgs>((playerDesc, index) => Object.assign({}, playerDesc, {
                 playerId:   index,
                 teamId:     teamIdCleaner[playerDesc.teamId],
             }));

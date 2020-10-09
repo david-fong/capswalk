@@ -53,6 +53,10 @@ Methodology: Use #private fields for fields that back accessors- Ie. Fields that
 
 ### Field / Method Naming
 
+### Typescript Array Syntax
+
+When describing array types, use the `Array<>` form if the arrays are nested (since `readonly T[][]` is not clear which dimension is readonly), or if the entry type is mainly intended to be used as an interface-style type-map. An example of when `T[]` syntax is acceptable is when `T` is a builtin literal type such as `string` and the array is one dimensional.
+
 #### Prefixing with Underscore
 
 TLDR: use such naming if a member / variable must be public, but is only meant to be called in a very specific place.

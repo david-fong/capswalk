@@ -8,7 +8,15 @@
     gap: 1.0em;
 }
 
-.screen-setup--next-button {
+.screen-setup .screen--prev-button,
+.screen-setup .screen--next-button {
     padding: 0.3em 0.7em;
     font-size: 2.0em;
+}
+
+.screen-setup--lang-sel {
+}
+
+.screen-setup--lang-weight-exagg {
+    width: 100%;
 }

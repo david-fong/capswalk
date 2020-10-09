@@ -1,6 +1,8 @@
 import { OmHooks } from "defs/OmHooks";
-import type { BrowserGameMixin } from "./game/BrowserGame";
+import { StorageHooks } from "defs/StorageHooks";
+import type { BrowserGameMixin, Game } from "./game/BrowserGame";
 import type { _PlayScreen } from "./screen/impl/Play";
+import type { Coord, SkScreen } from "../client/screen/SkScreen";
 
 import { AllSkScreens } from "./screen/AllSkScreens";
 import { BgMusic }      from "./audio/BgMusic";
@@ -14,11 +16,13 @@ export class TopLevel {
 
     public readonly webpageHostType: TopLevel.WebpageHostType;
 
+    public readonly storage: typeof StorageHooks;
+
     /**
      * Purposely made private. Screens are intended to navigate
      * between each other without reference to this field.
      */
-    private readonly allScreens: AllSkScreens;
+    readonly #allScreens: AllSkScreens;
 
     public readonly bgMusic: BgMusic;
     public readonly sfx: SoundEffects;
@@ -26,9 +30,17 @@ export class TopLevel {
     /**
      * This is managed by the `GroupJoiner` screen.
      */
+    // TODO.impl change this to just a getter, and implement a setter method
+    // that makes it clear that it is not generally safe to modify this field.
     public socket: typeof io.Socket | undefined;
 
     #socketIoChunk: Promise<typeof import("socket.io-client")>;
+
+    /**
+     */
+    public get clientIsGroupHost(): boolean {
+        return this.#allScreens.dict.groupJoiner.clientIsGroupHost;
+    }
 
 
     public constructor() {
@@ -41,11 +53,12 @@ export class TopLevel {
                 return TopLevel.WebpageHostType.SNAKEY_SERVER;
             }
         })();
+        this.storage = StorageHooks;
         //
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
-        if (!allScreensElem) { throw new Error; }
+        if (!allScreensElem) { throw Error(); }
         this.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
-        this.allScreens = new AllSkScreens(this, allScreensElem);
+        this.#allScreens = new AllSkScreens(this, allScreensElem);
 
         //
         // this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
@@ -90,9 +103,16 @@ export class TopLevel {
     /**
      * For debugging purposes- especially in the browser console.
      */
-    public get game(): BrowserGameMixin<any,any> | undefined {
-        return (this.allScreens.dict.playOffline as _PlayScreen<any,any>).currentGame
-            ?? (this.allScreens.dict.playOnline  as _PlayScreen<any,any>).currentGame;
+    public get game(): BrowserGameMixin<Game.Type.Browser,Coord.System> | undefined {
+        return (this.#allScreens.dict.playOffline).currentGame
+            ?? (this.#allScreens.dict.playOnline ).currentGame;
+    }
+
+    /**
+     * For debugging purposes- especially in the browser console.
+     */
+    public get currentScreen(): SkScreen<SkScreen.Id> {
+        return this.#allScreens.currentScreen;
     }
 }
 export namespace TopLevel {

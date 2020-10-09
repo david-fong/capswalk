@@ -50,25 +50,20 @@ export abstract class Lang extends _Lang {
      * require the provided values to all be strictly positive values.
      * Ie. They do not need to sum up to any specific value.
      *
-     * @param weightScaling
-     * A value used to scale the variance in weights. Passing zero will
-     * cause all weights to be adjusted to equal the average weight.
-     * Passing `1` will cause no adjustment to be made to the weights.
-     * Passing a value greater than one will cause an exaggeration of
-     * the weight distribution.
+     * @param weightExaggeration -
      */
     protected constructor(
-        frontendDescId: typeof Lang.FrontendDescs[number]["id"],
+        frontendDescId: Lang.FrontendDesc["id"],
         forwardDict:    Lang.CharSeqPair.WeightedForwardMap,
-        weightScaling:  number,
+        weightExaggeration: Lang.WeightExaggeration,
     ) {
         super();
-        this.frontendDesc = Lang.GET_FRONTEND_DESC_BY_ID(frontendDescId);
-        this.treeMap      = LangSeqTree.ParentNode.CREATE_TREE_MAP(forwardDict, weightScaling);
+        this.frontendDesc = Lang.GET_FRONTEND_DESC_BY_ID(frontendDescId)!;
+        this.treeMap      = LangSeqTree.ParentNode.CREATE_TREE_MAP(forwardDict, weightExaggeration);
         this.leafNodes    = this.treeMap.getLeafNodes();
 
         if (this.leafNodes.length !== this.frontendDesc.numLeaves) {
-            throw new Error(`maintenance required: the frontend constant`
+            throw Error(`maintenance required: the frontend constant`
             + ` for the language \"${this.frontendDesc.id}\" needs to`
             + ` be updated to the correct, computed value, which is`
             + ` \`${this.leafNodes.length}\`.`);
@@ -160,7 +155,7 @@ export abstract class Lang extends _Lang {
         if (!nodeToHit) {
             // Should never reach here because there is a check in the
             // constructor for this invariant.
-            throw new Error(`Invariants guaranteeing that a LangSeq can`
+            throw Error(`Invariants guaranteeing that a LangSeq can`
             + `always be shuffled-in were not met.`
             );
         }
@@ -182,7 +177,7 @@ export namespace Lang {
      * `Lang` class must implement this interface.
      */
     export interface ClassIf {
-        new (weightScaling: number): Lang;
+        new (weightScaling: Lang.WeightExaggeration): Lang;
     };
 
     /**
@@ -219,6 +214,15 @@ export namespace Lang {
             Readonly<{seq: Lang.Seq, weight: number,}>
         >;
     }
+
+    /**
+     * A value used to scale the variance in weights. Passing zero will
+     * cause all weights to be adjusted to equal the average weight.
+     * Passing `1` will cause no adjustment to be made to the weights.
+     * Passing a value greater than one will cause an exaggeration of
+     * the weight distribution.
+     */
+    export type WeightExaggeration = _Lang.WeightExaggeration;
 
     export type FrontendDesc = _Lang.FrontendDesc;
 }

@@ -21,7 +21,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         return this.static.getArea(this.dimensions);
     }
 
-    public readonly tile: TileGetter<S,[Coord.Bare<S>]>;
+    public readonly tile: TileGetter<S,[Coord.Bare[S]]>;
 
 
     /**
@@ -55,7 +55,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      *
      * @param consumer -
      */
-    public abstract forEachTile(consumer: (tile: Tile<S>) => void): void;
+    public abstract forEachTile(consumer: (tile: Tile<S>, index: number) => void): void;
 
     public abstract shuffledForEachTile(consumer: (tile: Tile<S>) => void): void;
 
@@ -77,7 +77,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * @param sourceCoord
      * The coordinate from which to find the next hop.
      */
-    public abstract getUntToward(intendedDest: Coord<S>, sourceCoord: Coord<S>): Tile<S>;
+    public abstract getUntToward(intendedDest: Coord[S], sourceCoord: Coord[S]): Tile<S>;
 
     /**
      *
@@ -85,9 +85,9 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * @param sourceCoord -
      */
     // TODO.doc
-    public abstract getUntAwayFrom(avoidCoord: Coord<S>, sourceCoord: Coord<S>): Tile<S>;
+    public abstract getUntAwayFrom(avoidCoord: Coord[S], sourceCoord: Coord[S]): Tile<S>;
 
-    public getRandomCoord(): Coord<S> {
+    public getRandomCoord(): Coord[S] {
         return this.static.getRandomCoord(this.dimensions);
     }
 
@@ -100,23 +100,23 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      *
      * The returned value should follow a uniform distribution.
      */
-    public abstract getRandomCoordAround(origin: Coord.Bare<S>, radius: number): Coord<S>;
+    public abstract getRandomCoordAround(origin: Coord.Bare[S], radius: number): Coord[S];
 
 
     /**
      * @override
      */
-    public abstract _getTileAt(coord: Coord.Bare<S>): Tile<S>;
+    public abstract _getTileAt(coord: Coord.Bare[S]): Tile<S>;
 
     /**
      * @override
      */
-    public abstract _getTileDestsFrom(coord: Coord.Bare<S>): Array<Tile<S>>;
+    public abstract _getTileDestsFrom(coord: Coord.Bare[S]): Array<Tile<S>>;
 
     /**
      * @override
      */
-    public abstract _getTileSourcesTo(coord: Coord.Bare<S>): Array<Tile<S>>;
+    public abstract _getTileSourcesTo(coord: Coord.Bare[S]): Array<Tile<S>>;
 
     /**
      * The returned value must be consistent with results from the
@@ -125,7 +125,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
      * @param source -
      * @param dest -
      */
-    public abstract minMovesFromTo(source: Coord.Bare<S>, dest: Coord.Bare<S>): number;
+    public abstract minMovesFromTo(source: Coord.Bare[S], dest: Coord.Bare[S]): number;
 }
 export namespace Grid {
 
@@ -193,7 +193,7 @@ export namespace Grid {
          * @param boundX An exclusive bound on x-coordinate.
          * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to `boundX`.
          */
-        getRandomCoord(bounds: Dimensions<S>): Coord<S>;
+        getRandomCoord(bounds: Dimensions<S>): Coord[S];
 
         /**
          * Return values do not need to be the same for repeated calls
@@ -205,7 +205,7 @@ export namespace Grid {
         getSpawnCoords(
             playerCounts: TU.RoArr<number>,
             dimensions: Dimensions<S>,
-        ): TU.RoArr<TU.RoArr<Coord.Bare<S>>>;
+        ): TU.RoArr<TU.RoArr<Coord.Bare[S]>>;
 
     };
 

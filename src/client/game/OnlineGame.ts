@@ -21,8 +21,15 @@ type G = Game.Type.ONLINE;
 export class OnlineGame<S extends Coord.System>
 extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 
+    /**
+     * @override
+     */
+    // @ts-expect-error : Redeclaring accessor as property.
     declare public readonly currentOperator: OperatorPlayer<S>;
 
+    /**
+     * @override
+     */
     declare public htmlElements: BrowserGameMixin.HtmlElements;
 
     public readonly socket: SocketIOClient.Socket;
@@ -35,6 +42,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
      * @param gameDesc - This should come from a Server event by the name
      *      {@link Game.CtorArgs.EVENT_NAME}.
      */
+    // TODO.design @all these socket events: expose a way to remove them all when going back to the lobby.
     public constructor(
         onGameBecomeOver: () => void,
         socket: SocketIOClient.Socket,
@@ -61,14 +69,18 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
             this.executePlayerBubbleEvent.bind(this),
         );
 
-        // TODO.impl Send ack?
+        this.socket.off(Game.Serialization.EVENT_NAME);
         this.socket.on(
             Game.Serialization.EVENT_NAME,
             async (ser: Game.ResetSer<S>) => {
                 await this.reset();
                 this.deserializeResetState(ser);
+                // See the PlayOnline screen for the registration of
+                // listeners for the event SERVER_APPROVE_UNPAUSE.
+                this.socket.emit(Game.CtorArgs.EVENT_NAME_CLIENT_READY_UNPAUSE);
             },
         );
+        this.socket.emit(Game.CtorArgs.EVENT_NAME_CLIENT_READY_RESET);
     }
 
     declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];

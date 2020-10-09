@@ -1,3 +1,7 @@
+import { Coord } from "floor/Tile";
+import type { Player } from "game/player/Player";
+import { Game } from "game/Game";
+
 import { OmHooks, SkScreen } from "../SkScreen";
 import { _SetupScreen } from "./Setup";
 
@@ -12,16 +16,41 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
     protected _lazyLoad(): void {
         super._lazyLoad();
 
-        this.nextBtn.onclick = (ev) => {
-            // TODO.design create ctorArgs from user presets.
-            const ctorArgs = Object.assign({}, _SetupScreen.DEFAULT_PRESET);
-            (ctorArgs.langId as string) = this.langSel.confirmedOpt.desc.id;
-            this.requestGoToScreen(SkScreen.Id.PLAY_OFFLINE, ctorArgs);
+        this.nav.next.onclick = (ev) => {
+            const args = this._parseArgsFromGui();
+            this.requestGoToScreen(SkScreen.Id.PLAY_OFFLINE, args);
         };
     }
 
-    protected _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
-        return Promise.resolve();
+    protected _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
+        return super._abstractOnBeforeEnter(navDir, args);
+    }
+
+    protected _parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
+        type pArgs = Array<Player.CtorArgs.PreIdAssignment>;
+        const args = super._parseArgsFromGui();
+        // TODO.impl get rid of this placeholder once this screen has inputs for
+        // the client to configure their own players.
+        (args.playerDescs as pArgs).splice(args.playerDescs.length, 0, {
+            isALocalOperator: true,
+            familyId:   <const>"HUMAN",
+            teamId:     0,
+            socketId:   undefined,
+            username:   "hello1",
+            avatar:     undefined,
+            noCheckGameOver: false,
+            familyArgs: { },
+        }, {
+            isALocalOperator: true,
+            familyId:   <const>"HUMAN",
+            teamId:     1,
+            socketId:   undefined,
+            username:   "hello2",
+            avatar:     undefined,
+            noCheckGameOver: false,
+            familyArgs: { },
+        },);
+        return args;
     }
 }
 export namespace SetupOfflineScreen {

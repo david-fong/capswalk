@@ -5,7 +5,7 @@ import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
 
 
 export type TileModEvent<S extends Coord.System> = {
-    readonly coord: Coord.Bare<S>;
+    readonly coord: Coord.Bare[S];
 
     /**
      * The requester should set this field to the highest value they

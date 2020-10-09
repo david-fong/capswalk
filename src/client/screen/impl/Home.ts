@@ -20,7 +20,8 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         );
 
         const nav
-            = (this.navElem as HTMLElement)
+            // @ts-expect-error : RO=
+            = this.navElem
             = document.createElement("div");
         nav.classList.add(
             OmHooks.General.Class.TEXT_SELECT_DISABLED,
@@ -45,7 +46,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
                     elem.focus();
                 });
                 // TODO.impl play a keyboard click sound.
-                this.top.sfx;
+                // this.top.sfx;
             });
             nav.appendChild(elem);
         };
@@ -82,6 +83,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             const button = document.createElement("button");
             button.onclick = (desc.screenId instanceof Function) ? desc.screenId : () => {
                 // TODO.impl play a health-up sound.
+                // this.top.sfx.;
                 this.requestGoToScreen(desc.screenId as SkScreen.Id, {});
             };
             addToNav(button, desc);

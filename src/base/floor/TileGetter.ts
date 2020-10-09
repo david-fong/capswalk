@@ -3,7 +3,7 @@ import type { Coord, Tile } from "./Tile";
 
 type CoordSys = Coord.System;
 
-type Arguments<S extends CoordSys> = [ Coord.Bare<S>, ] | [];
+type Arguments<S extends CoordSys> = [ Coord.Bare[S], ] | [];
 
 /**
  * A utility class to get destinations-to or sources-from a tile at
@@ -49,7 +49,7 @@ export namespace TileGetter {
     /**
      * A Tile should always be a source-to and destination-from itself.
      */
-    export interface Source<S extends CoordSys, A extends Arguments<S> = [Coord.Bare<S>]> {
+    export interface Source<S extends CoordSys, A extends Arguments<S> = [Coord.Bare[S]]> {
         _getTileAt(...args: A): Tile<S>;
         // NOTE: do we need to add an optional argument for range?
         // If so, document that it must default to `1` if unspecified.

@@ -1,9 +1,26 @@
 import { OmHooks } from "defs/OmHooks";
+import { StorageHooks } from "defs/StorageHooks";
+import type { Coord } from "floor/Tile";
 import type { Game } from "game/Game";
 import type { AllSkScreens } from "./AllSkScreens";
 import type { TopLevel } from "../TopLevel";
 
-export { OmHooks };
+import type {         HomeScreen } from "./impl/Home";
+import type {    HowToPlayScreen } from "./impl/HowToPlay";
+import type {    HowToHostScreen } from "./impl/HowToHost";
+import type {   ColourCtrlScreen } from "./impl/ColourCtrl";
+// ======== :   ~~~ OFFLINE ~~~  :============================
+import type { SetupOfflineScreen } from "./impl/SetupOffline";
+import type {  PlayOfflineScreen } from "./impl/PlayOffline";
+// ======== :   ~~~ ONLINE ~~~~  :============================
+import type {  GroupJoinerScreen } from "./impl/GroupJoiner";
+import type {  SetupOnlineScreen } from "./impl/SetupOnline";
+import type {   GroupLobbyScreen } from "./impl/GroupLobby";
+import type {   PlayOnlineScreen } from "./impl/PlayOnline";
+
+export { OmHooks, Coord, StorageHooks };
+
+const OMHC = OmHooks.Screen.Class;
 
 
 /**
@@ -25,18 +42,45 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 
     #hasLazyLoaded: boolean;
 
+    protected readonly nav: Readonly<{
+        /**
+         * `onclick` callback is registered automatically. Do not overwrite it.
+         */
+        prev: TU.Omit<HTMLButtonElement, "onclick">;
+        next: HTMLButtonElement;
+    }>;
+
     /**
+     * Used as the initial screen when arriving at this website via url.
      * Returns this screen's own id by default.
+     *
+     * **IMPORTANT**: Must identify a screen whose `EntranceArgs` is
+     * of type `{}`. Therefore, screens who don't take `{}` as entry
+     * arguments must override this method.
      */
     public get initialScreen(): SkScreen.Id {
         return this.screenId;
     }
+    /**
+     * Used to define the behaviour of the navigation buttons.
+     *
+     * **IMPORTANT**: Must pass SkScreen.NavDir.BACKWARD as the `historyDirection` argument.
+     */
+    public getNavPrevArgs(): Parameters<AllSkScreens["goToScreen"]> {
+        const defaultDest = SkScreen.NavPrevDest[this.screenId] as SkScreen.Id | undefined;
+        if (defaultDest) {
+            return [defaultDest, {}, SkScreen.NavDir.BACKWARD];
+        } else {
+            throw "never";
+        }
+    }
 
     /**
      * Implementations can use this as part of navigation button
-     * handlers.
+     * handlers. Refers directly to AllSkScreens.goToScreen.
      */
     protected readonly requestGoToScreen: AllSkScreens["goToScreen"];
+
 
     /**
      *
@@ -54,12 +98,26 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         this.#parentElem        = parentElem;
         this.requestGoToScreen  = requestGoToDisplay;
         this.#hasLazyLoaded     = false;
+        (this.nav as SkScreen<SkScreen.Id>["nav"]) = Object.freeze({
+            prev: document.createElement("button"),
+            next: document.createElement("button"),
+        });
+        this.nav.prev.classList.add(OMHC.NAV_PREV);
+        this.nav.next.classList.add(OMHC.NAV_NEXT);
+        this.nav.prev.textContent = "Back";
+        this.nav.next.textContent = "Next";
+        (this.nav.prev as HTMLButtonElement).onclick = (ev) => {
+            this.requestGoToScreen(...this.getNavPrevArgs());
+        };
     }
 
     /**
      * **Do not override.**
      */
-    public async enter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+    public async _enter(
+        navDir: SkScreen.NavDir,
+        args: SkScreen.EntranceArgs[SID],
+    ): Promise<void> {
         if (!this.#hasLazyLoaded) {
             const baseElem
                 = (this.baseElem as HTMLElement)
@@ -79,10 +137,18 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             }
             this.#hasLazyLoaded = true;
         }
-        const location = new window.URL(window.location.href);
-        location.hash = this.screenId;
-        history.replaceState(null, "", location.href);
-        await this._abstractOnBeforeEnter(args);
+        {
+            const location = new window.URL(window.location.href);
+            location.hash = this.screenId;
+            const args = <const>[{ screenId: this.screenId, }, "", location.href];
+            switch (navDir) {
+                case SkScreen.NavDir.BACKWARD: history.replaceState(...args); break;
+                case SkScreen.NavDir.FORWARD:  history.pushState(   ...args); break;
+                default: throw "never";
+            }
+        }
+
+        await this._abstractOnBeforeEnter(navDir, args);
         // ^Wait until the screen has finished setting itself up
         // before entering it.
         window.requestAnimationFrame((time) => {
@@ -96,8 +162,8 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      *
      * @returns false if the leave was cancelled.
      */
-    public leave(): boolean {
-        if (this._abstractOnBeforeLeave()) {
+    public _leave(navDir: SkScreen.NavDir): boolean {
+        if (this._abstractOnBeforeLeave(navDir)) {
             delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT]; // non-existant.
             this.baseElem.setAttribute("aria-hidden", "true");
             return true;
@@ -120,7 +186,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * Important: Calls to `HTMLElement.focus` may require a small delay
      * via setTimeout. The reason for this is currently unknown.
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> { }
+    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> { }
 
     /**
      * Return false if the leave should be cancelled. This functionality
@@ -130,7 +196,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * This is a good place, for example, to stop any non-essential
      * `setInterval` schedules.
      */
-    protected _abstractOnBeforeLeave(): boolean {
+    protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
         return true;
     }
 
@@ -153,17 +219,63 @@ export namespace SkScreen {
         PLAY_ONLINE     = "playOnline",
         // =======      ===================
     }
+    export interface Dict {
+        [ Id.HOME          ]: HomeScreen;
+        [ Id.HOW_TO_PLAY   ]: HowToPlayScreen;
+        [ Id.HOW_TO_HOST   ]: HowToHostScreen;
+        [ Id.COLOUR_CTRL   ]: ColourCtrlScreen;
+        //==================
+        [ Id.SETUP_OFFLINE ]: SetupOfflineScreen;
+        [ Id.PLAY_OFFLINE  ]: PlayOfflineScreen;
+        //==================
+        [ Id.GROUP_JOINER  ]: GroupJoinerScreen;
+        [ Id.GROUP_LOBBY   ]: GroupLobbyScreen;
+        [ Id.SETUP_ONLINE  ]: SetupOnlineScreen;
+        [ Id.PLAY_ONLINE   ]: PlayOnlineScreen;
+    }
+    export interface EntranceArgs {
+        [ Id.HOME          ]: {};
+        [ Id.HOW_TO_PLAY   ]: {};
+        [ Id.HOW_TO_HOST   ]: {};
+        [ Id.COLOUR_CTRL   ]: {};
+        //==================
+        [ Id.SETUP_OFFLINE ]: {};
+        [ Id.PLAY_OFFLINE  ]: Game.CtorArgs<Game.Type.OFFLINE,Coord.System>;
+        //==================
+        [ Id.GROUP_JOINER  ]: {};
+        [ Id.GROUP_LOBBY   ]: {};
+        [ Id.SETUP_ONLINE  ]: {};
+        [ Id.PLAY_ONLINE   ]: Game.CtorArgs<Game.Type.ONLINE,Coord.System>;
+    }
+    /**
+     * Note: The fact that the lobby precedes the online setup screen
+     * for the group host is important, since the socket listener for
+     * UserInfoChange events is only registered in the lobby screen.
+     */
+    export const NavPrevDest = Object.freeze(<const>{
+        [ Id.HOME          ]: Id.HOME,
+        [ Id.HOW_TO_PLAY   ]: Id.HOME,
+        [ Id.HOW_TO_HOST   ]: Id.HOME,
+        [ Id.COLOUR_CTRL   ]: Id.HOME,
+        //==================
+        [ Id.SETUP_OFFLINE ]: Id.HOME,
+        [ Id.PLAY_OFFLINE  ]: Id.SETUP_OFFLINE,
+        //==================
+        [ Id.GROUP_JOINER  ]: Id.HOME,
+        [ Id.GROUP_LOBBY   ]: Id.GROUP_JOINER,
+        [ Id.SETUP_ONLINE  ]: Id.GROUP_LOBBY,
+        [ Id.PLAY_ONLINE   ]: Id.SETUP_ONLINE,
+    });
 
-    export type CtorArgs<SID_group extends SkScreen.Id>
-    = any extends SID_group ? never
-    : { [SID in SID_group]:
-          SID extends SkScreen.Id.PLAY_OFFLINE ? Game.CtorArgs<Game.Type.OFFLINE,any>
-        : SID extends SkScreen.Id.PLAY_ONLINE  ? Game.CtorArgs<Game.Type.ONLINE,any>
-        : SID extends SkScreen.Id ? {}
-        // ^Placeholder for screens that don't
-        // require any entrance arguments.
-        : never
-    }[SID_group];
+    export const enum NavDir {
+        FORWARD  = "forward",
+        BACKWARD = "backward",
+    };
+
+    /**
+     * Helper type for overriding SkScreen.getNavPrevArgs.
+     */
+    export type NavPrevRet<SID extends SkScreen.Id> = [SID, SkScreen.EntranceArgs[SID], NavDir.BACKWARD];
 }
 Object.freeze(SkScreen);
 Object.freeze(SkScreen.prototype);

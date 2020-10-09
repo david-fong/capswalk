@@ -1,10 +1,4 @@
 
-export namespace SkErrors {
-    // TODO.impl use these?
-    export const NEVER = <const>"Never happens. See comment in source.";
-}
-
-
 export const SCROLL_INTO_CENTER = Object.freeze(<const>{
     behavior: "smooth",
     block:    "center",
@@ -47,7 +41,7 @@ export function deepFreeze(obj: any): void {
 /**
  *
  */
-export class Player<S> { }
+export abstract class Player<S> { }
 export namespace Player {
 
     /**
@@ -75,6 +69,41 @@ export namespace Player {
         export type Nullable = Player.Id | typeof Player.Id.NULL;
     }
 
+    export type Username = string;
+    export namespace Username {
+        // /**
+        //  * The choice of this is somewhat arbitrary. This should be enforced
+        //  * externally since player descriptors are passed to the constructor.
+        //  *
+        //  * Requirements:
+        //  * - Starts with a letter.
+        //  * - No whitespace except for non-consecutive space characters.
+        //  * - Must contain at least five non-space characters that are
+        //  *      either letters, numbers, or the dash character.
+        //  */
+        //export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
+        export const REGEXP = /[ a-zA-Z0-9:-]+/;
+        export const MAX_LENGTH = 15; // rather arbitrary choice.
+    }
+
+    export enum Avatar {
+        LOREM_IPSUM = "lorem-ipsum",
+    }
+    export namespace Avatar {
+        const _values = Object.values(Avatar).filter((e) => typeof e === "string") as Avatar[];
+        /**
+         */
+        export function GET_RANDOM(): Avatar {
+            return _values[Math.random() * _values.length];
+        }
+    }
+
+    export interface UserInfo {
+        readonly username: Username;
+        readonly teamId:   number;
+        readonly avatar:   Avatar;
+    }
+
     /**
      * See the main documentation in game/player/Player.
      */
@@ -94,7 +123,7 @@ Object.freeze(Player.prototype);
 /**
  *
  */
-export class Lang {}
+export abstract class Lang {}
 export namespace Lang {
     /**
      * See the main documentation in game/lang/Lang
@@ -133,6 +162,17 @@ export namespace Lang {
             char: "",
             seq:  "",
         });
+    }
+    /**
+     * See the main documentation in game/lang/Lang
+     */
+    export type WeightExaggeration = number;
+    export namespace WeightExaggeration {
+        /**
+         * The choice of this value is somewhat of an art.
+         * It must be greater than one.
+         */
+        export const MAX = 4;
     }
     /**
      * The choice of the upper bound on the number of times
@@ -236,7 +276,7 @@ export namespace Lang {
     FrontendDescs as TU.RoArr<FrontendDesc>;
 
     export type FrontendDesc = Readonly<{
-        id:         string;
+        id:         typeof FrontendDescs[number]["id"];
         /**
          * Pretty much a file name.
          */
@@ -252,14 +292,10 @@ export namespace Lang {
     }>;
 
     /**
-     *
-     * @param langId -
+     * @returns `undefined` if no such language descriptor is found.
      */
-    export function GET_FRONTEND_DESC_BY_ID(langId: FrontendDesc["id"]): FrontendDesc {
-        const desc = FrontendDescs.find((desc) => desc.id === langId);
-        if (!desc) throw new Error(`Frontend descriptor of language with id`
-        + ` \"${langId}\" not found.`);
-        return desc!;
+    export function GET_FRONTEND_DESC_BY_ID(langId: FrontendDesc["id"]): FrontendDesc | undefined {
+        return FrontendDescs.find((desc) => desc.id === langId);
     }
 }
 Object.freeze(Lang);

@@ -15,19 +15,18 @@ export namespace Euclid2 {
     /**
      * # Euclid2 Coord
      */
-    export class Coord extends BaseCoord.Abstract.Mathy<S> implements Coord.Bare {
+    export class Coord implements BaseCoord.Abstract.Mathy<S>, Coord.Bare {
 
         public readonly x: number;
         public readonly y: number;
 
         public constructor(desc: Coord.Bare) {
-            super(desc);
             this.x = desc.x;
             this.y = desc.y;
             Object.freeze(this);
         }
 
-        public equals(other: Coord.Bare): boolean {
+        public _equals(other: Coord.Bare): boolean {
             return (this.x === other.x) && (this.y === other.y);
         }
 
@@ -168,10 +167,11 @@ export namespace Euclid2 {
             this.grid = Object.freeze(grid);
         }
 
-        public forEachTile(consumer: (tile: Tile<S>) => void): void {
+        public forEachTile(consumer: (tile: Tile<S>, index: number) => void): void {
+            let i = 0;
             for (const row of this.grid) {
                 for (const tile of row) {
-                    consumer(tile);
+                    consumer(tile, i++);
                 }
             }
         }
@@ -246,11 +246,11 @@ export namespace Euclid2 {
 
 
         public _getTileAt(coord: Coord.Bare): Tile<S> {
-            if (coord.x < 0 || coord.x >= this.dimensions.width ||
-                coord.y < 0 || coord.y >= this.dimensions.height
-            ) {
-                throw new RangeError("Out of bounds. No such tile exists.");
-            }
+            // if (coord.x < 0 || coord.x >= this.dimensions.width ||
+            //     coord.y < 0 || coord.y >= this.dimensions.height
+            // ) {
+            //     throw RangeError("Out of bounds. No such tile exists.");
+            // }
             return this.grid[coord.y][coord.x];
         }
 
@@ -299,7 +299,7 @@ export namespace Euclid2 {
                     let coord: Coord;
                     do {
                         coord = Grid.getRandomCoord(dimensions);
-                    } while (avoidSet.find((other) => coord.equals(other)));
+                    } while (avoidSet.find((other) => coord._equals(other)));
                     teamSpawnCoords.push(coord);
                     avoidSet.push(coord);
                     numMembers--;

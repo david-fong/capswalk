@@ -1,7 +1,7 @@
 import { Lang } from "lang/Lang";
 import { Game } from "game/Game";
 
-import type { Coord, Tile } from "floor/Tile";
+import { Coord, Tile } from "floor/Tile";
 import { Player } from "../player/Player";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { ScoreInfo } from "../ScoreInfo";
@@ -54,12 +54,13 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
                 (nsps, propName) => nsps[propName],
                 langModule[this.langFrontend.module],
             ) as Lang.ClassIf;
-            (this.lang as Lang) = new LangConstructor(desc.langWeightScaling);
+            // @ts-expect-error : RO=
+            this.lang = new LangConstructor(desc.langWeightExaggeration);
 
             // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
             const minLangLeaves = this.grid.static.getAmbiguityThreshold();
             if (this.lang.numLeaves < minLangLeaves) {
-                throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
+                throw Error(`Found ${this.lang.numLeaves} leaves, but at`
                 + ` least ${minLangLeaves} were required. The provided mappings`
                 + ` composing the current Lang-under-construction are not`
                 + ` sufficient to ensure that a shuffling operation will always`
@@ -106,13 +107,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         });
         this.scoreInfo.reset();
 
-        // NOTE: This is currently commented out because they'll just
-        // spawn as the players start moving. It's not necessary.
-        // Targets should be spawned _after_ players have spawned so
-        // that they do not spawn in the same tile as any players.
-        // this.dryRunSpawnFreeHealth([])?.forEach((tileModDesc) => {
-        //     this.executeTileModEvent(tileModDesc);
-        // })
         return Promise.resolve();
     }
 
@@ -191,8 +185,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             } while ((() => {
                 return tile.isOccupied
                 // The below equality check is necessary to prevent counting bugs.
-                // TODO.learn see other TODO about the type cast seen here on the below line.
-                || retval.find((desc) => tile.coord.equals(desc.coord as any));
+                || retval.find((desc) => Coord.equals(tile.coord, desc.coord));
                 // TODO.impl add other checks to improve distribution and reduce
                 // crowding of freeHealth. Make sure it is sensitive to
                 // `this.averageFreeHealthPerTile`.
@@ -200,7 +193,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             const tileHealthToAdd = 1;
             if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
                 let otherDesc: TileModEvent<S> | undefined;
-                if (otherDesc = sameReqOtherModDescs.find((desc) => tile.coord.equals(desc.coord as any))) {
+                if (otherDesc = sameReqOtherModDescs.find((desc) => Coord.equals(tile.coord, desc.coord))) {
                     otherDesc.newFreeHealth = (otherDesc.newFreeHealth || 0) + tileHealthToAdd;
                 } else {
                     retval.push({
@@ -240,7 +233,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         // will be gone.
         if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
             // We literally just specified this in processMoveRequest.
-            throw new Error("this never happens. see comment in source.");
+            throw "never";
         }
         this.#currentFreeHealth += desc.newFreeHealth! - tile.freeHealth;
         if (desc.newFreeHealth === 0) {
@@ -274,10 +267,10 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         }
         const player = this.players[desc.playerId];
         if (!player) {
-            throw new Error("No such player exists.");
+            throw Error("No such player exists.");
         }
         if (desc.playerLastAcceptedRequestId !== player.lastAcceptedRequestId) {
-            throw new RangeError((desc.playerLastAcceptedRequestId < player.lastAcceptedRequestId)
+            throw RangeError((desc.playerLastAcceptedRequestId < player.lastAcceptedRequestId)
             ? ("Clients should not make requests until they have"
                 + " received my response to their last request.")
             : ("Client seems to have incremented the request ID"
@@ -383,6 +376,52 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
     : number | NodeJS.Timeout;
 
     public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
+}
+export namespace GamepartManager {
+    /**
+     * If cleaning can be appropriately performed, this function will
+     * do so. If not, it will indicate invalidities in its return value.
+     */
+    export function CHECK_VALID_CTOR_ARGS(
+        args: TU.NoRo<Game.CtorArgs<Game.Type.SERVER,Coord.System>>,
+    ): string[] {
+        const fr: string[] = [];
+        type Keys = keyof Game.CtorArgs<Game.Type,Coord.System>;
+        const requiredFields: {[K in Keys]: any} = Object.freeze({
+            coordSys: 0, gridDimensions: 0, averageFreeHealthPerTile: 0,
+            langId: 0, langWeightExaggeration: 0, playerDescs: 0,
+        });
+        const missingFields: string[] = [];
+        for (const fieldName in requiredFields) {
+            const field = args[fieldName as Keys];
+            if (field === undefined || field === null) {
+                missingFields.push(fieldName as Keys);
+            }
+        }
+        if (missingFields.length) {
+            fr.push("Missing the following arguments: " + missingFields);
+        }
+        if (Lang.GET_FRONTEND_DESC_BY_ID(args.langId) === undefined) {
+            fr.push(`No language with the ID \`${args.langId}\` exists.`);
+        }
+
+        if (parseInt(args.langWeightExaggeration as any) === NaN) {
+            fr.push(`Language Weight Exaggeration expected a number, but`
+            + `\`${args.langWeightExaggeration}\` is not a number.`);
+        } else {
+            args.langWeightExaggeration = Math.max(0, parseFloat(
+                args.langWeightExaggeration as any
+            ));
+        }
+        // TODO.impl check all the rest of the things.
+        // if (!(Player.Username.REGEXP.test(desc.username))) {
+        //     throw RangeError(`Username \"${desc.username}\"`
+        //     + ` does not match the required regular expression,`
+        //     + ` \"${Player.Username.REGEXP.source}\".`
+        //     );
+        // }
+        return fr;
+    }
 }
 Object.freeze(GamepartManager);
 Object.freeze(GamepartManager.prototype);

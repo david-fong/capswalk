@@ -19,7 +19,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     private readonly behaviour: Required<Readonly<Chaser.Behaviour>>;
 
     private readonly grid: Chaser<S>["game"]["grid"];
-    #prevCoord: Coord<S>;
+    #prevCoord: Coord[S];
 
     public constructor(game: GamepartManager<any,S>, desc: Player._CtorArgs<"CHASER">) {
         super(game, desc);
@@ -34,11 +34,13 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     public _afterAllPlayersConstruction(): void {
         super._afterAllPlayersConstruction();
         // We need to cast off read-only-ness below.
-        (this.threatProximity as Array<Player<S>>) = this.game.teams
+        // @ts-expect-error : RO=
+        this.threatProximity = this.game.teams
             .filter((team) => team.id !== this.teamId)
             .flatMap((team) => team.members);
 
-        (this.targetProximity as Array<Player<S>>) = this.threatProximity.slice();
+        // @ts-expect-error : RO=
+        this.targetProximity = this.threatProximity.slice();
     }
 
     public reset(spawnTile: Tile<S>): void {
@@ -51,7 +53,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
         super.moveTo(dest);
     }
 
-    protected computeDesiredDest(): Coord<S> {
+    protected computeDesiredDest(): Coord[S] {
         // Check if there is anyone to run away from:
         this.threatProximity.sort((pa,pb) => {
             return this.grid.minMovesFromTo(pa.coord, this.coord)

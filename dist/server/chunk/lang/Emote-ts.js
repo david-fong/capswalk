@@ -1,0 +1,2 @@
+exports.ids=[2],exports.modules={26:function(e,t,r){"use strict";r.r(t),r.d(t,"Emote",(function(){return o}));var o,s=r(10);!function(e){class t extends s.a{}e.GitHub=t,Object.freeze(t),Object.freeze(t.prototype)}(o||(o={})),Object.freeze(o)}};
+//# sourceMappingURL=Emote-ts.js.map

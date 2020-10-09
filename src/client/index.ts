@@ -5,20 +5,28 @@ import { TopLevel } from "./TopLevel";
 
 export { OmHooks } from "defs/OmHooks";
 
-
+Object.freeze(Object.prototype);
 
 // window.onerror = (msg, url, lineNum) => {
 //     alert(`Error message: ${msg}\nURL: ${url}\nLine Number: ${lineNum}`);
 //     return true;
 // }
 
-export const top = new TopLevel();
+// TODO.design instead of exposing top, expose handy function for probing it.
+export const _top = new TopLevel();
+
+export function screen() {
+    return _top.currentScreen;
+}
+export function game() {
+    return _top.game;
+}
 
 /**
  * https://developers.google.com/web/fundamentals/primers/service-workers
  */
 ((): void => {
-if (top.webpageHostType === TopLevel.WebpageHostType.GITHUB && "serviceWorker" in navigator) {
+if (_top.webpageHostType === TopLevel.WebpageHostType.GITHUB && "serviceWorker" in navigator) {
     window.addEventListener('load', function() {
         // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
         navigator.serviceWorker.register("/ServiceWorker.js").then(

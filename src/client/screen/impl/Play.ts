@@ -4,7 +4,7 @@ import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 // import type { OnlineGame }  from "../../game/OnlineGame";
 import type { BrowserGameMixin } from "../../game/BrowserGame";
 
-import { OmHooks, SkScreen } from "../SkScreen";
+import { OmHooks, Coord, SkScreen } from "../SkScreen";
 
 /**
  * If and only if this screen is the current screen, then its
@@ -17,7 +17,7 @@ import { OmHooks, SkScreen } from "../SkScreen";
 export abstract class _PlayScreen<
     SID extends SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE,
     G extends Game.Type.Browser,
-    Game extends BrowserGameMixin<G,any> = BrowserGameMixin<G,any>,
+    Game extends BrowserGameMixin<G,Coord.System> = BrowserGameMixin<G,Coord.System>,
 > extends SkScreen<SID> {
 
     /**
@@ -29,8 +29,6 @@ export abstract class _PlayScreen<
     //private   readonly _gridIsecObserver: IntersectionObserver;
 
     private readonly playersBar: HTMLElement;
-
-    private readonly backToHomeButton: HTMLButtonElement;
 
     /**
      * Must be disabled when
@@ -52,14 +50,11 @@ export abstract class _PlayScreen<
      * so there's no question that it can, under certain conditions be
      * undefined.
      */
-    // #currentGame: undefined | any extends G ? never : {[G_ in G]:
-    //       G extends Game.Type.OFFLINE ? OfflineGame<any>
-    //     : G extends Game.Type.ONLINE  ? OnlineGame<any>
-    //     : never
-    // }[G];
     #currentGame: undefined | Game;
 
     protected abstract readonly wantsAutoPause: boolean;
+
+    protected abstract readonly askConfirmBeforeLeave: boolean;
     /**
      * Automatically added and removed from listeners when entering
      * and leaving this screen.
@@ -86,8 +81,10 @@ export abstract class _PlayScreen<
         );
 
         const gridHtml = _PlayScreen.createCenterColElem();
-        (this._gridBaseElem as HTMLElement) = gridHtml.grid;
-        (this._gridImplHost as HTMLElement) = gridHtml.implHost;
+        // @ts-expect-error : RO=
+        this._gridBaseElem = gridHtml.grid;
+        // @ts-expect-error : RO=
+        this._gridImplHost = gridHtml.implHost;
         this._gridImplHost.appendChild(document.createComment("grid impl host"));
         this.baseElem.appendChild(gridHtml.top);
         gridHtml.pauseOl.addEventListener("click", (ev) => {
@@ -142,19 +139,23 @@ export abstract class _PlayScreen<
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(args: SkScreen.CtorArgs<SID>): Promise<void> {
+    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
         document.addEventListener("visibilitychange", this.#onVisibilityChange);
         this.pauseButton.disabled = true;
         this._statusBecomePaused(); // <-- Leverage some state initialization.
 
         this.#currentGame = await this._createNewGame(
-            args as (typeof args & Game.CtorArgs<G,any>),
+            args as Game.CtorArgs<G,Coord.System>,
         );
-        this._gridBaseElem.addEventListener("keydown", this.#gridOnKeyDown);
+        this._gridBaseElem.addEventListener("keydown", this.#gridOnKeyDown, {
+            // the handler will call stopPropagation. As a result,
+            // nothing inside this element can ever receive keyboard events.
+            capture: true,
+        });
         await this.currentGame!.reset();
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
-        // by populating tiles with CSP's will have batched reflow.
+        // by populating tiles with CSP's will be batched.
         const html = this.currentGame!.htmlElements;
         this._gridImplHost.appendChild(html.gridImpl);
         // ^The order of insertion does not matter (it used to).
@@ -166,6 +167,7 @@ export abstract class _PlayScreen<
             setTimeout(() => {
                 if (!document.hidden) { this._statusBecomePlaying(); }
             }, 500);
+            // ^This delay is for "aesthetic" purposes (not functional).
         }
         return;
     }
@@ -173,8 +175,8 @@ export abstract class _PlayScreen<
     /**
      * @override
      */
-    protected _abstractOnBeforeLeave(): boolean {
-        if (!window.confirm("Are you sure you would like to leave?")) {
+    protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
+        if (this.askConfirmBeforeLeave && !window.confirm("Are you sure you would like to leave?")) {
             return false;
         }
         document.removeEventListener("visibilitychange", this.#onVisibilityChange);
@@ -203,7 +205,7 @@ export abstract class _PlayScreen<
         return this.#currentGame;
     }
 
-    protected abstract async _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<Game>;
+    protected abstract async _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<Game>;
 
 
     /**
@@ -221,6 +223,7 @@ export abstract class _PlayScreen<
         // console.log(`key: ${ev.key}, code: ${ev.code},`
         // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
         // + ` charCode: ${ev.charCode}`);
+        ev.stopPropagation();
         const game = this.currentGame!;
         if (ev.ctrlKey && ev.key === " " && !ev.repeat) {
             // If switching operator:
@@ -248,21 +251,22 @@ export abstract class _PlayScreen<
     }
 
 
-    private _statusBecomePlaying(): void {
+    protected _statusBecomePlaying(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePlaying();
         this.pauseButton.textContent = "Pause";
         this.#pauseReason = undefined;
         this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
+        this.pauseButton.onclick = this._statusBecomePaused.bind(this);
+        this.resetButton.disabled = true;
+
         window.requestAnimationFrame((time) => {
-            this.pauseButton.onclick = this._statusBecomePaused.bind(this);
-            this.resetButton.disabled = true;
             this._gridBaseElem.focus();
         });
     }
 
-    private _statusBecomePaused(): void {
+    protected _statusBecomePaused(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePaused();
         this.pauseButton.textContent = "Unpause";
@@ -285,7 +289,7 @@ export abstract class _PlayScreen<
      * - The current game exists.
      * - The current game is paused or it is over.
      */
-    private _resetGame(): void {
+    protected _resetGame(): void {
         this.currentGame!.reset();
         this.pauseButton.disabled = false;
         if (this.wantsAutoPause) {
@@ -306,17 +310,20 @@ export abstract class _PlayScreen<
         );
         controlsBar.setAttribute("role", "menu");
 
-        function createControlButton(buttonText: string): HTMLButtonElement {
-            const button = document.createElement("button");
+        function createControlButton(
+            buttonText: string,
+            button?: TU.Omit<HTMLButtonElement, "onclick">,
+        ): HTMLButtonElement {
+            button = button ?? document.createElement("button");
             button.textContent = buttonText;
             button.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
             button.addEventListener("pointerenter", (ev) => {
                 window.requestAnimationFrame((time) => {
-                    button.focus();
+                    button!.focus();
                 });
             });
             controlsBar.appendChild(button);
-            return button;
+            return button as HTMLButtonElement;
         }
         controlsBar.addEventListener("pointerleave", (ev) => {
             window.requestAnimationFrame((time) => {
@@ -324,19 +331,18 @@ export abstract class _PlayScreen<
             });
         });
 
-        { const bth
-            = (this.backToHomeButton as HTMLButtonElement)
-            = createControlButton("Return To Homepage");
-        bth.onclick = this.requestGoToScreen.bind(this, SkScreen.Id.HOME);
+        { const bth = createControlButton("<Back Button Text>", this.nav.prev);
         }
 
         { const pause
-            = (this.pauseButton as HTMLButtonElement)
+            // @ts-expect-error : RO=
+            = this.pauseButton
             = createControlButton("");
         }
 
         { const reset
-            = (this.resetButton as HTMLButtonElement)
+            // @ts-expect-error : RO=
+            = this.resetButton
             = createControlButton("Reset");
         reset.onclick = this._resetGame.bind(this);
         }
@@ -346,7 +352,8 @@ export abstract class _PlayScreen<
 
     private _initializePlayersBar(): void {
         const playersBar
-            = (this.playersBar as HTMLElement)
+            // @ts-expect-error : RO=
+            = this.playersBar
             = document.createElement("div");
         playersBar.classList.add(OmHooks.Screen.Impl.Play.Class.PLAYERS_BAR);
         this.baseElem.appendChild(playersBar);

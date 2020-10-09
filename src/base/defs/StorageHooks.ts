@@ -1,6 +1,4 @@
-/**
- *
- */
+import { Player } from "defs/TypeDefs";
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
@@ -32,6 +30,14 @@ export namespace StorageHooks {
         USERNAME:       "username",
         AVATAR:         "avatarId",
     });
+
+    export function getLastUserInfo(): Player.UserInfo {
+        return Object.freeze(<Player.UserInfo>{
+            username: localStorage.getItem(LocalKeys.USERNAME) ?? "unnamed player",
+            teamId: 0,
+            avatar: localStorage.getItem(LocalKeys.AVATAR) ?? Player.Avatar.GET_RANDOM()
+        })
+    }
 
     /**
      * Keys for this origin's session storage records.

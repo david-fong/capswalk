@@ -24,7 +24,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
         const base = document.createElement("div");
         base.tabIndex = 0;
         base.classList.add(OmHooks.SkPickOne.Class.BASE);
-        base.addEventListener("keydown", this.onKeyDown.bind(this));
+        base.addEventListener("keydown", this._onKeyDown.bind(this));
         base.setAttribute("role", "listbox");
         base.addEventListener("pointerenter", (ev) => {
             window.requestAnimationFrame((time) => {
@@ -42,7 +42,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
         this.baseElem.appendChild(opt.baseElem);
         opt.baseElem.addEventListener("pointerenter", this.hoverOpt.bind(this, opt));
         opt.baseElem.addEventListener("click", this.selectOpt.bind(this, opt, true));
-        opt._registerParent(this.onOptDisabledChange.bind(this));
+        opt._registerParent(this._onOptDisabledChange.bind(this));
     }
 
     public hoverOpt(opt: O): void {
@@ -56,7 +56,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
     protected abstract _onHoverOpt(opt: O): void;
 
     public selectOpt(opt: O, doCallback: boolean = true): void {
-        if (!opt) throw new Error("opt must be defined");
+        if (!opt) throw Error("opt must be defined");
         // We must ensure hovering before executing confirmation:
         this.hoverOpt(opt);
         // Now that hovering is done, execute confirmation of selection:
@@ -86,24 +86,24 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
         return this.#hoveredOpt;
     }
 
-    private onOptDisabledChange(opt: O): void {
+    private _onOptDisabledChange(opt: O): void {
         if (this.confirmedOpt === opt) {
-            this.isValid = !opt.disabled;
+            this._isValid = !opt.disabled;
         }
     }
 
-    private set isValid(newIsValid: boolean) {
-        if (this.isValid !== newIsValid) {
+    private set _isValid(newIsValid: boolean) {
+        if (this._isValid !== newIsValid) {
             this.baseElem.setAttribute("aria-invalid", (newIsValid ? "false": "true"));
             this.#isValid = newIsValid;
             // TODO.impl styling.
         }
     }
-    private get isValid(): boolean {
+    private get _isValid(): boolean {
         return this.#isValid;
     }
 
-    private onKeyDown(ev: KeyboardEvent): boolean {
+    private _onKeyDown(ev: KeyboardEvent): boolean {
         if (ev.key === " " || ev.key === "Enter") {
             this.selectOpt(this.hoveredOpt);
             ev.preventDefault();
