@@ -14,6 +14,7 @@
 
 ### High Priority
 
+1. Server authentication is not working.
 1. Make circular references in `Player` non-enumerable and see if that improves the debug logging experience.
 1. Move StorageHooks to `client/` and make it smarter.
    - Make sure that index.ejs is updated for changes to colourSchemeStyleLiteral key name.

@@ -148,6 +148,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         const playerCoords = this.players.map((player) => player.coord);
         const healthCoords: TU.NoRo<Game.ResetSer<S>["healthCoords"]> = [];
         this.grid.forEachTile((tile) => {
+            tile.lastKnownUpdateId++;
             csps.push({
                 char: tile.langChar,
                 seq:  tile.langSeq,
@@ -167,7 +168,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         // because it modifies csps, which we don't need to do.
         this.grid.forEachTile((tile, index) => {
             tile.setLangCharSeqPair(ser.csps[index]);
-            tile.lastKnownUpdateId = 1;
+            tile.lastKnownUpdateId++;
         });
         ser.playerCoords.forEach((coord, index) => {
             this.players[index].reset(this.grid.tile.at(coord));

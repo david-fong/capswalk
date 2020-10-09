@@ -80,7 +80,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             return this.namespace.sockets[playerDesc.socketId!];
         });
 
-        // TODO.test wait for all sockets to signal ready for game reset.
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
             return new Promise((resolve, reject) => {
                 socket.once(Game.CtorArgs.EVENT_NAME_CLIENT_READY_RESET, () => {
@@ -125,7 +124,8 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      */
     public async reset(): Promise<void> {
         console.log("starting reset");
-        // TODO.test wait for all sockets to signal ready for game unpause.
+
+        // Be ready for clients to indicate readiness to unpause.
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
             return new Promise((resolve, reject) => {
                 socket.once(Game.CtorArgs.EVENT_NAME_CLIENT_READY_UNPAUSE, () => {
@@ -133,8 +133,10 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 });
             });
         })).then(() => {
+            this.statusBecomePlaying();
             this.namespace.emit(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_UNPAUSE);
         });
+
         const superPromise = super.reset();
         await superPromise;
 

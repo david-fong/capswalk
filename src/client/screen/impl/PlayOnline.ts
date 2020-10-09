@@ -44,7 +44,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
      */
     protected _lazyLoad(): void {
         super._lazyLoad();
-        this.nav.prev.textContent = "Return To Lobby";
+        this.nav.prev.innerHTML = "Return To&nbsp;Lobby";
     }
 
     protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
@@ -72,7 +72,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
             ctorArgs,
         );
         this.top.socket!.on(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_UNPAUSE, () => {
-            this._statusBecomePlaying;
+            this._statusBecomePlaying();
         });
         this.top.socket!.on(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_PAUSE, () => {
             this._statusBecomePaused;

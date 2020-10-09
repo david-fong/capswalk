@@ -249,6 +249,12 @@ const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>
         __dirname: false,
         global: false,
     };
+    // https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_javascript-source-map-tips
+    // https://webpack.js.org/configuration/output/#outputdevtoolmodulefilenametemplate
+    config.output.devtoolModuleFilenameTemplate = "../[resource-path]?[loaders]";
+    config.devtool = <webpack.Options.Devtool>(PACK_MODE === "production")
+        ? "cheap-module-source-map"
+        : "cheap-module-eval-source-map";
 };
 
 /**

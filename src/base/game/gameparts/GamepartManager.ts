@@ -54,7 +54,8 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
                 (nsps, propName) => nsps[propName],
                 langModule[this.langFrontend.module],
             ) as Lang.ClassIf;
-            (this.lang as Lang) = new LangConstructor(desc.langWeightExaggeration);
+            // @ts-expect-error : RO=
+            this.lang = new LangConstructor(desc.langWeightExaggeration);
 
             // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
             const minLangLeaves = this.grid.static.getAmbiguityThreshold();

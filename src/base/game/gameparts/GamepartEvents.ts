@@ -148,6 +148,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
      * A descriptor for all changes mandated by the player-movement event.
      */
     protected executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
+        // console.log(desc);
         const player = this.players[desc.playerId];
         const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
 
