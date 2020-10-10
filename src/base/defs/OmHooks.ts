@@ -101,7 +101,7 @@ export namespace Screen {
     export const Class = <const>{
         BASE:           "sk-screen",
         NAV_NEXT:       "screen--next-button",
-        NAV_PREV:       "screen--back-button",
+        NAV_PREV:       "screen--prev-button",
     };
     export const Dataset = <const>{
         CURRENT:        "current",
@@ -125,7 +125,8 @@ export namespace Screen {
             BASE:               "screen-colour",
             OPTION:             "screen-colour--opt",
             OPTION_LABEL:       "screen-colour--opt-label",
-            OPTION_PREVIEW:     "screen-colour--opt-preview",
+            OPTION_LABEL_TITLE: "screen-colour--opt-label--title",
+            OPTION_LABEL_AUTHOR:"screen-colour--opt-label--author",
         };
     }
     export namespace Play {

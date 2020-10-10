@@ -44,11 +44,11 @@
 ### Routine Checkups
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
-- Make sure all button elements have `type=button`, or else they will default to `type=submit`, which usually does not matter, but is also usually not my intention when it does matter (ie. when there are forms in the button' vicinity).
 
 ### Low Priority
 
-- Use [Constructable Stylesheets](https://developers.google.com/web/updates/2019/02/constructable-stylesheets) to scope CSS classes? Maybe? Am I sinking into the trap of just liking to add complications? Have I gone insane? What is wrong with me?
+- Try out CSS modules. We already have webpack-css-loader installed.
+  - This would take a lot of weight out of OmHooks.
 - Reset offline games in a separate thread and then pass the result back to the main thread in serialized form.
 - Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 - Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
@@ -184,6 +184,7 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/display
 flex playground: https://codepen.io/enxaneta/full/adLPwv/
 https://developers.google.com/web/updates/2018/01/paintapi
 https://drafts.csswg.org/mediaqueries-5/#custom-mq
+https://developers.google.com/web/updates/2019/02/constructable-stylesheets
 ```
 
 ### ARIA

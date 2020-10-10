@@ -24,5 +24,5 @@
 .screen-home--nav--how-to-play   { grid-area: htpl; }
 .screen-home--nav--how-to-host   { grid-area: hths; }
 .screen-home--nav--colour-scheme { grid-area: colr; }
-.screen-home--nav--goto-repo     { grid-area: repo; }
-.screen-home--nav--report-issue  { grid-area: bugs; }
+.screen-home--nav--goto-repo     { grid-area: repo; text-decoration: none; }
+.screen-home--nav--report-issue  { grid-area: bugs; text-decoration: none; }

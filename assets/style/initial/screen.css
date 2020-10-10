@@ -42,6 +42,7 @@ takes a long time to arrive. */
     transition-property: opacity, background-color;
     /* transition-duration will be assigned programmatically. */
     transition-timing-function: ease-in-out;
+    background-color: var(--colour-mainBg);
 }
 #screen-texture {
     background-size: 13.5rem;

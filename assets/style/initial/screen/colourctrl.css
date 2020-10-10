@@ -1,11 +1,83 @@
 
 .screen-colour {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+}
+
+.screen-colour .screen--prev-button {
+    position: absolute;
+    margin: 0.7em;
+    padding: 0.5em;
+    border-radius: 0.5em;
+}
+
+.screen-colour .sk-pick-one {
+    --padding: 0.5em;
+    gap: var(--padding);
+    padding: var(--padding);
+    border: solid 0.3em var(--colour-tileBd);
+    border-radius: 1.45em;
 }
 
 .screen-colour--opt {
+    --swatch-square-dimensions: 2em;
+    contain: content;
     display: grid;
+    grid-template-columns: auto repeat(7, var(--swatch-square-dimensions));
+    align-items: center;
+
+    gap: 0.35em;
+    padding: 0.7em;
+    border-radius: 0.9em;
+
+    color: var(--colour-mainFg);
+    background-color: var(--colour-mainBg);
 }
+
+.screen-colour--opt > * {
+    height: var(--swatch-square-dimensions);
+    box-sizing: border-box;
+    border: solid 0.2em var(--colour-tileBd);
+    border-radius: 0.45em;
+}
+
 .screen-colour--opt-label {
+    height: auto;
+    padding: 0.3em 0.7em;
+    text-align: end;
 }
-.screen-colour--opt-preview {
+.screen-colour--opt-label--title {
+}
+.screen-colour--opt-label--author {
+    font-size: 0.6em;
+    padding-bottom: 0.3em;
+}
+
+.screen-colour--opt > :nth-child(1) {
+    color: var(--colour-tileFg);
+    background-color: var(--colour-tileBg);
+    border: none;
+}
+.screen-colour--opt > :nth-child(2) {
+    color: var(--colour-healthFg);
+    background-color: var(--colour-healthBg);
+}
+.screen-colour--opt > :nth-child(3) {
+    background-color: var(--colour-pFaceMe);
+}
+.screen-colour--opt > :nth-child(4) {
+    background-color: var(--colour-pFaceMeOppo);
+}
+.screen-colour--opt > :nth-child(5) {
+    background-color: var(--colour-pFaceTeammate);
+}
+.screen-colour--opt > :nth-child(6) {
+    background-color: var(--colour-pFaceImtlTeammate);
+}
+.screen-colour--opt > :nth-child(7) {
+    background-color: var(--colour-pFaceOpponent);
+}
+.screen-colour--opt > :nth-child(8) {
+    background-color: var(--colour-pFaceImtlOpponent);
 }

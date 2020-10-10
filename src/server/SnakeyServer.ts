@@ -120,14 +120,9 @@ export class SnakeyServer extends _SnakeyServer {
                     initialTtl: Group.DEFAULT_TTL,
                 })),
             );
-            // Notify the group-creator that the group has been created and can now be joined.
-            socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
-
             // Notify all sockets connected to the joiner namespace
             // of the new namespace created for the new group session:
-            socket.nsp.emit(Group.Exist.EVENT_NAME, <Group.Query.NotifyStatus>{
-                [desc.groupName]: Group.Exist.Status.IN_LOBBY,
-            });
+            socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
         });
     }
 }
