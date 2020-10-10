@@ -1,5 +1,6 @@
-import { Lang } from "defs/TypeDefs";
-import { Coord } from "floor/Tile";
+import { Lang, Player } from "defs/TypeDefs";
+import { Coord } from "floor/Coord";
+import type { Player as _Player } from "game/player/Player";
 import type { Game } from "game/Game";
 import { SkPickOne } from "../../utils/SkPickOne";
 
@@ -81,13 +82,13 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
      */
     private _loadLastUsedPreset(): void {
         // TODO.impl
-        const lastUsedPresetId = localStorage.getItem(StorageHooks.LocalKeys.GAME_PRESET);
+        const lastUsedPresetId = this.top.storage.Local.gamePresetId;
     }
 
     /**
      * A helper for going to the next screen.
      */
-    protected _parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
+    protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
         // TODO.impl
         const args: TU.NoRo<Game.CtorArgs<Game.Type.OFFLINE,Coord.System>>
             = Object.assign({}, _SetupScreen.DEFAULT_PRESET);
@@ -110,9 +111,9 @@ export namespace _SetupScreen {
         averageFreeHealthPerTile: 1.0 / 45.0,
         langWeightExaggeration: 1.0,
         langId: "engl-low",
-        playerDescs: [{
+        playerDescs: ((): TU.RoArr<_Player.CtorArgs.PreIdAssignment> => [{
             isALocalOperator: false,
-            familyId:   <const>"CHASER",
+            familyId:   "CHASER",
             teamId:     1,
             socketId:   undefined,
             username:   "chaser1",
@@ -121,7 +122,7 @@ export namespace _SetupScreen {
             familyArgs: {/* Uses all defaults. */},
         }, {
             isALocalOperator: false,
-            familyId:   <const>"CHASER",
+            familyId:   "CHASER",
             teamId:     1,
             socketId:   undefined,
             username:   "chaser2",
@@ -133,7 +134,7 @@ export namespace _SetupScreen {
                 healthReserve: 5.0,
                 keyPressesPerSecond: 1.8,
             },
-        },],
+        },])(), // <- Wrap in a function for better type checking.
     };
     /**
      *

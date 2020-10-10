@@ -127,30 +127,30 @@ export namespace Player {
     export type CtorArgs = _CtorArgs<Player.Family>;
     export type _CtorArgs<F_group extends Player.Family> = any extends F_group ? never
     : { [F in F_group]: F extends Player.Family
-        ? (_PreIdAssignment<F> & Readonly<{
+        ? (_PreIdAssignmentDict[F] & Readonly<{
             playerId: Player.Id;
         }>)
         : never
     }[F_group];
 
-    type _PreIdAssignment<F_group extends Player.Family> = any extends F_group ? never
-    : { [F in F_group]: F extends Player.Family
-        ? (Readonly<{
-            isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
-            familyId: F;
-            teamId:   Team.Id;
-            socketId: F extends typeof Player.Family.HUMAN ? (SocketId | undefined) : undefined;
-            username: Username;
-            avatar:   Avatar | undefined;
-            noCheckGameOver: boolean;
-            familyArgs: CtorArgs.FamilySpecificPart[F];
-        }>)
-        : never;
-    }[F_group];
+    type __PreIdAssignmentConditional<F extends Player.Family> = Readonly<{
+        isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
+        familyId: F;
+        teamId:   Team.Id;
+        socketId: F extends typeof Player.Family.HUMAN ? (SocketId | undefined) : undefined;
+        username: Username;
+        avatar:   Avatar | undefined;
+        noCheckGameOver: boolean;
+        familyArgs: CtorArgs.FamilySpecificPart[F];
+    }>;
+    interface _PreIdAssignmentDict {
+        [Player.Family.HUMAN ]: __PreIdAssignmentConditional<typeof Player.Family.HUMAN >;
+        [Player.Family.CHASER]: __PreIdAssignmentConditional<typeof Player.Family.CHASER>;
+    }
 
     export namespace CtorArgs {
 
-        export type PreIdAssignment = _PreIdAssignment<Player.Family>;
+        export type PreIdAssignment = _PreIdAssignmentDict[Player.Family];
 
         export interface FamilySpecificPart extends ArtificialPlayer.FamilySpecificPart {
             [Player.Family.HUMAN]: {};

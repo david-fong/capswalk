@@ -67,28 +67,26 @@ export class GroupLobbyScreen extends SkScreen<SID> {
             minLength : 1,
             maxLength : Player.Username.MAX_LENGTH,
             pattern   : Player.Username.REGEXP.source,
-            value     : localStorage.getItem(StorageHooks.LocalKeys.USERNAME) ?? "",
+            spellcheck: false,
+            value     : this.top.storage.Local.username ?? "",
             onchange  : this._submitInputs.bind(this),
         });
         uname.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         base.appendChild(uname);
 
-        const teamId    = Object.assign(document.createElement("input"), <Partial<HTMLInputElement>>{
-            type     : "number",
-            min      : "0",
-            max      : "0",
-            step     : "1",
-            value    : "0",
-            onchange : this._submitInputs.bind(this),
+        const teamId = Object.assign(document.createElement("input"), <Partial<HTMLInputElement>>{
+            type: "number", inputMode: "numeric",
+            min: "0", max: "0", step: "1", value: "0",
+            onchange: this._submitInputs.bind(this),
         });
         teamId.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         base.appendChild(teamId);
 
-        const avatar    = document.createElement("select");
+        const avatar = document.createElement("select");
         // TODO.impl avatar selection element
 
         // @ts-expect-error : RO=
-        this.in = Object.freeze({
+        this.in = Object.freeze<GroupLobbyScreen["in"]>({
             username: uname,
             teamId,
             avatar,
@@ -99,8 +97,8 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         if (!this.in.username.validity.valid || !this.in.teamId.validity.valid) {
             return;
         }
-        localStorage.setItem(StorageHooks.LocalKeys.USERNAME, this.in.username.value);
-        localStorage.setItem(StorageHooks.LocalKeys.AVATAR, this.in.avatar.value);
+        this.top.storage.Local.username = this.in.username.value;
+        this.top.storage.Local.avatar   = this.in.avatar.value;
         this.top.socket!.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
             username: this.in.username.value,
             teamId: parseInt(this.in.teamId.value),
@@ -207,7 +205,7 @@ export namespace GroupLobbyScreen {
                 this.base.appendChild(div);
                 return div;
             }
-            this.el = Object.freeze(<UserInfo["el"]>{
+            this.el = Object.freeze<UserInfo["el"]>({
                 username: mkDiv(),
                 teamId:   mkDiv(),
                 avatar:   mkDiv(),

@@ -74,11 +74,10 @@ export namespace Game {
         langId: Lang.FrontendDesc["id"];
         langWeightExaggeration: Lang.WeightExaggeration;
 
-        playerDescs: TU.RoArr<(
-            G extends Game.Type.Manager
-            ? Player.CtorArgs.PreIdAssignment
-            : Player.CtorArgs
-        )>;
+        playerDescs: G extends Game.Type.Manager
+            ? TU.RoArr<Player.CtorArgs.PreIdAssignment>
+            : TU.RoArr<Player.CtorArgs>
+        ;
     }>;
     export namespace CtorArgs {
 
@@ -91,10 +90,10 @@ export namespace Game {
              */
             export const RETURN_TO_LOBBY_INDICATOR = "return-to-lobby";
         }
-        export const EVENT_NAME_CLIENT_READY_RESET   = "client-ready-for-reset";
-        export const EVENT_NAME_CLIENT_READY_UNPAUSE = "client-ready-for-unpause";
+        export const EVENT_NAME_CLIENT_READY_RESET     = "client-ready-for-reset";
+        export const EVENT_NAME_CLIENT_READY_UNPAUSE   = "client-ready-for-unpause";
         export const EVENT_NAME_SERVER_APPROVE_UNPAUSE = "server-approve-unpause";
-        export const EVENT_NAME_SERVER_APPROVE_PAUSE = "server-approve-pause";
+        export const EVENT_NAME_SERVER_APPROVE_PAUSE   = "server-approve-pause";
 
         /**
          */

@@ -64,14 +64,18 @@ export class VisibleGridMixin<S extends Coord.System> {
         gridImpl.setAttribute("role", "presentation");
         gridImpl.classList.add(OHG.Class.IMPL_BODY);
         gridImpl.dataset[OHG.Dataset.IMPL_COORD_SYS] = desc.coordSys;
-        (this.baseElem as HTMLElement) = gridImpl;
+        gridImpl.translate  = false; // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/translate
+        gridImpl.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
+        // @ts-expect-error : RO=
+        this.baseElem = gridImpl;
 
         // Initialize spotlight elements:
         const shortSpotlight = document.createElement("div");
         shortSpotlight.classList.add(OmHooks.Player.Class.SHORT_SPOTLIGHT);
         const longSpotlight = document.createElement("div");
         longSpotlight.classList.add(OmHooks.Player.Class.LONG_SPOTLIGHT);
-        (this.spotlightElems as TU.RoArr<HTMLElement>) = Object.freeze([ shortSpotlight, longSpotlight, ]);
+        // @ts-expect-error : RO=
+        this.spotlightElems = Object.freeze([ shortSpotlight, longSpotlight, ]);
     }
 }
 export interface VisibleGridMixin<S extends Coord.System> {};

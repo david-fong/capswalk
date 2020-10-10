@@ -310,11 +310,13 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             this._setFormState(State.IN_GROUP);
         });
         this.socket.on("connect_error", (error: object) => {
+            this.socket!.removeAllListeners();
             this.socket = undefined;
             top.toast("Unable to connect to the specified group.");
         });
         this.socket.on("disconnect", (reason: string) => {
             if (reason === "io server disconnect") {
+                this.socket!.removeAllListeners();
                 this.socket = undefined;
                 top.toast("The server disconnected you from your group.");
                 this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {}, SkScreen.NavDir.BACKWARD);

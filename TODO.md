@@ -14,10 +14,9 @@
 
 ### High Priority
 
+1. For client-side modules, don't import Coord from Tile.ts if not necessary.
 1. Server authentication is not working.
 1. Make circular references in `Player` non-enumerable and see if that improves the debug logging experience.
-1. Move StorageHooks to `client/` and make it smarter.
-   - Make sure that index.ejs is updated for changes to colourSchemeStyleLiteral key name.
 1. Make window title indicate current screen.
 1. Implement game creation event communications for online game.
 1. Implement Pause and Unpause events over network.
@@ -47,6 +46,12 @@
 
 ### Low Priority
 
+- Implement translations of string.
+  - Create a sitemap file to point to translated versions
+    - [Google Sitemap indicate translations](https://support.google.com/webmasters/answer/189077?hl=en)
+    - [Language Tags](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry)
+      - [Choosing language tags](https://www.w3.org/International/questions/qa-choosing-language-tags)
+    - Just put an argument in the url query and have the javascript parse it?
 - Try out CSS modules. We already have webpack-css-loader installed.
   - This would take a lot of weight out of OmHooks.
 - Reset offline games in a separate thread and then pass the result back to the main thread in serialized form.
@@ -185,6 +190,8 @@ flex playground: https://codepen.io/enxaneta/full/adLPwv/
 https://developers.google.com/web/updates/2018/01/paintapi
 https://drafts.csswg.org/mediaqueries-5/#custom-mq
 https://developers.google.com/web/updates/2019/02/constructable-stylesheets
+https://github.com/fergald/docs/blob/master/explainers/css-shadow-parts-1.md
+https://medium.com/seek-blog/the-end-of-global-css-90d2a4a06284
 ```
 
 ### ARIA

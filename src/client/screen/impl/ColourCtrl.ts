@@ -1,7 +1,6 @@
 // Tell WebPack about the css we want:
 require("assets/style/colour/_barrel.css");
 
-import { StorageHooks } from "defs/StorageHooks";
 import { SkPickOne } from "../../../client/utils/SkPickOne";
 
 import { OmHooks, SkScreen } from "../SkScreen";
@@ -27,13 +26,13 @@ export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
         const sel
             // @ts-expect-error : RO=
             = this.sel
-            = new ColourCtrlScreen.PickOne();
+            = new ColourCtrlScreen.PickOne(this.top.storage.Local);
         this.baseElem.appendChild(sel.baseElem);
 
         // Highlight the user's last selected colour scheme (if it exists).
         // This will already have been loaded up during page load, hence
         // passing `false` to the `noCallback` argument
-        const lastUsedSchemeId = localStorage.getItem(StorageHooks.LocalKeys.COLOUR_ID);
+        const lastUsedSchemeId = this.top.storage.Local.colourSchemeId;
         if (lastUsedSchemeId) {
             this.sel.selectOpt(this.sel.getOptById(lastUsedSchemeId)!, false);
         }
@@ -42,14 +41,19 @@ export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
 export namespace ColourCtrlScreen {
     type O = PickOne.Option;
     /**
-     *
      */
     export class PickOne extends SkPickOne<O> {
-
+        /**
+         * Usage of this element is partially aesthetic, but mostly
+         * to ease work done by the rendering engine. This is the only
+         * element styled to smoothly transition colour changes.
+         */
         public readonly garageDoorElem: HTMLElement;
+        private readonly storage: SkScreen<any>["top"]["storage"]["Local"];
 
-        public constructor() {
+        public constructor(storage: SkScreen<any>["top"]["storage"]["Local"]) {
             super();
+            this.storage = storage;
             this.garageDoorElem = document.getElementById(OmHooks.Screen.Id.SCREEN_TINT)!;
             this.garageDoorElem.style.transitionDuration = (Colour.SMOOTH_CHANGE_DURATION/3.0) + "ms";
 
@@ -57,7 +61,7 @@ export namespace ColourCtrlScreen {
                 this.addOption(new PickOne.Option(schemeDesc));
             });
             this.selectOpt(this.getOptById(
-                localStorage.getItem(StorageHooks.LocalKeys.COLOUR_ID) ?? "snakey",
+                this.storage.colourSchemeId ?? "snakey",
             )!, false);
         }
 
@@ -66,28 +70,24 @@ export namespace ColourCtrlScreen {
         }
 
         public _onSelectOpt(opt: O): void {
-            {const docStyle = document.documentElement.style;
-            for (const swatchName of Colour.Swatch) {
-                const varString = "--colour-" + swatchName;
-                docStyle.setProperty(varString, "");
-            }}
-            localStorage.setItem(
-                StorageHooks.LocalKeys.COLOUR_ID,
-                opt.desc.id,
-            );
-            localStorage.setItem(
-                StorageHooks.LocalKeys.COLOUR_LITERAL,
-                opt.cssLiteral,
-            );
+            this.storage.colourSchemeId = opt.desc.id;
+            this.storage.colourSchemeStyleLiteral = opt.cssLiteral;
+
             // This actually might be nicer-written than
             // it would be using the web animations API...
             const duration = (Colour.SMOOTH_CHANGE_DURATION / 3.0);
             const gdStyle = this.garageDoorElem.style;
-            gdStyle.opacity = "1.0";
-            gdStyle.pointerEvents = "all";
-            this.baseElem.style.pointerEvents = "none";
+                gdStyle.opacity = "1.0";
+                gdStyle.pointerEvents = "all";
+                this.baseElem.style.pointerEvents = "none";
             setTimeout(() => {
                 document.documentElement.dataset[OmHooks.General.Dataset.COLOUR_SCHEME] = opt.desc.id;
+                // Clear related style attribute variables set on page enter:
+                {const docStyle = document.documentElement.style;
+                for (const swatchName of Colour.Swatch) {
+                    const varString = "--colour-" + swatchName;
+                    docStyle.setProperty(varString, "");
+                }}
             setTimeout(() => {
                 gdStyle.opacity = "0.0";
                 gdStyle.pointerEvents = "";

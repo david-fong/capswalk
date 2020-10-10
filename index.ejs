@@ -25,7 +25,7 @@
         </datalist>
         <script>
         { // Load up last used colour scheme (or default):
-            const cssl = localStorage.getItem("colourSchemeStyleLiteral");
+            const cssl = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
             const root = document.documentElement;
             if (cssl) { root.setAttribute("style", cssl); }
             else { root.dataset["skColourScheme"] = "snakey"; }

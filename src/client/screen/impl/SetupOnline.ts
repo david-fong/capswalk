@@ -25,7 +25,7 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
 
         this.nav.next.textContent = "Start Game";
         this.nav.next.onclick = (ev) => {
-            const args = this._parseArgsFromGui();
+            const args = this.parseArgsFromGui();
             if (this.top.clientIsGroupHost) {
                 this.top.socket!.emit(Game.CtorArgs.Event.NAME, args);
             }
