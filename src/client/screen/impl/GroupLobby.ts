@@ -1,5 +1,5 @@
 import { Player } from "defs/TypeDefs";
-import { Group } from "defs/OnlineDefs";
+import { Group, GameEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 
 import { OmHooks, Coord, SkScreen, StorageHooks } from "../SkScreen";
@@ -11,6 +11,9 @@ const OMHC = OmHooks.Screen.Impl.GroupLobby.Class;
  */
 export class GroupLobbyScreen extends SkScreen<SID> {
 
+    /**
+     * A map from socket ID's to descriptors of players' info.
+     */
     private readonly _players: Record<string, GroupLobbyScreen.UserInfo>;
     private readonly teamsElem: HTMLElement;
     private readonly teamElems: Record<number, HTMLElement>;
@@ -121,7 +124,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
             );
             // Listen for when the server sends tbe game constructor arguments:
             this.top.socket!.once(
-                Game.CtorArgs.Event.NAME,
+                GameEv.CREATE,
                 async (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
                     this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
                 },
@@ -136,7 +139,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         if (navDir === SkScreen.NavDir.BACKWARD) {
             // Make sure we stop listening for the game to start
             // in case it hasn't started yet:
-            this.top.socket!.removeListener(Game.CtorArgs.Event.NAME);
+            this.top.socket!.removeListener(GameEv.CREATE);
         }
         return true;
     }

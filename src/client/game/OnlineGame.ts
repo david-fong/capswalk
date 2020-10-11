@@ -1,6 +1,7 @@
 // Tell WebPack about the CSS chunk we want:
 require("assets/style/game/_barrel.css");
 
+import { GameEv } from "defs/OnlineDefs";
 import {
     applyMixins,
     Game,
@@ -58,7 +59,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
         this.socket = socket;
         this._ctorBrowserGame();
 
-        this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);
+        this.socket.off(PlayerActionEvent.EVENT_NAME.Movement); // TODO.impl change these to assertions that there are no listeners.
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.Movement,
             this.executePlayerMoveEvent.bind(this),
@@ -69,18 +70,18 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
             this.executePlayerBubbleEvent.bind(this),
         );
 
-        this.socket.off(Game.Serialization.EVENT_NAME);
+        this.socket.off(GameEv.RESET);
         this.socket.on(
-            Game.Serialization.EVENT_NAME,
+            GameEv.RESET,
             async (ser: Game.ResetSer<S>) => {
                 await this.reset();
                 this.deserializeResetState(ser);
                 // See the PlayOnline screen for the registration of
-                // listeners for the event SERVER_APPROVE_UNPAUSE.
-                this.socket.emit(Game.CtorArgs.EVENT_NAME_CLIENT_READY_UNPAUSE);
+                // listeners for the server confirmation.
+                this.socket.emit(GameEv.UNPAUSE);
             },
         );
-        this.socket.emit(Game.CtorArgs.EVENT_NAME_CLIENT_READY_RESET);
+        this.socket.emit(GameEv.RESET);
     }
 
     declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];

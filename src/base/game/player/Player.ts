@@ -16,6 +16,11 @@ import { Team }                 from "./Team";              export { Team };
  */
 export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements _Player.UserInfo {
 
+    /**
+     * Defined for online games for players that are operated by some client.
+     */
+    public readonly socketId: Player.SocketId | undefined;
+
     public readonly familyId: Player.Family;
 
     public readonly teamId: Team.Id;
@@ -32,6 +37,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
     public constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
 
+        this.socketId = desc.socketId;
         this.familyId = desc.familyId;
         this.teamId   = desc.teamId;
         this.username = desc.username;

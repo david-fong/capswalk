@@ -1,3 +1,4 @@
+import { GameEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 
 import { OmHooks, SkScreen } from "../SkScreen";
@@ -27,7 +28,7 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
         this.nav.next.onclick = (ev) => {
             const args = this.parseArgsFromGui();
             if (this.top.clientIsGroupHost) {
-                this.top.socket!.emit(Game.CtorArgs.Event.NAME, args);
+                this.top.socket!.emit(GameEv.CREATE, args);
             }
         };
     }

@@ -1,6 +1,7 @@
 import type * as io from "socket.io";
 import { setTimeout } from "timers";
 
+import { GameEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
@@ -72,17 +73,17 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         // (Otherwise, `playerDesc` would still be a
         // `Player.CtorArgs.PreIdAssignment`).
         this.playerSockets = (gameDesc.playerDescs as Player.CtorArgs[])
-        .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN)
-        .map((playerDesc) => {
-            if (!playerDesc.socketId) {
-                throw Error("missing socket ID for player " + playerDesc.playerId);
-            }
-            return this.namespace.sockets[playerDesc.socketId!];
-        });
+            .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN)
+            .map((playerDesc) => {
+                if (playerDesc.socketId === undefined) {
+                    throw Error("missing socket ID for player " + playerDesc.playerId);
+                }
+                return this.namespace.sockets[playerDesc.socketId!];
+            });
 
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
             return new Promise((resolve, reject) => {
-                socket.once(Game.CtorArgs.EVENT_NAME_CLIENT_READY_RESET, () => {
+                socket.once(GameEv.RESET, () => {
                     resolve();
                 });
             });
@@ -109,11 +110,11 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
             // Set `isALocalOperator` flags to match what this socket should see:
             gameDesc.playerDescs.forEach((playerDesc) => {
-                (playerDesc.isALocalOperator as boolean) =
-                (playerDesc.socketId === socket.id);
+                // @ts-expect-error : RO=
+                playerDesc.isALocalOperator = (playerDesc.socketId === socket.id);
             });
             socket.emit(
-                Game.CtorArgs.Event.NAME,
+                GameEv.CREATE,
                 gameDesc,
             );
         });
@@ -128,20 +129,20 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         // Be ready for clients to indicate readiness to unpause.
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
             return new Promise((resolve, reject) => {
-                socket.once(Game.CtorArgs.EVENT_NAME_CLIENT_READY_UNPAUSE, () => {
+                socket.once(GameEv.UNPAUSE, () => {
                     resolve();
                 });
             });
         })).then(() => {
             this.statusBecomePlaying();
-            this.namespace.emit(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_UNPAUSE);
+            this.namespace.emit(GameEv.UNPAUSE);
         });
 
         const superPromise = super.reset();
         await superPromise;
 
         this.namespace.emit(
-            Game.Serialization.EVENT_NAME,
+            GameEv.RESET,
             this.serializeResetState(),
         );
         return superPromise;
@@ -151,6 +152,8 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         Object.values(this.namespace.sockets).forEach((socket) => {
             socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Movement);
             socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Bubble);
+            // TODO.impl remove listeners for everything game related.
+            // Otherwise the listers will probably prevent garbage-collection.
         });
     }
 

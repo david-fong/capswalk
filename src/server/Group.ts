@@ -2,6 +2,7 @@ import * as io from "socket.io";
 
 import type { Coord } from "floor/Tile";
 import type { Player } from "game/player/Player";
+import { GameEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 
@@ -111,8 +112,19 @@ export class Group extends _Group {
             this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_LOBBY,
             });
-            socket.on(Game.CtorArgs.Event.NAME, this._socketOnHostCreateGame.bind(this));
+            socket.on(GameEv.CREATE, this._socketOnHostCreateGame.bind(this));
         }
+
+        socket.on(GameEv.RETURN_TO_LOBBY, () => {
+            if (socket === this._sessionHost) {
+                this.#currentGame!.onReturnToLobby();
+                this.#currentGame!.statusBecomeOver();
+                socket.broadcast.emit(GameEv.RETURN_TO_LOBBY);
+                this.#currentGame = undefined;
+            } else {
+                socket.broadcast.emit(GameEv.RETURN_TO_LOBBY, socket.id);
+            }
+        });
 
         socket.on(
             Group.Socket.UserInfoChange.EVENT_NAME,
@@ -154,22 +166,15 @@ export class Group extends _Group {
     }
     private _socketOnHostCreateGame(
         ctorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System>
-        | typeof Game.CtorArgs.Event.RETURN_TO_LOBBY_INDICATOR,
     ): void {
-        // First, broadcast to the joiner namespace of this
-        // group's change in state:
-        this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
-            [this.name]: (ctorArgs !== Game.CtorArgs.Event.RETURN_TO_LOBBY_INDICATOR)
-            ? Group.Exist.Status.IN_GAME
-            : Group.Exist.Status.IN_LOBBY,
-        });
-        if (ctorArgs !== Game.CtorArgs.Event.RETURN_TO_LOBBY_INDICATOR) {
-            const failureReasons = this._createGameInstance(ctorArgs);
-            if (failureReasons.length) {
-                // TODO.impl handle failure reasons.
-            }
+        const failureReasons = this._createGameInstance(ctorArgs);
+        if (failureReasons.length) {
+            // TODO.impl handle failure reasons.
         } else {
-            this.#currentGame!.onReturnToLobby();
+            // Broadcast to the joiner namespace of this group's change in state:
+            this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
+                [this.name]: Group.Exist.Status.IN_GAME,
+            });
         }
     }
 
@@ -190,7 +195,7 @@ export class Group extends _Group {
         nsps.removeAllListeners("connect");
         nsps.removeAllListeners("connection");
         Object.values(nsps.connected).forEach((socket) => {
-            socket.disconnect(); // TODO.learn should we pass `true` here?
+            socket.disconnect(false);
         });
         nsps.removeAllListeners();
         delete nsps.server.nsps[nsps.name];

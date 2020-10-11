@@ -1,5 +1,6 @@
 import type { OnlineGame } from "../../game/OnlineGame";
 
+import { GameEv } from "defs/OnlineDefs";
 import { Coord, SkScreen } from "../SkScreen";
 import { Game, _PlayScreen } from "./Play";
 type SID = SkScreen.Id.PLAY_ONLINE;
@@ -25,6 +26,8 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
      * @override
      */
     public getNavPrevArgs(): SkScreen.NavPrevRet<SkScreen.Id.GROUP_LOBBY> {
+        this.top.socket!.emit(GameEv.RETURN_TO_LOBBY);
+        this.currentGame?.statusBecomeOver();
         return [SkScreen.Id.GROUP_LOBBY, {}, SkScreen.NavDir.BACKWARD,];
     };
 
@@ -39,24 +42,16 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
      */
     protected readonly wantsAutoPause = false;
 
+    private get socket(): SocketIOClient.Socket {
+        return this.top.socket!;
+    }
+
     /**
      * @override
      */
     protected _lazyLoad(): void {
         super._lazyLoad();
         this.nav.prev.innerHTML = "Return To&nbsp;Lobby";
-    }
-
-    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
-        (this.nav.prev as HTMLButtonElement).onclick = (ev) => {
-            if (this.top.clientIsGroupHost) {
-                // TODO.impl ask first.
-                this.top.socket!.emit(Game.CtorArgs.Event.NAME, Game.CtorArgs.Event.RETURN_TO_LOBBY_INDICATOR);
-            } else {
-                // TODO.impl leave the game but stay in the group.
-            }
-        };
-        return super._abstractOnBeforeEnter(navDir, args);
     }
 
     /**
@@ -68,16 +63,31 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
             "../../game/OnlineGame"
         )).OnlineGame(
             this._onGameBecomeOver.bind(this),
-            this.top.socket!,
+            this.socket,
             ctorArgs,
         );
-        this.top.socket!.on(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_UNPAUSE, () => {
+        this.socket.on(GameEv.UNPAUSE, () => {
             this._statusBecomePlaying();
         });
-        this.top.socket!.on(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_PAUSE, () => {
+        this.socket.on(GameEv.PAUSE, () => {
             this._statusBecomePaused;
         });
+        this.socket.on(GameEv.RETURN_TO_LOBBY, (socketId: string | undefined) => {
+            if (socketId === undefined) {
+                // Everyone is being sent back to the lobby:
+                this.currentGame!.statusBecomeOver();
+                this.nav.prev.click();
+            } else {
+                this.currentGame!.onPlayerLeave(socketId);
+            }
+        });
         return Promise.resolve(game);
+    }
+
+    protected _onGameBecomeOver(): void {
+        this.socket.off(GameEv.UNPAUSE);
+        this.socket.off(GameEv.PAUSE);
+        this.socket.off(GameEv.RETURN_TO_LOBBY);
     }
 }
 export namespace PlayOnlineScreen {

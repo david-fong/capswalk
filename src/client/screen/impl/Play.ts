@@ -201,6 +201,8 @@ export abstract class _PlayScreen<
     }
 
 
+    // TODO.design make a protected version that is always defined.
+    // subclasses will always have a defined game. <- please verify first.
     public get currentGame(): Game | undefined {
         return this.#currentGame;
     }
@@ -277,6 +279,9 @@ export abstract class _PlayScreen<
         this.resetButton.disabled   = false;
     }
 
+    /**
+     * A callback passed to the constructed game to call when it ends.
+     */
     protected _onGameBecomeOver(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.pauseButton.disabled = true;

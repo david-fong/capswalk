@@ -80,35 +80,11 @@ export namespace Game {
         ;
     }>;
     export namespace CtorArgs {
-
-        export namespace Event {
-            export const NAME = "game-create";
-            /**
-             * This is used as the payload with the above event name when
-             * notifying the server's joiner namespace that the group is
-             * returning to their lobby from playing a game.
-             */
-            export const RETURN_TO_LOBBY_INDICATOR = "return-to-lobby";
-        }
-        export const EVENT_NAME_CLIENT_READY_RESET     = "client-ready-for-reset";
-        export const EVENT_NAME_CLIENT_READY_UNPAUSE   = "client-ready-for-unpause";
-        export const EVENT_NAME_SERVER_APPROVE_UNPAUSE = "server-approve-unpause";
-        export const EVENT_NAME_SERVER_APPROVE_PAUSE   = "server-approve-pause";
-
         /**
          */
         export type FailureReasons = {
             missingFields: Array<keyof CtorArgs<Game.Type, Coord.System>>;
         };
-
-        // export type _GameTypeDependantPart<G_group extends Game.Type, S extends Coord.System>
-        // = any extends G_group ? any : {[G in G_group]:
-        //     G extends Game.Type.Manager ? {
-        //         playerDescs: TU.RoArr<Player.CtorArgs.PreIdAssignment>;
-        //     } : {
-        //         playerDescs: TU.RoArr<Player.CtorArgs>;
-        //     }
-        // }[G_group];
     }
 
     /**
@@ -125,9 +101,6 @@ export namespace Game {
             health: Player.Health;
         }>;
     }>;
-    export namespace Serialization {
-        export const EVENT_NAME = <const>"game-reset";
-    }
 
     /**
      * - **`PLAYING`** can go to:

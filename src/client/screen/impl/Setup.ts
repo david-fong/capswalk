@@ -91,7 +91,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
     protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
         // TODO.impl
         const args: TU.NoRo<Game.CtorArgs<Game.Type.OFFLINE,Coord.System>>
-            = Object.assign({}, _SetupScreen.DEFAULT_PRESET);
+            = Object.assign({}, _SetupScreen.DEFAULT_PRESET());
             // ^temporary default until _loadLastUsedPreset is implemented.
         args.langId = this.langSel.confirmedOpt.desc.id;
         args.langWeightExaggeration = parseFloat(this.langWeightExaggeration.value);
@@ -100,9 +100,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
 }
 export namespace _SetupScreen {
 
-    // TODO.impl If we keep this, use a recursive Object.freeze.
-    // Currently not frozen to allow for easier testing.
-    export const DEFAULT_PRESET = <Game.CtorArgs<Game.Type.OFFLINE,Coord.System>>{
+    export const DEFAULT_PRESET = (): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> => { return {
         coordSys: Coord.System.EUCLID2,
         gridDimensions: {
             height: 21,
@@ -135,7 +133,7 @@ export namespace _SetupScreen {
                 keyPressesPerSecond: 1.8,
             },
         },])(), // <- Wrap in a function for better type checking.
-    };
+    }};
     /**
      *
      */

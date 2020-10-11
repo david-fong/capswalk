@@ -28,11 +28,20 @@
     align-items: center;
 
     gap: 0.35em;
-    padding: 0.7em;
+    padding: 0.3em;
+    border: solid 0.2em var(--colour-mainBg);
     border-radius: 0.9em;
 
     color: var(--colour-mainFg);
     background-color: var(--colour-mainBg);
+}
+.screen-colour--opt[aria-active-descendant="true"] {
+    border-color: var(--colour-tile-Bd);
+    border-style: dotted;
+}
+.screen-colour--opt[aria-selected="true"] {
+    text-decoration: none;
+    border-color: var(--colour-tile-Bd);
 }
 
 .screen-colour--opt > * {

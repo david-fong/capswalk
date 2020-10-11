@@ -1,7 +1,6 @@
 import { Player } from 'defs/TypeDefs';
 
 /**
- *
  */
 export abstract class SkServer { }
 export namespace SkServer {
@@ -21,7 +20,6 @@ Object.freeze(SkServer.prototype);
 
 
 /**
- *
  */
 export abstract class Group { }
 export namespace Group {
@@ -102,3 +100,40 @@ export namespace Group {
 }
 Object.freeze(Group);
 Object.freeze(Group.prototype);
+
+
+/**
+ */
+export const enum GameEv {
+    /**
+     * On the client-side, this event is registered to the group socket.
+     */
+    CREATE = "group-game-create",
+
+    /**
+     * Upon constructing a _new_ game, the server waits for all clients
+     * to send this event to indicate that they have finished building
+     * any necessary HTML, and are now ready to receive the serialized
+     * reset-state.
+     */
+    RESET = "game-reset",
+
+    /**
+     * Client uses this event during reset procedure after receiving
+     * the serialized reset-state to indicate that it is ready for
+     * the game to be un-paused.
+     */
+    UNPAUSE = "game-unpause",
+
+    /**
+     */
+    PAUSE = "game-pause",
+
+    /**
+     * The server will send this event with no arguments to indicate
+     * that everyone must now return to the lobby, or with a socket
+     * ID as an argument to indicate that all players operated by
+     * a client with that socket ID are out of the game.
+     */
+    RETURN_TO_LOBBY = "game-return-to-lobby",
+};

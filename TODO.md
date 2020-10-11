@@ -14,14 +14,14 @@
 
 ### High Priority
 
-1. For client-side modules, don't import Coord from Tile.ts if not necessary.
-1. Server authentication is not working.
-1. Make circular references in `Player` non-enumerable and see if that improves the debug logging experience.
-1. Make window title indicate current screen.
-1. Implement game creation event communications for online game.
+1. Make three kinds of sockets: Joiner, Group, Game.
+    - This will make it easier to trace communication procedures for the joiner, and easier to remove all game-related event listeners when a group returns to its lobby from a game.
 1. Implement Pause and Unpause events over network.
-1. ~Review all throw clauses and remove those declared in class constructors.~
-    - The new approach is to put these checks in the UI input validators and on the receiving end of the server side.
+1. `_PlayScreen.currentGame` protected, always-defined version. Non-enumerable.
+1. Server authentication is not working.
+1. Mark properties as non-enumerable where they should not be easily accessible through debugger consoles.
+    - Also consider those members of objects stored in arrays that tend to end up as circular references, which floods console.log.
+1. Make window title indicate current screen.
 1. Debug and handle goToScreen when user navigates forward in history.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
@@ -30,6 +30,7 @@
     - Also show scores (very small size) on top of player faces.
 1. Display the operator's current sequence buffer.
 1. Fill in implementation of bubble event handler.
+
 1. Design decision: Change bubble mechanism:
     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
     - When done automatically, health will be levelled-down enough to cause as many changes in downed-ness as possible by changing other opponents' health to -1 and teammates' health to 0.
