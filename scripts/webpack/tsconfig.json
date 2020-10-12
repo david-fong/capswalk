@@ -19,6 +19,7 @@
         "noImplicitThis":       true,
     },
     "files": [
-        "webpack.config.ts"
-    ]
+        "webpack.config.ts",
+        "pack.ts",
+    ],
 }

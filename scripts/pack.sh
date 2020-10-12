@@ -18,9 +18,6 @@ fi
 
 
 # --verbose
-# interesting note: if you export an array of configs, the
-# stats.color argument is ignored... I haven't fiddled to
-# see what else is like this.
 declare -r doneMsg="$(echo -e "\n\n\n=== BUILD DONE ===\n\n\n")"
-time npx --no-install webpack --color --build-delimiter="${doneMsg}" --config "${cwd}/webpack/webpack.config.js"
+time node "${cwd}/webpack/pack.js"
 
