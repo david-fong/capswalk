@@ -14,6 +14,7 @@
 
 ### High Priority
 
+1. Change `Team` to use `WeakSet` to refer to players. Do an audit to see if other collections could use WeakSet as well.
 1. Make three kinds of sockets: Joiner, Group, Game.
     - This will make it easier to trace communication procedures for the joiner, and easier to remove all game-related event listeners when a group returns to its lobby from a game.
 1. Implement Pause and Unpause events over network.

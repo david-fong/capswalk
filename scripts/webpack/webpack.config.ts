@@ -19,7 +19,7 @@ type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 const PACK_MODE = (process.env.NODE_ENV) as webpack.Configuration["mode"];
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
-const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.Plugin>> => { return [
+const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> => { return [
     // new webpack.ProgressPlugin((pct, msg, moduleProgress?, activeModules?, moduleName?) => {
     //     console.log(
     //         `[${Math.floor(pct * 100).toString().padStart(3)}% ]`,
@@ -139,9 +139,9 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
     },
     module: { rules: MODULE_RULES(), },
     // https://webpack.js.org/plugins/source-map-dev-tool-plugin/
-    devtool: <webpack.Options.Devtool>(PACK_MODE === "production")
+    devtool: (PACK_MODE === "production")
         ? "nosources-source-map"
-        : "cheap-eval-source-map",
+        : "eval-cheap-source-map",
     output: {
         path:           path.resolve(PROJECT_ROOT, "dist", distSubFolder),
         publicPath:     `dist/${distSubFolder}/`, // need trailing "/".
@@ -181,7 +181,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
         importType: "root",
     }), ],
     config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
-    config.module!.rules.push(...WEB_MODULE_RULES());
+    config.module!.rules!.push(...WEB_MODULE_RULES());
     // config.resolve.alias = config.resolve.alias || {
     //     "socket.io-client": "socket.io-client/dist/socket.io.slim.js",
     // };
@@ -204,7 +204,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
         new MiniCssExtractPlugin({
             filename: "_barrel.css",
             chunkFilename: "chunk/[name].css",
-        }),
+        }) as webpack.WebpackPluginInstance, // TODO.build remove this when https://github.com/webpack-contrib/mini-css-extract-plugin/pull/594
         new CopyWebpackPlugin({ patterns: [{
             from: "node_modules/socket.io-client/dist/socket.io.js" + "*",
             to: "vendor/",
@@ -239,9 +239,9 @@ const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>
     // https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_javascript-source-map-tips
     // https://webpack.js.org/configuration/output/#outputdevtoolmodulefilenametemplate
     config.output.devtoolModuleFilenameTemplate = "../[resource-path]?[loaders]";
-    config.devtool = <webpack.Options.Devtool>(PACK_MODE === "production")
+    config.devtool = (PACK_MODE === "production")
         ? "cheap-module-source-map"
-        : "cheap-module-eval-source-map";
+        : "eval-cheap-module-source-map";
 };
 
 /**
