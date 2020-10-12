@@ -5,7 +5,8 @@ import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { VisibleGrid } from "floor/VisibleGrid";
 
-import { Player, PlayerStatus, Team } from "../player/Player";
+import { Player, PlayerStatus } from "../player/Player";
+import { Team } from "../player/Team";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
 

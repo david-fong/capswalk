@@ -18,7 +18,7 @@ export class Team<S extends Coord.System> {
             throw Error("Teams must have at least one member.");
         }
         this.id = teamId;
-        this.members = members;
+        this.members = members; // If paranoid, do a shallow copy.
         this.#elimOrder
             = (this.members.every((member) => member.status.noCheckGameOver))
             ? Team.ElimOrder.IMMORTAL

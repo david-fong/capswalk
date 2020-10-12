@@ -33,7 +33,7 @@
     ],
 
     "eslint.enable": false, // TODO.build Re-enable this once typescript's eslint parser can handle #private fields.
-    "trailing-spaces.trimOnSave": true,
+    "files.trimTrailingWhitespace": true,
 
     "todo-tree.filtering.useBuiltInExcludes": "file excludes",
     "todo-tree.general.statusBar": "total",

@@ -13,6 +13,7 @@ import {
  */
 export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 
+    // TODO.design how to remove players that have left the game?...
     private readonly threatProximity: Array<Player<S>>;
     private readonly targetProximity: Array<Player<S>>;
 
@@ -24,7 +25,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
     public constructor(game: GamepartManager<any,S>, desc: Player._CtorArgs<"CHASER">) {
         super(game, desc);
         this.behaviour = Object.freeze(Object.assign(
-            Object.create(null),
+            {},
             Chaser.Behaviour.DEFAULT,
             desc.familyArgs,
         ));
@@ -40,7 +41,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
             .flatMap((team) => team.members);
 
         // @ts-expect-error : RO=
-        this.targetProximity = this.threatProximity.slice();
+        this.targetProximity = [...this.threatProximity];
     }
 
     public reset(spawnTile: Tile<S>): void {

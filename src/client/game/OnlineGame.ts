@@ -112,6 +112,18 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
     public processBubbleRequest(desc: PlayerActionEvent.Bubble): void {
         this.socket.emit(PlayerActionEvent.EVENT_NAME.Bubble, desc);
     }
+
+    public onPlayerLeave(socketId: string): void {
+        this.players.filter((player) => player.socketId === socketId).forEach((player) => {
+            player.tile.at().evictOccupant();
+            // @ts-expect-error : RO=
+            player.hostTile = undefined;
+            // @ts-expect-error : RO=
+            this.players[player.playerId] = undefined;
+            // @ts-expect-error : RO[]
+            player.team.members.splice(player.team.members.indexOf(player));
+        });
+    }
 }
 export interface OnlineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
 applyMixins(OnlineGame, [BrowserGameMixin,]);
