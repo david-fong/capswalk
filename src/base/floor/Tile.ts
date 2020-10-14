@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { Lang, Player } from "defs/TypeDefs";
 import { Coord } from "./Coord"; export { Coord };
 
@@ -40,6 +41,7 @@ export class Tile<S extends Coord.System> {
      */
     public constructor(coord: Coord[S]) {
         this.coord = coord;
+        JsUtils.propNoWrite(this as Tile<S>, ["coord",]);
         this.#occupantId = Player.Id.NULL;
     }
 
@@ -111,8 +113,6 @@ export class Tile<S extends Coord.System> {
 // If this errs when changing the constructor signature, then
 // the type definition being asserted should be updated to match.
 Tile as Tile.ClassIf<Coord.System>;
-
-
 
 export namespace Tile {
 

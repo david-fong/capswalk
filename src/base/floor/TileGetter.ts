@@ -44,7 +44,6 @@ export class TileGetter<S extends CoordSys, A extends Arguments<S>> {
         return new Query(this.#source._getTileSourcesTo(...args));
     }
 }
-
 export namespace TileGetter {
     /**
      * A Tile should always be a source-to and destination-from itself.
@@ -60,12 +59,15 @@ export namespace TileGetter {
 Object.freeze(TileGetter);
 Object.freeze(TileGetter.prototype);
 
+
 /**
  *
  */
 class Query<S extends CoordSys> {
 
-    public constructor(protected contents: Array<Tile<S>>) { }
+    public constructor(protected contents: Array<Tile<S>>) {
+        Object.seal(this);
+    }
 
     public get occupied(): Omit<Query<S>, "unoccupied"> {
         this.contents = this.contents.filter((tile) => tile.isOccupied);

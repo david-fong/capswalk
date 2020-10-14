@@ -8,37 +8,6 @@ SCROLL_INTO_CENTER as ScrollIntoViewOptions;
 
 
 /**
- * Copied from TypeScript official docs.
- *
- * @param derivedCtor -
- * @param baseCtors -
- */
-export function applyMixins(derivedCtor: any, baseCtors: any[]): void {
-    baseCtors.forEach((baseCtor) => {
-        Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
-            Object.defineProperty(derivedCtor.prototype, name,
-                Object.getOwnPropertyDescriptor(baseCtor.prototype, name)!
-            );
-        });
-    });
-}
-
-/**
- *
- * @param obj -
- */
-export function deepFreeze(obj: any): void {
-    for (const key of Object.getOwnPropertyNames(obj)) {
-        const val = obj[key];
-        if (typeof val === "object") {
-            deepFreeze(val);
-        }
-    }
-    return Object.freeze(obj);
-}
-
-
-/**
  *
  */
 export abstract class Player<S> { }

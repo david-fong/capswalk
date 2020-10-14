@@ -1,6 +1,7 @@
 import type { Coord, Tile } from "floor/Tile";
+import { VisibleTile } from "floor/VisibleTile";
 import { Grid } from "floor/Grid";
-import { OmHooks } from 'defs/OmHooks';
+import { OmHooks } from "defs/OmHooks";
 
 
 /**
@@ -60,6 +61,9 @@ export class VisibleGridMixin<S extends Coord.System> {
      * @param gridImpl -
      */
     public _superVisibleGrid(desc: Grid.CtorArgs<S>, gridImpl: HTMLElement): void {
+        if (desc.tileClass !== VisibleTile) {
+            throw TypeError("never");
+        }
         const OHG = OmHooks.Grid;
         gridImpl.setAttribute("role", "presentation");
         gridImpl.classList.add(OHG.Class.IMPL_BODY);

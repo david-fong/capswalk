@@ -167,7 +167,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
         });
 
         if (clientEventLag > 1) {
-            // ===== Out of order receipt (client-side) =====
+            // ===== Out of order receipt (clientside) =====
             // Already received more recent request responses.
             if (player === this.currentOperator) {
                 // Operator never receives their own updates out of

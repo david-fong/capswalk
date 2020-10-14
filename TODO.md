@@ -23,6 +23,7 @@
     - Also consider those members of objects stored in arrays that tend to end up as circular references, which floods console.log.
 1. Make window title indicate current screen.
 1. Debug and handle goToScreen when user navigates forward in history.
+1. When TypeScript 4.1 comes out, use the improved `@see` JSdoc annotations.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).

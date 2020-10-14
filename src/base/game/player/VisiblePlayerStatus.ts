@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 import type { Coord, Tile } from "floor/Tile";
@@ -15,7 +16,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     readonly #baseElem: HTMLElement;
     readonly #vBellAnims: Animation[];
 
-    private readonly _immigrantInfoCache: Tile.VisibleImmigrantInfo;
+    readonly #immigrantInfoCache: Tile.VisibleImmigrantInfo;
 
 
     public constructor(player: Player<S>, noCheckGameOver: boolean) {
@@ -61,7 +62,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
      */
     public _afterAllPlayersConstruction(): void {
         // @ts-expect-error : RO=
-        this._immigrantInfoCache = Object.freeze({
+        this.#immigrantInfoCache = Object.freeze({
             playerElem: this.#baseElem,
             username: this.player.username,
         });
@@ -77,7 +78,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
     public get immigrantInfo(): Tile.VisibleImmigrantInfo {
-        return this._immigrantInfoCache;
+        return this.#immigrantInfoCache;
     }
 
     public _notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
@@ -157,5 +158,6 @@ export namespace VisiblePlayerStatus {
         }
     }
 }
+JsUtils.protoNoEnum(VisiblePlayerStatus, ["_afterAllPlayersConstruction"]);
 Object.freeze(VisiblePlayerStatus);
 Object.freeze(VisiblePlayerStatus.prototype);

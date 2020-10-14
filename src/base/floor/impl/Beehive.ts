@@ -1,6 +1,5 @@
-import { applyMixins } from 'defs/TypeDefs';
 import { Coord as BaseCoord, Tile } from "../Tile";
-import { Grid as AbstractGrid } from "../Grid";
+import { JsUtils, Grid as AbstractGrid } from "../Grid";
 import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
 
 
@@ -205,29 +204,32 @@ export namespace Beehive {
             return new Coord(undefined!);
         }
     }
-
     export namespace Grid {
         export type Dimensions = {
             dash: number;
             bslash: number;
             fslash: number;
         };
-
-        export class Visible extends Grid implements VisibleGrid<S> {
-            public constructor(desc: AbstractGrid.CtorArgs<S>) {
-                super(desc);
-                const domGrid: HTMLElement = undefined!;
-                // TODO.impl Beehive VisibleGrid ctor.
-                this._superVisibleGrid(desc, domGrid);
-            }
-        }
-        export interface Visible extends VisibleGridMixin<S> { };
-        applyMixins(Visible, [VisibleGridMixin,]);
-        Object.freeze(Visible);
-        Object.freeze(Visible.prototype);
     }
+    JsUtils.protoNoEnum(Grid, ["_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo"]);
     Object.freeze(Grid);
     Object.freeze(Grid.prototype);
-
 }
 Object.freeze(Beehive);
+
+
+/**
+ */
+// Separated for tree-shaking.
+export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
+    public constructor(desc: AbstractGrid.CtorArgs<S>) {
+        super(desc);
+        const domGrid: HTMLElement = undefined!;
+        // TODO.impl Beehive VisibleGrid ctor.
+        this._superVisibleGrid(desc, domGrid);
+    }
+}
+export interface BeehiveVisibleGrid extends VisibleGridMixin<S> { };
+JsUtils.applyMixins(BeehiveVisibleGrid, [VisibleGridMixin,]);
+Object.freeze(BeehiveVisibleGrid);
+Object.freeze(BeehiveVisibleGrid.prototype);

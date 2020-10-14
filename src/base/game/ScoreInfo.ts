@@ -1,12 +1,19 @@
+import { JsUtils } from "defs/JsUtils";
 import type { Player } from "./player/Player";
 import { Player as _Player } from "defs/TypeDefs";
 
 
 /**
- *
+ * Information about each Player's scores and statistics since the
+ * last Game reset. This is separated from Player instances since
+ * non-GameManagers have no need to maintain such records throughout
+ * the game.
  */
 export class ScoreInfo {
 
+    /**
+     * A map from player ID's to information about their scores.
+     */
     public readonly entries: TU.RoArr<ScoreInfo.Entry>;
 
     public constructor(playerIds: TU.RoArr<Player.Id>) {
@@ -15,6 +22,7 @@ export class ScoreInfo {
             entries[id] = new ScoreInfo.Entry();
         }
         this.entries = entries;
+        JsUtils.propNoWrite(this as ScoreInfo, ["entries",]);
     }
 
     public reset(): void {
@@ -25,7 +33,6 @@ export class ScoreInfo {
 }
 export namespace ScoreInfo {
     /**
-     *
      */
     export class Entry {
 

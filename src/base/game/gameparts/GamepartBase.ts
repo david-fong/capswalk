@@ -2,10 +2,11 @@ import { Game } from "../Game";
 import { Lang } from "defs/TypeDefs";
 
 import type { Coord, Tile } from "floor/Tile";
-import type { Grid } from "floor/Grid";
+import { Grid, JsUtils } from "floor/Grid";
 import type { VisibleGrid } from "floor/VisibleGrid";
 
-import { Player, PlayerStatus } from "../player/Player";
+import { Player } from "../player/Player";
+import type { PlayerStatus } from "../player/PlayerStatus";
 import { Team } from "../player/Team";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
@@ -90,6 +91,10 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
                 throw Error("All teams are immortal. The game will never end.");
             }
         }
+        JsUtils.propNoWrite(this as GamepartBase<G,S>, [
+            "gameType", "grid", "langFrontend",
+            "players", "operators", "teams", "_playerStatusCtor",
+        ]);
         this.players.forEach((player) => player._afterAllPlayersConstruction());
     }
 
@@ -228,8 +233,8 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             console.log("[statusBecomePaused]: Game is already paused");
             return;
         }
-        if (this.status !== Game.Status.PLAYING) {
-            throw Error("Can only pause a game that is currently playing.");
+        if (this.status === Game.Status.OVER) {
+            return;
         }
         this.players.forEach((player) => {
             player._notifyGameNowPaused();
@@ -269,5 +274,10 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
     public abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
     protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
 }
+JsUtils.protoNoEnum(GamepartBase, [
+    "_abstractStatusBecomePlaying",
+    "_abstractStatusBecomePaused",
+    "_abstractStatusBecomeOver",
+]);
 Object.freeze(GamepartBase);
 Object.freeze(GamepartBase.prototype);

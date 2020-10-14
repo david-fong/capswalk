@@ -1,11 +1,12 @@
+import { JsUtils } from "defs/JsUtils";
 import { Player as _Player } from "defs/TypeDefs";
 import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
 import type { GamepartBase } from "game/gameparts/GamepartBase";
+import type { PlayerStatus } from "./PlayerStatus";
 
-import { PlayerStatus } from "./PlayerStatus";
 import { TileGetter } from "floor/TileGetter";
 
 
@@ -47,6 +48,11 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
             desc.noCheckGameOver,
         );
         this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
+        JsUtils.instNoEnum( this as PlayerSkeleton<S>, ["game",]);
+        JsUtils.propNoWrite(this as PlayerSkeleton<S>, [
+            "playerId", "isALocalOperator",
+            "game", "status", "tile",
+        ]);
     }
 
     public _afterAllPlayersConstruction(): void {
@@ -128,7 +134,6 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 }
 export namespace PlayerSkeleton {
     /**
-     *
      */
     export class TileGetterSource<S extends Coord.System> implements TileGetter.Source<S,[]> {
 

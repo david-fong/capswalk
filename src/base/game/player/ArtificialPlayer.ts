@@ -107,8 +107,6 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
         return;
     }
 }
-
-
 export namespace ArtificialPlayer {
 
     export declare const _Constructors: Readonly<{

@@ -1,3 +1,5 @@
+import { JsUtils } from "defs/JsUtils";
+export { JsUtils } from "defs/JsUtils";
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
@@ -34,6 +36,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         this.static = desc.gridClass;
         this.dimensions = desc.dimensions;
         this.tile = new TileGetter(this);
+        JsUtils.propNoWrite(this as Grid<S>, ["static", "dimensions", "tile",]);
     }
 
     /**

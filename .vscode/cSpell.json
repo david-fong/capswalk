@@ -41,9 +41,11 @@
         // (Functions and Variables)
         "anims",
         "coord",
-        "dict",
+        "clientside",
+        "decor", // short for "decorator"
         "desc", "descs",
         "dests",
+        "dict",
         "elem", "elems",
         "minmax",
         "mixins",
@@ -51,6 +53,7 @@
         "retval",
         "reflow",
         "refs",
+        "serverside",
         "supercall",
         "spec",
         "typeof",

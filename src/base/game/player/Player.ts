@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
 
 import type { Coord, Tile }     from "floor/Tile";
@@ -42,6 +43,10 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
         this.teamId   = desc.teamId;
         this.username = desc.username;
         this.avatar   = desc.avatar ?? Player.Avatar.GET_RANDOM();
+        JsUtils.propNoWrite(this as Player<S>, [
+            "socketId", "familyId",
+            "teamId", "username", "avatar",
+        ]);
     }
 
     public reset(spawnTile: Tile<S>): void {

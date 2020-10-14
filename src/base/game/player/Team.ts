@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 
@@ -23,6 +24,8 @@ export class Team<S extends Coord.System> {
             = (this.members.every((member) => member.status.noCheckGameOver))
             ? Team.ElimOrder.IMMORTAL
             : Team.ElimOrder.STANDING;
+
+        JsUtils.propNoWrite(this as Team<S>, ["id", "members",]);
     }
 
     public reset(): void {

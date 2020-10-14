@@ -50,10 +50,9 @@ Import your system namespace, and add entries to `Coord` and `Coord.Bare` for th
 
 ```typescript
 // coord-related imports
-import { applyMixins } from "defs/TypeDefs";
 import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
-import { Grid as AbstractGrid } from "../Grid";
+import { JsUtils, Grid as AbstractGrid } from "../Grid";
 import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
 
 // documentation
@@ -96,21 +95,26 @@ export namespace SysName {
             // numeric fields.
             // at least one must be non-optional.
         };
-        export class Visible extends Grid implements VisibleGrid<S> {
-            public constructor(desc: AbstractGrid.CtorArgs<S>) {
-                super(desc);
-                // Set up DOM fields for rendering the grid.
-            }
-        }
-        export interface Visible extends VisibleGridMixin<S> { };
-        applyMixins(Visible, [VisibleGridMixin]);
-        Object.freeze(Visible);
-        Object.freeze(Visible.prototype);
     }
+    JsUtils.protoNoEnum(Grid, ["_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo"]);
     Object.freeze(Grid);
     Object.freeze(Grid.prototype);
 }
 Object.freeze(SysName);
+
+/**
+ */
+// Separated for tree-shaking.
+export class SysNameVisible extends Grid implements VisibleGrid<S> {
+    public constructor(desc: AbstractGrid.CtorArgs<S>) {
+        super(desc);
+        // Set up DOM fields for rendering the grid.
+    }
+}
+export interface SysNameVisible extends VisibleGridMixin<S> { };
+JsUtils.applyMixins(SysNameVisible, [VisibleGridMixin]);
+Object.freeze(SysNameVisible);
+Object.freeze(SysNameVisible.prototype);
 ```
 
 **In [`Grid.ts`](../Grid.ts)**

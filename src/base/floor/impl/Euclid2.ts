@@ -1,7 +1,6 @@
-import { applyMixins } from "defs/TypeDefs";
 import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
-import { Grid as AbstractGrid } from "../Grid";
+import { JsUtils, Grid as AbstractGrid } from "../Grid";
 import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
 
 
@@ -332,32 +331,37 @@ export namespace Euclid2 {
             height: number,
             width:  number,
         };
-
-        export class Visible extends Grid implements VisibleGrid<S> {
-            /**
-             * @override
-             */
-            declare protected readonly grid: TU.RoArr<TU.RoArr<VisibleTile<S>>>;
-
-            public constructor(desc: AbstractGrid.CtorArgs<S>) {
-                super(desc);
-                const gridElem = document.createElement("div");
-                gridElem.style.setProperty("--euclid2-grid-width",  this.dimensions.width.toString());
-                //gridElem.style.setProperty("--euclid2-grid-height", this.dimensions.height.toString());
-                for (const row of this.grid) {
-                    for (const tile of row) {
-                        tile._addToDom(gridElem);
-                    }
-                }
-                this._superVisibleGrid(desc, gridElem);
-            }
-        }
-        export interface Visible extends VisibleGridMixin<S> { };
-        applyMixins(Visible, [VisibleGridMixin,]);
-        Object.freeze(Visible);
-        Object.freeze(Visible.prototype);
     }
+    JsUtils.protoNoEnum(Grid, ["_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo"]);
     Object.freeze(Grid);
     Object.freeze(Grid.prototype);
 }
 Object.freeze(Euclid2);
+
+
+/**
+ */
+// Separated for tree-shaking.
+export class Euclid2VisibleGrid extends Euclid2.Grid implements VisibleGrid<S> {
+    /**
+     * @override
+     */
+    declare protected readonly grid: TU.RoArr<TU.RoArr<VisibleTile<S>>>;
+
+    public constructor(desc: AbstractGrid.CtorArgs<S>) {
+        super(desc);
+        const gridElem = document.createElement("div");
+        gridElem.style.setProperty("--euclid2-grid-width",  this.dimensions.width.toString());
+        //gridElem.style.setProperty("--euclid2-grid-height", this.dimensions.height.toString());
+        for (const row of this.grid) {
+            for (const tile of row) {
+                tile._addToDom(gridElem);
+            }
+        }
+        this._superVisibleGrid(desc, gridElem);
+    }
+}
+export interface Euclid2VisibleGrid extends VisibleGridMixin<S> { };
+JsUtils.applyMixins(Euclid2VisibleGrid, [VisibleGridMixin,]);
+Object.freeze(Euclid2VisibleGrid);
+Object.freeze(Euclid2VisibleGrid.prototype);

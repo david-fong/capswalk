@@ -5,11 +5,12 @@ import { GamepartBase }         from "game/gameparts/GamepartBase";
 import { Player }               from "game/player/Player";              export { Player };
 import { OperatorPlayer }       from "game/player/OperatorPlayer";      export { OperatorPlayer };
 
-export { applyMixins }          from "defs/TypeDefs";
+export { JsUtils }              from "defs/JsUtils";
 export { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
 
-import { GameBootstrap } from "game/GameBootstrap";
-GameBootstrap.INIT_CLASS_REGISTRIES();
+import { _INIT_BASIC_CLASS_REGISTRIES, _INIT_CLIENTSIDE_CLASS_REGISTRIES } from "game/GameBootstrap";
+_INIT_BASIC_CLASS_REGISTRIES();
+_INIT_CLIENTSIDE_CLASS_REGISTRIES();
 
 
 /**

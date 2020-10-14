@@ -4,7 +4,7 @@ import { setTimeout } from "timers";
 import { GameEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import { Coord, Tile } from "floor/Tile";
-import { Grid } from "floor/Grid";
+import { Grid, JsUtils } from "floor/Grid";
 import { Player, PlayerStatus } from "game/player/Player";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
@@ -12,8 +12,8 @@ import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
 import { GamepartManager } from "game/gameparts/GamepartManager";
 
-import { GameBootstrap } from "game/GameBootstrap";
-GameBootstrap.INIT_CLASS_REGISTRIES();
+import { _INIT_BASIC_CLASS_REGISTRIES } from "game/GameBootstrap";
+_INIT_BASIC_CLASS_REGISTRIES();
 
 
 type G = Game.Type.SERVER;
@@ -23,6 +23,12 @@ type G = Game.Type.SERVER;
  * socket.
  */
 export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
+
+    /**
+     * @override
+     */
+    // @ts-expect-error : Redeclaring accessor as property.
+    declare public currentOperator: undefined;
 
     public readonly namespace: io.Namespace;
 
@@ -66,6 +72,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             playerStatusCtor: PlayerStatus,
             }, gameDesc,
         );
+        JsUtils.instNoEnum(this as ServerGame<S>, ["operators"]);
         this.namespace = namespace;
 
         // The below cast is safe because GameBase reassigns
@@ -163,6 +170,12 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     public _createOperatorPlayer(desc: Player.CtorArgs): never {
         throw TypeError("This should never be called for a ServerGame.");
     }
+    /**
+     * @override
+     */
+    public setCurrentOperator(nextOperatorIndex: number): void {
+        // no-op
+    }
 
 
     public setTimeout(callback: VoidFunction, millis: number, ...args: any[]): NodeJS.Timeout {
@@ -217,5 +230,9 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         }
     }
 }
+JsUtils.protoNoEnum(ServerGame, [
+    "_createOperatorPlayer", "setCurrentOperator",
+    "onReturnToLobby",
+]);
 Object.freeze(ServerGame);
 Object.freeze(ServerGame.prototype);

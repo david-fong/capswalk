@@ -10,8 +10,8 @@ import { Player } from "./Player";
 
 
 /**
- * There is at least one in online-client-side and offline games.
- * There are none for online-server-side games.
+ * There is at least one in online-clientside and offline games.
+ * There are none for online-serverside games.
  */
 export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 

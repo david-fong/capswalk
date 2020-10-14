@@ -1,4 +1,4 @@
-import { deepFreeze } from "defs/TypeDefs";
+import { JsUtils } from "defs/JsUtils";
 
 /**
  * # DOM / CSSOM Hook Strings
@@ -177,4 +177,4 @@ export namespace SkPickOne {
 }
 }
 Object.freeze(OmHooks.Player.Dataset.DOWNED); // String with properties.
-deepFreeze(OmHooks);
+JsUtils.deepFreeze(OmHooks);

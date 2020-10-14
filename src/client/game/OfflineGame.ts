@@ -2,7 +2,7 @@
 require("assets/style/game/_barrel.css");
 
 import {
-    applyMixins,
+    JsUtils,
     Game,
     Coord, VisibleTile,
     BrowserGameMixin,
@@ -65,6 +65,6 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
     declare public readonly processBubbleRequest: GamepartManager<G,S>["processBubbleRequest"];
 }
 export interface OfflineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
-applyMixins(OfflineGame, [BrowserGameMixin,]);
+JsUtils.applyMixins(OfflineGame, [BrowserGameMixin,]);
 Object.freeze(OfflineGame);
 Object.freeze(OfflineGame.prototype);

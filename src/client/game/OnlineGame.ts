@@ -3,7 +3,7 @@ require("assets/style/game/_barrel.css");
 
 import { GameEv } from "defs/OnlineDefs";
 import {
-    applyMixins,
+    JsUtils,
     Game,
     Coord, VisibleTile,
     BrowserGameMixin,
@@ -126,6 +126,6 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
     }
 }
 export interface OnlineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
-applyMixins(OnlineGame, [BrowserGameMixin,]);
+JsUtils.applyMixins(OnlineGame, [BrowserGameMixin,]);
 Object.freeze(OnlineGame);
 Object.freeze(OnlineGame.prototype);

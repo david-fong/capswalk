@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { Lang } from "lang/Lang";
 import { Game } from "game/Game";
 
@@ -44,6 +45,10 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         this.averageFreeHealth = desc.averageFreeHealthPerTile * this.grid.area;
         this.averageFreeHealthPerTile = desc.averageFreeHealthPerTile;
         this.#freeHealthTiles = new Set();
+        this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
+        JsUtils.propNoWrite(this as GamepartManager<G,S>, [
+            "averageFreeHealth", "averageFreeHealthPerTile", "scoreInfo",
+        ]);
 
         // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
         this.#langImportPromise = (import(
@@ -56,6 +61,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             ) as Lang.ClassIf;
             // @ts-expect-error : RO=
             this.lang = new LangConstructor(desc.langWeightExaggeration);
+            JsUtils.propNoWrite(this as GamepartManager<G,S>, ["lang",]);
 
             // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
             const minLangLeaves = this.grid.static.getAmbiguityThreshold();
@@ -70,8 +76,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             }
             return this.lang;
         });
-
-        this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
     }
 
     /**
@@ -423,5 +427,6 @@ export namespace GamepartManager {
         return fr;
     }
 }
+JsUtils.protoNoEnum(GamepartManager, ["managerCheckGamePlayingRequest"]);
 Object.freeze(GamepartManager);
 Object.freeze(GamepartManager.prototype);

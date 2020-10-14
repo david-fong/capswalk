@@ -106,7 +106,7 @@ Object.freeze(Group.prototype);
  */
 export const enum GameEv {
     /**
-     * On the client-side, this event is registered to the group socket.
+     * On the clientside, this event is registered to the group socket.
      */
     CREATE = "group-game-create",
 

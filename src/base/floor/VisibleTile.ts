@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import type { Lang, Player } from "defs/TypeDefs";
 
@@ -50,6 +51,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             this.#baseElem.appendChild(seqElem);
         }
+        JsUtils.propNoWrite(this as VisibleTile<S>, ["langCharElem", "langSeqElem",]);
     }
 
     public _addToDom(parent: HTMLElement): void {
@@ -116,5 +118,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 }
 // Assert that this extension's constructor has a compatible signature:
 VisibleTile as Tile.ClassIf<Coord.System>;
+JsUtils.protoNoEnum(VisibleTile, ["_addToDom"]);
 Object.freeze(VisibleTile);
 Object.freeze(VisibleTile.prototype);
