@@ -18,16 +18,21 @@ export namespace JsUtils {
     }
 
     /**
-     * @param obj -
+     * @param obj
+     * An object with no cycles (circular references).
      */
-    export function deepFreeze(obj: any): void {
+    export function deepFreeze<T>(obj: T): TU.DeepRo<T> {
+        _deepFreeze(obj);
+        return obj as TU.DeepRo<T>;
+    }
+    function _deepFreeze(obj: any): void {
         for (const key of Object.getOwnPropertyNames(obj)) {
             const val = obj[key];
             if (typeof val === "object") {
                 deepFreeze(val);
             }
         }
-        return Object.freeze(obj);
+        Object.freeze(obj);
     }
 
     /**
@@ -112,6 +117,25 @@ export namespace JsUtils {
                 throw new TypeError(msg); // Mismatched property name.
             }
             Object.defineProperty(inst, propName, descriptor);
+        });
+    }
+
+    export type CamelCaseNameTransforms = Readonly<{
+        spaceyLowercase: string;
+        spaceyUppercase: string;
+        spaceyCapitalized: string;
+    }>;
+    /**
+     * Nothing ultra fancy. Does not handle Acronyms.
+     */
+    export function camelCaseTransforms(camelCaseName: string): CamelCaseNameTransforms {
+        const spaceyLowercase = camelCaseName.replace(/[A-Z]/g, (letter) => " " + letter.toLowerCase());
+        return Object.freeze(<CamelCaseNameTransforms>{
+            spaceyLowercase,
+            spaceyUppercase: spaceyLowercase.toUpperCase(),
+            spaceyCapitalized: spaceyLowercase.split(' ').map((word) =>
+                word.charAt(0).toUpperCase() + word.substring(1)
+            ).join(' '),
         });
     }
 }
