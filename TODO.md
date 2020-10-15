@@ -16,6 +16,7 @@
 
 1. Make three kinds of sockets: Joiner, Group, Game.
     - This will make it easier to trace communication procedures for the joiner, and easier to remove all game-related event listeners when a group returns to its lobby from a game.
+1. Get rid of `OnlineGame.onPlayerLeave`. Instead, if a Player leaves, just leave their player on the grid :P
 1. Implement Pause and Unpause events over network.
 1. `_PlayScreen.currentGame` protected, always-defined version. Non-enumerable.
 1. Server authentication is not working.
@@ -45,6 +46,7 @@
 ### Routine Checkups
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
+- `git gc`, `git prune`, `npm dedupe`, `npm audit`, `npm oudated`.
 
 ### Low Priority
 

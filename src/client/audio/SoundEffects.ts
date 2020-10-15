@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 
 
 /**
@@ -18,6 +19,7 @@ export class SoundEffects {
             latencyHint: "interactive",
             sampleRate: sfxDesc.sampleRate,
         });
+        JsUtils.propNoWrite(this as SoundEffects, ["context",]);
     }
 }
 export namespace SoundEffects {

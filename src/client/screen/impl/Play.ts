@@ -4,7 +4,7 @@ import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 // import type { OnlineGame }  from "../../game/OnlineGame";
 import type { BrowserGameMixin } from "../../game/BrowserGame";
 
-import { OmHooks, Coord, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks, Coord, SkScreen } from "../SkScreen";
 
 /**
  * If and only if this screen is the current screen, then its
@@ -59,7 +59,7 @@ export abstract class _PlayScreen<
      * Automatically added and removed from listeners when entering
      * and leaving this screen.
      */
-    readonly #onVisibilityChange: VoidFunction;
+    readonly #onVisibilityChange: () => void;
     /**
      * Automatically added and removed from listeners when entering
      * and leaving this screen.
@@ -94,6 +94,7 @@ export abstract class _PlayScreen<
             }
         });
         // ^Purposely make the grid the first child so it gets tabbed to first.
+        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["_gridBaseElem", "_gridImplHost",]);
 
         // See below link for an illustrative guide on the intersection observer API:
         // https://blog.arnellebalane.com/the-intersection-observer-api-d441be0b088d
@@ -352,6 +353,7 @@ export abstract class _PlayScreen<
         reset.onclick = this._resetGame.bind(this);
         }
 
+        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["pauseButton", "resetButton",]);
         this.baseElem.appendChild(controlsBar);
     }
 
@@ -360,6 +362,7 @@ export abstract class _PlayScreen<
             // @ts-expect-error : RO=
             = this.playersBar
             = document.createElement("div");
+        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["playersBar",]);
         playersBar.classList.add(OmHooks.Screen.Impl.Play.Class.PLAYERS_BAR);
         this.baseElem.appendChild(playersBar);
     }

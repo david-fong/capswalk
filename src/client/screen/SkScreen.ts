@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import { StorageHooks } from "defs/StorageHooks";
 import type { Coord } from "floor/Tile";
@@ -18,7 +19,7 @@ import type {  SetupOnlineScreen } from "./impl/SetupOnline";
 import type {   GroupLobbyScreen } from "./impl/GroupLobby";
 import type {   PlayOnlineScreen } from "./impl/PlayOnline";
 
-export { OmHooks, Coord, StorageHooks };
+export { JsUtils, OmHooks, Coord, StorageHooks };
 
 const OMHC = OmHooks.Screen.Class;
 
@@ -33,6 +34,7 @@ const OMHC = OmHooks.Screen.Class;
 export abstract class SkScreen<SID extends SkScreen.Id> {
 
     public readonly screenId: SID;
+    public readonly name: JsUtils.CamelCaseNameTransforms;
 
     protected readonly top: TopLevel;
 
@@ -64,6 +66,9 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     /**
      * Used to define the behaviour of the navigation buttons.
      *
+     * This should be a pure producer function. Any state modifications
+     * or event emissions should be done in `abstractOnBeforeLeave`.
+     *
      * **IMPORTANT**: Must pass SkScreen.NavDir.BACKWARD as the `historyDirection` argument.
      */
     public getNavPrevArgs(): Parameters<AllSkScreens["goToScreen"]> {
@@ -94,19 +99,25 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         requestGoToDisplay: AllSkScreens["goToScreen"],
     ) {
         this.screenId           = screenId;
+        this.name               = JsUtils.camelCaseTransforms(screenId);
         this.top                = toplevel;
         this.#parentElem        = parentElem;
         this.requestGoToScreen  = requestGoToDisplay;
+        this.baseElem           = document.createElement("div");
         this.#hasLazyLoaded     = false;
-        (this.nav as SkScreen<SkScreen.Id>["nav"]) = Object.freeze({
+        this.nav = Object.freeze({
             prev: document.createElement("button"),
             next: document.createElement("button"),
         });
+        JsUtils.propNoWrite<SkScreen<SID>>(this, [
+            "screenId", "top", "baseElem", "nav", "requestGoToScreen",
+        ]);
         this.nav.prev.classList.add(OMHC.NAV_PREV);
         this.nav.next.classList.add(OMHC.NAV_NEXT);
         this.nav.prev.textContent = "Back";
         this.nav.next.textContent = "Next";
-        (this.nav.prev as HTMLButtonElement).onclick = (ev) => {
+        // @ts-expect-error : RO=
+        this.nav.prev.onclick = (ev) => {
             this.requestGoToScreen(...this.getNavPrevArgs());
         };
     }
@@ -119,22 +130,11 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         args: SkScreen.EntranceArgs[SID],
     ): Promise<void> {
         if (!this.#hasLazyLoaded) {
-            const baseElem
-                = (this.baseElem as HTMLElement)
-                = document.createElement("div");
-            baseElem.classList.add(OmHooks.Screen.Class.BASE);
+            this.baseElem.classList.add(OmHooks.Screen.Class.BASE);
             this._lazyLoad();
-            this.#parentElem.appendChild(baseElem);
-            const spaceyCamelName = this.screenId.replace(/[A-Z]/g, (letter) => " " + letter);
-            { // "<SCREEN NAME> SCREEN"
-                const str = spaceyCamelName.toUpperCase();
-                this.top.prependComment(baseElem, `${str} SCREEN`);
-            }{ // "<Screen Name> Screen"
-                const str = spaceyCamelName.split(' ').map((word) =>
-                    word.charAt(0).toUpperCase()
-                    + word.substring(1)).join(' ');
-                baseElem.setAttribute("aria-label", str + " Screen");
-            }
+            this.#parentElem.appendChild(this.baseElem);
+            this.top.prependComment(this.baseElem, `${this.name.spaceyUppercase} SCREEN`);
+            this.baseElem.setAttribute("aria-label", this.name.spaceyCapitalized + " Screen");
             this.#hasLazyLoaded = true;
         }
         {
@@ -151,6 +151,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         await this._abstractOnBeforeEnter(navDir, args);
         // ^Wait until the screen has finished setting itself up
         // before entering it.
+        document.title = this.top.defaultDocTitle + " " + this.name.spaceyCapitalized;
         window.requestAnimationFrame((time) => {
             this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
             this.baseElem.setAttribute("aria-hidden", "false");

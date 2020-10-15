@@ -2,7 +2,7 @@ import type { TopLevel } from "../../TopLevel";
 import { Group } from "defs/OnlineDefs";
 import { SkServer } from "defs/OnlineDefs";
 
-import { OmHooks, SkScreen, StorageHooks } from "../SkScreen";
+import { JsUtils, OmHooks, SkScreen, StorageHooks } from "../SkScreen";
 type SID = SkScreen.Id.GROUP_JOINER;
 
 /**
@@ -388,8 +388,9 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 autocomplete: "on",
                 required: true,
             });
-            // @ts-expect-error : RO=
-            const nspsList = this.groupNameDataList
+            const nspsList
+                // @ts-expect-error : RO=
+                = this.groupNameDataList
                 = document.createElement("datalist");
             nspsList.id = OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS;
             this.baseElem.appendChild(nspsList);
@@ -405,6 +406,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             this.nav.next.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
             contentWrapper.appendChild(this.nav.next);
         }
+        JsUtils.propNoWrite(this as GroupJoinerScreen, ["in", "groupNameDataList"]);
         Object.freeze(this.in);
         return contentWrapper;
     }

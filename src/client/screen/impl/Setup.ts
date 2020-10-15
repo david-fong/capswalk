@@ -4,7 +4,7 @@ import type { Player as _Player } from "game/player/Player";
 import type { Game } from "game/Game";
 import { SkPickOne } from "../../utils/SkPickOne";
 
-import { OmHooks, StorageHooks, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks, StorageHooks, SkScreen } from "../SkScreen";
 const OMHC = OmHooks.Screen.Impl.Setup.Class;
 
 
@@ -36,6 +36,8 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
         this.baseElem.appendChild(this.langSel.baseElem);
 
         this._createLangWeightExaggerationInput();
+
+        JsUtils.propNoWrite(this as _SetupScreen<SID>, ["langSel", "langWeightExaggeration",]);
 
         this.baseElem.appendChild(this.nav.next);
         this._loadLastUsedPreset();

@@ -84,8 +84,14 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
         this.socket.emit(GameEv.RESET);
     }
 
+    /**
+     * @override
+     */
     declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
 
+    /**
+     * @override
+     */
     protected _createArtifPlayer(desc: Player.CtorArgs): Player<S> {
         return new Player(this, desc);
     }
@@ -113,6 +119,10 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
         this.socket.emit(PlayerActionEvent.EVENT_NAME.Bubble, desc);
     }
 
+    // TODO.design Rethink this... If we really go with this, everything iterating
+    // through Game.players will need to check for undefined. Also, everything that
+    // could possibly (and does) get a hold of a Player object must be notified when
+    // that Player leaves... Sounds like this is just an unfortunately bad idea...
     public onPlayerLeave(socketId: string): void {
         this.players.filter((player) => player.socketId === socketId).forEach((player) => {
             player.tile.at().evictOccupant();

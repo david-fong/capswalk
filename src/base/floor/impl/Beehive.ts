@@ -1,5 +1,6 @@
+import { JsUtils } from "defs/JsUtils";
 import { Coord as BaseCoord, Tile } from "../Tile";
-import { JsUtils, Grid as AbstractGrid } from "../Grid";
+import { Grid as AbstractGrid } from "../Grid";
 import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
 
 

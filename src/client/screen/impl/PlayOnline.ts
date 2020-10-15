@@ -1,7 +1,7 @@
 import type { OnlineGame } from "../../game/OnlineGame";
 
 import { GameEv } from "defs/OnlineDefs";
-import { Coord, SkScreen } from "../SkScreen";
+import { JsUtils, Coord, SkScreen } from "../SkScreen";
 import { Game, _PlayScreen } from "./Play";
 type SID = SkScreen.Id.PLAY_ONLINE;
 type G = Game.Type.ONLINE;
@@ -26,8 +26,6 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
      * @override
      */
     public getNavPrevArgs(): SkScreen.NavPrevRet<SkScreen.Id.GROUP_LOBBY> {
-        this.top.socket!.emit(GameEv.RETURN_TO_LOBBY);
-        this.currentGame?.statusBecomeOver();
         return [SkScreen.Id.GROUP_LOBBY, {}, SkScreen.NavDir.BACKWARD,];
     };
 
@@ -52,6 +50,14 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     protected _lazyLoad(): void {
         super._lazyLoad();
         this.nav.prev.innerHTML = "Return To&nbsp;Lobby";
+    }
+
+    /**
+     * @override
+     */
+    protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
+        this.top.socket!.emit(GameEv.RETURN_TO_LOBBY);
+        return super._abstractOnBeforeLeave(navDir);
     }
 
     /**

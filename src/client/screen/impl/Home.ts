@@ -1,4 +1,4 @@
-import { OmHooks, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks, SkScreen } from "../SkScreen";
 
 
 /**

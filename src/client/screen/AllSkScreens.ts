@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { SkScreen } from "./SkScreen";
 import { TopLevel } from "../TopLevel";
 
@@ -46,6 +47,8 @@ export class AllSkScreens {
             [ Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(Id.GROUP_LOBBY  ,t,p,f),
             [ Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(Id.PLAY_ONLINE  ,t,p,f),
         });
+        JsUtils.propNoWrite(this as AllSkScreens, ["dict"]);
+
         // note: "isr" as in "Initial Screen Request".
         const isrId = window.location.hash.slice(1) as SkScreen.Id;
         const isr = this.dict[isrId];

@@ -3,7 +3,7 @@ require("assets/style/colour/_barrel.css");
 
 import { SkPickOne } from "../../../client/utils/SkPickOne";
 
-import { OmHooks, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks, SkScreen } from "../SkScreen";
 const OMHC = OmHooks.Screen.Impl.ColourCtrl.Class;
 const CSS_FX = OmHooks.General.Class;
 
@@ -11,8 +11,6 @@ const CSS_FX = OmHooks.General.Class;
  *
  */
 export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
-
-    public readonly canBeInitialScreen = true;
 
     public readonly sel: ColourCtrlScreen.PickOne;
 
@@ -27,6 +25,7 @@ export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
             // @ts-expect-error : RO=
             = this.sel
             = new ColourCtrlScreen.PickOne(this.top.storage.Local);
+        JsUtils.propNoWrite(this as ColourCtrlScreen, ["sel"]);
         this.baseElem.appendChild(sel.baseElem);
 
         // Highlight the user's last selected colour scheme (if it exists).

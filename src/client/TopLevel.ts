@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import { StorageHooks } from "defs/StorageHooks";
 import type { BrowserGameMixin, Game } from "./game/BrowserGame";
@@ -13,6 +14,8 @@ import { SoundEffects } from "./audio/SoundEffects";
  *
  */
 export class TopLevel {
+
+    public readonly defaultDocTitle: string;
 
     public readonly webpageHostType: TopLevel.WebpageHostType;
 
@@ -44,6 +47,7 @@ export class TopLevel {
 
 
     public constructor() {
+        this.defaultDocTitle = document.title;
         this.webpageHostType = (() => {
             if (window.location.origin.match(/github\.io/)) {
                 return TopLevel.WebpageHostType.GITHUB;
@@ -63,6 +67,11 @@ export class TopLevel {
         //
         // this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
         // this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
+
+        JsUtils.propNoWrite(this as TopLevel, [
+            "defaultDocTitle", "webpageHostType",
+            "storage", /* "bgMusic", "sfx", */ // TODO.build uncomment when music classes implemented.
+        ]);
 
         console.log("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
         + " margin:0.4em; border:0.3em solid black;padding:0.4em;"

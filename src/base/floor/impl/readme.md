@@ -50,9 +50,10 @@ Import your system namespace, and add entries to `Coord` and `Coord.Bare` for th
 
 ```typescript
 // coord-related imports
+import { JsUtils } from "defs/JsUtils";
 import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
-import { JsUtils, Grid as AbstractGrid } from "../Grid";
+import { Grid as AbstractGrid } from "../Grid";
 import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
 
 // documentation

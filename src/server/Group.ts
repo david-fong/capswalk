@@ -2,6 +2,7 @@ import * as io from "socket.io";
 
 import type { Coord } from "floor/Tile";
 import type { Player } from "game/player/Player";
+import { JsUtils } from "defs/JsUtils";
 import { GameEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
@@ -25,7 +26,7 @@ export class Group extends _Group {
     private _sessionHost: Group.Socket;
 
     private readonly _initialTtlTimeout: NodeJS.Timeout;
-    private readonly _deleteExternalRefs: VoidFunction;
+    private readonly _deleteExternalRefs: () => void;
 
     /**
      *
@@ -44,11 +45,12 @@ export class Group extends _Group {
         namespace: io.Namespace,
         name: Group.Name,
         passphrase: Group.Passphrase,
-        deleteExternalRefs: VoidFunction,
+        deleteExternalRefs: () => void,
         initialTtl: number,
     }>) {
         super();
         this.namespace    = desc.namespace;
+        this.name         = desc.name;
         this.passphrase   = desc.passphrase;
         this.#currentGame = undefined;
 
@@ -268,5 +270,6 @@ export namespace Group {
         export type NotifyStatus    = _Group.Exist.NotifyStatus;
     }
 }
+JsUtils.protoNoEnum(Group, ["_socketOnHostCreateGame"]);
 Object.freeze(Group);
 Object.freeze(Group.prototype);

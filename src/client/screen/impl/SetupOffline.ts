@@ -2,7 +2,7 @@ import { Coord } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import { Game } from "game/Game";
 
-import { OmHooks, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks, SkScreen } from "../SkScreen";
 import { _SetupScreen } from "./Setup";
 
 

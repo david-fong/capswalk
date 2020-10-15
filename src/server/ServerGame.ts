@@ -1,10 +1,11 @@
 import type * as io from "socket.io";
 import { setTimeout } from "timers";
 
+import { JsUtils } from "defs/JsUtils";
 import { GameEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import { Coord, Tile } from "floor/Tile";
-import { Grid, JsUtils } from "floor/Grid";
+import { Grid } from "floor/Grid";
 import { Player, PlayerStatus } from "game/player/Player";
 
 import { EventRecordEntry } from "game/events/EventRecordEntry";
@@ -87,6 +88,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 }
                 return this.namespace.sockets[playerDesc.socketId!];
             });
+        JsUtils.propNoWrite(this as ServerGame<any>, ["playerSockets",]);
 
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
             return new Promise((resolve, reject) => {
@@ -178,10 +180,16 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     }
 
 
-    public setTimeout(callback: VoidFunction, millis: number, ...args: any[]): NodeJS.Timeout {
+    /**
+     * @override
+     */
+    public setTimeout(callback: () => void, millis: number, ...args: any[]): NodeJS.Timeout {
         return setTimeout(callback, millis, args).unref();
     }
 
+    /**
+     * @override
+     */
     public cancelTimeout(handle: NodeJS.Timeout): void {
         clearTimeout(handle);
     }
@@ -231,6 +239,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     }
 }
 JsUtils.protoNoEnum(ServerGame, [
+    "_getGridImplementation",
     "_createOperatorPlayer", "setCurrentOperator",
     "onReturnToLobby",
 ]);

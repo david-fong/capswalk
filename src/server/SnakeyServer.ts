@@ -5,8 +5,9 @@ import express  = require("express");
 import io       = require("socket.io");
 import type * as net from "net";
 
+import { JsUtils } from "defs/JsUtils";
 import { Group } from "./Group";
-import { SkServer as _SnakeyServer } from "defs/OnlineDefs";
+import { SkServer, SkServer as _SnakeyServer } from "defs/OnlineDefs";
 
 
 /**
@@ -47,6 +48,9 @@ export class SnakeyServer extends _SnakeyServer {
             // load on a LAN-hosted SnakeyServer.
         });
         this.allGroups = new Map();
+        JsUtils.propNoWrite(this as SkServer, [
+            "http", "app", "io", "allGroups",
+        ]);
 
         // At runtime, __dirname resolves to ":/dist/server/"
         const PROJECT_ROOT = path.resolve(__dirname, "../..");

@@ -1,5 +1,4 @@
 import { JsUtils } from "defs/JsUtils";
-export { JsUtils } from "defs/JsUtils";
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
