@@ -79,7 +79,6 @@ export namespace Team {
          */
         export const STANDING = 0;
     }
-
 }
 Object.freeze(Team);
 Object.freeze(Team.prototype);

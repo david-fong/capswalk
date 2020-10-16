@@ -16,6 +16,7 @@
 
 1. Make three kinds of sockets: Joiner, Group, Game.
     - This will make it easier to trace communication procedures for the joiner, and easier to remove all game-related event listeners when a group returns to its lobby from a game.
+    - Implement as a class that `TopLevel` contains an instance of.
 1. Get rid of `OnlineGame.onPlayerLeave`. Instead, if a Player leaves, just leave their player on the grid :P
 1. Implement Pause and Unpause events over network.
 1. `_PlayScreen.currentGame` protected, always-defined version. Non-enumerable.
@@ -50,7 +51,7 @@
 
 ### Low Priority
 
-- Implement translations of string.
+- Implement translations of clientside strings.
   - Create a sitemap file to point to translated versions
     - [Google Sitemap indicate translations](https://support.google.com/webmasters/answer/189077?hl=en)
     - [Language Tags](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry)
@@ -58,8 +59,9 @@
     - Just put an argument in the url query and have the javascript parse it?
 - Try out CSS modules. We already have webpack-css-loader installed.
   - This would take a lot of weight out of OmHooks.
+  - Move screen-related css to `client/screen/impl/`.
+    - Try using es6-style imports instead of CommonJs and see if the MiniCssPlugin understands (it should, I think).
 - Reset offline games in a separate thread and then pass the result back to the main thread in serialized form.
-- Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
 - Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
   - Note: The Intersection Observer API will not work here- it doesn't trigger on re-parenting the target node.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.

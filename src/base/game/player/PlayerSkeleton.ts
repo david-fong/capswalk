@@ -160,5 +160,6 @@ export namespace PlayerSkeleton {
     Object.freeze(TileGetterSource);
     Object.freeze(TileGetterSource.prototype);
 }
+JsUtils.protoNoEnum(PlayerSkeleton, ["_afterAllPlayersConstruction"]);
 Object.freeze(PlayerSkeleton);
 Object.freeze(PlayerSkeleton.prototype);

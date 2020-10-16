@@ -1,7 +1,9 @@
+import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { GamepartManager } from "game/gameparts/GamepartManager";
 
+export { JsUtils };
 export type { Coord, Tile };
 export type { GamepartManager };
 
@@ -129,4 +131,5 @@ export namespace ArtificialPlayer {
         return new (_Constructors[familyId])(game, playerDesc);
     };
 }
+JsUtils.protoNoEnum(ArtificialPlayer, ["movementContinue",]);
 // ArtificialPlayer is frozen in PostInit after _Constructors get initialized.

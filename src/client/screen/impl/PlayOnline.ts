@@ -84,7 +84,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
                 this.currentGame!.statusBecomeOver();
                 this.nav.prev.click();
             } else {
-                this.currentGame!.onPlayerLeave(socketId);
+                // Handle a player leaving:
             }
         });
         return Promise.resolve(game);
