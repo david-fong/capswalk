@@ -14,6 +14,7 @@
 
 ### High Priority
 
+1. ~Set a [site-wide referrer policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy).~
 1. Make three kinds of sockets: Joiner, Group, Game.
     - This will make it easier to trace communication procedures for the joiner, and easier to remove all game-related event listeners when a group returns to its lobby from a game.
     - Implement as a class that `TopLevel` contains an instance of.
@@ -48,6 +49,10 @@
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
 - `git gc`, `git prune`, `npm dedupe`, `npm audit`, `npm oudated`.
+- Rel-Noopener
+  - [Explainer by Mathias Bynens](https://mathiasbynens.github.io/rel-noopener/)
+    - [better default becoming standardized](https://github.com/whatwg/html/pull/4330)
+      - [Chrome is still working on it](https://bugs.chromium.org/p/chromium/issues/detail?id=898942)
 
 ### Low Priority
 
@@ -59,8 +64,9 @@
     - Just put an argument in the url query and have the javascript parse it?
 - Try out CSS modules. We already have webpack-css-loader installed.
   - This would take a lot of weight out of OmHooks.
+  - [how to config with typescript](https://stackoverflow.com/questions/40382842/cant-import-css-scss-modules-typescript-says-cannot-find-module)
   - Move screen-related css to `client/screen/impl/`.
-    - Try using es6-style imports instead of CommonJs and see if the MiniCssPlugin understands (it should, I think).
+    - Try using es6-style imports instead of CommonJs and see if css-loader understands (it should, I think).
 - Reset offline games in a separate thread and then pass the result back to the main thread in serialized form.
 - Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
   - Note: The Intersection Observer API will not work here- it doesn't trigger on re-parenting the target node.
@@ -91,11 +97,6 @@
 - Use es6 #private syntax for getter-backing fields
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
-- WebPack 5:
-  - `output.ecmaVersion` is `6` by default. If we have set it to `6` manually, we can delete the manual field specification.
-- [TypeScript / tslib bug](https://github.com/microsoft/TypeScript/issues/36841)
-  - This is on the roadmap for TypeScript 4.0.1... That may be a while.
-  - When it is fixed, we can take out the ts-loader compiler option forcing `importHelpers` to be off.
 - In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
 
 ---
