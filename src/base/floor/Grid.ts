@@ -188,6 +188,16 @@ export namespace Grid {
         getArea(bounds: Dimensions<S>): number;
 
         /**
+         * \*Assuming the grid is lattice-like and is partitioned into
+         * highly similar patches where each patch has a center, and
+         * all tiles in the patch are closer to that center tile than
+         * to any other patch's center tile. Returns the minimum number
+         * of tiles that must be visited to get from the center of one
+         * patch to any neighbouring patch.
+         */
+        getDiameterOfLatticePatchHavingArea(area: number): number;
+
+        /**
          * @returns
          * A coordinate with random, integer-valued fields within the
          * specified upper limits

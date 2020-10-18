@@ -129,6 +129,15 @@ export namespace Game {
          * re-spawned after being consumed.
          */
         HEALTH_UPDATE_CHANCE: 0.1,
+
+        /**
+         * Affects the distribution of health across the grid: "How
+         * concentrated or how diluted the average amount of health on
+         * the grid will be". Higher values cause concentration; lower
+         * values result in dilution.
+         */
+        AVERAGE_HEALTH_TO_SPAWN_ON_TILE: 1.0,
+
         /**
          * A value in `(0,1]`. If `1`, then players can (on average),
          * boost indefinitely. If close to zero, then players virtually
@@ -139,7 +148,46 @@ export namespace Game {
          * and randomly. Adjustments for more rational assumptions are
          * not to be made _here_.
          */
-        PCT_MOVES_THAT_ARE_BOOST: 0.05,
+        PORTION_OF_MOVES_THAT_ARE_BOOST: 0.05,
+
+        /**
+         * Takes into consideration all contributing factors to determine
+         * how much health it should cost to perform a single boost.
+         *
+         * It calculates for the following behaviour: Assuming that a
+         * player is only trying to collect health and always takes the
+         * optimal route, how much health should it cost them to boost
+         * such that they can only only boost for a determined percentage
+         * of all their movement actions?
+         */
+        HEALTH_COST_OF_BOOST(
+            averageHealthPerTile: Player.Health,
+            gridGetDiameter: (area: number) => number,
+        ): Player.Health {
+            // First, assume that a player has just landed on a tile
+            // with free health, and now plans to take the optimal
+            // route to the nearest tile with free health. Assume that
+            // Health is distributed uniformly, and spaced evenly apart.
+            // Then the grid/floor can be nicely divided into similar
+            // patches each with one tile with free health in the center.
+            // Find the diameter of a patch:
+            const patchArea = this.AVERAGE_HEALTH_TO_SPAWN_ON_TILE / averageHealthPerTile;
+            const patchDiameter = gridGetDiameter(patchArea);
+
+            // The patch diameter is the average optimal distance to
+            // the nearest tile with health (the center of the nearest
+            // patch). We know how much health awaits there, so we can
+            // find the average rate of health gain per movement on an
+            // optimal health-seeking path.
+            const healthGainedPerOptimalMove
+                = this.AVERAGE_HEALTH_TO_SPAWN_ON_TILE / patchDiameter;
+
+            // Since the portion of moves that can be boosts equals
+            // the rate of health gain divided by the health cost of
+            // boosting, (rearrange terms to solve):
+            return healthGainedPerOptimalMove / this.PORTION_OF_MOVES_THAT_ARE_BOOST;
+        },
+
         /**
          * A value in `(0,1]` (values greater than one are legal from
          * a mathematical standpoint, but not from one of game-design).
@@ -152,6 +200,7 @@ export namespace Game {
          * not too much, not too little.
          */
         HEALTH_EFFECT_FOR_DOWNED_PLAYER: 0.6,
+
         /**
          * A strictly-positive integer.
          *
@@ -161,8 +210,8 @@ export namespace Game {
          * explanation.
          */
         EVENT_RECORD_WRAPPING_BUFFER_LENGTH: 128,
+
         /**
-         *
          */
         EVENT_RECORD_FORWARD_WINDOW_LENGTH: 64,
     });

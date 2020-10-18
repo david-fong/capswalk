@@ -14,19 +14,18 @@
 
 ### High Priority
 
-1. ~Set a [site-wide referrer policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy).~
-1. Make three kinds of sockets: Joiner, Group, Game.
-    - This will make it easier to trace communication procedures for the joiner, and easier to remove all game-related event listeners when a group returns to its lobby from a game.
-    - Implement as a class that `TopLevel` contains an instance of.
+1. See if any serverside identification according to `socketId` should be changed to `socket.client.id`.
 1. Get rid of `OnlineGame.onPlayerLeave`. Instead, if a Player leaves, just leave their player on the grid :P
 1. Implement Pause and Unpause events over network.
 1. `_PlayScreen.currentGame` protected, always-defined version. Non-enumerable.
 1. Server authentication is not working.
 1. Mark properties as non-enumerable where they should not be easily accessible through debugger consoles.
     - Also consider those members of objects stored in arrays that tend to end up as circular references, which floods console.log.
-1. Make window title indicate current screen.
+1. Make an overrideable Grid method that does what `GameManager.dryRunShuffleLangChar` does.
+   - This would allow Grid implementations to make optimized versions based on their own specific properties.
+   - This may help prevent a lot of memory fragmentation from all the shallow array-copies that the default implementation produces from calls when getting destination and source tiles.
 1. Debug and handle goToScreen when user navigates forward in history.
-1. When TypeScript 4.1 comes out, use the improved `@see` JSdoc annotations.
+    - If I remember correctly, the forward history navigation cannot be prevented, but perhaps at least the keyboard shortcut can be.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
@@ -48,14 +47,17 @@
 ### Routine Checkups
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
-- `git gc`, `git prune`, `npm dedupe`, `npm audit`, `npm oudated`.
+- `git gc`, `git prune`, `npm audit`, `npm oudated`, `npm dedupe`.
 - Rel-Noopener
   - [Explainer by Mathias Bynens](https://mathiasbynens.github.io/rel-noopener/)
     - [better default becoming standardized](https://github.com/whatwg/html/pull/4330)
       - [Chrome is still working on it](https://bugs.chromium.org/p/chromium/issues/detail?id=898942)
+- Convert any usages of `.innerHtml` or `.innerText` to use `.textContent` unless intentional (In which case, write a comment on why it is intentional).
 
 ### Low Priority
 
+- Start a skeleton for a "Chess Knight" Grid implementation. That would be pretty mind boggling both to play and to develop...
+- When TypeScript 4.1 comes out, use the improved `@see` JSdoc annotations.
 - Implement translations of clientside strings.
   - Create a sitemap file to point to translated versions
     - [Google Sitemap indicate translations](https://support.google.com/webmasters/answer/189077?hl=en)
@@ -67,7 +69,6 @@
   - [how to config with typescript](https://stackoverflow.com/questions/40382842/cant-import-css-scss-modules-typescript-says-cannot-find-module)
   - Move screen-related css to `client/screen/impl/`.
     - Try using es6-style imports instead of CommonJs and see if css-loader understands (it should, I think).
-- Reset offline games in a separate thread and then pass the result back to the main thread in serialized form.
 - Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
   - Note: The Intersection Observer API will not work here- it doesn't trigger on re-parenting the target node.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.

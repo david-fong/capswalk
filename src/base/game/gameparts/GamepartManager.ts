@@ -21,6 +21,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 
     public readonly averageFreeHealth: Player.Health;
     public readonly averageFreeHealthPerTile: Player.Health;
+    public readonly healthCostOfBoost: Player.Health;
     #currentFreeHealth: Player.Health;
     readonly #freeHealthTiles: Set<Tile<S>>;
 
@@ -44,10 +45,14 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         super(gameType, impl, desc);
         this.averageFreeHealth = desc.averageFreeHealthPerTile * this.grid.area;
         this.averageFreeHealthPerTile = desc.averageFreeHealthPerTile;
+        this.healthCostOfBoost = Game.K.HEALTH_COST_OF_BOOST(
+            this.averageFreeHealthPerTile,
+            this.grid.static.getDiameterOfLatticePatchHavingArea,
+        );
         this.#freeHealthTiles = new Set();
         this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
         JsUtils.propNoWrite(this as GamepartManager<G,S>, [
-            "averageFreeHealth", "averageFreeHealthPerTile", "scoreInfo",
+            "averageFreeHealth", "averageFreeHealthPerTile", "healthCostOfBoost", "scoreInfo",
         ]);
 
         // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
@@ -194,11 +199,11 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
                 // crowding of freeHealth. Make sure it is sensitive to
                 // `this.averageFreeHealthPerTile`.
             })());
-            const tileHealthToAdd = 1;
+            const tileHealthToAdd = Game.K.AVERAGE_HEALTH_TO_SPAWN_ON_TILE;
             if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
                 let otherDesc: TileModEvent<S> | undefined;
                 if (otherDesc = sameReqOtherModDescs.find((desc) => Coord.equals(tile.coord, desc.coord))) {
-                    otherDesc.newFreeHealth = (otherDesc.newFreeHealth || 0) + tileHealthToAdd;
+                    otherDesc.newFreeHealth = (otherDesc.newFreeHealth ?? 0) + tileHealthToAdd;
                 } else {
                     retval.push({
                         coord: tile.coord,
@@ -211,15 +216,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             healthToSpawn -= tileHealthToAdd;
         }
         return retval;
-    }
-
-    private getHealthCostOfBoost(): Player.Health {
-        return this.averageFreeHealthPerTile
-        / Game.K.PCT_MOVES_THAT_ARE_BOOST;
-        // TODO.design Take into account the connectivity of the grid
-        // implementation. Ie. What is the average number of movements
-        // it would take me to reach any other tile averaged over all
-        // tiles?
     }
 
 
@@ -319,7 +315,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         const newPlayerHealthValue
             = player.status.health
             + (dest.freeHealth * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
-            - (moveIsBoost ? this.getHealthCostOfBoost() : 0);
+            - (moveIsBoost ? this.healthCostOfBoost : 0);
         if (moveIsBoost && newPlayerHealthValue < 0) {
             // Reject a boost-type movement request if it would make
             // the player become downed (or if they are already downed):

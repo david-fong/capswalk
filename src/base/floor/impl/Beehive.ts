@@ -106,10 +106,16 @@ export namespace Beehive {
      */
     export class Grid extends AbstractGrid<S> {
 
+        /**
+         * @override
+         */
         public static getAmbiguityThreshold(): 18 {
             return 18;
         }
 
+        /**
+         * @override
+         */
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
             dash:    Object.freeze({ min: 10, max: 50, }),
@@ -198,9 +204,17 @@ export namespace Beehive {
             return area;
         }
 
-        /**
-         * @override
-         */
+        public static getDiameterOfLatticePatchHavingArea(area: number): number {
+            if (area < 0.25) {
+                throw new RangeError("determinant of a radical will be strictly negative.");
+            }
+            // Given radius `r` and diameter = `1 + 2*r`, the area is
+            // `1 + 6*r*(1+r)/2`. Rearrange to solve for `d` given the
+            // area: `0 = 3r^2 + 3r + (1-a)`. Use quadratic formula.
+            const radius = ((-3) + Math.sqrt(9 - (12 * (1 - area)))) / 6;
+            return 1 + (2 * radius);
+        }
+
         public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
             return new Coord(undefined!);
         }

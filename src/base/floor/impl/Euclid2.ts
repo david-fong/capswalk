@@ -285,9 +285,6 @@ export namespace Euclid2 {
         }
 
 
-        /**
-         * @override
-         */
         public static getSpawnCoords(
             playerCounts: TU.RoArr<number>,
             dimensions: Grid.Dimensions,
@@ -308,16 +305,14 @@ export namespace Euclid2 {
             });
         }
 
-        /**
-         * @override
-         */
         public static getArea(dim: Grid.Dimensions): number {
             return dim.height * dim.width;
         }
 
-        /**
-         * @override
-         */
+        public static getDiameterOfLatticePatchHavingArea(area: number): number {
+            return Math.sqrt(area);
+        }
+
         public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
             const x = Math.floor(dimensions.width  * Math.random());
             const y = Math.floor(dimensions.height * Math.random());
