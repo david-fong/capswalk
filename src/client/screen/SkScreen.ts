@@ -133,7 +133,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             this.baseElem.classList.add(OmHooks.Screen.Class.BASE);
             this._lazyLoad();
             this.#parentElem.appendChild(this.baseElem);
-            this.top.prependComment(this.baseElem, `${this.name.spaceyUppercase} SCREEN`);
+            JsUtils.prependComment(this.baseElem, `${this.name.spaceyUppercase} SCREEN`);
             this.baseElem.setAttribute("aria-label", this.name.spaceyCapitalized + " Screen");
             this.#hasLazyLoaded = true;
         }
@@ -196,6 +196,10 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      *
      * This is a good place, for example, to stop any non-essential
      * `setInterval` schedules.
+     *
+     * This method will not be called upon navigating to a different
+     * page, so actions such as writes to persisted storage should not
+     * be placed here as an optimization.
      */
     protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
         return true;

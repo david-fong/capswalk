@@ -2,7 +2,7 @@ import type * as io from "socket.io";
 import { setTimeout } from "timers";
 
 import { JsUtils } from "defs/JsUtils";
-import { GameEv } from "defs/OnlineDefs";
+import { GameEv, Group, GroupEv, SkServer } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";
@@ -33,6 +33,8 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
     public readonly namespace: io.Namespace;
 
+    private readonly _deleteExternalRefs: () => void;
+
     /**
      * Entries indexed at ID's belonging to human-operated players
      * contain an `io.Socket` object. I could have made this a field
@@ -58,11 +60,13 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      *
      * Broadcasts constructor arguments to all clients.
      *
-     * @param namespace -
+     * @param groupNsps -
      * @param gameDesc -
      */
     public constructor(
-        namespace: io.Namespace,
+        groupNsps: io.Namespace,
+        passphrase: Group.Passphrase,
+        deleteExternalRefs: () => void,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         // Start with a call to the super constructor:
@@ -73,20 +77,53 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             playerStatusCtor: PlayerStatus,
             }, gameDesc,
         );
-        JsUtils.instNoEnum(this as ServerGame<S>, ["operators"]);
-        this.namespace = namespace;
+        this._deleteExternalRefs = deleteExternalRefs;
+        JsUtils.instNoEnum(this as ServerGame<S>, ["operators", "_deleteExternalRefs"]);
+        JsUtils.propNoWrite(this as ServerGame<S>, ["_deleteExternalRefs"]);
 
+        this.namespace = groupNsps.server.of(
+            SkServer.Nsps.GROUP_GAME_PREFIX + groupNsps.name
+        ).use((socket, next) => {
+            const handshake = socket.handshake;
+            if (handshake.query.passphrase !== passphrase) {
+                next(new Error("Incorrect passphrase"));
+            };
+            return next();
+        });
+
+        // Wait for all sockets from the group namespace to join the game namespace:
+        Promise.all(Object.values(groupNsps.sockets).map((groupSocket) => new Promise((resolve, reject) => {
+            const gameNsps = this.namespace;
+            function checkSameSocket(socket: io.Socket): void {
+                if (socket.client === groupSocket.client) {
+                    gameNsps.removeListener("connect", checkSameSocket);
+                    resolve();
+                }
+            }
+            gameNsps.on("connect", checkSameSocket);
+        })))
+        .then(() => this._greetGameSockets(groupNsps, gameDesc));
+    }
+
+    /**
+     */
+    private _greetGameSockets(
+        groupNsps: io.Namespace,
+        gameDesc: Game.CtorArgs<G,S>,
+    ): void {
+        // @ts-expect-error : RO=
+        this.playerSockets
         // The below cast is safe because GameBase reassigns
         // `gameDesc.playerDescs` the result of `Player.finalize`.
         // (Otherwise, `playerDesc` would still be a
         // `Player.CtorArgs.PreIdAssignment`).
-        this.playerSockets = (gameDesc.playerDescs as Player.CtorArgs[])
+        = (gameDesc.playerDescs as Player.CtorArgs[])
             .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN)
             .map((playerDesc) => {
                 if (playerDesc.socketId === undefined) {
                     throw Error("missing socket ID for player " + playerDesc.playerId);
                 }
-                return this.namespace.sockets[playerDesc.socketId!];
+                return groupNsps.sockets[playerDesc.socketId!];
             });
         JsUtils.propNoWrite(this as ServerGame<any>, ["playerSockets",]);
 
@@ -106,6 +143,21 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         Object.values(this.namespace.sockets).forEach((socket) => {
             // Attach the movement request handlers:
             // (these are detached in `onReturnToLobby`).
+            socket.on("disconnect", () => {
+                if (Object.keys(socket.nsp.sockets).length === 1) {
+                    this.terminate();
+                    return;
+                }
+            });
+            socket.on(GameEv.RETURN_TO_LOBBY, () => {
+                if (socket.client === this._groupHostClient) {
+                    this.statusBecomeOver();
+                    socket.broadcast.emit(GameEv.RETURN_TO_LOBBY);
+                    // All
+                } else {
+                    socket.broadcast.emit(GameEv.RETURN_TO_LOBBY, socket.id);
+                }
+            });
             socket.on(
                 PlayerActionEvent.EVENT_NAME.Movement,
                 this.processMoveRequest.bind(this),
@@ -122,10 +174,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 // @ts-expect-error : RO=
                 playerDesc.isALocalOperator = (playerDesc.socketId === socket.id);
             });
-            socket.emit(
-                GameEv.CREATE,
-                gameDesc,
-            );
+            socket.emit(GroupEv.CREATE, gameDesc);
         });
     }
 
@@ -155,15 +204,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             this.serializeResetState(),
         );
         return superPromise;
-    }
-
-    public onReturnToLobby(): void {
-        Object.values(this.namespace.sockets).forEach((socket) => {
-            socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Movement);
-            socket.removeAllListeners(PlayerActionEvent.EVENT_NAME.Bubble);
-            // TODO.impl remove listeners for everything game related.
-            // Otherwise the listers will probably prevent garbage-collection.
-        });
     }
 
     /**
@@ -237,8 +277,18 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             );
         }
     }
+
+    private terminate(): void {
+        Object.values(this.namespace.sockets).forEach((socket) => {
+            socket.disconnect();
+            socket.removeAllListeners();
+        });
+        this.namespace.removeAllListeners();
+        this._deleteExternalRefs();
+    }
 }
 JsUtils.protoNoEnum(ServerGame, [
+    "_greetGameSockets",
     "_getGridImplementation",
     "_createOperatorPlayer", "setCurrentOperator",
     "onReturnToLobby",

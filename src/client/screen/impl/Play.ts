@@ -89,7 +89,7 @@ export abstract class _PlayScreen<
         this.baseElem.appendChild(gridHtml.top);
         gridHtml.pauseOl.addEventListener("click", (ev) => {
             const game = this.currentGame;
-            if (game && game.status === Game.Status.PAUSED) {
+            if (game !== undefined && game.status === Game.Status.PAUSED) {
                 this._statusBecomePlaying();
             }
         });
@@ -116,15 +116,13 @@ export abstract class _PlayScreen<
         this._initializeControlsBar();
         this._initializePlayersBar();
 
-        // @ts-expect-error Assignment to readonly property.
-        // We can't use a type assertion to cast off the readonly-ness
-        // because it messed up the transpilation for #private fields.
+        // @ts-expect-error : RO=
         this.#onVisibilityChange = () => {
             if (!this.wantsAutoPause) return;
             if (document.hidden) {
                 if (this.#pauseReason === undefined) {
                     const game = this.currentGame;
-                    if (!game || (game && game.status !== Game.Status.OVER)) {
+                    if (game === undefined || (game !== undefined && game.status !== Game.Status.OVER)) {
                         this._statusBecomePaused();
                     }
                 }
@@ -132,8 +130,7 @@ export abstract class _PlayScreen<
                 if (this.#pauseReason === "page-hide") { this._statusBecomePlaying(); }
             }
         };
-        // @ts-expect-error Assignment to readonly property.
-        // See above note.
+        // @ts-expect-error : RO=
         this.#gridOnKeyDown = this._gridKeyDownCallback.bind(this);
     }
 
@@ -153,11 +150,11 @@ export abstract class _PlayScreen<
             // nothing inside this element can ever receive keyboard events.
             capture: true,
         });
-        await this.currentGame!.reset();
+        await this.currentGame.reset();
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
         // by populating tiles with CSP's will be batched.
-        const html = this.currentGame!.htmlElements;
+        const html = this.currentGame.htmlElements;
         this._gridImplHost.appendChild(html.gridImpl);
         // ^The order of insertion does not matter (it used to).
         this.playersBar.appendChild(html.playersBar);
@@ -185,9 +182,8 @@ export abstract class _PlayScreen<
 
         // Release the game:
         // See docs in Game.ts : Pausing is done to cancel scheduled callbacks.
-        const game = this.currentGame!;
-        game.statusBecomePaused();
-        for (const elem of Object.values(game.htmlElements)) {
+        this.currentGame.statusBecomePaused();
+        for (const elem of Object.values(this.currentGame.htmlElements)) {
             // IMPORTANT NOTE: For some reason, clearing children from the
             // grid-impl element is necessary to allow for garbage collection
             // of DOM nodes (at least on Chrome).
@@ -202,9 +198,14 @@ export abstract class _PlayScreen<
     }
 
 
-    // TODO.design make a protected version that is always defined.
-    // subclasses will always have a defined game. <- please verify first.
-    public get currentGame(): Game | undefined {
+    protected get currentGame(): Game {
+        return this.#currentGame!;
+    }
+    /**
+     * This class can use a protected alias that advertises the result
+     * as always being defined.
+     */
+    public get probeCurrentGame(): Game | undefined {
         return this.#currentGame;
     }
 
@@ -227,7 +228,7 @@ export abstract class _PlayScreen<
         // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
         // + ` charCode: ${ev.charCode}`);
         ev.stopPropagation();
-        const game = this.currentGame!;
+        const game = this.currentGame;
         if (ev.ctrlKey && ev.key === " " && !ev.repeat) {
             // If switching operator:
             function getOperatorElem(this: void): HTMLElement {
@@ -256,7 +257,7 @@ export abstract class _PlayScreen<
 
     protected _statusBecomePlaying(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
-        this.currentGame?.statusBecomePlaying();
+        this.probeCurrentGame?.statusBecomePlaying();
         this.pauseButton.textContent = "Pause";
         this.#pauseReason = undefined;
         this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
@@ -271,7 +272,7 @@ export abstract class _PlayScreen<
 
     protected _statusBecomePaused(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
-        this.currentGame?.statusBecomePaused();
+        this.probeCurrentGame?.statusBecomePaused();
         this.pauseButton.textContent = "Unpause";
         this.#pauseReason = document.hidden ? "page-hide" : "other";
         this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
@@ -296,7 +297,7 @@ export abstract class _PlayScreen<
      * - The current game is paused or it is over.
      */
     protected _resetGame(): void {
-        this.currentGame!.reset();
+        this.currentGame.reset();
         this.pauseButton.disabled = false;
         if (this.wantsAutoPause) {
             this._statusBecomePlaying();
@@ -453,5 +454,8 @@ export namespace _PlayScreen {
         });
     }
 }
+JsUtils.protoNoEnum(_PlayScreen, [
+    "probeCurrentGame", // At runtime, this is identical to this.currentGame.
+]);
 Object.freeze(_PlayScreen);
 Object.freeze(_PlayScreen.prototype);

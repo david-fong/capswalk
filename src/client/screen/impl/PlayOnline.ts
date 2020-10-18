@@ -33,7 +33,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
      * @override
      */
     // @ts-expect-error : Redeclaring accessor as property.
-    declare public readonly currentGame: OnlineGame<Coord.System> | undefined;
+    declare protected readonly currentGame: OnlineGame<Coord.System>;
 
     /**
      * @override
@@ -41,7 +41,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     protected readonly wantsAutoPause = false;
 
     private get socket(): SocketIOClient.Socket {
-        return this.top.socket!;
+        return this.currentGame.socket;
     }
 
     /**
@@ -56,8 +56,15 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
      * @override
      */
     protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
-        this.top.socket!.emit(GameEv.RETURN_TO_LOBBY);
-        return super._abstractOnBeforeLeave(navDir);
+        const leaveConfirmed = super._abstractOnBeforeLeave(navDir);
+        if (leaveConfirmed) {
+            this.socket.emit(GameEv.RETURN_TO_LOBBY);
+            this.socket.close();
+            if (this.socket !== undefined) {
+                throw "never"; // See `SkSockets._configSocket`.
+            }
+        }
+        return leaveConfirmed;
     }
 
     /**
@@ -72,16 +79,18 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
             this.socket,
             ctorArgs,
         );
-        this.socket.on(GameEv.UNPAUSE, () => {
+        this.top.sockets._configSocket(this.socket, "game");
+        this.socket
+        .on(GameEv.UNPAUSE, () => {
             this._statusBecomePlaying();
-        });
-        this.socket.on(GameEv.PAUSE, () => {
-            this._statusBecomePaused;
-        });
-        this.socket.on(GameEv.RETURN_TO_LOBBY, (socketId: string | undefined) => {
+        })
+        .on(GameEv.PAUSE, () => {
+            this._statusBecomePaused();
+        })
+        .on(GameEv.RETURN_TO_LOBBY, (socketId: string | undefined) => {
             if (socketId === undefined) {
                 // Everyone is being sent back to the lobby:
-                this.currentGame!.statusBecomeOver();
+                // this.currentGame.statusBecomeOver(); <- This is handled by `super._onBeforeLeave`.
                 this.nav.prev.click();
             } else {
                 // Handle a player leaving:
@@ -90,10 +99,11 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
         return Promise.resolve(game);
     }
 
+    /**
+     * @override
+     */
     protected _onGameBecomeOver(): void {
-        this.socket.off(GameEv.UNPAUSE);
-        this.socket.off(GameEv.PAUSE);
-        this.socket.off(GameEv.RETURN_TO_LOBBY);
+        super._onGameBecomeOver();
     }
 }
 export namespace PlayOnlineScreen {

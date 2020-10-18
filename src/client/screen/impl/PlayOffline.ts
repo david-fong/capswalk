@@ -20,7 +20,7 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
      * @override
      */
     // @ts-expect-error : Redeclaring accessor as property.
-    declare public readonly currentGame: OfflineGame<Coord.System> | undefined;
+    declare protected readonly currentGame: OfflineGame<Coord.System>;
 
     /**
      * @override

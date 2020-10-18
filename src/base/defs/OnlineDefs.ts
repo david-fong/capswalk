@@ -11,8 +11,9 @@ export namespace SkServer {
      * client and the server code, which both require access to it.
      */
     export const enum Nsps {
-        GROUP_LOBBY_PREFIX  = "/group-",
         GROUP_JOINER        = "/joiner",
+        GROUP_LOBBY_PREFIX  = "/group-",
+        GROUP_GAME_PREFIX   = "/group-game-",
     }
 }
 Object.freeze(SkServer);
@@ -104,12 +105,16 @@ Object.freeze(Group.prototype);
 
 /**
  */
-export const enum GameEv {
+export const enum GroupEv {
     /**
      * On the clientside, this event is registered to the group socket.
      */
     CREATE = "group-game-create",
+}
 
+/**
+ */
+export const enum GameEv {
     /**
      * Upon constructing a _new_ game, the server waits for all clients
      * to send this event to indicate that they have finished building

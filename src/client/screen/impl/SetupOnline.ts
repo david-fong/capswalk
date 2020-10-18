@@ -1,4 +1,4 @@
-import { GameEv } from "defs/OnlineDefs";
+import { GroupEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 
 import { JsUtils, OmHooks, SkScreen } from "../SkScreen";
@@ -28,7 +28,7 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
         this.nav.next.onclick = (ev) => {
             const args = this.parseArgsFromGui();
             if (this.top.clientIsGroupHost) {
-                this.top.socket!.emit(GameEv.CREATE, args);
+                this.top.sockets.groupSocket!.emit(GroupEv.CREATE, args);
             }
         };
     }

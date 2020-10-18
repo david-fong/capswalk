@@ -1,5 +1,5 @@
 import { Player } from "defs/TypeDefs";
-import { Group, GameEv } from "defs/OnlineDefs";
+import { Group, GroupEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 
 import { JsUtils, OmHooks, Coord, SkScreen, StorageHooks } from "../SkScreen";
@@ -29,6 +29,10 @@ export class GroupLobbyScreen extends SkScreen<SID> {
      */
     public get initialScreen(): SkScreen.Id {
         return SkScreen.Id.GROUP_JOINER;
+    }
+
+    private get socket(): typeof io.Socket {
+        return this.top.sockets.groupSocket!;
     }
 
     /**
@@ -106,7 +110,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         }
         this.top.storage.Local.username = this.in.username.value;
         this.top.storage.Local.avatar   = this.in.avatar.value;
-        this.top.socket!.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
+        this.socket.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
             username: this.in.username.value,
             teamId: parseInt(this.in.teamId.value),
             avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
@@ -124,13 +128,13 @@ export class GroupLobbyScreen extends SkScreen<SID> {
             this.teamsElem.textContent = "";
             this._submitInputs();
 
-            this.top.socket!.on(
+            this.socket.on(
                 Group.Socket.UserInfoChange.EVENT_NAME,
                 this._onUserInfoChange.bind(this),
             );
             // Listen for when the server sends tbe game constructor arguments:
-            this.top.socket!.once(
-                GameEv.CREATE,
+            this.socket.once(
+                GroupEv.CREATE,
                 async (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
                     this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
                 },
@@ -145,7 +149,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         if (navDir === SkScreen.NavDir.BACKWARD) {
             // Make sure we stop listening for the game to start
             // in case it hasn't started yet:
-            this.top.socket!.removeListener(GameEv.CREATE);
+            this.socket.removeListener(GroupEv.CREATE);
         }
         return true;
     }

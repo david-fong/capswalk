@@ -8,6 +8,7 @@ import type { Coord, SkScreen } from "../client/screen/SkScreen";
 import { AllSkScreens } from "./screen/AllSkScreens";
 import { BgMusic }      from "./audio/BgMusic";
 import { SoundEffects } from "./audio/SoundEffects";
+import { SkSockets }    from "./SkSockets";
 
 
 /**
@@ -30,14 +31,7 @@ export class TopLevel {
     public readonly bgMusic: BgMusic;
     public readonly sfx: SoundEffects;
 
-    /**
-     * This is managed by the `GroupJoiner` screen.
-     */
-    // TODO.impl change this to just a getter, and implement a setter method
-    // that makes it clear that it is not generally safe to modify this field.
-    public socket: typeof io.Socket | undefined;
-
-    #socketIoChunk: Promise<typeof import("socket.io-client")>;
+    public readonly sockets: SkSockets;
 
     /**
      */
@@ -61,16 +55,19 @@ export class TopLevel {
         //
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
         if (!allScreensElem) { throw Error(); }
-        this.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
+        JsUtils.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
         this.#allScreens = new AllSkScreens(this, allScreensElem);
 
         //
         // this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
         // this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
 
+        this.sockets = new SkSockets();
+
         JsUtils.propNoWrite(this as TopLevel, [
             "defaultDocTitle", "webpageHostType",
             "storage", /* "bgMusic", "sfx", */ // TODO.build uncomment when music classes implemented.
+            "sockets",
         ]);
 
         console.log("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
@@ -84,37 +81,11 @@ export class TopLevel {
     }
 
     /**
-     * A non-user-facing markup utility.
-     */
-    public prependComment(node: HTMLElement, commentStr: string): void {
-        node.parentNode!.insertBefore(document.createComment(" " + commentStr + " "), node);
-    }
-
-    public get socketIo(): Promise<typeof import("socket.io-client")> {
-        // return this.#socketIoChunk
-        // || (this.#socketIoChunk = import(
-        //     /* webpackChunkName: "[request]" */
-        //     "socket.io-client"
-        // ));
-        return (() => {
-            let cached: undefined | Promise<typeof import("socket.io-client")>;
-            return cached || (cached = new Promise<typeof import("socket.io-client")>((resolve, reject): void => {
-                const script = document.createElement("script");
-                script.onload = (): void => {
-                    resolve(io);
-                };
-                script.src = (document.getElementById("socket.io-preload") as HTMLLinkElement).href;
-                document.body.appendChild(script);
-            }));
-        })();
-    }
-
-    /**
      * For debugging purposes- especially in the browser console.
      */
     public get game(): BrowserGameMixin<Game.Type.Browser,Coord.System> | undefined {
-        return (this.#allScreens.dict.playOffline).currentGame
-            ?? (this.#allScreens.dict.playOnline ).currentGame;
+        return (this.#allScreens.dict.playOffline).probeCurrentGame
+            ?? (this.#allScreens.dict.playOnline ).probeCurrentGame;
     }
 
     /**

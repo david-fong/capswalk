@@ -120,6 +120,13 @@ export namespace JsUtils {
         });
     }
 
+    /**
+     * A non-user-facing markup utility.
+     */
+    export function prependComment(node: HTMLElement, commentStr: string): void {
+        node.parentNode!.insertBefore(document.createComment(" " + commentStr + " "), node);
+    }
+
     export type CamelCaseNameTransforms = Readonly<{
         spaceyLowercase: string;
         spaceyUppercase: string;

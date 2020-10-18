@@ -3,7 +3,7 @@ import * as io from "socket.io";
 import type { Coord } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import { JsUtils } from "defs/JsUtils";
-import { GameEv } from "defs/OnlineDefs";
+import { GameEv, GroupEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 
@@ -114,19 +114,8 @@ export class Group extends _Group {
             this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_LOBBY,
             });
-            socket.on(GameEv.CREATE, this._socketOnHostCreateGame.bind(this));
+            socket.on(GroupEv.CREATE, this._socketOnHostCreateGame.bind(this));
         }
-
-        socket.on(GameEv.RETURN_TO_LOBBY, () => {
-            if (socket === this._sessionHost) {
-                this.#currentGame!.onReturnToLobby();
-                this.#currentGame!.statusBecomeOver();
-                socket.broadcast.emit(GameEv.RETURN_TO_LOBBY);
-                this.#currentGame = undefined;
-            } else {
-                socket.broadcast.emit(GameEv.RETURN_TO_LOBBY, socket.id);
-            }
-        });
 
         socket.on(
             Group.Socket.UserInfoChange.EVENT_NAME,
@@ -192,20 +181,26 @@ export class Group extends _Group {
      * - Deletes the only external reference so this can be garbage collected.
      */
     protected terminate(): void {
+        function killNamespace(nsps: io.Namespace): void {
+            nsps.removeAllListeners("connect");
+            nsps.removeAllListeners("connection");
+            Object.values(nsps.connected).forEach((socket) => {
+                socket.disconnect(false /* Do not close underlying engine */);
+                socket.removeAllListeners();
+            });
+            nsps.removeAllListeners();
+            delete nsps.server.nsps[nsps.name];
+        }
+        killNamespace(this.#currentGame!.namespace);
         this.#currentGame = undefined;
-        const nsps = this.namespace;
-        nsps.removeAllListeners("connect");
-        nsps.removeAllListeners("connection");
-        Object.values(nsps.connected).forEach((socket) => {
-            socket.disconnect(false);
-        });
-        nsps.removeAllListeners();
-        delete nsps.server.nsps[nsps.name];
+
+        const server = this.namespace.server;
+        killNamespace(this.namespace);
         // @ts-expect-error : RO=
         this.namespace = undefined!;
         (this._deleteExternalRefs)();
 
-        nsps.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
+        server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
             [this.name]: Group.Exist.Status.DELETE,
         });
         console.log(`terminated group: \`${this.name}\``);
@@ -253,7 +248,12 @@ export class Group extends _Group {
                 });
             }),
         ];
-        this.#currentGame = new ServerGame(this.namespace, ctorArgs);
+        this.#currentGame = new ServerGame(
+            this.namespace,
+            this.passphrase,
+            () => { this.#currentGame = undefined; },
+            ctorArgs,
+        );
         return [];
     }
 

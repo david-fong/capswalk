@@ -1,7 +1,7 @@
 // Tell WebPack about the CSS chunk we want:
 require("assets/style/game/_barrel.css");
 
-import { GameEv } from "defs/OnlineDefs";
+import { GameEv, SkServer } from "defs/OnlineDefs";
 import {
     JsUtils,
     Game,
@@ -39,14 +39,12 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
     /**
      * Note that this class does not extend `GameManager`.
      *
-     * @param socket -
-     * @param gameDesc - This should come from a Server event by the name
-     *      {@link Game.CtorArgs.EVENT_NAME}.
+     * @param groupSocket - Used to make a Game socket.
+     * @param gameDesc - This should come from a Server event by the name {@link GroupEv.CREATE}.
      */
-    // TODO.design @all these socket events: expose a way to remove them all when going back to the lobby.
     public constructor(
         onGameBecomeOver: () => void,
-        socket: SocketIOClient.Socket,
+        groupSocket: SocketIOClient.Socket,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(
@@ -56,21 +54,24 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,
         );
-        this.socket = socket;
+        this.socket = groupSocket.io.socket(
+            groupSocket.nsp.replace(SkServer.Nsps.GROUP_LOBBY_PREFIX, SkServer.Nsps.GROUP_GAME_PREFIX)
+        );
         this._ctorBrowserGame();
 
-        this.socket.off(PlayerActionEvent.EVENT_NAME.Movement); // TODO.impl change these to assertions that there are no listeners.
+        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.Movement)) throw Error("never");
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.Movement,
             this.executePlayerMoveEvent.bind(this),
         );
-        this.socket.off(PlayerActionEvent.EVENT_NAME.Bubble);
+        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.Bubble)) throw Error("never");
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.Bubble,
             this.executePlayerBubbleEvent.bind(this),
         );
 
         this.socket.off(GameEv.RESET);
+        if (this.socket.hasListeners(GameEv.RESET)) throw Error("never");
         this.socket.on(
             GameEv.RESET,
             async (ser: Game.ResetSer<S>) => {
@@ -110,7 +111,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 
     /**
      * Normally calls {@link Game#processBubbleMakeExecute}. However,
-     * there, that should be done as a callback to an event created by
+     * here, that should be done as a callback to an event created by
      * the server.
      *
      * @override

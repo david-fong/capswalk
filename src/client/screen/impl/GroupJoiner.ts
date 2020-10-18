@@ -57,7 +57,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
      */
     protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
         window.setTimeout(() => {
-            if (this.socket && this.socket.nsp.startsWith(SkServer.Nsps.GROUP_LOBBY_PREFIX)) {
+            if (this.groupSocket) {
                 // Default to switching groups under the same host:
                 this.in.groupName.focus();
             } else {
@@ -126,34 +126,29 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 
             // Short-circuit when no change has occurred:
             const targetSocketUri = new window.URL(input.value + SkServer.Nsps.GROUP_JOINER);
-            if (this.socket
-            && this.socket.nsp === SkServer.Nsps.GROUP_JOINER
-            && this.socket.io.opts.hostname === targetSocketUri.hostname
-            ) {
-                if (this.socket!.connected) {
+            if (this.groupSocket?.io.opts.hostname === targetSocketUri.hostname) {
+                if (this.groupSocket!.connected) {
                     this._setFormState(State.CHOOSING_GROUP);
                     this.in.groupName.focus(); // No changes have occurred.
-                    return;
                 } else {
-                    return; // Impatient client is spamming.
+                    // Impatient client is spamming.
                 }
+                return;
             }
-            this.socket?.close();
-            this.socket = (await top.socketIo)(targetSocketUri.toString(), {
+            this.joinerSocket?.close();
+            const sock = await this.top.sockets.setJoinerSocket(targetSocketUri.toString(), {
                 reconnectionAttempts: Group.JoinerReconnectionAttempts,
-            });
-            this.socket.on("connect", () => {
+            }); sock
+            .on("connect", () => {
                 this._setFormState(State.CHOOSING_GROUP);
                 // Listen for group creation / deletion events.
-                this.socket!.on(Group.Exist.EVENT_NAME, this._onNotifyGroupExist.bind(this));
-            });
-            this.socket.on("connect_error", (error: object) => {
-                this.socket = undefined;
+                sock.on(Group.Exist.EVENT_NAME, this._onNotifyGroupExist.bind(this));
+            })
+            .on("connect_error", (error: object) => {
                 this.top.toast("Unable to connected to the specified server.");
-            });
-            this.socket.on("disconnect", (reason: string) => {
+            })
+            .on("disconnect", (reason: string) => {
                 if (reason === "io server disconnect") {
-                    this.socket = undefined;
                     this._setFormState(State.CHOOSING_HOST);
                     input.value = "";
                     top.toast("The server disconnected you from the group joiner.");
@@ -258,8 +253,8 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         const submitInput = async (): Promise<void> => {
             if (!this.in.passphrase.validity.valid) return;
             // Short-circuit when no change has occurred:
-            if (this.socket!.nsp === SkServer.Nsps.GROUP_LOBBY_PREFIX + this.in.groupName.value) {
-                if (this.socket!.connected) {
+            if (this.groupSocket!.nsp === SkServer.Nsps.GROUP_LOBBY_PREFIX + this.in.groupName.value) {
+                if (this.groupSocket!.connected) {
                     this._setFormState(State.IN_GROUP);
                     this.nav.next.focus(); // No changes have occurred.
                     return;
@@ -275,7 +270,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 await this._attemptToJoinExistingGroup();
             } else {
                 this.#clientIsGroupHost = true;
-                this.socket!.emit(Group.Exist.EVENT_NAME,
+                this.groupSocket!.emit(Group.Exist.EVENT_NAME,
                     new Group.Exist.RequestCreate(
                         this.in.groupName.value,
                         this.in.passphrase.value,
@@ -297,38 +292,32 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             url.pathname = SkServer.Nsps.GROUP_LOBBY_PREFIX + this.in.groupName.value;
             return url.toString();
         })();
-        this.socket?.close();
+        this.groupSocket?.close();
         const top = this.top;
         const userInfo = StorageHooks.getLastUserInfo();
-        this.socket = (await top.socketIo)(url, {
+        const sock = await this.top.sockets.setGroupSocket(url, {
             query: {
                 passphrase: this.in.passphrase.value,
                 userInfo,
             },
         });
-        this.socket.on("connect", () => {
+        sock.on("connect", () => {
             this._setFormState(State.IN_GROUP);
-        });
-        this.socket.on("connect_error", (error: object) => {
-            this.socket!.removeAllListeners();
-            this.socket = undefined;
+        }).on("connect_error", (error: object) => {
             top.toast("Unable to connect to the specified group.");
-        });
-        this.socket.on("disconnect", (reason: string) => {
+        }).on("disconnect", (reason: string) => {
             if (reason === "io server disconnect") {
-                this.socket!.removeAllListeners();
-                this.socket = undefined;
                 top.toast("The server disconnected you from your group.");
                 this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {}, SkScreen.NavDir.BACKWARD);
             }
         });
     }
 
-    private get socket(): SocketIOClient.Socket | undefined {
-        return this.top.socket;
+    private get joinerSocket(): SocketIOClient.Socket | undefined {
+        return this.top.sockets.joinerSocket;
     }
-    private set socket(newSocket: SocketIOClient.Socket | undefined) {
-        this.top.socket = newSocket;
+    private get groupSocket(): SocketIOClient.Socket | undefined {
+        return this.top.sockets.groupSocket;
     }
 
     /**

@@ -12,8 +12,11 @@ Object.freeze(Object.prototype);
 //     return true;
 // }
 
-// TODO.design instead of exposing top, expose handy function for probing it.
-export const _top = new TopLevel();
+const _top = new TopLevel();
+export const top = (() => {
+    const ENV_DEVELOPMENT = true; // TODO.build set this after installing webpack-define
+    return ENV_DEVELOPMENT ? _top : undefined;
+})();
 
 export function screen() {
     return _top.currentScreen;

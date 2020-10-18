@@ -40,12 +40,14 @@ export class SnakeyServer extends _SnakeyServer {
         this.app    = express();
         this.http   = http.createServer({}, this.app);
         this.io     = io(this.http, {
-            serveClient: false,
-            // Do not server socket.io-client. It is bundled into a
+            // Do not serve socket.io-client. It is bundled into a
             // client chunk on purpose so that a client can choose to
             // fetch all static page resources from another server,
             // namely, GitHub Pages, in order to reduce the downstream
             // load on a LAN-hosted SnakeyServer.
+            serveClient: false,
+            origins: "*:*", // TODO.learn how can we use this?
+            cookie: false, // https://github.com/socketio/socket.io/issues/2276#issuecomment-147184662
         });
         this.allGroups = new Map();
         JsUtils.propNoWrite(this as SkServer, [
