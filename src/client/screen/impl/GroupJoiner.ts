@@ -253,7 +253,9 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         const submitInput = async (): Promise<void> => {
             if (!this.in.passphrase.validity.valid) return;
             // Short-circuit when no change has occurred:
-            if (this.groupSocket!.nsp === SkServer.Nsps.GROUP_LOBBY_PREFIX + this.in.groupName.value) {
+            if (this.groupSocket !== undefined
+             && this.groupSocket.nsp === SkServer.Nsps.GROUP_LOBBY_PREFIX + this.in.groupName.value
+            ) {
                 if (this.groupSocket!.connected) {
                     this._setFormState(State.IN_GROUP);
                     this.nav.next.focus(); // No changes have occurred.
@@ -270,7 +272,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 await this._attemptToJoinExistingGroup();
             } else {
                 this.#clientIsGroupHost = true;
-                this.groupSocket!.emit(Group.Exist.EVENT_NAME,
+                this.joinerSocket!.emit(Group.Exist.EVENT_NAME,
                     new Group.Exist.RequestCreate(
                         this.in.groupName.value,
                         this.in.passphrase.value,

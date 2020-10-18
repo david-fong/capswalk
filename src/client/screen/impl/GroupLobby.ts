@@ -1,5 +1,5 @@
 import { Player } from "defs/TypeDefs";
-import { Group, GroupEv } from "defs/OnlineDefs";
+import { Group, GroupEv, GameEv, SkServer } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 
 import { JsUtils, OmHooks, Coord, SkScreen, StorageHooks } from "../SkScreen";
@@ -132,11 +132,18 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                 Group.Socket.UserInfoChange.EVENT_NAME,
                 this._onUserInfoChange.bind(this),
             );
-            // Listen for when the server sends tbe game constructor arguments:
+            // Listen for when the server sends the game constructor arguments:
             this.socket.once(
-                GroupEv.CREATE,
-                async (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
-                    this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
+                GroupEv.CREATE_GAME,
+                () => {
+                    console.log("group create game socket. now waiting for ctor args");
+                    const gameSocket = this.socket.io.socket(
+                        this.socket.nsp.replace(SkServer.Nsps.GROUP_LOBBY_PREFIX, SkServer.Nsps.GROUP_GAME_PREFIX)
+                    );
+                    this.top.sockets.setGameSocket(gameSocket);
+                    gameSocket.once(GameEv.CREATE_GAME, (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
+                        this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
+                    });
                 },
             );
         }
@@ -149,7 +156,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         if (navDir === SkScreen.NavDir.BACKWARD) {
             // Make sure we stop listening for the game to start
             // in case it hasn't started yet:
-            this.socket.removeListener(GroupEv.CREATE);
+            this.socket.removeListener(GroupEv.CREATE_GAME);
         }
         return true;
     }

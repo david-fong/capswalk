@@ -26,6 +26,10 @@ export class SnakeyServer extends _SnakeyServer {
      */
     private readonly allGroups: Map<string, Group>;
 
+    private readonly _joinerSocketListeners: Readonly<{
+        [evName : string]: (this: SnakeyServer, socket: io.Socket, ...args: any[]) => void;
+    }>;
+
     /**
      *
      * @param host - The hostname of the server. This may be an IP address.
@@ -74,6 +78,40 @@ export class SnakeyServer extends _SnakeyServer {
             console.log("");
         });
 
+        this._joinerSocketListeners = Object.freeze({
+            [Group.Exist.EVENT_NAME]: (socket: io.Socket, desc: Group.Query.RequestCreate): void => {
+                // A client is requesting a new group to be created.
+                // If a group with such a name already exists, or if the
+                // requested name or pass-phrases don't follow the required
+                // format, completely ignore the request.
+                if (!(desc.groupName) || this.allGroups.has(desc.groupName)
+                 ||   desc.groupName.length > Group.Name.MaxLength
+                 || !(desc.groupName.match(Group.Name.REGEXP))
+                 ||   desc.passphrase.length > Group.Passphrase.MaxLength
+                 || !(desc.passphrase.match(Group.Passphrase.REGEXP))
+                ) {
+                    socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.NOPE);
+                    return;
+                }
+
+                this.allGroups.set(
+                    desc.groupName,
+                    new Group(Object.freeze({
+                        namespace:  this.io.of(SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + desc.groupName),
+                        name:       desc.groupName,
+                        passphrase: desc.passphrase,
+                        deleteExternalRefs: () => this.allGroups.delete(desc.groupName),
+                        initialTtl: Group.DEFAULT_TTL,
+                    })),
+                );
+                // Notify all sockets connected to the joiner namespace
+                // of the new namespace created for the new group session:
+                socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
+            },
+        });
+        JsUtils.instNoEnum( this as SnakeyServer, ["_joinerSocketListeners"]);
+        JsUtils.propNoWrite(this as SnakeyServer, ["_joinerSocketListeners"]);
+
         this.io.of(SnakeyServer.Nsps.GROUP_JOINER)
             .on("connection", this.onJoinerNspsConnection.bind(this));
     }
@@ -93,6 +131,7 @@ export class SnakeyServer extends _SnakeyServer {
         socket.emit(
             Group.Exist.EVENT_NAME,
             (() => {
+                // TODO.design current implementation may suffer when there are many many groups.
                 const build: Group.Query.NotifyStatus = {};
                 Array.from(this.allGroups).forEach(([groupName, group,]) => {
                     build[groupName] = (group.isCurrentlyPlayingAGame)
@@ -102,33 +141,8 @@ export class SnakeyServer extends _SnakeyServer {
                 return build;
             })(),
         );
-        socket.on(Group.Exist.EVENT_NAME, (desc: Group.Query.RequestCreate): void => {
-            // A client is requesting a new group to be created.
-            // If a group with such a name already exists, or if the
-            // requested name or pass-phrases don't follow the required
-            // format, completely ignore the request.
-            if (!desc.groupName || this.allGroups.has(desc.groupName)
-            ||  desc.groupName.length > Group.Name.MaxLength
-            || !desc.groupName.match(Group.Name.REGEXP)
-            ||  desc.passphrase.length > Group.Passphrase.MaxLength
-            || !desc.passphrase.match(Group.Passphrase.REGEXP)
-            ) {
-                socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.NOPE);
-            }
-
-            this.allGroups.set(
-                desc.groupName,
-                new Group(Object.freeze({
-                    namespace:  this.io.of(SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + desc.groupName),
-                    name:       desc.groupName,
-                    passphrase: desc.passphrase,
-                    deleteExternalRefs: () => this.allGroups.delete(desc.groupName),
-                    initialTtl: Group.DEFAULT_TTL,
-                })),
-            );
-            // Notify all sockets connected to the joiner namespace
-            // of the new namespace created for the new group session:
-            socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
+        Object.entries(this._joinerSocketListeners).forEach(([evName, callback]) => {
+            socket.on(evName, callback.bind(this, socket));
         });
     }
 }

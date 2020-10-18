@@ -16,7 +16,11 @@ export class SkSockets {
     // #socketIoChunk: Promise<typeof import("socket.io-client")>;
 
     public constructor() {
-        ;
+        this.#sock = {
+            joiner: undefined,
+            group:  undefined,
+            game:   undefined,
+        };
     }
 
     public get socketIo(): Promise<typeof import("socket.io-client")> {
@@ -42,16 +46,16 @@ export class SkSockets {
     public get groupSocket (): Socket | undefined { return this.#sock.group;  }
     public get gameSocket  (): Socket | undefined { return this.#sock.game;   }
 
-    public async setJoinerSocket(url: string, params: SioOpts): SockProm { return await this._mkSocket("joiner", url, params) }
-    public async setGroupSocket (url: string, params: SioOpts): SockProm { return await this._mkSocket("group",  url, params) }
-    public async setGameSocket  (url: string, params: SioOpts): SockProm { return await this._mkSocket("game",   url, params) }
+    public async setJoinerSocket(url: string, params: SioOpts): SockProm { return await this._mkSocket("joiner", url, params); }
+    public async setGroupSocket (url: string, params: SioOpts): SockProm { return await this._mkSocket("group",  url, params); }
+    public setGameSocket  (socket: Socket): void { return this._configSocket(socket, "game"); }
 
     private async _mkSocket(name: SockName, url: string, params: SioOpts): SockProm {
         const socket = (await this.socketIo)(url, params);
         this._configSocket(socket, name);
         return socket;
     }
-    public _configSocket(socket: Socket, name: SockName): void {
+    private _configSocket(socket: Socket, name: SockName): void {
         this.#sock[name] = socket;
         socket
         .on("connect_error", (error: object) => {
@@ -69,7 +73,7 @@ export class SkSockets {
     }
 }
 JsUtils.protoNoEnum(SkSockets, [
-    "setJoinerSocket", "setGroupSocket", "setGameSocket", "_mkSocket",
+    "setJoinerSocket", "setGroupSocket", "setGameSocket", "_mkSocket", "_configSocket",
 ]);
 Object.freeze(SkSockets);
 Object.freeze(SkSockets.prototype);

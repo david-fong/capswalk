@@ -11,9 +11,9 @@ export namespace SkServer {
      * client and the server code, which both require access to it.
      */
     export const enum Nsps {
-        GROUP_JOINER        = "/joiner",
-        GROUP_LOBBY_PREFIX  = "/group-",
-        GROUP_GAME_PREFIX   = "/group-game-",
+        GROUP_JOINER        = "/joiner.",
+        GROUP_LOBBY_PREFIX  = "/group.",
+        GROUP_GAME_PREFIX   = "/group-game.",
     }
 }
 Object.freeze(SkServer);
@@ -57,7 +57,7 @@ export namespace Group {
     }
     export type Passphrase = string;
     export namespace Passphrase {
-        export const REGEXP = /(?:[a-zA-Z0-9:-]+)/;
+        export const REGEXP = /(?:[a-zA-Z0-9:-]*)/;
         export const MaxLength = 30;
     }
 
@@ -66,6 +66,7 @@ export namespace Group {
 
     export namespace Exist {
         export const EVENT_NAME = "group-exist";
+
         /**
          * Sent by the client to request the creation of a new group.
          *
@@ -109,12 +110,16 @@ export const enum GroupEv {
     /**
      * On the clientside, this event is registered to the group socket.
      */
-    CREATE = "group-game-create",
+    CREATE_GAME = "group-game-create",
 }
 
 /**
  */
 export const enum GameEv {
+    /**
+     */
+    CREATE_GAME = "game-create",
+
     /**
      * Upon constructing a _new_ game, the server waits for all clients
      * to send this event to indicate that they have finished building

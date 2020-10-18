@@ -76,10 +76,9 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
             "../../game/OnlineGame"
         )).OnlineGame(
             this._onGameBecomeOver.bind(this),
-            this.socket,
+            this.top.sockets.gameSocket!,
             ctorArgs,
-        );
-        this.top.sockets._configSocket(this.socket, "game");
+            );
         this.socket
         .on(GameEv.UNPAUSE, () => {
             this._statusBecomePlaying();

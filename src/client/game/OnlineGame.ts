@@ -39,12 +39,12 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
     /**
      * Note that this class does not extend `GameManager`.
      *
-     * @param groupSocket - Used to make a Game socket.
+     * @param gameSocket - Used to make a Game socket.
      * @param gameDesc - This should come from a Server event by the name {@link GroupEv.CREATE}.
      */
     public constructor(
         onGameBecomeOver: () => void,
-        groupSocket: SocketIOClient.Socket,
+        gameSocket: SocketIOClient.Socket,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(
@@ -54,9 +54,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,
         );
-        this.socket = groupSocket.io.socket(
-            groupSocket.nsp.replace(SkServer.Nsps.GROUP_LOBBY_PREFIX, SkServer.Nsps.GROUP_GAME_PREFIX)
-        );
+        this.socket = gameSocket;
         this._ctorBrowserGame();
 
         if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.Movement)) throw Error("never");

@@ -57,7 +57,7 @@ Methodology: Use #private fields for fields that back accessors- Ie. Fields that
 
 When describing array types, use the `Array<>` form if the arrays are nested (since `readonly T[][]` is not clear which dimension is readonly), or if the entry type is mainly intended to be used as an interface-style type-map. An example of when `T[]` syntax is acceptable is when `T` is a builtin literal type such as `string` and the array is one dimensional.
 
-#### Prefixing with Underscore
+### Prefixing with Underscore
 
 TLDR: use such naming if a member / variable must be public, but is only meant to be called in a very specific place.
 
@@ -66,3 +66,7 @@ Full Explanation: Do this if:
 - The _method_ has a good reason to exist and must grant public access, but is able to put an entity into a bad state. Such methods should be called very intentionally in very specific places. The reason is usually that it behaves as a setter (abstracts away management of internal representation), or that it is a hook for extension classes to perform implementation-specific duties. Those two scenarios are actually not all that different. See `Tile._setOccupant`, `GameBase._abstractStatusBecome*`, `Player._abstractNotifyThatGameStatusBecame*` for examples of this.
   - The _method_ is used to abstract the construction of an object of some abstract type. See `GameBase._playerStatusCtor`, `GameBase._getGridImplementation`, `GameBase._createOperatorPlayer` for examples of this. This is a weak-rationale strain of the above classification. The main benefit being sought here is that in autocompletion, its naming will communicate that it was created to be used in a very specific place (typically in constructors).
 - The _object_ is a dictionary / registry for enumerated constructor functions for instances sharing a common interface. See `base/game/IndexTasks.ts` for examples of this. These typically ask to be accessed indirectly through a more type-friendly function (one that handles any type-casting when TypeScript has a hard time tracking what's going on).
+
+### Socket.IO
+
+- Bind events to functions declared on a prototype to avoid creating unnecessary functions.

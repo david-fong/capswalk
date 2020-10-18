@@ -38,8 +38,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
         this.username = desc.username;
         this.avatar   = desc.avatar ?? Player.Avatar.GET_RANDOM();
         JsUtils.propNoWrite(this as Player<S>, [
-            "socketId", "familyId",
-            "teamId", "username", "avatar",
+            "familyId", "teamId", "username", "avatar",
         ]);
     }
 

@@ -32,6 +32,8 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     declare public currentOperator: undefined;
 
     public readonly namespace: io.Namespace;
+    private readonly _groupHostClient: io.Client;
+    private readonly socketListeners: Readonly<{[evName : string]: (...args: any[]) => void}>;
 
     private readonly _deleteExternalRefs: () => void;
 
@@ -63,46 +65,60 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * @param groupNsps -
      * @param gameDesc -
      */
-    public constructor(
+    public constructor(args: {
         groupNsps: io.Namespace,
         passphrase: Group.Passphrase,
+        groupHostClient: io.Client,
         deleteExternalRefs: () => void,
         gameDesc: Game.CtorArgs<G,S>,
-    ) {
+    }) {
         // Start with a call to the super constructor:
         super(
             Game.Type.SERVER, {
             onGameBecomeOver: () => {},
             tileClass: Tile,
             playerStatusCtor: PlayerStatus,
-            }, gameDesc,
+            }, args.gameDesc,
         );
-        this._deleteExternalRefs = deleteExternalRefs;
-        JsUtils.instNoEnum(this as ServerGame<S>, ["operators", "_deleteExternalRefs"]);
-        JsUtils.propNoWrite(this as ServerGame<S>, ["_deleteExternalRefs"]);
+        this._groupHostClient = args.groupHostClient;
+        this._deleteExternalRefs = args.deleteExternalRefs;
+        JsUtils.instNoEnum (this as ServerGame<S>, ["operators", "_deleteExternalRefs"]);
+        JsUtils.propNoWrite(this as ServerGame<S>, ["_groupHostClient", "_deleteExternalRefs"]);
 
-        this.namespace = groupNsps.server.of(
-            SkServer.Nsps.GROUP_GAME_PREFIX + groupNsps.name
+        this.namespace = args.groupNsps.server.of(
+            SkServer.Nsps.GROUP_GAME_PREFIX + args.groupNsps.name
         ).use((socket, next) => {
             const handshake = socket.handshake;
-            if (handshake.query.passphrase !== passphrase) {
+            if (handshake.query.passphrase !== args.passphrase) {
                 next(new Error("Incorrect passphrase"));
             };
             return next();
         });
 
+        this.socketListeners = Object.freeze({
+            [PlayerActionEvent.EVENT_NAME.Movement]: this.processMoveRequest.bind(this),
+            [PlayerActionEvent.EVENT_NAME.Bubble]: this.processBubbleRequest.bind(this),
+            // TODO.impl pause-request handler:
+        });
+        JsUtils.instNoEnum (this as ServerGame<S>, ["socketListeners"]);
+        JsUtils.propNoWrite(this as ServerGame<S>, ["socketListeners"]);
+
         // Wait for all sockets from the group namespace to join the game namespace:
-        Promise.all(Object.values(groupNsps.sockets).map((groupSocket) => new Promise((resolve, reject) => {
-            const gameNsps = this.namespace;
-            function checkSameSocket(socket: io.Socket): void {
-                if (socket.client === groupSocket.client) {
-                    gameNsps.removeListener("connect", checkSameSocket);
-                    resolve();
+        Promise.all(Object.values(args.groupNsps.sockets).map((groupSocket) => {
+            groupSocket.emit(GroupEv.CREATE_GAME); // <- "side effect" inside map function.
+            return new Promise((resolve, reject) => {
+                const gameNsps = this.namespace;
+                function _checkSameSocket(gameSocket: io.Socket): void {
+                    if (gameSocket.client === groupSocket.client) {
+                        console.log("group socket joined game socket");
+                        gameNsps.removeListener("connect", _checkSameSocket);
+                        resolve();
+                    }
                 }
-            }
-            gameNsps.on("connect", checkSameSocket);
-        })))
-        .then(() => this._greetGameSockets(groupNsps, gameDesc));
+                gameNsps.on("connect", _checkSameSocket);
+            });
+        }))
+        .then(() => this._greetGameSockets(args.groupNsps, args.gameDesc));
     }
 
     /**
@@ -111,6 +127,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         groupNsps: io.Namespace,
         gameDesc: Game.CtorArgs<G,S>,
     ): void {
+        console.log("greet game sockets:");
         // @ts-expect-error : RO=
         this.playerSockets
         // The below cast is safe because GameBase reassigns
@@ -123,7 +140,9 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 if (playerDesc.socketId === undefined) {
                     throw Error("missing socket ID for player " + playerDesc.playerId);
                 }
-                return groupNsps.sockets[playerDesc.socketId!];
+                const groupSocket = groupNsps.sockets[playerDesc.socketId!];
+                const  gameSocket = groupSocket.client.nsps[this.namespace.name];
+                return gameSocket;
             });
         JsUtils.propNoWrite(this as ServerGame<any>, ["playerSockets",]);
 
@@ -153,28 +172,20 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 if (socket.client === this._groupHostClient) {
                     this.statusBecomeOver();
                     socket.broadcast.emit(GameEv.RETURN_TO_LOBBY);
-                    // All
                 } else {
                     socket.broadcast.emit(GameEv.RETURN_TO_LOBBY, socket.id);
                 }
             });
-            socket.on(
-                PlayerActionEvent.EVENT_NAME.Movement,
-                this.processMoveRequest.bind(this),
-            );
-            // Attach the bubble-making request handler:
-            socket.on(
-                PlayerActionEvent.EVENT_NAME.Bubble,
-                this.processBubbleRequest.bind(this),
-            );
-            // TODO.impl pause-request handler:
+            Object.entries(this.socketListeners).forEach(([evName, callback]) => {
+                socket.on(evName, callback);
+            });
 
             // Set `isALocalOperator` flags to match what this socket should see:
             gameDesc.playerDescs.forEach((playerDesc) => {
                 // @ts-expect-error : RO=
                 playerDesc.isALocalOperator = (playerDesc.socketId === socket.id);
             });
-            socket.emit(GroupEv.CREATE, gameDesc);
+            socket.emit(GameEv.CREATE_GAME, gameDesc);
         });
     }
 
@@ -291,7 +302,6 @@ JsUtils.protoNoEnum(ServerGame, [
     "_greetGameSockets",
     "_getGridImplementation",
     "_createOperatorPlayer", "setCurrentOperator",
-    "onReturnToLobby",
 ]);
 Object.freeze(ServerGame);
 Object.freeze(ServerGame.prototype);

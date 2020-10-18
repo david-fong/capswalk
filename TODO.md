@@ -19,12 +19,9 @@
     - Rationale: This is a memory-saving measure.
     - Can even keep a field that is a dictionary of the bound functions to avoid making a new bound-function for each socket.
 1. See if any serverside identification according to `socketId` should be changed to `socket.client.id`.
-1. Get rid of `OnlineGame.onPlayerLeave`. Instead, if a Player leaves, just leave their player on the grid :P
 1. Implement Pause and Unpause events over network.
 1. `_PlayScreen.currentGame` protected, always-defined version. Non-enumerable.
 1. Server authentication is not working.
-1. Mark properties as non-enumerable where they should not be easily accessible through debugger consoles.
-    - Also consider those members of objects stored in arrays that tend to end up as circular references, which floods console.log.
 1. Make an overrideable Grid method that does what `GameManager.dryRunShuffleLangChar` does.
    - This would allow Grid implementations to make optimized versions based on their own specific properties.
    - This may help prevent a lot of memory fragmentation from all the shallow array-copies that the default implementation produces from calls when getting destination and source tiles.

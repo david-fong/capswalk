@@ -25,6 +25,10 @@ export class Group extends _Group {
     #currentGame: ServerGame<Coord.System> | undefined;
     private _sessionHost: Group.Socket;
 
+    private readonly socketListeners: Readonly<{
+        [evName : string]: (this: Group, socket: Group.Socket, ...args: any[]) => void,
+    }>;
+
     private readonly _initialTtlTimeout: NodeJS.Timeout;
     private readonly _deleteExternalRefs: () => void;
 
@@ -61,6 +65,45 @@ export class Group extends _Group {
             }
         }, (desc.initialTtl * 1000)).unref();
 
+        this.socketListeners = Object.freeze({
+            ["disconnect"]: (socket: io.Socket): void => {
+                if (socket === this._sessionHost) {
+                    // If the host disconnects, end the session.
+                    // TODO.impl this seems like a bad decision. What about just broadcasting
+                    // that the host player has died, and choose another player to become
+                    // the host?
+                    this.terminate();
+                    return;
+                }
+                if (Object.keys(socket.nsp.sockets).length === 1) {
+                    this.terminate();
+                    return;
+                }
+                const res = <_Group.Socket.UserInfoChange.Res>{
+                    [socket.id]: undefined,
+                };
+                socket.nsp.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
+            },
+            [Group.Socket.UserInfoChange.EVENT_NAME]: (socket: Group.Socket, req: _Group.Socket.UserInfoChange.Req) => {
+                if (typeof req.username !== "string"
+                 || typeof req.teamId   !== "number"
+                 || typeof req.avatar   !== "string") {
+                    // User arguments did not match expected format.
+                    console.log(`bad format: username: \`${req.username}\``
+                    + `, teamId: \`${req.teamId}\`, avatar: \`${req.avatar}\`.`);
+                    return;
+                }
+                socket.userInfo = req;
+                const res = <_Group.Socket.UserInfoChange.Res>{
+                    [socket.id]: req,
+                };
+                socket.nsp.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
+                //console.log("change ", res);
+            },
+        });
+        JsUtils.instNoEnum( this as Group, ["socketListeners"]);
+        JsUtils.propNoWrite(this as Group, ["socketListeners"]);
+
         // Call the connection-event handler:
         this.namespace.use((socket, next) => {
             const handshake = socket.handshake;
@@ -94,7 +137,7 @@ export class Group extends _Group {
             const EVENT_NAME = Group.Socket.UserInfoChange.EVENT_NAME;
             // Notify all other clients in this group of the new player:
             // NOTE: broadcast modifier not used since socket is not yet in this.sockets.
-            socket/* .broadcast */.emit(EVENT_NAME, <Res>{[socket.id]: socket.userInfo});
+            socket.nsp.emit(EVENT_NAME, <Res>{[socket.id]: socket.userInfo});
             // Notify the new player of all other players:
             socket.emit(EVENT_NAME, Object.entries(this.sockets).reduce<Res>((res, [otherSocketId, otherSocket]) => {
                 res[otherSocketId] = otherSocket.userInfo;
@@ -114,45 +157,11 @@ export class Group extends _Group {
             this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_LOBBY,
             });
-            socket.on(GroupEv.CREATE, this._socketOnHostCreateGame.bind(this));
+            socket.on(GroupEv.CREATE_GAME, this._socketOnHostCreateGame.bind(this));
         }
 
-        socket.on(
-            Group.Socket.UserInfoChange.EVENT_NAME,
-            (req: _Group.Socket.UserInfoChange.Req) => {
-                if (typeof req.username !== "string"
-                 || typeof req.teamId   !== "number"
-                 || typeof req.avatar   !== "string") {
-                    // User arguments did not match expected format.
-                    console.log(`bad format: username: \`${req.username}\``
-                    + `, teamId: \`${req.teamId}\`, avatar: \`${req.avatar}\`.`);
-                    return;
-                }
-                socket.userInfo = req;
-                const res = <_Group.Socket.UserInfoChange.Res>{
-                    [socket.id]: req,
-                };
-                socket.nsp.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
-                //console.log("change ", res);
-            },
-        );
-        socket.on("disconnect", (...args: any[]): void => {
-            if (socket === this._sessionHost) {
-                // If the host disconnects, end the session.
-                // TODO.impl this seems like a bad decision. What about just broadcasting
-                // that the host player has died, and choose another player to become
-                // the host?
-                this.terminate();
-                return;
-            }
-            if (Object.keys(socket.nsp.sockets).length === 1) {
-                this.terminate();
-                return;
-            }
-            const res = <_Group.Socket.UserInfoChange.Res>{
-                [socket.id]: undefined,
-            };
-            socket.nsp.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
+        Object.entries(this.socketListeners).forEach(([evName, callback]) => {
+            socket.on(evName, callback.bind(this, socket));
         });
     }
     private _socketOnHostCreateGame(
@@ -166,6 +175,7 @@ export class Group extends _Group {
             this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_GAME,
             });
+            console.log(`group ${this.name} new game`);
         }
     }
 
@@ -224,12 +234,16 @@ export class Group extends _Group {
     private _createGameInstance(
         ctorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System>,
     ): readonly string[] {
-        const failureReasons = GamepartManager.CHECK_VALID_CTOR_ARGS(ctorArgs);
+        const failureReasons = [];
+        if (this.isCurrentlyPlayingAGame) {
+            failureReasons.push("a game is already in session for this group");
+            return failureReasons;
+        }
+        failureReasons.push(...GamepartManager.CHECK_VALID_CTOR_ARGS(ctorArgs));
         if (failureReasons.length) {
             console.log(failureReasons);
             return failureReasons;
         }
-        console.log(`group ${this.name} new game`);
 
         // Everything needed to create a game exists. Let's do it!
         // @ts-expect-error : RO=
@@ -248,12 +262,13 @@ export class Group extends _Group {
                 });
             }),
         ];
-        this.#currentGame = new ServerGame(
-            this.namespace,
-            this.passphrase,
-            () => { this.#currentGame = undefined; },
-            ctorArgs,
-        );
+        this.#currentGame = new ServerGame({
+            groupNsps: this.namespace,
+            passphrase: this.passphrase,
+            groupHostClient: this._sessionHost.client,
+            deleteExternalRefs: () => { this.#currentGame = undefined; },
+            gameDesc: ctorArgs,
+        });
         return [];
     }
 
