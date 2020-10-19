@@ -67,23 +67,24 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
     },
     exclude: /node_modules/,
 }, ];};
-const WEB_MODULE_RULES = () => { return [{
+const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
     test: /\.css$/,
-    use: ((): webpack.RuleSetUseItem[] => {
-        const retval: webpack.RuleSetUse = [ "css-loader", ];
-        retval.unshift({
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-                publicPath: (resourcePath: string, context: string) => {
-                    // publicPath is the relative path of the resource to the context
-                    // e.g. for ./css/admin/main.css the publicPath will be ../../
-                    // while for ./css/main.css the publicPath will be ../
-                    // return path.relative(path.dirname(resourcePath), context).replace(/\\/g, "/") + "/";
-                },
-            }
-        });
-        return retval;
-    })(),
+    use: [{
+        loader: MiniCssExtractPlugin.loader,
+        options: {
+            publicPath: (resourcePath: string, context: string) => {
+                // publicPath is the relative path of the resource to the context
+                // e.g. for ./css/admin/main.css the publicPath will be ../../
+                // while for ./css/main.css the publicPath will be ../
+                // return path.relative(path.dirname(resourcePath), context).replace(/\\/g, "/") + "/";
+            },
+        }
+    }, {
+        loader: "css-loader",
+        options: {
+            modules: false,
+        }
+    }, ],
 },{
     // https://webpack.js.org/loaders/file-loader/
     test: /\.(png|svg|jpe?g|gif)$/,

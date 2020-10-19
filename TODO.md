@@ -14,7 +14,6 @@
 
 ### High Priority
 
-1. See if any serverside identification according to `socketId` should be changed to `socket.client.id`.
 1. Implement Pause and Unpause events over network.
 1. `_PlayScreen.currentGame` protected, always-defined version. Non-enumerable.
 1. Server authentication is not working.
@@ -54,6 +53,11 @@
 ### Low Priority
 
 - Start a skeleton for a "Chess Knight" Grid implementation. That would be pretty mind boggling both to play and to develop...
+- Try out CSS modules. We already have webpack-css-loader installed.
+  - This would take a lot of weight out of OmHooks.
+  - [how to config with typescript](https://stackoverflow.com/questions/40382842/cant-import-css-scss-modules-typescript-says-cannot-find-module)
+  - Move screen-related css to `client/screen/impl/`.
+    - Try using es6-style imports instead of CommonJs and see if css-loader understands (it should, I think).
 - When TypeScript 4.1 comes out, use the improved `@see` JSdoc annotations.
 - Implement translations of clientside strings.
   - Create a sitemap file to point to translated versions
@@ -61,11 +65,6 @@
     - [Language Tags](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry)
       - [Choosing language tags](https://www.w3.org/International/questions/qa-choosing-language-tags)
     - Just put an argument in the url query and have the javascript parse it?
-- Try out CSS modules. We already have webpack-css-loader installed.
-  - This would take a lot of weight out of OmHooks.
-  - [how to config with typescript](https://stackoverflow.com/questions/40382842/cant-import-css-scss-modules-typescript-says-cannot-find-module)
-  - Move screen-related css to `client/screen/impl/`.
-    - Try using es6-style imports instead of CommonJs and see if css-loader understands (it should, I think).
 - Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
   - Note: The Intersection Observer API will not work here- it doesn't trigger on re-parenting the target node.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
