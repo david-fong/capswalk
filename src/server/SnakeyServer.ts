@@ -44,12 +44,7 @@ export class SnakeyServer extends _SnakeyServer {
         this.app    = express();
         this.http   = http.createServer({}, this.app);
         this.io     = io(this.http, {
-            // Do not serve socket.io-client. It is bundled into a
-            // client chunk on purpose so that a client can choose to
-            // fetch all static page resources from another server,
-            // namely, GitHub Pages, in order to reduce the downstream
-            // load on a LAN-hosted SnakeyServer.
-            serveClient: false,
+            // Note: socket.io.js is alternatively hosted on GitHub Pages.
             origins: "*:*", // TODO.learn how can we use this?
             cookie: false, // https://github.com/socketio/socket.io/issues/2276#issuecomment-147184662
         });
@@ -64,7 +59,7 @@ export class SnakeyServer extends _SnakeyServer {
         this.app.get("/", (req, res) => {
             res.sendFile(path.resolve(PROJECT_ROOT, "index.html"));
         });
-        this.app.use("/dist",   express.static(path.resolve(PROJECT_ROOT, "dist")));
+        this.app.use("/dist/client", express.static(path.resolve(PROJECT_ROOT, "dist", "client")));
         this.app.use("/assets", express.static(path.resolve(PROJECT_ROOT, "assets")));
 
         this.http.listen(<net.ListenOptions>{ port, host, }, (): void => {

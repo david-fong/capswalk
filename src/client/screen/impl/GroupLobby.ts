@@ -137,11 +137,11 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                 GroupEv.CREATE_GAME,
                 () => {
                     console.log("group create game socket. now waiting for ctor args");
-                    const gameSocket = this.socket.io.socket(
-                        this.socket.nsp.replace(SkServer.Nsps.GROUP_LOBBY_PREFIX, SkServer.Nsps.GROUP_GAME_PREFIX)
+                    const sock = this.top.sockets.gameSocketConnect(
+                        args.groupName!,
+                        { passphrase: args.groupPassphrase!, },
                     );
-                    this.top.sockets.setGameSocket(gameSocket);
-                    gameSocket.once(GameEv.CREATE_GAME, (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
+                    sock.once(GameEv.CREATE_GAME, (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
                         this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
                     });
                 },

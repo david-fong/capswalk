@@ -61,7 +61,7 @@ export namespace Group {
         export const MaxLength = 30;
     }
 
-    export const JoinerReconnectionAttempts = 2;
+    export const GameServerReconnectionAttempts = 2;
     export const DEFAULT_TTL = 20; // seconds
 
     export namespace Exist {

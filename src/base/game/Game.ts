@@ -148,7 +148,7 @@ export namespace Game {
          * and randomly. Adjustments for more rational assumptions are
          * not to be made _here_.
          */
-        PORTION_OF_MOVES_THAT_ARE_BOOST: 0.05,
+        PORTION_OF_MOVES_THAT_ARE_BOOST: 0.4,
 
         /**
          * Takes into consideration all contributing factors to determine

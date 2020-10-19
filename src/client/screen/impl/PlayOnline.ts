@@ -79,7 +79,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
             this.top.sockets.gameSocket!,
             ctorArgs,
             );
-        this.socket
+        this.top.sockets.gameSocket!
         .on(GameEv.UNPAUSE, () => {
             this._statusBecomePlaying();
         })

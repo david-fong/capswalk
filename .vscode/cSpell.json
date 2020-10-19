@@ -54,6 +54,7 @@
         "reflow",
         "refs",
         "serverside",
+        "sourcemap",
         "supercall",
         "spec",
         "typeof",

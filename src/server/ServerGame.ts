@@ -47,7 +47,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * group is already in a game, which is currently the intended
      * behaviour: players cannot join the game mid-game.
      */
-    protected readonly playerSockets: TU.RoArr<io.Socket>;
+    protected readonly playerSockets: ReadonlyMap<Player.Id, io.Socket>;
 
     /**
      * @override
@@ -86,7 +86,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         JsUtils.propNoWrite(this as ServerGame<S>, ["_groupHostClient", "_deleteExternalRefs"]);
 
         this.namespace = args.groupNsps.server.of(
-            SkServer.Nsps.GROUP_GAME_PREFIX + args.groupNsps.name
+            SkServer.Nsps.GROUP_GAME_PREFIX + args.groupNsps.name.replace(SkServer.Nsps.GROUP_LOBBY_PREFIX, "")
         ).use((socket, next) => {
             const handshake = socket.handshake;
             if (handshake.query.passphrase !== args.passphrase) {
@@ -103,22 +103,23 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         JsUtils.instNoEnum (this as ServerGame<S>, ["socketListeners"]);
         JsUtils.propNoWrite(this as ServerGame<S>, ["socketListeners"]);
 
-        // Wait for all sockets from the group namespace to join the game namespace:
+        // Prepare for all group members to join the game namespace:
+        const gameSockConnResolvers: Map<io.Client, () => void> = new Map();
+        function onGameSockConn(gameSocket: io.Socket): void {
+            gameSockConnResolvers.get(gameSocket.client)!();
+            gameSockConnResolvers.delete(gameSocket.client);
+        }
         Promise.all(Object.values(args.groupNsps.sockets).map((groupSocket) => {
-            groupSocket.emit(GroupEv.CREATE_GAME); // <- "side effect" inside map function.
             return new Promise((resolve, reject) => {
-                const gameNsps = this.namespace;
-                function _checkSameSocket(gameSocket: io.Socket): void {
-                    if (gameSocket.client === groupSocket.client) {
-                        console.log("group socket joined game socket");
-                        gameNsps.removeListener("connect", _checkSameSocket);
-                        resolve();
-                    }
-                }
-                gameNsps.on("connect", _checkSameSocket);
+                gameSockConnResolvers.set(groupSocket.client, resolve);
+                this.namespace.once("connect", onGameSockConn);
             });
         }))
-        .then(() => this._greetGameSockets(args.groupNsps, args.gameDesc));
+        .then(() => this._greetGameSockets(args.groupNsps, args.gameDesc))
+        .catch((reason) => { setImmediate(() => { throw reason; }); });
+
+        // Tell all group members in the lobby to join the game namespace:
+        args.groupNsps.emit(GroupEv.CREATE_GAME);
     }
 
     /**
@@ -127,7 +128,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         groupNsps: io.Namespace,
         gameDesc: Game.CtorArgs<G,S>,
     ): void {
-        console.log("greet game sockets:");
         // @ts-expect-error : RO=
         this.playerSockets
         // The below cast is safe because GameBase reassigns
@@ -136,14 +136,17 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         // `Player.CtorArgs.PreIdAssignment`).
         = (gameDesc.playerDescs as Player.CtorArgs[])
             .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN)
-            .map((playerDesc) => {
-                if (playerDesc.socketId === undefined) {
-                    throw Error("missing socket ID for player " + playerDesc.playerId);
+            .reduce<Map<Player.Id, io.Socket>>((build, playerDesc) => {
+                if (playerDesc.clientId === undefined) {
+                    console.log(playerDesc);
+                    throw Error("missing socket client for player " + playerDesc.playerId);
                 }
-                const groupSocket = groupNsps.sockets[playerDesc.socketId!];
-                const  gameSocket = groupSocket.client.nsps[this.namespace.name];
-                return gameSocket;
-            });
+                const gameSocket = Object.values(this.namespace.sockets)
+                    .find((socket) => socket.client.id === playerDesc.clientId);
+                if (gameSocket === undefined) throw new Error("never");
+                build.set(playerDesc.playerId, gameSocket);
+                return build;
+            }, new Map());
         JsUtils.propNoWrite(this as ServerGame<any>, ["playerSockets",]);
 
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
@@ -183,7 +186,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             // Set `isALocalOperator` flags to match what this socket should see:
             gameDesc.playerDescs.forEach((playerDesc) => {
                 // @ts-expect-error : RO=
-                playerDesc.isALocalOperator = (playerDesc.socketId === socket.id);
+                playerDesc.isALocalOperator = (playerDesc.clientId === socket.client.id);
             });
             socket.emit(GameEv.CREATE_GAME, gameDesc);
         });
@@ -253,7 +256,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
-            this.playerSockets[desc.playerId].emit(
+            this.playerSockets.get(desc.playerId)!.emit(
                 PlayerActionEvent.EVENT_NAME.Movement,
                 desc,
             );
@@ -275,7 +278,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
-            this.playerSockets[desc.playerId].emit(
+            this.playerSockets.get(desc.playerId)!.emit(
                 PlayerActionEvent.EVENT_NAME.Bubble,
                 desc,
             );

@@ -14,10 +14,6 @@
 
 ### High Priority
 
-1. Refactor serverside `socket.on` to refer to a function on the prototype.
-    - Make sure to use `<Class>.<function>.bind(this)`.
-    - Rationale: This is a memory-saving measure.
-    - Can even keep a field that is a dictionary of the bound functions to avoid making a new bound-function for each socket.
 1. See if any serverside identification according to `socketId` should be changed to `socket.client.id`.
 1. Implement Pause and Unpause events over network.
 1. `_PlayScreen.currentGame` protected, always-defined version. Non-enumerable.

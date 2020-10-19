@@ -254,7 +254,7 @@ export class Group extends _Group {
                     isALocalOperator: false,
                     familyId: "HUMAN",
                     teamId:   socket.userInfo.teamId,
-                    socketId: socket.id,
+                    clientId: socket.client.id,
                     username: socket.userInfo.username,
                     avatar:   socket.userInfo.avatar,
                     noCheckGameOver: false, // TODO.design add a Group.Socket field for this.

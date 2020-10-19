@@ -1,8 +1,8 @@
 import { JsUtils } from "defs/JsUtils";
+import { Group, SkServer } from "defs/OnlineDefs";
+import type { Player } from "defs/TypeDefs";
 
 type Socket   = SocketIOClient.Socket;
-type SioOpts  = SocketIOClient.ConnectOpts;
-type SockProm = Promise<Socket>;
 type SockName = "joiner" | "group" | "game";
 
 
@@ -46,34 +46,80 @@ export class SkSockets {
     public get groupSocket (): Socket | undefined { return this.#sock.group;  }
     public get gameSocket  (): Socket | undefined { return this.#sock.game;   }
 
-    public async setJoinerSocket(url: string, params: SioOpts): SockProm { return await this._mkSocket("joiner", url, params); }
-    public async setGroupSocket (url: string, params: SioOpts): SockProm { return await this._mkSocket("group",  url, params); }
-    public setGameSocket  (socket: Socket): void { return this._configSocket(socket, "game"); }
-
-    private async _mkSocket(name: SockName, url: string, params: SioOpts): SockProm {
-        const socket = (await this.socketIo)(url, params);
-        this._configSocket(socket, name);
+    /**
+     * Makes the first connection to a game-hosting server.
+     */
+    public async joinerSocketConnect(args: { serverUrl: URL, }): Promise<Socket> {
+        const manager = (await this.socketIo).Manager(args.serverUrl.toString(), {
+            // https://socket.io/docs/client-api/#new-Manager-url-options
+            reconnectionAttempts: Group.GameServerReconnectionAttempts,
+        });
+        const socket = manager.socket(SkServer.Nsps.GROUP_JOINER);
+        this._registerSocket(socket, "joiner");
         return socket;
     }
-    private _configSocket(socket: Socket, name: SockName): void {
+
+    /**
+     */
+    public groupSocketConnect(
+        groupName: Group.Name,
+        query: { passphrase: Group.Passphrase, userInfo: Player.UserInfo, },
+    ): Socket {
+        return this._groupSocketHelper("group", groupName, query);
+    }
+
+    /**
+     */
+    public gameSocketConnect(
+        groupName: Group.Name,
+        query: { passphrase: Group.Passphrase, },
+    ): Socket {
+        return this._groupSocketHelper("game", groupName, query);
+    }
+
+    /**
+     */
+    private _groupSocketHelper(
+        _category: SockName,
+        groupName: Group.Name,
+        query: { passphrase: Group.Passphrase, [otherKeys : string]: any },
+    ): Socket {
+        let nspsPrefix;
+        switch (_category) {
+            case "group": nspsPrefix = SkServer.Nsps.GROUP_LOBBY_PREFIX; break;
+            case  "game": nspsPrefix = SkServer.Nsps.GROUP_GAME_PREFIX;  break;
+            default: throw new TypeError("never"); break;
+        }
+        const socket = this.joinerSocket!.io
+            // @ts-expect-error : Socket.IO types package is currently wrong.
+            .socket(nspsPrefix + groupName, query);
+        this._registerSocket(socket, _category);
+        return socket;
+    }
+
+    /**
+     */
+    private _registerSocket(socket: Socket, name: SockName): void {
         this.#sock[name] = socket;
-        socket
-        .on("connect_error", (error: object) => {
+        const byeBye = () => {
             socket.removeAllListeners();
             socket.close();
             this.#sock[name] = undefined;
+        }
+        socket
+        .on("connect_error", (error: object) => {
+            byeBye();
         })
         .on("disconnect", (reason: string) => {
             if (reason === "io server disconnect") {
-                socket.removeAllListeners();
-                socket.close();
-                this.#sock[name] = undefined;
+                byeBye();
             }
         });
     }
 }
 JsUtils.protoNoEnum(SkSockets, [
-    "setJoinerSocket", "setGroupSocket", "setGameSocket", "_mkSocket", "_configSocket",
+    "joinerSocketConnect", "groupSocketConnect", "gameSocketConnect",
+    "_groupSocketHelper", "_registerSocket",
 ]);
 Object.freeze(SkSockets);
 Object.freeze(SkSockets.prototype);

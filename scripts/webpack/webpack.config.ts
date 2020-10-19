@@ -206,8 +206,10 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
             chunkFilename: "chunk/[name].css",
         }) as webpack.WebpackPluginInstance, // TODO.build remove this when https://github.com/webpack-contrib/mini-css-extract-plugin/pull/594
         new CopyWebpackPlugin({ patterns: [{
-            from: "node_modules/socket.io-client/dist/socket.io.js" + "*",
-            to: "vendor/",
+            from: `node_modules/socket.io-client/dist/socket.io.${(
+                PACK_MODE === "production" ? "slim" : "dev" // TODO.build see https://github.com/socketio/socket.io-client/releases/tag/3.0.0-rc1 breaking changes
+            )}.js` + "*", // <- glob to include sourcemap file.
+            to: "vendor/socket.io.[ext]",
             flatten: true,
         }],}),
     );
