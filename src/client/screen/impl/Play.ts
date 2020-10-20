@@ -370,7 +370,6 @@ export abstract class _PlayScreen<
 }
 export namespace _PlayScreen {
     /**
-     *
      */
     export function createCenterColElem(): Readonly<{
         top: HTMLElement,
@@ -456,6 +455,9 @@ export namespace _PlayScreen {
 }
 JsUtils.protoNoEnum(_PlayScreen, [
     "probeCurrentGame", // At runtime, this is identical to this.currentGame.
+]);
+JsUtils.instNoEnum(_PlayScreen, [
+    "createCenterColElem",
 ]);
 Object.freeze(_PlayScreen);
 Object.freeze(_PlayScreen.prototype);

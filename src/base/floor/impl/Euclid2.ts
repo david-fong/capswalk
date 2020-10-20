@@ -15,7 +15,7 @@ export namespace Euclid2 {
     /**
      * # Euclid2 Coord
      */
-    export class Coord implements BaseCoord.Abstract.Mathy<S>, Coord.Bare {
+    export class Coord implements BaseCoord.Abstract.LatticeCoord<S>, Coord.Bare {
 
         public readonly x: number;
         public readonly y: number;
@@ -235,6 +235,13 @@ export namespace Euclid2 {
                 sourceCoord.add(sourceCoord.sub(avoidCoord)),
                 sourceCoord,
             );
+        }
+
+        /**
+         * @override
+         */
+        public getDestsFromSourcesTo(originCoord: Coord): Array<Tile<S>> {
+            return this._getTileDestsFrom(originCoord, 2);
         }
 
         public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {

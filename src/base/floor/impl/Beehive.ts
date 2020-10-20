@@ -28,7 +28,7 @@ export namespace Beehive {
     /**
      * # Beehive Coord
      */
-    export class Coord implements BaseCoord.Abstract.Mathy<S>, Coord.Bare {
+    export class Coord implements BaseCoord.Abstract.LatticeCoord<S>, Coord.Bare {
 
         /**
          * # 🕒 3'o'clock direction
@@ -124,7 +124,6 @@ export namespace Beehive {
         });
 
         /**
-         *
          */
         // TODO.design determine spec for indexing
         // Then initialize the field in the constructor
@@ -175,16 +174,23 @@ export namespace Beehive {
             return undefined!;
         }
 
-        public _getTileDestsFrom(coord: Coord.Bare): Array<Tile<S>> {
+        public _getTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             return undefined!;
         }
 
-        public _getTileSourcesTo(coord: Coord.Bare): Array<Tile<S>> {
+        public _getTileSourcesTo(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             return undefined!;
         }
 
         public minMovesFromTo(source: Coord.Bare, dest: Coord.Bare): number {
             return undefined!;
+        }
+
+        /**
+         * @override
+         */
+        public getDestsFromSourcesTo(originCoord: Coord): Array<Tile<S>> {
+            return this._getTileDestsFrom(originCoord, 2);
         }
 
 

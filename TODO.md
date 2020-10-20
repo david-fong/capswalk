@@ -15,11 +15,7 @@
 ### High Priority
 
 1. Implement Pause and Unpause events over network.
-1. `_PlayScreen.currentGame` protected, always-defined version. Non-enumerable.
 1. Server authentication is not working.
-1. Make an overrideable Grid method that does what `GameManager.dryRunShuffleLangChar` does.
-   - This would allow Grid implementations to make optimized versions based on their own specific properties.
-   - This may help prevent a lot of memory fragmentation from all the shallow array-copies that the default implementation produces from calls when getting destination and source tiles.
 1. Debug and handle goToScreen when user navigates forward in history.
     - If I remember correctly, the forward history navigation cannot be prevented, but perhaps at least the keyboard shortcut can be.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.

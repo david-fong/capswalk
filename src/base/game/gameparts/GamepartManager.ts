@@ -135,23 +135,29 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
      * The {@link Tile} to shuffle their {@link Lang.CharSeqPair}
      * pair for.
      *
+     * @param doCheckEmptyTiles
+     * Pass `true` when populating a grid which has been reset.
+     *
      * @returns
      * A {@link Lang.CharSeqPair} that can be used as a replacement
      * for that currently being used by `tile`.
      */
-    public dryRunShuffleLangCharSeqAt(targetTile: Tile<S>): Lang.CharSeqPair {
+    public dryRunShuffleLangCharSeqAt(targetTile: Tile<S>, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
         // First, clear values for the target tile so its current
         // (to-be-previous) values don't get unnecessarily avoided.
         targetTile.setLangCharSeqPair(Lang.CharSeqPair.NULL);
 
-        const avoid: TU.RoArr<Tile<S>> = Array.from(new Set(
-            this.grid.tile.sourcesTo(targetTile.coord).get
-            .flatMap((sourceToTarget) => this.grid.tile.destsFrom(sourceToTarget.coord).get)
-        ));
-        return this.lang.getNonConflictingChar(avoid
-            .map((tile) => tile.langSeq)
-            .filter((seq) => seq), // no falsy values.
-        );
+        let avoid: TU.RoArr<Lang.Seq> = this.grid
+            .getDestsFromSourcesTo(targetTile.coord)
+            .map((tile) => tile.langSeq);
+        // ^ Note: An array of CharSeq from unique Tiles. It is okay
+        // for those tiles to include `targetTile`, and it is okay for
+        // those
+        if (doCheckEmptyTiles) {
+            const nullSeq = Lang.CharSeqPair.NULL.seq;
+            avoid = avoid.filter((seq) => seq !== nullSeq);
+        }
+        return this.lang.getNonConflictingChar(avoid);
     }
 
     public get currentFreeHealth(): Player.Health {
