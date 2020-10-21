@@ -62,7 +62,7 @@ export class VisibleGridMixin<S extends Coord.System> {
      */
     public _superVisibleGrid(desc: Grid.CtorArgs<S>, gridImpl: HTMLElement): void {
         if (desc.tileClass !== VisibleTile) {
-            throw TypeError("never");
+            throw new TypeError("never");
         }
         const OHG = OmHooks.Grid;
         gridImpl.setAttribute("role", "presentation");

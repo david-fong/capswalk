@@ -80,7 +80,7 @@ export class AllSkScreens {
             // I don't see why this would ever need to happen.
             // If we find need to write code that allows for this,
             // rewrite the return-value spec.
-            throw "never";
+            throw new Error("never");
         }
         if ((this.currentScreen === undefined) || this.currentScreen._leave(navDir)) {
             // Note on above "nullish coalesce": Special case entered

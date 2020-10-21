@@ -256,7 +256,7 @@ export namespace Euclid2 {
             // if (coord.x < 0 || coord.x >= this.dimensions.width ||
             //     coord.y < 0 || coord.y >= this.dimensions.height
             // ) {
-            //     throw RangeError("Out of bounds. No such tile exists.");
+            //     throw new RangeError("Out of bounds. No such tile exists.");
             // }
             return this.grid[coord.y][coord.x];
         }

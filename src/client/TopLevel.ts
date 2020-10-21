@@ -54,7 +54,7 @@ export class TopLevel {
         this.storage = StorageHooks;
         //
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
-        if (!allScreensElem) { throw Error(); }
+        if (!allScreensElem) { throw new Error("never"); }
         JsUtils.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
         this.#allScreens = new AllSkScreens(this, allScreensElem);
 

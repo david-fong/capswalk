@@ -18,7 +18,7 @@ export class BgMusic {
     public constructor(trackId: BgMusic.TrackDesc["id"]) {
         this.desc = BgMusic.TrackDescs.find((desc) => desc.id === trackId)!;
         if (!this.desc) {
-            throw Error(`track with id \`${trackId}\` does not exist.`);
+            throw new Error(`track with id \`${trackId}\` does not exist.`);
         }
         const context = this.context = new AudioContext({
             // https://devdocs.io/dom/audiocontextoptions
@@ -58,7 +58,7 @@ export class BgMusic {
             // @ts-expect-error : RO=
             this.layerFaders = abs.map((ab, trackIndex) => {
                 if (ab.sampleRate !== this.desc.sampleRate) {
-                    throw "never";
+                    throw new Error("never");
                 }
                 const track = context.createChannelMerger(ab.numberOfChannels);
                 const fader = context.createGain(); // https://devdocs.io/dom/gainnode

@@ -18,15 +18,16 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
         {
-            const baseElem
+            const base
                 = this.#baseElem
                 = document.createElement("div");
-            baseElem.setAttribute("aria-label", "Tile");
-            baseElem.classList.add(
+            base.setAttribute("aria-label", "Tile");
+            base.classList.add(
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
                 OmHooks.Tile.Class.BASE,
             );
+            Object.seal(base);
         } {
             // Pointer hitbox element.
             // Must be the first child. See note in CSS class hook.
@@ -34,6 +35,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             pthb.setAttribute("aria-hidden", "true");
             pthb.classList.add(OmHooks.Tile.Class.POINTER_HB);
             this.#baseElem.appendChild(pthb);
+            Object.seal(pthb);
         } {
             const charWrap = document.createElement("div");
             charWrap.setAttribute("role", "presentation");
@@ -43,6 +45,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
                 = document.createElement("div");
             charWrap.appendChild(charElem);
             this.#baseElem.appendChild(charWrap);
+            Object.seal(charElem);
         } {
             const seqElem
                 = this.langSeqElem
@@ -50,6 +53,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             seqElem.setAttribute("role", "tooltip");
             seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             this.#baseElem.appendChild(seqElem);
+            Object.seal(seqElem);
         }
         JsUtils.propNoWrite(this as VisibleTile<S>, ["langCharElem", "langSeqElem",]);
     }

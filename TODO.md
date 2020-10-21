@@ -14,6 +14,7 @@
 
 ### High Priority
 
+1. Make a proxy to `document.createElement` which accepts class names and an attribute dictionary and automatically sets `button.type` and `a.rel="noopener"`.
 1. Implement Pause and Unpause events over network.
 1. Server authentication is not working.
 1. Debug and handle goToScreen when user navigates forward in history.

@@ -139,7 +139,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             .reduce<Map<Player.Id, io.Socket>>((build, playerDesc) => {
                 if (playerDesc.clientId === undefined) {
                     console.log(playerDesc);
-                    throw Error("missing socket client for player " + playerDesc.playerId);
+                    throw new Error("missing socket client for player " + playerDesc.playerId);
                 }
                 const gameSocket = Object.values(this.namespace.sockets)
                     .find((socket) => socket.client.id === playerDesc.clientId);
@@ -224,7 +224,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * @override
      */
     public _createOperatorPlayer(desc: Player.CtorArgs): never {
-        throw TypeError("This should never be called for a ServerGame.");
+        throw new TypeError("This should never be called for a ServerGame.");
     }
     /**
      * @override

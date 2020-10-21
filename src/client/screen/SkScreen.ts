@@ -76,7 +76,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         if (defaultDest) {
             return [defaultDest, {}, SkScreen.NavDir.BACKWARD];
         } else {
-            throw "never";
+            throw new Error("never");
         }
     }
 
@@ -144,7 +144,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             switch (navDir) {
                 case SkScreen.NavDir.BACKWARD: history.replaceState(...args); break;
                 case SkScreen.NavDir.FORWARD:  history.pushState(   ...args); break;
-                default: throw "never";
+                default: throw new Error("never");
             }
         }
 

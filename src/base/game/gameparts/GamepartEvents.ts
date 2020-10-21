@@ -92,11 +92,11 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
         const id = desc.eventId;
         const wrappedId = id % Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH;
         if (id === EventRecordEntry.EVENT_ID_REJECT) {
-            throw TypeError("Do not try to record events for rejected requests.");
+            throw new TypeError("Do not try to record events for rejected requests.");
         } else if (id < 0 || id !== Math.trunc(id)) {
-            throw RangeError("Event ID's must only be assigned positive, integer values.");
+            throw new RangeError("Event ID's must only be assigned positive, integer values.");
         } else if (this.eventRecordBitmap[wrappedId]) {
-            throw Error("Event ID's must be assigned unique values.");
+            throw new Error("Event ID's must be assigned unique values.");
         }
         // TODO.impl Check for an OnlineGame that it is not far behind the Server.
         // also design what should be done to handle that... Do we really need to
@@ -117,7 +117,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
         Object.freeze(desc);
         const dest = this.grid.tile.at(desc.coord);
         if (dest.lastKnownUpdateId  >  desc.lastKnownUpdateId) return dest;
-        if (dest.lastKnownUpdateId === desc.lastKnownUpdateId) throw "never";
+        if (dest.lastKnownUpdateId === desc.lastKnownUpdateId) throw new RangeError("never");
 
         if (desc.newCharSeqPair) {
             dest.setLangCharSeqPair(desc.newCharSeqPair);
@@ -173,7 +173,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
                 // Operator never receives their own updates out of
                 // order because they only have one unacknowledged
                 // in-flight request at a time.
-                throw "never";
+                throw new Error("never");
             }
             return; // Short-circuit!
         }
@@ -192,7 +192,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
         } else {
             // Apparent negative lag. The operator may somehow have
             // tampered with their player's request counter.
-            throw "never";
+            throw new RangeError("never");
         }
     }
 

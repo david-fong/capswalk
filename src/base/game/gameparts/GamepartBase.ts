@@ -89,7 +89,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
                 // The purpose of this restriction is to prevent DoS attacks on
                 // a hosting server by creating games that can never end and
                 // leaving them open forever, thus leaking the server's resources.
-                throw Error("All teams are immortal. The game will never end.");
+                throw new Error("All teams are immortal. The game will never end.");
             }
         }
         JsUtils.propNoWrite(this as GamepartBase<G,S>, [
@@ -190,7 +190,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
     }
     public setCurrentOperator(nextOperatorIndex: number): void {
         const nextOperator = this.operators[nextOperatorIndex];
-        if (nextOperator && this.currentOperator !== nextOperator)
+        if (this.currentOperator !== nextOperator)
         {
             nextOperator._notifyWillBecomeCurrent();
             this.#currentOperator = nextOperator;
@@ -215,7 +215,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             return;
         }
         if (this.status !== Game.Status.PAUSED) {
-            throw Error("Can only resume a game that is currently paused.");
+            throw new Error("Can only resume a game that is currently paused.");
         }
         this.players.forEach((player) => {
             player._notifyGameNowPlaying();
@@ -254,7 +254,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
      */
     public statusBecomeOver(): void {
         if (this.status !== Game.Status.PLAYING) {
-            throw Error("Can only end a game that is currently playing.");
+            throw new Error("Can only end a game that is currently playing.");
         }
         this.players.forEach((player) => {
             player._notifyGameNowOver();

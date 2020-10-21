@@ -104,7 +104,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         if (key) {
             key = this.#langRemappingFunc(key);
             if (!(Lang.Seq.REGEXP.test(key))) {
-                // throw RangeError(`The implementation of input transformation`
+                // throw new RangeError(`The implementation of input transformation`
                 // + ` in the currently selected language did not follow the rule`
                 // + ` of producing output matching the regular expression`
                 // + ` \"${Lang.Seq.REGEXP.source}\".`

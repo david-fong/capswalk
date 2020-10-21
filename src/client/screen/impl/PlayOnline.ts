@@ -61,7 +61,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
             this.socket.emit(GameEv.RETURN_TO_LOBBY);
             this.socket.close();
             if (this.socket !== undefined) {
-                throw "never"; // See `SkSockets._configSocket`.
+                throw new Error("never"); // See `SkSockets._configSocket`.
             }
         }
         return leaveConfirmed;

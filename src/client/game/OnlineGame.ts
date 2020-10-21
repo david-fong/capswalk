@@ -57,19 +57,19 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
         this.socket = gameSocket;
         this._ctorBrowserGame();
 
-        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.Movement)) throw Error("never");
+        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.Movement)) throw new Error("never");
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.Movement,
             this.executePlayerMoveEvent.bind(this),
         );
-        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.Bubble)) throw Error("never");
+        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.Bubble)) throw new Error("never");
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.Bubble,
             this.executePlayerBubbleEvent.bind(this),
         );
 
         this.socket.off(GameEv.RESET);
-        if (this.socket.hasListeners(GameEv.RESET)) throw Error("never");
+        if (this.socket.hasListeners(GameEv.RESET)) throw new Error("never");
         this.socket.on(
             GameEv.RESET,
             async (ser: Game.ResetSer<S>) => {

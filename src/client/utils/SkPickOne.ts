@@ -56,7 +56,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
     protected abstract _onHoverOpt(opt: O): void;
 
     public selectOpt(opt: O, doCallback: boolean = true): void {
-        if (!opt) throw Error("opt must be defined");
+        if (!opt) throw new Error("opt must be defined");
         // We must ensure hovering before executing confirmation:
         this.hoverOpt(opt);
         // Now that hovering is done, execute confirmation of selection:

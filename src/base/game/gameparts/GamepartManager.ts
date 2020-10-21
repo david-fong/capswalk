@@ -71,7 +71,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
             const minLangLeaves = this.grid.static.getAmbiguityThreshold();
             if (this.lang.numLeaves < minLangLeaves) {
-                throw Error(`Found ${this.lang.numLeaves} leaves, but at`
+                throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
                 + ` least ${minLangLeaves} were required. The provided mappings`
                 + ` composing the current Lang-under-construction are not`
                 + ` sufficient to ensure that a shuffling operation will always`
@@ -239,7 +239,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         // will be gone.
         if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
             // We literally just specified this in processMoveRequest.
-            throw "never";
+            throw new RangeError("never");
         }
         this.#currentFreeHealth += desc.newFreeHealth! - tile.freeHealth;
         if (desc.newFreeHealth === 0) {
@@ -273,10 +273,10 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         }
         const player = this.players[desc.playerId];
         if (!player) {
-            throw Error("No such player exists.");
+            throw new Error("No such player exists.");
         }
         if (desc.playerLastAcceptedRequestId !== player.lastAcceptedRequestId) {
-            throw RangeError((desc.playerLastAcceptedRequestId < player.lastAcceptedRequestId)
+            throw new RangeError((desc.playerLastAcceptedRequestId < player.lastAcceptedRequestId)
             ? ("Clients should not make requests until they have"
                 + " received my response to their last request.")
             : ("Client seems to have incremented the request ID"
@@ -421,7 +421,7 @@ export namespace GamepartManager {
         }
         // TODO.impl check all the rest of the things.
         // if (!(Player.Username.REGEXP.test(desc.username))) {
-        //     throw RangeError(`Username \"${desc.username}\"`
+        //     throw new RangeError(`Username \"${desc.username}\"`
         //     + ` does not match the required regular expression,`
         //     + ` \"${Player.Username.REGEXP.source}\".`
         //     );
