@@ -34,7 +34,7 @@ const OMHC = OmHooks.Screen.Class;
 export abstract class SkScreen<SID extends SkScreen.Id> {
 
     public readonly screenId: SID;
-    public readonly name: JsUtils.CamelCaseNameTransforms;
+    public readonly screenNames: JsUtils.CamelCaseNameTransforms;
 
     protected readonly top: TopLevel;
 
@@ -99,7 +99,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         requestGoToDisplay: AllSkScreens["goToScreen"],
     ) {
         this.screenId           = screenId;
-        this.name               = JsUtils.camelCaseTransforms(screenId);
+        this.screenNames               = JsUtils.camelCaseTransforms(screenId);
         this.top                = toplevel;
         this.#parentElem        = parentElem;
         this.requestGoToScreen  = requestGoToDisplay;
@@ -133,8 +133,8 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             this.baseElem.classList.add(OmHooks.Screen.Class.BASE);
             this._lazyLoad();
             this.#parentElem.appendChild(this.baseElem);
-            JsUtils.prependComment(this.baseElem, `${this.name.spaceyUppercase} SCREEN`);
-            this.baseElem.setAttribute("aria-label", this.name.spaceyCapitalized + " Screen");
+            JsUtils.prependComment(this.baseElem, `${this.screenNames.spaceyUppercase} SCREEN`);
+            this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
             this.#hasLazyLoaded = true;
         }
         {
@@ -151,7 +151,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         await this._abstractOnBeforeEnter(navDir, args);
         // ^Wait until the screen has finished setting itself up
         // before entering it.
-        document.title = this.top.defaultDocTitle + " " + this.name.spaceyCapitalized;
+        document.title = `${this.screenNames.spaceyCapitalized} | ${this.top.defaultDocTitle}`;
         window.requestAnimationFrame((time) => {
             this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
             this.baseElem.setAttribute("aria-hidden", "false");

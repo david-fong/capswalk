@@ -1,4 +1,4 @@
-import { Player } from 'defs/TypeDefs';
+import { Player } from "defs/TypeDefs";
 
 /**
  */

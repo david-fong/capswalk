@@ -15,6 +15,11 @@
 ### High Priority
 
 1. Make a proxy to `document.createElement` which accepts class names and an attribute dictionary and automatically sets `button.type` and `a.rel="noopener"`.
+1. Try making `AllSkScreens.goToScreen` async, and make it await `_enter`. See if this is incompatible with any usages of `SkScreen.requestGoToScreen`.
+1. Make screen transitions use the garage door to animate it smoothly. Make the garage door its own class.
+    - It provides a method which takes a promise. It will fade in the garage-door, and after the CSS transition has finished, it will `.then` the promise to fade out the garage door.
+    - Make the CSS transition duration an HTML data attribute, whose name/key and value is stored in javascript as the single source of truth.
+1. `onpopstate` in the forward direction, redirect to the Wikipedia page on challenges with building single-page applications- specifically to the section on history navigation.
 1. Implement Pause and Unpause events over network.
 1. Server authentication is not working.
 1. Debug and handle goToScreen when user navigates forward in history.

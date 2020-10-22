@@ -145,5 +145,42 @@ export namespace JsUtils {
             ).join(' '),
         });
     }
+
+    /**
+     * A combiner for common operations surrounding `document.createElement`
+     * with some custom HTML attribute defaults.
+     *
+     * - Calls `Object.seal` immediately on the created HTMLElement.
+     * - If making a button, defaults the `type` to `button` instead of `submit`.
+     * - If making an anchor, defaults the rel to `noopener`.
+     *
+     * @param tagName -
+     * @param classNames -
+     * @param domProperties -
+     */
+    export function mkEl<
+        K extends keyof HTMLElementTagNameMap,
+        V extends HTMLElementTagNameMap[K],
+    >(
+        tagName: K,
+        classNames: Array<string>,
+        domProperties: Readonly<Partial<V>>,
+    ): HTMLElementTagNameMap[K] {
+        const el = document.createElement(tagName);
+        Object.seal(el);
+        el.classList.add(...classNames);
+
+        if (tagName === "button") {
+            (el as HTMLButtonElement).type = "button"; // instead of "submit".
+        } else if (tagName === "a") {
+            (el as HTMLAnchorElement).rel = "noopener";
+            // ^ Should already be the default on modern browsers when
+            // `target === "_blank"`, but it doesn't hurt to set it
+            // anyway. We're going stricter too.
+        }
+
+        Object.assign(el, domProperties);
+        return el;
+    }
 }
 Object.freeze(JsUtils);

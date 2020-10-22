@@ -201,8 +201,12 @@ export class Group extends _Group {
             nsps.removeAllListeners();
             delete nsps.server.nsps[nsps.name];
         }
-        killNamespace(this.#currentGame!.namespace);
-        this.#currentGame = undefined;
+        if (this.#currentGame !== undefined) {
+            // Since `ServerGame` handles its own termination when all
+            // its sockets have disconnected, this code path is unlikely.
+            killNamespace(this.#currentGame.namespace);
+            this.#currentGame = undefined;
+        }
 
         const server = this.namespace.server;
         killNamespace(this.namespace);

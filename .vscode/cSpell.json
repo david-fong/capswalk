@@ -49,6 +49,7 @@
         "elem", "elems",
         "minmax",
         "mixins",
+        "noopener",
         "nsps",
         "retval",
         "reflow",
