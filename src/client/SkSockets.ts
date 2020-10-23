@@ -32,7 +32,7 @@ export class SkSockets {
         return (() => {
             let cached: undefined | Promise<typeof import("socket.io-client")>;
             return cached || (cached = new Promise<typeof import("socket.io-client")>((resolve, reject): void => {
-                const script = document.createElement("script");
+                const script = JsUtils.mkEl("script", []);
                 script.onload = (): void => {
                     resolve(io);
                 };

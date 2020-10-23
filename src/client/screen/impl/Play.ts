@@ -309,21 +309,22 @@ export abstract class _PlayScreen<
      *
      */
     private _initializeControlsBar(): void {
-        const controlsBar = document.createElement("div");
-        controlsBar.classList.add(
+        const controlsBar = JsUtils.mkEl("div", [
             OmHooks.General.Class.CENTER_CONTENTS,
             OmHooks.General.Class.INPUT_GROUP,
             OmHooks.Screen.Impl.Play.Class.CONTROLS_BAR,
-        );
+        ]);
         controlsBar.setAttribute("role", "menu");
 
         function createControlButton(
             buttonText: string,
             button?: TU.Omit<HTMLButtonElement, "onclick">,
         ): HTMLButtonElement {
-            button = button ?? document.createElement("button");
-            button.textContent = buttonText;
+            button = button ?? JsUtils.mkEl("button", []);
+            // Note that these below are set outside of mkEl, since they
+            // must apply if a button is provided as an argument.
             button.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+            button.textContent = buttonText;
             button.addEventListener("pointerenter", (ev) => {
                 window.requestAnimationFrame((time) => {
                     button!.focus();
@@ -354,7 +355,7 @@ export abstract class _PlayScreen<
         reset.onclick = this._resetGame.bind(this);
         }
 
-        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["pauseButton", "resetButton",]);
+        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["pauseButton", "resetButton"]);
         this.baseElem.appendChild(controlsBar);
     }
 
@@ -362,9 +363,8 @@ export abstract class _PlayScreen<
         const playersBar
             // @ts-expect-error : RO=
             = this.playersBar
-            = document.createElement("div");
-        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["playersBar",]);
-        playersBar.classList.add(OmHooks.Screen.Impl.Play.Class.PLAYERS_BAR);
+            = JsUtils.mkEl("div", [OmHooks.Screen.Impl.Play.Class.PLAYERS_BAR]);
+        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["playersBar"]);
         this.baseElem.appendChild(playersBar);
     }
 }
@@ -381,60 +381,46 @@ export namespace _PlayScreen {
         const OMHC = OmHooks.Grid.Class;
         const CSS_FX = OmHooks.General.Class;
 
-        const base = document.createElement("div");
-        base.classList.add(OmHooks.Screen.Impl.Play.Class.GRID_WRAPPER);
+        const base = JsUtils.mkEl("div", [OmHooks.Screen.Impl.Play.Class.GRID_WRAPPER]);
 
-        const grid = document.createElement("div");
-        grid.tabIndex = 0; // <-- allow focusing this element.
-        grid.setAttribute("role", "textbox");
-        grid.setAttribute("aria-label", "Game Grid");
-        grid.classList.add(
+        const grid = JsUtils.mkEl("div", [
             //CSS_FX.CENTER_CONTENTS,
             CSS_FX.STACK_CONTENTS,
             CSS_FX.TEXT_SELECT_DISABLED,
             OMHC.GRID,
-        );
+        ], { tabIndex: 0, });
+        grid.setAttribute("role", "textbox");
+        grid.setAttribute("aria-label", "Game Grid");
+
         // Grid Scroll Wrapper:
-        const scrollOuter = document.createElement("div");
-        scrollOuter.setAttribute("role", "presentation");
-        scrollOuter.classList.add(
+        const scrollOuter = JsUtils.mkEl("div", [
             //CSS_FX.FILL_PARENT,
             OMHC.SCROLL_OUTER,
-        );
+        ]);
+        scrollOuter.setAttribute("role", "presentation");
         {
             // Add a "keyboard-disconnected" overlay if not added already:
-            const kbdDcBase = document.createElement("div");
-            kbdDcBase.classList.add(
+            const kbdDcBase = JsUtils.mkEl("div", [
                 CSS_FX.FILL_PARENT,
                 CSS_FX.CENTER_CONTENTS,
                 OMHC.KBD_DC,
-            );
+            ]);
             // TODO.impl Add an <svg> with icon instead please.
-            {
-                const kbdDcIcon = document.createElement("div");
-                kbdDcIcon.classList.add(OMHC.KBD_DC_ICON);
-                kbdDcIcon.textContent = "(click here to continue typing)";
-                kbdDcBase.appendChild(kbdDcIcon);
-            }
+            kbdDcBase.appendChild(JsUtils.mkEl("div", [OMHC.KBD_DC_ICON], {
+                textContent: "(click here to continue typing)",
+            }));
             scrollOuter.appendChild(kbdDcBase);
         }
-        const pauseOl = document.createElement("div"); {
-            // Add a "keyboard-disconnected" overlay if not added already:
-            pauseOl.classList.add(
-                CSS_FX.FILL_PARENT,
-                CSS_FX.CENTER_CONTENTS,
-                OMHC.PAUSE_OL,
-            );
-            // TODO.impl Add an <svg> with icon instead please.
-            {
-                const pauseIcon = document.createElement("div");
-                pauseIcon.classList.add(OMHC.PAUSE_OL_ICON);
-                pauseIcon.textContent = "(Click to Unpause)";
-                pauseOl.appendChild(pauseIcon);
-            }
-            scrollOuter.appendChild(pauseOl);
-        }
-        // const intersectionRoot = document.createElement("div");
+        const pauseOl = JsUtils.mkEl("div", [
+            CSS_FX.FILL_PARENT,
+            CSS_FX.CENTER_CONTENTS,
+            OMHC.PAUSE_OL,
+        ], {});
+        pauseOl.appendChild(JsUtils.mkEl("div", [OMHC.PAUSE_OL_ICON], {
+            textContent: "(Click to Unpause)"
+        }));
+        scrollOuter.appendChild(pauseOl);
+        // const intersectionRoot = JsUtils.mkEl("div", []);
         // intersectionRoot.setAttribute("aria-hidden", "true");
         // intersectionRoot.classList.add(
         //     CSS_FX.FILL_PARENT,

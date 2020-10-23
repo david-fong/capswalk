@@ -164,7 +164,7 @@ export namespace JsUtils {
     >(
         tagName: K,
         classNames: Array<string>,
-        domProperties: Readonly<Partial<V>>,
+        domProperties: Readonly<Partial<V>> | undefined = undefined,
     ): HTMLElementTagNameMap[K] {
         const el = document.createElement(tagName);
         Object.seal(el);
@@ -179,7 +179,9 @@ export namespace JsUtils {
             // anyway. We're going stricter too.
         }
 
-        Object.assign(el, domProperties);
+        if (domProperties !== undefined) {
+            Object.assign(el, domProperties);
+        }
         return el;
     }
 }

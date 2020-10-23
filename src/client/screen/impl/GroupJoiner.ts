@@ -188,9 +188,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         const makeOption = (groupName: Group.Name): HTMLOptionElement => {
             // If we didn't know about this group yet, create a new
             // option for it (Insert into list in alphabetical order):
-            const newOpt = document.createElement("option");
-            newOpt.value = groupName;
-            //console.log(newOpt.value);
+            const newOpt = JsUtils.mkEl("option", [], { value: groupName, });
             for (const otherOpt of dataListArr) {
                 if (newOpt.value.localeCompare(otherOpt.value) < 0) {
                     dataList.insertBefore(newOpt, otherOpt);
@@ -328,24 +326,24 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         // @ts-expect-error : RO=
         this.in = {};
         const OMHC = OmHooks.Screen.Impl.GroupJoiner.Class;
-        const contentWrapper = document.createElement("div"/*"form"*/);
-        // contentWrapper.method = "POST"; // Not actually used, since the default onsubmit behaviour is prevented.
-        contentWrapper.classList.add(
+        const contentWrapper = JsUtils.mkEl("div"/*"form"*/, [
             OmHooks.General.Class.INPUT_GROUP,
             OMHC.CONTENT_WRAPPER,
-        );
+        ], {
+            // contentWrapper.method = "POST"; // Not actually used, since the default onsubmit behaviour is prevented.
+        });
+
         this.nav.prev.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         contentWrapper.appendChild(this.nav.prev);
 
         function createGenericTextInput(labelText: string, classStr: string): HTMLInputElement {
-            const input = document.createElement("input");
-            input.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM, classStr);
-            input.type = "text";
-            input.autocomplete = "off";
-            input.spellcheck = false;
+            const input = JsUtils.mkEl("input", [OmHooks.General.Class.INPUT_GROUP_ITEM, classStr], {
+                type: "text",
+                autocomplete: "off",
+                spellcheck: false,
+            });
             // Label:
-            const label = document.createElement("label");
-            label.textContent = labelText;
+            const label = JsUtils.mkEl("label", [], { textContent: labelText, });
             label.appendChild(input);
             contentWrapper.appendChild(label);
             return input;
@@ -360,9 +358,10 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             });
             const suggestedHostDesc = GroupJoinerScreen.SUGGEST_HOST(this.top.webpageHostType);
             if (suggestedHostDesc) {
-                const suggestOpt = document.createElement("option");
-                suggestOpt.value = suggestedHostDesc.value;
-                suggestOpt.textContent = suggestedHostDesc.description;
+                const suggestOpt = JsUtils.mkEl("option", [], {
+                    value: suggestedHostDesc.value,
+                    textContent: suggestedHostDesc.description,
+                });
                 document.getElementById(OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS)!
                     .insertAdjacentElement("afterbegin", suggestOpt);
             }
@@ -381,8 +380,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             const nspsList
                 // @ts-expect-error : RO=
                 = this.groupNameDataList
-                = document.createElement("datalist");
-            nspsList.id = OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS;
+                = JsUtils.mkEl("datalist", [], { id: OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS});
             this.baseElem.appendChild(nspsList);
             nspsName.setAttribute("list", nspsList.id);
         }{

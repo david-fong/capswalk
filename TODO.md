@@ -14,7 +14,7 @@
 
 ### High Priority
 
-1. Make a proxy to `document.createElement` which accepts class names and an attribute dictionary and automatically sets `button.type` and `a.rel="noopener"`.
+1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Try making `AllSkScreens.goToScreen` async, and make it await `_enter`. See if this is incompatible with any usages of `SkScreen.requestGoToScreen`.
 1. Make screen transitions use the garage door to animate it smoothly. Make the garage door its own class.
     - It provides a method which takes a promise. It will fade in the garage-door, and after the CSS transition has finished, it will `.then` the promise to fade out the garage door.
@@ -51,6 +51,7 @@
     - [better default becoming standardized](https://github.com/whatwg/html/pull/4330)
       - [Chrome is still working on it](https://bugs.chromium.org/p/chromium/issues/detail?id=898942)
 - Convert any usages of `.innerHtml` or `.innerText` to use `.textContent` unless intentional (In which case, write a comment on why it is intentional).
+- Make sure nobody uses `document.createElement` instead of `JsUtil.mkEl` unless they document why it's necessary.
 
 ### Low Priority
 

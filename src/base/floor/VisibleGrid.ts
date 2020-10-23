@@ -1,7 +1,8 @@
+import { OmHooks } from "defs/OmHooks";
+import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "floor/Tile";
 import { VisibleTile } from "floor/VisibleTile";
 import { Grid } from "floor/Grid";
-import { OmHooks } from "defs/OmHooks";
 
 
 /**
@@ -74,12 +75,10 @@ export class VisibleGridMixin<S extends Coord.System> {
         this.baseElem = gridImpl;
 
         // Initialize spotlight elements:
-        const shortSpotlight = document.createElement("div");
-        shortSpotlight.classList.add(OmHooks.Player.Class.SHORT_SPOTLIGHT);
-        const longSpotlight = document.createElement("div");
-        longSpotlight.classList.add(OmHooks.Player.Class.LONG_SPOTLIGHT);
+        const shortSpotlight = JsUtils.mkEl("div", [OmHooks.Player.Class.SHORT_SPOTLIGHT]);
+        const longSpotlight  = JsUtils.mkEl("div", [OmHooks.Player.Class.LONG_SPOTLIGHT]);
         // @ts-expect-error : RO=
-        this.spotlightElems = Object.freeze([ shortSpotlight, longSpotlight, ]);
+        this.spotlightElems = Object.freeze([ shortSpotlight, longSpotlight ]);
     }
 }
 export interface VisibleGridMixin<S extends Coord.System> {};

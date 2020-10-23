@@ -103,11 +103,11 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         this.top                = toplevel;
         this.#parentElem        = parentElem;
         this.requestGoToScreen  = requestGoToDisplay;
-        this.baseElem           = document.createElement("div");
+        this.baseElem           = JsUtils.mkEl("div", []);
         this.#hasLazyLoaded     = false;
         this.nav = Object.freeze({
-            prev: document.createElement("button"),
-            next: document.createElement("button"),
+            prev: JsUtils.mkEl("button", []),
+            next: JsUtils.mkEl("button", []),
         });
         JsUtils.propNoWrite<SkScreen<SID>>(this, [
             "screenId", "top", "baseElem", "nav", "requestGoToScreen",

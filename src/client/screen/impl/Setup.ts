@@ -47,21 +47,21 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
         const lwe
             // @ts-expect-error : RO=
             = this.langWeightExaggeration
-            = document.createElement("input");
-        lwe.classList.add(OMHC.LANG_WEIGHT_EXAGG);
-        lwe.type = "range";
-        lwe.min = "0";
-        lwe.max = Lang.WeightExaggeration.MAX.toString();
-        lwe.step = "any";
-        lwe.value = "1";
+            = JsUtils.mkEl("input", [OMHC.LANG_WEIGHT_EXAGG], {
+                type: "range",
+                min: "0",
+                max: Lang.WeightExaggeration.MAX.toString(),
+                step: "any",
+                value: "1",
+            });
         {
-            const list = document.createElement("datalist");
+            const list = JsUtils.mkEl("datalist", []);
             list.id = OmHooks.Screen.Impl.Setup.Id.LANG_WEIGHT_EXAGGERATION_LIST;
             [{val:0,label:"0",}, {val:1,label:"1"},].forEach((tickDesc) => {
-                const opt = document.createElement("option");
-                opt.value = tickDesc.val.toString();
-                opt.label = tickDesc.label;
-                list.appendChild(opt);
+                list.appendChild(JsUtils.mkEl("option", [], {
+                    value: tickDesc.val.toString(),
+                    label: tickDesc.label,
+                }));
             });
             this.baseElem.appendChild(list);
         }

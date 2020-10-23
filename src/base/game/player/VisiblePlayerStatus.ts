@@ -22,18 +22,14 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     public constructor(player: Player<S>, noCheckGameOver: boolean) {
         super(player, noCheckGameOver);
         {
-            const baseElem
-                = this.#baseElem
-                = document.createElement("div");
-            baseElem.classList.add(
+            this.#baseElem = JsUtils.mkEl("div", [
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
                 OmHooks.Player.Class.BASE,
-            );
+            ]);
         } {
             // Setup face element:
-            const faceElem = document.createElement("div");
-            faceElem.classList.add(OmHooks.Player.Class.FACE);
+            const faceElem = JsUtils.mkEl("div", [OmHooks.Player.Class.FACE], {});
             const vBellAnims
             = this.#vBellAnims
             = (this.player.isALocalOperator) ? [
@@ -47,12 +43,9 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
                 },{ duration: 270, easing: "ease-out", delay: 1, }),
             ] : [];
             vBellAnims.forEach((anim) => anim.pause());
-            {
-                // Setup downedOverlay element:
-                const dOverlayElem = document.createElement("div");
-                dOverlayElem.classList.add(OmHooks.Player.Class.DOWNED_OVERLAY);
-                faceElem.appendChild(dOverlayElem);
-            }
+
+            // Setup downedOverlay element:
+            faceElem.appendChild(JsUtils.mkEl("div", [OmHooks.Player.Class.DOWNED_OVERLAY]));
             this.#baseElem.appendChild(faceElem);
         }
     }
@@ -148,12 +141,10 @@ export namespace VisiblePlayerStatus {
         readonly #teamElem:  HTMLElement;
 
         public constructor(playerName: Player.Username) {
-            this.baseElem = document.createElement("div");
+            this.baseElem = JsUtils.mkEl("div", []);
             this.baseElem.setAttribute("label", "Player");
 
-            this.#nameElem = document.createElement("div");
-            const name = this.#nameElem;
-            name.textContent = playerName;
+            const name = this.#nameElem = JsUtils.mkEl("div", [], { textContent: playerName, });
             this.baseElem.appendChild(name);
         }
     }

@@ -353,9 +353,9 @@ export class Euclid2VisibleGrid extends Euclid2.Grid implements VisibleGrid<S> {
 
     public constructor(desc: AbstractGrid.CtorArgs<S>) {
         super(desc);
-        const gridElem = document.createElement("div");
+        const gridElem = JsUtils.mkEl("div", []);
         gridElem.style.setProperty("--euclid2-grid-width",  this.dimensions.width.toString());
-        //gridElem.style.setProperty("--euclid2-grid-height", this.dimensions.height.toString());
+        // At below use of for loop without breaks: For shallower stack when debugging.
         for (const row of this.grid) {
             for (const tile of row) {
                 tile._addToDom(gridElem);

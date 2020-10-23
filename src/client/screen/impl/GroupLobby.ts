@@ -45,9 +45,8 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         this.nav.prev.textContent = "Return To Joiner";
 
         /* @ts-expect-error : RO= */
-        {this.teamsElem = document.createElement("div");
-        this.teamsElem.classList.add(OMHC.SEC_TEAMS);
-        this.baseElem.appendChild(this.teamsElem);}
+        this.teamsElem = JsUtils.mkEl("div", [OMHC.SEC_TEAMS]);
+        this.baseElem.appendChild(this.teamsElem);
 
         // @ts-expect-error : RO=
         this.teamElems = new Map();
@@ -67,13 +66,12 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     /**
      */
     private _createInputs(): void {
-        const base = document.createElement("div");
-        base.classList.add(
+        const base = JsUtils.mkEl("div", [
             OmHooks.General.Class.INPUT_GROUP,
             OMHC.SEC_CLIENT_INFO,
-        );
+        ]);
 
-        const uname = Object.assign(document.createElement("input"), <Partial<HTMLInputElement>>{
+        const uname = JsUtils.mkEl("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
             type      : "text",
             minLength : 1,
             maxLength : Player.Username.MAX_LENGTH,
@@ -82,18 +80,17 @@ export class GroupLobbyScreen extends SkScreen<SID> {
             value     : this.top.storage.Local.username ?? "",
             onchange  : this._submitInputs.bind(this),
         });
-        uname.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         base.appendChild(uname);
 
-        const teamId = Object.assign(document.createElement("input"), <Partial<HTMLInputElement>>{
+        const teamId = JsUtils.mkEl("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
             type: "number", inputMode: "numeric",
             min: "0", max: "0", step: "1", value: "0",
             onchange: this._submitInputs.bind(this),
         });
-        teamId.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+        teamId.classList.add();
         base.appendChild(teamId);
 
-        const avatar = document.createElement("select");
+        const avatar = JsUtils.mkEl("select", []);
         // TODO.impl avatar selection element
 
         // @ts-expect-error : RO=
@@ -177,9 +174,8 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 
             // If player is joining a team that has no HTML element yet:
             if (desc && !this.teamElems.has(desc.teamId)) {
-                const teamElem = document.createElement("div");
+                const teamElem = JsUtils.mkEl("div", [OMHC.TEAM]);
                 this.teamElems.set(desc.teamId, teamElem);
-                teamElem.classList.add(OMHC.TEAM);
                 teamElem.onclick = (ev) => {
                     this.in.teamId.value = desc.teamId.toString();
                 }
@@ -219,10 +215,9 @@ export namespace GroupLobbyScreen {
         }>;
 
         public constructor(desc: Player.UserInfo) {
-            this.base = document.createElement("div");
-            this.base.classList.add(OMHC.PLAYER);
+            this.base = JsUtils.mkEl("div", [OMHC.PLAYER]);
             const mkDiv = (): HTMLDivElement => {
-                const div = document.createElement("div");
+                const div = JsUtils.mkEl("div", []);
                 this.base.appendChild(div);
                 return div;
             }
