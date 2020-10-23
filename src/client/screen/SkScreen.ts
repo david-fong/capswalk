@@ -90,19 +90,19 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     /**
      *
      * @param parentElem -
-     * @param requestGoToDisplay -
+     * @param requestGoToScreen -
      */
     public constructor(
         screenId: SID,
         toplevel: TopLevel,
         parentElem: HTMLElement,
-        requestGoToDisplay: AllSkScreens["goToScreen"],
+        requestGoToScreen: AllSkScreens["goToScreen"],
     ) {
         this.screenId           = screenId;
-        this.screenNames               = JsUtils.camelCaseTransforms(screenId);
+        this.screenNames        = JsUtils.camelCaseTransforms(screenId);
         this.top                = toplevel;
         this.#parentElem        = parentElem;
-        this.requestGoToScreen  = requestGoToDisplay;
+        this.requestGoToScreen  = requestGoToScreen;
         this.baseElem           = JsUtils.mkEl("div", []);
         this.#hasLazyLoaded     = false;
         this.nav = Object.freeze({
@@ -148,7 +148,11 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             }
         }
 
-        await this._abstractOnBeforeEnter(navDir, args);
+        const entranceRetval = await this._abstractOnBeforeEnter(navDir, args);
+        if (entranceRetval.elemToFocus !== undefined) {
+            setTimeout(() => { entranceRetval.elemToFocus!.focus(); }, 100);
+            // For some reason a small delay is needed.
+        }
         // ^Wait until the screen has finished setting itself up
         // before entering it.
         document.title = `${this.screenNames.spaceyCapitalized} | ${this.top.defaultDocTitle}`;
@@ -178,24 +182,25 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     protected abstract _lazyLoad(): void;
 
     /**
-     * This is a good place to start any `setInterval` schedules, and
-     * to bring focus to a starting HTML element if appropriate.
+     * This is a good place to start any `setInterval` schedules.
      *
      * The default implementation does nothing. Overriding implementations
      * from direct subclasses can safely skip making a supercall.
-     *
-     * Important: Calls to `HTMLElement.focus` may require a small delay
-     * via setTimeout. The reason for this is currently unknown.
      */
-    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> { }
+    protected async _abstractOnBeforeEnter(
+        navDir: SkScreen.NavDir,
+        args: SkScreen.EntranceArgs[SID],
+    ): Promise<SkScreen.EntranceRetVal> {
+        return {};
+    };
 
     /**
      * Return false if the leave should be cancelled. This functionality
      * allows an implementation to provide a prompt to the user such as
      * a confirmation modal warning that unsaved changes would be lost.
      *
-     * This is a good place, for example, to stop any non-essential
-     * `setInterval` schedules.
+     * top any non-essential `setInterval` schedules that were set up
+     * in `_abstractOnBeforeEnter`.
      *
      * This method will not be called upon navigating to a different
      * page, so actions such as writes to persisted storage should not
@@ -252,6 +257,9 @@ export namespace SkScreen {
         [ Id.SETUP_ONLINE  ]: {};
         [ Id.PLAY_ONLINE   ]: Game.CtorArgs<Game.Type.ONLINE,Coord.System>;
     }
+    export type EntranceRetVal = TU.NoRo<{
+        elemToFocus?: HTMLElement;
+    }>;
     /**
      * Note: The fact that the lobby precedes the online setup screen
      * for the group host is important, since the socket listener for

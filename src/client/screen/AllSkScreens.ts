@@ -32,20 +32,20 @@ export class AllSkScreens {
         const Id = SkScreen.Id;
         const t = top;
         const p = baseElem;
-        const f = this.goToScreen.bind(this);
+        const g = Object.freeze(this.goToScreen.bind(this));
         this.dict = Object.freeze({
             // TODO.impl turn this into a class that dynamically imports js and css
             // for all online-play-related modules together only once needed.
-            [ Id.HOME          ]: new         HomeScreen(Id.HOME         ,t,p,f),
-            [ Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(Id.HOW_TO_PLAY  ,t,p,f),
-            [ Id.HOW_TO_HOST   ]: new    HowToHostScreen(Id.HOW_TO_HOST  ,t,p,f),
-            [ Id.COLOUR_CTRL   ]: new   ColourCtrlScreen(Id.COLOUR_CTRL  ,t,p,f),
-            [ Id.SETUP_OFFLINE ]: new SetupOfflineScreen(Id.SETUP_OFFLINE,t,p,f),
-            [ Id.PLAY_OFFLINE  ]: new  PlayOfflineScreen(Id.PLAY_OFFLINE ,t,p,f),
-            [ Id.GROUP_JOINER  ]: new  GroupJoinerScreen(Id.GROUP_JOINER ,t,p,f),
-            [ Id.SETUP_ONLINE  ]: new  SetupOnlineScreen(Id.SETUP_ONLINE ,t,p,f),
-            [ Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(Id.GROUP_LOBBY  ,t,p,f),
-            [ Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(Id.PLAY_ONLINE  ,t,p,f),
+            [ Id.HOME          ]: new         HomeScreen(Id.HOME         ,t,p,g),
+            [ Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(Id.HOW_TO_PLAY  ,t,p,g),
+            [ Id.HOW_TO_HOST   ]: new    HowToHostScreen(Id.HOW_TO_HOST  ,t,p,g),
+            [ Id.COLOUR_CTRL   ]: new   ColourCtrlScreen(Id.COLOUR_CTRL  ,t,p,g),
+            [ Id.SETUP_OFFLINE ]: new SetupOfflineScreen(Id.SETUP_OFFLINE,t,p,g),
+            [ Id.PLAY_OFFLINE  ]: new  PlayOfflineScreen(Id.PLAY_OFFLINE ,t,p,g),
+            [ Id.GROUP_JOINER  ]: new  GroupJoinerScreen(Id.GROUP_JOINER ,t,p,g),
+            [ Id.SETUP_ONLINE  ]: new  SetupOnlineScreen(Id.SETUP_ONLINE ,t,p,g),
+            [ Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(Id.GROUP_LOBBY  ,t,p,g),
+            [ Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(Id.PLAY_ONLINE  ,t,p,g),
         });
         JsUtils.propNoWrite(this as AllSkScreens, ["dict"]);
 
@@ -69,12 +69,12 @@ export class AllSkScreens {
      * @param destId -
      * @param ctorArgs -
      */
-    public goToScreen<SID extends SkScreen.Id>(
+    public async goToScreen<SID extends SkScreen.Id>(
         // NOTE: using a tuple wrapper to expand bundled type.
         destId: SID,
         ctorArgs: SkScreen.EntranceArgs[SID],
         navDir: SkScreen.NavDir = SkScreen.NavDir.FORWARD,
-    ): boolean {
+    ): Promise<boolean> {
         const destScreen = this.dict[destId];
         if (this.currentScreen === destScreen) {
             // I don't see why this would ever need to happen.
@@ -86,8 +86,8 @@ export class AllSkScreens {
             // Note on above "nullish coalesce": Special case entered
             // during construction when there is no currentScreen yet.
             // Any confirm-leave prompts made to the user were OK-ed.
-            type enterFunc = (navDir: SkScreen.NavDir, args: typeof ctorArgs) => void;
-            (destScreen._enter as enterFunc)(navDir, ctorArgs);
+            type enterFunc = (navDir: SkScreen.NavDir, args: typeof ctorArgs) => Promise<void>;
+            await (destScreen._enter as enterFunc)(navDir, ctorArgs);
             this.#currentScreen = destScreen;
             return true;
         }

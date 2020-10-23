@@ -137,7 +137,10 @@ export abstract class _PlayScreen<
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
+    protected async _abstractOnBeforeEnter(
+        navDir: SkScreen.NavDir,
+        args: SkScreen.EntranceArgs[SID],
+    ): Promise<SkScreen.EntranceRetVal> {
         document.addEventListener("visibilitychange", this.#onVisibilityChange);
         this.pauseButton.disabled = true;
         this._statusBecomePaused(); // <-- Leverage some state initialization.
@@ -167,7 +170,7 @@ export abstract class _PlayScreen<
             }, 500);
             // ^This delay is for "aesthetic" purposes (not functional).
         }
-        return;
+        return {};
     }
 
     /**

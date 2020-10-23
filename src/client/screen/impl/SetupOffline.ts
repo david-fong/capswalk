@@ -22,10 +22,6 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
         };
     }
 
-    protected _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
-        return super._abstractOnBeforeEnter(navDir, args);
-    }
-
     protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
         type pArgs = Array<Player.CtorArgs.PreIdAssignment>;
         const args = super.parseArgsFromGui();

@@ -32,13 +32,6 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
             }
         };
     }
-
-    /**
-     * @override
-     */
-    protected _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
-        return super._abstractOnBeforeEnter(navDir, args);
-    }
 }
 Object.freeze(SetupOnlineScreen);
 Object.freeze(SetupOnlineScreen.prototype);

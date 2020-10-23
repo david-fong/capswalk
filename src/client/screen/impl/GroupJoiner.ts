@@ -59,17 +59,13 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
-        window.setTimeout(() => {
-            if (this.groupSocket) {
-                // Default to switching groups under the same host:
-                this.in.groupName.focus();
-            } else {
-                // We aren't connected to a host, or aren't yet in a group:
-                this.in.hostUrl.focus();
-            }
-        }, 100); // <-- An arbitrary short period of time. See super doc.
-        return;
+    protected async _abstractOnBeforeEnter(
+        navDir: SkScreen.NavDir,
+        args: SkScreen.EntranceArgs[SID],
+    ): Promise<SkScreen.EntranceRetVal> {
+        return {
+            elemToFocus: (this.groupSocket !== undefined) ? this.in.groupName : this.in.hostUrl,
+        };
     }
 
     public get state(): State {

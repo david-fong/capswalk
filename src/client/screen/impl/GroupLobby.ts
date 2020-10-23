@@ -1,5 +1,5 @@
 import { Player } from "defs/TypeDefs";
-import { Group, GroupEv, GameEv, SkServer } from "defs/OnlineDefs";
+import { Group, GroupEv, GameEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 
 import { JsUtils, OmHooks, Coord, SkScreen, StorageHooks } from "../SkScreen";
@@ -117,7 +117,10 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
+    protected async _abstractOnBeforeEnter(
+        navDir: SkScreen.NavDir,
+        args: SkScreen.EntranceArgs[SID],
+    ): Promise<SkScreen.EntranceRetVal> {
         if (navDir === "forward") {
             this.nav.next.disabled = !this.top.clientIsGroupHost;
             this._players.clear();
@@ -144,6 +147,14 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                 },
             );
         }
+        let elemToFocus: HTMLElement | undefined
+            = (!this.in.username.validity.valid) ? this.in.username
+            : (!this.in.teamId.validity.valid)   ? this.in.teamId
+            : undefined;
+        if (elemToFocus === undefined) {
+            elemToFocus = (this.top.clientIsGroupHost) ? this.nav.next : this.in.teamId;
+        }
+        return { elemToFocus, };
     }
 
     /**

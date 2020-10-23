@@ -52,6 +52,7 @@ export class TopLevel {
             }
         })();
         this.storage = StorageHooks;
+        this.sockets = new SkSockets();
         //
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
         if (!allScreensElem) { throw new Error("never"); }
@@ -61,8 +62,6 @@ export class TopLevel {
         //
         // this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
         // this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
-
-        this.sockets = new SkSockets();
 
         JsUtils.propNoWrite(this as TopLevel, [
             "defaultDocTitle", "webpageHostType",
