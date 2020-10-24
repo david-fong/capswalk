@@ -66,7 +66,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             ) as Lang.ClassIf;
             // @ts-expect-error : RO=
             this.lang = new LangConstructor(desc.langWeightExaggeration);
-            JsUtils.propNoWrite(this as GamepartManager<G,S>, ["lang",]);
+            JsUtils.propNoWrite(this as GamepartManager<G,S>, ["lang"]);
 
             // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
             const minLangLeaves = this.grid.static.getAmbiguityThreshold();
@@ -342,7 +342,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         desc.destModDesc.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
         desc.destModDesc.newFreeHealth     = 0;
         desc.destModDesc.newCharSeqPair    = this.dryRunShuffleLangCharSeqAt(dest);
-        desc.tileHealthModDescs = this.dryRunSpawnFreeHealth([desc.destModDesc,]);
+        desc.tileHealthModDescs = this.dryRunSpawnFreeHealth([desc.destModDesc]);
 
         // Accept the request, and trigger calculation
         // and enactment of the requested changes:

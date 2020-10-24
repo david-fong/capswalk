@@ -43,8 +43,8 @@ export class SkSockets {
     }
 
     public get joinerSocket(): Socket | undefined { return this.#sock.joiner; }
-    public get groupSocket (): Socket | undefined { return this.#sock.group;  }
-    public get gameSocket  (): Socket | undefined { return this.#sock.game;   }
+    public get groupSocket():  Socket | undefined { return this.#sock.group;  }
+    public get gameSocket():   Socket | undefined { return this.#sock.game;   }
 
     /**
      * Makes the first connection to a game-hosting server.
@@ -88,7 +88,7 @@ export class SkSockets {
         switch (_category) {
             case "group": nspsPrefix = SkServer.Nsps.GROUP_LOBBY_PREFIX; break;
             case  "game": nspsPrefix = SkServer.Nsps.GROUP_GAME_PREFIX;  break;
-            default: throw new TypeError("never"); break;
+            default: throw new TypeError("never");
         }
         const socket = this.joinerSocket!.io
             // @ts-expect-error : Socket.IO types package is currently wrong.
@@ -101,11 +101,11 @@ export class SkSockets {
      */
     private _registerSocket(socket: Socket, name: SockName): void {
         this.#sock[name] = socket;
-        const byeBye = () => {
+        const byeBye = (): void => {
             socket.removeAllListeners();
             socket.close();
             this.#sock[name] = undefined;
-        }
+        };
         socket
         .on("connect_error", (error: object) => {
             byeBye();

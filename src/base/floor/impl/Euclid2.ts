@@ -141,8 +141,8 @@ export namespace Euclid2 {
 
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze(<const>{
-            height: Object.freeze(<const>{ min: 11, max: 51, }),
-            width:  Object.freeze(<const>{ min: 11, max: 51, }),
+            height: Object.freeze(<const>{ min: 11, max: 51 }),
+            width:  Object.freeze(<const>{ min: 11, max: 51 }),
         });
 
         /**
@@ -159,7 +159,7 @@ export namespace Euclid2 {
             for (let row = 0; row < this.dimensions.height; row++) {
                 const newRow: Array<Tile<S>> = [];
                 for (let col = 0; col < this.dimensions.width; col++) {
-                    const newTile = new desc.tileClass(new Coord({ x: col, y: row, }));
+                    const newTile = new desc.tileClass(new Coord({ x: col, y: row }));
                     newRow.push(newTile);
                 }
                 grid.push(Object.freeze(newRow));
@@ -323,7 +323,7 @@ export namespace Euclid2 {
         public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
             const x = Math.floor(dimensions.width  * Math.random());
             const y = Math.floor(dimensions.height * Math.random());
-            return new Coord({x,y,});
+            return new Coord({x,y});
         }
     }
     export namespace Grid {
@@ -365,6 +365,6 @@ export class Euclid2VisibleGrid extends Euclid2.Grid implements VisibleGrid<S> {
     }
 }
 export interface Euclid2VisibleGrid extends VisibleGridMixin<S> { };
-JsUtils.applyMixins(Euclid2VisibleGrid, [VisibleGridMixin,]);
+JsUtils.applyMixins(Euclid2VisibleGrid, [VisibleGridMixin]);
 Object.freeze(Euclid2VisibleGrid);
 Object.freeze(Euclid2VisibleGrid.prototype);

@@ -131,5 +131,5 @@ export namespace ArtificialPlayer {
         return new (_Constructors[familyId])(game, playerDesc);
     };
 }
-JsUtils.protoNoEnum(ArtificialPlayer, ["movementContinue",]);
+JsUtils.protoNoEnum(ArtificialPlayer, ["movementContinue"]);
 // ArtificialPlayer is frozen in PostInit after _Constructors get initialized.

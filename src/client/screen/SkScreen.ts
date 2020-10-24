@@ -119,7 +119,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         if (navDir === SkScreen.NavDir.FORWARD) {
             const location = new window.URL(window.location.href);
             const newHistoryRoot = location.hash = SkScreen.NavTree[this.screenId].href;
-            const args: Parameters<typeof window.history.pushState> = [{ screenId: this.screenId, }, "", location.href];
+            const args: Parameters<typeof window.history.pushState> = [{ screenId: this.screenId }, "", location.href];
             if (window.history.state?.screenId !== newHistoryRoot) {
                 if (SkScreen.NavTree[this.screenId].prev === this.screenId) {
                     // If entering the root screen for the first time:
@@ -258,18 +258,18 @@ export namespace SkScreen {
      * UserInfoChange events is only registered in the lobby screen.
      */
     export const NavTree = Object.freeze(<const>{
-        [ Id.HOME          ]: { prev: Id.HOME,          href: Id.HOME, },
-        [ Id.HOW_TO_PLAY   ]: { prev: Id.HOME,          href: Id.HOW_TO_PLAY, },
-        [ Id.HOW_TO_HOST   ]: { prev: Id.HOME,          href: Id.HOW_TO_HOST, },
-        [ Id.COLOUR_CTRL   ]: { prev: Id.HOME,          href: Id.COLOUR_CTRL, },
+        [ Id.HOME          ]: { prev: Id.HOME,          href: Id.HOME },
+        [ Id.HOW_TO_PLAY   ]: { prev: Id.HOME,          href: Id.HOW_TO_PLAY },
+        [ Id.HOW_TO_HOST   ]: { prev: Id.HOME,          href: Id.HOW_TO_HOST },
+        [ Id.COLOUR_CTRL   ]: { prev: Id.HOME,          href: Id.COLOUR_CTRL },
         //==========================================================================
-        [ Id.SETUP_OFFLINE ]: { prev: Id.HOME,          href: Id.SETUP_OFFLINE, },
-        [ Id.PLAY_OFFLINE  ]: { prev: Id.SETUP_OFFLINE, href: Id.SETUP_OFFLINE, },
+        [ Id.SETUP_OFFLINE ]: { prev: Id.HOME,          href: Id.SETUP_OFFLINE },
+        [ Id.PLAY_OFFLINE  ]: { prev: Id.SETUP_OFFLINE, href: Id.SETUP_OFFLINE },
         //==========================================================================
-        [ Id.GROUP_JOINER  ]: { prev: Id.HOME,          href: Id.GROUP_JOINER, },
-        [ Id.GROUP_LOBBY   ]: { prev: Id.GROUP_JOINER,  href: Id.GROUP_JOINER, },
-        [ Id.SETUP_ONLINE  ]: { prev: Id.GROUP_LOBBY,   href: Id.GROUP_JOINER, },
-        [ Id.PLAY_ONLINE   ]: { prev: Id.GROUP_LOBBY,   href: Id.GROUP_JOINER, },
+        [ Id.GROUP_JOINER  ]: { prev: Id.HOME,          href: Id.GROUP_JOINER },
+        [ Id.GROUP_LOBBY   ]: { prev: Id.GROUP_JOINER,  href: Id.GROUP_JOINER },
+        [ Id.SETUP_ONLINE  ]: { prev: Id.GROUP_LOBBY,   href: Id.GROUP_JOINER },
+        [ Id.PLAY_ONLINE   ]: { prev: Id.GROUP_LOBBY,   href: Id.GROUP_JOINER },
     });
     (function assertNavigationTreeIsValid(): void { Object.entries(NavTree).forEach(([id, desc]) => {
         let prev = id as Id;

@@ -49,8 +49,8 @@ export namespace PlayerActionEvent {
     export const INITIAL_REQUEST_ID = -1;
 
     export const EVENT_NAME = Object.freeze(<const>{
-        Bubble:   "player-bubble"  ,
-        Movement: "player-movement",
+        BUBBLE:   "player-bubble"  ,
+        MOVEMENT: "player-movement",
     });
 
 

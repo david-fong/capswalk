@@ -23,8 +23,8 @@ export class Tile<S extends Coord.System> {
     public readonly coord: Coord[S];
     #occupantId: Player.Id.Nullable;
     #freeHealth: Player.Health;
-    #langChar:  Lang.Char;
-    #langSeq:   Lang.Seq;
+    #langChar:   Lang.Char;
+    #langSeq:    Lang.Seq;
 
     /**
      * The number of times this `Tile` was occupied since the last
@@ -41,7 +41,7 @@ export class Tile<S extends Coord.System> {
      */
     public constructor(coord: Coord[S]) {
         this.coord = coord;
-        JsUtils.propNoWrite(this as Tile<S>, ["coord",]);
+        JsUtils.propNoWrite(this as Tile<S>, ["coord"]);
         this.#occupantId = Player.Id.NULL;
     }
 

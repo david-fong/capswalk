@@ -94,7 +94,7 @@ export abstract class _PlayScreen<
             }
         });
         // ^Purposely make the grid the first child so it gets tabbed to first.
-        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["_gridBaseElem", "_gridImplHost",]);
+        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["_gridBaseElem", "_gridImplHost"]);
 
         // See below link for an illustrative guide on the intersection observer API:
         // https://blog.arnellebalane.com/the-intersection-observer-api-d441be0b088d
@@ -391,7 +391,7 @@ export namespace _PlayScreen {
             CSS_FX.STACK_CONTENTS,
             CSS_FX.TEXT_SELECT_DISABLED,
             OMHC.GRID,
-        ], { tabIndex: 0, });
+        ], { tabIndex: 0 });
         grid.setAttribute("role", "textbox");
         grid.setAttribute("aria-label", "Game Grid");
 

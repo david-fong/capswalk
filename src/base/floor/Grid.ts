@@ -35,7 +35,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         this.static = desc.gridClass;
         this.dimensions = desc.dimensions;
         this.tile = new TileGetter(this);
-        JsUtils.propNoWrite(this as Grid<S>, ["static", "dimensions", "tile",]);
+        JsUtils.propNoWrite(this as Grid<S>, ["static", "dimensions", "tile"]);
     }
 
     /**

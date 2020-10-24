@@ -99,6 +99,7 @@
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
 - In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
+- Take a look at [eslint-plugin-css-modules](https://www.npmjs.com/package/eslint-plugin-css-modules).
 
 ---
 

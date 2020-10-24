@@ -25,7 +25,7 @@ export class BgMusic {
             latencyHint: "playback",
             sampleRate: this.desc.sampleRate,
         });
-        JsUtils.propNoWrite(this as BgMusic, ["desc", "context",]);
+        JsUtils.propNoWrite(this as BgMusic, ["desc", "context"]);
 
         Promise.all(this.desc.trackDescs.map(async (trackDesc) => {
             // Fetch each track's audio file:
@@ -128,7 +128,7 @@ export namespace BgMusic {
         sampleRate:     undefined!,
         bufferLength:   undefined!,
         trackDescs: [],
-    },]);
+    }]);
 }
 Object.freeze(BgMusic);
 Object.freeze(BgMusic.prototype);

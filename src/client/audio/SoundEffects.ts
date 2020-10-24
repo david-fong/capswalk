@@ -19,7 +19,7 @@ export class SoundEffects {
             latencyHint: "interactive",
             sampleRate: sfxDesc.sampleRate,
         });
-        JsUtils.propNoWrite(this as SoundEffects, ["context",]);
+        JsUtils.propNoWrite(this as SoundEffects, ["context"]);
     }
 }
 export namespace SoundEffects {
@@ -30,7 +30,7 @@ export namespace SoundEffects {
     export const Descs: TU.RoArr<Desc> = Object.freeze([{
         id: "default",
         sampleRate: undefined!,
-    },]);
+    }]);
 }
 Object.freeze(SoundEffects);
 Object.freeze(SoundEffects.prototype);

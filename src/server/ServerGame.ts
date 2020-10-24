@@ -96,8 +96,8 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         });
 
         this.socketListeners = Object.freeze({
-            [PlayerActionEvent.EVENT_NAME.Movement]: this.processMoveRequest.bind(this),
-            [PlayerActionEvent.EVENT_NAME.Bubble]: this.processBubbleRequest.bind(this),
+            [PlayerActionEvent.EVENT_NAME.MOVEMENT]: this.processMoveRequest.bind(this),
+            [PlayerActionEvent.EVENT_NAME.BUBBLE]: this.processBubbleRequest.bind(this),
             // TODO.impl pause-request handler:
         });
         JsUtils.instNoEnum (this as ServerGame<S>, ["socketListeners"]);
@@ -147,7 +147,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 build.set(playerDesc.playerId, gameSocket);
                 return build;
             }, new Map());
-        JsUtils.propNoWrite(this as ServerGame<any>, ["playerSockets",]);
+        JsUtils.propNoWrite(this as ServerGame<any>, ["playerSockets"]);
 
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
             return new Promise((resolve, reject) => {
@@ -257,14 +257,14 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
             this.playerSockets.get(desc.playerId)!.emit(
-                PlayerActionEvent.EVENT_NAME.Movement,
+                PlayerActionEvent.EVENT_NAME.MOVEMENT,
                 desc,
             );
         } else {
             // Request was accepted.
             // Pass on change descriptor to all clients:
             this.namespace.emit(
-                PlayerActionEvent.EVENT_NAME.Movement,
+                PlayerActionEvent.EVENT_NAME.MOVEMENT,
                 desc,
             );
         }
@@ -279,14 +279,14 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
             // The request was rejected- Notify the requester.
             this.playerSockets.get(desc.playerId)!.emit(
-                PlayerActionEvent.EVENT_NAME.Bubble,
+                PlayerActionEvent.EVENT_NAME.BUBBLE,
                 desc,
             );
         } else {
             // Request was accepted.
             // Pass on change descriptor to all clients:
             this.namespace.emit(
-                PlayerActionEvent.EVENT_NAME.Bubble,
+                PlayerActionEvent.EVENT_NAME.BUBBLE,
                 desc,
             );
         }

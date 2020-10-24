@@ -19,10 +19,10 @@ export const top = (() => {
     return ENV_DEVELOPMENT ? _top : undefined;
 })();
 
-export function screen() {
+export function screen(): TopLevel["currentScreen"] {
     return _top.currentScreen;
 }
-export function game() {
+export function game(): TopLevel["game"] {
     return _top.game;
 }
 

@@ -95,7 +95,7 @@ export namespace JsUtils {
         inst: T,
         propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>,
     ): void {
-        _configProp(inst, propNames, {enumerable: false,});
+        _configProp(inst, propNames, { enumerable: false });
     }
 
     /**
@@ -104,7 +104,7 @@ export namespace JsUtils {
         inst: T,
         propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>,
     ): void {
-        _configProp(inst, propNames, {writable: false,})
+        _configProp(inst, propNames, { writable: false });
     }
 
     function _configProp<T>(

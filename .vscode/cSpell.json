@@ -41,6 +41,7 @@
         // (Functions and Variables)
         "anims",
         "coord",
+        "conn", // as in "connection"
         "clientside",
         "decor", // short for "decorator"
         "desc", "descs",
@@ -49,8 +50,10 @@
         "elem", "elems",
         "minmax",
         "mixins",
+        "multiline",
         "noopener",
         "nsps",
+        "readonly",
         "retval",
         "reflow",
         "refs",

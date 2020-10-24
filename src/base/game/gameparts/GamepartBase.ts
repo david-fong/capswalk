@@ -128,13 +128,13 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
      * @returns A bundle of the constructed players.
      */
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GamepartBase<G,S>["players"] {
-        type pCtorArgs = TU.RoArr<Player.CtorArgs>;
-        const playerDescs: pCtorArgs
+        type PCtorArgs = TU.RoArr<Player.CtorArgs>;
+        const playerDescs: PCtorArgs
             // @ts-expect-error : RO=
             = gameDesc.playerDescs
             = (this.gameType === Game.Type.ONLINE)
             // The client receives these descriptors already finalized / cleaned by the server.
-            ? (gameDesc.playerDescs as pCtorArgs)
+            ? (gameDesc.playerDescs as PCtorArgs)
             : Player.CtorArgs.finalize(gameDesc.playerDescs);
 
         return Object.freeze(playerDescs.map((playerDesc) => {
@@ -167,7 +167,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
                 });
             }
         });
-        return { csps, playerCoords, healthCoords, };
+        return { csps, playerCoords, healthCoords };
     }
 
     public deserializeResetState(ser: Game.ResetSer<S>): void {

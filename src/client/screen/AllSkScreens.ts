@@ -85,8 +85,8 @@ export class AllSkScreens {
             // Note on above "nullish coalesce": Special case entered
             // during construction when there is no currentScreen yet.
             // Any confirm-leave prompts made to the user were OK-ed.
-            type enterFunc = (navDir: SkScreen.NavDir, args: typeof ctorArgs) => Promise<void>;
-            await (destScreen._enter as enterFunc)(navDir, ctorArgs);
+            type EnterFunc = (navDir: SkScreen.NavDir, args: typeof ctorArgs) => Promise<void>;
+            await (destScreen._enter as EnterFunc)(navDir, ctorArgs);
             this.#currentScreen = destScreen;
             return true;
         }

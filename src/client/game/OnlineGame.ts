@@ -57,14 +57,14 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
         this.socket = gameSocket;
         this._ctorBrowserGame();
 
-        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.Movement)) throw new Error("never");
+        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.MOVEMENT)) throw new Error("never");
         this.socket.on(
-            PlayerActionEvent.EVENT_NAME.Movement,
+            PlayerActionEvent.EVENT_NAME.MOVEMENT,
             this.executePlayerMoveEvent.bind(this),
         );
-        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.Bubble)) throw new Error("never");
+        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.BUBBLE)) throw new Error("never");
         this.socket.on(
-            PlayerActionEvent.EVENT_NAME.Bubble,
+            PlayerActionEvent.EVENT_NAME.BUBBLE,
             this.executePlayerBubbleEvent.bind(this),
         );
 
@@ -104,7 +104,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
      * @override
      */
     public processMoveRequest(desc: PlayerActionEvent.Movement<S>): void {
-        this.socket.emit(PlayerActionEvent.EVENT_NAME.Movement, desc);
+        this.socket.emit(PlayerActionEvent.EVENT_NAME.MOVEMENT, desc);
     }
 
     /**
@@ -115,10 +115,10 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
      * @override
      */
     public processBubbleRequest(desc: PlayerActionEvent.Bubble): void {
-        this.socket.emit(PlayerActionEvent.EVENT_NAME.Bubble, desc);
+        this.socket.emit(PlayerActionEvent.EVENT_NAME.BUBBLE, desc);
     }
 }
 export interface OnlineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
-JsUtils.applyMixins(OnlineGame, [BrowserGameMixin,]);
+JsUtils.applyMixins(OnlineGame, [BrowserGameMixin]);
 Object.freeze(OnlineGame);
 Object.freeze(OnlineGame.prototype);

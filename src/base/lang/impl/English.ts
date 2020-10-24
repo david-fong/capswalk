@@ -19,7 +19,7 @@ export namespace English {
             "engl-low",
             Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
                 (accumulator, [char,weight]) => {
-                    accumulator[char] = { seq: char, weight, };
+                    accumulator[char] = { seq: char, weight };
                     return accumulator;
                 }, {},
             ),
@@ -43,7 +43,7 @@ export namespace English {
                 initializer = Object.entries(LETTER_FREQUENCY).reduce(
                     (accumulator, [_char,weight]) => {
                         const char: Lang.Char = charSeqTransform(_char);
-                        accumulator[char] = { seq: char, weight, };
+                        accumulator[char] = { seq: char, weight };
                         return accumulator;
                     },
                     initializer,
@@ -72,7 +72,7 @@ export namespace English {
                 "engl-cell-enc",
                 Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
                     (accumulator, [char,weight], index) => {
-                        accumulator[char] = { seq: NUMPAD[index], weight, };
+                        accumulator[char] = { seq: NUMPAD[index], weight };
                         return accumulator;
                     }, {},
                 ),
@@ -83,7 +83,7 @@ export namespace English {
         Object.freeze(Encode);
         Object.freeze(Encode.prototype);
 
-        const NUMPAD = Object.freeze([3,3,3,3,3,4,3,4,]
+        const NUMPAD = Object.freeze([3,3,3,3,3,4,3,4]
             .flatMap((val, idx) => {
                 const button = [];
                 const numpadKey = (1+idx).toString();

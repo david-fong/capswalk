@@ -36,11 +36,11 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
                 // Note the 1-millisecond start delays required to
                 // pause the animations before they start auto-playing.
                 faceElem.animate({
-                    filter: ["brightness(0.7)", "brightness(1.0)",],
-                },{ duration: 300, easing: "ease-in", delay: 1, }),
+                    filter: ["brightness(0.7)", "brightness(1.0)"],
+                },{ duration: 300, easing: "ease-in", delay: 1 }),
                 faceElem.animate({
                     transform: VisiblePlayerStatus.makeWiggleAnimation(10, 2),
-                },{ duration: 270, easing: "ease-out", delay: 1, }),
+                },{ duration: 270, easing: "ease-out", delay: 1 }),
             ] : [];
             vBellAnims.forEach((anim) => anim.pause());
 
@@ -144,7 +144,7 @@ export namespace VisiblePlayerStatus {
             this.baseElem = JsUtils.mkEl("div", []);
             this.baseElem.setAttribute("label", "Player");
 
-            const name = this.#nameElem = JsUtils.mkEl("div", [], { textContent: playerName, });
+            const name = this.#nameElem = JsUtils.mkEl("div", [], { textContent: playerName });
             this.baseElem.appendChild(name);
         }
     }

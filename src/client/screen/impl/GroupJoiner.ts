@@ -43,8 +43,8 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             // Using a plain button instead of <input type="submit"> is
             // better here since we don't want any magical form behaviour.
             contentWrapperSubmit();
-        }
-        const contentWrapperSubmit = () => {
+        };
+        const contentWrapperSubmit = (): void => {
             // ev.preventDefault(); // Don't perform any form action
             // No validation needed. The next button is only enabled if inputs are valid.
             this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {
@@ -184,7 +184,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         const makeOption = (groupName: Group.Name): HTMLOptionElement => {
             // If we didn't know about this group yet, create a new
             // option for it (Insert into list in alphabetical order):
-            const newOpt = JsUtils.mkEl("option", [], { value: groupName, });
+            const newOpt = JsUtils.mkEl("option", [], { value: groupName });
             for (const otherOpt of dataListArr) {
                 if (newOpt.value.localeCompare(otherOpt.value) < 0) {
                     dataList.insertBefore(newOpt, otherOpt);
@@ -198,7 +198,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         };
         const dataList = this.groupNameDataList;
         const dataListArr = Array.from(dataList.children) as HTMLOptionElement[];
-        Object.entries(response).forEach(([groupName, status,]) => {
+        Object.entries(response).forEach(([groupName, status]) => {
             const optElem
                 = dataListArr.find((opt: HTMLOptionElement) => opt.value === groupName)
                 || makeOption(groupName);
@@ -339,7 +339,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 spellcheck: false,
             });
             // Label:
-            const label = JsUtils.mkEl("label", [], { textContent: labelText, });
+            const label = JsUtils.mkEl("label", [], { textContent: labelText });
             label.appendChild(input);
             contentWrapper.appendChild(label);
             return input;

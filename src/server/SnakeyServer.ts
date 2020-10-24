@@ -62,7 +62,7 @@ export class SnakeyServer extends _SnakeyServer {
         this.app.use("/dist/client", express.static(path.resolve(PROJECT_ROOT, "dist", "client")));
         this.app.use("/assets", express.static(path.resolve(PROJECT_ROOT, "assets")));
 
-        this.http.listen(<net.ListenOptions>{ port, host, }, (): void => {
+        this.http.listen(<net.ListenOptions>{ port, host }, (): void => {
             const info = <net.AddressInfo>this.http.address();
             console.log(`\n\nServer mounted to: \`${info.address}${info.port}\` using ${info.family}.\n`);
             console.log("This host can be reached at any of the following addresses:\n");
@@ -128,7 +128,7 @@ export class SnakeyServer extends _SnakeyServer {
             (() => {
                 // TODO.design current implementation may suffer when there are many many groups.
                 const build: Group.Query.NotifyStatus = {};
-                Array.from(this.allGroups).forEach(([groupName, group,]) => {
+                Array.from(this.allGroups).forEach(([groupName, group]) => {
                     build[groupName] = (group.isCurrentlyPlayingAGame)
                     ? Group.Exist.Status.IN_GAME
                     : Group.Exist.Status.IN_LOBBY;

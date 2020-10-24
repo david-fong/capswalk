@@ -10,8 +10,7 @@ import type { Team }            from "./Team";
 
 import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
 import { PlayerSkeleton }       from "./PlayerSkeleton";    export { PlayerSkeleton };
-import { PlayerStatus }         from "./PlayerStatus";import { Socket } from 'socket.io-client';
-      export { PlayerStatus };
+import { PlayerStatus }         from "./PlayerStatus";      export { PlayerStatus };
 
 
 /**
@@ -31,7 +30,8 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 
     public requestInFlight: boolean;
 
-
+    /**
+     */
     public constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
 
@@ -131,15 +131,15 @@ export namespace Player {
      * # Player Constructor Arguments
      */
     export type CtorArgs = _CtorArgs<Player.Family>;
-    export type _CtorArgs<F_group extends Player.Family> = any extends F_group ? never
-    : { [F in F_group]: F extends Player.Family
+    export type _CtorArgs<FGroup extends Player.Family> = any extends FGroup ? never
+    : { [F in FGroup]: F extends Player.Family
         ? (_PreIdAssignmentDict[F] & Readonly<{
             playerId: Player.Id;
         }>)
         : never
-    }[F_group];
+    }[FGroup];
 
-    type __PreIdAssignmentConditional<F extends Player.Family> = Readonly<{
+    type _PreIdAssignmentConditional<F extends Player.Family> = Readonly<{
         isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
         familyId: F;
         teamId:   Team.Id;
@@ -150,8 +150,8 @@ export namespace Player {
         familyArgs: CtorArgs.FamilySpecificPart[F];
     }>;
     interface _PreIdAssignmentDict {
-        [Player.Family.HUMAN ]: __PreIdAssignmentConditional<typeof Player.Family.HUMAN >;
-        [Player.Family.CHASER]: __PreIdAssignmentConditional<typeof Player.Family.CHASER>;
+        [Player.Family.HUMAN ]: _PreIdAssignmentConditional<typeof Player.Family.HUMAN >;
+        [Player.Family.CHASER]: _PreIdAssignmentConditional<typeof Player.Family.CHASER>;
     }
 
     export namespace CtorArgs {

@@ -41,7 +41,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             seqElem.setAttribute("role", "tooltip");
             this.#baseElem.appendChild(seqElem);
         }
-        JsUtils.propNoWrite(this as VisibleTile<S>, ["langCharElem", "langSeqElem",]);
+        JsUtils.propNoWrite(this as VisibleTile<S>, ["langCharElem", "langSeqElem"]);
     }
 
     public _addToDom(parent: HTMLElement): void {

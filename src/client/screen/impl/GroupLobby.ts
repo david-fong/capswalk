@@ -52,7 +52,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         goSetup.textContent = "Setup Game";
         goSetup.onclick = () => {
             this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
-        }
+        };
         this.baseElem.appendChild(goSetup);}
     }
 
@@ -133,7 +133,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                 console.log("group create game socket. now waiting for ctor args");
                 const sock = this.top.sockets.gameSocketConnect(
                     args.groupName!,
-                    { passphrase: args.groupPassphrase!, },
+                    { passphrase: args.groupPassphrase! },
                 );
                 sock.once(GameEv.CREATE_GAME, (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
                     this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
@@ -148,7 +148,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         if (elemToFocus === undefined) {
             elemToFocus = (this.top.clientIsGroupHost) ? this.nav.next : this.in.teamId;
         }
-        return { elemToFocus, };
+        return { elemToFocus };
     }
 
     /**
@@ -181,7 +181,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                 this.teamElems.set(desc.teamId, teamElem);
                 teamElem.onclick = (ev) => {
                     this.in.teamId.value = desc.teamId.toString();
-                }
+                };
                 this.teamsElem.appendChild(teamElem);
             }
 
@@ -223,7 +223,7 @@ export namespace GroupLobbyScreen {
                 const div = JsUtils.mkEl("div", []);
                 this.base.appendChild(div);
                 return div;
-            }
+            };
             this.el = Object.freeze<UserInfo["el"]>({
                 username: mkDiv(),
                 teamId:   mkDiv(),
@@ -232,7 +232,7 @@ export namespace GroupLobbyScreen {
             this.el.username.classList.add(OMHC.PLAYER_NAME);
             this.username = desc.username;
             this.teamId = desc.teamId;
-            JsUtils.propNoWrite(this as UserInfo, ["base", "el",]);
+            JsUtils.propNoWrite(this as UserInfo, ["base", "el"]);
         }
 
         public update(desc: Player.UserInfo): void {
@@ -266,6 +266,6 @@ export namespace GroupLobbyScreen {
         }
     }
 }
-JsUtils.protoNoEnum(GroupLobbyScreen, ["_createInputs", "_submitInputs",]);
+JsUtils.protoNoEnum(GroupLobbyScreen, ["_createInputs", "_submitInputs"]);
 Object.freeze(GroupLobbyScreen);
 Object.freeze(GroupLobbyScreen.prototype);

@@ -34,7 +34,7 @@ export namespace StorageHooks {
             username: Local.username ?? "unnamed player",
             teamId: 0,
             avatar: Local.avatar ?? Player.Avatar.GET_RANDOM()
-        })
+        });
     }
 
     /**
@@ -71,7 +71,7 @@ export namespace StorageHooks {
                 set: (val: boolean): void => {
                     storage.setItem(key, JSON.stringify(val));
                 },
-            })
+            });
         });
         Object.freeze(smart);
         return smart;

@@ -48,7 +48,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
             desc.noCheckGameOver,
         );
         this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
-        JsUtils.instNoEnum( this as PlayerSkeleton<S>, ["game",]);
+        JsUtils.instNoEnum( this as PlayerSkeleton<S>, ["game"]);
         JsUtils.propNoWrite(this as PlayerSkeleton<S>, [
             "playerId", "isALocalOperator",
             "game", "status", "tile",
@@ -137,8 +137,8 @@ export namespace PlayerSkeleton {
      */
     export class TileGetterSource<S extends Coord.System> implements TileGetter.Source<S,[]> {
 
-        readonly #player: PlayerSkeleton<S>
-        readonly #superTileSrc: TileGetter.Source<S,[Coord.Bare[S],]>;
+        readonly #player: PlayerSkeleton<S>;
+        readonly #superTileSrc: TileGetter.Source<S,[Coord.Bare[S]]>;
 
         public constructor(player: PlayerSkeleton<S>) {
             this.#player = player;

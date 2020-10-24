@@ -25,7 +25,7 @@ export class Team<S extends Coord.System> {
             ? Team.ElimOrder.IMMORTAL
             : Team.ElimOrder.STANDING;
 
-        JsUtils.propNoWrite(this as Team<S>, ["id", "members",]);
+        JsUtils.propNoWrite(this as Team<S>, ["id", "members"]);
     }
 
     public reset(): void {

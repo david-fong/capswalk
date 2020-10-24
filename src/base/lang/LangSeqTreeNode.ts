@@ -102,7 +102,7 @@ export namespace LangSeqTree {
             weightScaling: Lang.WeightExaggeration,
         ): LangSeqTree.ParentNode {
             const averageWeight = Object.values(forwardDict).reduce((sum, next) => sum += next.weight, 0);
-            const adjustedWeight = (function () {
+            const adjustedWeight = (function(): (ogWeight: number) => number {
                 return (weightScaling === 0) ? (originalWeight: number) => 1
                     :  (weightScaling === 1) ? (originalWeight: number) => originalWeight
                     : (originalWeight: number) => Math.pow(originalWeight / averageWeight, weightScaling);
@@ -119,7 +119,7 @@ export namespace LangSeqTree {
                     // The entry was already made:
                     charArray.push(weightedChar);
                 } else {
-                    reverseDict.set(seq, [weightedChar,]);
+                    reverseDict.set(seq, [weightedChar]);
                 }
             }
             // Add mappings in ascending order of sequence length:

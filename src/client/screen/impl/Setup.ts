@@ -8,8 +8,6 @@ import { JsUtils, OmHooks, StorageHooks, SkScreen } from "../SkScreen";
 const OMHC = OmHooks.Screen.Impl.Setup.Class;
 
 
-type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
-
 /**
  * What coordinate systems are available will depend on what language
  * the user chooses.
@@ -18,7 +16,7 @@ type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
  * behaviour of the `_nextBtn` and `_prevBtn` buttons.
  */
 // TODO.learn how to use the IndexDB web API.
-export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID> {
+export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE> extends SkScreen<SID> {
 
     protected readonly langSel: _SetupScreen.LangPickOne;
     protected readonly langWeightExaggeration: HTMLInputElement;
@@ -37,7 +35,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
 
         this._createLangWeightExaggerationInput();
 
-        JsUtils.propNoWrite(this as _SetupScreen<SID>, ["langSel", "langWeightExaggeration",]);
+        JsUtils.propNoWrite(this as _SetupScreen<SID>, ["langSel", "langWeightExaggeration"]);
 
         this.baseElem.appendChild(this.nav.next);
         this._loadLastUsedPreset();
@@ -57,7 +55,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
         {
             const list = JsUtils.mkEl("datalist", []);
             list.id = OmHooks.Screen.Impl.Setup.Id.LANG_WEIGHT_EXAGGERATION_LIST;
-            [{val:0,label:"0",}, {val:1,label:"1"},].forEach((tickDesc) => {
+            [{val:0,label:"0"}, {val:1,label:"1"}].forEach((tickDesc) => {
                 list.appendChild(JsUtils.mkEl("option", [], {
                     value: tickDesc.val.toString(),
                     label: tickDesc.label,
@@ -136,15 +134,15 @@ export namespace _SetupScreen {
                 healthReserve: 5.0,
                 keyPressesPerSecond: 1.8,
             },
-        },])(), // <- Wrap in a function for better type checking.
-    }};
+        }])(), // <- Wrap in a function for better type checking.
+    }; };
     /**
      *
      */
     export class LangPickOne extends SkPickOne<LangPickOne.Option> {
         public constructor() {
             super();
-            this.baseElem.classList.add(OMHC.LANG_SEL)
+            this.baseElem.classList.add(OMHC.LANG_SEL);
             Lang.FrontendDescs.forEach((desc) => {
                 this.addOption(new LangPickOne.Option(desc));
             });

@@ -58,13 +58,13 @@ export namespace Beehive {
             const d = floorDash - this.dash;
             const b = floorBash - this.bash;
             if (d > 2 * b) {
-                return new Coord({ dash: floorDash+1, bash: floorBash  , });
+                return new Coord({ dash: floorDash+1, bash: floorBash   });
             } else if (d < 0.5 * b) {
-                return new Coord({ dash: floorDash  , bash: floorBash+1, });
+                return new Coord({ dash: floorDash  , bash: floorBash+1 });
             } else if (Math.min(d, b) > 0.5) {
-                return new Coord({ dash: floorDash+1, bash: floorBash+1, });
+                return new Coord({ dash: floorDash+1, bash: floorBash+1 });
             } else {
-                return new Coord({ dash: floorDash  , bash: floorBash  , });
+                return new Coord({ dash: floorDash  , bash: floorBash   });
             }
         }
 
@@ -118,9 +118,9 @@ export namespace Beehive {
          */
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
-            dash:    Object.freeze({ min: 10, max: 50, }),
-            bslash:  Object.freeze({ min: 10, max: 50, }),
-            fslash:  Object.freeze({ min: 10, max: 50, }),
+            dash:    Object.freeze({ min: 10, max: 50 }),
+            bslash:  Object.freeze({ min: 10, max: 50 }),
+            fslash:  Object.freeze({ min: 10, max: 50 }),
         });
 
         /**
@@ -251,6 +251,6 @@ export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
     }
 }
 export interface BeehiveVisibleGrid extends VisibleGridMixin<S> { };
-JsUtils.applyMixins(BeehiveVisibleGrid, [VisibleGridMixin,]);
+JsUtils.applyMixins(BeehiveVisibleGrid, [VisibleGridMixin]);
 Object.freeze(BeehiveVisibleGrid);
 Object.freeze(BeehiveVisibleGrid.prototype);

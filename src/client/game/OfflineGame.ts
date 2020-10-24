@@ -81,6 +81,6 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
     declare public readonly processBubbleRequest: GamepartManager<G,S>["processBubbleRequest"];
 }
 export interface OfflineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
-JsUtils.applyMixins(OfflineGame, [BrowserGameMixin,]);
+JsUtils.applyMixins(OfflineGame, [BrowserGameMixin]);
 Object.freeze(OfflineGame);
 Object.freeze(OfflineGame.prototype);

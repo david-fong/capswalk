@@ -3,11 +3,12 @@
     "files.exclude": {
         // generic excludes:
         "node_modules/{[^.@]*,}": true,
+        "package-lock.json": true,
+        ".nojekyll": true,
 
         // project specific excludes:
-        "package-lock.json": true,
 
-        // don't always need this:
+        // things that I might like to toggle:
         "node_modules/": true,
         "{**/.templates/,**/tsconfig.json}": true,
         //"{**/.eslintrc.*,.eslintignore}": true,
@@ -32,7 +33,6 @@
         }
     ],
 
-    "eslint.enable": false, // TODO.build Re-enable this once typescript's eslint parser can handle #private fields.
     "files.trimTrailingWhitespace": true,
 
     "todo-tree.filtering.useBuiltInExcludes": "file excludes",

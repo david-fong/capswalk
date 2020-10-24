@@ -54,4 +54,4 @@ The HTML element for the game's grid should be greyed out.
 
 ### Enact changes
 
-Player classes are responsible to check whether the game is over or paused- but this is only as a measure to reduce wasted event messaging. The most important thing is that the game manager must either reject or ignore client requests for game-in-session-actions. I need to make a decision on which way to go for that. If I go with ignoring (reduced traffic!), I need to make sure that clients clear all their `requestInFlight` flags when notified of the game becoming un-paused. The fact that players perform the game-over/game-paused checks.
+Player classes are responsible to check whether the game is over or paused- but this is only as a measure to reduce wasted event messaging. The most important thing is that the game manager must either reject or ignore client requests for game-in-session-actions. I need to make a decision on which way to go for that. If I go with ignoring (reduced traffic!), I need to make sure that clients clear all their `requestInFlight` flags when notified of the game becoming un-paused. I am currently going with the reject approach.

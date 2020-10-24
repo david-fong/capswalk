@@ -72,7 +72,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             text:    "Colour Schemes",
             cssClass: OMHC.NAV_COLOURS,
             screenId: SkScreen.Id.COLOUR_CTRL,
-        },])
+        }])
         .map<Readonly<{
             text: string;
             cssClass: OMHC[keyof OMHC];
@@ -96,7 +96,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             text:    "Report\nIssue",
             cssClass: OMHC.NAV_RPT_ISSUE,
             href:     new window.URL("https://github.com/david-fong/SnaKey-NTS/issues"),
-        },])
+        }])
         .map<Readonly<{
             text: string;
             cssClass: OMHC[keyof OMHC];

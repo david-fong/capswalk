@@ -73,7 +73,7 @@ export namespace Grid {
          */
         GAME_STATE: { KEY: "gameState", VALUES: <const>{
             PLAYING: "playing", PAUSED: "paused", OVER: "over",
-        },},
+        }},
     };
 }
 
@@ -88,7 +88,7 @@ export namespace Player {
     export const Dataset = <const>{
         DOWNED: { KEY: "downed", VALUES: <const>{
             TEAM: "team", SELF: "self", NO: "no",
-        },},
+        }},
         FACE_SWATCH:    "face",
     };
 }
