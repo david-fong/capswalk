@@ -21,7 +21,7 @@ import {   PlayOnlineScreen } from "./impl/PlayOnline";
  */
 export class AllSkScreens {
 
-    public readonly dict: SkScreen.Dict;
+    public readonly dict: SkScreen.AllSkScreensDict;
 
     #currentScreen: SkScreen<SkScreen.Id>;
 
@@ -50,17 +50,13 @@ export class AllSkScreens {
         JsUtils.propNoWrite(this as AllSkScreens, ["dict"]);
 
         // note: "isr" as in "Initial Screen Request".
-        const isrId = window.location.hash.slice(1) as SkScreen.Id;
-        const isr = this.dict[isrId];
-        if (isr && isr.initialScreen) {
-            this.goToScreen(isr.initialScreen, {});
-        } else {
-            this.goToScreen(SkScreen.Id.HOME, {});
-        }
+        const isr = SkScreen.NavTree[window.location.hash.slice(1) as SkScreen.Id];
+        this.goToScreen(isr?.href ?? SkScreen.Id.HOME, {});
+
         window.addEventListener("popstate", (ev: PopStateEvent) => {
             // For corresponding calls to pushState and replaceState,
             // see SkScreen.enter.
-            this.goToScreen(...this.currentScreen.getNavPrevArgs())
+            this.goToScreen(window.history.state.screenId, {});
         });
     }
 
@@ -73,7 +69,6 @@ export class AllSkScreens {
         // NOTE: using a tuple wrapper to expand bundled type.
         destId: SID,
         ctorArgs: SkScreen.EntranceArgs[SID],
-        navDir: SkScreen.NavDir = SkScreen.NavDir.FORWARD,
     ): Promise<boolean> {
         const destScreen = this.dict[destId];
         if (this.currentScreen === destScreen) {
@@ -82,6 +77,10 @@ export class AllSkScreens {
             // rewrite the return-value spec.
             throw new Error("never");
         }
+        const navDir = SkScreen.GET_NAV_DIR({
+            curr: this.currentScreen?.screenId,
+            dest: destId,
+        });
         if ((this.currentScreen === undefined) || this.currentScreen._leave(navDir)) {
             // Note on above "nullish coalesce": Special case entered
             // during construction when there is no currentScreen yet.

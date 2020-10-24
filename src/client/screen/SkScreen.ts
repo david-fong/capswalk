@@ -53,34 +53,6 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     }>;
 
     /**
-     * Used as the initial screen when arriving at this website via url.
-     * Returns this screen's own id by default.
-     *
-     * **IMPORTANT**: Must identify a screen whose `EntranceArgs` is
-     * of type `{}`. Therefore, screens who don't take `{}` as entry
-     * arguments must override this method.
-     */
-    public get initialScreen(): SkScreen.Id {
-        return this.screenId;
-    }
-    /**
-     * Used to define the behaviour of the navigation buttons.
-     *
-     * This should be a pure producer function. Any state modifications
-     * or event emissions should be done in `abstractOnBeforeLeave`.
-     *
-     * **IMPORTANT**: Must pass SkScreen.NavDir.BACKWARD as the `historyDirection` argument.
-     */
-    public getNavPrevArgs(): Parameters<AllSkScreens["goToScreen"]> {
-        const defaultDest = SkScreen.NavPrevDest[this.screenId] as SkScreen.Id | undefined;
-        if (defaultDest) {
-            return [defaultDest, {}, SkScreen.NavDir.BACKWARD];
-        } else {
-            throw new Error("never");
-        }
-    }
-
-    /**
      * Implementations can use this as part of navigation button
      * handlers. Refers directly to AllSkScreens.goToScreen.
      */
@@ -118,7 +90,12 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         this.nav.next.textContent = "Next";
         // @ts-expect-error : RO=
         this.nav.prev.onclick = (ev) => {
-            this.requestGoToScreen(...this.getNavPrevArgs());
+            const tree = SkScreen.NavTree;
+            if (tree[tree[this.screenId].prev].href === tree[this.screenId].href) {
+                this.requestGoToScreen(SkScreen.NavTree[screenId].prev, {});
+            } else {
+                window.history.back();
+            }
         };
     }
 
@@ -137,14 +114,19 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
             this.#hasLazyLoaded = true;
         }
-        {
+
+        document.title = `${this.screenNames.spaceyCapitalized} | ${this.top.defaultDocTitle}`;
+        if (navDir === SkScreen.NavDir.FORWARD) {
             const location = new window.URL(window.location.href);
-            location.hash = this.screenId;
-            const args = <const>[{ screenId: this.screenId, }, "", location.href];
-            switch (navDir) {
-                case SkScreen.NavDir.BACKWARD: history.replaceState(...args); break;
-                case SkScreen.NavDir.FORWARD:  history.pushState(   ...args); break;
-                default: throw new Error("never");
+            const newHistoryRoot = location.hash = SkScreen.NavTree[this.screenId].href;
+            const args: Parameters<typeof window.history.pushState> = [{ screenId: this.screenId, }, "", location.href];
+            if (window.history.state?.screenId !== newHistoryRoot) {
+                if (SkScreen.NavTree[this.screenId].prev === this.screenId) {
+                    // If entering the root screen for the first time:
+                    history.replaceState(...args);
+                } else {
+                    history.pushState(...args);
+                }
             }
         }
 
@@ -155,7 +137,6 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         }
         // ^Wait until the screen has finished setting itself up
         // before entering it.
-        document.title = `${this.screenNames.spaceyCapitalized} | ${this.top.defaultDocTitle}`;
         window.requestAnimationFrame((time) => {
             this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
             this.baseElem.setAttribute("aria-hidden", "false");
@@ -229,7 +210,11 @@ export namespace SkScreen {
         PLAY_ONLINE     = "playOnline",
         // =======      ===================
     }
-    export interface Dict {
+    Object.freeze(Id);
+
+    export const enum HistoryEntryId {
+    }
+    export interface AllSkScreensDict {
         [ Id.HOME          ]: HomeScreen;
         [ Id.HOW_TO_PLAY   ]: HowToPlayScreen;
         [ Id.HOW_TO_HOST   ]: HowToHostScreen;
@@ -243,6 +228,10 @@ export namespace SkScreen {
         [ Id.SETUP_ONLINE  ]: SetupOnlineScreen;
         [ Id.PLAY_ONLINE   ]: PlayOnlineScreen;
     }
+    /**
+     * If not a navigation leaf, must be `{}`. If history root is not
+     * self, then can be a partial object for forward navigation.
+     */
     export interface EntranceArgs {
         [ Id.HOME          ]: {};
         [ Id.HOW_TO_PLAY   ]: {};
@@ -265,30 +254,57 @@ export namespace SkScreen {
      * for the group host is important, since the socket listener for
      * UserInfoChange events is only registered in the lobby screen.
      */
-    export const NavPrevDest = Object.freeze(<const>{
-        [ Id.HOME          ]: Id.HOME,
-        [ Id.HOW_TO_PLAY   ]: Id.HOME,
-        [ Id.HOW_TO_HOST   ]: Id.HOME,
-        [ Id.COLOUR_CTRL   ]: Id.HOME,
-        //==================
-        [ Id.SETUP_OFFLINE ]: Id.HOME,
-        [ Id.PLAY_OFFLINE  ]: Id.SETUP_OFFLINE,
-        //==================
-        [ Id.GROUP_JOINER  ]: Id.HOME,
-        [ Id.GROUP_LOBBY   ]: Id.GROUP_JOINER,
-        [ Id.SETUP_ONLINE  ]: Id.GROUP_LOBBY,
-        [ Id.PLAY_ONLINE   ]: Id.SETUP_ONLINE,
+    export const NavTree = Object.freeze(<const>{
+        [ Id.HOME          ]: { prev: Id.HOME,          href: Id.HOME, },
+        [ Id.HOW_TO_PLAY   ]: { prev: Id.HOME,          href: Id.HOW_TO_PLAY, },
+        [ Id.HOW_TO_HOST   ]: { prev: Id.HOME,          href: Id.HOW_TO_HOST, },
+        [ Id.COLOUR_CTRL   ]: { prev: Id.HOME,          href: Id.COLOUR_CTRL, },
+        //==========================================================================
+        [ Id.SETUP_OFFLINE ]: { prev: Id.HOME,          href: Id.SETUP_OFFLINE, },
+        [ Id.PLAY_OFFLINE  ]: { prev: Id.SETUP_OFFLINE, href: Id.SETUP_OFFLINE, },
+        //==========================================================================
+        [ Id.GROUP_JOINER  ]: { prev: Id.HOME,          href: Id.GROUP_JOINER, },
+        [ Id.GROUP_LOBBY   ]: { prev: Id.GROUP_JOINER,  href: Id.GROUP_JOINER, },
+        [ Id.SETUP_ONLINE  ]: { prev: Id.GROUP_LOBBY,   href: Id.GROUP_JOINER, },
+        [ Id.PLAY_ONLINE   ]: { prev: Id.GROUP_LOBBY,   href: Id.GROUP_JOINER, },
     });
+    (function assertNavigationTreeIsValid(): void { Object.entries(NavTree).forEach(([id, desc]) => {
+        let prev = id as Id;
+        const visited = new Set<Id>();
+        do {
+            if (visited.has(prev)) {
+                throw new Error("Navigation tree must not contain cycles.");
+            }
+            visited.add(prev);
+            prev = NavTree[prev].prev;
+            if (prev === id) {
+                break;
+            }
+        } while (prev !== NavTree[prev].prev);
+        if (prev !== Id.HOME) {
+            throw new Error("The home screen must be the root of the screen-navigation tree.");
+        }
+    }); })();
 
     export const enum NavDir {
         FORWARD  = "forward",
         BACKWARD = "backward",
     };
+    export function GET_NAV_DIR(_args: { curr: Id | undefined, dest: Id, }): NavDir {
+        const { curr, dest } = _args;
+        if (curr === undefined) return SkScreen.NavDir.FORWARD;
+        let prev = curr;
+        while (prev !== SkScreen.NavTree[prev].prev) {
+            prev      = SkScreen.NavTree[prev].prev;
+            if (prev === dest) return SkScreen.NavDir.BACKWARD;
+        }
 
-    /**
-     * Helper type for overriding SkScreen.getNavPrevArgs.
-     */
-    export type NavPrevRet<SID extends SkScreen.Id> = [SID, SkScreen.EntranceArgs[SID], NavDir.BACKWARD];
+        // if (NavTree[dest].prev !== curr) {
+        //     throw new Error(`${dest} is not reachable from ${curr}.`);
+        // }
+        // If do-while completes, then dest must be in the forward direction:
+        return SkScreen.NavDir.FORWARD;
+    }
 }
 Object.freeze(SkScreen);
 Object.freeze(SkScreen.prototype);

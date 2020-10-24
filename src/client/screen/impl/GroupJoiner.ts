@@ -303,7 +303,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         .on("disconnect", (reason: string) => {
             if (reason === "io server disconnect") {
                 top.toast("The server disconnected you from your group.");
-                this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {}, SkScreen.NavDir.BACKWARD);
+                this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {});
             }
         });
     }

@@ -14,13 +14,6 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
     /**
      * @override
      */
-    public get initialScreen(): SkScreen.Id {
-        return SkScreen.Id.GROUP_JOINER;
-    }
-
-    /**
-     * @override
-     */
     protected _lazyLoad(): void {
         super._lazyLoad();
 

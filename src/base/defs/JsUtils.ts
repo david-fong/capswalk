@@ -167,7 +167,7 @@ export namespace JsUtils {
         domProperties: Readonly<Partial<V>> | undefined = undefined,
     ): HTMLElementTagNameMap[K] {
         const el = document.createElement(tagName);
-        Object.seal(el);
+        try { Object.seal(el); } catch (e) {};
         el.classList.add(...classNames);
 
         if (tagName === "button") {

@@ -19,19 +19,6 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     /**
      * @override
      */
-    public get initialScreen(): SkScreen.Id {
-        return SkScreen.Id.GROUP_JOINER;
-    };
-    /**
-     * @override
-     */
-    public getNavPrevArgs(): SkScreen.NavPrevRet<SkScreen.Id.GROUP_LOBBY> {
-        return [SkScreen.Id.GROUP_LOBBY, {}, SkScreen.NavDir.BACKWARD,];
-    };
-
-    /**
-     * @override
-     */
     // @ts-expect-error : Redeclaring accessor as property.
     declare protected readonly currentGame: OnlineGame<Coord.System>;
 

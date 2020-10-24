@@ -12,13 +12,6 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
     /**
      * @override
      */
-    public get initialScreen(): SkScreen.Id {
-        return SkScreen.Id.SETUP_OFFLINE;
-    }
-
-    /**
-     * @override
-     */
     // @ts-expect-error : Redeclaring accessor as property.
     declare protected readonly currentGame: OfflineGame<Coord.System>;
 

@@ -24,13 +24,6 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         avatar:   HTMLSelectElement;
     }>;
 
-    /**
-     * @override
-     */
-    public get initialScreen(): SkScreen.Id {
-        return SkScreen.Id.GROUP_JOINER;
-    }
-
     private get socket(): typeof io.Socket {
         return this.top.sockets.groupSocket!;
     }
