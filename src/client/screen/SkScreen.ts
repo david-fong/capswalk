@@ -250,6 +250,9 @@ export namespace SkScreen {
         elemToFocus?: HTMLElement;
     }>;
     /**
+     * Note that forward navigation has no obligation to comply with
+     * the navigation tree.
+     *
      * Note: The fact that the lobby precedes the online setup screen
      * for the group host is important, since the socket listener for
      * UserInfoChange events is only registered in the lobby screen.
