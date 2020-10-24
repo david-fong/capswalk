@@ -111,7 +111,8 @@ export class SkSockets {
             byeBye();
         })
         .on("disconnect", (reason: string) => {
-            if (reason === "io server disconnect") {
+            if (reason === "io server disconnect"
+             || reason === "io client disconnect") {
                 byeBye();
             }
         });

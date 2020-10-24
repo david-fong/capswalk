@@ -28,7 +28,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     protected readonly wantsAutoPause = false;
 
     private get socket(): SocketIOClient.Socket {
-        return this.currentGame.socket;
+        return this.top.sockets.gameSocket!;
     }
 
     /**
@@ -46,10 +46,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
         const leaveConfirmed = super._abstractOnBeforeLeave(navDir);
         if (leaveConfirmed) {
             this.socket.emit(GameEv.RETURN_TO_LOBBY);
-            this.socket.close();
-            if (this.socket !== undefined) {
-                throw new Error("never"); // See `SkSockets._configSocket`.
-            }
+            this.socket.removeAllListeners();
         }
         return leaveConfirmed;
     }

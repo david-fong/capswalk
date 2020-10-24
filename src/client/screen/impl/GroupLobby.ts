@@ -125,21 +125,22 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                 Group.Socket.UserInfoChange.EVENT_NAME,
                 this._onUserInfoChange.bind(this),
             );
-            // Listen for when the server sends the game constructor arguments:
-            this.socket.once(
-                GroupEv.CREATE_GAME,
-                () => {
-                    console.log("group create game socket. now waiting for ctor args");
-                    const sock = this.top.sockets.gameSocketConnect(
-                        args.groupName!,
-                        { passphrase: args.groupPassphrase!, },
-                    );
-                    sock.once(GameEv.CREATE_GAME, (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
-                        this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
-                    });
-                },
-            );
         }
+        // Listen for when the server sends the game constructor arguments:
+        this.socket.once(
+            GroupEv.CREATE_GAME,
+            () => {
+                console.log("group create game socket. now waiting for ctor args");
+                const sock = this.top.sockets.gameSocketConnect(
+                    args.groupName!,
+                    { passphrase: args.groupPassphrase!, },
+                );
+                sock.once(GameEv.CREATE_GAME, (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
+                    this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
+                });
+            },
+        );
+
         let elemToFocus: HTMLElement | undefined
             = (!this.in.username.validity.valid) ? this.in.username
             : (!this.in.teamId.validity.valid)   ? this.in.teamId
@@ -154,11 +155,9 @@ export class GroupLobbyScreen extends SkScreen<SID> {
      * @override
      */
     protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
-        if (navDir === SkScreen.NavDir.BACKWARD) {
-            // Make sure we stop listening for the game to start
-            // in case it hasn't started yet:
-            this.socket.removeListener(GroupEv.CREATE_GAME);
-        }
+        // Make sure we stop listening for the game to start
+        // in case it hasn't started yet:
+        this.socket.removeListener(GroupEv.CREATE_GAME);
         return true;
     }
 
