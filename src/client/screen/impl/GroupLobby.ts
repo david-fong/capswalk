@@ -210,7 +210,7 @@ export namespace GroupLobbyScreen {
     export class UserInfo implements Player.UserInfo {
         #username: Player.Username;
         #teamId:   number;
-        #avatar: Player.Avatar;
+        #avatar:   Player.Avatar;
 
         public readonly base: HTMLElement;
         private readonly el: Readonly<{

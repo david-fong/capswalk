@@ -190,5 +190,8 @@ export namespace Player {
     }
     Object.freeze(CtorArgs);
 }
+JsUtils.protoNoEnum(Player, [
+    "_notifyGameNowPaused", "_notifyGameNowPlaying", "_notifyGameNowOver",
+]);
 Object.freeze(Player);
 Object.freeze(Player.prototype);

@@ -1,4 +1,4 @@
-import type { Lang } from "lang/Lang";
+import type { Lang } from "defs/TypeDefs";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";

@@ -1,5 +1,5 @@
-// Tell WebPack we want CSS:
-require("assets/style/initial/_barrel.css");
+// STYLE IMPORT:
+import "assets/style/initial/_barrel.css";
 
 // None shall touch Object.prototype >:(
 Object.freeze(Object.prototype);

@@ -14,6 +14,7 @@
 
 ### High Priority
 
+1. Make game css shared. Find out why ArtificialPlayer is being included for online games.
 1. Make a decorator to prevent overrides of a method.
     - Make JsUtils have a non-exported `WeakSet<Functions>`.
     - Make a JsUtil function that checks if a class declares any functions with the same name as anything higher in the prototype chain

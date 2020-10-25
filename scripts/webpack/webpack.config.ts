@@ -31,10 +31,10 @@ const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> 
     //         .replace(path.join("node_modules","css-loader","dist","cjs.js"), "css-loader"),
     //     );
     // }),
-    // new webpack.WatchIgnorePlugin([
-    //     /\.js$/,
-    //     /\.d\.ts$/,
-    // ]),
+    new webpack.WatchIgnorePlugin({ paths: [
+        /\.js$/,
+        /\.d\.ts$/,
+    ]}),
 ]};
 
 /**
@@ -71,20 +71,13 @@ const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
     test: /\.css$/,
     use: [{
         loader: MiniCssExtractPlugin.loader,
-        options: {
-            publicPath: (resourcePath: string, context: string) => {
-                // publicPath is the relative path of the resource to the context
-                // e.g. for ./css/admin/main.css the publicPath will be ../../
-                // while for ./css/main.css the publicPath will be ../
-                // return path.relative(path.dirname(resourcePath), context).replace(/\\/g, "/") + "/";
-            },
-        }
-    }, {
+        options: {}
+    },{
         loader: "css-loader",
         options: {
             modules: false,
-        }
-    }, ],
+        },
+    }],
 },{
     // https://webpack.js.org/loaders/file-loader/
     test: /\.(png|svg|jpe?g|gif)$/,
@@ -159,7 +152,9 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
         // runtimeChunk: {
         //     name: entrypoint => `${entrypoint.name}/runtime`,
         // } as webpack.Options.RuntimeChunkOptions,
-        //mergeDuplicateChunks: true,
+        splitChunks: {
+            //chunks: "all",
+        },
     },
     watchOptions: {
         ignored: [ "node_modules", ],

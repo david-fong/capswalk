@@ -20,6 +20,9 @@
         "{**/.templates/,**/tsconfig.json}": false,
         "scripts/webpack/webpack.config.js": true,
     },
+    "files.associations": {
+        "**/dist/{client,server}/**/*.js": "json", // Loads bundled js much faster.
+    },
     "json.schemas": [
         {
             "fileMatch": [ "/**/*tsconfig.json", ],

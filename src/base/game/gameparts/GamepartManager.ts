@@ -13,6 +13,8 @@ import {
     GamepartEvents,
 } from "./GamepartEvents";
 
+import "game/ctormaps/Manager"; // <- has side-effects.
+
 
 /**
  *

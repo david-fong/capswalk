@@ -13,9 +13,6 @@ import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
 import { GamepartManager } from "game/gameparts/GamepartManager";
 
-import { _INIT_BASIC_CLASS_REGISTRIES } from "game/GameBootstrap";
-_INIT_BASIC_CLASS_REGISTRIES();
-
 
 type G = Game.Type.SERVER;
 

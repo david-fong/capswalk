@@ -1,3 +1,6 @@
+// Tell WebPack about the CSS chunk we want:
+require("assets/style/game/_barrel.css");
+
 import { Game }                 from "game/Game";                       export { Game };
 import { Coord, VisibleTile }   from "floor/VisibleTile";               export { Coord, VisibleTile };
 import { VisibleGrid }          from "floor/VisibleGrid";
@@ -8,9 +11,7 @@ import { OperatorPlayer }       from "game/player/OperatorPlayer";      export {
 import { JsUtils }              from "defs/JsUtils";                    export { JsUtils };
 export { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
 
-import { _INIT_BASIC_CLASS_REGISTRIES, _INIT_CLIENTSIDE_CLASS_REGISTRIES } from "game/GameBootstrap";
-_INIT_BASIC_CLASS_REGISTRIES();
-_INIT_CLIENTSIDE_CLASS_REGISTRIES();
+import "game/ctormaps/Browser"; // <- has side-effects.
 
 
 /**
