@@ -157,7 +157,9 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
         // Make sure we stop listening for the game to start
         // in case it hasn't started yet:
-        this.socket.removeListener(GroupEv.CREATE_GAME);
+        if (navDir === SkScreen.NavDir.BACKWARD) {
+            this.socket.removeListener(GroupEv.CREATE_GAME);
+        }
         return true;
     }
 
