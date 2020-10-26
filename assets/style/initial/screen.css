@@ -49,7 +49,7 @@ takes a long time to arrive. */
     mix-blend-mode: overlay;
     background-color: #919191;
     /* Image courtesy of toptal patterns: */
-    background-image: url(../../images/textures/cheap_diagonal_fabric.png);
+    background-image: url("assets/images/textures/cheap_diagonal_fabric.png");
     background-blend-mode: color-burn;
     filter: contrast(2.3);
 }

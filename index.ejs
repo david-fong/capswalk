@@ -16,7 +16,6 @@
 
         <link rel="prefetch" as="script" id="socket.io-preload" href="dist/client/vendor/socket.io.js"/>
         <%= htmlWebpackPlugin.files.js.map((href)  => `<link rel="preload" as="script" href="${href}"/>`).join("\n") %>
-        <%= htmlWebpackPlugin.files.css.map((href) => `<link rel="preload" as="style"  href="${href}"/>`).join("\n") %>
     </head>
 
 

@@ -20,17 +20,6 @@ const PACK_MODE = (process.env.NODE_ENV) as webpack.Configuration["mode"];
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
 const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> => { return [
-    // new webpack.ProgressPlugin((pct, msg, moduleProgress?, activeModules?, moduleName?) => {
-    //     console.log(
-    //         `[${Math.floor(pct * 100).toString().padStart(3)}% ]`,
-    //         (msg === "building") ? msg : msg.padEnd(45),
-    //         (msg === "building") ? moduleProgress!.padStart(15) : (moduleProgress || ""),
-    //         (moduleName || "")
-    //         .replace(new RegExp(PROJECT_ROOT.replace(/\\/g, "\\\\"), "g"), ":")
-    //         .replace(path.join("node_modules","ts-loader","index.js"), "ts-loader")
-    //         .replace(path.join("node_modules","css-loader","dist","cjs.js"), "css-loader"),
-    //     );
-    // }),
     new webpack.WatchIgnorePlugin({ paths: [
         /\.js$/,
         /\.d\.ts$/,
@@ -41,12 +30,6 @@ const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> 
  * https://webpack.js.org/loaders/
  */
 const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
-    test: /\.(md)$/,
-    use: "null-loader",
-},{
-    // With ts-loader@7.0.0, you need to set:
-    // options.compilerOptions.emitDeclarationsOnly: false
-    // options.transpileOnly: false
     test: /\.ts$/,
     use: {
         loader: "ts-loader",
@@ -81,6 +64,7 @@ const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 },{
     // https://webpack.js.org/loaders/file-loader/
     test: /\.(png|svg|jpe?g|gif)$/,
+    issuer: /\.css$/,
     use: [(() => {
         const pathFunc = (url: string, resourcePath: string, context: string) => {
             return path.relative(context, resourcePath).replace(/\\/g, "/");
@@ -125,7 +109,7 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
     entry: { /* Left to each branch config */ },
     plugins: [ ...BASE_PLUGINS(), ],
     resolve: {
-        extensions: [ ".ts", ".css", ".js", ],
+        extensions: [".ts", ".css", ".js"],
         modules: [
             path.resolve(PROJECT_ROOT, "src", "base"),
             path.resolve(PROJECT_ROOT, "node_modules"),
@@ -137,11 +121,11 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
         ? "nosources-source-map"
         : "eval-cheap-source-map",
     output: {
-        path:           path.resolve(PROJECT_ROOT, "dist", distSubFolder),
-        publicPath:     `dist/${distSubFolder}/`, // need trailing "/".
-        filename:       "[name].js",
-        chunkFilename:  "chunk/[name].js",
-        library:        "snakey3",
+        path: path.resolve(PROJECT_ROOT, "dist", distSubFolder),
+        publicPath: `dist/${distSubFolder}/`, // need trailing "/".
+        filename: "[name].js",
+        chunkFilename: "chunk/[name].js",
+        library: "snakey3",
         pathinfo: false, // unneeded. minor performance gain.
     },
 
@@ -154,6 +138,12 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
         // } as webpack.Options.RuntimeChunkOptions,
         splitChunks: {
             //chunks: "all",
+            cacheGroups: {
+                ["style"]: {
+                    test: /\.css$/,
+                    reuseExistingChunk: true,
+                },
+            },
         },
     },
     watchOptions: {

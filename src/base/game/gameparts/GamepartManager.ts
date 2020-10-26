@@ -13,7 +13,7 @@ import {
     GamepartEvents,
 } from "./GamepartEvents";
 
-import "game/ctormaps/Manager"; // <- has side-effects.
+import "game/ctormaps/CmapManager"; // <- has side-effects.
 
 
 /**

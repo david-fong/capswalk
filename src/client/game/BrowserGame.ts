@@ -1,6 +1,7 @@
 // Tell WebPack about the CSS chunk we want:
 require("assets/style/game/_barrel.css");
 
+import { JsUtils }              from "defs/JsUtils";                    export { JsUtils };
 import { Game }                 from "game/Game";                       export { Game };
 import { Coord, VisibleTile }   from "floor/VisibleTile";               export { Coord, VisibleTile };
 import { VisibleGrid }          from "floor/VisibleGrid";
@@ -8,10 +9,9 @@ import { GamepartBase }         from "game/gameparts/GamepartBase";
 import { Player }               from "game/player/Player";              export { Player };
 import { OperatorPlayer }       from "game/player/OperatorPlayer";      export { OperatorPlayer };
 
-import { JsUtils }              from "defs/JsUtils";                    export { JsUtils };
 export { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
 
-import "game/ctormaps/Browser"; // <- has side-effects.
+import "game/ctormaps/CmapBrowser"; // <- has side-effects.
 
 
 /**
