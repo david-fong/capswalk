@@ -75,13 +75,13 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         this.top                = toplevel;
         this.#parentElem        = parentElem;
         this.requestGoToScreen  = requestGoToScreen;
-        this.baseElem           = JsUtils.mkEl("div", []);
+        this.baseElem           = JsUtils.mkEl("div", [OMHC.BASE]);
         this.#hasLazyLoaded     = false;
         this.nav = Object.freeze({
             prev: JsUtils.mkEl("button", []),
             next: JsUtils.mkEl("button", []),
         });
-        JsUtils.propNoWrite<SkScreen<SID>>(this, [
+        JsUtils.propNoWrite(this as SkScreen<SID>, [
             "screenId", "top", "baseElem", "nav", "requestGoToScreen",
         ]);
         this.nav.prev.classList.add(OMHC.NAV_PREV);
@@ -91,7 +91,8 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         // @ts-expect-error : RO=
         this.nav.prev.onclick = (ev) => {
             const tree = SkScreen.NavTree;
-            if (tree[tree[this.screenId].prev].href === tree[this.screenId].href) {
+            const thisNav = tree[this.screenId];
+            if (tree[thisNav.prev].href === thisNav.href) {
                 this.requestGoToScreen(SkScreen.NavTree[screenId].prev, {});
             } else {
                 window.history.back();
@@ -106,15 +107,6 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         navDir: SkScreen.NavDir,
         args: SkScreen.EntranceArgs[SID],
     ): Promise<void> {
-        if (!this.#hasLazyLoaded) {
-            this.baseElem.classList.add(OmHooks.Screen.Class.BASE);
-            this._lazyLoad();
-            this.#parentElem.appendChild(this.baseElem);
-            JsUtils.prependComment(this.baseElem, `${this.screenNames.spaceyUppercase} SCREEN`);
-            this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
-            this.#hasLazyLoaded = true;
-        }
-
         document.title = `${this.screenNames.spaceyCapitalized} | ${this.top.defaultDocTitle}`;
         if (navDir === SkScreen.NavDir.FORWARD) {
             const location = new window.URL(window.location.href);
@@ -129,18 +121,21 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
                 }
             }
         }
+        if (!this.#hasLazyLoaded) {
+            this._lazyLoad();
+            this.#parentElem.appendChild(this.baseElem);
+            JsUtils.prependComment(this.baseElem, `${this.screenNames.spaceyUppercase} SCREEN`);
+            this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
+            this.#hasLazyLoaded = true;
+        }
 
+        this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
+        this.baseElem.setAttribute("aria-hidden", "false");
         const entranceRetval = await this._abstractOnBeforeEnter(navDir, args);
         if (entranceRetval.elemToFocus !== undefined) {
             setTimeout(() => { entranceRetval.elemToFocus!.focus(); }, 100);
-            // For some reason a small delay is needed.
+            // For some reason, a small delay is needed.
         }
-        // ^Wait until the screen has finished setting itself up
-        // before entering it.
-        window.requestAnimationFrame((time) => {
-            this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
-            this.baseElem.setAttribute("aria-hidden", "false");
-        });
     }
 
     /**
@@ -150,11 +145,17 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      */
     public _leave(navDir: SkScreen.NavDir): boolean {
         if (this._abstractOnBeforeLeave(navDir)) {
-            delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT]; // non-existant.
-            this.baseElem.setAttribute("aria-hidden", "true");
             return true;
         }
         return false;
+    }
+
+    /**
+     * **Do not override.**
+     */
+    public _onAfterLeave(): void {
+        delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT]; // non-existant.
+        this.baseElem.setAttribute("aria-hidden", "true");
     }
 
     /**

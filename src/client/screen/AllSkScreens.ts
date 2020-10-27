@@ -29,6 +29,7 @@ export class AllSkScreens {
         baseElem.setAttribute("role", "presentation");
         // Setting role="presentation" is similar to setting "display: content"
         // Setting aria-hidden="true" is similar to setting "visibility: hidden"
+
         const Id = SkScreen.Id;
         const t = top;
         const p = baseElem;
@@ -61,7 +62,7 @@ export class AllSkScreens {
     }
 
     /**
-     * @returns false if the leaving of the current screen was cancelled.
+     * @returns `false` if cancelled.
      * @param destId -
      * @param ctorArgs -
      */
@@ -87,6 +88,7 @@ export class AllSkScreens {
             // Any confirm-leave prompts made to the user were OK-ed.
             type EnterFunc = (navDir: SkScreen.NavDir, args: typeof ctorArgs) => Promise<void>;
             await (destScreen._enter as EnterFunc)(navDir, ctorArgs);
+            this.currentScreen?._onAfterLeave();
             this.#currentScreen = destScreen;
             return true;
         }

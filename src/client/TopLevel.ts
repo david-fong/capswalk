@@ -6,6 +6,7 @@ import type { _PlayScreen } from "./screen/impl/Play";
 import type { Coord, SkScreen } from "../client/screen/SkScreen";
 
 import { AllSkScreens } from "./screen/AllSkScreens";
+import { ScreenTransition }   from "./screen/ScreenTransition";
 import { BgMusic }      from "./audio/BgMusic";
 import { SoundEffects } from "./audio/SoundEffects";
 import { SkSockets }    from "./SkSockets";
@@ -22,6 +23,7 @@ export class TopLevel {
 
     public readonly storage: typeof StorageHooks;
 
+    public readonly transition: ScreenTransition;
     /**
      * Purposely made private. Screens are intended to navigate
      * between each other without reference to this field.
@@ -51,9 +53,17 @@ export class TopLevel {
                 return TopLevel.WebpageHostType.SNAKEY_SERVER;
             }
         })();
+        JsUtils.propNoWrite(this as TopLevel, [
+            "defaultDocTitle", "webpageHostType",
+        ]);
+
         this.storage = StorageHooks;
         this.sockets = new SkSockets();
-        //
+        this.transition = new ScreenTransition();
+        JsUtils.propNoWrite(this as TopLevel, [
+            "storage", "sockets", "transition",
+        ]);
+
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
         if (!allScreensElem) { throw new Error("never"); }
         JsUtils.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
@@ -62,16 +72,9 @@ export class TopLevel {
         //
         // this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
         // this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
-
         JsUtils.propNoWrite(this as TopLevel, [
-            "defaultDocTitle", "webpageHostType",
-            "storage", /* "bgMusic", "sfx", */ // TODO.build uncomment when music classes implemented.
-            "sockets",
+            /* "bgMusic", "sfx", */ // TODO.build uncomment when music classes implemented.
         ]);
-
-        console.log("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
-        + " margin:0.4em; border:0.3em solid black;padding:0.4em;"
-        + " color:white; background-color:#3f5e77; border-radius:0.7em; ");
     }
 
     public toast(message: string): void {

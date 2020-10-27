@@ -24,7 +24,10 @@ export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
         const sel
             // @ts-expect-error : RO=
             = this.sel
-            = new ColourCtrlScreen.PickOne(this.top.storage.Local);
+            = new ColourCtrlScreen.PickOne(
+                this.top.storage.Local,
+                this.top.transition,
+            );
         JsUtils.propNoWrite(this as ColourCtrlScreen, ["sel"]);
         this.baseElem.appendChild(sel.baseElem);
 
@@ -42,25 +45,25 @@ export namespace ColourCtrlScreen {
     /**
      */
     export class PickOne extends SkPickOne<O> {
-        /**
-         * Usage of this element is partially aesthetic, but mostly
-         * to ease work done by the rendering engine. This is the only
-         * element styled to smoothly transition colour changes.
-         */
-        public readonly garageDoorElem: HTMLElement;
-        private readonly storage: SkScreen<any>["top"]["storage"]["Local"];
 
-        public constructor(storage: SkScreen<any>["top"]["storage"]["Local"]) {
+        #firstTime: boolean;
+        readonly #storage: SkScreen<any>["top"]["storage"]["Local"];
+        readonly #transition: SkScreen<any>["top"]["transition"];
+
+        public constructor(
+            storage: SkScreen<any>["top"]["storage"]["Local"],
+            transition: SkScreen<any>["top"]["transition"],
+        ) {
             super();
-            this.storage = storage;
-            this.garageDoorElem = document.getElementById(OmHooks.Screen.Id.SCREEN_TINT)!;
-            this.garageDoorElem.style.transitionDuration = (Colour.SMOOTH_CHANGE_DURATION/3.0) + "ms";
+            this.#firstTime = true;
+            this.#storage = storage;
+            this.#transition = transition;
 
             Colour.Schemes.forEach((schemeDesc) => {
                 this.addOption(new PickOne.Option(schemeDesc));
             });
             this.selectOpt(this.getOptById(
-                this.storage.colourSchemeId ?? "snakey",
+                this.#storage.colourSchemeId ?? "snakey",
             )!, false);
         }
 
@@ -69,30 +72,24 @@ export namespace ColourCtrlScreen {
         }
 
         public _onSelectOpt(opt: O): void {
-            this.storage.colourSchemeId = opt.desc.id;
-            this.storage.colourSchemeStyleLiteral = opt.cssLiteral;
+            this.#storage.colourSchemeId = opt.desc.id;
+            this.#storage.colourSchemeStyleLiteral = opt.cssLiteral;
+            const firstTime = this.#firstTime;
+            this.#firstTime = false;
 
-            // This actually might be nicer-written than
-            // it would be using the web animations API...
-            const duration = (Colour.SMOOTH_CHANGE_DURATION / 3.0);
-            const gdStyle = this.garageDoorElem.style;
-                gdStyle.opacity = "1.0";
-                gdStyle.pointerEvents = "all";
-                this.baseElem.style.pointerEvents = "none";
-            setTimeout(() => {
-                document.documentElement.dataset[OmHooks.General.Dataset.COLOUR_SCHEME] = opt.desc.id;
-                // Clear related style attribute variables set on page enter:
-                {const docStyle = document.documentElement.style;
-                for (const swatchName of Colour.Swatch) {
-                    const varString = "--colour-" + swatchName;
-                    docStyle.setProperty(varString, "");
-                }}
-            setTimeout(() => {
-                gdStyle.opacity = "0.0";
-                gdStyle.pointerEvents = "";
-                this.baseElem.style.pointerEvents = "";
-            }, duration);
-            }, duration);
+            this.#transition.do({
+                intermediateTransitionTrigger: (): void => {
+                    document.documentElement.dataset[OmHooks.General.Dataset.COLOUR_SCHEME] = opt.desc.id;
+                    // Clear related style attribute variables set on page enter:
+                    const docStyle = document.documentElement.style;
+                    if (firstTime) {
+                        for (const swatchName of Colour.Swatch) {
+                            const varString = "--colour-" + swatchName;
+                            docStyle.setProperty(varString, "");
+                        }
+                    }
+                },
+            });
         }
 
         public getOptById(searchId: Colour.Scheme["id"]): O | undefined {
@@ -191,11 +188,5 @@ export namespace Colour {
         displayName: string;
         author: string;
     }>;
-
-    /**
-     * How long the entire smooth transition between colour schemes
-     * should last in units of milliseconds.
-     */
-    export const SMOOTH_CHANGE_DURATION = 2_000.0;
 }
 Object.freeze(Colour);

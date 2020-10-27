@@ -16,11 +16,8 @@
 
 1. Make a decorator to prevent overrides of a method.
     - Make JsUtils have a non-exported `WeakSet<Functions>`.
-    - Make a JsUtil function that checks if a class declares any functions with the same name as anything higher in the prototype chain
+    - Make a JsUtil function that checks if a class declares any functions with the same name as anything higher in the prototype chain (see `Object.getPrototypeOf()`).
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
-1. Make screen transitions use the garage door to animate it smoothly. Make the garage door its own class.
-    - It provides a method which takes a promise. It will fade in the garage-door, and after the CSS transition has finished, it will `.then` the promise to fade out the garage door.
-    - Make the CSS transition duration an HTML data attribute, whose name/key and value is stored in javascript as the single source of truth.
 1. Implement Pause and Unpause events over network.
 1. Server authentication is not working.
 1. Debug and handle goToScreen when user navigates forward in history.
