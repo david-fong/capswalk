@@ -55,7 +55,14 @@ export class AllSkScreens {
 
         // note: "isr" as in "Initial Screen Request".
         const isr = SkScreen.NavTree[window.location.hash.slice(1) as SkScreen.Id];
-        this.goToScreen(isr?.href ?? SkScreen.Id.HOME, {});
+        window.setTimeout(() => {
+            this.goToScreen(isr?.href ?? SkScreen.Id.HOME, {});
+        }, 75);
+        // TODO.learn For some reason, a small delay is required here to prevent
+        // a bug which happens 70% of the time when starting up with files served
+        // through the file:// protocol: The unblur part of ScreenTransition will
+        // not happen. Even now, there is still an unexpected event handler that
+        // gets left on the tint screen... spooky.
 
         window.addEventListener("popstate", (ev: PopStateEvent) => {
             // For corresponding calls to pushState and replaceState,

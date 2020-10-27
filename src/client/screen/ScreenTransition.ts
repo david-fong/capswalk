@@ -42,19 +42,21 @@ export class ScreenTransition {
     private async _atomicDo(request: ScreenTransition.Request): Promise<void> {
         const gdStyle = this.baseElem.style;
         await this._triggerCssTransition(() => {
-            gdStyle.opacity = "1.0";
             gdStyle.pointerEvents = "all";
+            gdStyle.opacity = "1.0";
         });
         if (request.intermediateTransitionTrigger !== undefined) {
-            await this._triggerCssTransition(request.intermediateTransitionTrigger);
+            await this._triggerCssTransition(() => {
+                request.intermediateTransitionTrigger!();
+            });
         }
         await request.beforeUnblurAwait;
         if (request.beforeUnblur !== undefined) {
             request.beforeUnblur();
         }
         await this._triggerCssTransition(() => {
-            gdStyle.opacity = "0.0";
             gdStyle.pointerEvents = "none";
+            gdStyle.opacity = "0.0";
         });
         return;
     }
@@ -63,11 +65,7 @@ export class ScreenTransition {
      */
     private _triggerCssTransition(transitionTriggerFunc: () => void): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const resolver = (ev: TransitionEvent): void => {
-                this.baseElem.removeEventListener("transitionend", resolver);
-                resolve();
-            };
-            this.baseElem.addEventListener("transitionend", resolver);
+            this.baseElem.addEventListener("transitionend", () => resolve(), { once: true });
             transitionTriggerFunc();
         });
     }
