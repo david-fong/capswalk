@@ -1,7 +1,9 @@
+import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { GamepartManager } from "game/gameparts/GamepartManager";
 
+export { JsUtils };
 export type { Coord, Tile };
 export type { GamepartManager };
 
@@ -39,7 +41,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
     protected constructor(game: GamepartManager<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
         if (game.gameType === Game.Type.ONLINE) {
-            throw TypeError("OnlineGames should be using regular Players instead.");
+            throw new TypeError("OnlineGames should be using regular Players instead.");
         }
     }
 
@@ -107,8 +109,6 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
         return;
     }
 }
-
-
 export namespace ArtificialPlayer {
 
     export declare const _Constructors: Readonly<{
@@ -131,4 +131,5 @@ export namespace ArtificialPlayer {
         return new (_Constructors[familyId])(game, playerDesc);
     };
 }
+JsUtils.protoNoEnum(ArtificialPlayer, ["movementContinue"]);
 // ArtificialPlayer is frozen in PostInit after _Constructors get initialized.

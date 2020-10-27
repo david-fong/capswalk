@@ -32,7 +32,7 @@
     /* grid-area: passphrase; */
 }
 
-.screen-joiner .screen--back-button {
+.screen-joiner .screen--prev-button {
     grid-area: prev;
 }
 .screen-joiner .screen--next-button {

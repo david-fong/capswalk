@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
 
 import { LangSeqTree } from "lang/LangSeqTreeNode";
@@ -61,21 +62,28 @@ export abstract class Lang extends _Lang {
         this.frontendDesc = Lang.GET_FRONTEND_DESC_BY_ID(frontendDescId)!;
         this.treeMap      = LangSeqTree.ParentNode.CREATE_TREE_MAP(forwardDict, weightExaggeration);
         this.leafNodes    = this.treeMap.getLeafNodes();
+        JsUtils.propNoWrite(this as Lang, [
+            "frontendDesc", "treeMap", "leafNodes",
+        ]);
 
         if (this.leafNodes.length !== this.frontendDesc.numLeaves) {
-            throw Error(`maintenance required: the frontend constant`
+            throw new Error(`maintenance required: the frontend constant`
             + ` for the language \"${this.frontendDesc.id}\" needs to`
             + ` be updated to the correct, computed value, which is`
             + ` \`${this.leafNodes.length}\`.`);
         }
     }
 
+    /**
+     */
     public reset(): void {
         this.treeMap.reset();
+
         // The below method of shuffling is not used because its effects
         // on state are weaker / less desirable than those achieved by
         // the currently-used method found in ChildNode.reset, whose
         // drawback is that it is more performance costly.
+
         // Shuffle the initial leaf order:
         // this.leafNodes.sort((a,b) => Math.random() - 0.5);
     }
@@ -94,16 +102,17 @@ export abstract class Lang extends _Lang {
      * reachable by a player occupying any tile B from which they can
      * also reach A (except for A itself).
      *
+     * @param avoid
+     * A collection of `Lang.Seq`s to avoid conflicts with when choosing
+     * a `Lang.Char` to return. Is allowed to contain empty strings,
+     * which will be ignored as if those entries did not exist.
+     *
      * @requires
      * In order for this language to satisfy these constraints, it must
      * be true that the number of leaf nodes in its tree-structure must
-     * provably be greater than the number of entries in `avoid` for all
-     * expected combinations of internal state and passed-arguments under
-     * which it could be called.
-     *
-     * @param avoid
-     * A collection of `Lang.Seq`s to avoid conflicts with when choosing
-     * a `Lang.Char` to return.
+     * provably be greater than the number of non-empty entries in
+     * `avoid` for all expected combinations of internal state and
+     * passed-arguments under which it could be called.
      */
     public getNonConflictingChar(
         avoid: TU.RoArr<Lang.Seq>,
@@ -152,16 +161,17 @@ export abstract class Lang extends _Lang {
                 break;
             }
         }
-        if (!nodeToHit) {
+        if (nodeToHit === undefined) {
             // Should never reach here because there is a check in the
             // constructor for this invariant.
-            throw Error(`Invariants guaranteeing that a LangSeq can`
-            + `always be shuffled-in were not met.`
-            );
+            throw new Error(`Invariants guaranteeing that a LangSeq can`
+            + `always be shuffled-in were not met.`);
         }
         return nodeToHit.chooseOnePair();
     }
 
+    /**
+     */
     public simpleView(): object {
         return Object.assign(Object.create(null), {
             id: this.frontendDesc.id,

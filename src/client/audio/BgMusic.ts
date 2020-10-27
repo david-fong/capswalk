@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 
 
 /**
@@ -17,17 +18,18 @@ export class BgMusic {
     public constructor(trackId: BgMusic.TrackDesc["id"]) {
         this.desc = BgMusic.TrackDescs.find((desc) => desc.id === trackId)!;
         if (!this.desc) {
-            throw Error(`track with id \`${trackId}\` does not exist.`);
+            throw new Error(`track with id \`${trackId}\` does not exist.`);
         }
-        const tracksDesc = this.desc;
         const context = this.context = new AudioContext({
             // https://devdocs.io/dom/audiocontextoptions
             latencyHint: "playback",
-            sampleRate: tracksDesc.sampleRate,
+            sampleRate: this.desc.sampleRate,
         });
-        Promise.all(tracksDesc.trackDescs.map(async (trackDesc) => {
+        JsUtils.propNoWrite(this as BgMusic, ["desc", "context"]);
+
+        Promise.all(this.desc.trackDescs.map(async (trackDesc) => {
             // Fetch each track's audio file:
-            return fetch(`assets/audio/bg/${tracksDesc.id}/${trackDesc.filename}`)
+            return fetch(`assets/audio/bg/${this.desc.id}/${trackDesc.filename}`)
             .then((res) => res.blob())
             .then((blob) => blob.arrayBuffer())
             .then((audioData) => context.decodeAudioData(
@@ -41,8 +43,8 @@ export class BgMusic {
             const bigBufferNumChannels = abs.reduce((sum, ab) => sum += ab.numberOfChannels, 0);
             const bigBuffer = context.createBuffer(
                 bigBufferNumChannels,
-                tracksDesc.bufferLength,
-                tracksDesc.sampleRate,
+                this.desc.bufferLength,
+                this.desc.sampleRate,
             );
             // @ts-expect-error : RO=
             this.sourceBuffer = bigBuffer;
@@ -55,8 +57,8 @@ export class BgMusic {
             let bigBufferChannelIndex = 0;
             // @ts-expect-error : RO=
             this.layerFaders = abs.map((ab, trackIndex) => {
-                if (ab.sampleRate !== tracksDesc.sampleRate) {
-                    throw "never";
+                if (ab.sampleRate !== this.desc.sampleRate) {
+                    throw new Error("never");
                 }
                 const track = context.createChannelMerger(ab.numberOfChannels);
                 const fader = context.createGain(); // https://devdocs.io/dom/gainnode
@@ -76,6 +78,14 @@ export class BgMusic {
             this.masterFader = context.createGain();
             merge.connect(this.masterFader);
             this.masterFader.connect(context.destination);
+
+            JsUtils.propNoWrite(this as BgMusic, [
+                "source",
+                "sourceBuffer",
+                "sourceDestination",
+                "layerFaders",
+                "masterFader",
+            ]);
         });
     }
 
@@ -112,13 +122,13 @@ export namespace BgMusic {
             filename: string;
         }>;
     }>;
-    export const TrackDescs: TU.RoArr<TrackDesc> = Object.freeze([{
+    export const TrackDescs: TU.RoArr<TrackDesc> = JsUtils.deepFreeze([{
         id:             "default",
         displayName:    "Default",
         sampleRate:     undefined!,
         bufferLength:   undefined!,
         trackDescs: [],
-    },]);
+    }]);
 }
 Object.freeze(BgMusic);
 Object.freeze(BgMusic.prototype);

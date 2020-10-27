@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 import type { Coord, Tile } from "floor/Tile";
@@ -15,43 +16,36 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     readonly #baseElem: HTMLElement;
     readonly #vBellAnims: Animation[];
 
-    private readonly _immigrantInfoCache: Tile.VisibleImmigrantInfo;
+    readonly #immigrantInfoCache: Tile.VisibleImmigrantInfo;
 
 
     public constructor(player: Player<S>, noCheckGameOver: boolean) {
         super(player, noCheckGameOver);
         {
-            const baseElem
-                = this.#baseElem
-                = document.createElement("div");
-            baseElem.classList.add(
+            this.#baseElem = JsUtils.mkEl("div", [
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
                 OmHooks.Player.Class.BASE,
-            );
+            ]);
         } {
             // Setup face element:
-            const faceElem = document.createElement("div");
-            faceElem.classList.add(OmHooks.Player.Class.FACE);
+            const faceElem = JsUtils.mkEl("div", [OmHooks.Player.Class.FACE], {});
             const vBellAnims
             = this.#vBellAnims
             = (this.player.isALocalOperator) ? [
                 // Note the 1-millisecond start delays required to
                 // pause the animations before they start auto-playing.
                 faceElem.animate({
-                    filter: ["brightness(0.7)", "brightness(1.0)",],
-                },{ duration: 300, easing: "ease-in", delay: 1, }),
+                    filter: ["brightness(0.7)", "brightness(1.0)"],
+                },{ duration: 300, easing: "ease-in", delay: 1 }),
                 faceElem.animate({
                     transform: VisiblePlayerStatus.makeWiggleAnimation(10, 2),
-                },{ duration: 270, easing: "ease-out", delay: 1, }),
+                },{ duration: 270, easing: "ease-out", delay: 1 }),
             ] : [];
             vBellAnims.forEach((anim) => anim.pause());
-            {
-                // Setup downedOverlay element:
-                const dOverlayElem = document.createElement("div");
-                dOverlayElem.classList.add(OmHooks.Player.Class.DOWNED_OVERLAY);
-                faceElem.appendChild(dOverlayElem);
-            }
+
+            // Setup downedOverlay element:
+            faceElem.appendChild(JsUtils.mkEl("div", [OmHooks.Player.Class.DOWNED_OVERLAY]));
             this.#baseElem.appendChild(faceElem);
         }
     }
@@ -61,7 +55,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
      */
     public _afterAllPlayersConstruction(): void {
         // @ts-expect-error : RO=
-        this._immigrantInfoCache = Object.freeze({
+        this.#immigrantInfoCache = Object.freeze({
             playerElem: this.#baseElem,
             username: this.player.username,
         });
@@ -77,7 +71,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     }
 
     public get immigrantInfo(): Tile.VisibleImmigrantInfo {
-        return this._immigrantInfoCache;
+        return this.#immigrantInfoCache;
     }
 
     public _notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
@@ -147,15 +141,14 @@ export namespace VisiblePlayerStatus {
         readonly #teamElem:  HTMLElement;
 
         public constructor(playerName: Player.Username) {
-            this.baseElem = document.createElement("div");
+            this.baseElem = JsUtils.mkEl("div", []);
             this.baseElem.setAttribute("label", "Player");
 
-            this.#nameElem = document.createElement("div");
-            const name = this.#nameElem;
-            name.textContent = playerName;
+            const name = this.#nameElem = JsUtils.mkEl("div", [], { textContent: playerName });
             this.baseElem.appendChild(name);
         }
     }
 }
+JsUtils.protoNoEnum(VisiblePlayerStatus, ["_afterAllPlayersConstruction"]);
 Object.freeze(VisiblePlayerStatus);
 Object.freeze(VisiblePlayerStatus.prototype);

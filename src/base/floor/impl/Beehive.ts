@@ -1,4 +1,4 @@
-import { applyMixins } from 'defs/TypeDefs';
+import { JsUtils } from "defs/JsUtils";
 import { Coord as BaseCoord, Tile } from "../Tile";
 import { Grid as AbstractGrid } from "../Grid";
 import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
@@ -28,7 +28,7 @@ export namespace Beehive {
     /**
      * # Beehive Coord
      */
-    export class Coord implements BaseCoord.Abstract.Mathy<S>, Coord.Bare {
+    export class Coord implements BaseCoord.Abstract.LatticeCoord<S>, Coord.Bare {
 
         /**
          * # 🕒 3'o'clock direction
@@ -58,13 +58,13 @@ export namespace Beehive {
             const d = floorDash - this.dash;
             const b = floorBash - this.bash;
             if (d > 2 * b) {
-                return new Coord({ dash: floorDash+1, bash: floorBash  , });
+                return new Coord({ dash: floorDash+1, bash: floorBash   });
             } else if (d < 0.5 * b) {
-                return new Coord({ dash: floorDash  , bash: floorBash+1, });
+                return new Coord({ dash: floorDash  , bash: floorBash+1 });
             } else if (Math.min(d, b) > 0.5) {
-                return new Coord({ dash: floorDash+1, bash: floorBash+1, });
+                return new Coord({ dash: floorDash+1, bash: floorBash+1 });
             } else {
-                return new Coord({ dash: floorDash  , bash: floorBash  , });
+                return new Coord({ dash: floorDash  , bash: floorBash   });
             }
         }
 
@@ -106,19 +106,24 @@ export namespace Beehive {
      */
     export class Grid extends AbstractGrid<S> {
 
+        /**
+         * @override
+         */
         public static getAmbiguityThreshold(): 18 {
             return 18;
         }
 
+        /**
+         * @override
+         */
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze({
-            dash:    Object.freeze({ min: 10, max: 50, }),
-            bslash:  Object.freeze({ min: 10, max: 50, }),
-            fslash:  Object.freeze({ min: 10, max: 50, }),
+            dash:    Object.freeze({ min: 10, max: 50 }),
+            bslash:  Object.freeze({ min: 10, max: 50 }),
+            fslash:  Object.freeze({ min: 10, max: 50 }),
         });
 
         /**
-         *
          */
         // TODO.design determine spec for indexing
         // Then initialize the field in the constructor
@@ -169,16 +174,23 @@ export namespace Beehive {
             return undefined!;
         }
 
-        public _getTileDestsFrom(coord: Coord.Bare): Array<Tile<S>> {
+        public _getTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             return undefined!;
         }
 
-        public _getTileSourcesTo(coord: Coord.Bare): Array<Tile<S>> {
+        public _getTileSourcesTo(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
             return undefined!;
         }
 
         public minMovesFromTo(source: Coord.Bare, dest: Coord.Bare): number {
             return undefined!;
+        }
+
+        /**
+         * @override
+         */
+        public getDestsFromSourcesTo(originCoord: Coord): Array<Tile<S>> {
+            return this._getTileDestsFrom(originCoord, 2);
         }
 
 
@@ -198,36 +210,47 @@ export namespace Beehive {
             return area;
         }
 
-        /**
-         * @override
-         */
+        public static getDiameterOfLatticePatchHavingArea(area: number): number {
+            if (area < 0.25) {
+                throw new RangeError("determinant of a radical will be strictly negative.");
+            }
+            // Given radius `r` and diameter = `1 + 2*r`, the area is
+            // `1 + 6*r*(1+r)/2`. Rearrange to solve for `d` given the
+            // area: `0 = 3r^2 + 3r + (1-a)`. Use quadratic formula.
+            const radius = ((-3) + Math.sqrt(9 - (12 * (1 - area)))) / 6;
+            return 1 + (2 * radius);
+        }
+
         public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
             return new Coord(undefined!);
         }
     }
-
     export namespace Grid {
         export type Dimensions = {
             dash: number;
             bslash: number;
             fslash: number;
         };
-
-        export class Visible extends Grid implements VisibleGrid<S> {
-            public constructor(desc: AbstractGrid.CtorArgs<S>) {
-                super(desc);
-                const domGrid: HTMLElement = undefined!;
-                // TODO.impl Beehive VisibleGrid ctor.
-                this._superVisibleGrid(desc, domGrid);
-            }
-        }
-        export interface Visible extends VisibleGridMixin<S> { };
-        applyMixins(Visible, [VisibleGridMixin,]);
-        Object.freeze(Visible);
-        Object.freeze(Visible.prototype);
     }
+    JsUtils.protoNoEnum(Grid, ["_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo"]);
     Object.freeze(Grid);
     Object.freeze(Grid.prototype);
-
 }
 Object.freeze(Beehive);
+
+
+/**
+ */
+// Separated for tree-shaking.
+export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
+    public constructor(desc: AbstractGrid.CtorArgs<S>) {
+        super(desc);
+        const domGrid: HTMLElement = undefined!;
+        // TODO.impl Beehive VisibleGrid ctor.
+        this._superVisibleGrid(desc, domGrid);
+    }
+}
+export interface BeehiveVisibleGrid extends VisibleGridMixin<S> { };
+JsUtils.applyMixins(BeehiveVisibleGrid, [VisibleGridMixin]);
+Object.freeze(BeehiveVisibleGrid);
+Object.freeze(BeehiveVisibleGrid.prototype);

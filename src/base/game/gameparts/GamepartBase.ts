@@ -1,11 +1,14 @@
+import { JsUtils} from "defs/JsUtils";
 import { Game } from "../Game";
 import { Lang } from "defs/TypeDefs";
 
 import type { Coord, Tile } from "floor/Tile";
-import type { Grid } from "floor/Grid";
+import { Grid } from "floor/Grid";
 import type { VisibleGrid } from "floor/VisibleGrid";
 
-import { Player, PlayerStatus, Team } from "../player/Player";
+import { Player } from "../player/Player";
+import type { PlayerStatus } from "../player/PlayerStatus";
+import { Team } from "../player/Team";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
@@ -86,9 +89,13 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
                 // The purpose of this restriction is to prevent DoS attacks on
                 // a hosting server by creating games that can never end and
                 // leaving them open forever, thus leaking the server's resources.
-                throw Error("All teams are immortal. The game will never end.");
+                throw new Error("All teams are immortal. The game will never end.");
             }
         }
+        JsUtils.propNoWrite(this as GamepartBase<G,S>, [
+            "gameType", "grid", "langFrontend",
+            "players", "operators", "teams", "_playerStatusCtor",
+        ]);
         this.players.forEach((player) => player._afterAllPlayersConstruction());
     }
 
@@ -121,13 +128,13 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
      * @returns A bundle of the constructed players.
      */
     private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GamepartBase<G,S>["players"] {
-        type pCtorArgs = TU.RoArr<Player.CtorArgs>;
-        const playerDescs: pCtorArgs
+        type PCtorArgs = TU.RoArr<Player.CtorArgs>;
+        const playerDescs: PCtorArgs
             // @ts-expect-error : RO=
             = gameDesc.playerDescs
             = (this.gameType === Game.Type.ONLINE)
             // The client receives these descriptors already finalized / cleaned by the server.
-            ? (gameDesc.playerDescs as pCtorArgs)
+            ? (gameDesc.playerDescs as PCtorArgs)
             : Player.CtorArgs.finalize(gameDesc.playerDescs);
 
         return Object.freeze(playerDescs.map((playerDesc) => {
@@ -160,7 +167,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
                 });
             }
         });
-        return { csps, playerCoords, healthCoords, };
+        return { csps, playerCoords, healthCoords };
     }
 
     public deserializeResetState(ser: Game.ResetSer<S>): void {
@@ -183,7 +190,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
     }
     public setCurrentOperator(nextOperatorIndex: number): void {
         const nextOperator = this.operators[nextOperatorIndex];
-        if (nextOperator && this.currentOperator !== nextOperator)
+        if (this.currentOperator !== nextOperator)
         {
             nextOperator._notifyWillBecomeCurrent();
             this.#currentOperator = nextOperator;
@@ -208,7 +215,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             return;
         }
         if (this.status !== Game.Status.PAUSED) {
-            throw Error("Can only resume a game that is currently paused.");
+            throw new Error("Can only resume a game that is currently paused.");
         }
         this.players.forEach((player) => {
             player._notifyGameNowPlaying();
@@ -227,8 +234,8 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             console.log("[statusBecomePaused]: Game is already paused");
             return;
         }
-        if (this.status !== Game.Status.PLAYING) {
-            throw Error("Can only pause a game that is currently playing.");
+        if (this.status === Game.Status.OVER) {
+            return;
         }
         this.players.forEach((player) => {
             player._notifyGameNowPaused();
@@ -247,7 +254,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
      */
     public statusBecomeOver(): void {
         if (this.status !== Game.Status.PLAYING) {
-            throw Error("Can only end a game that is currently playing.");
+            throw new Error("Can only end a game that is currently playing.");
         }
         this.players.forEach((player) => {
             player._notifyGameNowOver();
@@ -268,5 +275,10 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
     public abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
     protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
 }
+JsUtils.protoNoEnum(GamepartBase, [
+    "_abstractStatusBecomePlaying",
+    "_abstractStatusBecomePaused",
+    "_abstractStatusBecomeOver",
+]);
 Object.freeze(GamepartBase);
 Object.freeze(GamepartBase.prototype);

@@ -14,16 +14,12 @@
 
 ### High Priority
 
-1. Server authentication is not working.
-1. Make circular references in `Player` non-enumerable and see if that improves the debug logging experience.
-1. Move StorageHooks to `client/` and make it smarter.
-   - Make sure that index.ejs is updated for changes to colourSchemeStyleLiteral key name.
-1. Make window title indicate current screen.
-1. Implement game creation event communications for online game.
+1. Make a decorator to prevent overrides of a method.
+    - Make JsUtils have a non-exported `WeakSet<Functions>`.
+    - Make a JsUtil function that checks if a class declares any functions with the same name as anything higher in the prototype chain (see `Object.getPrototypeOf()`).
+1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Implement Pause and Unpause events over network.
-1. ~Review all throw clauses and remove those declared in class constructors.~
-    - The new approach is to put these checks in the UI input validators and on the receiving end of the server side.
-1. Debug and handle goToScreen when user navigates forward in history.
+1. Server authentication is not working.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
@@ -31,6 +27,7 @@
     - Also show scores (very small size) on top of player faces.
 1. Display the operator's current sequence buffer.
 1. Fill in implementation of bubble event handler.
+
 1. Design decision: Change bubble mechanism:
     - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
     - When done automatically, health will be levelled-down enough to cause as many changes in downed-ness as possible by changing other opponents' health to -1 and teammates' health to 0.
@@ -44,13 +41,29 @@
 ### Routine Checkups
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
-- Make sure all button elements have `type=button`, or else they will default to `type=submit`, which usually does not matter, but is also usually not my intention when it does matter (ie. when there are forms in the button' vicinity).
+- `git gc`, `git prune`, `npm audit`, `npm oudated`, `npm dedupe`.
+- Rel-Noopener
+  - [Explainer by Mathias Bynens](https://mathiasbynens.github.io/rel-noopener/)
+    - [better default becoming standardized](https://github.com/whatwg/html/pull/4330)
+      - [Chrome is still working on it](https://bugs.chromium.org/p/chromium/issues/detail?id=898942)
+- Convert any usages of `.innerHtml` or `.innerText` to use `.textContent` unless intentional (In which case, write a comment on why it is intentional).
+- Make sure nobody uses `document.createElement` instead of `JsUtil.mkEl` unless they document why it's necessary.
 
 ### Low Priority
 
-- Use [Constructable Stylesheets](https://developers.google.com/web/updates/2019/02/constructable-stylesheets) to scope CSS classes? Maybe? Am I sinking into the trap of just liking to add complications? Have I gone insane? What is wrong with me?
-- Reset offline games in a separate thread and then pass the result back to the main thread in serialized form.
-- Play an emphasis animation on switching to a different operator, and dim non-current-operator faces.
+- Start a skeleton for a "Chess Knight" Grid implementation. That would be pretty mind boggling both to play and to develop...
+- Try out CSS modules. We already have webpack-css-loader installed.
+  - This would take a lot of weight out of OmHooks.
+  - [how to config with typescript](https://stackoverflow.com/questions/40382842/cant-import-css-scss-modules-typescript-says-cannot-find-module)
+  - Move screen-related css to `client/screen/impl/`.
+    - Try using es6-style imports instead of CommonJs and see if css-loader understands (it should, I think).
+- When TypeScript 4.1 comes out, use the improved `@see` JSdoc annotations.
+- Implement translations of clientside strings.
+  - Create a sitemap file to point to translated versions
+    - [Google Sitemap indicate translations](https://support.google.com/webmasters/answer/189077?hl=en)
+    - [Language Tags](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry)
+      - [Choosing language tags](https://www.w3.org/International/questions/qa-choosing-language-tags)
+    - Just put an argument in the url query and have the javascript parse it?
 - Scroll to center the current operator if it intersects with some rootMargin of the .grid element.
   - Note: The Intersection Observer API will not work here- it doesn't trigger on re-parenting the target node.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
@@ -80,12 +93,8 @@
 - Use es6 #private syntax for getter-backing fields
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
-- WebPack 5:
-  - `output.ecmaVersion` is `6` by default. If we have set it to `6` manually, we can delete the manual field specification.
-- [TypeScript / tslib bug](https://github.com/microsoft/TypeScript/issues/36841)
-  - This is on the roadmap for TypeScript 4.0.1... That may be a while.
-  - When it is fixed, we can take out the ts-loader compiler option forcing `importHelpers` to be off.
 - In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
+- Take a look at [eslint-plugin-css-modules](https://www.npmjs.com/package/eslint-plugin-css-modules).
 
 ---
 
@@ -184,6 +193,9 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/display
 flex playground: https://codepen.io/enxaneta/full/adLPwv/
 https://developers.google.com/web/updates/2018/01/paintapi
 https://drafts.csswg.org/mediaqueries-5/#custom-mq
+https://developers.google.com/web/updates/2019/02/constructable-stylesheets
+https://github.com/fergald/docs/blob/master/explainers/css-shadow-parts-1.md
+https://medium.com/seek-blog/the-end-of-global-css-90d2a4a06284
 ```
 
 ### ARIA

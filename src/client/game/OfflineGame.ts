@@ -1,12 +1,10 @@
-// Tell WebPack about the CSS chunk we want:
-require("assets/style/game/_barrel.css");
-
 import {
-    applyMixins,
+    JsUtils,
     Game,
     Coord, VisibleTile,
     BrowserGameMixin,
-    Player, OperatorPlayer, VisiblePlayerStatus,
+    // Player, OperatorPlayer,
+    VisiblePlayerStatus,
 } from "./BrowserGame";
 
 import { GamepartManager } from "game/gameparts/GamepartManager";
@@ -48,23 +46,38 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
         this._ctorBrowserGame();
     }
 
+    /**
+     * @override
+     */
     declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
 
+    /**
+     * @override
+     */
     declare public readonly _createArtifPlayer: GamepartManager<G,S>["_createArtifPlayer"];
 
+    /**
+     * @override
+     */
     public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
         return setTimeout(callback, millis, args);
     }
 
+    /**
+     * @override
+     */
     public cancelTimeout(handle: number): void {
         clearTimeout(handle);
     }
 
+    /**
+     * @override
+     */
     // NOTE: We need to declare this for OfflineGame
     // to be able to use this Mixin for some reason...
     declare public readonly processBubbleRequest: GamepartManager<G,S>["processBubbleRequest"];
 }
 export interface OfflineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
-applyMixins(OfflineGame, [BrowserGameMixin,]);
+JsUtils.applyMixins(OfflineGame, [BrowserGameMixin]);
 Object.freeze(OfflineGame);
 Object.freeze(OfflineGame.prototype);

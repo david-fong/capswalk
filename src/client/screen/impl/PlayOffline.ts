@@ -1,6 +1,6 @@
 import type { OfflineGame } from "../../game/OfflineGame";
 
-import { Coord, SkScreen } from "../SkScreen";
+import { JsUtils, Coord, SkScreen } from "../SkScreen";
 import { Game, _PlayScreen } from "./Play";
 type G = Game.Type.OFFLINE;
 
@@ -12,15 +12,8 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
     /**
      * @override
      */
-    public get initialScreen(): SkScreen.Id {
-        return SkScreen.Id.SETUP_OFFLINE;
-    }
-
-    /**
-     * @override
-     */
     // @ts-expect-error : Redeclaring accessor as property.
-    declare public readonly currentGame: OfflineGame<Coord.System> | undefined;
+    declare protected readonly currentGame: OfflineGame<Coord.System>;
 
     /**
      * @override

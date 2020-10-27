@@ -5,8 +5,9 @@
         <meta name="author"         content="David Fong"/>
         <meta name="description"    content="A multiplayer typing game for learning written languages."/>
         <meta name="viewport"       content="width=device-width, initial-scale=1.0"/>
+        <meta name="referrer"       content="same-origin"/>
         <meta charset="UTF-8"/>
-        <link rel="manifest" href="manifest.webmanifest"/>
+        <!-- <link rel="manifest" href="manifest.webmanifest"/> -->
 
         <%= htmlWebpackPlugin.tags.headTags.join("\n        ") %>
         <meta name="og:title"  content="SnaKey v3"/>
@@ -15,7 +16,6 @@
 
         <link rel="prefetch" as="script" id="socket.io-preload" href="dist/client/vendor/socket.io.js"/>
         <%= htmlWebpackPlugin.files.js.map((href)  => `<link rel="preload" as="script" href="${href}"/>`).join("\n") %>
-        <%= htmlWebpackPlugin.files.css.map((href) => `<link rel="preload" as="style"  href="${href}"/>`).join("\n") %>
     </head>
 
 
@@ -25,7 +25,7 @@
         </datalist>
         <script>
         { // Load up last used colour scheme (or default):
-            const cssl = localStorage.getItem("colourSchemeStyleLiteral");
+            const cssl = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
             const root = document.documentElement;
             if (cssl) { root.setAttribute("style", cssl); }
             else { root.dataset["skColourScheme"] = "snakey"; }

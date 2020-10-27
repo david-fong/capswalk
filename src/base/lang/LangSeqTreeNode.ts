@@ -50,13 +50,13 @@ export namespace LangSeqTree {
                 // If this errs, and the offending character is one that can
                 // be easily entered on a generic keyboard, don't be afraid
                 // to just add it to the regexp.
-                throw RangeError(`Mapping-sequence \"${seq}\" did not match the`
+                throw new RangeError(`Mapping-sequence \"${seq}\" did not match the`
                 + ` required regular expression \"${_Lang.Seq.REGEXP.source}\".`
                 );
             }
             if (chars.length === 0) {
-                // Must not make mapping without written characters.
-                throw "never";
+                // Must not make a mapping without written characters.
+                throw new RangeError("never");
             }
             let node: ParentNode = this; {
                 let childNode: ParentNode | undefined = this;
@@ -67,7 +67,7 @@ export namespace LangSeqTree {
             }
             if ((node as ChildNode).sequence === seq) { // TODO.build disable during development
                 // This should never happen.
-                throw Error(`Mappings for all written-characters with a common`
+                throw new Error(`Mappings for all written-characters with a common`
                 + `corresponding typeable-sequence should be registered together,`
                 + `but an existing mapping for the sequence \"${seq}\" was found.`
                 );
@@ -102,7 +102,7 @@ export namespace LangSeqTree {
             weightScaling: Lang.WeightExaggeration,
         ): LangSeqTree.ParentNode {
             const averageWeight = Object.values(forwardDict).reduce((sum, next) => sum += next.weight, 0);
-            const adjustedWeight = (function () {
+            const adjustedWeight = (function(): (ogWeight: number) => number {
                 return (weightScaling === 0) ? (originalWeight: number) => 1
                     :  (weightScaling === 1) ? (originalWeight: number) => originalWeight
                     : (originalWeight: number) => Math.pow(originalWeight / averageWeight, weightScaling);
@@ -119,7 +119,7 @@ export namespace LangSeqTree {
                     // The entry was already made:
                     charArray.push(weightedChar);
                 } else {
-                    reverseDict.set(seq, [weightedChar,]);
+                    reverseDict.set(seq, [weightedChar]);
                 }
             }
             // Add mappings in ascending order of sequence length:
@@ -302,7 +302,7 @@ class WeightedLangChar {
         weight: number,
     ) {
         if (weight <= 0) { // TODO.build disable during development
-            throw RangeError(`All weights must be positive, but we`
+            throw new RangeError(`All weights must be positive, but we`
             + ` were passed the value \"${weight}\" for the character`
             + ` \"${char}\".`);
         }

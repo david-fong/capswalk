@@ -1,4 +1,4 @@
-import { applyMixins } from "defs/TypeDefs";
+import { JsUtils } from "defs/JsUtils";
 import { Coord as BaseCoord, Tile } from "../Tile";
 import type { VisibleTile } from "floor/VisibleTile";
 import { Grid as AbstractGrid } from "../Grid";
@@ -15,7 +15,7 @@ export namespace Euclid2 {
     /**
      * # Euclid2 Coord
      */
-    export class Coord implements BaseCoord.Abstract.Mathy<S>, Coord.Bare {
+    export class Coord implements BaseCoord.Abstract.LatticeCoord<S>, Coord.Bare {
 
         public readonly x: number;
         public readonly y: number;
@@ -141,8 +141,8 @@ export namespace Euclid2 {
 
         public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
         private static readonly SIZE_LIMITS = Object.freeze(<const>{
-            height: Object.freeze(<const>{ min: 11, max: 51, }),
-            width:  Object.freeze(<const>{ min: 11, max: 51, }),
+            height: Object.freeze(<const>{ min: 11, max: 51 }),
+            width:  Object.freeze(<const>{ min: 11, max: 51 }),
         });
 
         /**
@@ -159,7 +159,7 @@ export namespace Euclid2 {
             for (let row = 0; row < this.dimensions.height; row++) {
                 const newRow: Array<Tile<S>> = [];
                 for (let col = 0; col < this.dimensions.width; col++) {
-                    const newTile = new desc.tileClass(new Coord({ x: col, y: row, }));
+                    const newTile = new desc.tileClass(new Coord({ x: col, y: row }));
                     newRow.push(newTile);
                 }
                 grid.push(Object.freeze(newRow));
@@ -237,6 +237,13 @@ export namespace Euclid2 {
             );
         }
 
+        /**
+         * @override
+         */
+        public getDestsFromSourcesTo(originCoord: Coord): Array<Tile<S>> {
+            return this._getTileDestsFrom(originCoord, 2);
+        }
+
         public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {
             return new Coord({
                 x: origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
@@ -249,7 +256,7 @@ export namespace Euclid2 {
             // if (coord.x < 0 || coord.x >= this.dimensions.width ||
             //     coord.y < 0 || coord.y >= this.dimensions.height
             // ) {
-            //     throw RangeError("Out of bounds. No such tile exists.");
+            //     throw new RangeError("Out of bounds. No such tile exists.");
             // }
             return this.grid[coord.y][coord.x];
         }
@@ -285,9 +292,6 @@ export namespace Euclid2 {
         }
 
 
-        /**
-         * @override
-         */
         public static getSpawnCoords(
             playerCounts: TU.RoArr<number>,
             dimensions: Grid.Dimensions,
@@ -308,20 +312,18 @@ export namespace Euclid2 {
             });
         }
 
-        /**
-         * @override
-         */
         public static getArea(dim: Grid.Dimensions): number {
             return dim.height * dim.width;
         }
 
-        /**
-         * @override
-         */
+        public static getDiameterOfLatticePatchHavingArea(area: number): number {
+            return Math.sqrt(area);
+        }
+
         public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
             const x = Math.floor(dimensions.width  * Math.random());
             const y = Math.floor(dimensions.height * Math.random());
-            return new Coord({x,y,});
+            return new Coord({x,y});
         }
     }
     export namespace Grid {
@@ -332,32 +334,37 @@ export namespace Euclid2 {
             height: number,
             width:  number,
         };
-
-        export class Visible extends Grid implements VisibleGrid<S> {
-            /**
-             * @override
-             */
-            declare protected readonly grid: TU.RoArr<TU.RoArr<VisibleTile<S>>>;
-
-            public constructor(desc: AbstractGrid.CtorArgs<S>) {
-                super(desc);
-                const gridElem = document.createElement("div");
-                gridElem.style.setProperty("--euclid2-grid-width",  this.dimensions.width.toString());
-                //gridElem.style.setProperty("--euclid2-grid-height", this.dimensions.height.toString());
-                for (const row of this.grid) {
-                    for (const tile of row) {
-                        tile._addToDom(gridElem);
-                    }
-                }
-                this._superVisibleGrid(desc, gridElem);
-            }
-        }
-        export interface Visible extends VisibleGridMixin<S> { };
-        applyMixins(Visible, [VisibleGridMixin,]);
-        Object.freeze(Visible);
-        Object.freeze(Visible.prototype);
     }
+    JsUtils.protoNoEnum(Grid, ["_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo"]);
     Object.freeze(Grid);
     Object.freeze(Grid.prototype);
 }
 Object.freeze(Euclid2);
+
+
+/**
+ */
+// Separated for tree-shaking.
+export class Euclid2VisibleGrid extends Euclid2.Grid implements VisibleGrid<S> {
+    /**
+     * @override
+     */
+    declare protected readonly grid: TU.RoArr<TU.RoArr<VisibleTile<S>>>;
+
+    public constructor(desc: AbstractGrid.CtorArgs<S>) {
+        super(desc);
+        const gridElem = JsUtils.mkEl("div", []);
+        gridElem.style.setProperty("--euclid2-grid-width",  this.dimensions.width.toString());
+        // At below use of for loop without breaks: For shallower stack when debugging.
+        for (const row of this.grid) {
+            for (const tile of row) {
+                tile._addToDom(gridElem);
+            }
+        }
+        this._superVisibleGrid(desc, gridElem);
+    }
+}
+export interface Euclid2VisibleGrid extends VisibleGridMixin<S> { };
+JsUtils.applyMixins(Euclid2VisibleGrid, [VisibleGridMixin]);
+Object.freeze(Euclid2VisibleGrid);
+Object.freeze(Euclid2VisibleGrid.prototype);

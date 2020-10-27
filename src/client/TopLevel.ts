@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import { StorageHooks } from "defs/StorageHooks";
 import type { BrowserGameMixin, Game } from "./game/BrowserGame";
@@ -5,8 +6,10 @@ import type { _PlayScreen } from "./screen/impl/Play";
 import type { Coord, SkScreen } from "../client/screen/SkScreen";
 
 import { AllSkScreens } from "./screen/AllSkScreens";
+import { ScreenTransition }   from "./screen/ScreenTransition";
 import { BgMusic }      from "./audio/BgMusic";
 import { SoundEffects } from "./audio/SoundEffects";
+import { SkSockets }    from "./SkSockets";
 
 
 /**
@@ -14,10 +17,13 @@ import { SoundEffects } from "./audio/SoundEffects";
  */
 export class TopLevel {
 
+    public readonly defaultDocTitle: string;
+
     public readonly webpageHostType: TopLevel.WebpageHostType;
 
     public readonly storage: typeof StorageHooks;
 
+    public readonly transition: ScreenTransition;
     /**
      * Purposely made private. Screens are intended to navigate
      * between each other without reference to this field.
@@ -27,14 +33,7 @@ export class TopLevel {
     public readonly bgMusic: BgMusic;
     public readonly sfx: SoundEffects;
 
-    /**
-     * This is managed by the `GroupJoiner` screen.
-     */
-    // TODO.impl change this to just a getter, and implement a setter method
-    // that makes it clear that it is not generally safe to modify this field.
-    public socket: typeof io.Socket | undefined;
-
-    #socketIoChunk: Promise<typeof import("socket.io-client")>;
+    public readonly sockets: SkSockets;
 
     /**
      */
@@ -44,6 +43,7 @@ export class TopLevel {
 
 
     public constructor() {
+        this.defaultDocTitle = document.title;
         this.webpageHostType = (() => {
             if (window.location.origin.match(/github\.io/)) {
                 return TopLevel.WebpageHostType.GITHUB;
@@ -53,20 +53,28 @@ export class TopLevel {
                 return TopLevel.WebpageHostType.SNAKEY_SERVER;
             }
         })();
+        JsUtils.propNoWrite(this as TopLevel, [
+            "defaultDocTitle", "webpageHostType",
+        ]);
+
         this.storage = StorageHooks;
-        //
+        this.sockets = new SkSockets();
+        this.transition = new ScreenTransition();
+        JsUtils.propNoWrite(this as TopLevel, [
+            "storage", "sockets", "transition",
+        ]);
+
         const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
-        if (!allScreensElem) { throw Error(); }
-        this.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
+        if (!allScreensElem) { throw new Error("never"); }
+        JsUtils.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
         this.#allScreens = new AllSkScreens(this, allScreensElem);
 
         //
         // this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
         // this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
-
-        console.log("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
-        + " margin:0.4em; border:0.3em solid black;padding:0.4em;"
-        + " color:white; background-color:#3f5e77; border-radius:0.7em; ");
+        JsUtils.propNoWrite(this as TopLevel, [
+            /* "bgMusic", "sfx", */ // TODO.build uncomment when music classes implemented.
+        ]);
     }
 
     public toast(message: string): void {
@@ -75,37 +83,11 @@ export class TopLevel {
     }
 
     /**
-     * A non-user-facing markup utility.
-     */
-    public prependComment(node: HTMLElement, commentStr: string): void {
-        node.parentNode!.insertBefore(document.createComment(" " + commentStr + " "), node);
-    }
-
-    public get socketIo(): Promise<typeof import("socket.io-client")> {
-        // return this.#socketIoChunk
-        // || (this.#socketIoChunk = import(
-        //     /* webpackChunkName: "[request]" */
-        //     "socket.io-client"
-        // ));
-        return (() => {
-            let cached: undefined | Promise<typeof import("socket.io-client")>;
-            return cached || (cached = new Promise<typeof import("socket.io-client")>((resolve, reject): void => {
-                const script = document.createElement("script");
-                script.onload = (): void => {
-                    resolve(io);
-                };
-                script.src = (document.getElementById("socket.io-preload") as HTMLLinkElement).href;
-                document.body.appendChild(script);
-            }));
-        })();
-    }
-
-    /**
      * For debugging purposes- especially in the browser console.
      */
     public get game(): BrowserGameMixin<Game.Type.Browser,Coord.System> | undefined {
-        return (this.#allScreens.dict.playOffline).currentGame
-            ?? (this.#allScreens.dict.playOnline ).currentGame;
+        return (this.#allScreens.dict.playOffline).probeCurrentGame
+            ?? (this.#allScreens.dict.playOnline ).probeCurrentGame;
     }
 
     /**

@@ -41,16 +41,24 @@
         // (Functions and Variables)
         "anims",
         "coord",
-        "dict",
+        "conn", // as in "connection"
+        "clientside",
+        "decor", // short for "decorator"
         "desc", "descs",
         "dests",
+        "dict",
         "elem", "elems",
         "minmax",
         "mixins",
+        "multiline",
+        "noopener",
         "nsps",
+        "readonly",
         "retval",
         "reflow",
         "refs",
+        "serverside",
+        "sourcemap",
         "supercall",
         "spec",
         "typeof",
@@ -69,6 +77,7 @@
         "readmes",
         "todos",
         "transpiled",
+        "tsloader",
         "webpage",
         "websockets",
 
@@ -96,6 +105,7 @@
         "requester's",
         "screenshots",
         "setup", "setups",
+        "shortcut",
         "spacebar",
         "spellcheck", // <-- how ironic
         "teammate", "teammates",

@@ -1,2 +1,2 @@
-(window.webpackJsonpsnakey3=window.webpackJsonpsnakey3||[]).push([[4],{20:function(e,n,o){"use strict";o.r(n),o.d(n,"Cellphone",(function(){return s}));class s{}s||(s={}),Object.freeze(s),Object.freeze(s.prototype)}}]);
+(self.webpackChunksnakey3=self.webpackChunksnakey3||[]).push([[313],{56:(e,s,c)=>{"use strict";c.r(s),c.d(s,{Cellphone:()=>k});class k{}k||(k={}),Object.freeze(k),Object.freeze(k.prototype)}}]);
 //# sourceMappingURL=Cellphone-ts.js.map

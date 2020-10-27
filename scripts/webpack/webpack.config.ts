@@ -17,37 +17,19 @@ type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
  * Externalized definition (for convenience of toggling).
  */
 const PACK_MODE = (process.env.NODE_ENV) as webpack.Configuration["mode"];
+const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
-export const PROJECT_ROOT = path.resolve(__dirname, "../..");
-
-const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.Plugin>> => { return [
-    // new webpack.ProgressPlugin((pct, msg, moduleProgress?, activeModules?, moduleName?) => {
-    //     console.log(
-    //         `[${Math.floor(pct * 100).toString().padStart(3)}% ]`,
-    //         (msg === "building") ? msg : msg.padEnd(45),
-    //         (msg === "building") ? moduleProgress!.padStart(15) : (moduleProgress || ""),
-    //         (moduleName || "")
-    //         .replace(new RegExp(PROJECT_ROOT.replace(/\\/g, "\\\\"), "g"), ":")
-    //         .replace(path.join("node_modules","ts-loader","index.js"), "ts-loader")
-    //         .replace(path.join("node_modules","css-loader","dist","cjs.js"), "css-loader"),
-    //     );
-    // }),
-    // new webpack.WatchIgnorePlugin([
-    //     /\.js$/,
-    //     /\.d\.ts$/,
-    // ]),
+const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> => { return [
+    new webpack.WatchIgnorePlugin({ paths: [
+        /\.js$/,
+        /\.d\.ts$/,
+    ]}),
 ]};
 
 /**
  * https://webpack.js.org/loaders/
  */
 const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
-    test: /\.(md)$/,
-    use: "null-loader",
-},{
-    // With ts-loader@7.0.0, you need to set:
-    // options.compilerOptions.emitDeclarationsOnly: false
-    // options.transpileOnly: false
     test: /\.ts$/,
     use: {
         loader: "ts-loader",
@@ -67,26 +49,22 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
         },
     },
     exclude: /node_modules/,
-},{
+}, ];};
+const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
     test: /\.css$/,
-    use: ((): webpack.RuleSetUseItem[] => {
-        const retval: webpack.RuleSetUse = [ "css-loader", ];
-        retval.unshift({
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-                publicPath: (resourcePath: string, context: string) => {
-                    // publicPath is the relative path of the resource to the context
-                    // e.g. for ./css/admin/main.css the publicPath will be ../../
-                    // while for ./css/main.css the publicPath will be ../
-                    // return path.relative(path.dirname(resourcePath), context).replace(/\\/g, "/") + "/";
-                },
-            }
-        });
-        return retval;
-    })(),
+    use: [{
+        loader: MiniCssExtractPlugin.loader,
+        options: {}
+    },{
+        loader: "css-loader",
+        options: {
+            modules: false,
+        },
+    }],
 },{
     // https://webpack.js.org/loaders/file-loader/
     test: /\.(png|svg|jpe?g|gif)$/,
+    issuer: /\.css$/,
     use: [(() => {
         const pathFunc = (url: string, resourcePath: string, context: string) => {
             return path.relative(context, resourcePath).replace(/\\/g, "/");
@@ -100,19 +78,15 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
             publicPath: pathFunc,
         },};
     })()],
-}, ]};
+}, ];}
 
 /**
  * # Base Config
  *
- * The way my project is set up as a single node package, I need to
- * export an array of configs. Note that I don't bundle any node
- * modules, but if if do, there are tricky things that can be solved
- * by adding `node: { "fs": "empty", "net": "empty", },`
- *
  * Everything that builds off of this will need to add the `entry` field.
  *
- * Important implementation note: make sure helpers such as
+ * Important implementation note: make sure helpers return completely new
+ * instances each time. BASE_PLUGINS() and MODULE_RULES().
  *
  * ## Help Links
  *
@@ -125,16 +99,17 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 "entry" | "plugins" | "resolve" | "output"> => { return {
     mode: PACK_MODE,
-    name: `\n\n${"=".repeat(32)} ${distSubFolder.toUpperCase()} ${"=".repeat(32)}\n`,
+    name: distSubFolder,
     stats: { /* https://webpack.js.org/configuration/stats/ */
         children: false,
+        colors: true,
     },
 
     context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
     entry: { /* Left to each branch config */ },
     plugins: [ ...BASE_PLUGINS(), ],
     resolve: {
-        extensions: [ ".ts", ".css", ".js", ],
+        extensions: [".ts", ".css", ".js"],
         modules: [
             path.resolve(PROJECT_ROOT, "src", "base"),
             path.resolve(PROJECT_ROOT, "node_modules"),
@@ -142,15 +117,15 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
     },
     module: { rules: MODULE_RULES(), },
     // https://webpack.js.org/plugins/source-map-dev-tool-plugin/
-    devtool: <webpack.Options.Devtool>(PACK_MODE === "production")
+    devtool: (PACK_MODE === "production")
         ? "nosources-source-map"
-        : "cheap-eval-source-map",
+        : "eval-cheap-source-map",
     output: {
-        path:           path.resolve(PROJECT_ROOT, "dist", distSubFolder),
-        publicPath:     `dist/${distSubFolder}/`, // need trailing "/".
-        filename:       "[name].js",
-        chunkFilename:  "chunk/[name].js",
-        library:        "snakey3",
+        path: path.resolve(PROJECT_ROOT, "dist", distSubFolder),
+        publicPath: `dist/${distSubFolder}/`, // need trailing "/".
+        filename: "[name].js",
+        chunkFilename: "chunk/[name].js",
+        library: "snakey3",
         pathinfo: false, // unneeded. minor performance gain.
     },
 
@@ -161,7 +136,15 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
         // runtimeChunk: {
         //     name: entrypoint => `${entrypoint.name}/runtime`,
         // } as webpack.Options.RuntimeChunkOptions,
-        //mergeDuplicateChunks: true,
+        splitChunks: {
+            //chunks: "all",
+            cacheGroups: {
+                ["style"]: {
+                    test: /\.css$/,
+                    reuseExistingChunk: true,
+                },
+            },
+        },
     },
     watchOptions: {
         ignored: [ "node_modules", ],
@@ -174,51 +157,48 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 
 /**
  * ## Web Bundles
- *
- * socket.io-client will be bundled as well.
- *
- * - `target: "web",`. This is implied, but here, explicitness helps me learn.
- * - `externals: [ nodeExternals(), ],` or something like `[ "socket.io-client", ]`
- * - appropriate plugin entries for the index.html file.
  */
 const CLIENT_CONFIG = __BaseConfig("client"); {
     const config  = CLIENT_CONFIG;
     config.target = "web";
-
-    const htmlPluginArgs: HtmlPlugin.Options = {
-        template:   "./index.ejs",
-        filename:   path.resolve(PROJECT_ROOT, "index.html"),
-        base:       ".", // must play nice with path configs.
-        favicon:    "./assets/favicon.png",
-        scriptLoading: "defer",
-        inject: false, // (I specify where each injection goes in the template).
-        templateParameters: (compilation, assets, assetTags, options) => { return {
-            compilation, webpackConfig: compilation.options,
-            htmlWebpackPlugin: { tags: assetTags, files: assets, options, },
-            // Custom HTML templates for index.ejs:
-            // "extraScripts": [],
-        }; },
-        //hash: true,
-    };
     config.entry["index"] = `./src/client/index.ts`;
     config.externals = [ nodeExternals({
         allowlist: ["tslib"],
         importType: "root",
     }), ],
     config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
+    config.module!.rules!.push(...WEB_MODULE_RULES());
     // config.resolve.alias = config.resolve.alias || {
     //     "socket.io-client": "socket.io-client/dist/socket.io.slim.js",
     // };
-    config.plugins.push(new HtmlPlugin(htmlPluginArgs));
-    config.plugins.push(new MiniCssExtractPlugin({
-        filename: "_barrel.css",
-        chunkFilename: "chunk/[name].css",
-    }));
-    config.plugins.push(new CopyWebpackPlugin({ patterns: [{
-        from: "node_modules/socket.io-client/dist/socket.io.js" + "*",
-        to: "vendor/",
-        flatten: true,
-    }],}));
+    config.plugins.push(
+        new HtmlPlugin({
+            template:   "./index.ejs",
+            filename:   path.resolve(PROJECT_ROOT, "index.html"),
+            base:       ".", // must play nice with path configs.
+            favicon:    "./assets/favicon.png",
+            scriptLoading: "defer",
+            inject: false, // (I specify where each injection goes in the template).
+            templateParameters: (compilation, assets, assetTags, options) => { return {
+                compilation, webpackConfig: compilation.options,
+                htmlWebpackPlugin: { tags: assetTags, files: assets, options, },
+                // Custom HTML templates for index.ejs:
+                // "extraScripts": [],
+            }; },
+            //hash: true,
+        }),
+        new MiniCssExtractPlugin({
+            filename: "_barrel.css",
+            chunkFilename: "chunk/[name].css",
+        }) as webpack.WebpackPluginInstance, // TODO.build remove this when https://github.com/webpack-contrib/mini-css-extract-plugin/pull/594
+        new CopyWebpackPlugin({ patterns: [{
+            from: `node_modules/socket.io-client/dist/socket.io.${(
+                PACK_MODE === "production" ? "slim" : "dev" // TODO.build see https://github.com/socketio/socket.io-client/releases/tag/3.0.0-rc1 breaking changes
+            )}.js` + "*", // <- glob to include sourcemap file.
+            to: "vendor/socket.io.[ext]",
+            flatten: true,
+        }],}),
+    );
     if (PACK_MODE === "production") {
         config.plugins.push(new OptimizeCssAssetsPlugin({
             cssProcessorPluginOptions: {
@@ -231,34 +211,28 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 
 
 /**
- * ## Basic node configuration:
- *
- * - `target: "node"`. This should mean that node modules are not bundled.
- * - `resolve.modules.push("node_modules")`
- * - `externals: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))`
- *
- * @param config -
  */
 const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>): void => {
     config.target = "node";
     // alternative to below: https://www.npmjs.com/package/webpack-node-externals
-    config.externals = [ nodeExternals(), ],
+    config.externals = [ nodeExternals(), ], // <- Does not whitelist tslib.
+    // alternative to above: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))
     config.resolve.extensions!.push(".js");
     config.node = {
         __filename: false,
         __dirname: false,
         global: false,
+        //"fs": "empty", "net": "empty", <- may solve tricky problems if they come up.
     };
     // https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_javascript-source-map-tips
     // https://webpack.js.org/configuration/output/#outputdevtoolmodulefilenametemplate
     config.output.devtoolModuleFilenameTemplate = "../[resource-path]?[loaders]";
-    config.devtool = <webpack.Options.Devtool>(PACK_MODE === "production")
+    config.devtool = (PACK_MODE === "production")
         ? "cheap-module-source-map"
-        : "cheap-module-eval-source-map";
+        : "eval-cheap-module-source-map";
 };
 
 /**
- * ## Node Bundles
  */
 const SERVER_CONFIG = __BaseConfig("server"); {
     const config = SERVER_CONFIG;
@@ -267,7 +241,6 @@ const SERVER_CONFIG = __BaseConfig("server"); {
 }
 
 /**
- * ## Test Bundles
  */
 const TEST_CONFIG = __BaseConfig("test"); {
     const config = TEST_CONFIG;
@@ -282,7 +255,6 @@ const TEST_CONFIG = __BaseConfig("test"); {
 
 module.exports = [
     CLIENT_CONFIG,
-    // TODO.build Uncomment these pack configs when we get to using them.
     SERVER_CONFIG,
     //TEST_CONFIG,
 ];

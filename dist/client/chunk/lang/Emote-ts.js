@@ -1,2 +1,2 @@
-(window.webpackJsonpsnakey3=window.webpackJsonpsnakey3||[]).push([[5],{21:function(e,n,t){"use strict";t.r(n),t.d(n,"Emote",(function(){return c}));var c,o=t(9);!function(e){class n extends o.a{}e.GitHub=n,Object.freeze(n),Object.freeze(n.prototype)}(c||(c={})),Object.freeze(c)}}]);
+(self.webpackChunksnakey3=self.webpackChunksnakey3||[]).push([[858],{981:(e,t,s)=>{"use strict";s.r(t),s.d(t,{Emote:()=>c});var c,n=s(979);!function(e){class t extends n.U{}e.GitHub=t,Object.freeze(t),Object.freeze(t.prototype)}(c||(c={})),Object.freeze(c)}}]);
 //# sourceMappingURL=Emote-ts.js.map

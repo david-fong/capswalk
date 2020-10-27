@@ -1,4 +1,4 @@
-import type { Lang } from "lang/Lang";
+import type { Lang } from "defs/TypeDefs";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
@@ -74,42 +74,17 @@ export namespace Game {
         langId: Lang.FrontendDesc["id"];
         langWeightExaggeration: Lang.WeightExaggeration;
 
-        playerDescs: TU.RoArr<(
-            G extends Game.Type.Manager
-            ? Player.CtorArgs.PreIdAssignment
-            : Player.CtorArgs
-        )>;
+        playerDescs: G extends Game.Type.Manager
+            ? TU.RoArr<Player.CtorArgs.PreIdAssignment>
+            : TU.RoArr<Player.CtorArgs>
+        ;
     }>;
     export namespace CtorArgs {
-
-        export namespace Event {
-            export const NAME = "game-create";
-            /**
-             * This is used as the payload with the above event name when
-             * notifying the server's joiner namespace that the group is
-             * returning to their lobby from playing a game.
-             */
-            export const RETURN_TO_LOBBY_INDICATOR = "return-to-lobby";
-        }
-        export const EVENT_NAME_CLIENT_READY_RESET   = "client-ready-for-reset";
-        export const EVENT_NAME_CLIENT_READY_UNPAUSE = "client-ready-for-unpause";
-        export const EVENT_NAME_SERVER_APPROVE_UNPAUSE = "server-approve-unpause";
-        export const EVENT_NAME_SERVER_APPROVE_PAUSE = "server-approve-pause";
-
         /**
          */
         export type FailureReasons = {
             missingFields: Array<keyof CtorArgs<Game.Type, Coord.System>>;
         };
-
-        // export type _GameTypeDependantPart<G_group extends Game.Type, S extends Coord.System>
-        // = any extends G_group ? any : {[G in G_group]:
-        //     G extends Game.Type.Manager ? {
-        //         playerDescs: TU.RoArr<Player.CtorArgs.PreIdAssignment>;
-        //     } : {
-        //         playerDescs: TU.RoArr<Player.CtorArgs>;
-        //     }
-        // }[G_group];
     }
 
     /**
@@ -126,9 +101,6 @@ export namespace Game {
             health: Player.Health;
         }>;
     }>;
-    export namespace Serialization {
-        export const EVENT_NAME = <const>"game-reset";
-    }
 
     /**
      * - **`PLAYING`** can go to:
@@ -157,6 +129,15 @@ export namespace Game {
          * re-spawned after being consumed.
          */
         HEALTH_UPDATE_CHANCE: 0.1,
+
+        /**
+         * Affects the distribution of health across the grid: "How
+         * concentrated or how diluted the average amount of health on
+         * the grid will be". Higher values cause concentration; lower
+         * values result in dilution.
+         */
+        AVERAGE_HEALTH_TO_SPAWN_ON_TILE: 1.0,
+
         /**
          * A value in `(0,1]`. If `1`, then players can (on average),
          * boost indefinitely. If close to zero, then players virtually
@@ -167,7 +148,46 @@ export namespace Game {
          * and randomly. Adjustments for more rational assumptions are
          * not to be made _here_.
          */
-        PCT_MOVES_THAT_ARE_BOOST: 0.05,
+        PORTION_OF_MOVES_THAT_ARE_BOOST: 0.4,
+
+        /**
+         * Takes into consideration all contributing factors to determine
+         * how much health it should cost to perform a single boost.
+         *
+         * It calculates for the following behaviour: Assuming that a
+         * player is only trying to collect health and always takes the
+         * optimal route, how much health should it cost them to boost
+         * such that they can only only boost for a determined percentage
+         * of all their movement actions?
+         */
+        HEALTH_COST_OF_BOOST(
+            averageHealthPerTile: Player.Health,
+            gridGetDiameter: (area: number) => number,
+        ): Player.Health {
+            // First, assume that a player has just landed on a tile
+            // with free health, and now plans to take the optimal
+            // route to the nearest tile with free health. Assume that
+            // Health is distributed uniformly, and spaced evenly apart.
+            // Then the grid/floor can be nicely divided into similar
+            // patches each with one tile with free health in the center.
+            // Find the diameter of a patch:
+            const patchArea = this.AVERAGE_HEALTH_TO_SPAWN_ON_TILE / averageHealthPerTile;
+            const patchDiameter = gridGetDiameter(patchArea);
+
+            // The patch diameter is the average optimal distance to
+            // the nearest tile with health (the center of the nearest
+            // patch). We know how much health awaits there, so we can
+            // find the average rate of health gain per movement on an
+            // optimal health-seeking path.
+            const healthGainedPerOptimalMove
+                = this.AVERAGE_HEALTH_TO_SPAWN_ON_TILE / patchDiameter;
+
+            // Since the portion of moves that can be boosts equals
+            // the rate of health gain divided by the health cost of
+            // boosting, (rearrange terms to solve):
+            return healthGainedPerOptimalMove / this.PORTION_OF_MOVES_THAT_ARE_BOOST;
+        },
+
         /**
          * A value in `(0,1]` (values greater than one are legal from
          * a mathematical standpoint, but not from one of game-design).
@@ -180,6 +200,7 @@ export namespace Game {
          * not too much, not too little.
          */
         HEALTH_EFFECT_FOR_DOWNED_PLAYER: 0.6,
+
         /**
          * A strictly-positive integer.
          *
@@ -189,8 +210,8 @@ export namespace Game {
          * explanation.
          */
         EVENT_RECORD_WRAPPING_BUFFER_LENGTH: 128,
+
         /**
-         *
          */
         EVENT_RECORD_FORWARD_WINDOW_LENGTH: 64,
     });

@@ -1,4 +1,4 @@
-import { SkScreen } from "../SkScreen";
+import { JsUtils, SkScreen } from "../SkScreen";
 
 
 /**

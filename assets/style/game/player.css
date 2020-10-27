@@ -34,7 +34,7 @@
     visibility: hidden;
 }
 
-/* Only applied for client-side operator player since
+/* Only applied for clientside operator player since
 using certain properties will create a new stacking
 context, and we decided that we will allow this for
 such players' face element. */

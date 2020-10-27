@@ -1,6 +1,7 @@
 import type { OnlineGame } from "../../game/OnlineGame";
 
-import { Coord, SkScreen } from "../SkScreen";
+import { GameEv } from "defs/OnlineDefs";
+import { JsUtils, Coord, SkScreen } from "../SkScreen";
 import { Game, _PlayScreen } from "./Play";
 type SID = SkScreen.Id.PLAY_ONLINE;
 type G = Game.Type.ONLINE;
@@ -18,26 +19,17 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     /**
      * @override
      */
-    public get initialScreen(): SkScreen.Id {
-        return SkScreen.Id.GROUP_JOINER;
-    };
-    /**
-     * @override
-     */
-    public getNavPrevArgs(): SkScreen.NavPrevRet<SkScreen.Id.GROUP_LOBBY> {
-        return [SkScreen.Id.GROUP_LOBBY, {}, SkScreen.NavDir.BACKWARD,];
-    };
-
-    /**
-     * @override
-     */
     // @ts-expect-error : Redeclaring accessor as property.
-    declare public readonly currentGame: OnlineGame<Coord.System> | undefined;
+    declare protected readonly currentGame: OnlineGame<Coord.System>;
 
     /**
      * @override
      */
     protected readonly wantsAutoPause = false;
+
+    private get socket(): SocketIOClient.Socket {
+        return this.top.sockets.gameSocket!;
+    }
 
     /**
      * @override
@@ -47,16 +39,16 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
         this.nav.prev.innerHTML = "Return To&nbsp;Lobby";
     }
 
-    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
-        (this.nav.prev as HTMLButtonElement).onclick = (ev) => {
-            if (this.top.clientIsGroupHost) {
-                // TODO.impl ask first.
-                this.top.socket!.emit(Game.CtorArgs.Event.NAME, Game.CtorArgs.Event.RETURN_TO_LOBBY_INDICATOR);
-            } else {
-                // TODO.impl leave the game but stay in the group.
-            }
-        };
-        return super._abstractOnBeforeEnter(navDir, args);
+    /**
+     * @override
+     */
+    protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
+        const leaveConfirmed = super._abstractOnBeforeLeave(navDir);
+        if (leaveConfirmed) {
+            this.socket.emit(GameEv.RETURN_TO_LOBBY);
+            this.socket.removeAllListeners();
+        }
+        return leaveConfirmed;
     }
 
     /**
@@ -68,16 +60,33 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
             "../../game/OnlineGame"
         )).OnlineGame(
             this._onGameBecomeOver.bind(this),
-            this.top.socket!,
+            this.top.sockets.gameSocket!,
             ctorArgs,
-        );
-        this.top.socket!.on(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_UNPAUSE, () => {
+            );
+        this.top.sockets.gameSocket!
+        .on(GameEv.UNPAUSE, () => {
             this._statusBecomePlaying();
-        });
-        this.top.socket!.on(Game.CtorArgs.EVENT_NAME_SERVER_APPROVE_PAUSE, () => {
-            this._statusBecomePaused;
+        })
+        .on(GameEv.PAUSE, () => {
+            this._statusBecomePaused();
+        })
+        .on(GameEv.RETURN_TO_LOBBY, (socketId: string | undefined) => {
+            if (socketId === undefined) {
+                // Everyone is being sent back to the lobby:
+                // this.currentGame.statusBecomeOver(); <- This is handled by `super._onBeforeLeave`.
+                this.nav.prev.click();
+            } else {
+                // Handle a player leaving:
+            }
         });
         return Promise.resolve(game);
+    }
+
+    /**
+     * @override
+     */
+    protected _onGameBecomeOver(): void {
+        super._onGameBecomeOver();
     }
 }
 export namespace PlayOnlineScreen {

@@ -1,14 +1,16 @@
+import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
+import type * as ServersideSocketIO from "socket.io";
 
 import type { Coord, Tile }     from "floor/Tile";
 import type { Player as _Player } from "defs/TypeDefs";
 import type { ArtificialPlayer } from "./ArtificialPlayer";
 import type { GamepartBase }    from "game/gameparts/GamepartBase";
+import type { Team }            from "./Team";
 
 import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
 import { PlayerSkeleton }       from "./PlayerSkeleton";    export { PlayerSkeleton };
 import { PlayerStatus }         from "./PlayerStatus";      export { PlayerStatus };
-import { Team }                 from "./Team";              export { Team };
 
 
 /**
@@ -28,7 +30,8 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 
     public requestInFlight: boolean;
 
-
+    /**
+     */
     public constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
 
@@ -36,6 +39,9 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
         this.teamId   = desc.teamId;
         this.username = desc.username;
         this.avatar   = desc.avatar ?? Player.Avatar.GET_RANDOM();
+        JsUtils.propNoWrite(this as Player<S>, [
+            "familyId", "teamId", "username", "avatar",
+        ]);
     }
 
     public reset(spawnTile: Tile<S>): void {
@@ -72,9 +78,9 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
     protected makeMovementRequest(dest: Tile<S>, type: Player.MoveType): void {
         if (this.game.status !== Game.Status.PLAYING) {
             // TODO.build disable this check for production.
-            throw Error("This is not a necessary precondition, but we're doing it anyway.");
+            throw new Error("This is not a necessary precondition, but we're doing it anyway.");
         } else if (this.requestInFlight) {
-            throw Error("Only one request should ever be in flight at a time.");
+            throw new Error("Only one request should ever be in flight at a time.");
         }
         this.requestInFlight = true;
         this.game.processMoveRequest(
@@ -125,32 +131,32 @@ export namespace Player {
      * # Player Constructor Arguments
      */
     export type CtorArgs = _CtorArgs<Player.Family>;
-    export type _CtorArgs<F_group extends Player.Family> = any extends F_group ? never
-    : { [F in F_group]: F extends Player.Family
-        ? (_PreIdAssignment<F> & Readonly<{
+    export type _CtorArgs<FGroup extends Player.Family> = any extends FGroup ? never
+    : { [F in FGroup]: F extends Player.Family
+        ? (_PreIdAssignmentDict[F] & Readonly<{
             playerId: Player.Id;
         }>)
         : never
-    }[F_group];
+    }[FGroup];
 
-    type _PreIdAssignment<F_group extends Player.Family> = any extends F_group ? never
-    : { [F in F_group]: F extends Player.Family
-        ? (Readonly<{
-            isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
-            familyId: F;
-            teamId:   Team.Id;
-            socketId: F extends typeof Player.Family.HUMAN ? (SocketId | undefined) : undefined;
-            username: Username;
-            avatar:   Avatar | undefined;
-            noCheckGameOver: boolean;
-            familyArgs: CtorArgs.FamilySpecificPart[F];
-        }>)
-        : never;
-    }[F_group];
+    type _PreIdAssignmentConditional<F extends Player.Family> = Readonly<{
+        isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
+        familyId: F;
+        teamId:   Team.Id;
+        clientId: F extends typeof Player.Family.HUMAN ? (ServersideSocketIO.Client["id"] | undefined) : undefined;
+        username: Username;
+        avatar:   Avatar | undefined;
+        noCheckGameOver: boolean;
+        familyArgs: CtorArgs.FamilySpecificPart[F];
+    }>;
+    interface _PreIdAssignmentDict {
+        [Player.Family.HUMAN ]: _PreIdAssignmentConditional<typeof Player.Family.HUMAN >;
+        [Player.Family.CHASER]: _PreIdAssignmentConditional<typeof Player.Family.CHASER>;
+    }
 
     export namespace CtorArgs {
 
-        export type PreIdAssignment = _PreIdAssignment<Player.Family>;
+        export type PreIdAssignment = _PreIdAssignmentDict[Player.Family];
 
         export interface FamilySpecificPart extends ArtificialPlayer.FamilySpecificPart {
             [Player.Family.HUMAN]: {};
@@ -184,5 +190,8 @@ export namespace Player {
     }
     Object.freeze(CtorArgs);
 }
+JsUtils.protoNoEnum(Player, [
+    "_notifyGameNowPaused", "_notifyGameNowPlaying", "_notifyGameNowOver",
+]);
 Object.freeze(Player);
 Object.freeze(Player.prototype);

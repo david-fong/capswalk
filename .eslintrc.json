@@ -46,6 +46,7 @@
         "no-throw-literal": ["error"],
 
         "yoda": ["error", "never", { "exceptRange": true }],
+        "no-mixed-spaces-and-tabs": "error",
         "no-trailing-spaces": ["error", { "ignoreComments": true }],
         "semi-style": ["error", "last"],
         "semi-spacing": ["error", { "before": false, "after": true }],
@@ -55,10 +56,10 @@
             "asyncArrow": "always"
         }],
         "comma-dangle": ["error", {
-            "arrays": "always",
-            "objects": "always",
-            "imports": "always-multiline",
-            "exports": "always-multiline",
+            "arrays": "only-multiline",
+            "objects": "only-multiline",
+            "imports": "only-multiline",
+            "exports": "only-multiline",
             "functions": "only-multiline"
         }],
 

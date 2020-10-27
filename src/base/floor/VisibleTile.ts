@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import type { Lang, Player } from "defs/TypeDefs";
 
@@ -12,44 +13,35 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     readonly #baseElem:             HTMLDivElement;
     private readonly langCharElem:  HTMLDivElement;
-    private readonly langSeqElem:   HTMLElement;
+    private readonly langSeqElem:   HTMLDivElement;
 
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
         {
-            const baseElem
-                = this.#baseElem
-                = document.createElement("div");
-            baseElem.setAttribute("aria-label", "Tile");
-            baseElem.classList.add(
+            const base = this.#baseElem = JsUtils.mkEl("div", [
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
                 OmHooks.Tile.Class.BASE,
-            );
+            ]);
+            base.setAttribute("aria-label", "Tile");
         } {
             // Pointer hitbox element.
             // Must be the first child. See note in CSS class hook.
-            const pthb = document.createElement("div");
+            const pthb = JsUtils.mkEl("div", [OmHooks.Tile.Class.POINTER_HB]);
             pthb.setAttribute("aria-hidden", "true");
-            pthb.classList.add(OmHooks.Tile.Class.POINTER_HB);
             this.#baseElem.appendChild(pthb);
         } {
-            const charWrap = document.createElement("div");
+            const charWrap = JsUtils.mkEl("div", [OmHooks.Tile.Class.LANG_CHAR_WRAP]);
             charWrap.setAttribute("role", "presentation");
-            charWrap.classList.add(OmHooks.Tile.Class.LANG_CHAR_WRAP);
-            const charElem
-                = this.langCharElem
-                = document.createElement("div");
+            const charElem = this.langCharElem = JsUtils.mkEl("div", []);
             charWrap.appendChild(charElem);
             this.#baseElem.appendChild(charWrap);
         } {
-            const seqElem
-                = this.langSeqElem
-                = document.createElement("div"); // Purposely don't use `kbd`.
+            const seqElem = this.langSeqElem = JsUtils.mkEl("div", [OmHooks.Tile.Class.LANG_SEQ]);
             seqElem.setAttribute("role", "tooltip");
-            seqElem.classList.add(OmHooks.Tile.Class.LANG_SEQ);
             this.#baseElem.appendChild(seqElem);
         }
+        JsUtils.propNoWrite(this as VisibleTile<S>, ["langCharElem", "langSeqElem"]);
     }
 
     public _addToDom(parent: HTMLElement): void {
@@ -116,5 +108,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 }
 // Assert that this extension's constructor has a compatible signature:
 VisibleTile as Tile.ClassIf<Coord.System>;
+JsUtils.protoNoEnum(VisibleTile, ["_addToDom"]);
 Object.freeze(VisibleTile);
 Object.freeze(VisibleTile.prototype);

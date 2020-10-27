@@ -1,4 +1,4 @@
-import { deepFreeze } from "defs/TypeDefs";
+import { JsUtils } from "defs/JsUtils";
 
 /**
  * # DOM / CSSOM Hook Strings
@@ -73,7 +73,7 @@ export namespace Grid {
          */
         GAME_STATE: { KEY: "gameState", VALUES: <const>{
             PLAYING: "playing", PAUSED: "paused", OVER: "over",
-        },},
+        }},
     };
 }
 
@@ -88,7 +88,7 @@ export namespace Player {
     export const Dataset = <const>{
         DOWNED: { KEY: "downed", VALUES: <const>{
             TEAM: "team", SELF: "self", NO: "no",
-        },},
+        }},
         FACE_SWATCH:    "face",
     };
 }
@@ -101,7 +101,7 @@ export namespace Screen {
     export const Class = <const>{
         BASE:           "sk-screen",
         NAV_NEXT:       "screen--next-button",
-        NAV_PREV:       "screen--back-button",
+        NAV_PREV:       "screen--prev-button",
     };
     export const Dataset = <const>{
         CURRENT:        "current",
@@ -125,7 +125,8 @@ export namespace Screen {
             BASE:               "screen-colour",
             OPTION:             "screen-colour--opt",
             OPTION_LABEL:       "screen-colour--opt-label",
-            OPTION_PREVIEW:     "screen-colour--opt-preview",
+            OPTION_LABEL_TITLE: "screen-colour--opt-label--title",
+            OPTION_LABEL_AUTHOR:"screen-colour--opt-label--author",
         };
     }
     export namespace Play {
@@ -176,4 +177,4 @@ export namespace SkPickOne {
 }
 }
 Object.freeze(OmHooks.Player.Dataset.DOWNED); // String with properties.
-deepFreeze(OmHooks);
+JsUtils.deepFreeze(OmHooks);

@@ -33,6 +33,14 @@ export namespace Coord {
     // ==============================================================
 
     /**
+     * Helper function to abstract away some TypeScript casting due to
+     * the complexity of inheritance and mapped types.
+     */
+    export function equals<S extends Coord.System>(a: Coord[S], b: Coord.Bare[S]): boolean {
+        return a._equals(b as any);
+    }
+
+    /**
      * Immutable. All `Coord` objects returned by operations are new objects.
      *
      * @template S - An enum identifying the unique implementation class.
@@ -50,26 +58,18 @@ export namespace Coord {
          * Must be reflexive and transitive. Must be symmetric if `other`
          * is already (ir if not, if made into) and instance of Coord[S].
          *
-         * For outside usage, it is recommended to use the static helper,
+         * For regular usage, it is recommended to use the static helper,
          * which hides away some type-casting necessary for outside usage.
          */
         _equals(other: Bare[Coord.System]): boolean;
     }
-    /**
-     * Helper function to abstract away some TypeScript casting due to
-     * the complexity of inheritance and mapped types.
-     */
-    export function equals<S extends Coord.System>(a: Coord[S], b: Coord.Bare[S]): boolean {
-        return a._equals(b as any);
-    }
-
     export namespace Abstract {
         /**
          * As opposed, for example, to grid systems operating on the
          * basis of graph connections that cannot be represented by
          * lattices.
          */
-        export interface Mathy<S extends Coord.System> extends Coord.Abstract<S> {
+        export interface LatticeCoord<S extends Coord.System> extends Coord.Abstract<S> {
             /**
              * For discrete-coordinate-based systems, this is used to round
              * non-discrete coordinates to discrete ones.
@@ -83,7 +83,6 @@ export namespace Coord {
     }
     // Object.freeze(Abstract);
     // Object.freeze(Abstract.prototype);
-
 }
 Object.freeze(Coord);
 // No prototype to freeze.

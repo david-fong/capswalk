@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 
 
@@ -21,11 +22,11 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
     #isValid: boolean;
 
     public constructor() {
-        const base = document.createElement("div");
-        base.tabIndex = 0;
-        base.classList.add(OmHooks.SkPickOne.Class.BASE);
-        base.addEventListener("keydown", this._onKeyDown.bind(this));
+        const base = JsUtils.mkEl("div", [OmHooks.SkPickOne.Class.BASE], {
+            tabIndex: 0,
+        });
         base.setAttribute("role", "listbox");
+        base.addEventListener("keydown", this._onKeyDown.bind(this));
         base.addEventListener("pointerenter", (ev) => {
             window.requestAnimationFrame((time) => {
                 // Autofocus on pointerenter to hear keyboard events:
@@ -56,7 +57,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
     protected abstract _onHoverOpt(opt: O): void;
 
     public selectOpt(opt: O, doCallback: boolean = true): void {
-        if (!opt) throw Error("opt must be defined");
+        if (!opt) throw new Error("opt must be defined");
         // We must ensure hovering before executing confirmation:
         this.hoverOpt(opt);
         // Now that hovering is done, execute confirmation of selection:
@@ -141,8 +142,7 @@ export namespace SkPickOne {
         #disabled: boolean;
         #notifyParentOfDisabledChange: (me: _Option) => void;
         public constructor() {
-            const base = this.baseElem = document.createElement("div");
-            base.classList.add(OmHooks.SkPickOne.Class.OPT_BASE);
+            const base = this.baseElem = JsUtils.mkEl("div", [OmHooks.SkPickOne.Class.OPT_BASE]);
             base.setAttribute("role", "option");
             this.#disabled = false;
         }

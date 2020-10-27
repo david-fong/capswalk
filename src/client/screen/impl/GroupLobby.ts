@@ -1,8 +1,8 @@
 import { Player } from "defs/TypeDefs";
-import { Group } from "defs/OnlineDefs";
+import { Group, GroupEv, GameEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 
-import { OmHooks, Coord, SkScreen, StorageHooks } from "../SkScreen";
+import { JsUtils, OmHooks, Coord, SkScreen, StorageHooks } from "../SkScreen";
 type SID = SkScreen.Id.GROUP_LOBBY;
 const OMHC = OmHooks.Screen.Impl.GroupLobby.Class;
 
@@ -11,9 +11,12 @@ const OMHC = OmHooks.Screen.Impl.GroupLobby.Class;
  */
 export class GroupLobbyScreen extends SkScreen<SID> {
 
-    private readonly _players: Record<string, GroupLobbyScreen.UserInfo>;
+    /**
+     * A map from socket ID's to descriptors of players' info.
+     */
+    private readonly _players:  Map<string, GroupLobbyScreen.UserInfo>;
     private readonly teamsElem: HTMLElement;
-    private readonly teamElems: Record<number, HTMLElement>;
+    private readonly teamElems: Map<number, HTMLElement>;
 
     private readonly in: Readonly<{
         username: HTMLInputElement;
@@ -21,11 +24,8 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         avatar:   HTMLSelectElement;
     }>;
 
-    /**
-     * @override
-     */
-    public get initialScreen(): SkScreen.Id {
-        return SkScreen.Id.GROUP_JOINER;
+    private get socket(): typeof io.Socket {
+        return this.top.sockets.groupSocket!;
     }
 
     /**
@@ -33,62 +33,61 @@ export class GroupLobbyScreen extends SkScreen<SID> {
      */
     protected _lazyLoad(): void {
         // @ts-expect-error : RO=
-        this._players = {};
+        this._players = new Map();
         this._createInputs();
         this.nav.prev.textContent = "Return To Joiner";
 
         /* @ts-expect-error : RO= */
-        {this.teamsElem = document.createElement("div");
-        this.teamsElem.classList.add(OMHC.SEC_TEAMS);
-        this.baseElem.appendChild(this.teamsElem);}
+        this.teamsElem = JsUtils.mkEl("div", [OMHC.SEC_TEAMS]);
+        this.baseElem.appendChild(this.teamsElem);
 
         // @ts-expect-error : RO=
-        this.teamElems = {};
+        this.teamElems = new Map();
+
+        JsUtils.propNoWrite(this as GroupLobbyScreen, [
+            "_players", "teamsElem", "teamElems", "in",
+        ]);
 
         {const goSetup = this.nav.next;
         goSetup.textContent = "Setup Game";
         goSetup.onclick = () => {
             this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
-        }
+        };
         this.baseElem.appendChild(goSetup);}
     }
 
     /**
      */
     private _createInputs(): void {
-        const base = document.createElement("div");
-        base.classList.add(
+        const base = JsUtils.mkEl("div", [
             OmHooks.General.Class.INPUT_GROUP,
             OMHC.SEC_CLIENT_INFO,
-        );
+        ]);
 
-        const uname = Object.assign(document.createElement("input"), <Partial<HTMLInputElement>>{
+        const uname = JsUtils.mkEl("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
             type      : "text",
             minLength : 1,
             maxLength : Player.Username.MAX_LENGTH,
             pattern   : Player.Username.REGEXP.source,
-            value     : localStorage.getItem(StorageHooks.LocalKeys.USERNAME) ?? "",
+            spellcheck: false,
+            value     : this.top.storage.Local.username ?? "",
             onchange  : this._submitInputs.bind(this),
         });
-        uname.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
         base.appendChild(uname);
 
-        const teamId    = Object.assign(document.createElement("input"), <Partial<HTMLInputElement>>{
-            type     : "number",
-            min      : "0",
-            max      : "0",
-            step     : "1",
-            value    : "0",
-            onchange : this._submitInputs.bind(this),
+        const teamId = JsUtils.mkEl("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
+            type: "number", inputMode: "numeric",
+            min: "0", max: "0", step: "1", value: "0",
+            onchange: this._submitInputs.bind(this),
         });
-        teamId.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+        teamId.classList.add();
         base.appendChild(teamId);
 
-        const avatar    = document.createElement("select");
+        const avatar = JsUtils.mkEl("select", []);
         // TODO.impl avatar selection element
 
         // @ts-expect-error : RO=
-        this.in = Object.freeze({
+        this.in = Object.freeze<GroupLobbyScreen["in"]>({
             username: uname,
             teamId,
             avatar,
@@ -99,9 +98,9 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         if (!this.in.username.validity.valid || !this.in.teamId.validity.valid) {
             return;
         }
-        localStorage.setItem(StorageHooks.LocalKeys.USERNAME, this.in.username.value);
-        localStorage.setItem(StorageHooks.LocalKeys.AVATAR, this.in.avatar.value);
-        this.top.socket!.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
+        this.top.storage.Local.username = this.in.username.value;
+        this.top.storage.Local.avatar   = this.in.avatar.value;
+        this.socket.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
             username: this.in.username.value,
             teamId: parseInt(this.in.teamId.value),
             avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
@@ -111,34 +110,60 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
+    protected async _abstractOnBeforeEnter(
+        navDir: SkScreen.NavDir,
+        args: SkScreen.EntranceArgs[SID],
+    ): Promise<void> {
         if (navDir === "forward") {
             this.nav.next.disabled = !this.top.clientIsGroupHost;
+            this._players.clear();
+            this.teamElems.clear();
             this.teamsElem.textContent = "";
             this._submitInputs();
 
-            this.top.socket!.on(
+            this.socket.on(
                 Group.Socket.UserInfoChange.EVENT_NAME,
                 this._onUserInfoChange.bind(this),
             );
-            // Listen for when the server sends tbe game constructor arguments:
-            this.top.socket!.once(
-                Game.CtorArgs.Event.NAME,
-                async (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
-                    this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
-                },
-            );
         }
+        // Listen for when the server sends the game constructor arguments:
+        this.socket.once(
+            GroupEv.CREATE_GAME,
+            () => {
+                console.log("group create game socket. now waiting for ctor args");
+                const sock = this.top.sockets.gameSocketConnect(
+                    args.groupName!,
+                    { passphrase: args.groupPassphrase! },
+                );
+                sock.once(GameEv.CREATE_GAME, (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
+                    this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
+                });
+            },
+        );
+    }
+
+    /**
+     * @override
+     */
+    public getRecommendedFocusElem(): HTMLElement {
+        let elemToFocus: HTMLElement | undefined
+            = (!this.in.username.validity.valid) ? this.in.username
+            : (!this.in.teamId.validity.valid)   ? this.in.teamId
+            : undefined;
+        if (elemToFocus === undefined) {
+            elemToFocus = (this.top.clientIsGroupHost) ? this.nav.next : this.in.teamId;
+        }
+        return elemToFocus;
     }
 
     /**
      * @override
      */
     protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
+        // Make sure we stop listening for the game to start
+        // in case it hasn't started yet:
         if (navDir === SkScreen.NavDir.BACKWARD) {
-            // Make sure we stop listening for the game to start
-            // in case it hasn't started yet:
-            this.top.socket!.removeListener(Game.CtorArgs.Event.NAME);
+            this.socket.removeListener(GroupEv.CREATE_GAME);
         }
         return true;
     }
@@ -147,35 +172,35 @@ export class GroupLobbyScreen extends SkScreen<SID> {
      */
     private _onUserInfoChange(res: Group.Socket.UserInfoChange.Res): void {
         Object.entries(res).forEach(([socketId, desc]) => {
-            const userInfo = this._players[socketId];
+            const userInfo = this._players.get(socketId);
 
             // If player is in a team on their own and they are leaving it:
-            if (userInfo && this.teamElems[userInfo.teamId].childElementCount === 1
+            if (userInfo
+                && this.teamElems.get(userInfo.teamId)!.childElementCount === 1
                 && (desc === undefined || desc.teamId !== userInfo.teamId)) {
-                this.teamElems[userInfo.teamId].remove();
-                delete this.teamElems[userInfo.teamId];
+                this.teamElems.get(userInfo.teamId)!.remove();
+                this.teamElems.delete(userInfo.teamId);
             }
 
             // If player is joining a team that has no HTML element yet:
-            if (desc && this.teamElems[desc.teamId] === undefined) {
-                const teamElem = this.teamElems[desc.teamId] = document.createElement("div");
-                teamElem.classList.add(OMHC.TEAM);
+            if (desc && !this.teamElems.has(desc.teamId)) {
+                const teamElem = JsUtils.mkEl("div", [OMHC.TEAM]);
+                this.teamElems.set(desc.teamId, teamElem);
                 teamElem.onclick = (ev) => {
                     this.in.teamId.value = desc.teamId.toString();
-                }
+                };
                 this.teamsElem.appendChild(teamElem);
             }
 
             if (desc === undefined) {
                 // Player has left the group:
-                userInfo.base.remove();
-                delete this._players[socketId];
+                userInfo!.base.remove();
+                this._players.delete(socketId);
             } else if (userInfo === undefined) {
                 // New player has joined the group:
-                const userInfo
-                    = this._players[socketId]
-                    = new GroupLobbyScreen.UserInfo(desc);
-                this.teamElems[desc.teamId].appendChild(userInfo.base);
+                const userInfo = new GroupLobbyScreen.UserInfo(desc);
+                this._players.set(socketId, userInfo);
+                this.teamElems.get(desc.teamId)!.appendChild(userInfo.base);
             } else {
                 // Player changed their user information:
                 userInfo.update(desc);
@@ -190,24 +215,23 @@ export namespace GroupLobbyScreen {
     export class UserInfo implements Player.UserInfo {
         #username: Player.Username;
         #teamId:   number;
-        #avatar: Player.Avatar;
+        #avatar:   Player.Avatar;
 
-        public base: HTMLElement;
-        private el: Readonly<{
+        public readonly base: HTMLElement;
+        private readonly el: Readonly<{
             username: HTMLElement;
             teamId: HTMLElement;
             avatar: HTMLElement;
         }>;
 
         public constructor(desc: Player.UserInfo) {
-            this.base = document.createElement("div");
-            this.base.classList.add(OMHC.PLAYER);
+            this.base = JsUtils.mkEl("div", [OMHC.PLAYER]);
             const mkDiv = (): HTMLDivElement => {
-                const div = document.createElement("div");
+                const div = JsUtils.mkEl("div", []);
                 this.base.appendChild(div);
                 return div;
-            }
-            this.el = Object.freeze(<UserInfo["el"]>{
+            };
+            this.el = Object.freeze<UserInfo["el"]>({
                 username: mkDiv(),
                 teamId:   mkDiv(),
                 avatar:   mkDiv(),
@@ -215,6 +239,7 @@ export namespace GroupLobbyScreen {
             this.el.username.classList.add(OMHC.PLAYER_NAME);
             this.username = desc.username;
             this.teamId = desc.teamId;
+            JsUtils.propNoWrite(this as UserInfo, ["base", "el"]);
         }
 
         public update(desc: Player.UserInfo): void {
@@ -248,5 +273,6 @@ export namespace GroupLobbyScreen {
         }
     }
 }
+JsUtils.protoNoEnum(GroupLobbyScreen, ["_createInputs", "_submitInputs"]);
 Object.freeze(GroupLobbyScreen);
 Object.freeze(GroupLobbyScreen.prototype);

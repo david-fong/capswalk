@@ -3,11 +3,12 @@
     "files.exclude": {
         // generic excludes:
         "node_modules/{[^.@]*,}": true,
+        "package-lock.json": true,
+        ".nojekyll": true,
 
         // project specific excludes:
-        "package-lock.json": true,
 
-        // don't always need this:
+        // things that I might like to toggle:
         "node_modules/": true,
         "{**/.templates/,**/tsconfig.json}": true,
         //"{**/.eslintrc.*,.eslintignore}": true,
@@ -18,6 +19,9 @@
         "**/*.code-search": true,
         "{**/.templates/,**/tsconfig.json}": false,
         "scripts/webpack/webpack.config.js": true,
+    },
+    "files.associations": {
+        "**/dist/{client,server}/**/*.js": "json", // Loads bundled js much faster.
     },
     "json.schemas": [
         {
@@ -32,8 +36,7 @@
         }
     ],
 
-    "eslint.enable": false, // TODO.build Re-enable this once typescript's eslint parser can handle #private fields.
-    "trailing-spaces.trimOnSave": true,
+    "files.trimTrailingWhitespace": true,
 
     "todo-tree.filtering.useBuiltInExcludes": "file excludes",
     "todo-tree.general.statusBar": "total",

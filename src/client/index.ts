@@ -1,26 +1,34 @@
-// Tell WebPack we want CSS:
-require("assets/style/initial/_barrel.css");
+// STYLE IMPORT:
+import "assets/style/initial/_barrel.css";
+
+// None shall touch Object.prototype >:(
+Object.freeze(Object.prototype);
 
 import { TopLevel } from "./TopLevel";
 
 export { OmHooks } from "defs/OmHooks";
-
-Object.freeze(Object.prototype);
 
 // window.onerror = (msg, url, lineNum) => {
 //     alert(`Error message: ${msg}\nURL: ${url}\nLine Number: ${lineNum}`);
 //     return true;
 // }
 
-// TODO.design instead of exposing top, expose handy function for probing it.
-export const _top = new TopLevel();
+const _top = new TopLevel();
+export const top = (() => {
+    const ENV_DEVELOPMENT = true; // TODO.build set this after installing webpack-define
+    return ENV_DEVELOPMENT ? _top : undefined;
+})();
 
-export function screen() {
+export function screen(): TopLevel["currentScreen"] {
     return _top.currentScreen;
 }
-export function game() {
+export function game(): TopLevel["game"] {
     return _top.game;
 }
+
+console.log("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
++ " margin:0.4em; border:0.3em solid black;padding:0.4em;"
++ " color:white; background-color:#3f5e77; border-radius:0.7em; ");
 
 /**
  * https://developers.google.com/web/fundamentals/primers/service-workers

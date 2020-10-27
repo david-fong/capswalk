@@ -1,4 +1,4 @@
-import { OmHooks, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks, SkScreen } from "../SkScreen";
 
 
 /**
@@ -22,12 +22,11 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         const nav
             // @ts-expect-error : RO=
             = this.navElem
-            = document.createElement("div");
-        nav.classList.add(
-            OmHooks.General.Class.TEXT_SELECT_DISABLED,
-            OmHooks.General.Class.INPUT_GROUP,
-            OMHC.NAV,
-        );
+            = JsUtils.mkEl("div", [
+                OmHooks.General.Class.TEXT_SELECT_DISABLED,
+                OmHooks.General.Class.INPUT_GROUP,
+                OMHC.NAV,
+            ]);
         nav.setAttribute("role", "navigation");
         nav.addEventListener("pointerleave", () => {
             if (document.activeElement?.parentElement === nav) {
@@ -73,14 +72,14 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             text:    "Colour Schemes",
             cssClass: OMHC.NAV_COLOURS,
             screenId: SkScreen.Id.COLOUR_CTRL,
-        },])
+        }])
         .map<Readonly<{
             text: string;
             cssClass: OMHC[keyof OMHC];
             screenId: SkScreen.Id | ((ev: MouseEvent) => void);
         }>>((desc) => Object.freeze(desc))
         .forEach((desc) => {
-            const button = document.createElement("button");
+            const button = JsUtils.mkEl("button", []);
             button.onclick = (desc.screenId instanceof Function) ? desc.screenId : () => {
                 // TODO.impl play a health-up sound.
                 // this.top.sfx.;
@@ -97,18 +96,18 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             text:    "Report\nIssue",
             cssClass: OMHC.NAV_RPT_ISSUE,
             href:     new window.URL("https://github.com/david-fong/SnaKey-NTS/issues"),
-        },])
+        }])
         .map<Readonly<{
             text: string;
             cssClass: OMHC[keyof OMHC];
             href: URL;
         }>>((desc) => Object.freeze(desc))
         .forEach((desc) => {
-            const a = document.createElement("a");
-            a.href = (desc.href).toString();
-            a.referrerPolicy = "strict-origin-when-cross-origin";
-            a.rel = "noopener"; // Defaulted on modern browsers when target === "_blank".
-            a.target = "_blank";
+            const a = JsUtils.mkEl("a", [], {
+                href: (desc.href).toString(),
+                //referrerPolicy: "strict-origin-when-cross-origin",
+                target: "_blank",
+            });
             addToNav(a, desc);
         });
 

@@ -1,4 +1,5 @@
-import { Lang } from "lang/Lang";
+import { JsUtils } from "defs/JsUtils";
+import { Lang as _Lang } from "defs/TypeDefs";
 import { Game } from "game/Game";
 
 import type { VisibleTile } from "floor/VisibleTile";
@@ -10,8 +11,8 @@ import { Player } from "./Player";
 
 
 /**
- * There is at least one in online-client-side and offline games.
- * There are none for online-server-side games.
+ * There is at least one in online-clientside and offline games.
+ * There are none for online-serverside games.
  */
 export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
@@ -35,7 +36,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
      * Invariant: always matches the prefix of the {@link LangSeq} of
      * an unoccupied neighbouring {@link Tile}.
      */
-    #seqBuffer: Lang.Seq;
+    #seqBuffer: _Lang.Seq;
 
     readonly #langRemappingFunc: {(input: string): string};
 
@@ -103,8 +104,8 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         }
         if (key) {
             key = this.#langRemappingFunc(key);
-            if (!(Lang.Seq.REGEXP.test(key))) {
-                // throw RangeError(`The implementation of input transformation`
+            if (!(_Lang.Seq.REGEXP.test(key))) {
+                // throw new RangeError(`The implementation of input transformation`
                 // + ` in the currently selected language did not follow the rule`
                 // + ` of producing output matching the regular expression`
                 // + ` \"${Lang.Seq.REGEXP.source}\".`
@@ -121,7 +122,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         }
 
         for ( // loop through substring start offset of newSeqBuffer:
-            let newSeqBuffer: Lang.Seq = this.seqBuffer + key;
+            let newSeqBuffer: _Lang.Seq = this.seqBuffer + key;
             newSeqBuffer.length;
             newSeqBuffer = newSeqBuffer.substring(1)
         ) {
@@ -157,11 +158,10 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         this.status._notifyWillBecomeCurrent(this.game.grid.spotlightElems);
     }
 
-
-    public get seqBuffer(): Lang.Seq {
+    public get seqBuffer(): _Lang.Seq {
         return this.#seqBuffer;
     }
-
 }
+JsUtils.protoNoEnum(OperatorPlayer, ["_notifyWillBecomeCurrent"]);
 Object.freeze(OperatorPlayer);
 Object.freeze(OperatorPlayer.prototype);

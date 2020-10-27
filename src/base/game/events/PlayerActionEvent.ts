@@ -1,4 +1,4 @@
-import type { Lang } from "lang/Lang";
+import type { Lang } from "defs/TypeDefs";
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
@@ -49,8 +49,8 @@ export namespace PlayerActionEvent {
     export const INITIAL_REQUEST_ID = -1;
 
     export const EVENT_NAME = Object.freeze(<const>{
-        Bubble:   "player-bubble"  ,
-        Movement: "player-movement",
+        BUBBLE:   "player-bubble"  ,
+        MOVEMENT: "player-movement",
     });
 
 

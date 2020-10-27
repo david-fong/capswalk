@@ -1,8 +1,6 @@
-// Tell WebPack about the CSS chunk we want:
-require("assets/style/game/_barrel.css");
-
+import { GameEv, SkServer } from "defs/OnlineDefs";
 import {
-    applyMixins,
+    JsUtils,
     Game,
     Coord, VisibleTile,
     BrowserGameMixin,
@@ -38,14 +36,12 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
     /**
      * Note that this class does not extend `GameManager`.
      *
-     * @param socket -
-     * @param gameDesc - This should come from a Server event by the name
-     *      {@link Game.CtorArgs.EVENT_NAME}.
+     * @param gameSocket - Used to make a Game socket.
+     * @param gameDesc - This should come from a Server event by the name {@link GroupEv.CREATE}.
      */
-    // TODO.design @all these socket events: expose a way to remove them all when going back to the lobby.
     public constructor(
         onGameBecomeOver: () => void,
-        socket: SocketIOClient.Socket,
+        gameSocket: SocketIOClient.Socket,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(
@@ -55,36 +51,43 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
             playerStatusCtor: VisiblePlayerStatus,
             }, gameDesc,
         );
-        this.socket = socket;
+        this.socket = gameSocket;
         this._ctorBrowserGame();
 
-        this.socket.off(PlayerActionEvent.EVENT_NAME.Movement);
+        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.MOVEMENT)) throw new Error("never");
         this.socket.on(
-            PlayerActionEvent.EVENT_NAME.Movement,
+            PlayerActionEvent.EVENT_NAME.MOVEMENT,
             this.executePlayerMoveEvent.bind(this),
         );
-        this.socket.off(PlayerActionEvent.EVENT_NAME.Bubble);
+        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.BUBBLE)) throw new Error("never");
         this.socket.on(
-            PlayerActionEvent.EVENT_NAME.Bubble,
+            PlayerActionEvent.EVENT_NAME.BUBBLE,
             this.executePlayerBubbleEvent.bind(this),
         );
 
-        this.socket.off(Game.Serialization.EVENT_NAME);
+        this.socket.off(GameEv.RESET);
+        if (this.socket.hasListeners(GameEv.RESET)) throw new Error("never");
         this.socket.on(
-            Game.Serialization.EVENT_NAME,
+            GameEv.RESET,
             async (ser: Game.ResetSer<S>) => {
                 await this.reset();
                 this.deserializeResetState(ser);
                 // See the PlayOnline screen for the registration of
-                // listeners for the event SERVER_APPROVE_UNPAUSE.
-                this.socket.emit(Game.CtorArgs.EVENT_NAME_CLIENT_READY_UNPAUSE);
+                // listeners for the server confirmation.
+                this.socket.emit(GameEv.UNPAUSE);
             },
         );
-        this.socket.emit(Game.CtorArgs.EVENT_NAME_CLIENT_READY_RESET);
+        this.socket.emit(GameEv.RESET);
     }
 
+    /**
+     * @override
+     */
     declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
 
+    /**
+     * @override
+     */
     protected _createArtifPlayer(desc: Player.CtorArgs): Player<S> {
         return new Player(this, desc);
     }
@@ -98,21 +101,21 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
      * @override
      */
     public processMoveRequest(desc: PlayerActionEvent.Movement<S>): void {
-        this.socket.emit(PlayerActionEvent.EVENT_NAME.Movement, desc);
+        this.socket.emit(PlayerActionEvent.EVENT_NAME.MOVEMENT, desc);
     }
 
     /**
      * Normally calls {@link Game#processBubbleMakeExecute}. However,
-     * there, that should be done as a callback to an event created by
+     * here, that should be done as a callback to an event created by
      * the server.
      *
      * @override
      */
     public processBubbleRequest(desc: PlayerActionEvent.Bubble): void {
-        this.socket.emit(PlayerActionEvent.EVENT_NAME.Bubble, desc);
+        this.socket.emit(PlayerActionEvent.EVENT_NAME.BUBBLE, desc);
     }
 }
 export interface OnlineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
-applyMixins(OnlineGame, [BrowserGameMixin,]);
+JsUtils.applyMixins(OnlineGame, [BrowserGameMixin]);
 Object.freeze(OnlineGame);
 Object.freeze(OnlineGame.prototype);

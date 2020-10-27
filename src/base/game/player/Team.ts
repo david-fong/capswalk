@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 
@@ -15,14 +16,16 @@ export class Team<S extends Coord.System> {
 
     public constructor(teamId: Team.Id, members: TU.RoArr<Player<S>>) {
         if (members.length === 0) {
-            throw Error("Teams must have at least one member.");
+            throw new Error("Teams must have at least one member.");
         }
         this.id = teamId;
-        this.members = members;
+        this.members = members; // If paranoid, do a shallow copy.
         this.#elimOrder
             = (this.members.every((member) => member.status.noCheckGameOver))
             ? Team.ElimOrder.IMMORTAL
             : Team.ElimOrder.STANDING;
+
+        JsUtils.propNoWrite(this as Team<S>, ["id", "members"]);
     }
 
     public reset(): void {
@@ -50,7 +53,7 @@ export class Team<S extends Coord.System> {
     }
     public set elimOrder(teamElimOrder: number) {
         if (this.elimOrder === Team.ElimOrder.IMMORTAL) {
-            throw Error("Cannot change the elimination status of an immortal team.");
+            throw new TypeError("Cannot change the elimination status of an immortal team.");
         }
         this.#elimOrder = teamElimOrder;
     }
@@ -76,7 +79,6 @@ export namespace Team {
          */
         export const STANDING = 0;
     }
-
 }
 Object.freeze(Team);
 Object.freeze(Team.prototype);

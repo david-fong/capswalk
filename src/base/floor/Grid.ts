@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
@@ -34,6 +35,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
         this.static = desc.gridClass;
         this.dimensions = desc.dimensions;
         this.tile = new TileGetter(this);
+        JsUtils.propNoWrite(this as Grid<S>, ["static", "dimensions", "tile"]);
     }
 
     /**
@@ -80,12 +82,25 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
     public abstract getUntToward(intendedDest: Coord[S], sourceCoord: Coord[S]): Tile<S>;
 
     /**
+     * The opposite of `getUntToward`.
      *
      * @param avoidCoord -
      * @param sourceCoord -
      */
-    // TODO.doc
     public abstract getUntAwayFrom(avoidCoord: Coord[S], sourceCoord: Coord[S]): Tile<S>;
+
+    /**
+     * This action is commonly performed by the GameManager when
+     * shuffling in new CSP's to its grid. Grid implementations are
+     * encouraged to override it if they have a more efficient way to
+     * produce the same result.
+     */
+    public getDestsFromSourcesTo(originCoord: Coord[S]): Array<Tile<S>> {
+        return Array.from(new Set(
+            this.tile.sourcesTo(originCoord).get
+                .flatMap((sourceToTarget) => this.tile.destsFrom(sourceToTarget.coord).get)
+        ));
+    }
 
     public getRandomCoord(): Coord[S] {
         return this.static.getRandomCoord(this.dimensions);
@@ -184,6 +199,16 @@ export namespace Grid {
          * @param bounds -
          */
         getArea(bounds: Dimensions<S>): number;
+
+        /**
+         * \*Assuming the grid is lattice-like and is partitioned into
+         * highly similar patches where each patch has a center, and
+         * all tiles in the patch are closer to that center tile than
+         * to any other patch's center tile. Returns the minimum number
+         * of tiles that must be visited to get from the center of one
+         * patch to any neighbouring patch.
+         */
+        getDiameterOfLatticePatchHavingArea(area: number): number;
 
         /**
          * @returns

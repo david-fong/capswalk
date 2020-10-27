@@ -5,8 +5,9 @@ import express  = require("express");
 import io       = require("socket.io");
 import type * as net from "net";
 
+import { JsUtils } from "defs/JsUtils";
 import { Group } from "./Group";
-import { SkServer as _SnakeyServer } from "defs/OnlineDefs";
+import { SkServer, SkServer as _SnakeyServer } from "defs/OnlineDefs";
 
 
 /**
@@ -25,6 +26,10 @@ export class SnakeyServer extends _SnakeyServer {
      */
     private readonly allGroups: Map<string, Group>;
 
+    private readonly _joinerSocketListeners: Readonly<{
+        [evName : string]: (this: SnakeyServer, socket: io.Socket, ...args: any[]) => void;
+    }>;
+
     /**
      *
      * @param host - The hostname of the server. This may be an IP address.
@@ -39,14 +44,14 @@ export class SnakeyServer extends _SnakeyServer {
         this.app    = express();
         this.http   = http.createServer({}, this.app);
         this.io     = io(this.http, {
-            serveClient: false,
-            // Do not server socket.io-client. It is bundled into a
-            // client chunk on purpose so that a client can choose to
-            // fetch all static page resources from another server,
-            // namely, GitHub Pages, in order to reduce the downstream
-            // load on a LAN-hosted SnakeyServer.
+            // Note: socket.io.js is alternatively hosted on GitHub Pages.
+            origins: "*:*", // TODO.learn how can we use this?
+            cookie: false, // https://github.com/socketio/socket.io/issues/2276#issuecomment-147184662
         });
         this.allGroups = new Map();
+        JsUtils.propNoWrite(this as SkServer, [
+            "http", "app", "io", "allGroups",
+        ]);
 
         // At runtime, __dirname resolves to ":/dist/server/"
         const PROJECT_ROOT = path.resolve(__dirname, "../..");
@@ -54,10 +59,10 @@ export class SnakeyServer extends _SnakeyServer {
         this.app.get("/", (req, res) => {
             res.sendFile(path.resolve(PROJECT_ROOT, "index.html"));
         });
-        this.app.use("/dist",   express.static(path.resolve(PROJECT_ROOT, "dist")));
+        this.app.use("/dist/client", express.static(path.resolve(PROJECT_ROOT, "dist", "client")));
         this.app.use("/assets", express.static(path.resolve(PROJECT_ROOT, "assets")));
 
-        this.http.listen(<net.ListenOptions>{ port, host, }, (): void => {
+        this.http.listen(<net.ListenOptions>{ port, host }, (): void => {
             const info = <net.AddressInfo>this.http.address();
             console.log(`\n\nServer mounted to: \`${info.address}${info.port}\` using ${info.family}.\n`);
             console.log("This host can be reached at any of the following addresses:\n");
@@ -67,6 +72,40 @@ export class SnakeyServer extends _SnakeyServer {
             });
             console.log("");
         });
+
+        this._joinerSocketListeners = Object.freeze({
+            [Group.Exist.EVENT_NAME]: (socket: io.Socket, desc: Group.Query.RequestCreate): void => {
+                // A client is requesting a new group to be created.
+                // If a group with such a name already exists, or if the
+                // requested name or pass-phrases don't follow the required
+                // format, completely ignore the request.
+                if (!(desc.groupName) || this.allGroups.has(desc.groupName)
+                 ||   desc.groupName.length > Group.Name.MaxLength
+                 || !(desc.groupName.match(Group.Name.REGEXP))
+                 ||   desc.passphrase.length > Group.Passphrase.MaxLength
+                 || !(desc.passphrase.match(Group.Passphrase.REGEXP))
+                ) {
+                    socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.NOPE);
+                    return;
+                }
+
+                this.allGroups.set(
+                    desc.groupName,
+                    new Group(Object.freeze({
+                        namespace:  this.io.of(SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + desc.groupName),
+                        name:       desc.groupName,
+                        passphrase: desc.passphrase,
+                        deleteExternalRefs: () => this.allGroups.delete(desc.groupName),
+                        initialTtl: Group.DEFAULT_TTL,
+                    })),
+                );
+                // Notify all sockets connected to the joiner namespace
+                // of the new namespace created for the new group session:
+                socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
+            },
+        });
+        JsUtils.instNoEnum( this as SnakeyServer, ["_joinerSocketListeners"]);
+        JsUtils.propNoWrite(this as SnakeyServer, ["_joinerSocketListeners"]);
 
         this.io.of(SnakeyServer.Nsps.GROUP_JOINER)
             .on("connection", this.onJoinerNspsConnection.bind(this));
@@ -87,8 +126,9 @@ export class SnakeyServer extends _SnakeyServer {
         socket.emit(
             Group.Exist.EVENT_NAME,
             (() => {
+                // TODO.design current implementation may suffer when there are many many groups.
                 const build: Group.Query.NotifyStatus = {};
-                Array.from(this.allGroups).forEach(([groupName, group,]) => {
+                Array.from(this.allGroups).forEach(([groupName, group]) => {
                     build[groupName] = (group.isCurrentlyPlayingAGame)
                     ? Group.Exist.Status.IN_GAME
                     : Group.Exist.Status.IN_LOBBY;
@@ -96,38 +136,8 @@ export class SnakeyServer extends _SnakeyServer {
                 return build;
             })(),
         );
-        socket.on(Group.Exist.EVENT_NAME, (desc: Group.Query.RequestCreate): void => {
-            // A client is requesting a new group to be created.
-            // If a group with such a name already exists, or if the
-            // requested name or pass-phrases don't follow the required
-            // format, completely ignore the request.
-            if (!desc.groupName || this.allGroups.has(desc.groupName)
-            ||  desc.groupName.length > Group.Name.MaxLength
-            || !desc.groupName.match(Group.Name.REGEXP)
-            ||  desc.passphrase.length > Group.Passphrase.MaxLength
-            || !desc.passphrase.match(Group.Passphrase.REGEXP)
-            ) {
-                socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.NOPE);
-            }
-
-            this.allGroups.set(
-                desc.groupName,
-                new Group(Object.freeze({
-                    namespace:  this.io.of(SnakeyServer.Nsps.GROUP_LOBBY_PREFIX + desc.groupName),
-                    name:       desc.groupName,
-                    passphrase: desc.passphrase,
-                    deleteExternalRefs: () => this.allGroups.delete(desc.groupName),
-                    initialTtl: Group.DEFAULT_TTL,
-                })),
-            );
-            // Notify the group-creator that the group has been created and can now be joined.
-            socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
-
-            // Notify all sockets connected to the joiner namespace
-            // of the new namespace created for the new group session:
-            socket.nsp.emit(Group.Exist.EVENT_NAME, <Group.Query.NotifyStatus>{
-                [desc.groupName]: Group.Exist.Status.IN_LOBBY,
-            });
+        Object.entries(this._joinerSocketListeners).forEach(([evName, callback]) => {
+            socket.on(evName, callback.bind(this, socket));
         });
     }
 }

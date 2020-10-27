@@ -1,7 +1,6 @@
-import { Player } from 'defs/TypeDefs';
+import { Player } from "defs/TypeDefs";
 
 /**
- *
  */
 export abstract class SkServer { }
 export namespace SkServer {
@@ -12,8 +11,9 @@ export namespace SkServer {
      * client and the server code, which both require access to it.
      */
     export const enum Nsps {
-        GROUP_LOBBY_PREFIX  = "/group-",
-        GROUP_JOINER        = "/joiner",
+        GROUP_JOINER        = "/joiner.",
+        GROUP_LOBBY_PREFIX  = "/group.",
+        GROUP_GAME_PREFIX   = "/group-game.",
     }
 }
 Object.freeze(SkServer);
@@ -21,7 +21,6 @@ Object.freeze(SkServer.prototype);
 
 
 /**
- *
  */
 export abstract class Group { }
 export namespace Group {
@@ -58,15 +57,16 @@ export namespace Group {
     }
     export type Passphrase = string;
     export namespace Passphrase {
-        export const REGEXP = /(?:[a-zA-Z0-9:-]+)/;
+        export const REGEXP = /(?:[a-zA-Z0-9:-]*)/;
         export const MaxLength = 30;
     }
 
-    export const JoinerReconnectionAttempts = 2;
+    export const GameServerReconnectionAttempts = 2;
     export const DEFAULT_TTL = 20; // seconds
 
     export namespace Exist {
         export const EVENT_NAME = "group-exist";
+
         /**
          * Sent by the client to request the creation of a new group.
          *
@@ -102,3 +102,48 @@ export namespace Group {
 }
 Object.freeze(Group);
 Object.freeze(Group.prototype);
+
+
+/**
+ */
+export const enum GroupEv {
+    /**
+     * On the clientside, this event is registered to the group socket.
+     */
+    CREATE_GAME = "group-game-create",
+}
+
+/**
+ */
+export const enum GameEv {
+    /**
+     */
+    CREATE_GAME = "game-create",
+
+    /**
+     * Upon constructing a _new_ game, the server waits for all clients
+     * to send this event to indicate that they have finished building
+     * any necessary HTML, and are now ready to receive the serialized
+     * reset-state.
+     */
+    RESET = "game-reset",
+
+    /**
+     * Client uses this event during reset procedure after receiving
+     * the serialized reset-state to indicate that it is ready for
+     * the game to be un-paused.
+     */
+    UNPAUSE = "game-unpause",
+
+    /**
+     */
+    PAUSE = "game-pause",
+
+    /**
+     * The server will send this event with no arguments to indicate
+     * that everyone must now return to the lobby, or with a socket
+     * ID as an argument to indicate that all players operated by
+     * a client with that socket ID are out of the game.
+     */
+    RETURN_TO_LOBBY = "game-return-to-lobby",
+};

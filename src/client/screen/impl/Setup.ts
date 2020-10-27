@@ -1,13 +1,12 @@
-import { Lang } from "defs/TypeDefs";
-import { Coord } from "floor/Tile";
+import { Lang, Player } from "defs/TypeDefs";
+import { Coord } from "floor/Coord";
+import type { Player as _Player } from "game/player/Player";
 import type { Game } from "game/Game";
 import { SkPickOne } from "../../utils/SkPickOne";
 
-import { OmHooks, StorageHooks, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks, StorageHooks, SkScreen } from "../SkScreen";
 const OMHC = OmHooks.Screen.Impl.Setup.Class;
 
-
-type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
 
 /**
  * What coordinate systems are available will depend on what language
@@ -17,7 +16,7 @@ type SID_options = SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE;
  * behaviour of the `_nextBtn` and `_prevBtn` buttons.
  */
 // TODO.learn how to use the IndexDB web API.
-export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID> {
+export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE> extends SkScreen<SID> {
 
     protected readonly langSel: _SetupScreen.LangPickOne;
     protected readonly langWeightExaggeration: HTMLInputElement;
@@ -36,6 +35,8 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
 
         this._createLangWeightExaggerationInput();
 
+        JsUtils.propNoWrite(this as _SetupScreen<SID>, ["langSel", "langWeightExaggeration"]);
+
         this.baseElem.appendChild(this.nav.next);
         this._loadLastUsedPreset();
     }
@@ -44,21 +45,21 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
         const lwe
             // @ts-expect-error : RO=
             = this.langWeightExaggeration
-            = document.createElement("input");
-        lwe.classList.add(OMHC.LANG_WEIGHT_EXAGG);
-        lwe.type = "range";
-        lwe.min = "0";
-        lwe.max = Lang.WeightExaggeration.MAX.toString();
-        lwe.step = "any";
-        lwe.value = "1";
+            = JsUtils.mkEl("input", [OMHC.LANG_WEIGHT_EXAGG], {
+                type: "range",
+                min: "0",
+                max: Lang.WeightExaggeration.MAX.toString(),
+                step: "any",
+                value: "1",
+            });
         {
-            const list = document.createElement("datalist");
+            const list = JsUtils.mkEl("datalist", []);
             list.id = OmHooks.Screen.Impl.Setup.Id.LANG_WEIGHT_EXAGGERATION_LIST;
-            [{val:0,label:"0",}, {val:1,label:"1"},].forEach((tickDesc) => {
-                const opt = document.createElement("option");
-                opt.value = tickDesc.val.toString();
-                opt.label = tickDesc.label;
-                list.appendChild(opt);
+            [{val:0,label:"0"}, {val:1,label:"1"}].forEach((tickDesc) => {
+                list.appendChild(JsUtils.mkEl("option", [], {
+                    value: tickDesc.val.toString(),
+                    label: tickDesc.label,
+                }));
             });
             this.baseElem.appendChild(list);
         }
@@ -69,11 +70,8 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(navDir: SkScreen.NavDir, args: SkScreen.EntranceArgs[SID]): Promise<void> {
-        window.setTimeout(() => {
-            this.nav.next.focus();
-        }, 100); // <-- An arbitrary short period of time. See super doc.
-        return;
+    public getRecommendedFocusElem(): HTMLElement {
+        return this.nav.next;
     }
 
     /**
@@ -81,16 +79,16 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
      */
     private _loadLastUsedPreset(): void {
         // TODO.impl
-        const lastUsedPresetId = localStorage.getItem(StorageHooks.LocalKeys.GAME_PRESET);
+        const lastUsedPresetId = this.top.storage.Local.gamePresetId;
     }
 
     /**
      * A helper for going to the next screen.
      */
-    protected _parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
+    protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
         // TODO.impl
         const args: TU.NoRo<Game.CtorArgs<Game.Type.OFFLINE,Coord.System>>
-            = Object.assign({}, _SetupScreen.DEFAULT_PRESET);
+            = Object.assign({}, _SetupScreen.DEFAULT_PRESET());
             // ^temporary default until _loadLastUsedPreset is implemented.
         args.langId = this.langSel.confirmedOpt.desc.id;
         args.langWeightExaggeration = parseFloat(this.langWeightExaggeration.value);
@@ -99,9 +97,7 @@ export abstract class _SetupScreen<SID extends SID_options> extends SkScreen<SID
 }
 export namespace _SetupScreen {
 
-    // TODO.impl If we keep this, use a recursive Object.freeze.
-    // Currently not frozen to allow for easier testing.
-    export const DEFAULT_PRESET = <Game.CtorArgs<Game.Type.OFFLINE,Coord.System>>{
+    export const DEFAULT_PRESET = (): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> => { return {
         coordSys: Coord.System.EUCLID2,
         gridDimensions: {
             height: 21,
@@ -110,20 +106,20 @@ export namespace _SetupScreen {
         averageFreeHealthPerTile: 1.0 / 45.0,
         langWeightExaggeration: 1.0,
         langId: "engl-low",
-        playerDescs: [{
+        playerDescs: ((): TU.RoArr<_Player.CtorArgs.PreIdAssignment> => [{
             isALocalOperator: false,
-            familyId:   <const>"CHASER",
+            familyId:   "CHASER",
             teamId:     1,
-            socketId:   undefined,
+            clientId:   undefined,
             username:   "chaser1",
             avatar:     undefined,
             noCheckGameOver: true,
             familyArgs: {/* Uses all defaults. */},
         }, {
             isALocalOperator: false,
-            familyId:   <const>"CHASER",
+            familyId:   "CHASER",
             teamId:     1,
-            socketId:   undefined,
+            clientId:   undefined,
             username:   "chaser2",
             avatar:     undefined,
             noCheckGameOver: true,
@@ -133,15 +129,15 @@ export namespace _SetupScreen {
                 healthReserve: 5.0,
                 keyPressesPerSecond: 1.8,
             },
-        },],
-    };
+        }])(), // <- Wrap in a function for better type checking.
+    }; };
     /**
      *
      */
     export class LangPickOne extends SkPickOne<LangPickOne.Option> {
         public constructor() {
             super();
-            this.baseElem.classList.add(OMHC.LANG_SEL)
+            this.baseElem.classList.add(OMHC.LANG_SEL);
             Lang.FrontendDescs.forEach((desc) => {
                 this.addOption(new LangPickOne.Option(desc));
             });

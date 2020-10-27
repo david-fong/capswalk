@@ -1,0 +1,70 @@
+
+/* If anything goes into fullscreen mode: */
+::backdrop {
+    background-color: var(--colour-mainBg);
+}
+@media (light-level: dim) {
+    body {
+        filter: brightness(0.7);
+    }
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family:
+        "Trebuchet MS",
+        "Lucida Sans Unicode",
+        "MS PGothic"            /* Japanese */
+        ;
+    font-weight:    bold;
+    color:          var(--colour-mainFg);
+    text-align:     center;
+    transition:     filter 0.5s ease-in-out;
+}
+
+:disabled {
+    cursor:         not-allowed;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: transparent;
+    scrollbar-track-color: var(--colour-tileBd);
+}
+::-webkit-scrollbar {
+    width:  8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background:     var(--colour-tileBd);
+    border-radius:  30px;
+    border: 2px solid transparent;
+}
+::-webkit-scrollbar-corner {
+    visibility:     hidden;
+}
+
+table {
+    border-spacing: 0;
+}
+button {
+    font:       inherit;
+    color:      inherit;
+    padding:    0px;
+    background-color: var(--colour-tileBg);
+}
+button:disabled {
+    opacity:    0.7;
+}
+input {
+    font:           inherit;
+    text-align:     inherit;
+    box-sizing:     border-box;
+}
