@@ -48,10 +48,10 @@ export class ScreenTransition {
         if (request.intermediateTransitionTrigger !== undefined) {
             await this._triggerCssTransition(request.intermediateTransitionTrigger);
         }
+        await request.beforeUnblurAwait;
         if (request.beforeUnblur !== undefined) {
             request.beforeUnblur();
         }
-        await request.whileBlur;
         await this._triggerCssTransition(() => {
             gdStyle.opacity = "0.0";
             gdStyle.pointerEvents = "none";
@@ -76,7 +76,10 @@ export namespace ScreenTransition {
     /**
      */
     export type Request = Readonly<{
-        whileBlur?: Promise<any>,
+        /**
+         * This will be awaited before calling `beforeUnblur`.
+         */
+        beforeUnblurAwait?: Promise<any>,
         intermediateTransitionTrigger?: () => void,
         /**
          * This is done after `intermediateTransitionTrigger` finishes.

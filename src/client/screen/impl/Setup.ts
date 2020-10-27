@@ -70,13 +70,8 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(
-        navDir: SkScreen.NavDir,
-        args: SkScreen.EntranceArgs[SID],
-    ): Promise<SkScreen.EntranceRetVal> {
-        return {
-            elemToFocus: this.nav.next,
-        };
+    public getRecommendedFocusElem(): HTMLElement {
+        return this.nav.next;
     }
 
     /**

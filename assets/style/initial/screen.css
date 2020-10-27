@@ -40,7 +40,7 @@ takes a long time to arrive. */
 #screen-tint {
     opacity:        0.0;
     transition-property: opacity, background-color;
-    transition-duration: 650.0ms;
+    transition-duration: 333.0ms;
     transition-timing-function: ease-in-out;
     background-color: var(--colour-mainBg);
 }

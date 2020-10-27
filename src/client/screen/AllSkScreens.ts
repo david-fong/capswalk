@@ -25,7 +25,10 @@ export class AllSkScreens {
 
     #currentScreen: SkScreen<SkScreen.Id>;
 
+    readonly #screenTransition: TopLevel["transition"];
+
     public constructor(top: TopLevel, baseElem: HTMLElement) {
+        this.#screenTransition = top.transition;
         baseElem.setAttribute("role", "presentation");
         // Setting role="presentation" is similar to setting "display: content"
         // Setting aria-hidden="true" is similar to setting "visibility: hidden"
@@ -71,28 +74,36 @@ export class AllSkScreens {
         destId: SID,
         ctorArgs: SkScreen.EntranceArgs[SID],
     ): Promise<boolean> {
+        const currScreen = this.currentScreen;
         const destScreen = this.dict[destId];
-        if (this.currentScreen === destScreen) {
+        if (currScreen === destScreen) {
             // I don't see why this would ever need to happen.
             // If we find need to write code that allows for this,
             // rewrite the return-value spec.
             throw new Error("never");
         }
+        this.#currentScreen = destScreen;
+
         const navDir = SkScreen.GET_NAV_DIR({
-            curr: this.currentScreen?.screenId,
+            curr: currScreen?.screenId,
             dest: destId,
         });
-        if ((this.currentScreen === undefined) || this.currentScreen._leave(navDir)) {
+        if ((currScreen === undefined) || currScreen._leave(navDir)) {
             // Note on above "nullish coalesce": Special case entered
             // during construction when there is no currentScreen yet.
             // Any confirm-leave prompts made to the user were OK-ed.
             type EnterFunc = (navDir: SkScreen.NavDir, args: typeof ctorArgs) => Promise<void>;
-            await (destScreen._enter as EnterFunc)(navDir, ctorArgs);
-            this.currentScreen?._onAfterLeave();
-            this.#currentScreen = destScreen;
+            await this.#screenTransition.do({
+                beforeUnblurAwait: (destScreen._enter as EnterFunc)(navDir, ctorArgs),
+                beforeUnblur: () => {
+                    currScreen?._onAfterLeave();
+                    destScreen._onAfterEnter();
+                    destScreen.getRecommendedFocusElem()?.focus();
+                },
+            });
             return true;
         }
-        return true;
+        return false;
     }
 
     public get currentScreen(): SkScreen<SkScreen.Id> {

@@ -113,7 +113,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     protected async _abstractOnBeforeEnter(
         navDir: SkScreen.NavDir,
         args: SkScreen.EntranceArgs[SID],
-    ): Promise<SkScreen.EntranceRetVal> {
+    ): Promise<void> {
         if (navDir === "forward") {
             this.nav.next.disabled = !this.top.clientIsGroupHost;
             this._players.clear();
@@ -140,7 +140,12 @@ export class GroupLobbyScreen extends SkScreen<SID> {
                 });
             },
         );
+    }
 
+    /**
+     * @override
+     */
+    public getRecommendedFocusElem(): HTMLElement {
         let elemToFocus: HTMLElement | undefined
             = (!this.in.username.validity.valid) ? this.in.username
             : (!this.in.teamId.validity.valid)   ? this.in.teamId
@@ -148,7 +153,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         if (elemToFocus === undefined) {
             elemToFocus = (this.top.clientIsGroupHost) ? this.nav.next : this.in.teamId;
         }
-        return { elemToFocus };
+        return elemToFocus;
     }
 
     /**

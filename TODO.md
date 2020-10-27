@@ -20,8 +20,6 @@
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Implement Pause and Unpause events over network.
 1. Server authentication is not working.
-1. Debug and handle goToScreen when user navigates forward in history.
-    - If I remember correctly, the forward history navigation cannot be prevented, but perhaps at least the keyboard shortcut can be.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).

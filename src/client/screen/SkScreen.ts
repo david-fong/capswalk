@@ -26,7 +26,6 @@ const OMHC = OmHooks.Screen.Class;
 
 /**
  *
- *
  * NOTE: Design decision: Isolate from the rest of the architecture.
  * Ie. Do not give it circular / upward references to anything that
  * references it.
@@ -128,14 +127,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
             this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
             this.#hasLazyLoaded = true;
         }
-
-        this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
-        this.baseElem.setAttribute("aria-hidden", "false");
-        const entranceRetval = await this._abstractOnBeforeEnter(navDir, args);
-        if (entranceRetval.elemToFocus !== undefined) {
-            setTimeout(() => { entranceRetval.elemToFocus!.focus(); }, 100);
-            // For some reason, a small delay is needed.
-        }
+        await this._abstractOnBeforeEnter(navDir, args);
     }
 
     /**
@@ -153,9 +145,23 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
     /**
      * **Do not override.**
      */
+    public _onAfterEnter(): void {
+        this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
+        this.baseElem.setAttribute("aria-hidden", "false");
+    }
+
+    /**
+     * **Do not override.**
+     */
     public _onAfterLeave(): void {
         delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT]; // non-existant.
         this.baseElem.setAttribute("aria-hidden", "true");
+    }
+
+    /**
+     */
+    public getRecommendedFocusElem(): HTMLElement | undefined {
+        return undefined;
     }
 
     /**
@@ -168,12 +174,13 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      *
      * The default implementation does nothing. Overriding implementations
      * from direct subclasses can safely skip making a supercall.
+     *
+     * Must not call `this.requestGoToScreen`.
      */
     protected async _abstractOnBeforeEnter(
         navDir: SkScreen.NavDir,
         args: SkScreen.EntranceArgs[SID],
-    ): Promise<SkScreen.EntranceRetVal> {
-        return {};
+    ): Promise<void> {
     };
 
     /**
@@ -187,6 +194,8 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
      * This method will not be called upon navigating to a different
      * page, so actions such as writes to persisted storage should not
      * be placed here as an optimization.
+     *
+     * Must not call `this.requestGoToScreen`.
      */
     protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
         return true;
@@ -247,9 +256,6 @@ export namespace SkScreen {
         [ Id.SETUP_ONLINE  ]: {};
         [ Id.PLAY_ONLINE   ]: Game.CtorArgs<Game.Type.ONLINE,Coord.System>;
     }
-    export type EntranceRetVal = TU.NoRo<{
-        elemToFocus?: HTMLElement;
-    }>;
     /**
      * Note that forward navigation has no obligation to comply with
      * the navigation tree.

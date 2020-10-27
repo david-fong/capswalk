@@ -59,13 +59,8 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     /**
      * @override
      */
-    protected async _abstractOnBeforeEnter(
-        navDir: SkScreen.NavDir,
-        args: SkScreen.EntranceArgs[SID],
-    ): Promise<SkScreen.EntranceRetVal> {
-        return {
-            elemToFocus: (this.groupSocket !== undefined) ? this.in.groupName : this.in.hostUrl,
-        };
+    public getRecommendedFocusElem(): HTMLElement {
+        return (this.groupSocket !== undefined) ? this.in.groupName : this.in.hostUrl;
     }
 
     public get state(): State {
