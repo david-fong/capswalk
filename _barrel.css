@@ -1,0 +1,572 @@
+
+.fill-parent {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    overflow: hidden hidden;
+}
+
+.text-select-disabled {
+    user-select:        none;
+    -moz-user-select:   none;
+    -webkit-user-select:none;
+    -ms-user-select:    none;
+}
+
+.center-contents {
+    display:            inline-flex;
+    justify-content:    center;
+    align-content:      center;
+    justify-items:      center;
+    align-items:        center;
+}
+.stack-contents {
+    position:   relative;
+}
+.stack-contents > * {
+    position:   absolute;
+}
+
+
+/* Does not imposes effects on external sizing
+calculations except by setting its own items'
+margins and padding, and its own padding. */
+.sk-input-group {
+    background-color: var(--colour-mainBg);
+    padding: var(--spacing);
+    border-radius: calc(
+        var(--border-radius) + (2.0 * var(--spacing))
+    );
+}
+.sk-input-group > * {
+    contain:        strict;
+    position:       relative;
+}
+.sk-input-group input.sk-input-group-item {
+    padding:        0px;
+}
+.sk-input-group input.sk-input-group-item:invalid {
+    border-style:   dotted;
+}
+.sk-input-group .sk-input-group-item {
+    border-radius:  var(--border-radius);
+    margin:         var(--spacing);
+    border:   0px solid var(--colour-tileBg);
+    color:              var(--colour-tileFg);
+    background-color:   var(--colour-tileBg);
+    transition: all 0.15s ease-in;
+}
+/* Note: The javascript focuses these on pointer entry. */
+.sk-input-group .sk-input-group-item:focus {
+    outline:        none;
+    border-color:   var(--colour-tileBd);
+    box-shadow:     inset 0px 0px 20px #00000040;
+    text-shadow:    0px 0px 8px #000000ff;
+    animation: 0.4s ease-in-out -0.5s infinite alternate sk-input-group-item-focus;
+}
+.sk-input-group:focus-within .sk-input-group-item:not(:focus) {
+    filter:         brightness(0.9);
+    opacity:        0.6;
+}
+@keyframes sk-input-group-item-focus {
+    from {
+        margin: calc(var(--spacing) / 3.0);
+        border-width: calc(1.2 * var(--spacing));
+    }
+    to {
+        margin: calc(var(--spacing) * 2.0 / 3.0);
+        border-width: calc(1.4 * var(--spacing));
+    }
+}
+
+
+.sk-pick-one {
+    display:        flex;
+    flex-direction: column;
+    align-items:    stretch;
+    overflow-x:     hidden;
+    overflow-y:     auto;
+
+    border-color:   var(--colour-tileBd);
+    text-align:     start;
+}
+.sk-pick-one:focus {
+    outline:        none;
+}
+
+.sk-pick-one--opt {
+    overflow:   hidden hidden;
+    cursor:     default;
+    transition-property: opacity;
+    transition-duration: 0.35s;
+    transition-timing-function: ease-out;
+}
+.sk-pick-one:focus .sk-pick-one--opt:not([aria-active-descendant="true"]):not([aria-selected="true"]) {
+    opacity:    0.4;
+}
+.sk-pick-one--opt[aria-selected="true"] {
+    text-decoration: underline;
+}
+
+.sk-pick-one[aria-invalid="true"] {
+    border-style: dotted;
+    border-width: 0.3rem;
+}
+
+
+[data-sk-colour-scheme="snakey"] {
+    --colour-mainFg: #e9eef3;
+    --colour-mainBg: #3f5e77;
+    --colour-tileFg: #e9eef3;
+    --colour-tileBg: #2e3b48;
+    --colour-tileBd: #ffffff;
+    --colour-healthFg: #21352e;
+    --colour-healthBg: #4edf8f;
+    --colour-pFaceMe: #35e7ff;
+    --colour-pFaceMeOppo: #937ad8;
+    --colour-pFaceTeammate: #f8d150;
+    --colour-pFaceImtlTeammate: #f8d150;
+    --colour-pFaceOpponent: #ec4daf;
+    --colour-pFaceImtlOpponent: #e23fa3;
+}
+
+/* If anything goes into fullscreen mode: */
+::backdrop {
+    background-color: var(--colour-mainBg);
+}
+@media (light-level: dim) {
+    body {
+        filter: brightness(0.7);
+    }
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family:
+        "Trebuchet MS",
+        "Lucida Sans Unicode",
+        "MS PGothic"            /* Japanese */
+        ;
+    font-weight:    bold;
+    color:          var(--colour-mainFg);
+    text-align:     center;
+    transition:     filter 0.5s ease-in-out;
+}
+
+:disabled {
+    cursor:         not-allowed;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: transparent;
+    scrollbar-track-color: var(--colour-tileBd);
+}
+::-webkit-scrollbar {
+    width:  8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background:     var(--colour-tileBd);
+    border-radius:  30px;
+    border: 2px solid transparent;
+}
+::-webkit-scrollbar-corner {
+    visibility:     hidden;
+}
+
+table {
+    border-spacing: 0;
+}
+button {
+    font:       inherit;
+    color:      inherit;
+    padding:    0px;
+    background-color: var(--colour-tileBg);
+}
+button:disabled {
+    opacity:    0.7;
+}
+input {
+    font:           inherit;
+    text-align:     inherit;
+    box-sizing:     border-box;
+}
+
+
+#all-screens-container {
+    display:    contents;
+}
+
+.sk-screen {
+    /* Make sure that each display starts its own
+    stacking context. Note that as a result of using
+    the contain property on this class and possibly
+    on some of its children, the visibility property
+    will not be sufficient to hide inactive screens. */
+    contain:    strict;
+    position:   absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    overflow:   auto;
+}
+.sk-screen:not([data-current]) {
+    display: none;
+}
+
+
+/* Special instances of non-navigated screens that
+are explicitly marked up in the HTML. The background
+is part of the markup- not generated by javascript,
+so it will always appear even if the initial script
+takes a long time to arrive. */
+#background {
+    /* If will-change is on, the texture overlay
+    screen doesn't "see" the background layer. */
+    /* will-change:    transform; */
+    z-index:        -10000;
+    display:        initial;
+    background-color: var(--colour-mainBg);
+}
+#screen-tint, #screen-texture {
+    pointer-events: none;
+    z-index:        10000;
+    display:        initial;
+}
+#screen-tint {
+    opacity:        0.0;
+    transition-property: opacity, background-color;
+    transition-duration: 333.0ms;
+    transition-timing-function: ease-in-out;
+    background-color: var(--colour-mainBg);
+}
+#screen-texture {
+    background-size: 13.5rem;
+    mix-blend-mode: overlay;
+    background-color: #919191;
+    /* Image courtesy of toptal patterns: */
+    background-image: url(images/textures/cheap_diagonal_fabric.png);
+    background-blend-mode: color-burn;
+    filter: contrast(2.3);
+}
+
+
+.screen-home {
+    display:        flex;
+}
+
+.screen-home--nav {
+    --spacing: 6px;
+    --border-radius: 1rem;
+    height: 30em; max-height: 80vmin;
+    width:  30em; max-width:  80vmin;
+    display:        grid;
+    grid-template:
+    "pofl pofl pofl ponl" 3fr
+    "htpl htpl htpl hths" 1fr
+    "colr colr colr .   " 1fr
+    "repo bugs .    .   " 1fr
+    / 1fr  1fr  1fr  3fr  ;
+}
+.screen-home--nav > * {
+    border-style:   double !important;
+}
+.screen-home--nav--play-offline  { grid-area: pofl; }
+.screen-home--nav--play-online   { grid-area: ponl; }
+.screen-home--nav--how-to-play   { grid-area: htpl; }
+.screen-home--nav--how-to-host   { grid-area: hths; }
+.screen-home--nav--colour-scheme { grid-area: colr; }
+.screen-home--nav--goto-repo     { grid-area: repo; text-decoration: none; }
+.screen-home--nav--report-issue  { grid-area: bugs; text-decoration: none; }
+
+
+.screen-colour {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+}
+
+.screen-colour .screen--prev-button {
+    position: absolute;
+    margin: 0.7em;
+    padding: 0.5em;
+    border-radius: 0.5em;
+}
+
+.screen-colour .sk-pick-one {
+    --padding: 0.5em;
+    gap: var(--padding);
+    padding: var(--padding);
+    border: solid 0.3em var(--colour-tileBd);
+    border-radius: 1.45em;
+}
+
+.screen-colour--opt {
+    --swatch-square-dimensions: 2em;
+    contain: content;
+    display: grid;
+    grid-template-columns: auto repeat(7, var(--swatch-square-dimensions));
+    align-items: center;
+
+    gap: 0.35em;
+    padding: 0.3em;
+    border: solid 0.2em var(--colour-mainBg);
+    border-radius: 0.9em;
+
+    color: var(--colour-mainFg);
+    background-color: var(--colour-mainBg);
+}
+.screen-colour--opt[aria-active-descendant="true"] {
+    border-color: var(--colour-tile-Bd);
+    border-style: dotted;
+}
+.screen-colour--opt[aria-selected="true"] {
+    text-decoration: none;
+    border-color: var(--colour-tile-Bd);
+}
+
+.screen-colour--opt > * {
+    height: var(--swatch-square-dimensions);
+    box-sizing: border-box;
+    border: solid 0.2em var(--colour-tileBd);
+    border-radius: 0.45em;
+}
+
+.screen-colour--opt-label {
+    height: auto;
+    padding: 0.3em 0.7em;
+    text-align: end;
+}
+.screen-colour--opt-label--title {
+}
+.screen-colour--opt-label--author {
+    font-size: 0.6em;
+    padding-bottom: 0.3em;
+}
+
+.screen-colour--opt > :nth-child(1) {
+    color: var(--colour-tileFg);
+    background-color: var(--colour-tileBg);
+    border: none;
+}
+.screen-colour--opt > :nth-child(2) {
+    color: var(--colour-healthFg);
+    background-color: var(--colour-healthBg);
+}
+.screen-colour--opt > :nth-child(3) {
+    background-color: var(--colour-pFaceMe);
+}
+.screen-colour--opt > :nth-child(4) {
+    background-color: var(--colour-pFaceMeOppo);
+}
+.screen-colour--opt > :nth-child(5) {
+    background-color: var(--colour-pFaceTeammate);
+}
+.screen-colour--opt > :nth-child(6) {
+    background-color: var(--colour-pFaceImtlTeammate);
+}
+.screen-colour--opt > :nth-child(7) {
+    background-color: var(--colour-pFaceOpponent);
+}
+.screen-colour--opt > :nth-child(8) {
+    background-color: var(--colour-pFaceImtlOpponent);
+}
+
+.screen-setup {
+    display: grid;
+    justify-content: center;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
+    gap: 1.0em;
+}
+
+.screen-setup .screen--prev-button,
+.screen-setup .screen--next-button {
+    padding: 0.3em 0.7em;
+    font-size: 2.0em;
+}
+
+.screen-setup--lang-sel {
+}
+
+.screen-setup--lang-weight-exagg {
+    width: 100%;
+}
+
+
+.screen-play {
+    display:        grid;
+    grid-template:
+        "controls main scoreboard" 100% /
+        minmax(auto, 1fr)
+        auto
+        minmax(auto, 1fr);
+}
+.screen-play--grid-wrapper {
+    grid-area:      main;
+    contain:        content;
+    box-sizing:     border-box;
+    height:         100%;
+    padding:        1rem 0rem;
+}
+.screen-play--controls-bar {
+    --spacing:      0.3rem;
+    --border-radius:0.7rem;
+    --track-size:   5rem;
+    position:       sticky;
+    top:            0;
+
+    grid-area:      controls;
+    display:        grid;
+    grid-auto-rows: var(--track-size);
+    grid-template-columns: minmax(var(--track-size), 1fr);
+    justify-items:  stretch;
+    align-items:    stretch;
+    font-size:      80%;
+}
+.screen-play--controls-bar > * {
+    padding:        0.35em;
+}
+.screen-play--players-bar {
+    grid-area:      players;
+}
+@media screen and (max-aspect-ratio: 1/1) {
+    .screen-play {
+        align-content: flex-start;
+        grid-template:
+        "main"          calc(100vh - 7.5rem)
+        "controls"      max-content
+        "players"       auto /
+        1fr;
+    }
+    .screen-play--grid-wrapper {
+        padding:        1rem;
+        padding-bottom: 0rem;
+    }
+    .screen-play--controls-bar {
+        /* grid-auto-flow:     column; */
+        grid-template-columns:  repeat(3, var(--track-size));
+        grid-template-rows: var(--track-size);
+    }
+}
+
+
+.screen-joiner {
+}
+.screen-joiner--content-wrapper {
+    --spacing:       0.2em;
+    --border-radius: 1.2em;
+    height: 27em; max-height: 80vh;
+    width:  27em; max-width:  90vw;
+    display:        grid;
+    /* grid-template-rows: repeat(3, 2fr) 1fr; */
+    gap:            7.0%;
+    grid-template:
+    "host-url   host-url"   2fr
+    "group-name group-name" 2fr
+    "passphrase passphrase" 2fr
+    "prev       next"       1fr
+    / 1fr       1fr;
+}
+.screen-joiner--content-wrapper > label {
+    display:        grid;
+    grid-template-rows: 1fr 2.0fr;
+    grid-column:    1/3;
+}
+
+.screen-joiner--host-url {
+    /* grid-area: host-url; */
+}
+.screen-joiner--group-name {
+    /* grid-area: group-name; */
+}
+.screen-joiner--passphrase {
+    /* grid-area: passphrase; */
+}
+
+.screen-joiner .screen--prev-button {
+    grid-area: prev;
+}
+.screen-joiner .screen--next-button {
+    grid-area: next;
+}
+
+.screen-lobby {
+    display:        grid;
+    justify-items:  center;
+    align-content:  center;
+}
+
+.screen-lobby--client-info-section {
+    --spacing:       0.2em;
+    --border-radius: 0.8em;
+    gap: 0.2em; margin: 0.2em;
+    height:  6em; max-height: 80vh;
+    width:  15em; /* max-width:  30vw; */
+    display:        grid;
+    grid-template-rows: 1fr 1fr;
+}
+
+.screen-lobby--teams-section {
+    display:        grid;
+}
+
+.screen-lobby--team {
+}
+
+.screen-lobby--player {
+    max-width: 20em;
+    display: grid;
+    grid-template-columns: 3em 2em 1fr;
+}
+.screen-lobby--player * {
+    pointer-events: none;
+}
+.screen-lobby--player__name {
+    justify-self: start;
+    padding-inline-start: 0.5em;
+}
+
+.screen-lobby .screen--next-button:disabled {
+    display: none;
+}
+
+
+
+[data-sk-colour-scheme="smooth-stone"] {
+    --colour-mainFg: #c3c5ce;
+    --colour-mainBg: #72888d;
+    --colour-tileFg: #a2b6bb;
+    --colour-tileBg: #546164;
+    --colour-tileBd: #ffffff;
+    --colour-healthFg: #21352e;
+    --colour-healthBg: #398f5a;
+    --colour-pFaceMe: #43aec9;
+    --colour-pFaceMeOppo: #5a5f9c;
+    --colour-pFaceTeammate: #bdae58;
+    --colour-pFaceImtlTeammate: #f8df50;
+    --colour-pFaceOpponent: #a34e59;
+    --colour-pFaceImtlOpponent: #e23fa3;
+}
+[data-sk-colour-scheme="murky-dive"] {
+    --colour-mainFg: #c3c5ce;
+    --colour-mainBg: #336465;
+    --colour-tileFg: #e7efef;
+    --colour-tileBg: #283e3f;
+    --colour-tileBd: #ffffff;
+    --colour-healthFg: #1d3633;
+    --colour-healthBg: #37dfc6;
+    --colour-pFaceMe: #03f9ed;
+    --colour-pFaceMeOppo: #898697;
+    --colour-pFaceTeammate: #ffbbaa;
+    --colour-pFaceImtlTeammate: #ffcabd;
+    --colour-pFaceOpponent: #ff4f6c;
+    --colour-pFaceImtlOpponent: #ff6d85;
+}
+

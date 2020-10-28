@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>SnaKey v3</title>
+        <meta name="author"         content="David Fong"/>
+        <meta name="description"    content="A multiplayer typing game for learning written languages."/>
+        <meta name="viewport"       content="width=device-width, initial-scale=1.0"/>
+        <meta name="referrer"       content="same-origin"/>
+        <meta charset="UTF-8"/>
+        <!-- <link rel="manifest" href="manifest.webmanifest"/> -->
+
+        <base href=".">
+        <link rel="icon" href="./favicon.png">
+        <link href="./_barrel.css" rel="stylesheet">
+        <meta name="og:title"  content="SnaKey v3"/>
+        <meta name="og:description" content="A multiplayer typing game for learning written languages."/>
+        <meta name="og:image"  content="./assets/images/screenshots/snakey_version3_blanktitle.png"/>
+
+        <link rel="prefetch" as="script" id="socket.io-preload" href="./vendor/socket.io.js"/>
+        <link rel="preload" as="script" href="./index.js"/>
+    </head>
+
+
+    <body class="fill-parent">
+        <datalist id="public-game-hosts-list">
+            <!-- default protocol is http -->
+        </datalist>
+        <script>
+        { // Load up last used colour scheme (or default):
+            const cssl = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
+            const root = document.documentElement;
+            if (cssl) { root.setAttribute("style", cssl); }
+            else { root.dataset["skColourScheme"] = "snakey"; }
+        } </script>
+        <div id="background"     class="sk-screen" aria-hidden="true"></div>
+        <div id="all-screens-container"></div>
+        <div id="screen-tint"    class="sk-screen" aria-hidden="true"></div>
+        <div id="screen-texture" class="sk-screen" aria-hidden="true"></div>
+        <script defer src="./index.js"></script>
+    </body>
+</html>
