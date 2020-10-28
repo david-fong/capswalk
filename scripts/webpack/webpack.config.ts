@@ -81,18 +81,9 @@ const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 }, ];}
 
 /**
- * # Base Config
- *
- * Everything that builds off of this will need to add the `entry` field.
- *
- * Important implementation note: make sure helpers return completely new
- * instances each time. BASE_PLUGINS() and MODULE_RULES().
- *
- * ## Help Links
- *
- * - https://www.typescriptlang.org/docs/handbook/react-&-webpack.html
- * - https://webpack.js.org/configuration/configuration-languages/#typescript
- * - https://github.com/TypeStrong/ts-loader#loader-options
+ * - [typescript docs](https://www.typescriptlang.org/docs/handbook/react-&-webpack.html)
+ * - [webpack config](https://webpack.js.org/configuration/configuration-languages/#typescript)
+ * - [ts-loader](https://github.com/TypeStrong/ts-loader#loader-options)
  *
  * @returns A standalone ("deep-copy") basic configuration.
  */
@@ -173,7 +164,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     // };
     config.plugins.push(
         new HtmlPlugin({
-            template:   "./index.ejs",
+            template:   path.resolve(PROJECT_ROOT, "src/client/index.ejs"),
             base:       ".", // must play nice with path configs.
             favicon:    "./assets/favicon.png",
             scriptLoading: "defer",

@@ -4,7 +4,7 @@
         // generic excludes:
         "node_modules/{[^.@]*,}": true,
         "package-lock.json": true,
-        ".nojekyll": true,
+        "dist/client/.nojekyll": true,
 
         // project specific excludes:
 

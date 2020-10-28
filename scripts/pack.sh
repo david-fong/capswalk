@@ -20,4 +20,4 @@ fi
 # --verbose
 declare -r doneMsg="$(echo -e "\n\n\n=== BUILD DONE ===\n\n\n")"
 time node "${cwd}/webpack/pack.js"
-
+echo '' > "${cwd}/../dist/client/.nojekyll"
