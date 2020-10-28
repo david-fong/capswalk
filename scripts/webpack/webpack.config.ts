@@ -122,7 +122,7 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
         : "eval-cheap-source-map",
     output: {
         path: path.resolve(PROJECT_ROOT, "dist", distSubFolder),
-        publicPath: `dist/${distSubFolder}/`, // need trailing "/".
+        publicPath: `./`, // need trailing "/".
         filename: "[name].js",
         chunkFilename: "chunk/[name].js",
         library: "snakey3",
@@ -174,7 +174,6 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     config.plugins.push(
         new HtmlPlugin({
             template:   "./index.ejs",
-            filename:   path.resolve(PROJECT_ROOT, "index.html"),
             base:       ".", // must play nice with path configs.
             favicon:    "./assets/favicon.png",
             scriptLoading: "defer",

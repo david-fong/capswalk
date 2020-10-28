@@ -1,43 +1,49 @@
 
 # My Developer Guidelines
 
+## Cloning and Building
+
+1. Clone from the git repo. The default branch is `dev`.
+1. Install npm packages.
+1. Run `./scripts/pack.sh -t`.
+1. To test off the local filesystem, open `file://<path-to-project-root>/dist/client/index.html`.
+1. To test off a local server, do `./scripts/server.sh`.
+    - The server will serve the client files, but you can also just open using the local filesystem.
+1. Optional: setup for deployment to GitHub Pages:
+    - go to the project root folder on the `dev` branch, and do `git worktree add --track -b gh-pages dist/client/`.
+    - If you already checked out `gh-pages`, then you can just do `git worktree add dist/client/ gh-pages`.
+
 ## Release Procedure
 
-Update the `version` field in [package.json](package.json).
+### GitHub Pages Deployment
 
 ```shell
-git switch gh-pages
-git checkout dev .
-echo 'y' | rm -r dist/*
-$EDITOR package.json
-tsc --force # Delete any old artifacts of folder renaming.
 export NODE_ENV='production'
-./scripts/pack.sh -t
-```
+./scripts/pack.sh
+# Sanity check that everything is running properly for online and offline implementations.
 
-Sanity check that everything is running properly for online and offline implementations.
-
-```shell
-git add -u
-git add -f dist/{client,server}
+cd dist/client
+git rm -r --cached .
+git add .
 git commit # Start message with current hash of dev branch.
 git push
-npm publish --dry-run # Check included files.
-npm publish
+
+git tag -a 'vX.X.X'
+git push --tags
+# Update the GitHub repo with details of the release.
 ```
 
 Now let's go back to development:
 
 ```shell
-git switch dev
+cd ../..
 export NODE_ENV='development'
-echo 'y' | rm -r dist/{client,server}
-npx tsc -b --force
-./scripts/pack.sh -t
-$EDITOR package.json
+./scripts/pack.sh
 ```
 
-TODO.build Should we be maintaining some sort of release notes / making annotated tags for releases? If so, update list and shell template right before the git staging step.
+### Server Deployment (Heroku)
+
+TODO.doc
 
 ## Coding Style
 
@@ -69,4 +75,4 @@ Full Explanation: Do this if:
 
 ### Socket.IO
 
-- Bind events to functions declared on a prototype to avoid creating unnecessary functions.
+- On the serverside, bind events to functions declared on a prototype (when possible) to avoid creating unnecessary function objects.

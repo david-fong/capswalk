@@ -14,7 +14,7 @@
         <meta name="og:description" content="A multiplayer typing game for learning written languages."/>
         <meta name="og:image"  content="./assets/images/screenshots/snakey_version3_blanktitle.png"/>
 
-        <link rel="prefetch" as="script" id="socket.io-preload" href="dist/client/vendor/socket.io.js"/>
+        <link rel="prefetch" as="script" id="socket.io-preload" href="./vendor/socket.io.js"/>
         <%= htmlWebpackPlugin.files.js.map((href)  => `<link rel="preload" as="script" href="${href}"/>`).join("\n") %>
     </head>
 
