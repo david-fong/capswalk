@@ -11,7 +11,9 @@
     - The server will serve the client files, but you can also just open using the local filesystem.
 1. Optional: setup for deployment to GitHub Pages:
     - go to the project root folder on the `dev` branch, and do `git worktree add --track -b gh-pages dist/client/`.
-    - If you already checked out `gh-pages`, then you can just do `git worktree add dist/client/ gh-pages`.
+      - If you already checked out `gh-pages`, then you can just do `git worktree add dist/client/ gh-pages`.
+    - `git worktree lock --reason 'This is the GitHub Pages deployment branch' client`.
+    - If `dist/client/.git` ever gets remove, just create it again with the contents: `gitdir: $GIT_DIR/.git/worktrees/client`.
 
 ## Release Procedure
 
