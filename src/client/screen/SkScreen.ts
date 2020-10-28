@@ -1,7 +1,7 @@
 import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import { StorageHooks } from "defs/StorageHooks";
-import type { Coord } from "floor/Tile";
+import type { Coord } from "floor/Coord";
 import type { Game } from "game/Game";
 import type { AllSkScreens } from "./AllSkScreens";
 import type { TopLevel } from "../TopLevel";

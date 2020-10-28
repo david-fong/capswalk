@@ -1,5 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
-import { Coord, Tile } from "./Tile";
+import type { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
 import type { Euclid2 } from "./impl/Euclid2";

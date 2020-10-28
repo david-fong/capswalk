@@ -5,7 +5,7 @@ import { Beehive } from "floor/impl/Beehive";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { Chaser } from "../player/artificials/Chaser";
 
-{
+export default (): void => {{
     // Non-Visible Grid Implementation Registry:
     (<TU.NoRo<typeof Grid._Constructors>>Grid._Constructors)
     = Object.freeze({
@@ -23,4 +23,4 @@ import { Chaser } from "../player/artificials/Chaser";
     });
     Object.freeze(AP);
     Object.freeze(AP.prototype);
-}
+}};

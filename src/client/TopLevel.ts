@@ -7,8 +7,8 @@ import type { Coord, SkScreen } from "../client/screen/SkScreen";
 
 import { AllSkScreens } from "./screen/AllSkScreens";
 import { ScreenTransition }   from "./screen/ScreenTransition";
-import { BgMusic }      from "./audio/BgMusic";
-import { SoundEffects } from "./audio/SoundEffects";
+//import { BgMusic }      from "./audio/BgMusic";
+//import { SoundEffects } from "./audio/SoundEffects";
 import { SkSockets }    from "./SkSockets";
 
 
@@ -30,8 +30,8 @@ export class TopLevel {
      */
     readonly #allScreens: AllSkScreens;
 
-    public readonly bgMusic: BgMusic;
-    public readonly sfx: SoundEffects;
+    //public readonly bgMusic: BgMusic;
+    //public readonly sfx: SoundEffects;
 
     public readonly sockets: SkSockets;
 

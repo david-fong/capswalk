@@ -2,18 +2,20 @@ import { JsUtils } from "defs/JsUtils";
 import { Lang } from "lang/Lang";
 import { Game } from "game/Game";
 
-import { Coord, Tile } from "floor/Tile";
+import { Coord } from "floor/Coord";
+import type { Tile } from "floor/Tile";
 import { Player } from "../player/Player";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { ScoreInfo } from "../ScoreInfo";
 
-import { PlayerGeneratedRequest } from "../events/EventRecordEntry";
+import type { PlayerGeneratedRequest } from "../events/EventRecordEntry";
 import {
     PlayerActionEvent, TileModEvent,
     GamepartEvents,
 } from "./GamepartEvents";
 
-import "game/ctormaps/CmapManager"; // <- has side-effects.
+import InitGameManagerCtorMaps from "game/ctormaps/CmapManager"; // <- has side-effects.
+InitGameManagerCtorMaps();
 
 
 /**

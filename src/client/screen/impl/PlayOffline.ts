@@ -1,6 +1,7 @@
 import type { OfflineGame } from "../../game/OfflineGame";
 
-import { JsUtils, Coord, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks } from "../SkScreen";
+import type { Coord, SkScreen } from "../SkScreen";
 import { Game, _PlayScreen } from "./Play";
 type G = Game.Type.OFFLINE;
 

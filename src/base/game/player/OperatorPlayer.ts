@@ -5,7 +5,8 @@ import { Game } from "game/Game";
 import type { VisibleTile } from "floor/VisibleTile";
 import type { VisiblePlayerStatus } from "./VisiblePlayerStatus";
 import type { GamepartBase } from "game/gameparts/GamepartBase";
-import { Coord, Tile } from "floor/Tile";
+import { Coord } from "floor/Coord";
+import type { Tile } from "floor/Tile";
 
 import { Player } from "./Player";
 

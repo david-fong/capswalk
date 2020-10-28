@@ -8,6 +8,7 @@
         "forceConsistentCasingInFileNames": true,
         "importHelpers": true,
         "skipLibCheck": true, // time-saving measure.
+        "importsNotUsedAsValues": "error",
 
         // Language Settings:
         "target": "es6",
@@ -28,5 +29,8 @@
         "strictBindCallApply":  true,
         "noImplicitThis":       true,
         "noImplicitAny":        true,
+
+        // Linting:
+        "noFallthroughCasesInSwitch": true,
     },
 }

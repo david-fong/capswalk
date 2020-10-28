@@ -1,7 +1,8 @@
 import type { OnlineGame } from "../../game/OnlineGame";
 
 import { GameEv } from "defs/OnlineDefs";
-import { JsUtils, Coord, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks } from "../SkScreen";
+import type { Coord, SkScreen } from "../SkScreen";
 import { Game, _PlayScreen } from "./Play";
 type SID = SkScreen.Id.PLAY_ONLINE;
 type G = Game.Type.ONLINE;

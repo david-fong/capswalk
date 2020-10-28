@@ -3,7 +3,7 @@ import { Game } from "../Game";
 import { Lang } from "defs/TypeDefs";
 
 import type { Coord, Tile } from "floor/Tile";
-import { Grid } from "floor/Grid";
+import type { Grid } from "floor/Grid";
 import type { VisibleGrid } from "floor/VisibleGrid";
 
 import { Player } from "../player/Player";

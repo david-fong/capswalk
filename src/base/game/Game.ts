@@ -27,7 +27,7 @@ import type { Player, PlayerStatus } from "./player/Player";
  */
 export namespace Game {
 
-    export const enum Type {
+    export enum Type {
         SERVER  = "SERVER",
         ONLINE  = "ONLINE",
         OFFLINE = "OFFLINE",
@@ -36,6 +36,7 @@ export namespace Game {
         export type Manager = Type.OFFLINE | Type.SERVER;
         export type Browser = Type.OFFLINE | Type.ONLINE;
     }
+    Object.freeze(Type);
 
     /**
      * Unlike CtorArgs, these are not passed as no-prototype objects
@@ -111,11 +112,12 @@ export namespace Game {
      * - **`OVER`** can go to:
      *   - `PLAYING`: via resetting the game.
      */
-    export const enum Status {
+    export enum Status {
         PLAYING = "PLAYING",
         PAUSED  = "PAUSED",
         OVER    = "OVER",
     }
+    Object.freeze(Status);
 
     /**
      * Global, Game-Setup-Agnostic constants for tuning game behaviour.

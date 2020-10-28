@@ -1,6 +1,6 @@
 import { JsUtils } from "defs/JsUtils";
 import { SkScreen } from "./SkScreen";
-import { TopLevel } from "../TopLevel";
+import type { TopLevel } from "../TopLevel";
 
 import {         HomeScreen } from "./impl/Home";
 import {    HowToPlayScreen } from "./impl/HowToPlay";

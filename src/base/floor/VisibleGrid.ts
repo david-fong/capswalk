@@ -2,7 +2,7 @@ import { OmHooks } from "defs/OmHooks";
 import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "floor/Tile";
 import { VisibleTile } from "floor/VisibleTile";
-import { Grid } from "floor/Grid";
+import type { Grid } from "floor/Grid";
 
 
 /**

@@ -1,10 +1,10 @@
-import * as io from "socket.io";
+import type * as io from "socket.io";
 
 import type { Coord } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import { JsUtils } from "defs/JsUtils";
 import { GameEv, GroupEv } from "defs/OnlineDefs";
-import { Game } from "game/Game";
+import type { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 
 import { Group as _Group, SkServer } from "defs/OnlineDefs";

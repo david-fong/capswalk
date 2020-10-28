@@ -3,16 +3,17 @@ require("assets/style/game/_barrel.css");
 
 import { JsUtils }              from "defs/JsUtils";                    export { JsUtils };
 import { Game }                 from "game/Game";                       export { Game };
-import { Coord, VisibleTile }   from "floor/VisibleTile";               export { Coord, VisibleTile };
+import type { Coord }           from "floor/Coord";                     export { Coord };
+import { VisibleTile }          from "floor/VisibleTile";               export { VisibleTile };
 import { VisibleGrid }          from "floor/VisibleGrid";
-import { GamepartBase }         from "game/gameparts/GamepartBase";
+import type { GamepartBase }    from "game/gameparts/GamepartBase";
 import { Player }               from "game/player/Player";              export { Player };
 import { OperatorPlayer }       from "game/player/OperatorPlayer";      export { OperatorPlayer };
 
 export { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
 
-import "game/ctormaps/CmapBrowser"; // <- has side-effects.
-
+import InitBrowserGameCtorMaps from "game/ctormaps/CmapBrowser";
+InitBrowserGameCtorMaps();
 
 /**
  *

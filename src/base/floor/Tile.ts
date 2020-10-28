@@ -1,6 +1,6 @@
 import { JsUtils } from "defs/JsUtils";
 import { Lang, Player } from "defs/TypeDefs";
-import { Coord } from "./Coord"; export { Coord };
+import type { Coord } from "./Coord"; export { Coord };
 
 
 /**

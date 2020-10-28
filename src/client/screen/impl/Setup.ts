@@ -1,5 +1,5 @@
 import { Lang, Player } from "defs/TypeDefs";
-import { Coord } from "floor/Coord";
+import type { Coord } from "floor/Coord";
 import type { Player as _Player } from "game/player/Player";
 import type { Game } from "game/Game";
 import { SkPickOne } from "../../utils/SkPickOne";
@@ -98,7 +98,7 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 export namespace _SetupScreen {
 
     export const DEFAULT_PRESET = (): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> => { return {
-        coordSys: Coord.System.EUCLID2,
+        coordSys: "EUCLID2" as Coord.System.EUCLID2,
         gridDimensions: {
             height: 21,
             width:  21,

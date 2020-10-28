@@ -1,6 +1,6 @@
 import { Player } from "defs/TypeDefs";
 import { Group, GroupEv, GameEv } from "defs/OnlineDefs";
-import { Game } from "game/Game";
+import type { Game } from "game/Game";
 
 import { JsUtils, OmHooks, Coord, SkScreen, StorageHooks } from "../SkScreen";
 type SID = SkScreen.Id.GROUP_LOBBY;
