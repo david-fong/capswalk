@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "snakey3",
   "version": "0.7.0",
   "description": "A multiplayer typing game for learning written languages.",
@@ -8,7 +9,6 @@
   ],
   "author": "David Fong (https://github.com/david-fong)",
   "repository": "github:david-fong/SnaKey-NTS",
-  "private": true,
   "type": "commonjs",
   "files": [],
   "scripts": {

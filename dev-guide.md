@@ -6,11 +6,11 @@
 1. Clone from the git repo. The default branch is `dev`.
 1. `npm install`.
 1. `npm run build`.
-1. To test off the local filesystem, open `file://<path-to-project-root>/dist/client/index.html`.
+1. To test off the local filesystem (no online-game capabilities), open `file://<path-to-project-root>/dist/client/index.html`.
 1. To test off a local server, do `npm start`.
-    - The server will serve the client files, but you can also just open using the local filesystem.
+    - The server will serve the client files, but you can also just open them using the local filesystem.
 1. Notes on repairing git worktrees used for deployment:
-    - Avoid commands that would delete `dist/.git` or `dist/client/.git`.
+    - Avoid commands that would delete either of the file `dist/.git` or `dist/client/.git`.
     - If you accidentally delete them, recreate them with the contents `gitdir: ../../.git/worktrees/client` and `gitdir: ../.git/worktrees/client` respectively.
 
 ## Release Procedure

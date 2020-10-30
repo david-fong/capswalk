@@ -15,6 +15,7 @@ const pkg = distPkg as (typeof distPkg | Partial<typeof srcPkg>);
 ] as ReadonlyArray<keyof typeof srcPkg>).forEach((key) => {
     pkg[key] = srcPkg[key];
 });
+pkg["repository"] += "/tree/dist"; // Point to the dist branch.
 fs.writeFileSync(
     path.resolve(__dirname, "../../dist/package.json"),
     JSON.stringify(pkg, undefined, "  "),

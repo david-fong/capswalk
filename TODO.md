@@ -3,9 +3,6 @@
 
 ## High-level
 
-1. Get a basic, working implementation of an offline game.
-1. Write the stylesheets.
-1. Get working bundles for networked games.
 1. Add player sprites.
 1. Record music + find out how to play tracks together.
 1. Make the website accessible by ARIA standards.
@@ -14,9 +11,9 @@
 
 ### High Priority
 
+1. Disable connecting to public game servers when testing.
 1. Improve onboarding experience for new contributors:
-    - `devinit.sh`: setup worktrees and worktree locks.
-    - webpack script: emit a `package.json` to `dist/`, and also a heroku procfile (copy it from the script folder).
+    - webpack script: emit a heroku procfile (copy it from the script folder).
     - git hook for push: if branch is `dist`, check that `dist/package.json` has changed.
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Implement Pause and Unpause events over network.
@@ -28,25 +25,12 @@
     - Also show scores (very small size) on top of player faces.
 1. Display the operator's current sequence buffer.
 1. Fill in implementation of bubble event handler.
-
-1. Design decision: Change bubble mechanism:
-    - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
-    - When done automatically, health will be levelled-down enough to cause as many changes in downed-ness as possible by changing other opponents' health to -1 and teammates' health to 0.
-    - If done by pressing space, health will be levelled further until the space-presser's health is at zero.
-    - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
-      - If the attacker is downed (ie. everyone in the interaction is downed), no changes should be made. Just short circuit.
-      - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
-      - If it still has more health, it does something similar for its teammates.
 1. Use webpack replace plugin to change some assertions and checks to only be done during development.
 
 ### Routine Checkups
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
 - `git gc`, `git prune`, `npm audit`, `npm oudated`, `npm dedupe`.
-- Rel-Noopener
-  - [Explainer by Mathias Bynens](https://mathiasbynens.github.io/rel-noopener/)
-    - [better default becoming standardized](https://github.com/whatwg/html/pull/4330)
-      - [Chrome is still working on it](https://bugs.chromium.org/p/chromium/issues/detail?id=898942)
 - Convert any usages of `.innerHtml` or `.innerText` to use `.textContent` unless intentional (In which case, write a comment on why it is intentional).
 - Make sure nobody uses `document.createElement` instead of `JsUtil.mkEl` unless they document why it's necessary.
 
@@ -122,6 +106,12 @@ https://github.com/whatwg/html/issues/4078
 
 https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
 ```
+
+### Rel-Noopener
+
+- [Explainer by Mathias Bynens](https://mathiasbynens.github.io/rel-noopener/)
+  - [better default becoming standardized](https://github.com/whatwg/html/pull/4330)
+    - [Chrome is still working on it](https://bugs.chromium.org/p/chromium/issues/detail?id=898942)
 
 ## Research / Learning Links
 
