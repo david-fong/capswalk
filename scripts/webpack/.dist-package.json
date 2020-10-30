@@ -1,0 +1,14 @@
+{
+  "//": [
+    "This is for deployment environments only (ex. Heroku).",
+    "Do not run `npm install` in `dist/` if you are a dev."
+  ],
+  "type": "commonjs",
+  "files": [
+    "client/",
+    "server/"
+  ],
+  "scripts": {
+    "start": "node server/index.js"
+  }
+}

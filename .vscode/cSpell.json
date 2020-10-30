@@ -80,6 +80,7 @@
         "tsloader",
         "webpage",
         "websockets",
+        "worktree", "worktrees",
 
         "lowercase", "uppercase",
         "hiragana" , "katakana" ,

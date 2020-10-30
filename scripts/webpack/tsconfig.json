@@ -6,6 +6,7 @@
         "outDir": ".",
         "listEmittedFiles": true,
         "incremental": true,
+        "resolveJsonModule": true,
 
         "removeComments": true,
         "alwaysStrict": true,

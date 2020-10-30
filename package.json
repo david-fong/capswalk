@@ -1,5 +1,5 @@
 {
-  "name": "snakey-mp",
+  "name": "snakey3",
   "version": "0.7.0",
   "description": "A multiplayer typing game for learning written languages.",
   "keywords": [
@@ -8,20 +8,17 @@
   ],
   "author": "David Fong (https://github.com/david-fong)",
   "repository": "github:david-fong/SnaKey-NTS",
-  "private": false,
+  "private": true,
   "type": "commonjs",
-  "files": [
-    "dist/",
-    "!dist/ts/",
-    "index.html",
-    "manifest.webmanifest"
-  ],
-  "exports": {},
+  "files": [],
   "scripts": {
-    "start": "node ./dist/server/index.js"
+    "postinstall": "bash scripts/devinit.sh",
+    "build": "bash scripts/pack.sh",
+    "start": "bash scripts/server.sh"
   },
   "dependencies": {
     "express": "^4.17.1",
+    "socket.io": "^2.3.0",
     "tslib": "^2.0.3"
   },
   "devDependencies": {
@@ -41,7 +38,6 @@
     "html-webpack-plugin": "^4.5.0",
     "mini-css-extract-plugin": "^1.2.0",
     "optimize-css-assets-webpack-plugin": "^5.0.4",
-    "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.1",
     "ts-loader": "^8.0.7",
     "typescript": "^4.0.3",

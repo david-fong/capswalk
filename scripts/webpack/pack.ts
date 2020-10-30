@@ -2,6 +2,25 @@ import path    = require("path");
 import webpack = require("webpack");
 import configs = require("./webpack.config");
 
+
+// Generate dist/package.json:
+const srcPkg    = require("../../package.json");
+import distPkg  = require("./.dist-package.json");
+import fs       = require("fs");
+const pkg = distPkg as (typeof distPkg | Partial<typeof srcPkg>);
+([
+    "name", "author",
+    "description", "keywords",
+    "version", "dependencies", "repository",
+] as ReadonlyArray<keyof typeof srcPkg>).forEach((key) => {
+    pkg[key] = srcPkg[key];
+});
+fs.writeFileSync(
+    path.resolve(__dirname, "../../dist/package.json"),
+    JSON.stringify(pkg, undefined, "  "),
+);
+
+
 // This way I don't need to install webpack-cli,
 // which pulls in hundreds of packages for some reason.
 // https://webpack.js.org/api/node/

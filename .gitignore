@@ -4,9 +4,6 @@
 
 # build
 /dist/
-/scripts/eslint-cache.json
-/scripts/webpack/*.js
-/scripts/webpack/*.tsbuildinfo
 
 # vim
 *.swp
@@ -24,4 +21,3 @@ Session.vim
 *.pem
 *.pfx
 *.p12
-

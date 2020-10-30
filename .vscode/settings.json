@@ -4,21 +4,24 @@
         // generic excludes:
         "node_modules/{[^.@]*,}": true,
         "package-lock.json": true,
-        "dist/client/.nojekyll": true,
 
         // project specific excludes:
 
         // things that I might like to toggle:
         "node_modules/": true,
         "{**/.templates/,**/tsconfig.json}": true,
-        //"{**/.eslintrc.*,.eslintignore}": true,
+        "{**/.eslintrc.*,.eslintignore}": false,
+        "scripts/webpack/*.js": true,
     },
     "search.exclude": {
         "**/node_modules": true,
         "**/bower_components": true,
         "**/*.code-search": true,
+        "tsconfig.tsbuildinfo": true,
+        "*cache.json": true,
+
         "{**/.templates/,**/tsconfig.json}": false,
-        "scripts/webpack/webpack.config.js": true,
+        "scripts/webpack/*.js": true,
     },
     "files.associations": {
         "**/dist/{client,server}/**/*.js": "json", // Loads bundled js much faster.
@@ -33,6 +36,9 @@
         }, {
             "fileMatch": [ "/**/*.webmanifest", ],
             "url": "http://json.schemastore.org/web-manifest"
+        }, {
+            "fileMatch": [ "/scripts/webpack/.dist-package.json", ],
+            "url": "https://json.schemastore.org/package",
         }
     ],
 

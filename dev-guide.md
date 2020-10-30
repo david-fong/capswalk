@@ -4,16 +4,14 @@
 ## Cloning and Building
 
 1. Clone from the git repo. The default branch is `dev`.
-1. Install npm packages.
-1. Run `./scripts/pack.sh -t`.
+1. `npm install`.
+1. `npm run build`.
 1. To test off the local filesystem, open `file://<path-to-project-root>/dist/client/index.html`.
-1. To test off a local server, do `./scripts/server.sh`.
+1. To test off a local server, do `npm start`.
     - The server will serve the client files, but you can also just open using the local filesystem.
-1. Optional: setup for deployment to GitHub Pages:
-    - go to the project root folder on the `dev` branch, and do `git worktree add --track -b gh-pages dist/client/`.
-      - If you already checked out `gh-pages`, then you can just do `git worktree add dist/client/ gh-pages`.
-    - `git worktree lock --reason 'This is the GitHub Pages deployment branch' client`.
-    - If `dist/client/.git` ever gets remove, just create it again with the contents: `gitdir: $GIT_DIR/.git/worktrees/client`.
+1. Notes on repairing git worktrees used for deployment:
+    - Avoid commands that would delete `dist/.git` or `dist/client/.git`.
+    - If you accidentally delete them, recreate them with the contents `gitdir: ../../.git/worktrees/client` and `gitdir: ../.git/worktrees/client` respectively.
 
 ## Release Procedure
 
@@ -30,7 +28,7 @@ git add .
 git commit # Start message with current hash of dev branch.
 git push
 
-git tag -a 'vX.X.X'
+git tag -s 'vX.X.X'
 git push --tags
 # Update the GitHub repo with details of the release.
 ```

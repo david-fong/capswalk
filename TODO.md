@@ -14,12 +14,13 @@
 
 ### High Priority
 
-1. Make a decorator to prevent overrides of a method.
-    - Make JsUtils have a non-exported `WeakSet<Functions>`.
-    - Make a JsUtil function that checks if a class declares any functions with the same name as anything higher in the prototype chain (see `Object.getPrototypeOf()`).
+1. Improve onboarding experience for new contributors:
+    - `devinit.sh`: setup worktrees and worktree locks.
+    - webpack script: emit a `package.json` to `dist/`, and also a heroku procfile (copy it from the script folder).
+    - git hook for push: if branch is `dist`, check that `dist/package.json` has changed.
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Implement Pause and Unpause events over network.
-1. Server authentication is not working.
+1. Server authentication is not working. Please debug and fix.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
@@ -51,6 +52,9 @@
 
 ### Low Priority
 
+- Make a decorator to prevent overrides of a method.
+  - Make JsUtils have a non-exported `WeakSet<Functions>`.
+  - Make a JsUtil function that checks if a class declares any functions with the same name as anything higher in the prototype chain (see `Object.getPrototypeOf()`).
 - Start a skeleton for a "Chess Knight" Grid implementation. That would be pretty mind boggling both to play and to develop...
 - Try out CSS modules. We already have webpack-css-loader installed.
   - This would take a lot of weight out of OmHooks.
