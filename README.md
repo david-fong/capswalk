@@ -1,9 +1,7 @@
 
 # ⌨🐍 SnaKey
 
-[**`Try it!` 👈**](https://david-fong.github.io/SnaKey-NTS/)
-
-TODO.doc: insert a gif of the gameplay here.
+[**`Try it!` 👈**](https://david-fong.github.io/snakey3/)
 
 SnaKey is a typing game where you move around by typing keyboard sequences corresponding to characters from written languages. For example, playing with English, if there was a tile adjacent to your player character marked by the written character "a", to move on it, you would type the keyboard sequence "a". If you were playing with Japanese Hiragana, you would type the keyboard sequence "no" to move onto an adjacent tile marked by the written character "の". It's easier done than said.
 

@@ -91,11 +91,11 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         (<const>[{
             text:    "Visit\nRepo",
             cssClass: OMHC.NAV_VIEW_REPO,
-            href:     new window.URL("https://github.com/david-fong/SnaKey-NTS"),
+            href:     new window.URL("https://github.com/david-fong/snakey3"),
         },{
             text:    "Report\nIssue",
             cssClass: OMHC.NAV_RPT_ISSUE,
-            href:     new window.URL("https://github.com/david-fong/SnaKey-NTS/issues"),
+            href:     new window.URL("https://github.com/david-fong/snakey3/issues"),
         }])
         .map<Readonly<{
             text: string;

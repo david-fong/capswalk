@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>SnaKey v3</title>
+        <title>snakey3</title>
         <meta name="author"         content="David Fong"/>
         <meta name="description"    content="A multiplayer typing game for learning written languages."/>
         <meta name="viewport"       content="width=device-width, initial-scale=1.0"/>
@@ -10,9 +10,9 @@
         <!-- <link rel="manifest" href="manifest.webmanifest"/> -->
 
         <%= htmlWebpackPlugin.tags.headTags.join("\n        ") %>
-        <meta name="og:title"  content="SnaKey v3"/>
+        <meta name="og:title"  content="snakey3"/>
         <meta name="og:description" content="A multiplayer typing game for learning written languages."/>
-        <meta name="og:image"  content="./assets/images/screenshots/snakey_version3_blanktitle.png"/>
+        <meta name="og:image"  content="https://raw.githubusercontent.com/david-fong/snakey3/dev/assets/images/screenshots/snakey_version3_blanktitle.png"/>
 
         <link rel="prefetch" as="script" id="socket.io-preload" href="./vendor/socket.io.js"/>
         <%= htmlWebpackPlugin.files.js.map((href)  => `<link rel="preload" as="script" href="${href}"/>`).join("\n") %>

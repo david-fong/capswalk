@@ -11,6 +11,7 @@
 
 ### High Priority
 
+1. Switch to [css minimizer webpack plugin](https://github.com/webpack-contrib/css-minimizer-webpack-plugin) [as recommended for WebPack 5](https://github.com/NMFR/optimize-css-assets-webpack-plugin).
 1. Disable connecting to public game servers when testing.
 1. Improve onboarding experience for new contributors:
     - webpack script: emit a heroku procfile (copy it from the script folder).

@@ -1,6 +1,6 @@
 {
-    "name": "SnaKey v3",
-    "short_name": "SnaKey v3",
+    "name": "snakey",
+    "short_name": "snakey",
     "description": "A multiplayer typing game for learning written languages.",
     "categories": [
         "education",
