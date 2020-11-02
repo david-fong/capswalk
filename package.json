@@ -1,0 +1,31 @@
+{
+  "//": [
+    "This is for deployment environments only (ex. Heroku).",
+    "Do not run `npm install` in `dist/` if you are a dev."
+  ],
+  "type": "commonjs",
+  "files": [
+    "client/",
+    "server/"
+  ],
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "name": "snakey3",
+  "author": "David Fong (https://github.com/david-fong)",
+  "description": "A multiplayer typing game for learning written languages.",
+  "keywords": [
+    "typing",
+    "game"
+  ],
+  "version": "0.7.0",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0",
+    "tslib": "^2.0.3"
+  },
+  "repository": "github:david-fong/snakey3/tree/dist"
+}

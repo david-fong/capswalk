@@ -1,0 +1,2 @@
+(self.webpackChunksnakey3=self.webpackChunksnakey3||[]).push([[858],{981:(e,t,s)=>{"use strict";s.r(t),s.d(t,{Emote:()=>c});var c,n=s(979);!function(e){class t extends n.U{}e.GitHub=t,Object.freeze(t),Object.freeze(t.prototype)}(c||(c={})),Object.freeze(c)}}]);
+//# sourceMappingURL=Emote-ts.js.map
