@@ -11,11 +11,11 @@
 
 ### High Priority
 
-1. Switch to [css minimizer webpack plugin](https://github.com/webpack-contrib/css-minimizer-webpack-plugin) [as recommended for WebPack 5](https://github.com/NMFR/optimize-css-assets-webpack-plugin).
 1. Disable connecting to public game servers when testing.
 1. Improve onboarding experience for new contributors:
     - webpack script: emit a heroku procfile (copy it from the script folder).
     - git hook for push: if branch is `dist`, check that `dist/package.json` has changed.
+1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Implement Pause and Unpause events over network.
 1. Server authentication is not working. Please debug and fix.
@@ -64,12 +64,9 @@
   - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
-  - [](https://www.npmjs.com/package/bad-words)
   - Heroku
-    - [](https://devcenter.heroku.com/articles/getting-started-with-nodejs)
-    - [](https://devcenter.heroku.com/articles/deploying-nodejs)
-    - [](https://devcenter.heroku.com/articles/node-best-practices)
     - [](https://devcenter.heroku.com/articles/nodejs-support)
+    - [](https://devcenter.heroku.com/articles/deploying-nodejs)
     - [](https://medium.com/deployplace/heroku-vs-docker-the-ultimate-comparison-with-hidden-pitfalls-revealed-f6b7f4075de5)
   - [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
@@ -87,7 +84,7 @@
 
 ---
 
-## Important Ideas to Develop
+## Misc Ideas
 
 - Make sound settings stubs for playing music and sound effects.
   - make BGM have a track that varies with lang and different selectable style variations such as jazz cafe/elevator music, fast 13/8.

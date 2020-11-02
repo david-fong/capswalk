@@ -54,13 +54,12 @@ export class SnakeyServer extends _SnakeyServer {
         ]);
 
         // At runtime, __dirname resolves to ":/dist/server/"
-        const PROJECT_ROOT = path.resolve(__dirname, "../..");
+        const CLIENT_ROOT = path.resolve(__dirname, "../client");
         this.app.disable("x-powered-by");
         this.app.get("/", (req, res) => {
-            res.sendFile(path.resolve(PROJECT_ROOT, "index.html"));
+            res.sendFile(path.resolve(__dirname, path.resolve(CLIENT_ROOT, "index.html")));
         });
-        this.app.use("/dist/client", express.static(path.resolve(PROJECT_ROOT, "dist", "client")));
-        this.app.use("/assets", express.static(path.resolve(PROJECT_ROOT, "assets")));
+        this.app.use("/", express.static(CLIENT_ROOT));
 
         this.http.listen(<net.ListenOptions>{ port, host }, (): void => {
             const info = <net.AddressInfo>this.http.address();

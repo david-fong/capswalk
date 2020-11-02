@@ -5,7 +5,7 @@ import type { Player } from "defs/TypeDefs";
 export abstract class SkServer { }
 export namespace SkServer {
     export const PROTOCOL = "http://";
-    export const DEFAULT_PORT = 8080;
+    export const DEFAULT_PORT = 80;
     /**
      * This is placed in this file so that it gets bundled into both the
      * client and the server code, which both require access to it.
