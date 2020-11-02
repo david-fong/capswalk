@@ -8,7 +8,7 @@ import nodeExternals = require("webpack-node-externals");
 import CopyWebpackPlugin = require("copy-webpack-plugin");
 import HtmlPlugin = require("html-webpack-plugin");
 import MiniCssExtractPlugin = require("mini-css-extract-plugin");
-import OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+import CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
@@ -120,22 +120,12 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
         pathinfo: false, // unneeded. minor performance gain.
     },
 
-    // https://webpack.js.org/guides/caching/
-    // https://webpack.js.org/configuration/other-options/#cache
-    cache: true,
     optimization: {
-        // runtimeChunk: {
-        //     name: entrypoint => `${entrypoint.name}/runtime`,
-        // } as webpack.Options.RuntimeChunkOptions,
-        splitChunks: {
-            //chunks: "all",
-            cacheGroups: {
-                ["style"]: {
-                    test: /\.css$/,
-                    reuseExistingChunk: true,
-                },
-            },
-        },
+        minimizer: ["...",
+            new CssMinimizerPlugin({
+                minimizerOptions: { preset: ["default", { discardComments: { removeAll: true }}], },
+            }),
+        ],
     },
     watchOptions: {
         ignored: [ "node_modules", ],
@@ -162,7 +152,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     // config.resolve.alias = config.resolve.alias || {
     //     "socket.io-client": "socket.io-client/dist/socket.io.slim.js",
     // };
-    config.plugins.push(
+    config.plugins.push(...[
         new HtmlPlugin({
             template:   path.resolve(PROJECT_ROOT, "src/client/index.ejs"),
             base:       ".", // must play nice with path configs.
@@ -188,13 +178,9 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
             to: "vendor/socket.io.[ext]",
             flatten: true,
         }],}),
-    );
+    ].filter((plugin) => plugin));
     if (PACK_MODE === "production") {
-        config.plugins.push(new OptimizeCssAssetsPlugin({
-            cssProcessorPluginOptions: {
-                preset: ["default", { discardComments: { removeAll: true, },},],
-            },
-        }));
+        config.plugins.push();
     }
 }
 
@@ -204,7 +190,6 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
  */
 const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>): void => {
     config.target = "node";
-    // alternative to below: https://www.npmjs.com/package/webpack-node-externals
     config.externals = [ nodeExternals(), ], // <- Does not whitelist tslib.
     // alternative to above: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))
     config.resolve.extensions!.push(".js");
