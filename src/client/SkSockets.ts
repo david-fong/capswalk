@@ -54,6 +54,7 @@ export class SkSockets {
             // https://socket.io/docs/client-api/#new-Manager-url-options
             reconnectionAttempts: Group.GameServerReconnectionAttempts,
             autoConnect: false,
+            transports: ["websocket"],
         });
         const socket = manager.socket(SkServer.Nsps.GROUP_JOINER);
         this._registerSocket(socket, "joiner");

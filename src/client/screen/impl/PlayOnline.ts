@@ -59,6 +59,20 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     /**
      * @override
      */
+    protected _statusBecomePlaying(): void {
+        this.socket.emit(GameEv.UNPAUSE);
+    }
+
+    /**
+     * @override
+     */
+    protected _statusBecomePaused(): void {
+        this.socket.emit(GameEv.PAUSE);
+    }
+
+    /**
+     * @override
+     */
     protected async _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<OnlineGame<Coord.System>> {
         const game = new (await import(
             /* webpackChunkName: "game/online" */
@@ -70,10 +84,10 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
         );
         this.socket
         .on(GameEv.UNPAUSE, () => {
-            this._statusBecomePlaying();
+            super._statusBecomePlaying();
         })
         .on(GameEv.PAUSE, () => {
-            this._statusBecomePaused();
+            super._statusBecomePaused();
         })
         .on(GameEv.RETURN_TO_LOBBY, (socketId: string | undefined) => {
             if (socketId === undefined) {

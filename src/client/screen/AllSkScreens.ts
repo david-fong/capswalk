@@ -83,12 +83,9 @@ export class AllSkScreens {
     ): Promise<boolean> {
         const currScreen = this.currentScreen;
         const destScreen = this.dict[destId];
-        if (currScreen === destScreen) {
-            // I don't see why this would ever need to happen.
-            // If we find need to write code that allows for this,
-            // rewrite the return-value spec.
-            throw new Error("never");
-        }
+        // if (currScreen === destScreen) {
+        //     throw new Error("never");
+        // }
         this.#currentScreen = destScreen;
 
         const navDir = SkScreen.GET_NAV_DIR({

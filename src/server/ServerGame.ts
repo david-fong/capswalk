@@ -96,9 +96,16 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         JsUtils.propNoWrite(this as ServerGame<S>, ["namespace"]);
 
         this.socketListeners = Object.freeze({
+            ["disconnect"]: () => {
+                if (Object.keys(this.namespace.sockets).length === 1) {
+                    this.terminate();
+                    return;
+                }
+            },
             [PlayerActionEvent.EVENT_NAME.MOVEMENT]: this.processMoveRequest.bind(this),
             [PlayerActionEvent.EVENT_NAME.BUBBLE]: this.processBubbleRequest.bind(this),
-            // TODO.impl pause-request handler:
+            [GameEv.PAUSE]: this.statusBecomePaused.bind(this),
+            [GameEv.UNPAUSE]: this.statusBecomePlaying.bind(this),
         });
         JsUtils.instNoEnum (this as ServerGame<S>, ["socketListeners"]);
         JsUtils.propNoWrite(this as ServerGame<S>, ["socketListeners"]);
@@ -176,12 +183,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         Object.values(this.namespace.sockets).forEach((socket) => {
             // Attach the movement request handlers:
             // (these are detached in `onReturnToLobby`).
-            socket.on("disconnect", () => {
-                if (Object.keys(this.namespace.sockets).length === 1) {
-                    this.terminate();
-                    return;
-                }
-            });
             socket.on(GameEv.RETURN_TO_LOBBY, () => {
                 if (socket.client === this._groupHostClient) {
                     this.statusBecomeOver();

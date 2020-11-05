@@ -11,10 +11,7 @@
 
 ### High Priority
 
-1. Use `console.info` for non-temporary debug messages, and `console.log` for temporary debug messages. Make a note about this policy in dev-guide.md.
 1. Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
-1. Improve onboarding experience for new contributors:
-    - git hook for push: if branch is `dist`, check that `dist/package.json` has changed.
 1. Implement Pause and Unpause events over network.
 1. Server authentication is not working. Please debug and fix.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
@@ -58,6 +55,8 @@
   - Note: The Intersection Observer API will not work here- it doesn't trigger on re-parenting the target node.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
+- Improve onboarding experience for new contributors:
+  - git hook for push: if branch is `dist`, check that `dist/package.json` has changed.
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
 - [Create a mask-safe icon that is large enough (min 144px)](https://web.dev/maskable-icon/)
 - Read about these topics and see how they might be useful

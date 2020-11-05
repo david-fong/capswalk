@@ -220,7 +220,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         this.players.forEach((player) => {
             player._notifyGameNowPlaying();
         });
-        this._abstractStatusBecomePlaying();
         this.#status = Game.Status.PLAYING;
     }
     /**
@@ -240,7 +239,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         this.players.forEach((player) => {
             player._notifyGameNowPaused();
         });
-        this._abstractStatusBecomePaused();
         this.#status = Game.Status.PAUSED;
     }
     /**
@@ -253,20 +251,14 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
      * This should not be controllable by UI input elements.
      */
     public statusBecomeOver(): void {
-        if (this.status !== Game.Status.PLAYING) {
-            throw new Error("Can only end a game that is currently playing.");
-        }
+        if (this.status === Game.Status.OVER) return;
         this.players.forEach((player) => {
             player._notifyGameNowOver();
         });
-        this._abstractStatusBecomeOver();
         this.#status = Game.Status.OVER;
         this.#onGameBecomeOver();
-        console.log("game is over!");
+        console.info("game is over!");
     }
-    protected _abstractStatusBecomePlaying(): void {}
-    protected _abstractStatusBecomePaused(): void {}
-    protected _abstractStatusBecomeOver(): void {}
 
  /* The implementations are fully defined and publicly exposed by
     GameManager. These protected declarations higher up the class
@@ -275,10 +267,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
     public abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
     protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
 }
-JsUtils.protoNoEnum(GamepartBase, [
-    "_abstractStatusBecomePlaying",
-    "_abstractStatusBecomePaused",
-    "_abstractStatusBecomeOver",
-]);
+JsUtils.protoNoEnum(GamepartBase, []);
 Object.freeze(GamepartBase);
 Object.freeze(GamepartBase.prototype);
