@@ -37,7 +37,7 @@ export class SnakeyServer extends _SnakeyServer {
      *          Defaults to {@link Defs.SERVER_PORT}.
      */
     public constructor(
-        port: number = SnakeyServer.DEFAULT_PORT,
+        port: number = Number.parseInt(process.env.PORT ?? SnakeyServer.DEFAULT_PORT.toString()),
         host: string | undefined = undefined,
     ) {
         super();

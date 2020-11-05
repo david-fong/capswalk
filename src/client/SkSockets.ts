@@ -53,10 +53,11 @@ export class SkSockets {
         const manager = (await this.socketIo).Manager(args.serverUrl.toString(), {
             // https://socket.io/docs/client-api/#new-Manager-url-options
             reconnectionAttempts: Group.GameServerReconnectionAttempts,
+            autoConnect: false,
         });
         const socket = manager.socket(SkServer.Nsps.GROUP_JOINER);
         this._registerSocket(socket, "joiner");
-        return socket;
+        return socket.open();
     }
 
     /**
@@ -65,16 +66,22 @@ export class SkSockets {
         groupName: Group.Name,
         query: { passphrase: Group.Passphrase, userInfo: Player.UserInfo, },
     ): Socket {
-        return this._groupSocketHelper("group", groupName, query);
+        return this._groupSocketHelper("group", groupName, query).open();
     }
 
     /**
+     * The returned socket may need to be manually `connect()`-ed if
+     * it is being reused for a known namespace that was previously
+     * disconnected from.
      */
     public gameSocketConnect(
         groupName: Group.Name,
         query: { passphrase: Group.Passphrase, },
     ): Socket {
-        return this._groupSocketHelper("game", groupName, query);
+        if (groupName === undefined || query.passphrase === undefined) {
+            throw new TypeError("never");
+        }
+        return this._groupSocketHelper("game", groupName, query).open();
     }
 
     /**
@@ -108,11 +115,13 @@ export class SkSockets {
         };
         socket
         .on("connect_error", (error: object) => {
+            console.warn(error);
             byeBye();
         })
         .on("disconnect", (reason: string) => {
             if (reason === "io server disconnect"
              || reason === "io client disconnect") {
+                console.info(reason);
                 byeBye();
             }
         });

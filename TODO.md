@@ -11,22 +11,22 @@
 
 ### High Priority
 
-1. Disable connecting to public game servers when testing.
+1. Use `console.info` for non-temporary debug messages, and `console.log` for temporary debug messages. Make a note about this policy in dev-guide.md.
+1. Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
 1. Improve onboarding experience for new contributors:
-    - webpack script: emit a heroku procfile (copy it from the script folder).
     - git hook for push: if branch is `dist`, check that `dist/package.json` has changed.
-1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
-1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Implement Pause and Unpause events over network.
 1. Server authentication is not working. Please debug and fix.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
+1. Fill in implementation of bubble event handler.
+1. Use webpack replace plugin to change some assertions and checks to only be done during development.
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores (very small size) on top of player faces.
 1. Display the operator's current sequence buffer.
-1. Fill in implementation of bubble event handler.
-1. Use webpack replace plugin to change some assertions and checks to only be done during development.
+1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
+1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
 
 ### Routine Checkups
 
@@ -46,6 +46,7 @@
   - [how to config with typescript](https://stackoverflow.com/questions/40382842/cant-import-css-scss-modules-typescript-says-cannot-find-module)
   - Move screen-related css to `client/screen/impl/`.
     - Try using es6-style imports instead of CommonJs and see if css-loader understands (it should, I think).
+- Investigate whether we can create fewer functions for socket event listeners by making custom subclasses of Socket.
 - When TypeScript 4.1 comes out, use the improved `@see` JSdoc annotations.
 - Implement translations of clientside strings.
   - Create a sitemap file to point to translated versions

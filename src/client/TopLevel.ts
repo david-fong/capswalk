@@ -40,6 +40,9 @@ export class TopLevel {
     public get clientIsGroupHost(): boolean {
         return this.#allScreens.dict.groupJoiner.clientIsGroupHost;
     }
+    public get groupLoginInfo(): Readonly<{ name?: string, passphrase?: string }> {
+        return this.#allScreens.dict.groupJoiner.loginInfo;
+    }
 
 
     public constructor() {

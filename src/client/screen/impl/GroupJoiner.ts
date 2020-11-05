@@ -24,6 +24,18 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     public get clientIsGroupHost(): boolean {
         return this.#clientIsGroupHost;
     }
+    /**
+     * Throws an error if called before this screen is lazy-loaded.
+     */
+    public get loginInfo(): Readonly<{ name?: Group.Name, passphrase?: Group.Passphrase }> {
+        if (this.in === undefined) {
+            throw new Error("never"); // Should never be called before entrance.
+        }
+        return Object.freeze({
+            name: this.in.groupName.value,
+            passphrase: this.in.passphrase.value,
+        });
+    }
 
     /**
      * @override
@@ -47,10 +59,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         const contentWrapperSubmit = (): void => {
             // ev.preventDefault(); // Don't perform any form action
             // No validation needed. The next button is only enabled if inputs are valid.
-            this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {
-                groupName: this.in.groupName.value,
-                groupPassphrase: this.in.passphrase.value,
-            });
+            this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {});
         };
         this._setFormState(State.CHOOSING_HOST);
         this.baseElem.appendChild(contentWrapper);
@@ -298,7 +307,11 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         .on("disconnect", (reason: string) => {
             if (reason === "io server disconnect") {
                 top.toast("The server disconnected you from your group.");
-                this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {});
+                if (this.top.currentScreen !== this) {
+                    this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {});
+                } else {
+                    this.in.passphrase.focus();
+                }
             }
         });
     }

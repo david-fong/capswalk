@@ -170,6 +170,7 @@ export class Group extends _Group {
         const failureReasons = this._createGameInstance(ctorArgs);
         if (failureReasons.length) {
             // TODO.impl handle failure reasons.
+            console.log(failureReasons);
         } else {
             // Broadcast to the joiner namespace of this group's change in state:
             this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {

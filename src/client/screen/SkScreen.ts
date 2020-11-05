@@ -252,7 +252,7 @@ export namespace SkScreen {
         [ Id.PLAY_OFFLINE  ]: Game.CtorArgs<Game.Type.OFFLINE,Coord.System>;
         //==================
         [ Id.GROUP_JOINER  ]: {};
-        [ Id.GROUP_LOBBY   ]: Partial<{ groupName: string, groupPassphrase: string, }>;
+        [ Id.GROUP_LOBBY   ]: {};
         [ Id.SETUP_ONLINE  ]: {};
         [ Id.PLAY_ONLINE   ]: Game.CtorArgs<Game.Type.ONLINE,Coord.System>;
     }

@@ -62,17 +62,17 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * @param groupNsps -
      * @param gameDesc -
      */
-    public constructor(args: {
+    public constructor(args: Readonly<{
         groupNsps: io.Namespace,
         passphrase: Group.Passphrase,
         groupHostClient: io.Client,
         deleteExternalRefs: () => void,
         gameDesc: Game.CtorArgs<G,S>,
-    }) {
+    }>) {
         // Start with a call to the super constructor:
         super(
             Game.Type.SERVER, {
-            onGameBecomeOver: () => {},
+            onGameBecomeOver: () => { this.terminate(); },
             tileClass: Tile,
             playerStatusCtor: PlayerStatus,
             }, args.gameDesc,
@@ -84,13 +84,16 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
         this.namespace = args.groupNsps.server.of(
             SkServer.Nsps.GROUP_GAME_PREFIX + args.groupNsps.name.replace(SkServer.Nsps.GROUP_LOBBY_PREFIX, "")
-        ).use((socket, next) => {
+        );/* .use((socket, next) => {
+            TODO.build re-enable this when we figure out how to make client send query.
             const handshake = socket.handshake;
             if (handshake.query.passphrase !== args.passphrase) {
+                console.log("wrong passphrase. query was: ", handshake.query);
                 next(new Error("Incorrect passphrase"));
             };
             return next();
-        });
+        }) */
+        JsUtils.propNoWrite(this as ServerGame<S>, ["namespace"]);
 
         this.socketListeners = Object.freeze({
             [PlayerActionEvent.EVENT_NAME.MOVEMENT]: this.processMoveRequest.bind(this),
@@ -100,20 +103,37 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         JsUtils.instNoEnum (this as ServerGame<S>, ["socketListeners"]);
         JsUtils.propNoWrite(this as ServerGame<S>, ["socketListeners"]);
 
+        this._awaitGameSockets(args);
+    }
+
+    /**
+     * Calls `_greetGameSockets` when all clients have joined the game
+     * namespace.
+     */
+    private _awaitGameSockets(args: Readonly<{
+        groupNsps: io.Namespace,
+        gameDesc: Game.CtorArgs<G,S>,
+    }>): void {
         // Prepare for all group members to join the game namespace:
-        const gameSockConnResolvers: Map<io.Client, () => void> = new Map();
-        function onGameSockConn(gameSocket: io.Socket): void {
-            gameSockConnResolvers.get(gameSocket.client)!();
-            gameSockConnResolvers.delete(gameSocket.client);
-        }
-        Promise.all(Object.values(args.groupNsps.sockets).map((groupSocket) => {
+        const resolvers = new Map<io.Client["id"], () => void>();
+        const promises = Object.values(args.groupNsps.sockets).map((groupSocket) => {
             return new Promise((resolve, reject) => {
-                gameSockConnResolvers.set(groupSocket.client, resolve);
-                this.namespace.once("connect", onGameSockConn);
+                console.log("group socket client id: ", groupSocket.client.id);
+                resolvers.set(groupSocket.client.id, resolve);
             });
-        }))
-        .then(() => this._greetGameSockets(args.groupNsps, args.gameDesc))
+        });
+        Promise.all(promises)
+        .then(() => {
+            console.log("all clients have connected to the game namespace"); // debuglog
+            this.namespace.removeAllListeners("connect");
+            this._greetGameSockets(args.gameDesc);
+        })
         .catch((reason) => { setImmediate(() => { throw reason; }); });
+
+        this.namespace.on("connect", (gameSocket: io.Socket): void => {
+            console.log("game socket client id: ", gameSocket.client.id);
+            resolvers.get(gameSocket.client.id)!();
+        });
 
         // Tell all group members in the lobby to join the game namespace:
         args.groupNsps.emit(GroupEv.CREATE_GAME);
@@ -121,30 +141,28 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
     /**
      */
-    private _greetGameSockets(
-        groupNsps: io.Namespace,
-        gameDesc: Game.CtorArgs<G,S>,
-    ): void {
+    private _greetGameSockets(gameDesc: Game.CtorArgs<G,S>): void {
+        // The below cast is safe because GamepartBase reassigns
+        // `gameDesc.playerDescs` the result of `Player.finalize`.
+        const humanPlayerDescs = (gameDesc.playerDescs as Player.CtorArgs[])
+            .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN);
+
+        {const _clientToGameSocketMap = new Map(
+            Object.values(this.namespace.sockets).map((s) => [s.client.id, s]),
+        );
         // @ts-expect-error : RO=
         this.playerSockets
-        // The below cast is safe because GameBase reassigns
-        // `gameDesc.playerDescs` the result of `Player.finalize`.
-        // (Otherwise, `playerDesc` would still be a
-        // `Player.CtorArgs.PreIdAssignment`).
-        = (gameDesc.playerDescs as Player.CtorArgs[])
-            .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN)
-            .reduce<Map<Player.Id, io.Socket>>((build, playerDesc) => {
-                if (playerDesc.clientId === undefined) {
-                    console.log(playerDesc);
-                    throw new Error("missing socket client for player " + playerDesc.playerId);
-                }
-                const gameSocket = Object.values(this.namespace.sockets)
-                    .find((socket) => socket.client.id === playerDesc.clientId);
-                if (gameSocket === undefined) throw new Error("never");
-                build.set(playerDesc.playerId, gameSocket);
-                return build;
-            }, new Map());
+        = humanPlayerDescs.reduce<Map<Player.Id, io.Socket>>((build, playerDesc) => {
+            if (playerDesc.clientId === undefined) {
+                throw new Error("missing socket client for player with ID " + playerDesc.playerId);
+            }
+            const gameSocket = _clientToGameSocketMap.get(playerDesc.clientId);
+            if (gameSocket === undefined) throw new Error("never");
+            build.set(playerDesc.playerId, gameSocket);
+            return build;
+        }, new Map());
         JsUtils.propNoWrite(this as ServerGame<any>, ["playerSockets"]);
+        }
 
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
             return new Promise((resolve, reject) => {
@@ -163,7 +181,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             // Attach the movement request handlers:
             // (these are detached in `onReturnToLobby`).
             socket.on("disconnect", () => {
-                if (Object.keys(socket.nsp.sockets).length === 1) {
+                if (Object.keys(this.namespace.sockets).length === 1) {
                     this.terminate();
                     return;
                 }
@@ -181,10 +199,11 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             });
 
             // Set `isALocalOperator` flags to match what this socket should see:
-            gameDesc.playerDescs.forEach((playerDesc) => {
+            humanPlayerDescs.forEach((desc) => {
                 // @ts-expect-error : RO=
-                playerDesc.isALocalOperator = (playerDesc.clientId === socket.client.id);
+                desc.isALocalOperator = (desc.clientId === socket.client.id);
             });
+            console.log("notify game socket of game create");
             socket.emit(GameEv.CREATE_GAME, gameDesc);
         });
     }
@@ -299,7 +318,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     }
 }
 JsUtils.protoNoEnum(ServerGame, [
-    "_greetGameSockets",
+    "_awaitGameSockets", "_greetGameSockets",
     "_getGridImplementation",
     "_createOperatorPlayer", "setCurrentOperator",
 ]);

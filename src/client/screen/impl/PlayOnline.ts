@@ -46,8 +46,12 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
         const leaveConfirmed = super._abstractOnBeforeLeave(navDir);
         if (leaveConfirmed) {
-            this.socket.emit(GameEv.RETURN_TO_LOBBY);
-            this.socket.removeAllListeners();
+            if (this.socket !== undefined) {
+                // This may not be entered if the server went down unexpectedly.
+                this.socket.emit(GameEv.RETURN_TO_LOBBY);
+                this.socket.removeAllListeners();
+                this.socket.close();
+            }
         }
         return leaveConfirmed;
     }
@@ -63,8 +67,8 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
             this._onGameBecomeOver.bind(this),
             this.top.sockets.gameSocket!,
             ctorArgs,
-            );
-        this.top.sockets.gameSocket!
+        );
+        this.socket
         .on(GameEv.UNPAUSE, () => {
             this._statusBecomePlaying();
         })

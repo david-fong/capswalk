@@ -121,8 +121,9 @@ export class GroupLobbyScreen extends SkScreen<SID> {
             this.teamsElem.textContent = "";
             this._submitInputs();
 
-            this.socket.on(
-                Group.Socket.UserInfoChange.EVENT_NAME,
+            this.socket
+            .off(Group.Socket.UserInfoChange.EVENT_NAME)
+            .on (Group.Socket.UserInfoChange.EVENT_NAME,
                 this._onUserInfoChange.bind(this),
             );
         }
@@ -130,14 +131,23 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         this.socket.once(
             GroupEv.CREATE_GAME,
             () => {
-                console.log("group create game socket. now waiting for ctor args");
+                const login = this.top.groupLoginInfo;
+                console.log("group create game socket. now waiting for ctor args. ");
                 const sock = this.top.sockets.gameSocketConnect(
-                    args.groupName!,
-                    { passphrase: args.groupPassphrase! },
+                    login.name!,
+                    { passphrase: login.passphrase! },
                 );
                 sock.once(GameEv.CREATE_GAME, (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
                     this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
                 });
+                // function ensureConnected(): void {
+                //     if (!(sock.connected)) {
+                //         console.log("ensure connected.");
+                //         sock.connect();
+                //         setTimeout(() => { ensureConnected(); }, 300);
+                //     }
+                // }
+                // ensureConnected();
             },
         );
     }
