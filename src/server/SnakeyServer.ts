@@ -63,13 +63,13 @@ export class SnakeyServer extends _SnakeyServer {
 
         this.http.listen(<net.ListenOptions>{ port, host }, (): void => {
             const info = <net.AddressInfo>this.http.address();
-            console.log(`\n\nServer mounted to: \`${info.address}${info.port}\` using ${info.family}.\n`);
-            console.log("This host can be reached at any of the following addresses:\n");
+            console.info(`\n\nServer mounted to: \`${info.address}${info.port}\` using ${info.family}.\n`);
+            console.info("This host can be reached at any of the following addresses:\n");
             SnakeyServer.chooseIPAddress().sort().forEach((address) => {
-                console.log(/* ${SkServer.PROTOCOL} */`${address}:${port}`);
+                console.info(/* ${SkServer.PROTOCOL} */`${address}:${port}`);
                 // ^We can exclude the protocol since it will get defaulted by the client side.
             });
-            console.log("");
+            console.info("");
         });
 
         this._joinerSocketListeners = Object.freeze({
@@ -120,7 +120,7 @@ export class SnakeyServer extends _SnakeyServer {
      * @param socket - The socket from the game host.
      */
     protected onJoinerNspsConnection(socket: io.Socket): void {
-        console.log(`socket    connect: ${socket.id}`);
+        console.info(`socket    connect: ${socket.id}`);
         // Upon connection, immediately send a list of existing groups:
         socket.emit(
             Group.Exist.EVENT_NAME,

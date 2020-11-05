@@ -17,7 +17,7 @@ export namespace Lang {
     .forEach((langImpl) => {
         const inst = new (langImpl)(1.0);
         inst.reset();
-        console.log(inst.simpleView());
+        console.info(inst.simpleView());
         debugger;
     });
 }

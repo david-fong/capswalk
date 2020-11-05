@@ -124,7 +124,7 @@ export class Group extends _Group {
      * @param socket -
      */
     protected onConnection(socket: Group.Socket): void {
-        console.log(`socket    connect: ${socket.id}`);
+        console.info(`socket    connect: ${socket.id}`);
         if (this.#currentGame) {
             // TODO.design is there a good reason to do the below?
             // Prevent new players from joining while the group is playing
@@ -170,13 +170,13 @@ export class Group extends _Group {
         const failureReasons = this._createGameInstance(ctorArgs);
         if (failureReasons.length) {
             // TODO.impl handle failure reasons.
-            console.log(failureReasons);
+            console.info(failureReasons);
         } else {
             // Broadcast to the joiner namespace of this group's change in state:
             this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
                 [this.name]: Group.Exist.Status.IN_GAME,
             });
-            console.log(`group ${this.name} new game`);
+            console.info(`group ${this.name} new game`);
         }
     }
 
@@ -218,7 +218,7 @@ export class Group extends _Group {
         server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
             [this.name]: Group.Exist.Status.DELETE,
         });
-        console.log(`terminated group: \`${this.name}\``);
+        console.info(`terminated group: \`${this.name}\``);
     }
 
 
@@ -246,7 +246,6 @@ export class Group extends _Group {
         }
         failureReasons.push(...GamepartManager.CHECK_VALID_CTOR_ARGS(ctorArgs));
         if (failureReasons.length) {
-            console.log(failureReasons);
             return failureReasons;
         }
 

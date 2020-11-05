@@ -118,23 +118,19 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         const resolvers = new Map<io.Client["id"], () => void>();
         const promises = Object.values(args.groupNsps.sockets).map((groupSocket) => {
             return new Promise((resolve, reject) => {
-                console.log("group socket client id: ", groupSocket.client.id);
                 resolvers.set(groupSocket.client.id, resolve);
             });
         });
         Promise.all(promises)
         .then(() => {
-            console.log("all clients have connected to the game namespace"); // debuglog
             this.namespace.removeAllListeners("connect");
             this._greetGameSockets(args.gameDesc);
         })
         .catch((reason) => { setImmediate(() => { throw reason; }); });
 
         this.namespace.on("connect", (gameSocket: io.Socket): void => {
-            console.log("game socket client id: ", gameSocket.client.id);
             resolvers.get(gameSocket.client.id)!();
         });
-
         // Tell all group members in the lobby to join the game namespace:
         args.groupNsps.emit(GroupEv.CREATE_GAME);
     }
@@ -203,7 +199,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 // @ts-expect-error : RO=
                 desc.isALocalOperator = (desc.clientId === socket.client.id);
             });
-            console.log("notify game socket of game create");
             socket.emit(GameEv.CREATE_GAME, gameDesc);
         });
     }
@@ -212,8 +207,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * @override
      */
     public async reset(): Promise<void> {
-        console.log("starting reset");
-
         // Be ready for clients to indicate readiness to unpause.
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
             return new Promise((resolve, reject) => {

@@ -26,7 +26,7 @@ export function game(): TopLevel["game"] {
     return _top.game;
 }
 
-console.log("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
+console.info("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
 + " margin:0.4em; border:0.3em solid black;padding:0.4em;"
 + " color:white; background-color:#3f5e77; border-radius:0.7em; ");
 
@@ -39,10 +39,10 @@ if (_top.webpageHostType === TopLevel.WebpageHostType.GITHUB && "serviceWorker" 
         // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
         navigator.serviceWorker.register("/ServiceWorker.js").then(
         (registration) => {
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            console.info('ServiceWorker registration successful with scope: ', registration.scope);
         },
         (err) => {
-            console.log('ServiceWorker registration failed: ', err);
+            console.info('ServiceWorker registration failed: ', err);
         });
         // TODO.learn Using Service Workers to make an offline-friendly PWA.
         // https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
