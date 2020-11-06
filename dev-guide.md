@@ -8,7 +8,7 @@
 1. `npm run build`.
 1. To test off the local filesystem (no online-game capabilities), open `file://<path-to-project-root>/dist/client/index.html`.
 1. To test off a local server, do `npm start`.
-    - The server will serve the client files, but you can also just open them using the local filesystem.
+    - Instead of the file protocol, load the site at localhost.
 1. Notes on repairing git worktrees used for deployment:
     - Avoid commands that would delete either of the file `dist/.git` or `dist/client/.git`.
     - If you accidentally delete them, recreate them with the contents `gitdir: ../../.git/worktrees/client` and `gitdir: ../.git/worktrees/client` respectively.

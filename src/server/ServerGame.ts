@@ -30,7 +30,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
     public readonly namespace: io.Namespace;
     private readonly _groupHostClient: io.Client;
-    private readonly socketListeners: Readonly<{[evName : string]: (...args: any[]) => void}>;
+    private readonly gameEvSocketListeners: Readonly<{[evName : string]: (...args: any[]) => void}>;
 
     private readonly _deleteExternalRefs: () => void;
 
@@ -64,7 +64,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      */
     public constructor(args: Readonly<{
         groupNsps: io.Namespace,
-        passphrase: Group.Passphrase,
         groupHostClient: io.Client,
         deleteExternalRefs: () => void,
         gameDesc: Game.CtorArgs<G,S>,
@@ -95,20 +94,14 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         }) */
         JsUtils.propNoWrite(this as ServerGame<S>, ["namespace"]);
 
-        this.socketListeners = Object.freeze({
-            ["disconnect"]: () => {
-                if (Object.keys(this.namespace.sockets).length === 1) {
-                    this.terminate();
-                    return;
-                }
-            },
+        this.gameEvSocketListeners = Object.freeze({
             [PlayerActionEvent.EVENT_NAME.MOVEMENT]: this.processMoveRequest.bind(this),
             [PlayerActionEvent.EVENT_NAME.BUBBLE]: this.processBubbleRequest.bind(this),
             [GameEv.PAUSE]: this.statusBecomePaused.bind(this),
             [GameEv.UNPAUSE]: this.statusBecomePlaying.bind(this),
         });
-        JsUtils.instNoEnum (this as ServerGame<S>, ["socketListeners"]);
-        JsUtils.propNoWrite(this as ServerGame<S>, ["socketListeners"]);
+        JsUtils.instNoEnum (this as ServerGame<S>, ["gameEvSocketListeners"]);
+        JsUtils.propNoWrite(this as ServerGame<S>, ["gameEvSocketListeners"]);
 
         this._awaitGameSockets(args);
     }
@@ -136,6 +129,11 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         .catch((reason) => { setImmediate(() => { throw reason; }); });
 
         this.namespace.on("connect", (gameSocket: io.Socket): void => {
+            gameSocket.on("disconnect", () => {
+                if (Object.keys(this.namespace.sockets).length === 1) {
+                    this.terminate();
+                }
+            });
             resolvers.get(gameSocket.client.id)!();
         });
         // Tell all group members in the lobby to join the game namespace:
@@ -149,22 +147,22 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         // `gameDesc.playerDescs` the result of `Player.finalize`.
         const humanPlayerDescs = (gameDesc.playerDescs as Player.CtorArgs[])
             .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN);
-
-        {const _clientToGameSocketMap = new Map(
-            Object.values(this.namespace.sockets).map((s) => [s.client.id, s]),
-        );
-        // @ts-expect-error : RO=
-        this.playerSockets
-        = humanPlayerDescs.reduce<Map<Player.Id, io.Socket>>((build, playerDesc) => {
-            if (playerDesc.clientId === undefined) {
-                throw new Error("missing socket client for player with ID " + playerDesc.playerId);
-            }
-            const gameSocket = _clientToGameSocketMap.get(playerDesc.clientId);
-            if (gameSocket === undefined) throw new Error("never");
-            build.set(playerDesc.playerId, gameSocket);
-            return build;
-        }, new Map());
-        JsUtils.propNoWrite(this as ServerGame<any>, ["playerSockets"]);
+        {
+            const _clientToGameSocketMap = new Map(
+                Object.values(this.namespace.sockets).map((s) => [s.client.id, s]),
+            );
+            // @ts-expect-error : RO=
+            this.playerSockets
+            = humanPlayerDescs.reduce<Map<Player.Id, io.Socket>>((build, playerDesc) => {
+                if (playerDesc.clientId === undefined) {
+                    throw new Error("missing socket client for player with ID " + playerDesc.playerId);
+                }
+                const gameSocket = _clientToGameSocketMap.get(playerDesc.clientId);
+                if (gameSocket === undefined) throw new Error("never");
+                build.set(playerDesc.playerId, gameSocket);
+                return build;
+            }, new Map());
+            JsUtils.propNoWrite(this as ServerGame<S>, ["playerSockets"]);
         }
 
         Promise.all(Object.values(this.namespace.sockets).map((socket) => {
@@ -177,12 +175,8 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             this.reset();
         });
 
-        // Pass on Game constructor arguments to each client:
-        // We need to go by sockets since each client may be operating
-        // upon (controlling) several of its own players.
+        // Register socket listeners for game events:
         Object.values(this.namespace.sockets).forEach((socket) => {
-            // Attach the movement request handlers:
-            // (these are detached in `onReturnToLobby`).
             socket.on(GameEv.RETURN_TO_LOBBY, () => {
                 if (socket.client === this._groupHostClient) {
                     this.statusBecomeOver();
@@ -191,10 +185,13 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                     socket.broadcast.emit(GameEv.RETURN_TO_LOBBY, socket.id);
                 }
             });
-            Object.entries(this.socketListeners).forEach(([evName, callback]) => {
+            Object.entries(this.gameEvSocketListeners).forEach(([evName, callback]) => {
                 socket.on(evName, callback);
             });
+        });
 
+        // Pass on Game constructor arguments to each client:
+        Object.values(this.namespace.sockets).forEach((socket) => {
             // Set `isALocalOperator` flags to match what this socket should see:
             humanPlayerDescs.forEach((desc) => {
                 // @ts-expect-error : RO=
@@ -217,7 +214,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             });
         })).then(() => {
             this.statusBecomePlaying();
-            this.namespace.emit(GameEv.UNPAUSE);
         });
 
         const superPromise = super.reset();
@@ -261,6 +257,22 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     /**
      * @override
      */
+    public statusBecomePlaying(): void {
+        super.statusBecomePlaying();
+        this.namespace.emit(GameEv.UNPAUSE);
+    }
+
+    /**
+     * @override
+     */
+    public statusBecomePaused(): void {
+        super.statusBecomePaused();
+        this.namespace.emit(GameEv.PAUSE);
+    }
+
+    /**
+     * @override
+     */
     public executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
         super.executePlayerMoveEvent(desc);
 
@@ -272,7 +284,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             );
         } else {
             // Request was accepted.
-            // Pass on change descriptor to all clients:
+            // Pass change descriptor to all clients:
             this.namespace.emit(
                 PlayerActionEvent.EVENT_NAME.MOVEMENT,
                 desc,

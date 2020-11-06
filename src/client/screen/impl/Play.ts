@@ -52,7 +52,7 @@ export abstract class _PlayScreen<
      */
     #currentGame: undefined | Game;
 
-    protected abstract readonly wantsAutoPause: boolean;
+    protected abstract readonly wantsAutoPlayPause: boolean;
 
     protected abstract readonly askConfirmBeforeLeave: boolean;
     /**
@@ -90,7 +90,7 @@ export abstract class _PlayScreen<
         gridHtml.pauseOl.addEventListener("click", (ev) => {
             const game = this.currentGame;
             if (game !== undefined && game.status === Game.Status.PAUSED) {
-                this._statusBecomePlaying();
+                this._requestStatusBecomePlaying();
             }
         });
         // ^Purposely make the grid the first child so it gets tabbed to first.
@@ -118,16 +118,16 @@ export abstract class _PlayScreen<
 
         // @ts-expect-error : RO=
         this.#onVisibilityChange = () => {
-            if (!this.wantsAutoPause) return;
+            if (!this.wantsAutoPlayPause) return;
             if (document.hidden) {
                 if (this.#pauseReason === undefined) {
                     const game = this.currentGame;
                     if (game === undefined || (game !== undefined && game.status !== Game.Status.OVER)) {
-                        this._statusBecomePaused();
+                        this._requestStatusBecomePaused();
                     }
                 }
             } else {
-                if (this.#pauseReason === "page-hide") { this._statusBecomePlaying(); }
+                if (this.#pauseReason === "page-hide") { this._requestStatusBecomePlaying(); }
             }
         };
         // @ts-expect-error : RO=
@@ -162,11 +162,11 @@ export abstract class _PlayScreen<
         // ^The order of insertion does not matter (it used to).
         this.playersBar.appendChild(html.playersBar);
 
-        this.pauseButton.onclick = this._statusBecomePlaying.bind(this);
+        this.pauseButton.onclick = this._requestStatusBecomePlaying.bind(this);
         this.pauseButton.disabled = false;
-        if (this.wantsAutoPause) {
+        if (this.wantsAutoPlayPause) {
             setTimeout(() => {
-                if (!document.hidden) { this._statusBecomePlaying(); }
+                if (!document.hidden) { this._requestStatusBecomePlaying(); }
             }, 500);
             // ^This delay is for "aesthetic" purposes (not functional).
         }
@@ -256,6 +256,13 @@ export abstract class _PlayScreen<
         return true;
     }
 
+    protected _requestStatusBecomePlaying(): void {
+        this._statusBecomePlaying();
+    }
+
+    protected _requestStatusBecomePaused(): void {
+        this._statusBecomePaused();
+    }
 
     protected _statusBecomePlaying(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
@@ -264,7 +271,7 @@ export abstract class _PlayScreen<
         this.#pauseReason = undefined;
         this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
-        this.pauseButton.onclick = this._statusBecomePaused.bind(this);
+        this.pauseButton.onclick = this._requestStatusBecomePaused.bind(this);
         this.resetButton.disabled = true;
 
         window.requestAnimationFrame((time) => {
@@ -279,7 +286,7 @@ export abstract class _PlayScreen<
         this.#pauseReason = document.hidden ? "page-hide" : "other";
         this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
 
-        this.pauseButton.onclick    = this._statusBecomePlaying.bind(this);
+        this.pauseButton.onclick    = this._requestStatusBecomePlaying.bind(this);
         this.resetButton.disabled   = false;
     }
 
@@ -301,8 +308,8 @@ export abstract class _PlayScreen<
     protected _resetGame(): void {
         this.currentGame.reset();
         this.pauseButton.disabled = false;
-        if (this.wantsAutoPause) {
-            this._statusBecomePlaying();
+        if (this.wantsAutoPlayPause) {
+            this._requestStatusBecomePlaying();
         }
     }
 

@@ -11,10 +11,18 @@
 
 ### High Priority
 
-1. Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
+1. Try out Socket.IO v3!
+1. Game-Host Servers:
+    - Define a list of well-known servers. This should be enforced in the CSP headers `connect-src` or something.
+    - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
 1. Implement Pause and Unpause events over network.
 1. Server authentication is not working. Please debug and fix.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
+1. Try out CSS modules. We already have webpack-css-loader installed.
+    - This would take a lot of weight out of OmHooks.
+    - [how to config with typescript](https://stackoverflow.com/questions/40382842/cant-import-css-scss-modules-typescript-says-cannot-find-module)
+    - Move screen-related css to `client/screen/impl/`.
+      - Try using es6-style imports instead of CommonJs and see if css-loader understands (it should, I think).
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
 1. Fill in implementation of bubble event handler.
@@ -38,11 +46,6 @@
   - Make JsUtils have a non-exported `WeakSet<Functions>`.
   - Make a JsUtil function that checks if a class declares any functions with the same name as anything higher in the prototype chain (see `Object.getPrototypeOf()`).
 - Start a skeleton for a "Chess Knight" Grid implementation. That would be pretty mind boggling both to play and to develop...
-- Try out CSS modules. We already have webpack-css-loader installed.
-  - This would take a lot of weight out of OmHooks.
-  - [how to config with typescript](https://stackoverflow.com/questions/40382842/cant-import-css-scss-modules-typescript-says-cannot-find-module)
-  - Move screen-related css to `client/screen/impl/`.
-    - Try using es6-style imports instead of CommonJs and see if css-loader understands (it should, I think).
 - Investigate whether we can create fewer functions for socket event listeners by making custom subclasses of Socket.
 - When TypeScript 4.1 comes out, use the improved `@see` JSdoc annotations.
 - Implement translations of clientside strings.

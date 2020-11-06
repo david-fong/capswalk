@@ -360,16 +360,17 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 autocomplete: "on",
                 required: true,
             });
+            hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
             const suggestedHostDesc = GroupJoinerScreen.SUGGEST_HOST(this.top.webpageHostType);
             if (suggestedHostDesc) {
                 const suggestOpt = JsUtils.mkEl("option", [], {
                     value: suggestedHostDesc.value,
                     textContent: suggestedHostDesc.description,
                 });
-                document.getElementById(OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS)!
-                    .insertAdjacentElement("afterbegin", suggestOpt);
+                const datalist = document.getElementById(OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS)!;
+                datalist.insertAdjacentElement("afterbegin", suggestOpt);
+                hostUrl.value = suggestOpt.value;
             }
-            hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
         }{
             // @ts-expect-error : RO=
             const nspsName = this.in.groupName

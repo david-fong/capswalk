@@ -268,7 +268,6 @@ export class Group extends _Group {
         ];
         this.#currentGame = new ServerGame({
             groupNsps: this.namespace,
-            passphrase: this.passphrase,
             groupHostClient: this._sessionHost.client,
             deleteExternalRefs: () => { this.#currentGame = undefined; },
             gameDesc: ctorArgs,

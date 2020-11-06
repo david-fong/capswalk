@@ -155,7 +155,6 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     config.plugins.push(...[
         new HtmlPlugin({
             template:   path.resolve(PROJECT_ROOT, "src/client/index.ejs"),
-            base:       ".", // must play nice with path configs.
             favicon:    "./assets/favicon.png",
             scriptLoading: "defer",
             inject: false, // (I specify where each injection goes in the template).
@@ -163,7 +162,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
                 compilation, webpackConfig: compilation.options,
                 htmlWebpackPlugin: { tags: assetTags, files: assets, options, },
                 // Custom HTML templates for index.ejs:
-                // "extraScripts": [],
+                wellKnownGameServers: require(path.resolve(PROJECT_ROOT, "servers.json")),
             }; },
             //hash: true,
         }),

@@ -19,7 +19,7 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
     /**
      * @override
      */
-    protected readonly wantsAutoPause = true;
+    protected readonly wantsAutoPlayPause = true;
     /**
      * @override
      */

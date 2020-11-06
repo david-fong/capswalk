@@ -9,7 +9,6 @@ type G = Game.Type.ONLINE;
 
 
 /**
- *
  */
 export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     /**
@@ -26,7 +25,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     /**
      * @override
      */
-    protected readonly wantsAutoPause = false;
+    protected readonly wantsAutoPlayPause = false;
 
     private get socket(): SocketIOClient.Socket {
         return this.top.sockets.gameSocket!;
@@ -59,14 +58,14 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     /**
      * @override
      */
-    protected _statusBecomePlaying(): void {
+    protected _requestStatusBecomePlaying(): void {
         this.socket.emit(GameEv.UNPAUSE);
     }
 
     /**
      * @override
      */
-    protected _statusBecomePaused(): void {
+    protected _requestStatusBecomePaused(): void {
         this.socket.emit(GameEv.PAUSE);
     }
 
@@ -84,10 +83,10 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
         );
         this.socket
         .on(GameEv.UNPAUSE, () => {
-            super._statusBecomePlaying();
+            this._statusBecomePlaying();
         })
         .on(GameEv.PAUSE, () => {
-            super._statusBecomePaused();
+            this._statusBecomePaused();
         })
         .on(GameEv.RETURN_TO_LOBBY, (socketId: string | undefined) => {
             if (socketId === undefined) {
