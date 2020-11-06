@@ -48,7 +48,7 @@ export class TopLevel {
     public constructor() {
         this.defaultDocTitle = document.title;
         this.webpageHostType = (() => {
-            if (window.location.origin.match(/github\.io/)) {
+            if (window.location.hostname.match(/github\.io/)) {
                 return TopLevel.WebpageHostType.GITHUB;
             } else if (window.location.protocol.startsWith("file")) {
                 return TopLevel.WebpageHostType.FILESYSTEM;

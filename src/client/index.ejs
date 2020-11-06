@@ -25,7 +25,7 @@
 
     <body class="fill-parent">
         <datalist id="public-game-hosts-list">
-            <!-- default protocol is http -->
+            <%= wellKnownGameServers.map((host) => "<option value="+host+"></option>").join() %>
         </datalist>
         <script>
         { // Load up last used colour scheme (or default):
