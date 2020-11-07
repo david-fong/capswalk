@@ -152,20 +152,25 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
     // config.resolve.alias = config.resolve.alias || {
     //     "socket.io-client": "socket.io-client/dist/socket.io.slim.js",
     // };
-    config.plugins.push(...[
-        new HtmlPlugin({
-            template:   path.resolve(PROJECT_ROOT, "src/client/index.ejs"),
-            favicon:    "./assets/favicon.png",
-            scriptLoading: "defer",
-            inject: false, // (I specify where each injection goes in the template).
-            templateParameters: (compilation, assets, assetTags, options) => { return {
-                compilation, webpackConfig: compilation.options,
-                htmlWebpackPlugin: { tags: assetTags, files: assets, options, },
-                // Custom HTML templates for index.ejs:
-                wellKnownGameServers: require(path.resolve(PROJECT_ROOT, "servers.json")),
-            }; },
-            //hash: true,
-        }),
+    const htmlPluginOptions: HtmlPlugin.Options = {
+        template:   path.resolve(PROJECT_ROOT, "src/client/index.ejs"),
+        favicon:    "./assets/favicon.png",
+        scriptLoading: "defer",
+        inject: false, // (I specify where each injection goes in the template).
+        templateParameters: (compilation, assets, assetTags, options) => { return {
+            compilation, webpackConfig: compilation.options,
+            htmlWebpackPlugin: { tags: assetTags, files: assets, options, },
+            // Custom HTML templates for index.ejs:
+            wellKnownGameServers: require(path.resolve(PROJECT_ROOT, "servers.json")),
+        }; },
+        //hash: true,
+    };
+    config.plugins.push(
+        new HtmlPlugin(htmlPluginOptions),
+        // new HtmlPlugin(Object.assign({}, htmlPluginOptions, <HtmlPlugin.Options>{
+        //     chunks: [],
+        //     filename: "404.html",
+        // })),
         new MiniCssExtractPlugin({
             filename: "_barrel.css",
             chunkFilename: "chunk/[name].css",
@@ -178,7 +183,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
             to: "vendor/socket.io.[ext]",
             flatten: true,
         }],}),
-    ].filter((plugin) => plugin));
+    );
     if (PACK_MODE === "production") {
         config.plugins.push();
     }
