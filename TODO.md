@@ -13,9 +13,7 @@
 
 1. Try out Socket.IO v3!
 1. Game-Host Servers:
-    - Define a list of well-known servers. This should be enforced in the CSP headers `connect-src` or something.
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
-1. Implement Pause and Unpause events over network.
 1. Server authentication is not working. Please debug and fix.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Try out CSS modules. We already have webpack-css-loader installed.

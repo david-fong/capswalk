@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
 import type { Lang } from "./Lang";
 
@@ -22,15 +23,12 @@ export namespace LangSeqTree {
 
         public constructor() {
             this.children = [];
+            JsUtils.propNoWrite(this as ParentNode, ["children"]);
         }
 
         public reset(): void {
-            this.inheritingWeightedHitCount = 0.000;
-            // Recursively reset (from leaves first to root last):
-            // We must go in such an order so that our random hit
-            // seeds will be properly inherited (and not wrongly
-            // cleared).
             this.children.forEach((child) => child.reset());
+            this.inheritingWeightedHitCount = 0.000;
         }
 
         protected _finalize(): void {
@@ -59,10 +57,9 @@ export namespace LangSeqTree {
                 throw new RangeError("never");
             }
             let node: ParentNode = this; {
-                let childNode: ParentNode | undefined = this;
-                while (childNode) {
+                let childNode: ParentNode | undefined;
+                while ((childNode = node.children.find((child) => seq.startsWith(child.sequence))) !== undefined) {
                     node = childNode;
-                    childNode = childNode.children.find((child) => seq.startsWith(child.sequence));
                 }
             }
             if ((node as ChildNode).sequence === seq) { // TODO.build disable during development
@@ -102,7 +99,7 @@ export namespace LangSeqTree {
             weightScaling: Lang.WeightExaggeration,
         ): LangSeqTree.ParentNode {
             const averageWeight = Object.values(forwardDict).reduce((sum, next) => sum += next.weight, 0);
-            const adjustedWeight = (function(): (ogWeight: number) => number {
+            const scaleWeight = (function(): (ogWeight: number) => number {
                 return (weightScaling === 0) ? (originalWeight: number) => 1
                     :  (weightScaling === 1) ? (originalWeight: number) => originalWeight
                     : (originalWeight: number) => Math.pow(originalWeight / averageWeight, weightScaling);
@@ -112,7 +109,7 @@ export namespace LangSeqTree {
             for (const char in forwardDict) {
                 const seq = forwardDict[char].seq;
                 const weightedChar = new WeightedLangChar(
-                    char, adjustedWeight(forwardDict[char].weight),
+                    char, scaleWeight(forwardDict[char].weight),
                 );
                 const charArray = reverseDict.get(seq);
                 if (charArray) {
@@ -128,9 +125,7 @@ export namespace LangSeqTree {
             Array.from(reverseDict)
               //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
                 .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
-                .forEach((mapping) => {
-                    rootNode._addCharMapping(...mapping);
-                });
+                .forEach((args): void => rootNode._addCharMapping(...args));
             rootNode._finalize();
             return rootNode;
         }
@@ -139,6 +134,7 @@ export namespace LangSeqTree {
             return a.inheritingWeightedHitCount - b.inheritingWeightedHitCount;
         };
     }
+    JsUtils.protoNoEnum(ParentNode, ["_finalize", "_recursiveGetLeafNodes"]);
     Object.freeze(ParentNode);
     Object.freeze(ParentNode.prototype);
 
@@ -171,8 +167,12 @@ export namespace LangSeqTree {
             this.sequence    = sequence;
             this.#characters = characters;
             this.#parent     = parent;
+            JsUtils.propNoWrite(this as ChildNode, ["sequence"]);
         }
 
+        /**
+         * @override
+         */
         protected _finalize(): void {
             Object.freeze(this.#characters);
             super._finalize();
@@ -180,6 +180,9 @@ export namespace LangSeqTree {
 
         public reset(): void {
             super.reset();
+            // Order matters! The below work must be done after `super.reset`
+            // so that `inheritingWeightedHitCount` does not get erroneously
+            // reset to zero after starting to inherit seeding hits.
             this.#characters.forEach((char) => {
                 char.reset();
                 this.incrementNumHits(char, Math.random() * _Lang.CHAR_HIT_COUNT_SEED_CEILING);
@@ -187,6 +190,8 @@ export namespace LangSeqTree {
         }
 
         /**
+         * #### How it works:
+         *
          * Incrementing the hit-count makes this node less likely to be
          * used for a shuffle-in. Shuffle-in option searching is easy to
          * taking the viewpoint of leaf-nodes, so this implementation is
@@ -197,9 +202,12 @@ export namespace LangSeqTree {
          *      been selected the least according to the specified scheme.
          */
         public chooseOnePair(): Lang.CharSeqPair {
-            const weightedChar = this.#characters.slice(0)
-                .sort(WeightedLangChar.CMP)
-                .shift()!;
+            let weightedChar: WeightedLangChar = this.#characters[0];
+            for (const otherWeightedChar of this.#characters) {
+                if (otherWeightedChar.weightedHitCount < weightedChar.weightedHitCount) {
+                    weightedChar = otherWeightedChar;
+                }
+            }
             const pair: Lang.CharSeqPair = {
                 char: weightedChar.char,
                 seq:  this.sequence,
@@ -251,6 +259,7 @@ export namespace LangSeqTree {
             return a.personalWeightedHitCount - b.personalWeightedHitCount;
         };
     }
+    JsUtils.protoNoEnum(ChildNode, ["_finalize", "_recursiveIncrementNumHits"]);
     Object.freeze(ChildNode);
     Object.freeze(ChildNode.prototype);
 }

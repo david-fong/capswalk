@@ -173,12 +173,12 @@ export abstract class Lang extends _Lang {
     /**
      */
     public simpleView(): object {
-        return Object.assign(Object.create(null), {
+        return Object.freeze(Object.assign(Object.create(null), {
             id: this.frontendDesc.id,
             displayName: this.frontendDesc.displayName,
             root: this.treeMap.simpleView(),
             numLeaves: this.leafNodes.length,
-        });
+        }));
     }
 }
 export namespace Lang {
