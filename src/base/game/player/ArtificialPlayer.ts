@@ -114,7 +114,8 @@ export namespace ArtificialPlayer {
     export declare const _Constructors: Readonly<{
         [ F in Player.FamilyArtificial ]: {
             new<S extends Coord.System>(
-                game: GamepartManager<any,S>, desc: Player._CtorArgs<F>
+                game: GamepartManager<Game.Type.Manager,S>,
+                desc: Player._CtorArgs<F>
             ): ArtificialPlayer<S>;
         };
     }>;
@@ -124,10 +125,13 @@ export namespace ArtificialPlayer {
     }
 
     export const of = <S extends Coord.System>(
-        game: GamepartManager<any,S>,
+        game: GamepartManager<Game.Type.Manager,S>,
         playerDesc: Player._CtorArgs<Player.FamilyArtificial>,
     ): ArtificialPlayer<S> => {
         const familyId = playerDesc.familyId as Player.FamilyArtificial;
+        if (!Object.keys(_Constructors).includes(familyId)) { // TODO.build turn this off for production.
+            throw new RangeError(familyId + " is not a valid artificial player family id.");
+        }
         return new (_Constructors[familyId])(game, playerDesc);
     };
 }

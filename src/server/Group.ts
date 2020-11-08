@@ -19,7 +19,7 @@ export { ServerGame };
  */
 export class Group extends _Group {
 
-    public readonly namespace: io.Namespace;
+    public readonly namespace: io.Socket["nsp"];
     public readonly name: Group.Name;
     public readonly passphrase: Group.Passphrase;
     #currentGame: ServerGame<Coord.System> | undefined;
@@ -46,11 +46,10 @@ export class Group extends _Group {
      * it will close and clean itself up.
      */
     public constructor(desc: Readonly<{
-        namespace: io.Namespace,
+        namespace: io.Socket["nsp"],
         name: Group.Name,
         passphrase: Group.Passphrase,
         deleteExternalRefs: () => void,
-        initialTtl: number,
     }>) {
         super();
         this.namespace    = desc.namespace;
@@ -60,10 +59,10 @@ export class Group extends _Group {
 
         this._deleteExternalRefs = desc.deleteExternalRefs;
         this._initialTtlTimeout = setTimeout(() => {
-            if (Object.keys(this.namespace.sockets).length === 0) {
+            if (this.namespace.sockets.size === 0) {
                 this.terminate();
             }
-        }, (desc.initialTtl * 1000)).unref();
+        }, (Group.DEFAULT_TTL * 1000)).unref();
 
         this.socketListeners = Object.freeze({
             ["disconnect"]: (socket: io.Socket): void => {
@@ -75,7 +74,7 @@ export class Group extends _Group {
                     this.terminate();
                     return;
                 }
-                if (Object.keys(socket.nsp.sockets).length === 1) {
+                if (socket.nsp.sockets.size === 1) {
                     this.terminate();
                     return;
                 }
@@ -107,10 +106,10 @@ export class Group extends _Group {
         // Call the connection-event handler:
         this.namespace.use((socket, next) => {
             const handshake = socket.handshake;
-            if (handshake.query.passphrase !== this.passphrase) {
+            if ((handshake.auth as any).passphrase !== this.passphrase) {
                 next(new Error("Incorrect passphrase"));
             }
-            const userInfo = socket.handshake.query as Player.UserInfo;
+            const userInfo = (socket.handshake.auth as any).userInfo as Player.UserInfo;
             if (userInfo === undefined || userInfo.teamId !== 0) {
                 next(new Error(`a socket attempted to connect to group`
                 + ` \`${this.name}\` without providing userInfo.`));
@@ -124,14 +123,14 @@ export class Group extends _Group {
      * @param socket -
      */
     protected onConnection(socket: Group.Socket): void {
-        console.info(`socket    connect: ${socket.id}`);
+        console.info(`socket connect (group):  ${socket.id}`);
         if (this.#currentGame) {
             // TODO.design is there a good reason to do the below?
             // Prevent new players from joining while the group is playing
             // a game:
             socket.disconnect();
         }
-        socket.userInfo = socket.handshake.query.userInfo;
+        socket.userInfo = (socket.handshake.auth as any).userInfo;
         {
             type Res = _Group.Socket.UserInfoChange.Res;
             const EVENT_NAME = Group.Socket.UserInfoChange.EVENT_NAME;
@@ -139,17 +138,18 @@ export class Group extends _Group {
             // NOTE: broadcast modifier not used since socket is not yet in this.sockets.
             socket.nsp.emit(EVENT_NAME, <Res>{[socket.id]: socket.userInfo});
             // Notify the new player of all other players:
-            socket.emit(EVENT_NAME, Object.entries(this.sockets).reduce<Res>((res, [otherSocketId, otherSocket]) => {
+            const res: {[socketId: string]: Player.UserInfo} = {};
+            for (const [otherSocketId, otherSocket] of this.sockets.entries()) {
                 res[otherSocketId] = otherSocket.userInfo;
-                return res;
-            }, {} as Res));
+            }
+            socket.emit(EVENT_NAME, res);
         }
 
         /**
          * Nobody has connected yet.
          * The first socket becomes the session host.
          */
-        if (Object.keys(socket.nsp.connected).length === 1) {
+        if (socket.nsp.sockets.size === 1) {
             clearTimeout(this._initialTtlTimeout);
             // @ts-expect-error : RO=
             this._initialTtlTimeout = undefined!;
@@ -192,15 +192,15 @@ export class Group extends _Group {
      * - Deletes the only external reference so this can be garbage collected.
      */
     protected terminate(): void {
-        function killNamespace(nsps: io.Namespace): void {
+        function killNamespace(nsps: io.Socket["nsp"]): void {
             nsps.removeAllListeners("connect");
             nsps.removeAllListeners("connection");
-            Object.values(nsps.connected).forEach((socket) => {
+            for (const socket of nsps.sockets.values()) {
                 socket.disconnect(false /* Do not close underlying engine */);
                 socket.removeAllListeners();
-            });
+            }
             nsps.removeAllListeners();
-            delete nsps.server.nsps[nsps.name];
+            nsps.server._nsps.delete(nsps.name);
         }
         if (this.#currentGame !== undefined) {
             // Since `ServerGame` handles its own termination when all
@@ -253,12 +253,12 @@ export class Group extends _Group {
         // @ts-expect-error : RO=
         ctorArgs.playerDescs = [
             ...ctorArgs.playerDescs,
-            ...Object.values(this.sockets).map((socket) => {
+            ...[...this.sockets.values()].map((socket) => {
                 return Object.freeze(<Player.CtorArgs>{
                     isALocalOperator: false,
                     familyId: "HUMAN",
                     teamId:   socket.userInfo.teamId,
-                    clientId: socket.client.id,
+                    clientId: socket.client["id"],
                     username: socket.userInfo.username,
                     avatar:   socket.userInfo.avatar,
                     noCheckGameOver: false, // TODO.design add a Group.Socket field for this.
@@ -275,8 +275,8 @@ export class Group extends _Group {
         return [];
     }
 
-    public get sockets(): Record<string, Group.Socket> {
-        return this.namespace.sockets as Record<io.Socket["id"], Group.Socket>;
+    public get sockets(): Map<string, Group.Socket> {
+        return this.namespace.sockets as Map<io.Socket["id"], Group.Socket>;
     }
 }
 export namespace Group {

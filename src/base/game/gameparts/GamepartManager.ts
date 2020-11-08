@@ -14,7 +14,7 @@ import {
     GamepartEvents,
 } from "./GamepartEvents";
 
-import InitGameManagerCtorMaps from "game/ctormaps/CmapManager"; // <- has side-effects.
+import InitGameManagerCtorMaps from "game/ctormaps/CmapManager";
 InitGameManagerCtorMaps();
 
 

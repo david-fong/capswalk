@@ -1,3 +1,4 @@
+import type { Socket } from "socket.io-client/build/socket";
 import type { OnlineGame } from "../../game/OnlineGame";
 
 import { GameEv } from "defs/OnlineDefs";
@@ -27,7 +28,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
      */
     protected readonly wantsAutoPlayPause = false;
 
-    private get socket(): SocketIOClient.Socket {
+    private get socket(): Socket {
         return this.top.sockets.gameSocket!;
     }
 
@@ -48,7 +49,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
             if (this.socket !== undefined) {
                 // This may not be entered if the server went down unexpectedly.
                 this.socket.emit(GameEv.RETURN_TO_LOBBY);
-                this.socket.removeAllListeners();
+                this.socket.off();
                 this.socket.close();
             }
         }

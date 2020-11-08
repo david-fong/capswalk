@@ -1,3 +1,4 @@
+import type { Socket } from "socket.io-client/build/socket";
 import { GameEv, SkServer } from "defs/OnlineDefs";
 import {
     JsUtils,
@@ -30,18 +31,18 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
      */
     declare public htmlElements: BrowserGameMixin.HtmlElements;
 
-    public readonly socket: SocketIOClient.Socket;
+    public readonly socket: Socket;
 
 
     /**
      * Note that this class does not extend `GameManager`.
      *
      * @param gameSocket - Used to make a Game socket.
-     * @param gameDesc - This should come from a Server event by the name {@link GroupEv.CREATE}.
+     * @param gameDesc - This should come from a Server event by the name {@link GameEv.CREATE}.
      */
     public constructor(
         onGameBecomeOver: () => void,
-        gameSocket: SocketIOClient.Socket,
+        gameSocket: Socket,
         gameDesc: Game.CtorArgs<G,S>,
     ) {
         super(

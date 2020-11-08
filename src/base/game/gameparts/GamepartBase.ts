@@ -105,7 +105,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
      * Overrides should not use the return value. They should return
      * the result of calling `ctorAsync`.
      */
-    public reset(): Promise<void> {
+    public async reset(): Promise<void> {
         this.grid.reset();
         // We must reset status to PAUSED to pass a state-transition
         // assertion when changing status later to PLAYING.
@@ -113,7 +113,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 
         // Important: Since there is nothing to do in this game-part's
         // ctorAsync getter, we don't need to use `await`.
-        return Promise.resolve();
     }
 
     protected abstract _getGridImplementation(coordSys: S): Grid.ClassIf<S> | VisibleGrid.ClassIf<S>;
@@ -121,8 +120,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 
     /**
      * Private helper for the constructor to create player objects.
-     * This is bypassed in non-game-manager implementations (Ie. In
-     * OnlineGame).
      *
      * @param gameDesc -
      * @returns A bundle of the constructed players.
@@ -133,9 +130,9 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             // @ts-expect-error : RO=
             = gameDesc.playerDescs
             = (this.gameType === Game.Type.ONLINE)
-            // The client receives these descriptors already finalized / cleaned by the server.
-            ? (gameDesc.playerDescs as PCtorArgs)
-            : Player.CtorArgs.finalize(gameDesc.playerDescs);
+                // The client receives these descriptors already finalized / cleaned by the server.
+                ? (gameDesc.playerDescs as PCtorArgs)
+                : Player.CtorArgs.finalize(gameDesc.playerDescs);
 
         return Object.freeze(playerDescs.map((playerDesc) => {
             if (playerDesc.familyId === Player.Family.HUMAN) {

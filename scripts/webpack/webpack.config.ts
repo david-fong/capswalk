@@ -177,8 +177,8 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
         }) as webpack.WebpackPluginInstance, // TODO.build remove this when https://github.com/webpack-contrib/mini-css-extract-plugin/pull/594
         new CopyWebpackPlugin({ patterns: [{
             context: "node_modules/socket.io-client/dist/",
-            from: `socket.io.${(
-                PACK_MODE === "production" ? "slim" : "dev" // TODO.build see https://github.com/socketio/socket.io-client/releases/tag/3.0.0-rc1 breaking changes
+            from: `socket.io${(
+                PACK_MODE === "production" ? ".min" : ""
             )}.js` + "*", // <- glob to include sourcemap file.
             to: "vendor/socket.io.[ext]",
             flatten: true,

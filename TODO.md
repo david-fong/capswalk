@@ -11,7 +11,9 @@
 
 ### High Priority
 
+1. Make a JSUtil function to map IterableIterator. Use it in places where `[...IterableIterator].map` is being done.
 1. Try out Socket.IO v3!
+1. On clientside, if joiner socket gets disconnected by server, go back to the joiner screen.
 1. Game-Host Servers:
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
 1. Server authentication is not working. Please debug and fix.
@@ -25,6 +27,7 @@
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
 1. Fill in implementation of bubble event handler.
 1. Use webpack replace plugin to change some assertions and checks to only be done during development.
+1. Spectator mode for online games? O_o
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores (very small size) on top of player faces.
 1. Display the operator's current sequence buffer.

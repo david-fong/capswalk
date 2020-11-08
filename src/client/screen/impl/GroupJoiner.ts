@@ -1,3 +1,4 @@
+import type { Socket } from "socket.io-client/build/socket";
 import type { TopLevel } from "../../TopLevel";
 import { Group } from "defs/OnlineDefs";
 import { SkServer } from "defs/OnlineDefs";
@@ -129,7 +130,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 
             // Short-circuit when no change has occurred:
             const gameServerUrl = new window.URL(input.value);
-            if (this.groupSocket?.io.opts.hostname === gameServerUrl.hostname) {
+            if (this.groupSocket?.io!["opts"].hostname === gameServerUrl.hostname) {
                 if (this.groupSocket!.connected) {
                     this._setFormState(State.CHOOSING_GROUP);
                     this.in.groupName.focus(); // No changes have occurred.
@@ -255,7 +256,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             if (!this.in.passphrase.validity.valid) return;
             // Short-circuit when no change has occurred:
             if (this.groupSocket !== undefined
-             && this.groupSocket.nsp === SkServer.Nsps.GROUP_LOBBY_PREFIX + this.in.groupName.value
+             && this.groupSocket["nsp"] === SkServer.Nsps.GROUP_LOBBY_PREFIX + this.in.groupName.value
             ) {
                 if (this.groupSocket!.connected) {
                     this._setFormState(State.IN_GROUP);
@@ -316,10 +317,10 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         });
     }
 
-    private get joinerSocket(): SocketIOClient.Socket | undefined {
+    private get joinerSocket(): Socket | undefined {
         return this.top.sockets.joinerSocket;
     }
-    private get groupSocket(): SocketIOClient.Socket | undefined {
+    private get groupSocket(): Socket | undefined {
         return this.top.sockets.groupSocket;
     }
 

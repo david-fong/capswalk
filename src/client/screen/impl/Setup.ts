@@ -84,6 +84,9 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 
     /**
      * A helper for going to the next screen.
+     *
+     * Must return a completely new object each time.
+     * (think deep copy. no shared references.)
      */
     protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
         // TODO.impl

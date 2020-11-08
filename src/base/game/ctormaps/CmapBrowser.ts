@@ -7,8 +7,9 @@ import { BeehiveVisibleGrid } from "floor/impl/Beehive";
 export default (): void => {
     // Visible Grid Implementation Registry:
     const VGr = VisibleGrid;
-    (<TU.NoRo<typeof VGr._Constructors>>VGr._Constructors)
-    = Object.freeze({
+    // @ts-expect-error : RO=
+    VGr._Constructors
+    = Object.freeze<typeof VGr._Constructors>({
         [ "EUCLID2" ]: Euclid2VisibleGrid,
         [ "BEEHIVE" ]: BeehiveVisibleGrid,
     });

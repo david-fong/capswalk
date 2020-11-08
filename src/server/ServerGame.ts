@@ -13,7 +13,6 @@ import { PlayerActionEvent } from "game/events/PlayerActionEvent";
 
 import { GamepartManager } from "game/gameparts/GamepartManager";
 
-
 type G = Game.Type.SERVER;
 
 /**
@@ -28,8 +27,8 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     // @ts-expect-error : Redeclaring accessor as property.
     declare public currentOperator: undefined;
 
-    public readonly namespace: io.Namespace;
-    private readonly _groupHostClient: io.Client;
+    public readonly namespace: io.Socket["nsp"];
+    private readonly _groupHostClient: io.Socket["client"];
     private readonly gameEvSocketListeners: Readonly<{[evName : string]: (...args: any[]) => void}>;
 
     private readonly _deleteExternalRefs: () => void;
@@ -63,8 +62,8 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * @param gameDesc -
      */
     public constructor(args: Readonly<{
-        groupNsps: io.Namespace,
-        groupHostClient: io.Client,
+        groupNsps: io.Socket["nsp"],
+        groupHostClient: io.Socket["client"],
         deleteExternalRefs: () => void,
         gameDesc: Game.CtorArgs<G,S>,
     }>) {
@@ -111,14 +110,14 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * namespace.
      */
     private _awaitGameSockets(args: Readonly<{
-        groupNsps: io.Namespace,
+        groupNsps: io.Socket["nsp"],
         gameDesc: Game.CtorArgs<G,S>,
     }>): void {
         // Prepare for all group members to join the game namespace:
-        const resolvers = new Map<io.Client["id"], () => void>();
-        const promises = Object.values(args.groupNsps.sockets).map((groupSocket) => {
+        const resolvers = new Map<io.Socket["client"]["id"], () => void>();
+        const promises = [...args.groupNsps.sockets.values()].map((groupSocket) => {
             return new Promise((resolve, reject) => {
-                resolvers.set(groupSocket.client.id, resolve);
+                resolvers.set(groupSocket.client["id"], resolve);
             });
         });
         Promise.all(promises)
@@ -130,11 +129,11 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
         this.namespace.on("connect", (gameSocket: io.Socket): void => {
             gameSocket.on("disconnect", () => {
-                if (Object.keys(this.namespace.sockets).length === 1) {
+                if (this.namespace.sockets.size === 1) {
                     this.terminate();
                 }
             });
-            resolvers.get(gameSocket.client.id)!();
+            resolvers.get(gameSocket.client["id"])!();
         });
         // Tell all group members in the lobby to join the game namespace:
         args.groupNsps.emit(GroupEv.CREATE_GAME);
@@ -149,7 +148,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN);
         {
             const _clientToGameSocketMap = new Map(
-                Object.values(this.namespace.sockets).map((s) => [s.client.id, s]),
+                [...this.namespace.sockets.values()].map((s) => [s.client["id"], s]),
             );
             // @ts-expect-error : RO=
             this.playerSockets
@@ -165,7 +164,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             JsUtils.propNoWrite(this as ServerGame<S>, ["playerSockets"]);
         }
 
-        Promise.all(Object.values(this.namespace.sockets).map((socket) => {
+        Promise.all([...this.namespace.sockets.values()].map((socket) => {
             return new Promise((resolve, reject) => {
                 socket.once(GameEv.RESET, () => {
                     resolve();
@@ -176,7 +175,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         });
 
         // Register socket listeners for game events:
-        Object.values(this.namespace.sockets).forEach((socket) => {
+        for (const socket of this.namespace.sockets.values()) {
             socket.on(GameEv.RETURN_TO_LOBBY, () => {
                 if (socket.client === this._groupHostClient) {
                     this.statusBecomeOver();
@@ -188,17 +187,17 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             Object.entries(this.gameEvSocketListeners).forEach(([evName, callback]) => {
                 socket.on(evName, callback);
             });
-        });
+        }
 
         // Pass on Game constructor arguments to each client:
-        Object.values(this.namespace.sockets).forEach((socket) => {
+        for (const socket of this.namespace.sockets.values()) {
             // Set `isALocalOperator` flags to match what this socket should see:
             humanPlayerDescs.forEach((desc) => {
                 // @ts-expect-error : RO=
                 desc.isALocalOperator = (desc.clientId === socket.client.id);
             });
             socket.emit(GameEv.CREATE_GAME, gameDesc);
-        });
+        }
     }
 
     /**
@@ -206,7 +205,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      */
     public async reset(): Promise<void> {
         // Be ready for clients to indicate readiness to unpause.
-        Promise.all(Object.values(this.namespace.sockets).map((socket) => {
+        Promise.all([...this.namespace.sockets.values()].map((socket) => {
             return new Promise((resolve, reject) => {
                 socket.once(GameEv.UNPAUSE, () => {
                     resolve();
@@ -315,10 +314,10 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     }
 
     private terminate(): void {
-        Object.values(this.namespace.sockets).forEach((socket) => {
+        for (const socket of this.namespace.sockets.values()) {
             socket.disconnect();
             socket.removeAllListeners();
-        });
+        }
         this.namespace.removeAllListeners();
         this._deleteExternalRefs();
     }

@@ -1,6 +1,6 @@
 import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
-import type * as ServersideSocketIO from "socket.io";
+import type * as io from "socket.io";
 
 import type { Coord, Tile }     from "floor/Tile";
 import type { Player as _Player } from "defs/TypeDefs";
@@ -143,7 +143,7 @@ export namespace Player {
         isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
         familyId: F;
         teamId:   Team.Id;
-        clientId: F extends typeof Player.Family.HUMAN ? (ServersideSocketIO.Client["id"] | undefined) : undefined;
+        clientId: F extends typeof Player.Family.HUMAN ? (io.Socket["client"]["id"] | undefined) : undefined;
         username: Username;
         avatar:   Avatar | undefined;
         noCheckGameOver: boolean;

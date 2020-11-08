@@ -2,7 +2,7 @@ import os       = require("os");
 import path     = require("path");
 import http     = require("http");
 import express  = require("express");
-import io       = require("socket.io");
+import * as io from "socket.io";
 import type * as net from "net";
 
 import { JsUtils } from "defs/JsUtils";
@@ -43,9 +43,8 @@ export class SnakeyServer extends _SnakeyServer {
         super();
         this.app    = express();
         this.http   = http.createServer({}, this.app);
-        this.io     = io(this.http, {
+        this.io     = new io.Server(this.http, {
             // Note: socket.io.js is alternatively hosted on GitHub Pages.
-            origins: "*:*", // TODO.learn how can we use this?
             cookie: false, // https://github.com/socketio/socket.io/issues/2276#issuecomment-147184662
         });
         this.allGroups = new Map();
@@ -59,7 +58,9 @@ export class SnakeyServer extends _SnakeyServer {
         this.app.get("/", (req, res) => {
             res.sendFile(path.resolve(__dirname, path.resolve(CLIENT_ROOT, "index.html")));
         });
-        this.app.use("/", express.static(CLIENT_ROOT));
+        this.app.use("/", express.static(CLIENT_ROOT, {
+            index: false,
+        }));
 
         this.http.listen(<net.ListenOptions>{ port, host }, (): void => {
             const info = <net.AddressInfo>this.http.address();
@@ -95,7 +96,6 @@ export class SnakeyServer extends _SnakeyServer {
                         name:       desc.groupName,
                         passphrase: desc.passphrase,
                         deleteExternalRefs: () => this.allGroups.delete(desc.groupName),
-                        initialTtl: Group.DEFAULT_TTL,
                     })),
                 );
                 // Notify all sockets connected to the joiner namespace
@@ -120,7 +120,7 @@ export class SnakeyServer extends _SnakeyServer {
      * @param socket - The socket from the game host.
      */
     protected onJoinerNspsConnection(socket: io.Socket): void {
-        console.info(`socket    connect: ${socket.id}`);
+        console.info(`socket connect (server): ${socket.id}`);
         // Upon connection, immediately send a list of existing groups:
         socket.emit(
             Group.Exist.EVENT_NAME,

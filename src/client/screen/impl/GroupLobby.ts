@@ -1,3 +1,4 @@
+import type { Socket } from "socket.io-client/build/socket";
 import { Player } from "defs/TypeDefs";
 import { Group, GroupEv, GameEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
@@ -24,7 +25,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         avatar:   HTMLSelectElement;
     }>;
 
-    private get socket(): typeof io.Socket {
+    private get socket(): Socket {
         return this.top.sockets.groupSocket!;
     }
 
@@ -173,7 +174,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
         // Make sure we stop listening for the game to start
         // in case it hasn't started yet:
         if (navDir === SkScreen.NavDir.BACKWARD) {
-            this.socket.removeListener(GroupEv.CREATE_GAME);
+            this.socket.off(GroupEv.CREATE_GAME);
         }
         return true;
     }
