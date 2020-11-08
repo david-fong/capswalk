@@ -253,7 +253,7 @@ export class Group extends _Group {
         // @ts-expect-error : RO=
         ctorArgs.playerDescs = [
             ...ctorArgs.playerDescs,
-            ...[...this.sockets.values()].map((socket) => {
+            ...Array.from(this.sockets.values(), (socket) => {
                 return Object.freeze(<Player.CtorArgs>{
                     isALocalOperator: false,
                     familyId: "HUMAN",

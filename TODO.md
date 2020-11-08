@@ -11,7 +11,6 @@
 
 ### High Priority
 
-1. Make a JSUtil function to map IterableIterator. Use it in places where `[...IterableIterator].map` is being done.
 1. Try out Socket.IO v3!
 1. On clientside, if joiner socket gets disconnected by server, go back to the joiner screen.
 1. Game-Host Servers:

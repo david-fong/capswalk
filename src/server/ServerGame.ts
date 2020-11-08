@@ -115,7 +115,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     }>): void {
         // Prepare for all group members to join the game namespace:
         const resolvers = new Map<io.Socket["client"]["id"], () => void>();
-        const promises = [...args.groupNsps.sockets.values()].map((groupSocket) => {
+        const promises = Array.from(args.groupNsps.sockets.values(), (groupSocket) => {
             return new Promise((resolve, reject) => {
                 resolvers.set(groupSocket.client["id"], resolve);
             });
@@ -148,7 +148,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             .filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN);
         {
             const _clientToGameSocketMap = new Map(
-                [...this.namespace.sockets.values()].map((s) => [s.client["id"], s]),
+                Array.from(this.namespace.sockets.values(), (s) => [s.client["id"], s]),
             );
             // @ts-expect-error : RO=
             this.playerSockets
@@ -164,7 +164,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
             JsUtils.propNoWrite(this as ServerGame<S>, ["playerSockets"]);
         }
 
-        Promise.all([...this.namespace.sockets.values()].map((socket) => {
+        Promise.all(Array.from(this.namespace.sockets.values(), (socket) => {
             return new Promise((resolve, reject) => {
                 socket.once(GameEv.RESET, () => {
                     resolve();
@@ -205,7 +205,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      */
     public async reset(): Promise<void> {
         // Be ready for clients to indicate readiness to unpause.
-        Promise.all([...this.namespace.sockets.values()].map((socket) => {
+        Promise.all(Array.from(this.namespace.sockets.values(), (socket) => {
             return new Promise((resolve, reject) => {
                 socket.once(GameEv.UNPAUSE, () => {
                     resolve();

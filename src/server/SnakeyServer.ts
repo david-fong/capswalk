@@ -127,11 +127,11 @@ export class SnakeyServer extends _SnakeyServer {
             (() => {
                 // TODO.design current implementation may suffer when there are many many groups.
                 const build: Group.Query.NotifyStatus = {};
-                Array.from(this.allGroups).forEach(([groupName, group]) => {
+                for (const [groupName, group] of this.allGroups) {
                     build[groupName] = (group.isCurrentlyPlayingAGame)
                     ? Group.Exist.Status.IN_GAME
                     : Group.Exist.Status.IN_LOBBY;
-                });
+                }
                 return build;
             })(),
         );
