@@ -40,7 +40,7 @@ export class SkSockets {
         });
         const socket = manager.socket(SkServer.Nsps.GROUP_JOINER);
         this._registerSocket(socket, "joiner");
-        return socket.open();
+        return socket.connect();
     }
 
     /**
@@ -49,13 +49,10 @@ export class SkSockets {
         groupName: Group.Name,
         auth: { passphrase: Group.Passphrase, userInfo: Player.UserInfo, },
     ): Socket {
-        return this._groupSocketHelper("group", groupName, auth).open();
+        return this._groupSocketHelper("group", groupName, auth).connect();
     }
 
     /**
-     * The returned socket may need to be manually `connect()`-ed if
-     * it is being reused for a known namespace that was previously
-     * disconnected from.
      */
     public gameSocketConnect(
         groupName: Group.Name,
@@ -64,7 +61,7 @@ export class SkSockets {
         if (groupName === undefined || auth.passphrase === undefined) {
             throw new TypeError("never");
         }
-        return this._groupSocketHelper("game", groupName, auth).open();
+        return this._groupSocketHelper("game", groupName, auth).connect();
     }
 
     /**
@@ -91,7 +88,7 @@ export class SkSockets {
         this.#sock[name] = socket;
         const byeBye = (): void => {
             socket.offAny();
-            socket.close();
+            socket.disconnect();
             this.#sock[name] = undefined;
         };
         socket

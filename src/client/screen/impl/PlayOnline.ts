@@ -50,7 +50,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
                 // This may not be entered if the server went down unexpectedly.
                 this.socket.emit(GameEv.RETURN_TO_LOBBY);
                 this.socket.offAny();
-                this.socket.close();
+                this.socket.disconnect();
             }
         }
         return leaveConfirmed;

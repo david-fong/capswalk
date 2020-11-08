@@ -124,9 +124,9 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             if (!input.value || !input.validity.valid) return;
 
             // Minor cleaning: default the protocol and only use the origin:
-            if (!input.value.startsWith(SkServer.PROTOCOL)) {
-                input.value = new window.URL(SkServer.PROTOCOL + input.value).origin;
-            }
+            // if (!input.value.startsWith(SkServer.PROTOCOL)) {
+            //     input.value = new window.URL(SkServer.PROTOCOL + input.value).origin;
+            // }
 
             // Short-circuit when no change has occurred:
             const gameServerUrl = new window.URL(input.value);
@@ -139,7 +139,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 }
                 return;
             }
-            this.joinerSocket?.close();
+            this.joinerSocket?.disconnect();
             const sock = await this.top.sockets.joinerSocketConnect({
                 serverUrl: gameServerUrl,
             }); sock
@@ -291,7 +291,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     /**
      */
     private _attemptToJoinExistingGroup(): void {
-        this.groupSocket?.close();
+        this.groupSocket?.disconnect();
         const top = this.top;
         const userInfo = StorageHooks.getLastUserInfo();
         const sock = this.top.sockets.groupSocketConnect(
