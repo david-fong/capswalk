@@ -11,7 +11,6 @@
 
 ### High Priority
 
-1. Try out Socket.IO v3!
 1. On clientside, if joiner socket gets disconnected by server, go back to the joiner screen.
 1. Game-Host Servers:
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
