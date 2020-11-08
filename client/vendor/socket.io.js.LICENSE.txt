@@ -1,7 +1,5 @@
 /*!
- * Socket.IO v2.3.1
+ * Socket.IO v3.0.0
  * (c) 2014-2020 Guillermo Rauch
  * Released under the MIT License.
  */
-
-/*! https://mths.be/utf8js v2.1.2 by @mathias */

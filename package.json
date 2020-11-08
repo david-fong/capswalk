@@ -21,10 +21,10 @@
     "typing",
     "game"
   ],
-  "version": "0.7.0",
+  "version": "0.8.0",
   "dependencies": {
     "express": "^4.17.1",
-    "socket.io": "^2.3.0",
+    "socket.io": "^3.0.0",
     "tslib": "^2.0.3"
   },
   "repository": "github:david-fong/snakey3/tree/dist"
