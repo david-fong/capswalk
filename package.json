@@ -21,7 +21,7 @@
     "typing",
     "game"
   ],
-  "version": "0.8.0",
+  "version": "0.8.1",
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^3.0.0",
