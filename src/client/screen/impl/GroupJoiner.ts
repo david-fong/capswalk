@@ -161,14 +161,14 @@ export class GroupJoinerScreen extends SkScreen<SID> {
         };
         // Link handler to events:
         input.oninput = (ev) => this._setFormState(State.CHOOSING_HOST);
-        input.onkeydown = (ev) => { if (ev.key === "Enter") {
+        input.onkeydown = (ev) => { if (ev.isTrusted && ev.key === "Enter") {
             submitInput();
         }};
         input.onpaste = (ev) => {
-            window.setTimeout(() => submitInput(), 0);
+            if (ev.isTrusted) window.setTimeout(() => submitInput(), 0);
         };
-        input.onchange = () => {
-            submitInput();
+        input.onchange = (ev) => {
+            if (ev.isTrusted) submitInput();
         };
         return submitInput;
     }
@@ -223,7 +223,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 
     /**
      */
-    private _initializeGroupNameHandlers(huiSubmit: () => Promise<void>): void {
+    private _initializeGroupNameHandlers(hostUrlInputSubmit: () => Promise<void>): void {
         const input = this.in.groupName;
         const submitInput = (): void => {
             if (!input.value || !input.validity.valid) return;
@@ -234,18 +234,19 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             }
         };
         this.in.groupName.oninput = async (ev) => {
+            if (!ev.isTrusted) return;
             if (this.state === State.IN_GROUP) {
-                await huiSubmit();
+                await hostUrlInputSubmit();
                 // ^This will take us back to the state `CHOOSING_GROUP`.
             }
             this.in.passphrase.value = "";
             this.#clientIsGroupHost = false; // <-- Not necessary. Just feels nice to do.
         };
-        input.onkeydown = (ev) => { if (ev.key === "Enter") {
-            submitInput();
-        }};
+        input.onkeydown = (ev) => {
+            if (ev.isTrusted && ev.key === "Enter") submitInput();
+        };
         input.onchange = (ev) => {
-            submitInput();
+            if (ev.isTrusted) submitInput();
         };
     }
 
@@ -282,7 +283,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 );
             }
         };
-        this.in.passphrase.onkeydown = (ev) => { if (ev.key === "Enter") {
+        this.in.passphrase.onkeydown = (ev) => { if (ev.isTrusted && ev.key === "Enter") {
             submitInput();
         }};
     }

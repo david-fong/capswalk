@@ -90,7 +90,7 @@ export class SkSockets {
     private _registerSocket(socket: Socket, name: SockName): void {
         this.#sock[name] = socket;
         const byeBye = (): void => {
-            socket.off();
+            socket.offAny();
             socket.close();
             this.#sock[name] = undefined;
         };

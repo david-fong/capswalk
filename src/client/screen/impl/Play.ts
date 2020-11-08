@@ -226,16 +226,14 @@ export abstract class _PlayScreen<
      * @param ev -
      */
     private _gridKeyDownCallback(ev: KeyboardEvent): boolean {
-        // console.log(`key: ${ev.key}, code: ${ev.code},`
-        // + ` keyCode: ${ev.keyCode}, char: ${ev.char},`
-        // + ` charCode: ${ev.charCode}`);
         ev.stopPropagation();
+        if (!ev.isTrusted) return true;
         const game = this.currentGame;
         if (ev.ctrlKey && ev.key === " " && !ev.repeat) {
             // If switching operator:
-            function getOperatorElem(this: void): HTMLElement {
-                return game.currentOperator.status.immigrantInfo.playerElem;
-            };
+            //function getOperatorElem(this: void): HTMLElement {
+            //    return game.currentOperator.status.immigrantInfo.playerElem;
+            //};
             //this._gridIsecObserver.unobserve(getOperatorElem());
             const operators = game.operators;
             game.setCurrentOperator(
@@ -248,8 +246,8 @@ export abstract class _PlayScreen<
             // Process event as regular typing:
             game.currentOperator.processKeyboardInput(ev);
         }
-        // Disable scroll-down via spacebar:
         if (ev.key === " ") {
+            // Disable scroll-down via spacebar:
             ev.preventDefault();
             return false;
         }
