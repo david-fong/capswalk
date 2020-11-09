@@ -85,13 +85,5 @@ export namespace Screen {
         }
     }
 }
-
-export namespace SkPickOne {
-    export const Class = <const>{
-        BASE:           "sk-pick-one",
-        OPT_BASE:       "sk-pick-one--opt",
-    };
 }
-}
-Object.freeze(OmHooks.Player.Dataset.DOWNED); // String with properties.
 JsUtils.deepFreeze(OmHooks);

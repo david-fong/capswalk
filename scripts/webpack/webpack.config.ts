@@ -121,11 +121,10 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
     },
 
     optimization: {
-        minimizer: ["...",
-            new CssMinimizerPlugin({
-                minimizerOptions: { preset: ["default", { discardComments: { removeAll: true }}], },
-            }),
-        ],
+        minimizer: ["...", new CssMinimizerPlugin({
+            minimizerOptions: { preset: ["default", { discardComments: { removeAll: true }}], },
+        })],
+        splitChunks: { chunks: "all", cacheGroups: {} },
     },
     watchOptions: {
         ignored: [ "node_modules", ],
@@ -140,13 +139,14 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
  * ## Web Bundles
  */
 const CLIENT_CONFIG = __BaseConfig("client"); {
-    const config  = CLIENT_CONFIG;
-    config.target = "web";
-    config.entry["index"] = `./src/client/index.ts`;
-    config.externals = [ nodeExternals({
-        allowlist: ["tslib"],
-        importType: "root",
-    }), ],
+    const config  = Object.assign(CLIENT_CONFIG, {
+        target: "web",
+        entry: {["index"]: `./src/client/index.ts`},
+        externals: [nodeExternals({
+            allowlist: ["tslib"],
+            importType: "root",
+        })],
+    });
     config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
     config.module!.rules!.push(...WEB_MODULE_RULES());
     // config.resolve.alias = config.resolve.alias || {

@@ -1,6 +1,5 @@
 @import "./utils.css";
-@import "./components/_barrel.css";
 @import "./snakey.css";
 
-@import "./defaults.css";
-@import "./screen.css";
+@import "./general.css";
+@import "./layers.css";

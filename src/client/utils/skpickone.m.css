@@ -1,5 +1,5 @@
 
-.sk-pick-one {
+.this {
     display:        flex;
     flex-direction: column;
     align-items:    stretch;
@@ -9,25 +9,25 @@
     border-color:   var(--colour-tileBd);
     text-align:     start;
 }
-.sk-pick-one:focus {
+.this:focus {
     outline:        none;
 }
 
-.sk-pick-one--opt {
+.opt {
     overflow:   hidden hidden;
     cursor:     default;
     transition-property: opacity;
     transition-duration: 0.35s;
     transition-timing-function: ease-out;
 }
-.sk-pick-one:focus .sk-pick-one--opt:not([aria-active-descendant="true"]):not([aria-selected="true"]) {
+.this:focus .opt:not([aria-active-descendant="true"]):not([aria-selected="true"]) {
     opacity:    0.4;
 }
-.sk-pick-one--opt[aria-selected="true"] {
+.opt[aria-selected="true"] {
     text-decoration: underline;
 }
 
-.sk-pick-one[aria-invalid="true"] {
+.this[aria-invalid="true"] {
     border-style: dotted;
     border-width: 0.3rem;
 }

@@ -1,3 +1,6 @@
+:import("../../../utils/skpickone.m.css") {
+    _sk-pick-one: this;
+}
 
 .this {
     display: grid;
@@ -12,7 +15,7 @@
     border-radius: 0.5em;
 }
 
-.this :global(.sk-pick-one) {
+.this ._sk-pick-one {
     --padding: 0.5em;
     gap: var(--padding);
     padding: var(--padding);

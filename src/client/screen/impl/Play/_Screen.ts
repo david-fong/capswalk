@@ -159,10 +159,9 @@ export abstract class _PlayScreen<
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
         // by populating tiles with CSP's will be batched.
-        const html = this.currentGame.htmlElements;
-        this._gridImplHost.appendChild(html.gridImpl);
+        this._gridImplHost.appendChild(this.currentGame.htmlElements.gridImpl);
+        this.playersBar.appendChild(this.currentGame.htmlElements.playersBar);
         // ^The order of insertion does not matter (it used to).
-        this.playersBar.appendChild(html.playersBar);
 
         this.pauseButton.onclick = this._requestStatusBecomePlaying.bind(this);
         this.pauseButton.disabled = false;

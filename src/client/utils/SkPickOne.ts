@@ -1,5 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
-import { OmHooks } from "defs/OmHooks";
+import CSS from "./skpickone.m.css";
 
 
 /**
@@ -22,7 +22,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
     #isValid: boolean;
 
     public constructor() {
-        const base = JsUtils.mkEl("div", [OmHooks.SkPickOne.Class.BASE], {
+        const base = JsUtils.mkEl("div", [CSS["this"]], {
             tabIndex: 0,
         });
         base.setAttribute("role", "listbox");
@@ -142,7 +142,7 @@ export namespace SkPickOne {
         #disabled: boolean;
         #notifyParentOfDisabledChange: (me: _Option) => void;
         public constructor() {
-            const base = this.baseElem = JsUtils.mkEl("div", [OmHooks.SkPickOne.Class.OPT_BASE]);
+            const base = this.baseElem = JsUtils.mkEl("div", [CSS["opt"]]);
             base.setAttribute("role", "option");
             this.#disabled = false;
         }
