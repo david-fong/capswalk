@@ -1,9 +1,11 @@
+import CSS from "./grid.m.css";
+import PLAYER_CSS from "game/player/player.m.css";
+import "./zindex.m.css";
 import { OmHooks } from "defs/OmHooks";
 import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "floor/Tile";
 import { VisibleTile } from "floor/VisibleTile";
 import type { Grid } from "floor/Grid";
-
 
 /**
  * All implementations must call `Grid._superVisibleGrid` at the end
@@ -67,7 +69,7 @@ export class VisibleGridMixin<S extends Coord.System> {
         }
         const OHG = OmHooks.Grid;
         gridImpl.setAttribute("role", "presentation");
-        gridImpl.classList.add(OHG.Class.IMPL_BODY);
+        gridImpl.classList.add(...CSS["impl-body"].split(" "));
         gridImpl.dataset[OHG.Dataset.IMPL_COORD_SYS] = desc.coordSys;
         gridImpl.translate  = false; // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/translate
         gridImpl.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
@@ -75,8 +77,8 @@ export class VisibleGridMixin<S extends Coord.System> {
         this.baseElem = gridImpl;
 
         // Initialize spotlight elements:
-        const shortSpotlight = JsUtils.mkEl("div", [OmHooks.Player.Class.SHORT_SPOTLIGHT]);
-        const longSpotlight  = JsUtils.mkEl("div", [OmHooks.Player.Class.LONG_SPOTLIGHT]);
+        const shortSpotlight = JsUtils.mkEl("div", [PLAYER_CSS["spotlight-short"]]);
+        const longSpotlight  = JsUtils.mkEl("div", [PLAYER_CSS["spotlight-long"]]);
         // @ts-expect-error : RO=
         this.spotlightElems = Object.freeze([ shortSpotlight, longSpotlight ]);
     }

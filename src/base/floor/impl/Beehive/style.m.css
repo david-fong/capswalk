@@ -1,0 +1,13 @@
+:import("../../tile.m.css") {
+    _tile: this;
+}
+:import("../../grid.m.css") {
+    _grid: impl-body;
+}
+/*
+https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path
+*/
+._grid[data-coord-sys="BEEHIVE"] ._tile {
+}
+._grid[data-coord-sys="BEEHIVE"] ._tile > * {
+}

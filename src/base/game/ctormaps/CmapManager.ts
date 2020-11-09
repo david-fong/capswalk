@@ -1,6 +1,6 @@
 import { Grid } from "floor/Grid";
-import { Euclid2 } from "floor/impl/Euclid2";
-import { Beehive } from "floor/impl/Beehive";
+import { Euclid2 } from "floor/impl/Euclid2/System";
+import { Beehive } from "floor/impl/Beehive/System";
 
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { Chaser } from "../player/artificials/Chaser";

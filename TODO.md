@@ -16,13 +16,12 @@
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
 1. Server authentication is not working. Please debug and fix.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
-1. Try out CSS modules. We already have webpack-css-loader installed.
-    - This would take a lot of weight out of OmHooks.
-    - [how to config with typescript](https://stackoverflow.com/questions/40382842/cant-import-css-scss-modules-typescript-says-cannot-find-module)
-    - Move screen-related css to `client/screen/impl/`.
-      - Try using es6-style imports instead of CommonJs and see if css-loader understands (it should, I think).
-    - Migrate the leaves first (the things that depend on other things) and move upward.
-1. Find out how to share game CSS
+1. Use CSS Modules
+    - update documentation on implementing Coordinate systems
+      - file naming, separate file Visible.ts
+      - edit tile.m.css and grid.m.css to compose System/style.m.css classes.
+        - Alternatively, see if we can now use :export :import after fixing the splitting/loader mistake.
+1. Find out how to share game CSS and grid between entry and game chunks.
     - Maybe [this](https://www.npmjs.com/package/mini-css-extract-plugin#extracting-css-based-on-entry) is what I need?
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).

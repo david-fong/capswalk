@@ -1,6 +1,6 @@
 import { VisibleGrid } from "floor/VisibleGrid";
-import { Euclid2VisibleGrid } from "floor/impl/Euclid2";
-import { BeehiveVisibleGrid } from "floor/impl/Beehive";
+import { Euclid2VisibleGrid } from "floor/impl/Euclid2/Visible";
+import { BeehiveVisibleGrid } from "floor/impl/Beehive/Visible";
 
 /**
  */

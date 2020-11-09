@@ -3,13 +3,13 @@
 
 For the following guidelines, [`Euclid2`](./Euclid2.ts) can be used as a reference.
 
-If the coordinate system of a new implementation is given some name `<sys_name>`, then a new file must be created in this folder with the name `SysName.ts`. The skeleton code required to integrate the new system into the codebase is as follows:
+If the coordinate system of a new implementation is given some name `<sys_name>`, then a new file must be created in this folder with the name `SysName/System.ts`. The skeleton code required to integrate the new system into the codebase is as follows:
 
 ## Coordinate System
 
 First, a new, unique enum entry for the new coordinate system must be defined in [Coord.System](../Coord.ts). This is the basis of how the rest of the codebase is able to refer to a coordinate system in a generic fashion.
 
-**In `SysName.ts`**
+**In `SysName/System.ts`**
 
 ```typescript
 import { Coord as BaseCoord } from "../Tile";

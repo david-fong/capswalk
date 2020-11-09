@@ -1,37 +1,41 @@
+:import("../game/player/player.m.css") {
+    _player: this;
+    _player__face: face;
+}
 
-.tile {
+.this {
     /* DO NOT create a new stacking context, which
     breaks the spotlight display. */
     pointer-events: none;
     contain:        size style;
 }
-.tile * {
+.this * {
     height: 100%; width: 100%;
 }
-.tile__pointer-hitbox {
+.pointer-hitbox {
     pointer-events: initial;
     contain:        strict;
     top: 40%; left: 40%;
     /* border-color: black; */
 }
 
-.tile__char, .tile__seq, .player__face {
+.char, .seq, ._player__face {
     box-sizing: border-box;
     border: 0.14em solid transparent;
     border-radius: 0.35em;
 }
 
-.tile__char {
+.char {
     contain:        strict;
     background-color: var(--colour-tileBg);
     overflow:       hidden hidden;
     display:        grid;
     align-items:    center;
 }
-.tile__char > * {
+.char > * {
     height:         initial;
 }
-.tile[data-health] .tile__char {
+.this[data-health] .char {
     border-color:     var(--colour-tileBd);
     color:            var(--colour-healthFg);
     background-color: var(--colour-healthBg);
@@ -41,7 +45,7 @@
     transition-timing-function: ease-in;
 }
 
-.tile__seq {
+.seq {
     contain:        content;
     padding:    0ch  0.4ch;
     /* bottom:     0%; */
@@ -53,12 +57,12 @@
     font-family:    inherit;
     visibility:     hidden;
 }
-.tile__pointer-hitbox:hover ~ .player > .player__face {
+.pointer-hitbox:hover ~ ._player > ._player__face {
     visibility:     hidden;
 }
-.tile__pointer-hitbox:hover ~ .tile__char {
+.pointer-hitbox:hover ~ .char {
     color:          transparent;
 }
-.tile__pointer-hitbox:hover ~ .tile__seq {
+.pointer-hitbox:hover ~ .seq {
     visibility:     visible;
 }

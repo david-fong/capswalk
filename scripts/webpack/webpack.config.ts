@@ -55,7 +55,10 @@ const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
         loader: "css-modules-typescript-loader",
     },{
         loader: "css-loader", options: {
-            modules: { auto: /\.m\.css$/, },
+            modules: {
+                auto: /\.m\.css$/,
+                localIdentName: "[name]_[local]_[hash:base64:5]",
+            },
         },
     }],
 },{
@@ -97,7 +100,7 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
     entry: { /* Left to each branch config */ },
     plugins: [ ...BASE_PLUGINS(), ],
     resolve: {
-        extensions: [".ts", ".css", ".js"],
+        extensions: [".ts", ".js"],
         modules: [
             path.resolve(PROJECT_ROOT, "src", "base"),
             path.resolve(PROJECT_ROOT, "node_modules"),

@@ -1,3 +1,4 @@
+import CSS from "./tile.m.css";
 import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import type { Lang, Player } from "defs/TypeDefs";
@@ -21,23 +22,23 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             const base = this.#baseElem = JsUtils.mkEl("div", [
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
-                OmHooks.Tile.Class.BASE,
+                ...CSS["this"].split(" "),
             ]);
             base.setAttribute("aria-label", "Tile");
         } {
             // Pointer hitbox element.
             // Must be the first child. See note in CSS class hook.
-            const pthb = JsUtils.mkEl("div", [OmHooks.Tile.Class.POINTER_HB]);
+            const pthb = JsUtils.mkEl("div", [CSS["pointer-hitbox"]]);
             pthb.setAttribute("aria-hidden", "true");
             this.#baseElem.appendChild(pthb);
         } {
-            const charWrap = JsUtils.mkEl("div", [OmHooks.Tile.Class.LANG_CHAR_WRAP]);
+            const charWrap = JsUtils.mkEl("div", [CSS["char"]]);
             charWrap.setAttribute("role", "presentation");
             const charElem = this.langCharElem = JsUtils.mkEl("div", []);
             charWrap.appendChild(charElem);
             this.#baseElem.appendChild(charWrap);
         } {
-            const seqElem = this.langSeqElem = JsUtils.mkEl("div", [OmHooks.Tile.Class.LANG_SEQ]);
+            const seqElem = this.langSeqElem = JsUtils.mkEl("div", [CSS["seq"]]);
             seqElem.setAttribute("role", "tooltip");
             this.#baseElem.appendChild(seqElem);
         }

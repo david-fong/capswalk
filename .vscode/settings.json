@@ -55,4 +55,7 @@
         "TODO.build" ,
         "TODO",
     ],
+    "css.lint.validProperties": [
+        "composes",
+    ],
 }

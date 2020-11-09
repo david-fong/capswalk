@@ -33,34 +33,12 @@ export namespace General {
 }
 
 export namespace Tile {
-    export const Class = <const>{
-        BASE:           "tile",
-        /**
-         * Must precede the char and seq elements to allow CSS
-         * to use the variable-distance same-parent precede
-         * selection operator ("~").
-         */
-        POINTER_HB:     "tile__pointer-hitbox",
-        LANG_CHAR_WRAP: "tile__char",
-        LANG_SEQ:       "tile__seq",
-    };
     export const Dataset = <const>{
         HEALTH:         "health",
     };
 }
 
 export namespace Grid {
-    export const Class = <const>{
-        GRID:           "game-grid",
-        SCROLL_OUTER:   "game-grid-scroll-outer",
-        SCROLL_INNER:   "game-grid-scroll-inner",
-        IMPL_BODY:      "game-grid-impl-body",
-        KBD_DC:         "game-grid-kbd-dc",
-        KBD_DC_ICON:    "game-grid-kbd-dc__icon",
-        PAUSE_OL:       "game-grid-pause-overlay",
-        PAUSE_OL_ICON:  "game-grid-pause-overlay__icon",
-        PLAYER_IOB_ROOT:"grid-player-intersection-root"
-    };
     export const Dataset = <const>{
         /**
          * Used as a part of CSS selector queries to specify coord-
@@ -78,13 +56,6 @@ export namespace Grid {
 }
 
 export namespace Player {
-    export const Class = <const>{
-        BASE:           "player",
-        FACE:           "player__face",
-        DOWNED_OVERLAY: "player__downed-overlay",
-        SHORT_SPOTLIGHT:"player__spotlight-short",
-        LONG_SPOTLIGHT: "player__spotlight-long",
-    };
     export const Dataset = <const>{
         DOWNED: { KEY: "downed", VALUES: <const>{
             TEAM: "team", SELF: "self", NO: "no",

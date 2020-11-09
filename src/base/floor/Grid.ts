@@ -2,8 +2,8 @@ import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
 
-import type { Euclid2 } from "./impl/Euclid2";
-import type { Beehive } from "./impl/Beehive";
+import type { Euclid2 } from "./impl/Euclid2/System";
+import type { Beehive } from "./impl/Beehive/System";
 
 
 /**

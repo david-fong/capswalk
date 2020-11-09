@@ -6,6 +6,7 @@ import type { BrowserGameMixin } from "../../../game/BrowserGame";
 
 import { JsUtils, OmHooks, Coord, SkScreen } from "../../SkScreen";
 import CSS from "./style.m.css";
+import GRID_CSS from "floor/grid.m.css";
 
 /**
  * If and only if this screen is the current screen, then its
@@ -386,16 +387,14 @@ export namespace _PlayScreen {
         implHost: HTMLElement,
         pauseOl: HTMLElement,
     }> {
-        const OMHC = OmHooks.Grid.Class;
         const CSS_FX = OmHooks.General.Class;
-
         const base = JsUtils.mkEl("div", [CSS["grid-wrapper"]]);
 
         const grid = JsUtils.mkEl("div", [
             //CSS_FX.CENTER_CONTENTS,
             CSS_FX.STACK_CONTENTS,
             CSS_FX.TEXT_SELECT_DISABLED,
-            OMHC.GRID,
+            GRID_CSS["this"],
         ], { tabIndex: 0 });
         grid.setAttribute("role", "textbox");
         grid.setAttribute("aria-label", "Game Grid");
@@ -403,7 +402,7 @@ export namespace _PlayScreen {
         // Grid Scroll Wrapper:
         const scrollOuter = JsUtils.mkEl("div", [
             //CSS_FX.FILL_PARENT,
-            OMHC.SCROLL_OUTER,
+            GRID_CSS["scroll-outer"],
         ]);
         scrollOuter.setAttribute("role", "presentation");
         {
@@ -411,10 +410,10 @@ export namespace _PlayScreen {
             const kbdDcBase = JsUtils.mkEl("div", [
                 CSS_FX.FILL_PARENT,
                 CSS_FX.CENTER_CONTENTS,
-                OMHC.KBD_DC,
+                GRID_CSS["kbd-dc"],
             ]);
             // TODO.impl Add an <svg> with icon instead please.
-            kbdDcBase.appendChild(JsUtils.mkEl("div", [OMHC.KBD_DC_ICON], {
+            kbdDcBase.appendChild(JsUtils.mkEl("div", [], {
                 textContent: "(click here to continue typing)",
             }));
             scrollOuter.appendChild(kbdDcBase);
@@ -422,9 +421,9 @@ export namespace _PlayScreen {
         const pauseOl = JsUtils.mkEl("div", [
             CSS_FX.FILL_PARENT,
             CSS_FX.CENTER_CONTENTS,
-            OMHC.PAUSE_OL,
+            GRID_CSS["pause-overlay"],
         ], {});
-        pauseOl.appendChild(JsUtils.mkEl("div", [OMHC.PAUSE_OL_ICON], {
+        pauseOl.appendChild(JsUtils.mkEl("div", [], {
             textContent: "(Click to Unpause)"
         }));
         scrollOuter.appendChild(pauseOl);

@@ -1,6 +1,3 @@
-// Tell WebPack about the CSS chunk we want:
-require("assets/style/game/_barrel.css");
-
 import { JsUtils }              from "defs/JsUtils";                    export { JsUtils };
 import { Game }                 from "game/Game";                       export { Game };
 import type { Coord }           from "floor/Coord";                     export { Coord };

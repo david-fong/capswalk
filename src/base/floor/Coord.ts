@@ -1,5 +1,5 @@
-import type { Euclid2 } from "./impl/Euclid2";
-import type { Beehive } from "./impl/Beehive";
+import type { Euclid2 } from "./impl/Euclid2/System";
+import type { Beehive } from "./impl/Beehive/System";
 
 
 /**

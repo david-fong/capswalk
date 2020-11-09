@@ -1,14 +1,20 @@
+:import("../../tile.m.css") {
+    _tile: this;
+}
+:import("../../grid.m.css") {
+    _grid: impl-body;
+}
 
-.game-grid-impl-body[data-coord-sys="EUCLID2"] {
+._grid[data-coord-sys="EUCLID2"] {
     --track-size: minmax(1.67em, 1fr);
     display:    grid;
     grid-template-columns:
         repeat(var(--euclid2-grid-width), var(--track-size));
     grid-auto-rows: var(--track-size);
 }
-.game-grid-impl-body[data-coord-sys="EUCLID2"] .tile {
+._grid[data-coord-sys="EUCLID2"] ._tile {
     margin:     5%;
     scroll-snap-align: center;
 }
-/* .game-grid[data-coord-sys="EUCLID2"] .tile > * {
+/* ._grid[data-coord-sys="EUCLID2"] ._tile > * {
 } */

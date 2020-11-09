@@ -1,5 +1,5 @@
 // Tell WebPack about the css we want:
-require("assets/style/colour/_barrel.css");
+import "./schemes/_barrel.css";
 import CSS from "./style.m.css";
 
 import { SkPickOne } from "../../../utils/SkPickOne";

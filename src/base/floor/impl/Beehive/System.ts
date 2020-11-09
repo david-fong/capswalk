@@ -1,9 +1,6 @@
 import { JsUtils } from "defs/JsUtils";
-import type { Coord as BaseCoord, Tile } from "../Tile";
-import { Grid as AbstractGrid } from "../Grid";
-import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
-
-
+import type { Coord as BaseCoord, Tile } from "floor/Tile";
+import { Grid as AbstractGrid } from "floor/Grid";
 type S = BaseCoord.System.BEEHIVE;
 
 /**
@@ -19,7 +16,6 @@ type S = BaseCoord.System.BEEHIVE;
  *  \\__/  \__/  \
  *     \\__/ \\__/
  * ```
- *
  *
  * [(bees)](https://giphy.com/gifs/oprah-bees-VhFps32TlNgsg)
  */
@@ -237,20 +233,3 @@ export namespace Beehive {
     Object.freeze(Grid.prototype);
 }
 Object.freeze(Beehive);
-
-
-/**
- */
-// Separated for tree-shaking.
-export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
-    public constructor(desc: AbstractGrid.CtorArgs<S>) {
-        super(desc);
-        const domGrid: HTMLElement = undefined!;
-        // TODO.impl Beehive VisibleGrid ctor.
-        this._superVisibleGrid(desc, domGrid);
-    }
-}
-export interface BeehiveVisibleGrid extends VisibleGridMixin<S> { };
-JsUtils.applyMixins(BeehiveVisibleGrid, [VisibleGridMixin]);
-Object.freeze(BeehiveVisibleGrid);
-Object.freeze(BeehiveVisibleGrid.prototype);
