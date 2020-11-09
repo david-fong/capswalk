@@ -3,9 +3,9 @@ import { Player } from "defs/TypeDefs";
 import { Group, GroupEv, GameEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 
-import { JsUtils, OmHooks, Coord, SkScreen, StorageHooks } from "../SkScreen";
+import { JsUtils, OmHooks, Coord, SkScreen, StorageHooks } from "../../SkScreen";
 type SID = SkScreen.Id.GROUP_LOBBY;
-const OMHC = OmHooks.Screen.Impl.GroupLobby.Class;
+import CSS from "./style.m.css";
 
 /**
  *
@@ -62,7 +62,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
     private _createInputs(): void {
         const base = JsUtils.mkEl("div", [
             OmHooks.General.Class.INPUT_GROUP,
-            OMHC.SEC_CLIENT_INFO,
+            CSS["client-info-section"],
         ]);
 
         const uname = JsUtils.mkEl("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
@@ -195,7 +195,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 
             // If player is joining a team that has no HTML element yet:
             if (desc && !this.teamElems.has(desc.teamId)) {
-                const teamElem = JsUtils.mkEl("div", [OMHC.TEAM]);
+                const teamElem = JsUtils.mkEl("div", [CSS["team"]]);
                 this.teamElems.set(desc.teamId, teamElem);
                 teamElem.onclick = (ev) => {
                     this.in.teamId.value = desc.teamId.toString();
@@ -236,7 +236,7 @@ export namespace GroupLobbyScreen {
         }>;
 
         public constructor(desc: Player.UserInfo) {
-            this.base = JsUtils.mkEl("div", [OMHC.PLAYER]);
+            this.base = JsUtils.mkEl("div", [CSS["player"]]);
             const mkDiv = (): HTMLDivElement => {
                 const div = JsUtils.mkEl("div", []);
                 this.base.appendChild(div);
@@ -247,7 +247,7 @@ export namespace GroupLobbyScreen {
                 teamId:   mkDiv(),
                 avatar:   mkDiv(),
             });
-            this.el.username.classList.add(OMHC.PLAYER_NAME);
+            this.el.username.classList.add(CSS["player__name"]);
             this.username = desc.username;
             this.teamId = desc.teamId;
             JsUtils.propNoWrite(this as UserInfo, ["base", "el"]);

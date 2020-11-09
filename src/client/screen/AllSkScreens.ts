@@ -2,18 +2,18 @@ import { JsUtils } from "defs/JsUtils";
 import { SkScreen } from "./SkScreen";
 import type { TopLevel } from "../TopLevel";
 
-import {         HomeScreen } from "./impl/Home";
+import {         HomeScreen } from "./impl/Home/Screen";
 import {    HowToPlayScreen } from "./impl/HowToPlay";
 import {    HowToHostScreen } from "./impl/HowToHost";
-import {   ColourCtrlScreen } from "./impl/ColourCtrl";
+import {   ColourCtrlScreen } from "./impl/ColourCtrl/Screen";
 // ====:   ~~~ OFFLINE ~~~  :============================
-import { SetupOfflineScreen } from "./impl/SetupOffline";
-import {  PlayOfflineScreen } from "./impl/PlayOffline";
+import { SetupOfflineScreen } from "./impl/Setup/Offline";
+import {  PlayOfflineScreen } from "./impl/Play/Offline";
 // ====:   ~~~ ONLINE ~~~~  :============================
-import {  GroupJoinerScreen } from "./impl/GroupJoiner";
-import {  SetupOnlineScreen } from "./impl/SetupOnline";
-import {   GroupLobbyScreen } from "./impl/GroupLobby";
-import {   PlayOnlineScreen } from "./impl/PlayOnline";
+import {  GroupJoinerScreen } from "./impl/GroupJoiner/Screen";
+import {  SetupOnlineScreen } from "./impl/Setup/Online";
+import {   GroupLobbyScreen } from "./impl/GroupLobby/Screen";
+import {   PlayOnlineScreen } from "./impl/Play/Online";
 
 
 /**

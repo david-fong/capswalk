@@ -1,4 +1,5 @@
-import { JsUtils, OmHooks, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
+import CSS from "./style.m.css";
 
 
 /**
@@ -12,11 +13,9 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
      * @override
      */
     protected _lazyLoad(): void {
-        const OMHC = OmHooks.Screen.Impl.Home.Class;
-        type  OMHC = typeof OMHC;
         this.baseElem.classList.add(
             OmHooks.General.Class.CENTER_CONTENTS,
-            OMHC.BASE,
+            CSS["this"],
         );
 
         const nav
@@ -25,7 +24,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
             = JsUtils.mkEl("div", [
                 OmHooks.General.Class.TEXT_SELECT_DISABLED,
                 OmHooks.General.Class.INPUT_GROUP,
-                OMHC.NAV,
+                CSS["nav"],
             ]);
         nav.setAttribute("role", "navigation");
         nav.addEventListener("pointerleave", () => {
@@ -54,28 +53,28 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
         // buttons should be tabbed through via keyboard.
         (<const>[{
             text:    "Offline Single-player",
-            cssClass: OMHC.NAV_PLAY_OFFLINE,
+            cssClass: CSS["nav--play-offline"],
             screenId: SkScreen.Id.SETUP_OFFLINE,
         },{
             text:    "Online Multi-player",
-            cssClass: OMHC.NAV_PLAY_ONLINE,
+            cssClass: CSS["nav--play-online"],
             screenId: SkScreen.Id.GROUP_JOINER,
         },{
             text:    "How To Play",
-            cssClass: OMHC.NAV_HOW_TO_PLAY,
+            cssClass: CSS["nav--how-to-play"],
             screenId: SkScreen.Id.HOW_TO_PLAY,
         },{
             text:    "How To Host",
-            cssClass: OMHC.NAV_HOW_TO_HOST,
+            cssClass: CSS["nav--how-to-host"],
             screenId: SkScreen.Id.HOW_TO_HOST,
         },{
             text:    "Colour Schemes",
-            cssClass: OMHC.NAV_COLOURS,
+            cssClass: CSS["nav--colour-scheme"],
             screenId: SkScreen.Id.COLOUR_CTRL,
         }])
         .map<Readonly<{
             text: string;
-            cssClass: OMHC[keyof OMHC];
+            cssClass: typeof CSS[keyof typeof CSS];
             screenId: SkScreen.Id | ((ev: MouseEvent) => void);
         }>>((desc) => Object.freeze(desc))
         .forEach((desc) => {
@@ -90,16 +89,16 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 
         (<const>[{
             text:    "Visit\nRepo",
-            cssClass: OMHC.NAV_VIEW_REPO,
+            cssClass: CSS["nav--goto-repo"],
             href:     new window.URL("https://github.com/david-fong/snakey3"),
         },{
             text:    "Report\nIssue",
-            cssClass: OMHC.NAV_RPT_ISSUE,
+            cssClass: CSS["nav--report-issue"],
             href:     new window.URL("https://github.com/david-fong/snakey3/issues"),
         }])
         .map<Readonly<{
             text: string;
-            cssClass: OMHC[keyof OMHC];
+            cssClass: typeof CSS[keyof typeof CSS];
             href: URL;
         }>>((desc) => Object.freeze(desc))
         .forEach((desc) => {

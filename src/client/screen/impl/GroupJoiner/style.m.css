@@ -1,7 +1,7 @@
 
-.screen-joiner {
+.this {
 }
-.screen-joiner--content-wrapper {
+.content-wrapper {
     --spacing:       0.2em;
     --border-radius: 1.2em;
     height: 27em; max-height: 80vh;
@@ -16,25 +16,25 @@
     "prev       next"       1fr
     / 1fr       1fr;
 }
-.screen-joiner--content-wrapper > label {
+.content-wrapper > label {
     display:        grid;
     grid-template-rows: 1fr 2.0fr;
     grid-column:    1/3;
 }
 
-.screen-joiner--host-url {
+.host-url {
     /* grid-area: host-url; */
 }
-.screen-joiner--group-name {
+.group-name {
     /* grid-area: group-name; */
 }
-.screen-joiner--passphrase {
+.passphrase {
     /* grid-area: passphrase; */
 }
 
-.screen-joiner .screen--prev-button {
+.this :global(.screen--prev-button) {
     grid-area: prev;
 }
-.screen-joiner .screen--next-button {
+.this :global(.screen--next-button) {
     grid-area: next;
 }

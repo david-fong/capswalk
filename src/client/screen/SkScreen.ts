@@ -6,18 +6,18 @@ import type { Game } from "game/Game";
 import type { AllSkScreens } from "./AllSkScreens";
 import type { TopLevel } from "../TopLevel";
 
-import type {         HomeScreen } from "./impl/Home";
+import type {         HomeScreen } from "./impl/Home/Screen";
 import type {    HowToPlayScreen } from "./impl/HowToPlay";
 import type {    HowToHostScreen } from "./impl/HowToHost";
-import type {   ColourCtrlScreen } from "./impl/ColourCtrl";
+import type {   ColourCtrlScreen } from "./impl/ColourCtrl/Screen";
 // ======== :   ~~~ OFFLINE ~~~  :============================
-import type { SetupOfflineScreen } from "./impl/SetupOffline";
-import type {  PlayOfflineScreen } from "./impl/PlayOffline";
+import type { SetupOfflineScreen } from "./impl/Setup/Offline";
+import type {  PlayOfflineScreen } from "./impl/Play/Offline";
 // ======== :   ~~~ ONLINE ~~~~  :============================
-import type {  GroupJoinerScreen } from "./impl/GroupJoiner";
-import type {  SetupOnlineScreen } from "./impl/SetupOnline";
-import type {   GroupLobbyScreen } from "./impl/GroupLobby";
-import type {   PlayOnlineScreen } from "./impl/PlayOnline";
+import type {  GroupJoinerScreen } from "./impl/GroupJoiner/Screen";
+import type {  SetupOnlineScreen } from "./impl/Setup/Online";
+import type {   GroupLobbyScreen } from "./impl/GroupLobby/Screen";
+import type {   PlayOnlineScreen } from "./impl/Play/Online";
 
 export { JsUtils, OmHooks, Coord, StorageHooks };
 

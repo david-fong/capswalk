@@ -2,10 +2,10 @@ import { Lang, Player } from "defs/TypeDefs";
 import type { Coord } from "floor/Coord";
 import type { Player as _Player } from "game/player/Player";
 import type { Game } from "game/Game";
-import { SkPickOne } from "../../utils/SkPickOne";
+import { SkPickOne } from "../../../utils/SkPickOne";
 
-import { JsUtils, OmHooks, StorageHooks, SkScreen } from "../SkScreen";
-const OMHC = OmHooks.Screen.Impl.Setup.Class;
+import { JsUtils, OmHooks, StorageHooks, SkScreen } from "../../SkScreen";
+import CSS from "./style.m.css";
 
 
 /**
@@ -25,7 +25,7 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
      * @override
      */
     protected _lazyLoad(): void {
-        this.baseElem.classList.add(OMHC.BASE);
+        this.baseElem.classList.add(CSS["this"]);
         this.baseElem.appendChild(this.nav.prev);
 
         // Language selection component:
@@ -45,7 +45,7 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
         const lwe
             // @ts-expect-error : RO=
             = this.langWeightExaggeration
-            = JsUtils.mkEl("input", [OMHC.LANG_WEIGHT_EXAGG], {
+            = JsUtils.mkEl("input", [CSS["lang-weight-exagg"]], {
                 type: "range",
                 min: "0",
                 max: Lang.WeightExaggeration.MAX.toString(),
@@ -135,12 +135,11 @@ export namespace _SetupScreen {
         }])(), // <- Wrap in a function for better type checking.
     }; };
     /**
-     *
      */
     export class LangPickOne extends SkPickOne<LangPickOne.Option> {
         public constructor() {
             super();
-            this.baseElem.classList.add(OMHC.LANG_SEL);
+            this.baseElem.classList.add(CSS["lang-sel"]);
             Lang.FrontendDescs.forEach((desc) => {
                 this.addOption(new LangPickOne.Option(desc));
             });
@@ -155,7 +154,6 @@ export namespace _SetupScreen {
     }
     export namespace LangPickOne {
         /**
-         *
          */
         export class Option extends SkPickOne._Option {
 

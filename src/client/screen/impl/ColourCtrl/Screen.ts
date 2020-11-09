@@ -1,11 +1,10 @@
 // Tell WebPack about the css we want:
 require("assets/style/colour/_barrel.css");
+import CSS from "./style.m.css";
 
-import { SkPickOne } from "../../../client/utils/SkPickOne";
+import { SkPickOne } from "../../../utils/SkPickOne";
 
-import { JsUtils, OmHooks, SkScreen } from "../SkScreen";
-const OMHC = OmHooks.Screen.Impl.ColourCtrl.Class;
-const CSS_FX = OmHooks.General.Class;
+import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
 
 /**
  *
@@ -18,7 +17,7 @@ export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
      * @override
      */
     protected _lazyLoad(): void {
-        this.baseElem.classList.add(OMHC.BASE);
+        this.baseElem.classList.add(CSS["this"]);
         this.baseElem.appendChild(this.nav.prev);
 
         const sel
@@ -109,15 +108,15 @@ export namespace ColourCtrlScreen {
                 super();
                 this.desc = desc;
                 const base = this.baseElem;
-                base.classList.add(OMHC.OPTION);
+                base.classList.add(CSS["opt"]);
                 base.dataset[OmHooks.General.Dataset.COLOUR_SCHEME] = desc.id;
 
-                const label = JsUtils.mkEl("span", [OMHC.OPTION_LABEL]); {
-                    label.appendChild(JsUtils.mkEl("div", [OMHC.OPTION_LABEL_TITLE], {
+                const label = JsUtils.mkEl("span", [CSS["opt-label"]]); {
+                    label.appendChild(JsUtils.mkEl("div", [CSS["opt-label--title"]], {
                         textContent: desc.displayName,
                     }));
                 }
-                label.appendChild(JsUtils.mkEl("div", [OMHC.OPTION_LABEL_AUTHOR], {
+                label.appendChild(JsUtils.mkEl("div", [CSS["opt-label--author"]], {
                     textContent: "by " + desc.author,
                 }));
                 base.appendChild(label);

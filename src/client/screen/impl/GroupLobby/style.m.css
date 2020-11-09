@@ -1,10 +1,10 @@
-.screen-lobby {
+.this {
     display:        grid;
     justify-items:  center;
     align-content:  center;
 }
 
-.screen-lobby--client-info-section {
+.client-info-section {
     --spacing:       0.2em;
     --border-radius: 0.8em;
     gap: 0.2em; margin: 0.2em;
@@ -14,26 +14,26 @@
     grid-template-rows: 1fr 1fr;
 }
 
-.screen-lobby--teams-section {
+.teams-section {
     display:        grid;
 }
 
-.screen-lobby--team {
+.team {
 }
 
-.screen-lobby--player {
+.player {
     max-width: 20em;
     display: grid;
     grid-template-columns: 3em 2em 1fr;
 }
-.screen-lobby--player * {
+.player * {
     pointer-events: none;
 }
-.screen-lobby--player__name {
+.player__name {
     justify-self: start;
     padding-inline-start: 0.5em;
 }
 
-.screen-lobby .screen--next-button:disabled {
+.this :global(.screen--next-button):disabled {
     display: none;
 }

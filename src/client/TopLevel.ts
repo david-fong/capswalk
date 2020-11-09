@@ -2,7 +2,7 @@ import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import { StorageHooks } from "defs/StorageHooks";
 import type { BrowserGameMixin, Game } from "./game/BrowserGame";
-import type { _PlayScreen } from "./screen/impl/Play";
+import type { _PlayScreen } from "./screen/impl/Play/_Screen";
 import type { Coord, SkScreen } from "../client/screen/SkScreen";
 
 import { AllSkScreens } from "./screen/AllSkScreens";

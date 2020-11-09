@@ -1,8 +1,8 @@
-import type { OfflineGame } from "../../game/OfflineGame";
+import type { OfflineGame } from "../../../game/OfflineGame";
 
-import { JsUtils, OmHooks } from "../SkScreen";
-import type { Coord, SkScreen } from "../SkScreen";
-import { Game, _PlayScreen } from "./Play";
+import { JsUtils, OmHooks } from "../../SkScreen";
+import type { Coord, SkScreen } from "../../SkScreen";
+import { Game, _PlayScreen } from "./_Screen";
 type G = Game.Type.OFFLINE;
 
 /**
@@ -41,7 +41,7 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
         // TODO.impl use game-setup args passed in from _abstractOnBeforeEnter
         return new (await import(
             /* webpackChunkName: "game/offline" */
-            "../../game/OfflineGame"
+            "../../../game/OfflineGame"
         )).OfflineGame(this._onGameBecomeOver.bind(this), ctorArgs);
     }
 }

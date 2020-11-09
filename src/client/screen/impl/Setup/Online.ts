@@ -1,9 +1,9 @@
 import { GroupEv } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 
-import { JsUtils, OmHooks } from "../SkScreen";
-import type { SkScreen } from "../SkScreen";
-import { _SetupScreen } from "./Setup";
+import { JsUtils, OmHooks } from "../../SkScreen";
+import type { SkScreen } from "../../SkScreen";
+import { _SetupScreen } from "./_Screen";
 type SID = SkScreen.Id.SETUP_ONLINE;
 
 

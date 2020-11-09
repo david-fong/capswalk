@@ -107,65 +107,11 @@ export namespace Screen {
         CURRENT:        "current",
     };
     export namespace Impl {
-    export namespace Home {
-        export const Class = <const>{
-            BASE:               "screen-home",
-            NAV:                "screen-home--nav",
-            NAV_PLAY_OFFLINE:   "screen-home--nav--play-offline",
-            NAV_PLAY_ONLINE:    "screen-home--nav--play-online",
-            NAV_HOW_TO_PLAY:    "screen-home--nav--how-to-play",
-            NAV_HOW_TO_HOST:    "screen-home--nav--how-to-host",
-            NAV_COLOURS:        "screen-home--nav--colour-scheme",
-            NAV_VIEW_REPO:      "screen-home--nav--goto-repo",
-            NAV_RPT_ISSUE:      "screen-home--nav--report-issue",
-        };
-    }
-    export namespace ColourCtrl {
-        export const Class = <const>{
-            BASE:               "screen-colour",
-            OPTION:             "screen-colour--opt",
-            OPTION_LABEL:       "screen-colour--opt-label",
-            OPTION_LABEL_TITLE: "screen-colour--opt-label--title",
-            OPTION_LABEL_AUTHOR:"screen-colour--opt-label--author",
-        };
-    }
-    export namespace Play {
-        export const Class = <const>{
-            BASE:               "screen-play",
-            GRID_WRAPPER:       "screen-play--grid-wrapper",
-            CONTROLS_BAR:       "screen-play--controls-bar",
-            PLAYERS_BAR:        "screen-play--players-bar",
-        };
-    }
-    export namespace Setup {
-        export const Class = <const>{
-            BASE:               "screen-setup",
-            LANG_SEL:           "screen-setup--lang-sel",
-            LANG_WEIGHT_EXAGG:  "screen-setup--lang-weight-exagg",
-        };
-        export const Id = <const>{
-            LANG_WEIGHT_EXAGGERATION_LIST: "screen-setup--lang-weight-exaggeration-list",
-        };
-    }
-    export namespace GroupJoiner {
-        export const Class = <const>{
-            BASE:               "screen-joiner",
-            CONTENT_WRAPPER:    "screen-joiner--content-wrapper",
-            HOST_URL:           "screen-joiner--host-url",
-            GROUP_NAME:         "screen-joiner--group-name",
-            PASSPHRASE:         "screen-joiner--passphrase",
-        };
-    }
-    export namespace GroupLobby {
-        export const Class = <const>{
-            BASE:               "screen-lobby",
-            SEC_CLIENT_INFO:    "screen-lobby--client-info-section",
-            SEC_TEAMS:          "screen-lobby--teams-section",
-            TEAM:               "screen-lobby--team",
-            PLAYER:             "screen-lobby--player",
-            PLAYER_NAME:        "screen-lobby--player__name",
-        };
-    }
+        export namespace Setup {
+            export const Id = <const>{
+                LANG_WEIGHT_EXAGGERATION_LIST: "screen-setup--lang-weight-exaggeration-list",
+            };
+        }
     }
 }
 

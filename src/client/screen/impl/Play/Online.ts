@@ -1,10 +1,10 @@
 import type { Socket } from "socket.io-client/build/socket";
-import type { OnlineGame } from "../../game/OnlineGame";
+import type { OnlineGame } from "../../../game/OnlineGame";
 
 import { GameEv } from "defs/OnlineDefs";
-import { JsUtils, OmHooks } from "../SkScreen";
-import type { Coord, SkScreen } from "../SkScreen";
-import { Game, _PlayScreen } from "./Play";
+import { JsUtils, OmHooks } from "../../SkScreen";
+import type { Coord, SkScreen } from "../../SkScreen";
+import { Game, _PlayScreen } from "./_Screen";
 type SID = SkScreen.Id.PLAY_ONLINE;
 type G = Game.Type.ONLINE;
 
@@ -76,7 +76,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
     protected async _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<OnlineGame<Coord.System>> {
         const game = new (await import(
             /* webpackChunkName: "game/online" */
-            "../../game/OnlineGame"
+            "../../../game/OnlineGame"
         )).OnlineGame(
             this._onGameBecomeOver.bind(this),
             this.top.sockets.gameSocket!,

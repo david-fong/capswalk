@@ -2,8 +2,8 @@ import type { Coord } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import type { Game } from "game/Game";
 
-import { JsUtils, OmHooks, SkScreen } from "../SkScreen";
-import { _SetupScreen } from "./Setup";
+import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
+import { _SetupScreen } from "./_Screen";
 
 
 type SID = SkScreen.Id.SETUP_OFFLINE;

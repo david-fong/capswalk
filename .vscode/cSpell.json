@@ -51,6 +51,7 @@
         "minmax",
         "mixins",
         "multiline",
+        "nbsp",
         "noopener",
         "nsps",
         "readonly",
@@ -112,6 +113,7 @@
         "spellcheck", // <-- how ironic
         "teammate", "teammates",
         "tradeoff",
-        "turtling"
+        "turtling",
+        "unblur"
     ]
 }

@@ -4,11 +4,11 @@ import webpack  = require("webpack");
 // https://github.com/TypeStrong/ts-loader#loader-options
 import type * as tsloader from "ts-loader/dist/interfaces";
 
-import nodeExternals = require("webpack-node-externals");
-import CopyWebpackPlugin = require("copy-webpack-plugin");
-import HtmlPlugin = require("html-webpack-plugin");
+import nodeExternals        = require("webpack-node-externals");
+import CopyWebpackPlugin    = require("copy-webpack-plugin");
+import HtmlPlugin           = require("html-webpack-plugin");
 import MiniCssExtractPlugin = require("mini-css-extract-plugin");
-import CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+import CssMinimizerPlugin   = require("css-minimizer-webpack-plugin");
 
 type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
@@ -36,10 +36,7 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
         options: <tsloader.LoaderOptions>{
             projectReferences: true,
             compilerOptions: {
-                // We need to preserve comments in transpiled output
-                // so that magic comments in dynamic imports can be
-                // seen by webpack.
-                removeComments: false,
+                removeComments: false, // needed for webpack-import magic-comments
                 //noEmit: true,
             },
             // https://github.com/TypeStrong/ts-loader#faster-builds
@@ -53,12 +50,12 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
     test: /\.css$/,
     use: [{
-        loader: MiniCssExtractPlugin.loader,
-        options: {}
+        loader: MiniCssExtractPlugin.loader, options: {}
     },{
-        loader: "css-loader",
-        options: {
-            modules: false,
+        loader: "css-modules-typescript-loader",
+    },{
+        loader: "css-loader", options: {
+            modules: { auto: /\.m\.css$/, },
         },
     }],
 },{

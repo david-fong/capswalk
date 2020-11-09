@@ -2,9 +2,10 @@ import { Game } from "game/Game"; export { Game };
 import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 // import type { OfflineGame } from "../../game/OfflineGame";
 // import type { OnlineGame }  from "../../game/OnlineGame";
-import type { BrowserGameMixin } from "../../game/BrowserGame";
+import type { BrowserGameMixin } from "../../../game/BrowserGame";
 
-import { JsUtils, OmHooks, Coord, SkScreen } from "../SkScreen";
+import { JsUtils, OmHooks, Coord, SkScreen } from "../../SkScreen";
+import CSS from "./style.m.css";
 
 /**
  * If and only if this screen is the current screen, then its
@@ -77,7 +78,7 @@ export abstract class _PlayScreen<
     protected _lazyLoad(): void {
         this.baseElem.classList.add(
             OmHooks.General.Class.CENTER_CONTENTS,
-            OmHooks.Screen.Impl.Play.Class.BASE,
+            CSS["this"],
         );
 
         const gridHtml = _PlayScreen.createCenterColElem();
@@ -319,7 +320,7 @@ export abstract class _PlayScreen<
         const controlsBar = JsUtils.mkEl("div", [
             OmHooks.General.Class.CENTER_CONTENTS,
             OmHooks.General.Class.INPUT_GROUP,
-            OmHooks.Screen.Impl.Play.Class.CONTROLS_BAR,
+            CSS["controls-bar"],
         ]);
         controlsBar.setAttribute("role", "menu");
 
@@ -370,7 +371,7 @@ export abstract class _PlayScreen<
         const playersBar
             // @ts-expect-error : RO=
             = this.playersBar
-            = JsUtils.mkEl("div", [OmHooks.Screen.Impl.Play.Class.PLAYERS_BAR]);
+            = JsUtils.mkEl("div", [CSS["players-bar"]]);
         JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["playersBar"]);
         this.baseElem.appendChild(playersBar);
     }
@@ -388,7 +389,7 @@ export namespace _PlayScreen {
         const OMHC = OmHooks.Grid.Class;
         const CSS_FX = OmHooks.General.Class;
 
-        const base = JsUtils.mkEl("div", [OmHooks.Screen.Impl.Play.Class.GRID_WRAPPER]);
+        const base = JsUtils.mkEl("div", [CSS["grid-wrapper"]]);
 
         const grid = JsUtils.mkEl("div", [
             //CSS_FX.CENTER_CONTENTS,

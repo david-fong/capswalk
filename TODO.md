@@ -21,6 +21,9 @@
     - [how to config with typescript](https://stackoverflow.com/questions/40382842/cant-import-css-scss-modules-typescript-says-cannot-find-module)
     - Move screen-related css to `client/screen/impl/`.
       - Try using es6-style imports instead of CommonJs and see if css-loader understands (it should, I think).
+    - Migrate the leaves first (the things that depend on other things) and move upward.
+1. Find out how to share game CSS
+    - Maybe [this](https://www.npmjs.com/package/mini-css-extract-plugin#extracting-css-based-on-entry) is what I need?
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
 1. Fill in implementation of bubble event handler.
@@ -35,7 +38,7 @@
 ### Routine Checkups
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
-- `git gc`, `git prune`, `npm audit`, `npm oudated`, `npm dedupe`.
+- `git gc`, `git prune`, `npm audit`, `npm outdated`, `npm dedupe`.
 - Convert any usages of `.innerHtml` or `.innerText` to use `.textContent` unless intentional (In which case, write a comment on why it is intentional).
 - Make sure nobody uses `document.createElement` instead of `JsUtil.mkEl` unless they document why it's necessary.
 
