@@ -37,6 +37,7 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
             projectReferences: true,
             compilerOptions: {
                 removeComments: false, // needed for webpack-import magic-comments
+                assumeChangesOnlyAffectDirectDependencies: PACK_MODE === "development",
                 //noEmit: true,
             },
             // https://github.com/TypeStrong/ts-loader#faster-builds
@@ -45,7 +46,7 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
             experimentalFileCaching: true,
         },
     },
-    exclude: /node_modules/,
+    exclude: [/node_modules/,/\.d\.ts$/],
 }, ];};
 const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
     test: /\.css$/,
@@ -102,7 +103,8 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
     resolve: {
         extensions: [".ts", ".js"],
         modules: [
-            path.resolve(PROJECT_ROOT, "src", "base"),
+            path.resolve(PROJECT_ROOT, "src"),
+            path.resolve(PROJECT_ROOT, "src/base"),
             path.resolve(PROJECT_ROOT, "node_modules"),
         ], // match tsconfig.baseUrl
     },

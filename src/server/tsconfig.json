@@ -3,7 +3,8 @@
     "compilerOptions": {
         "module": "CommonJS",
         "target": "ES2019",
-        "lib": ["ES2019"],
+        "lib": ["ES2019"], // no dom.
+        "types": ["snakey-utils", "node", "express"]
     },
     "references": [
         { "path": "../base", },

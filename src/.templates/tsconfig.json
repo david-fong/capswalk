@@ -1,28 +1,14 @@
 // Since the parent template and this one don't have a "files" or an
 // "includes" field, all the files in the folder containing the concrete
 // config will be part of its reference group.
-//
-// Note that the fields are not actually taken in a strictly dumb
-// fashion. According to vscode, "rootDir" is used relative to this
-// file and not the concrete config files, although the final value
-// is the same.
-//
-// If general changes are made to this file, make similar changes to
-// /test/.templates/tsconfig.json, which is essentially a copy of this.
-//
-// Note that the baseUrl is set to the "base/" folder. This is because
-// The other src/* subprojects only reference externals under the base.
-// This will reduce on unnecessary visual clutter. This means that all
-// the non-base src/* subprojects should use relative imports for their
-// own internals only. This is also reflected in the WebPack config.
-// This makes it feel as though the "offline", "server" and "client"
-// folders were under the "base" folder from the standpoint of someone
-// writing and maintaining imports.
 {
     "extends": "../../.templates/tsconfig.json",
     "compilerOptions": {
-        "baseUrl": "../base",
+        "baseUrl": "..",
         "rootDir": "../..",
-        "outDir": "../../dist/ts",
+        "outDir":  "../../dist/ts",
+        "paths": {
+            "*": ["*", "base/*"],
+        },
     },
 }

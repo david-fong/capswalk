@@ -8,7 +8,7 @@ declare -r cwd="$(dirname "${BASH_SOURCE[0]}")"
 if [[ "$@" =~ '-t' ]]
 then
     time npx tsc --project "${cwd}/webpack/tsconfig.json"
-    echo 'built the webpack config'
+    echo 'done transpiling webpack scripts'
     echo
 else
     echo

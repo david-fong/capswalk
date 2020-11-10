@@ -1,5 +1,8 @@
 {
     "extends": "../.templates/tsconfig.json",
+    "compilerOptions": {
+        "types": ["snakey-utils"],
+    },
     "references": [
         { "path": "../base/defs", },
         { "path": "../base/game", },

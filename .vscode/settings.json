@@ -6,13 +6,12 @@
         "package-lock.json": true,
         "**/tsconfig.tsbuildinfo": true,
 
-        // project specific excludes:
-
         // things that I might like to toggle:
         "node_modules/": true,
-        "{**/.templates/,**/tsconfig.json}": true,
+        //"{**/.templates/,**/tsconfig.json}": true,
         "{**/.eslintrc.*,.eslintignore}": false,
         "scripts/webpack/*.js": true,
+        "**/*.css.d.ts": true,
     },
     "search.exclude": {
         "**/node_modules": true,
