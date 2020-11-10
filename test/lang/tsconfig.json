@@ -1,6 +1,7 @@
 {
     "extends": "../.templates/tsconfig.json",
     "references": [
-        { "path": "../../src/base/lang", },
+        { "path": "../../src/base/lang" },
+        { "path": "../../src/base/lang/tsconfig@impl.json", },
     ],
 }

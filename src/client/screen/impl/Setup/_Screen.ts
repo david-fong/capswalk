@@ -2,7 +2,7 @@ import { Lang, Player } from "defs/TypeDefs";
 import type { Coord } from "floor/Coord";
 import type { Player as _Player } from "game/player/Player";
 import type { Game } from "game/Game";
-import { SkPickOne } from "../../../utils/SkPickOne";
+import { SkPickOne } from "client/utils/SkPickOne";
 
 import { JsUtils, OmHooks, StorageHooks, SkScreen } from "../../SkScreen";
 import CSS from "./style.m.css";

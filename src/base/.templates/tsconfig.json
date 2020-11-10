@@ -2,8 +2,8 @@
     "extends": "../../.templates/tsconfig.json",
     "compilerOptions": {
         "baseUrl": "../..",
-        "rootDir": "../../..",
-        "outDir":  "../../../dist/ts",
+        "rootDir": "../..",
+        "outDir":  "../../../dist/ts/src",
         "types": ["snakey-utils"],
     },
 }

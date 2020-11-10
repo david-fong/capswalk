@@ -27,7 +27,7 @@
     },
     "json.schemas": [
         {
-            "fileMatch": [ "/**/*tsconfig.json", ],
+            "fileMatch": [ "/**/*tsconfig*.json", ],
             "url": "http://json.schemastore.org/tsconfig",
         }, {
             "fileMatch": [ "/**/*cSpell.json", ],

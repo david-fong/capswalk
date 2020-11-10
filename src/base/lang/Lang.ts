@@ -1,7 +1,7 @@
 import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
 
-import { LangSeqTree } from "lang/LangSeqTreeNode";
+import { LangSeqTree } from "./LangSeqTreeNode";
 
 
 /**

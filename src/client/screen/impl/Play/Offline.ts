@@ -1,4 +1,4 @@
-import type { OfflineGame } from "../../../game/OfflineGame";
+import type { OfflineGame } from "client/game/OfflineGame";
 
 import { JsUtils, OmHooks } from "../../SkScreen";
 import type { Coord, SkScreen } from "../../SkScreen";

@@ -1,5 +1,5 @@
 import type { Socket } from "socket.io-client/build/socket";
-import type { OnlineGame } from "../../../game/OnlineGame";
+import type { OnlineGame } from "client/game/OnlineGame";
 
 import { GameEv } from "defs/OnlineDefs";
 import { JsUtils, OmHooks } from "../../SkScreen";
