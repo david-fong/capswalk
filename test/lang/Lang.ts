@@ -18,6 +18,15 @@ export namespace Lang {
         const inst = new (langImpl)(1.0);
         inst.reset();
         console.info(inst.simpleView());
+
+        // TODO.impl test a set of alphanumeric character inputs for each lang's remapping function.
+        // if (!(_Lang.Seq.REGEXP.test(key))) {
+        //     throw new RangeError(`The implementation of input transformation`
+        //     + ` in the currently selected language did not follow the rule`
+        //     + ` of producing output matching the regular expression`
+        //     + ` \"${_Lang.Seq.REGEXP.source}\".`
+        //     );
+        // }
         debugger;
     });
 }

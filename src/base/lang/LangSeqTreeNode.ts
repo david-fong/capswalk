@@ -27,13 +27,13 @@ export namespace LangSeqTree {
         }
 
         public reset(): void {
-            this.children.forEach((child) => child.reset());
+            for (const child of this.children) child.reset();
             this.inheritingWeightedHitCount = 0.000;
         }
 
         protected _finalize(): void {
             Object.freeze(this.children);
-            this.children.forEach((child) => (child as ParentNode)._finalize());
+            for (const child of this.children) (child as ParentNode)._finalize();
             // The above cast to ParentNode tells to the TypeScript
             // compiler that the override has protected access to us.
         }
@@ -79,9 +79,7 @@ export namespace LangSeqTree {
         }
         protected _recursiveGetLeafNodes(leafNodes: Array<ChildNode>): void {
             if (this.children.length) {
-                this.children.forEach((child) => {
-                    child._recursiveGetLeafNodes(leafNodes);
-                });
+                for (const child of this.children) child._recursiveGetLeafNodes(leafNodes);
             } else {
                 leafNodes.push(this as ParentNode as ChildNode);
             }
@@ -122,10 +120,9 @@ export namespace LangSeqTree {
             // Add mappings in ascending order of sequence length:
             // (this is so that no merging of branches needs to be done)
             const rootNode = new ParentNode();
-            Array.from(reverseDict)
-              //.sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
+            for (const args of Array.from(reverseDict)
                 .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
-                .forEach((args): void => rootNode._addCharMapping(...args));
+            ) rootNode._addCharMapping(...args);
             rootNode._finalize();
             return rootNode;
         }
@@ -183,10 +180,10 @@ export namespace LangSeqTree {
             // Order matters! The below work must be done after `super.reset`
             // so that `inheritingWeightedHitCount` does not get erroneously
             // reset to zero after starting to inherit seeding hits.
-            this.#characters.forEach((char) => {
+            for (const char of this.#characters) {
                 char.reset();
                 this.incrementNumHits(char, Math.random() * _Lang.CHAR_HIT_COUNT_SEED_CEILING);
-            });
+            }
         }
 
         /**
@@ -221,7 +218,7 @@ export namespace LangSeqTree {
         }
         private _recursiveIncrementNumHits(weightInv: number): void {
             this.inheritingWeightedHitCount += weightInv;
-            this.children.forEach((child) => child._recursiveIncrementNumHits(weightInv));
+            for (const child of this.children) child._recursiveIncrementNumHits(weightInv);
         }
 
         public get personalWeightedHitCount(): number {

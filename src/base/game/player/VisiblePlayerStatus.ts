@@ -26,11 +26,11 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
             this.#baseElem = JsUtils.mkEl("div", [
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
-                ...CSS["this"].split(" "),
+                CSS["this"],
             ]);
         } {
             // Setup face element:
-            const faceElem = JsUtils.mkEl("div", CSS["face"].split(" "), {});
+            const faceElem = JsUtils.mkEl("div", [CSS["face"]], {});
             const vBellAnims
             = this.#vBellAnims
             = (this.player.isALocalOperator) ? [

@@ -430,7 +430,7 @@ export namespace _PlayScreen {
         // intersectionRoot.setAttribute("aria-hidden", "true");
         // intersectionRoot.classList.add(
         //     CSS_FX.FILL_PARENT,
-        //     OMHC.PLAYER_IOB_ROOT,
+        //     GRID_CSS["intersection-root"],
         // );
         // scrollOuter.appendChild(intersectionRoot);
 

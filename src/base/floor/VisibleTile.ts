@@ -22,7 +22,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
             const base = this.#baseElem = JsUtils.mkEl("div", [
                 OmHooks.General.Class.CENTER_CONTENTS,
                 OmHooks.General.Class.STACK_CONTENTS,
-                ...CSS["this"].split(" "),
+                CSS["this"],
             ]);
             base.setAttribute("aria-label", "Tile");
         } {

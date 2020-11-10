@@ -13,11 +13,13 @@ const pkg = distPkg as (typeof distPkg | Partial<typeof srcPkg>); ([
     "version", "dependencies", "repository",
 ] as ReadonlyArray<keyof typeof srcPkg>).forEach((key) => { pkg[key] = srcPkg[key]; });
 pkg["repository"] += "/tree/dist"; // Point to the dist branch.
-fs.writeFile(
-    path.resolve(__dirname, "../../dist/package.json"),
-    JSON.stringify(pkg, undefined, "  "),
-    null, (err) => console.error(err),
-);
+if (process.env.NODE_ENV === "production") {
+    fs.writeFile(
+        path.resolve(__dirname, "../../dist/package.json"),
+        JSON.stringify(pkg, undefined, "  "),
+        null, (err) => console.error(err),
+    );
+}
 fs.copyFile(
     path.resolve(__dirname, "templates/stage.sh"),
     path.resolve(__dirname, "../../dist/stage.sh"),

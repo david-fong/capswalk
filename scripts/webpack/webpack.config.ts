@@ -123,9 +123,9 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
     },
 
     optimization: {
-        minimizer: ["...", new CssMinimizerPlugin({
+        minimizer: [new CssMinimizerPlugin({
             minimizerOptions: { preset: ["default", { discardComments: { removeAll: true }}], },
-        })],
+        }), "..."],
         splitChunks: { chunks: "all", cacheGroups: {} },
     },
     watchOptions: {

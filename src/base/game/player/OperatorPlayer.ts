@@ -1,5 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
-import { Lang as _Lang } from "defs/TypeDefs";
+import type { Lang as _Lang } from "defs/TypeDefs";
 import { Game } from "game/Game";
 
 import type { VisibleTile } from "floor/VisibleTile";
@@ -105,14 +105,6 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
         }
         if (key) {
             key = this.#langRemappingFunc(key);
-            if (!(_Lang.Seq.REGEXP.test(key))) {
-                // throw new RangeError(`The implementation of input transformation`
-                // + ` in the currently selected language did not follow the rule`
-                // + ` of producing output matching the regular expression`
-                // + ` \"${Lang.Seq.REGEXP.source}\".`
-                // );
-                return;
-            }
         } else {
             const possibleTarget = unts.find((tile) => tile.langSeq.startsWith(this.seqBuffer));
             if (!possibleTarget) {
