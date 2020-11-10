@@ -8,8 +8,8 @@
 
         // things that I might like to toggle:
         "node_modules/": true,
-        //"{**/.templates/,**/tsconfig.json}": true,
-        "{**/.eslintrc.*,.eslintignore}": false,
+        "{**/.templates/,**/*tsconfig.json}": true,
+        "{**/.eslintrc.*,.eslintignore}": true,
         "scripts/webpack/*.js": true,
         "**/*.css.d.ts": true,
     },
@@ -27,7 +27,7 @@
     },
     "json.schemas": [
         {
-            "fileMatch": [ "/**/*tsconfig*.json", ],
+            "fileMatch": [ "/**/*tsconfig.json", ],
             "url": "http://json.schemastore.org/tsconfig",
         }, {
             "fileMatch": [ "/**/*cSpell.json", ],

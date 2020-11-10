@@ -3,11 +3,9 @@ import "./schemes/_barrel.css";
 import CSS from "./style.m.css";
 
 import { SkPickOne } from "client/utils/SkPickOne";
-
 import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
 
 /**
- *
  */
 export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
 

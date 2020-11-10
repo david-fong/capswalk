@@ -19,12 +19,11 @@
 1. Use CSS Modules
     - update documentation on implementing Coordinate systems
       - file naming, separate file Visible.ts
-      - edit tile.m.css and grid.m.css to compose System/style.m.css classes.
-        - Alternatively, see if we can now use :export :import after fixing the splitting/loader mistake.
 1. Find out how to share game CSS and grid between entry and game chunks.
     - Maybe [this](https://www.npmjs.com/package/mini-css-extract-plugin#extracting-css-based-on-entry) is what I need?
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
+1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
 1. Fill in implementation of bubble event handler.
 1. Use webpack replace plugin to change some assertions and checks to only be done during development.
 1. Spectator mode for online games? O_o
@@ -68,11 +67,10 @@
   - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
+  - [](https://github.com/actions/cache)
   - Heroku
     - [](https://devcenter.heroku.com/articles/nodejs-support)
     - [](https://devcenter.heroku.com/articles/deploying-nodejs)
-    - [](https://medium.com/deployplace/heroku-vs-docker-the-ultimate-comparison-with-hidden-pitfalls-revealed-f6b7f4075de5)
-  - [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - To discourage players from spamming the keyboard, which would make them move chaotically really fast and defeat the educational purpose of the game, detect their success rate of pressing relevant keys, or the rate in terms of time. If they seem to be spamming, then somehow throttle their requests. Maybe stop responding for a brief period of time.
 - Look into switching from JsDoc to TsDoc
   - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
