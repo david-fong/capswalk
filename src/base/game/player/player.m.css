@@ -10,6 +10,7 @@
     contain: size;
 }
 .this > .face {
+    z-index:        11;
     border-color:   var(--colour-tileBd);
     contain:        strict;
     transition:     background-color 0.7s ease-in-out;
@@ -19,6 +20,7 @@
     will-change: transform;
 }
 .this[data-face="me"] > .face {
+    z-index:        21;
     /* Both `contain` and `will-change` are required
     here to constrain repaints (due to animations) on
     this element to the smallest possible box. It is
@@ -27,6 +29,7 @@
     will-change:    transform;
 }
 .downed-overlay {
+    z-index: 12;
     background-color: red;
     opacity: 0.2;
 }
@@ -53,6 +56,7 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
 https://www.w3schools.com/cssref/pr_background-blend-mode.asp
  */
 .spotlight-short {
+    z-index: 10;
     background-image: radial-gradient(
         farthest-side,
         transparent 21%, 46%, var(--colour-spotlight)
@@ -61,6 +65,7 @@ https://www.w3schools.com/cssref/pr_background-blend-mode.asp
     border:     100vmax solid var(--colour-spotlight);
 }
 .spotlight-long {
+    z-index: 20;
     background-image: radial-gradient(
         farthest-side,
         transparent 15%, var(--colour-spotlight)

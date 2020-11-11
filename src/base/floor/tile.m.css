@@ -36,6 +36,7 @@
     height:         initial;
 }
 .this[data-health] .char {
+    z-index:          11;
     border-color:     var(--colour-tileBd);
     color:            var(--colour-healthFg);
     background-color: var(--colour-healthBg);
@@ -46,8 +47,9 @@
 }
 
 .seq {
+    z-index:        13;
     contain:        content;
-    padding:    0ch  0.4ch;
+    padding:        0ch  0.4ch;
     /* bottom:     0%; */
     min-height: 100%; height: max-content;
     min-width:  100%; width:  max-content;

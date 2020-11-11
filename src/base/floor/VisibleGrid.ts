@@ -1,8 +1,9 @@
 import CSS from "./grid.m.css";
 import PLAYER_CSS from "game/player/player.m.css";
-import "./zindex.m.css";
+// import "./zindex.m.css"; // not used. file only contains documentation.
 import { OmHooks } from "defs/OmHooks";
 import { JsUtils } from "defs/JsUtils";
+
 import type { Coord, Tile } from "floor/Tile";
 import { VisibleTile } from "floor/VisibleTile";
 import type { Grid } from "floor/Grid";

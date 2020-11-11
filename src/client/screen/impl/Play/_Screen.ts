@@ -6,7 +6,7 @@ import type { BrowserGameMixin } from "../../../game/BrowserGame";
 
 import { JsUtils, OmHooks, Coord, SkScreen } from "../../SkScreen";
 import CSS from "./style.m.css";
-import GRID_CSS from "floor/grid.m.css";
+import GRID_CSS from "./grid.m.css";
 
 /**
  * If and only if this screen is the current screen, then its

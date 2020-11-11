@@ -1,3 +1,4 @@
+/*
 :import("./tile.m.css") {
     _tile: this;
     _tile__char: char;
@@ -5,8 +6,6 @@
 }
 :import("./grid.m.css") {
     _grid-impl-body: impl-body;
-    _grid-kbd-dc: kbd-dc;
-    _grid-pause-overlay: pause-overlay;
 }
 :import("../game/player/player.m.css") {
     _player: this;
@@ -14,15 +13,20 @@
     _player__spotlight-long: spotlight-long;
     _player__spotlight-short: spotlight-short;
 }
+*/
 
+/*
 ._grid-pause-overlay            { z-index:   2; }
 ._grid-kbd-dc                   { z-index:   1; }
+*/
 
+/*
 ._player__face[data-face="me"]  { z-index:  21; }
-._player__spotlight-long        { z-index:  20; } /* SPOTLIGHT (long-range) */
+._player__spotlight-long        { z-index:  20; }
 ._tile__seq                     { z-index:  13; }
 ._player__downed-overlay        { z-index:  12; }
 ._player__face                  { z-index:  11; }
 ._tile[data-health] ._tile__char{ z-index:  11; }
-._player__spotlight-short       { z-index:  10; } /* SPOTLIGHT (short-range) */
-._grid-impl-body                { z-index:   0; } /* ROOT */
+._player__spotlight-short       { z-index:  10; }
+._grid-impl-body                { z-index:   0; }
+*/

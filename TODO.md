@@ -13,7 +13,7 @@
 
 1. Find out how to share game CSS and grid between entry and game chunks.
     - Maybe [this](https://www.npmjs.com/package/mini-css-extract-plugin#extracting-css-based-on-entry) is what I need?
-    - Split `grid.m.css` into two parts: part for game chunk and part for initial chunk. This should get rid of some output duplication. Also take a look at `zindex.m.css` and the possibility of moving those rules to the source files and perhaps just keeping comments to have a unified view of what the values should be.
+    - Take a look at Tile and Player and possibly putting them into one file?
 1. Use CSS Modules
     - update documentation on implementing Coordinate systems
       - file naming, separate file Visible.ts
