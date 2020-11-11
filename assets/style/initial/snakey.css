@@ -1,3 +1,18 @@
+@media print { :root {
+    --colour-mainFg: black !important;
+    --colour-mainBg: white !important;
+    --colour-tileFg: black !important;
+    --colour-tileBg: white !important;
+    --colour-tileBd: black !important;
+    --colour-healthFg: black !important;
+    --colour-healthBg: white !important;
+    --colour-pFaceMe: grey !important;
+    --colour-pFaceMeOppo: grey !important;
+    --colour-pFaceTeammate: grey !important;
+    --colour-pFaceImtlTeammate: grey !important;
+    --colour-pFaceOpponent: grey !important;
+    --colour-pFaceImtlOpponent: grey !important;
+}}
 [data-sk-colour-scheme="snakey"] {
     --colour-mainFg: #e9eef3;
     --colour-mainBg: #3f5e77;

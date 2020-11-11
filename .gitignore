@@ -11,12 +11,6 @@
 *.orig
 Session.vim
 
-# vscode
-/.vscode/**/*
-!/.vscode/settings.json
-!/.vscode/cSpell.json
-*.code-workspace
-
 # security
 *.pem
 *.pfx
