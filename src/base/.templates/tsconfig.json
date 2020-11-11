@@ -4,6 +4,6 @@
         "baseUrl": "../..",
         "rootDir": "../..",
         "outDir":  "../../../dist/ts/src",
-        "types": ["snakey-utils"],
+        "types": ["snakey-type-utils"],
     },
 }

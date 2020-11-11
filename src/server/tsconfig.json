@@ -4,9 +4,9 @@
         "module": "CommonJS",
         "target": "ES2019",
         "lib":   ["ES2019"], // no dom.
-        "types": ["snakey-utils", "node", "express"]
+        "types": ["snakey-type-utils", "node", "express"],
     },
     "references": [
-        { "path": "../base", },
+        { "path": "../base" },
     ],
 }

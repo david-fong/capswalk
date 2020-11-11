@@ -24,6 +24,11 @@ const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> 
         /\.d\.ts$/, // Importantly, this also covers .css.d.ts files.
         /\.js$/,
     ]}),
+    new webpack.DefinePlugin({
+        // See [](src/node_modules/@types/snakey-type-utils.dts).
+        //"DEF.DEBUGLOG":  JSON.stringify(PACK_MODE === "development"),
+        "DEF.DEVASSERT": JSON.stringify(PACK_MODE === "development"),
+    }),
 ]};
 
 /**
