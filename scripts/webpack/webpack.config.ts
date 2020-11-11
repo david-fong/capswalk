@@ -22,7 +22,7 @@ const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> => { return [
     new webpack.WatchIgnorePlugin({ paths: [
         /\.js$/,
-        /\.d\.ts$/,
+        /\.d\.ts$/, // Importantly, this also covers .css.d.ts files.
     ]}),
 ]};
 
