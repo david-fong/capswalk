@@ -15,8 +15,7 @@ export { OmHooks } from "defs/OmHooks";
 
 const _top = new TopLevel();
 export const top = (() => {
-    const ENV_DEVELOPMENT = true; // TODO.build set this after installing webpack-define
-    return ENV_DEVELOPMENT ? _top : undefined;
+    return (DEF.NodeEnv === "development") ? _top : undefined;
 })();
 
 export function screen(): TopLevel["currentScreen"] {

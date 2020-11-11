@@ -55,19 +55,23 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
         this.socket = gameSocket;
         this._ctorBrowserGame();
 
-        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.MOVEMENT)) throw new Error("never");
+        if (DEF.DevAssert) {
+            // Enforcer: SkSockets calls `offAny` upon socket disconnect.
+            if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.MOVEMENT)
+             || this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.BUBBLE)
+             || this.socket.hasListeners(GameEv.RESET)
+            ) {
+                throw new Error("never");
+            }
+        }
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.MOVEMENT,
             this.executePlayerMoveEvent.bind(this),
         );
-        if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.BUBBLE)) throw new Error("never");
         this.socket.on(
             PlayerActionEvent.EVENT_NAME.BUBBLE,
             this.executePlayerBubbleEvent.bind(this),
         );
-
-        this.socket.off(GameEv.RESET);
-        if (this.socket.hasListeners(GameEv.RESET)) throw new Error("never");
         this.socket.on(
             GameEv.RESET,
             async (ser: Game.ResetSer<S>) => {

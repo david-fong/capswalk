@@ -79,9 +79,11 @@ export namespace JsUtils {
         // prototype properties (without static checking existence).
     ): void {
         propNames.forEach((propName) => {
-            if (!Object.getOwnPropertyNames(ctor.prototype).includes(propName as string)) {
-                const msg = `\`${ctor.name}\` prototype has no property named \"${propName}\"`;
-                throw new TypeError(msg); // Mismatched property name.
+            if (DEF.DevAssert) {
+                if (!Object.getOwnPropertyNames(ctor.prototype).includes(propName as string)) {
+                    const msg = `\`${ctor.name}\` prototype has no property named \"${propName}\"`;
+                    throw new TypeError(msg); // Mismatched property name.
+                }
             }
             Object.defineProperty(ctor.prototype, propName, {
                 enumerable: false,
@@ -111,10 +113,12 @@ export namespace JsUtils {
         inst: T, propNames: TU.RoArr<string>, descriptor: PropertyDescriptor,
     ): void {
         propNames.forEach((propName) => {
-            if (!Object.getOwnPropertyNames(inst).includes(propName as string)) {
-                const msg = `\`${(inst as any).__proto__.constructor.name}\``
-                + ` instance has no property named \"${propName}\"`;
-                throw new TypeError(msg); // Mismatched property name.
+            if (DEF.DevAssert) {
+                if (!Object.getOwnPropertyNames(inst).includes(propName as string)) {
+                    const msg = `\`${(inst as any).__proto__.constructor.name}\``
+                    + ` instance has no property named \"${propName}\"`;
+                    throw new TypeError(msg); // Mismatched property name.
+                }
             }
             Object.defineProperty(inst, propName, descriptor);
         });

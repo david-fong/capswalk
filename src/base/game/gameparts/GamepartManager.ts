@@ -72,9 +72,9 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
             this.lang = new LangConstructor(desc.langWeightExaggeration);
             JsUtils.propNoWrite(this as GamepartManager<G,S>, ["lang"]);
 
-            // TODO.impl Enforce this in the UI code by greying out unusable combos of lang and coord-sys.
             const minLangLeaves = this.grid.static.getAmbiguityThreshold();
-            if (this.lang.numLeaves < minLangLeaves) {
+            if (DEF.DevAssert && this.lang.numLeaves < minLangLeaves) {
+                // Enforced By: UI code, and `GamepartManager.CHECK_VALID_CTOR_ARGS`.
                 throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
                 + ` least ${minLangLeaves} were required. The provided mappings`
                 + ` composing the current Lang-under-construction are not`
@@ -241,7 +241,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
         // NOTE: This assertion must be performed before executing
         // changes by making a supercall or else the previous state
         // will be gone.
-        if (desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
+        if (DEF.DevAssert && desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
             // We literally just specified this in processMoveRequest.
             throw new RangeError("never");
         }
@@ -265,11 +265,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
      * The player specified by the given ID, or undefined if the
      * game is not playing, in which case the event request should
      * be rejected.
-     *
-     * @throws
-     * `RangeError` if the request was made before receiving an
-     * acknowledgement for the previous request, or if the given ID
-     * does not belong to any existing player.
      */
     private managerCheckGamePlayingRequest(desc: PlayerGeneratedRequest): Player<S> | undefined {
         if (this.status !== Game.Status.PLAYING) {
@@ -306,7 +301,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
      */
     public processMoveRequest(desc: PlayerActionEvent.Movement<S>): void {
         const player = this.managerCheckGamePlayingRequest(desc);
-        if (!player) {
+        if (player === undefined) {
             // Reject the request:
             this.executePlayerMoveEvent(desc);
             return;
@@ -405,6 +400,7 @@ export namespace GamepartManager {
      * If cleaning can be appropriately performed, this function will
      * do so. If not, it will indicate invalidities in its return value.
      */
+    // TODO.impl check lang and coord-sys compatibility.
     export function CHECK_VALID_CTOR_ARGS(
         args: TU.NoRo<Game.CtorArgs<Game.Type.SERVER,Coord.System>>,
     ): string[] {

@@ -11,10 +11,10 @@
 
 ### Things I feel like doing
 
+1. Player notifyWillBecomeCurrent requestAnimationFrame is taking too long. Don't use requestAnimationFrame.
 1. Find out how to share game CSS and grid between entry and game chunks.
     - Maybe [this](https://www.npmjs.com/package/mini-css-extract-plugin#extracting-css-based-on-entry) is what I need?
     - Take a look at Tile and Player and possibly putting them into one file?
-1. Use webpack replace plugin to change some assertions and checks to only be done during development.
 
 ### Things that I feel less like doing
 

@@ -13,10 +13,7 @@ import CssMinimizerPlugin   = require("css-minimizer-webpack-plugin");
 type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
 
-/**
- * Externalized definition (for convenience of toggling).
- */
-const PACK_MODE = (process.env.NODE_ENV) as webpack.Configuration["mode"];
+const PACK_MODE = (process.env.NODE_ENV) as ("development" | "production") || "development";
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
 const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> => { return [
@@ -26,8 +23,8 @@ const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> 
     ]}),
     new webpack.DefinePlugin({
         // See [](src/node_modules/@types/snakey-type-utils.dts).
-        //"DEF.DEBUGLOG":  JSON.stringify(PACK_MODE === "development"),
-        "DEF.DEVASSERT": JSON.stringify(PACK_MODE === "development"),
+        "DEF.NodeEnv":   JSON.stringify(PACK_MODE),
+        "DEF.DevAssert": JSON.stringify(PACK_MODE === "development"),
     }),
 ]};
 

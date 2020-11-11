@@ -95,7 +95,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
     public moveTo(dest: Tile<S>): void {
         // Evict self from current `Tile`.
         if (this.hostTile.occupantId !== this.playerId) {
-            if (this.game.gameType !== Game.Type.ONLINE) {
+            if (DEF.DevAssert && this.game.gameType !== Game.Type.ONLINE) {
                 // Should never happen.
                 throw new Error("Linkage between player and occupied tile disagrees.");
             }
@@ -109,9 +109,8 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
         }
         // Occupy the destination `Tile.
         if (dest.isOccupied) {
-            if (this.game.gameType !== Game.Type.ONLINE) {
-                // Should never happen because the Game Manager
-                // rejects requests to move onto an occupied `Tile`.
+            if (DEF.DevAssert && this.game.gameType !== Game.Type.ONLINE) {
+                // Should be enforced by `GamepartManager`
                 throw new Error("Only one player can occupy a tile at a time.");
             }
             /* Otherwise, this is actually possible in a variant of the _DAS_

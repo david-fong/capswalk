@@ -278,7 +278,9 @@ export namespace SkScreen {
         [ Id.SETUP_ONLINE  ]: { prev: Id.GROUP_LOBBY,   href: Id.GROUP_JOINER },
         [ Id.PLAY_ONLINE   ]: { prev: Id.GROUP_LOBBY,   href: Id.GROUP_JOINER },
     });
-    (function assertNavigationTreeIsValid(): void { Object.entries(NavTree).forEach(([id, desc]) => {
+    (function assertNavigationTreeIsValid(): void {
+    if (DEF.DevAssert) Object.entries(NavTree).forEach(([id, desc]) => {
+        // Enforced By: Code author's adherence to spec.
         let prev = id as Id;
         const visited = new Set<Id>();
         do {
@@ -308,7 +310,8 @@ export namespace SkScreen {
             prev      = SkScreen.NavTree[prev].prev;
             if (prev === dest) return SkScreen.NavDir.BACKWARD;
         }
-
+        // This below check is too strong of a spec. I have kept
+        // it just in case it could somehow be useful in the future.
         // if (NavTree[dest].prev !== curr) {
         //     throw new Error(`${dest} is not reachable from ${curr}.`);
         // }

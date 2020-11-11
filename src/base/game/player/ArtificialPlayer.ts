@@ -40,7 +40,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
      */
     protected constructor(game: GamepartManager<any,S>, desc: Player.CtorArgs) {
         super(game, desc);
-        if (game.gameType === Game.Type.ONLINE) {
+        if (DEF.DevAssert && game.gameType === Game.Type.ONLINE) {
             throw new TypeError("OnlineGames should be using regular Players instead.");
         }
     }
@@ -62,6 +62,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
     protected abstract computeNextMovementTimer(): number;
 
     public _notifyGameNowPlaying(): void {
+        super._notifyGameNowPlaying();
         this.delayedMovementContinue();
     }
     public _notifyGameNowPaused(): void {
@@ -129,8 +130,11 @@ export namespace ArtificialPlayer {
         playerDesc: Player._CtorArgs<Player.FamilyArtificial>,
     ): ArtificialPlayer<S> => {
         const familyId = playerDesc.familyId as Player.FamilyArtificial;
-        if (!Object.keys(_Constructors).includes(familyId)) { // TODO.build turn this off for production.
-            throw new RangeError(familyId + " is not a valid artificial player family id.");
+        if (DEF.DevAssert) {
+            // Enforced By: Caller adherence to contract.
+            if (!Object.keys(_Constructors).includes(familyId)) {
+                throw new RangeError(familyId + " is not a valid artificial player family id.");
+            }
         }
         return new (_Constructors[familyId])(game, playerDesc);
     };

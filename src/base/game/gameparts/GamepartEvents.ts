@@ -83,7 +83,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
      * @param desc -
      *
      * @throws
-     * In the given order of priority:
+     * (Only in the development environment) In the given order of priority:
      * - TypeError if the event ID indicates a rejected request
      * - RangeError if it is not a positive integer
      * - Error if another event was already recorded with the same ID.
@@ -91,12 +91,15 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
     private _recordEvent(desc: Readonly<EventRecordEntry>): void {
         const id = desc.eventId;
         const wrappedId = id % Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH;
-        if (id === EventRecordEntry.EVENT_ID_REJECT) {
-            throw new TypeError("Do not try to record events for rejected requests.");
-        } else if (id < 0 || id !== Math.trunc(id)) {
-            throw new RangeError("Event ID's must only be assigned positive, integer values.");
-        } else if (this.eventRecordBitmap[wrappedId]) {
-            throw new Error("Event ID's must be assigned unique values.");
+        if (DEF.DevAssert) {
+            // Enforced By: Checks at internal call sites.
+            if (id === EventRecordEntry.EVENT_ID_REJECT) {
+                throw new TypeError("Do not try to record events for rejected requests.");
+            } else if (id < 0 || id !== Math.trunc(id)) {
+                throw new RangeError("Event ID's must only be assigned positive, integer values.");
+            } else if (this.eventRecordBitmap[wrappedId]) {
+                throw new Error("Event ID's must be assigned unique values.");
+            }
         }
         // TODO.impl Check for an OnlineGame that it is not far behind the Server.
         // also design what should be done to handle that... Do we really need to
@@ -117,7 +120,10 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
         Object.freeze(desc);
         const dest = this.grid.tile.at(desc.coord);
         if (dest.lastKnownUpdateId  >  desc.lastKnownUpdateId) return dest;
-        if (dest.lastKnownUpdateId === desc.lastKnownUpdateId) throw new RangeError("never");
+        if (DEF.DevAssert) {
+            // Enforced By: `GamepartManager.dryRunSpawnFreeHealth`.
+            if (dest.lastKnownUpdateId === desc.lastKnownUpdateId) throw new RangeError("never");
+        }
 
         if (desc.newCharSeqPair) {
             dest.setLangCharSeqPair(desc.newCharSeqPair);
@@ -169,7 +175,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
         if (clientEventLag > 1) {
             // ===== Out of order receipt (clientside) =====
             // Already received more recent request responses.
-            if (player === this.currentOperator) {
+            if (DEF.DevAssert && player === this.currentOperator) {
                 // Operator never receives their own updates out of
                 // order because they only have one unacknowledged
                 // in-flight request at a time.

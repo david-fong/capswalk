@@ -44,7 +44,7 @@ export namespace LangSeqTree {
          * @param chars A collection of unique characters in a written language.
          */
         private _addCharMapping(seq: Lang.Seq, chars: TU.RoArr<WeightedLangChar>): void {
-            if (!(_Lang.Seq.REGEXP.test(seq))) { // TODO.build disable during development
+            if (DEF.DevAssert && !(_Lang.Seq.REGEXP.test(seq))) {
                 // If this errs, and the offending character is one that can
                 // be easily entered on a generic keyboard, don't be afraid
                 // to just add it to the regexp.
@@ -52,7 +52,7 @@ export namespace LangSeqTree {
                 + ` required regular expression \"${_Lang.Seq.REGEXP.source}\".`
                 );
             }
-            if (chars.length === 0) {
+            if (DEF.DevAssert && chars.length === 0) {
                 // Must not make a mapping without written characters.
                 throw new RangeError("never");
             }
@@ -62,7 +62,7 @@ export namespace LangSeqTree {
                     node = childNode;
                 }
             }
-            if ((node as ChildNode).sequence === seq) { // TODO.build disable during development
+            if (DEF.DevAssert && (node as ChildNode).sequence === seq) {
                 // This should never happen.
                 throw new Error(`Mappings for all written-characters with a common`
                 + `corresponding typeable-sequence should be registered together,`
@@ -307,7 +307,7 @@ class WeightedLangChar {
         char: Lang.Char,
         weight: number,
     ) {
-        if (weight <= 0) { // TODO.build disable during development
+        if (DEF.DevAssert && weight <= 0) {
             throw new RangeError(`All weights must be positive, but we`
             + ` were passed the value \"${weight}\" for the character`
             + ` \"${char}\".`);

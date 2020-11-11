@@ -52,7 +52,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
     }
 
     /**
-     * The default implementation does nothing.
+     * Overrides must call super.
      */
     public _notifyGameNowPlaying(): void { }
     /**
@@ -76,11 +76,12 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
      * @throws A previous request is still in flight (unacknowledged).
      */
     protected makeMovementRequest(dest: Tile<S>, type: Player.MoveType): void {
-        if (this.game.status !== Game.Status.PLAYING) {
-            // TODO.build disable this check for production.
-            throw new Error("This is not a necessary precondition, but we're doing it anyway.");
-        } else if (this.requestInFlight) {
-            throw new Error("Only one request should ever be in flight at a time.");
+        if (DEF.DevAssert) {
+            if (this.game.status !== Game.Status.PLAYING) {
+                throw new Error("This is not a necessary precondition, but we're doing it anyway.");
+            } else if (this.requestInFlight) {
+                throw new Error("Only one request should ever be in flight at a time.");
+            }
         }
         this.requestInFlight = true;
         this.game.processMoveRequest(

@@ -7,6 +7,7 @@ import { SkPickOne } from "client/utils/SkPickOne";
 import { JsUtils, OmHooks, StorageHooks, SkScreen } from "../../SkScreen";
 import CSS from "./style.m.css";
 
+// TODO.impl enforce lang and coord-sys compatibility (num leaves)
 
 /**
  * What coordinate systems are available will depend on what language
