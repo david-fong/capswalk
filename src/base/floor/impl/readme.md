@@ -46,15 +46,14 @@ Import your system namespace, and add entries to `Coord` and `Coord.Bare` for th
 
 ## Grid Implementation
 
-**In `SysName.ts`**
+**In `SysName/System.ts`**
 
 ```typescript
 // coord-related imports
 import { JsUtils } from "defs/JsUtils";
 import type { Coord as BaseCoord, Tile } from "../Tile";
-import type { VisibleTile } from "floor/VisibleTile";
 import { Grid as AbstractGrid } from "../Grid";
-import { VisibleGrid, VisibleGridMixin } from "../VisibleGrid";
+type S = BaseCoord.System.SYS_NAME;
 
 // documentation
 export namespace SysName {
@@ -73,10 +72,6 @@ export namespace SysName {
         // constructor
         // abstract method implementations
 
-        // Note: I place the following abstract static methods at the
-        // bottom because they are implementation-heavy and don't
-        // control / describe the behaviour of the implementation at
-        // such a core / logistical level.
         public static getSpawnCoords(
             playerCounts: TU.RoArr<number>,
             bounds: Required<Grid.Dimensions>,
@@ -102,20 +97,32 @@ export namespace SysName {
     Object.freeze(Grid.prototype);
 }
 Object.freeze(SysName);
+```
+
+**In `SysName/Visible.ts`**
+
+```typescript
+import "./style.m.css";
+import { JsUtils } from "defs/JsUtils";
+import type { Coord as BaseCoord } from "floor/Tile";
+import type { VisibleTile } from "floor/VisibleTile";
+import type { Grid as AbstractGrid } from "floor/Grid";
+import { SysName } from "./System";
+import { VisibleGrid, VisibleGridMixin } from "floor/VisibleGrid";
+type S = BaseCoord.System.SYS_NAME;
 
 /**
  */
-// Separated for tree-shaking.
-export class SysNameVisible extends Grid implements VisibleGrid<S> {
+export class SysNameVisibleGrid extends SysName.Grid implements VisibleGrid<S> {
     public constructor(desc: AbstractGrid.CtorArgs<S>) {
         super(desc);
         // Set up DOM fields for rendering the grid.
     }
 }
-export interface SysNameVisible extends VisibleGridMixin<S> { };
-JsUtils.applyMixins(SysNameVisible, [VisibleGridMixin]);
-Object.freeze(SysNameVisible);
-Object.freeze(SysNameVisible.prototype);
+export interface SysNameVisibleGrid extends VisibleGridMixin<S> { };
+JsUtils.applyMixins(SysNameVisibleGrid, [VisibleGridMixin]);
+Object.freeze(SysNameVisibleGrid);
+Object.freeze(SysNameVisibleGrid.prototype);
 ```
 
 **In [`Grid.ts`](../Grid.ts)**

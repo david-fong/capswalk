@@ -14,9 +14,6 @@
 1. Find out how to share game CSS and grid between entry and game chunks.
     - Maybe [this](https://www.npmjs.com/package/mini-css-extract-plugin#extracting-css-based-on-entry) is what I need?
     - Take a look at Tile and Player and possibly putting them into one file?
-1. Use CSS Modules
-    - update documentation on implementing Coordinate systems
-      - file naming, separate file Visible.ts
 1. Disable colour schemes when media is print.
     - See [javascript media queries API](https://www.w3schools.com/jsref/met_win_matchmedia.asp).
     - Just make a high-specificity rule in `assets/style/snakey.css`.
