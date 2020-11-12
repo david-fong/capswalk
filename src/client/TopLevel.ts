@@ -84,6 +84,10 @@ export class TopLevel {
         // TODO.impl
         console.info(message);
     }
+    public confirm(message: string): boolean {
+        // TODO.impl
+        return window.confirm(message);
+    }
 
     /**
      * For debugging purposes- especially in the browser console.

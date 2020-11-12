@@ -72,7 +72,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
         this.operators = Object.freeze(
             this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[]
         );
-        this.setCurrentOperator(0);
         {
             const teams: Array<Array<Player<S>>> = [];
             this.players.forEach((player) => {
@@ -97,6 +96,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
             "players", "operators", "teams", "_playerStatusCtor",
         ]);
         this.players.forEach((player) => player._afterAllPlayersConstruction());
+        this.setCurrentOperator(0);
     }
 
     /**

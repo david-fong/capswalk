@@ -87,6 +87,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
         this.nav.next.classList.add(OMHC.NAV_NEXT);
         this.nav.prev.textContent = "Back";
         this.nav.next.textContent = "Next";
+
         // @ts-expect-error : RO=
         this.nav.prev.onclick = (ev) => {
             const tree = SkScreen.NavTree;
@@ -222,8 +223,6 @@ export namespace SkScreen {
     }
     Object.freeze(Id);
 
-    export const enum HistoryEntryId {
-    }
     export interface AllSkScreensDict {
         [ Id.HOME          ]: HomeScreen;
         [ Id.HOW_TO_PLAY   ]: HowToPlayScreen;

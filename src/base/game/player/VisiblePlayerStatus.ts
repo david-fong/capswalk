@@ -78,12 +78,6 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
     public _notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
         const currOperator = this.player.game.currentOperator;
         const nextOperator = this.player as OperatorPlayer<S>;
-        requestAnimationFrame((time) => {
-            spotlightElems.forEach((elem) => {
-                this.#baseElem.appendChild(elem);
-            });
-            nextOperator.status.immigrantInfo.playerElem.scrollIntoView(SCROLL_INTO_CENTER);
-        });
         if (nextOperator.teamId !== currOperator?.teamId) {
             // Must use the above nullish coalesce operator for first call to setCurrentOperator.
             nextOperator.game.players.forEach((otherPlayer) => {
@@ -94,6 +88,10 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
                 ;
             });
         }
+        spotlightElems.forEach((elem) => {
+            this.#baseElem.appendChild(elem);
+        });
+        nextOperator.status.immigrantInfo.playerElem.scrollIntoView(SCROLL_INTO_CENTER);
     }
 
     public visualBell(): void {

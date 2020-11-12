@@ -177,7 +177,7 @@ export abstract class _PlayScreen<
      * @override
      */
     protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
-        if (this.askConfirmBeforeLeave && !window.confirm("Are you sure you would like to leave?")) {
+        if (this.askConfirmBeforeLeave && !this.top.confirm("Are you sure you would like to leave?")) {
             return false;
         }
         document.removeEventListener("visibilitychange", this.#onVisibilityChange);
@@ -273,9 +273,7 @@ export abstract class _PlayScreen<
         this.pauseButton.onclick = this._requestStatusBecomePaused.bind(this);
         this.resetButton.disabled = true;
 
-        window.requestAnimationFrame((time) => {
-            this._gridBaseElem.focus();
-        });
+        this._gridBaseElem.focus();
     }
 
     protected _statusBecomePaused(): void {
@@ -334,17 +332,13 @@ export abstract class _PlayScreen<
             button.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
             button.textContent = buttonText;
             button.addEventListener("pointerenter", (ev) => {
-                window.requestAnimationFrame((time) => {
-                    button!.focus();
-                });
+                button!.focus();
             });
             controlsBar.appendChild(button);
             return button as HTMLButtonElement;
         }
         controlsBar.addEventListener("pointerleave", (ev) => {
-            window.requestAnimationFrame((time) => {
-                this._gridBaseElem.focus();
-            });
+            this._gridBaseElem.focus();
         });
 
         { const bth = createControlButton("<Back Button Text>", this.nav.prev);
