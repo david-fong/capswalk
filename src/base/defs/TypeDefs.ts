@@ -1,3 +1,5 @@
+import LangDescs from "./LangDefs";
+import type { Info as LangInfo } from "./LangDefs";
 
 export const SCROLL_INTO_CENTER = Object.freeze(<const>{
     behavior: "smooth",
@@ -150,121 +152,18 @@ export namespace Lang {
     export const CHAR_HIT_COUNT_SEED_CEILING = 5;
 
     /**
-     *
-     * This can be used, for example, for basic practical purposes like
-     * changing all letters to lowercase for the English language, or for
-     * more interesting things like mapping halves of the keyboard to a
-     * binary-like value like the dots and dashes in morse, or zeros and
-     * ones in binary. It could even be used for some crazy challenges like
-     * remapping the alphabet by barrel-shifting it so that pressing "a"
-     * produces "b", and "b" produces "c", and so on.
-     *
-     * The output should either equal the input (in cases that the input
-     * is already relevant to the `Lang` at hand and is intended to be
-     * taken as-is (ex. typing "a" produces / corresponds to "a" in
-     * regular English), or in cases where the input is completely
-     * irrelevant before and after remapping), or be a translation to
-     * some character that is relevant to the `Lang` and hand, and that
-     * matches against {@link SEQ_REGEXP}. This behaviour is mandated
-     * by {@link OperatorPlayer#seqBufferAcceptKey}.
-     *
-     * @param input -
-     * @returns
      */
-    export const _RemapTemplates = Object.freeze(<const>{
-        IDENTITY: (input: string): string => input,
-        TO_LOWER: (input: string): string => input.toLowerCase(),
-    });
-    _RemapTemplates as Readonly<Record<string, {(input: string): string}>>;
-
-    /**
-     *
-     */
-    export const FrontendDescs = Object.freeze([
-       <const>{
-        id: "engl-low",
-        module: "English", export: "Lowercase", numLeaves: 26,
-        remapFunc: _RemapTemplates.TO_LOWER,
-        displayName: "English Lowercase (qwerty)",
-        blurb: "",
-    },<const>{
-        id: "engl-mix",
-        module: "English", export: "MixedCase", numLeaves: 52,
-        remapFunc: _RemapTemplates.IDENTITY,
-        displayName: "English Mixed-Case (Querty)",
-        blurb: "",
-    }, <const>{
-        id: "japn-hir",
-        module: "Japanese", export: "Hiragana", numLeaves: 71,
-        remapFunc: _RemapTemplates.TO_LOWER,
-        displayName: "Japanese Hiragana",
-        blurb: "",
-    }, <const>{
-        id: "japn-kat",
-        module: "Japanese", export: "Katakana", numLeaves: 70,
-        remapFunc: _RemapTemplates.TO_LOWER,
-        displayName: "Japanese Katakana",
-        blurb: "",
-    }, <const>{
-        id: "kore-dub",
-        module: "Korean", export: "Dubeolsik", numLeaves: 9177,
-        remapFunc: _RemapTemplates.IDENTITY,
-        displayName: "Korean Dubeolsik (두벌식 키보드)",
-        blurb: "The most common keyboard layout, and South Korea's only Hangul"
-        + " standard since 1969. Consonants are on the left, and vowels on"
-        + " the right.",
-    }, <const>{
-        id: "kore-sub",
-        module: "Korean", export: "Sebeolsik", numLeaves: 10206,
-        remapFunc: _RemapTemplates.IDENTITY,
-        displayName: "Korean Sebeolsik (세벌식 최종 키보드)",
-        blurb: "Another Hangul keyboard layout used in South Korea, and the"
-        + " final Sebeolsik layout designed by Dr. Kong Byung Woo, hence"
-        + " the name. Syllable-initial consonants are on the right, final"
-        + " consonants on the left, and vowels in the middle. It is more"
-        + " ergonomic than the dubeolsik, but not widely used.",
-    },<const>{
-        id: "kore-rom",
-        module: "Korean", export: "Romanization", numLeaves: 3990,
-        remapFunc: _RemapTemplates.TO_LOWER,
-        displayName: "Korean Revised Romanization",
-        blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
-        + " 表記法) is the official South Korean language romanization system. It"
-        + " was developed by the National Academy of the Korean Language from 1995,"
-        + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
-        + " and Tourism",
-    },
-    <const>{
-        id: "engl-cell-enc",
-        module: "English", export: "OldCellphone.Encode", numLeaves: 8,
-        remapFunc: _RemapTemplates.IDENTITY,
-        displayName: "Old Cellphone Keyboard",
-        blurb: "",
-    },
-    ].map((desc) => Object.freeze(desc)));
-    FrontendDescs as TU.RoArr<FrontendDesc>;
+    export const FrontendDescs = LangDescs as Record<FrontendDesc["id"], FrontendDesc>;
 
     export type FrontendDesc = Readonly<{
-        id:         typeof FrontendDescs[number]["id"];
-        /**
-         * Pretty much a file name.
-         */
-        module:     string;
-        /**
-         * A property-access chain.
-         */
-        export:     string;
-        remapFunc:  {(input: string): string};
-        numLeaves:  number;
-        displayName:string;
-        blurb:      string;
-    }>;
+        id: keyof typeof LangDescs;
+    } & LangInfo>;
 
     /**
      * @returns `undefined` if no such language descriptor is found.
      */
     export function GET_FRONTEND_DESC_BY_ID(langId: FrontendDesc["id"]): FrontendDesc | undefined {
-        return FrontendDescs.find((desc) => desc.id === langId);
+        return FrontendDescs[langId];
     }
 }
 Object.freeze(Lang);

@@ -11,7 +11,7 @@
 
 ### Things I feel like doing
 
-1. Player notifyWillBecomeCurrent requestAnimationFrame is taking too long. Don't use requestAnimationFrame.
+1. Take a look at [compression-webpack-plugin](https://webpack.js.org/plugins/compression-webpack-plugin/#using-brotli).
 1. Find out how to share game CSS and grid between entry and game chunks.
     - Maybe [this](https://www.npmjs.com/package/mini-css-extract-plugin#extracting-css-based-on-entry) is what I need?
     - Take a look at Tile and Player and possibly putting them into one file?
@@ -60,6 +60,9 @@
   - Note: The Intersection Observer API will not work here- it doesn't trigger on re-parenting the target node.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
+- Take a look at HTML WebPack Plugins:
+  - html-webpack-tags-plugin
+  - resource-hints-webpack-plugin
 - Improve onboarding experience for new contributors:
   - git hook for push: if branch is `dist`, check that `dist/package.json` has changed.
 - If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.

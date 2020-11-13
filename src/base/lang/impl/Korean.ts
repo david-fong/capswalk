@@ -1,4 +1,4 @@
-import { Lang } from "lang/Lang";
+import { Lang } from "../Lang";
 
 
 /**
@@ -32,13 +32,10 @@ export namespace Korean {
         public constructor(weightScaling: number) {
             super(
                 "kore-dub",
-                INITIALIZE(((ij, mj, fj) => {
-                    const atoms = [ij, mj, fj].flatMap((jamos) => {
-                        return (jamos.value in Dubeolsik.DUB_KEYBOARD)
-                            ? [jamos.value] : jamos.atoms.split("");
-                    }) as Array<keyof typeof Dubeolsik.DUB_KEYBOARD>;
+                INITIALIZE((ij, mj, fj) => {
+                    const atoms = [ij, mj, fj].flatMap((jamos) => jamos.atoms.split("")) as Array<keyof typeof Dubeolsik.DUB_KEYBOARD>;
                     return atoms.map((atom) => Dubeolsik.DUB_KEYBOARD[atom]).join("");
-                }) as SeqBuilder),
+                }),
                 weightScaling,
             );
         }
@@ -96,11 +93,11 @@ export namespace Korean {
 
         public constructor(weightScaling: number) { super(
             "kore-sub",
-            INITIALIZE(((ij, mj, fj) => {
+            INITIALIZE((ij, mj, fj) => {
                 return Sebeolsik.SEB_KEYBOARD.INITIALS[ij.value]
                     + Sebeolsik.SEB_KEYBOARD.MEDIALS[mj.value]
                     + Sebeolsik.SEB_KEYBOARD.FINALS[fj.value];
-            }) as SeqBuilder),
+            }),
             weightScaling,
         ); }
     }
@@ -114,13 +111,14 @@ export namespace Korean {
      *
      * https://wikipedia.org/wiki/Revised_Romanization_of_Korean#Transcription_rules
      * https://wikipedia.org/wiki/Romanization_of_Korean#Systems
+     * https://www.korean.go.kr/front_eng/roman/roman_01.do
      */
     export class Romanization extends Lang {
         public constructor(weightScaling: number) { super(
             "kore-rom",
-            INITIALIZE(((ij, mj, fj) => {
+            INITIALIZE((ij, mj, fj) => {
                 return ij.roman + mj.roman + fj.roman;
-            }) as SeqBuilder),
+            }),
             weightScaling,
         ); }
     }

@@ -66,7 +66,7 @@ export abstract class Lang extends _Lang {
             "frontendDesc", "treeMap", "leafNodes",
         ]);
 
-        if (this.leafNodes.length !== this.frontendDesc.numLeaves) {
+        if (DEF.DevAssert && this.leafNodes.length !== this.frontendDesc.numLeaves) {
             throw new Error(`maintenance required: the frontend constant`
             + ` for the language \"${this.frontendDesc.id}\" needs to`
             + ` be updated to the correct, computed value, which is`

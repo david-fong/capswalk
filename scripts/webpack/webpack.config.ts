@@ -143,7 +143,7 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
  * ## Web Bundles
  */
 const CLIENT_CONFIG = __BaseConfig("client"); {
-    const config  = Object.assign(CLIENT_CONFIG, {
+    const config  = Object.assign(CLIENT_CONFIG, <Partial<webpack.Configuration>>{
         target: "web",
         entry: {["index"]: `./src/client/index.ts`},
         externals: [nodeExternals({

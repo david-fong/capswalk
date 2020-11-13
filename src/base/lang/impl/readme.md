@@ -4,6 +4,7 @@
 Each implementation must:
 
 - Go under the [`./impl/`](./impl/) folder.
+- Declare a single namespace with the same name as the file.
 - Implement the [`Lang` and `Lang.ClassIf`](./Lang.ts) interfaces.
 - Assert its own class literal as a [`Lang.ClassIf`](./Lang.ts) instance.
 - Register their filename (without the extension) and exports in the [`Lang.FrontendDescs`](../../defs/TypeDefs.ts) array for dynamic importing.

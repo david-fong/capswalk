@@ -1,4 +1,4 @@
-import { Lang } from "lang/Lang";
+import { Lang } from "../Lang";
 
 
 /**
@@ -12,7 +12,6 @@ export namespace English {
      * https://wikipedia.org/wiki/Keyboard_layout#QWERTY
      */
     export class Lowercase extends Lang {
-
         // TODO.learn see https://wikipedia.org/wiki/Keyboard_layout#Dvorak
         // and https://wikipedia.org/wiki/Keyboard_layout#Colemak
         public constructor(weightScaling: number) { super(
@@ -108,5 +107,90 @@ export namespace English {
         u: 2.758, v: 0.978, w: 2.560, x: 0.150,
         y: 1.994, z: 0.077,
     });
+    const LETTER_FREQUENCY_EXT = Object.freeze(Object.assign(
+        (() => {
+            const freq: Record<string, number> = {
+                ".": 65.3, ",": 61.3, "\"": 26.7, "'": 24.3, "-": 15.3,
+                "?": 5.6, ":": 3.4, "!": 3.3, ";": 3.2,
+            };
+            for (let i = 0; i < 10; i++) {
+                freq[i.toString()] = 10; // TODO.learn what's a good value to use here?
+            }
+            let sum = 0;
+            for (const key in freq) {
+                sum += freq[key as keyof typeof freq];
+            }
+            for (const key in freq) {
+                freq[key as keyof typeof freq] *= 8 / sum;
+                // ^ above constant: 8 is between the 3rd and 4th top
+                // frequencies of alphabet letters in LETTER_FREQUENCY.
+            }
+            return freq;
+        })(),
+        LETTER_FREQUENCY,
+    ));
+    export const Morse = _Morse;
 }
 Object.freeze(English);
+
+/**
+ */
+export namespace _Morse {
+    /**
+     * You see letters and numbers and you type sequences of dots and dashes.
+     */
+    export class Encode extends Lang {
+        public constructor(weightScaling: number) { super(
+            "mors-enc", undefined!, weightScaling,
+        ); }
+    }
+    Encode as Lang.ClassIf;
+    Object.freeze(Encode);
+    Object.freeze(Encode.prototype);
+
+
+    /**
+     * You see dots and dashes and you type alphanumeric characters.
+     */
+    export class Decode extends Lang {
+        public constructor(weightScaling: number) { super(
+            "mors-enc", undefined!, weightScaling,
+        ); }
+    }
+    Decode as Lang.ClassIf;
+    Object.freeze(Decode);
+    Object.freeze(Decode.prototype);
+
+    // Also see https://en.wikipedia.org/wiki/Prosigns_for_Morse_code
+    export const Dict = Object.freeze(<const>{
+        "0": "-----", "5": ".....",
+        "1": ".----", "6": "-....",
+        "2": "..---", "7": "--...",
+        "3": "...--", "8": "---..",
+        "4": "....-", "9": "----.",
+        // =======================,
+        "a": ".-"   , "n": "-."   ,
+        "b": "-..." , "o": "---"  ,
+        "c": "-.-." , "p": ".--." ,
+        "d": "-.."  , "q": "--.-" ,
+        "e": "."    , "r": ".-."  ,
+        "f": "..-." , "s": "..."  ,
+        "g": "--."  , "t": "-"    ,
+        "h": "...." , "u": "..-"  ,
+        "i": ".."   , "v": "...-" ,
+        "j": ".---" , "w": ".--"  ,
+        "k": "-.-"  , "x": "-..-" ,
+        "l": ".-.." , "y": "-.--" ,
+        "m": "--"   , "z": "--.." ,
+        // =======================,
+        ".": ".-.-.-",
+        ",": "--..--",
+        "?": "..--..",
+        "!": "-.-.--",
+        "-": "-....-",
+        // "/": "-..-.",
+        // "@": ".--.-.",
+        // "(": "-.--.",
+        // ")": "-.--.-"
+    });
+}
