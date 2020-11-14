@@ -165,7 +165,7 @@ export namespace Korean {
                     const char = String.fromCharCode(UNICODE_HANGUL_SYLLABLES_BASE + offset);
                     forwardDict[char] = {
                         seq: seqBuilder(initialJamo, medialJamo, finalJamo),
-                        weight: WEIGHTS[char] || 1,
+                        weight: initialJamo.freq * medialJamo.freq * finalJamo.freq,
                         // TODO.impl remove the above fallback once weights dict gets implemented.
                         //   Also then fix the internal `averageWeight` argument in each implementation.
                     };
@@ -268,13 +268,5 @@ export namespace Korean {
         { value: "ㅎ", atoms: "ㅎ",   roman: "t" , freq: 0.002595 },
     ]);
     FINALS as TU.RoArr<JamoDesc>; // type-check
-
-    /**
-     *
-     */
-    // TODO.learn Korean jamo frequency. This should probably go in its own json file.
-    const WEIGHTS = Object.freeze({
-        "": 1,
-    }) as Record<string, number>;
 }
 Object.freeze(Korean);

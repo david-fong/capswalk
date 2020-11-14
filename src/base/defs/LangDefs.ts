@@ -73,7 +73,7 @@ const Descs = <const>{
         blurb: "",
     },
     "kore-dub": <Info>{
-        module: "Korean", export: "Dubeolsik", numLeaves: 9177,
+        module: "Korean", export: "Dubeolsik", numLeaves: 8778,
         remapFunc: REMAP.IDENT,
         displayName: "Korean Dubeolsik (두벌식 키보드)",
         blurb: "The most common keyboard layout, and South Korea's only Hangul"
