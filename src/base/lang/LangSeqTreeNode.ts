@@ -120,9 +120,12 @@ export namespace LangSeqTree {
             // Add mappings in ascending order of sequence length:
             // (this is so that no merging of branches needs to be done)
             const rootNode = new ParentNode();
-            for (const args of Array.from(reverseDict)
+            for (const args of Array
+                .from(reverseDict)
                 .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
-            ) rootNode._addCharMapping(...args);
+            ) {
+                rootNode._addCharMapping(...args);
+            }
             rootNode._finalize();
             return rootNode;
         }

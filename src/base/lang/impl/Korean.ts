@@ -4,6 +4,14 @@ import { Lang } from "../Lang";
 /**
  * # Korean
  *
+ * [Frequency data](https://www.koreascience.or.kr/article/JAKO201514751644957.page).
+ * Another paper (that I didn't use): https://www.koreascience.or.kr/article/JAKO201507158233900.page
+ *
+ * I have normalized jamo frequency values to an average value of one.
+ * In the above data sources there is no data for when a character has
+ * no final jamo. I looked at [this](https://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/Korean_5800)
+ * to make an estimate for that value.
+ *
  * https://wikipedia.org/wiki/Hangul_consonant_and_vowel_tables#Hangul_syllables
  * https://wikipedia.org/wiki/Korean_language_and_computers#Hangul_in_Unicode
  * https://wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)
@@ -176,25 +184,25 @@ export namespace Korean {
      * # Initial Jamo (Choseong)
      */
     const INITIALS = Object.freeze(<const>[
-        { value: "ㄱ", atoms: "ㄱ",   roman: "g"  },
-        { value: "ㄲ", atoms: "ㄱㄱ", roman: "kk" },
-        { value: "ㄴ", atoms: "ㄴ",   roman: "n"  },
-        { value: "ㄷ", atoms: "ㄷ",   roman: "d"  },
-        { value: "ㄸ", atoms: "ㄷㄷ", roman: "tt" },
-        { value: "ㄹ", atoms: "ㄹ",   roman: "r"  },
-        { value: "ㅁ", atoms: "ㅁ",   roman: "m"  },
-        { value: "ㅂ", atoms: "ㅂ",   roman: "b"  },
-        { value: "ㅃ", atoms: "ㅂㅂ", roman: "pp" },
-        { value: "ㅅ", atoms: "ㅅ",   roman: "s"  },
-        { value: "ㅆ", atoms: "ㅅㅅ", roman: "ss" },
-        { value: "ㅇ", atoms: "ㅇ",   roman: "-"  }, // TODO.learn "-" ? see wikipedia
-        { value: "ㅈ", atoms: "ㅈ",   roman: "j"  },
-        { value: "ㅉ", atoms: "ㅈㅈ", roman: "jj" },
-        { value: "ㅊ", atoms: "ㅊ",   roman: "ch" },
-        { value: "ㅋ", atoms: "ㅋ",   roman: "k"  },
-        { value: "ㅌ", atoms: "ㅌ",   roman: "t"  },
-        { value: "ㅍ", atoms: "ㅍ",   roman: "p"  },
-        { value: "ㅎ", atoms: "ㅎ",   roman: "h"  },
+        { value: "ㄱ", atoms: "ㄱ",   roman: "g" , freq: 2.508206 },
+        { value: "ㄲ", atoms: "ㄱㄱ", roman: "kk", freq: 0.139215 },
+        { value: "ㄴ", atoms: "ㄴ",   roman: "n" , freq: 1.278464 },
+        { value: "ㄷ", atoms: "ㄷ",   roman: "d" , freq: 1.715174 },
+        { value: "ㄸ", atoms: "ㄷㄷ", roman: "tt", freq: 0.155508 },
+        { value: "ㄹ", atoms: "ㄹ",   roman: "r" , freq: 1.306990 },
+        { value: "ㅁ", atoms: "ㅁ",   roman: "m" , freq: 0.920276 },
+        { value: "ㅂ", atoms: "ㅂ",   roman: "b" , freq: 0.768992 },
+        { value: "ㅃ", atoms: "ㅂㅂ", roman: "pp", freq: 0.034349 },
+        { value: "ㅅ", atoms: "ㅅ",   roman: "s" , freq: 1.620272 },
+        { value: "ㅆ", atoms: "ㅅㅅ", roman: "ss", freq: 0.062508 },
+        { value: "ㅇ", atoms: "ㅇ",   roman: "-" , freq: 4.509884 }, // TODO.learn "-" ? see wikipedia
+        { value: "ㅈ", atoms: "ㅈ",   roman: "j" , freq: 1.603205 },
+        { value: "ㅉ", atoms: "ㅈㅈ", roman: "jj", freq: 0.043767 },
+        { value: "ㅊ", atoms: "ㅊ",   roman: "ch", freq: 0.428943 },
+        { value: "ㅋ", atoms: "ㅋ",   roman: "k" , freq: 0.103017 },
+        { value: "ㅌ", atoms: "ㅌ",   roman: "t" , freq: 0.228492 },
+        { value: "ㅍ", atoms: "ㅍ",   roman: "p" , freq: 0.212015 },
+        { value: "ㅎ", atoms: "ㅎ",   roman: "h" , freq: 1.360725 },
     ]);
     INITIALS as TU.RoArr<JamoDesc>; // type-check
 
@@ -202,27 +210,27 @@ export namespace Korean {
      * # Medial Jamo (Jungseong)
      */
     const MEDIALS = Object.freeze(<const>[
-        { value: "ㅏ", atoms: "ㅏ",   roman: "a"  },
-        { value: "ㅐ", atoms: "ㅐ",   roman: "ae" },
-        { value: "ㅑ", atoms: "ㅑ",   roman: "ya" },
-        { value: "ㅒ", atoms: "ㅒ",   roman: "yae"},
-        { value: "ㅓ", atoms: "ㅓ",   roman: "eo" },
-        { value: "ㅔ", atoms: "ㅔ",   roman: "e"  },
-        { value: "ㅕ", atoms: "ㅕ",   roman: "yeo"},
-        { value: "ㅖ", atoms: "ㅖ",   roman: "ye" },
-        { value: "ㅗ", atoms: "ㅗ",   roman: "o"  },
-        { value: "ㅘ", atoms: "ㅗㅏ", roman: "wa" },
-        { value: "ㅙ", atoms: "ㅗㅐ", roman: "wae"},
-        { value: "ㅚ", atoms: "ㅗㅣ", roman: "oe" },
-        { value: "ㅛ", atoms: "ㅛ",   roman: "yo" },
-        { value: "ㅜ", atoms: "ㅜ",   roman: "u"  },
-        { value: "ㅝ", atoms: "ㅜㅓ", roman: "wo" },
-        { value: "ㅞ", atoms: "ㅜㅔ", roman: "we" },
-        { value: "ㅟ", atoms: "ㅜㅣ", roman: "wi" },
-        { value: "ㅠ", atoms: "ㅠ",   roman: "yu" },
-        { value: "ㅡ", atoms: "ㅡ",   roman: "eu" },
-        { value: "ㅢ", atoms: "ㅡㅣ", roman: "ui" },
-        { value: "ㅣ", atoms: "ㅣ",   roman: "i"  },
+        { value: "ㅏ", atoms: "ㅏ",   roman: "a"  , freq: 4.559484 },
+        { value: "ㅐ", atoms: "ㅐ",   roman: "ae" , freq: 0.970054 },
+        { value: "ㅑ", atoms: "ㅑ",   roman: "ya" , freq: 0.150865 },
+        { value: "ㅒ", atoms: "ㅒ",   roman: "yae", freq: 0.008922 },
+        { value: "ㅓ", atoms: "ㅓ",   roman: "eo" , freq: 2.231959 },
+        { value: "ㅔ", atoms: "ㅔ",   roman: "e"  , freq: 0.932004 },
+        { value: "ㅕ", atoms: "ㅕ",   roman: "yeo", freq: 1.000171 },
+        { value: "ㅖ", atoms: "ㅖ",   roman: "ye" , freq: 0.105095 },
+        { value: "ㅗ", atoms: "ㅗ",   roman: "o"  , freq: 2.040807 },
+        { value: "ㅘ", atoms: "ㅗㅏ", roman: "wa" , freq: 0.385060 },
+        { value: "ㅙ", atoms: "ㅗㅐ", roman: "wae", freq: 0.026550 },
+        { value: "ㅚ", atoms: "ㅗㅣ", roman: "oe" , freq: 0.236245 },
+        { value: "ㅛ", atoms: "ㅛ",   roman: "yo" , freq: 0.223892 },
+        { value: "ㅜ", atoms: "ㅜ",   roman: "u"  , freq: 1.402448 },
+        { value: "ㅝ", atoms: "ㅜㅓ", roman: "wo" , freq: 0.135821 },
+        { value: "ㅞ", atoms: "ㅜㅔ", roman: "we" , freq: 0.004818 },
+        { value: "ㅟ", atoms: "ㅜㅣ", roman: "wi" , freq: 0.112462 },
+        { value: "ㅠ", atoms: "ㅠ",   roman: "yu" , freq: 0.111584 },
+        { value: "ㅡ", atoms: "ㅡ",   roman: "eu" , freq: 2.727101 },
+        { value: "ㅢ", atoms: "ㅡㅣ", roman: "ui" , freq: 0.425688 },
+        { value: "ㅣ", atoms: "ㅣ",   roman: "i"  , freq: 3.208973 },
     ]);
     MEDIALS as TU.RoArr<JamoDesc>; // type-check
 
@@ -230,34 +238,34 @@ export namespace Korean {
      * # Final Jamo (Jongseong)
      */
     const FINALS = Object.freeze(<const>[
-        { value: "",   atoms: "",     roman: ""   },
-        { value: "ㄱ", atoms: "ㄱ",   roman: "k"  },
-        { value: "ㄲ", atoms: "ㄱㄱ", roman: "k"  },
-        { value: "ㄳ", atoms: "ㄱㅅ", roman: "kt" },
-        { value: "ㄴ", atoms: "ㄴ",   roman: "n"  },
-        { value: "ㄵ", atoms: "ㄴㅈ", roman: "nt" },
-        { value: "ㄶ", atoms: "ㄴㅎ", roman: "nt" },
-        { value: "ㄷ", atoms: "ㄷ",   roman: "t"  },
-        { value: "ㄹ", atoms: "ㄹ",   roman: "l"  },
-        { value: "ㄺ", atoms: "ㄹㄱ", roman: "lk" },
-        { value: "ㄻ", atoms: "ㄹㅁ", roman: "lm" },
-        { value: "ㄼ", atoms: "ㄹㅂ", roman: "lp" },
-        { value: "ㄽ", atoms: "ㄹㅅ", roman: "lt" },
-        { value: "ㄾ", atoms: "ㄹㅌ", roman: "lt" },
-        { value: "ㄿ", atoms: "ㄹㅍ", roman: "lp" },
-        { value: "ㅀ", atoms: "ㄹㅎ", roman: "lt" },
-        { value: "ㅁ", atoms: "ㅁ",   roman: "m"  },
-        { value: "ㅂ", atoms: "ㅂ",   roman: "p"  },
-        { value: "ㅄ", atoms: "ㅂㅅ", roman: "pt" },
-        { value: "ㅅ", atoms: "ㅅ",   roman: "t"  },
-        { value: "ㅆ", atoms: "ㅅㅅ", roman: "t"  },
-        { value: "ㅇ", atoms: "ㅇ",   roman: "ng" },
-        { value: "ㅈ", atoms: "ㅈ",   roman: "t"  },
-        { value: "ㅊ", atoms: "ㅊ",   roman: "t"  },
-        { value: "ㅋ", atoms: "ㅋ",   roman: "k"  },
-        { value: "ㅌ", atoms: "ㅌ",   roman: "t"  },
-        { value: "ㅍ", atoms: "ㅍ",   roman: "p"  },
-        { value: "ㅎ", atoms: "ㅎ",   roman: "t"  },
+        { value: "",   atoms: "",     roman: "" , freq: 17.061190 },
+        { value: "ㄱ", atoms: "ㄱ",   roman: "k" , freq: 1.109483 },
+        { value: "ㄲ", atoms: "ㄱㄱ", roman: "k" , freq: 0.016359 },
+        { value: "ㄳ", atoms: "ㄱㅅ", roman: "kt", freq: 0.000962 },
+        { value: "ㄴ", atoms: "ㄴ",   roman: "n" , freq: 3.580456 },
+        { value: "ㄵ", atoms: "ㄴㅈ", roman: "nt", freq: 0.007522 },
+        { value: "ㄶ", atoms: "ㄴㅎ", roman: "nt", freq: 0.081892 },
+        { value: "ㄷ", atoms: "ㄷ",   roman: "t" , freq: 0.049969 },
+        { value: "ㄹ", atoms: "ㄹ",   roman: "l" , freq: 2.094454 },
+        { value: "ㄺ", atoms: "ㄹㄱ", roman: "lk", freq: 0.019761 },
+        { value: "ㄻ", atoms: "ㄹㅁ", roman: "lm", freq: 0.011711 },
+        { value: "ㄼ", atoms: "ㄹㅂ", roman: "lp", freq: 0.005885 },
+        { value: "ㄽ", atoms: "ㄹㅅ", roman: "lt", freq: 0.000013 },
+        { value: "ㄾ", atoms: "ㄹㅌ", roman: "lt", freq: 0.000353 },
+        { value: "ㄿ", atoms: "ㄹㅍ", roman: "lp", freq: 0.000210 },
+        { value: "ㅀ", atoms: "ㄹㅎ", roman: "lt", freq: 0.008150 },
+        { value: "ㅁ", atoms: "ㅁ",   roman: "m" , freq: 0.697015 },
+        { value: "ㅂ", atoms: "ㅂ",   roman: "p" , freq: 0.360526 },
+        { value: "ㅄ", atoms: "ㅂㅅ", roman: "pt", freq: 0.069739 },
+        { value: "ㅅ", atoms: "ㅅ",   roman: "t" , freq: 0.308934 },
+        { value: "ㅆ", atoms: "ㅅㅅ", roman: "t" , freq: 0.590913 },
+        { value: "ㅇ", atoms: "ㅇ",   roman: "ng", freq: 1.663950 },
+        { value: "ㅈ", atoms: "ㅈ",   roman: "t" , freq: 0.046297 },
+        { value: "ㅊ", atoms: "ㅊ",   roman: "t" , freq: 0.026808 },
+        { value: "ㅋ", atoms: "ㅋ",   roman: "k" , freq: 0.000814 },
+        { value: "ㅌ", atoms: "ㅌ",   roman: "t" , freq: 0.068318 },
+        { value: "ㅍ", atoms: "ㅍ",   roman: "p" , freq: 0.045664 },
+        { value: "ㅎ", atoms: "ㅎ",   roman: "t" , freq: 0.002595 },
     ]);
     FINALS as TU.RoArr<JamoDesc>; // type-check
 

@@ -1,5 +1,9 @@
 
-
+/**
+ * ```sh
+ * >_
+ * ```
+ */
 export namespace Shell {
     export const UnixAndShell = Object.freeze(<const>[
         // "uname", "users", "whoami", "df", "du", "uptime",

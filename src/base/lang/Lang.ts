@@ -189,6 +189,12 @@ export namespace Lang {
     export interface ClassIf {
         new (weightScaling: Lang.WeightExaggeration): Lang;
     };
+    /**
+     * Utility functions for implementations to use in their static
+     * `.BUILD` function.
+     */
+    export namespace BUILD {
+    }
 
     /**
      * An atomic unit in a written language that constitutes a single

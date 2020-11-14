@@ -34,7 +34,7 @@
         "sysname",
         "typeable",
         "unts",
-        "engl", "japn", "kore",
+        "engl", "japn", "kore", "jamo",
         "smoothstone",
 
         // Programming terminology:
