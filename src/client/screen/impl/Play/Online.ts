@@ -1,4 +1,4 @@
-import type { Socket } from "socket.io-client/build/socket";
+import type { Socket } from "socket.io-client";
 import type { OnlineGame } from "client/game/OnlineGame";
 
 import { GameEv } from "defs/OnlineDefs";

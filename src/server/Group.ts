@@ -19,7 +19,7 @@ export { ServerGame };
  */
 export class Group extends _Group {
 
-    public readonly namespace: io.Socket["nsp"];
+    public readonly namespace: io.Namespace;
     public readonly name: Group.Name;
     public readonly passphrase: Group.Passphrase;
     #currentGame: ServerGame<Coord.System> | undefined;
@@ -46,7 +46,7 @@ export class Group extends _Group {
      * it will close and clean itself up.
      */
     public constructor(desc: Readonly<{
-        namespace: io.Socket["nsp"],
+        namespace: io.Namespace,
         name: Group.Name,
         passphrase: Group.Passphrase,
         deleteExternalRefs: () => void,
@@ -192,7 +192,7 @@ export class Group extends _Group {
      * - Deletes the only external reference so this can be garbage collected.
      */
     protected terminate(): void {
-        function killNamespace(nsps: io.Socket["nsp"]): void {
+        function killNamespace(nsps: io.Namespace): void {
             nsps.removeAllListeners("connect");
             nsps.removeAllListeners("connection");
             for (const socket of nsps.sockets.values()) {

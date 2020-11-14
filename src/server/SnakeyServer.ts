@@ -45,7 +45,6 @@ export class SnakeyServer extends _SnakeyServer {
         this.http   = http.createServer({}, this.app);
         this.io     = new io.Server(this.http, {
             // Note: socket.io.js is alternatively hosted on GitHub Pages.
-            cookie: false, // https://github.com/socketio/socket.io/issues/2276#issuecomment-147184662
         });
         this.allGroups = new Map();
         JsUtils.propNoWrite(this as SkServer, [

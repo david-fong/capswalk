@@ -27,7 +27,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
     // @ts-expect-error : Redeclaring accessor as property.
     declare public currentOperator: undefined;
 
-    public readonly namespace: io.Socket["nsp"];
+    public readonly namespace: io.Namespace;
     private readonly _groupHostClient: io.Socket["client"];
     private readonly gameEvSocketListeners: Readonly<{[evName : string]: (...args: any[]) => void}>;
 
@@ -62,7 +62,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * @param gameDesc -
      */
     public constructor(args: Readonly<{
-        groupNsps: io.Socket["nsp"],
+        groupNsps: io.Namespace,
         groupHostClient: io.Socket["client"],
         deleteExternalRefs: () => void,
         gameDesc: Game.CtorArgs<G,S>,
@@ -110,7 +110,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
      * namespace.
      */
     private _awaitGameSockets(args: Readonly<{
-        groupNsps: io.Socket["nsp"],
+        groupNsps: io.Namespace,
         gameDesc: Game.CtorArgs<G,S>,
     }>): void {
         // Prepare for all group members to join the game namespace:

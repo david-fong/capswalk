@@ -1,4 +1,4 @@
-import type { Socket } from "socket.io-client/build/socket";
+import type { Socket } from "socket.io-client";
 import { GameEv, SkServer } from "defs/OnlineDefs";
 import {
     JsUtils,

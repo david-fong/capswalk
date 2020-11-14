@@ -1,4 +1,4 @@
-import type { Socket } from "socket.io-client/build/socket";
+import type { Socket } from "socket.io-client";
 import type { TopLevel } from "client/TopLevel";
 import { Group } from "defs/OnlineDefs";
 import { SkServer } from "defs/OnlineDefs";

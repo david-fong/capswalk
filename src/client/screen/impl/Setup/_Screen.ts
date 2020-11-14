@@ -141,7 +141,7 @@ export namespace _SetupScreen {
         public constructor() {
             super();
             this.baseElem.classList.add(CSS["lang-sel"]);
-            Lang.FrontendDescs.forEach((desc) => {
+            Object.values(Lang.FrontendDescs).forEach((desc) => {
                 this.addOption(new LangPickOne.Option(desc));
             });
             this.selectOpt(this.options[0]);

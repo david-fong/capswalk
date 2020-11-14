@@ -2,7 +2,7 @@ import { JsUtils } from "defs/JsUtils";
 import { Group, SkServer } from "defs/OnlineDefs";
 import type { Player } from "defs/TypeDefs";
 import type * as SocketIo from "socket.io-client";
-type Socket = ReturnType<SocketIo.Manager["socket"]>;
+type Socket = SocketIo.Socket;
 type SockName = "joiner" | "group" | "game";
 
 
@@ -12,8 +12,6 @@ type SockName = "joiner" | "group" | "game";
 export class SkSockets {
 
     #sock: Record<SockName, Socket | undefined>;
-
-    // #socketIoChunk: Promise<typeof import("socket.io-client")>;
 
     public constructor() {
         this.#sock = {
@@ -106,12 +104,12 @@ export class SkSockets {
 }
 export namespace SkSockets {
     const globalSocketIoHref = (document.getElementById("socket.io-preload") as HTMLLinkElement).href;
-    let globalSocketIo: undefined | Promise<typeof import("socket.io-client")>;
+    let globalSocketIo: undefined | Promise<typeof SocketIo>;
     /**
      */
-    export function socketIo(): Promise<typeof import("socket.io-client")> {
+    export function socketIo(): Promise<typeof SocketIo> {
         return globalSocketIo
-        ?? (globalSocketIo = new Promise<typeof import("socket.io-client")>((resolve, reject): void => {
+        ?? (globalSocketIo = new Promise<typeof SocketIo>((resolve, reject): void => {
             const script = JsUtils.mkEl("script", []);
             script.type = "module";
             script.onload = (): void => {
