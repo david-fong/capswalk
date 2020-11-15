@@ -55,13 +55,15 @@ export abstract class Lang extends _Lang {
      */
     protected constructor(
         frontendDescId: Lang.FrontendDesc["id"],
-        forwardDict:    Lang.CharSeqPair.WeightedForwardMap,
         weightExaggeration: Lang.WeightExaggeration,
     ) {
         super();
         this.frontendDesc = Lang.GET_FRONTEND_DESC_BY_ID(frontendDescId)!;
-        this.treeMap      = LangSeqTree.ParentNode.CREATE_TREE_MAP(forwardDict, weightExaggeration);
-        this.leafNodes    = this.treeMap.getLeafNodes();
+        this.treeMap = LangSeqTree.ParentNode.CREATE_TREE_MAP(
+            (Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD(),
+            weightExaggeration,
+        );
+        this.leafNodes = this.treeMap.getLeafNodes();
         JsUtils.propNoWrite(this as Lang, [
             "frontendDesc", "treeMap", "leafNodes",
         ]);
@@ -188,6 +190,7 @@ export namespace Lang {
      */
     export interface ClassIf {
         new (weightScaling: Lang.WeightExaggeration): Lang;
+        BUILD(): CharSeqPair.WeightedForwardMap;
     };
     /**
      * Utility functions for implementations to use in their static

@@ -14,16 +14,17 @@ export namespace English {
     export class Lowercase extends Lang {
         // TODO.learn see https://wikipedia.org/wiki/Keyboard_layout#Dvorak
         // and https://wikipedia.org/wiki/Keyboard_layout#Colemak
-        public constructor(weightScaling: number) { super(
-            "engl-low",
-            Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
+        public constructor(weightScaling: number) {
+            super("engl-low", weightScaling);
+        }
+        public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+            return Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
                 (accumulator, [char,weight]) => {
                     accumulator[char] = { seq: char, weight };
                     return accumulator;
                 }, {},
-            ),
-            weightScaling,
-        ); }
+            );
+        }
     }
     Lowercase as Lang.ClassIf;
     Object.freeze(Lowercase);
@@ -37,6 +38,9 @@ export namespace English {
      */
     export class MixedCase extends Lang {
         public constructor(weightScaling: number) {
+            super("engl-mix", weightScaling);
+        }
+        public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
             let initializer: Lang.CharSeqPair.WeightedForwardMap = {};
             const addMappings = (charSeqTransform: (cs: string) => string): void => {
                 initializer = Object.entries(LETTER_FREQUENCY).reduce(
@@ -50,11 +54,7 @@ export namespace English {
             };
             addMappings((cs) => cs.toLowerCase());
             addMappings((cs) => cs.toUpperCase());
-            super(
-                "engl-mix",
-                initializer,
-                weightScaling,
-            );
+            return initializer;
         }
     }
     MixedCase as Lang.ClassIf;
@@ -67,16 +67,17 @@ export namespace English {
          * You see letters and type as if on an old cellphone's numeric keypad.
          */
         export class Encode extends Lang {
-            public constructor(weightScaling: number) { super(
-                "engl-cell-enc",
-                Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
+            public constructor(weightScaling: number) {
+                super("engl-cell-enc", weightScaling);
+            }
+            public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+                return Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
                     (accumulator, [char,weight], index) => {
                         accumulator[char] = { seq: NUMPAD[index], weight };
                         return accumulator;
                     }, {},
-                ),
-                weightScaling,
-            ); }
+                );
+            }
         }
         Encode as Lang.ClassIf;
         Object.freeze(Encode);
@@ -137,15 +138,16 @@ export namespace English {
          * You see letters and numbers and you type sequences of dots and dashes.
          */
         export class Encode extends Lang {
-            public constructor(weightScaling: number) { super(
-                "mors-enc", (() => {
-                    const dict: Lang.CharSeqPair.WeightedForwardMap = {};
-                    for (const [plain,cipher] of Object.entries(Dict)) {
-                        dict[plain] = { seq: cipher, weight: English.LETTER_FREQUENCY_EXT[plain] };
-                    }
-                    return dict;
-                })(), weightScaling,
-            ); }
+            public constructor(weightScaling: number) {
+                super("mors-enc", weightScaling);
+            }
+            public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+                const dict: Lang.CharSeqPair.WeightedForwardMap = {};
+                for (const [plain,cipher] of Object.entries(Dict)) {
+                    dict[plain] = { seq: cipher, weight: English.LETTER_FREQUENCY_EXT[plain] };
+                }
+                return dict;
+            }
         }
         Encode as Lang.ClassIf;
         Object.freeze(Encode);
@@ -156,16 +158,17 @@ export namespace English {
          * You see dots and dashes and you type alphanumeric characters.
          */
         export class Decode extends Lang {
-            public constructor(weightScaling: number) { super(
-                "mors-dec", (() => {
-                    const dict: Lang.CharSeqPair.WeightedForwardMap = {};
-                    for (const [plain,cipher] of Object.entries(Dict)) {
-                        const morse = cipher.replace(/\./g,"•").replace(/\-/g,"−");
-                        dict[morse] = { seq: plain, weight: English.LETTER_FREQUENCY_EXT[plain] };
-                    }
-                    return dict;
-                })(), weightScaling,
-            ); }
+            public constructor(weightScaling: number) {
+                super("mors-dec", weightScaling);
+            }
+            public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+                const dict: Lang.CharSeqPair.WeightedForwardMap = {};
+                for (const [plain,cipher] of Object.entries(Dict)) {
+                    const morse = cipher.replace(/\./g,"•").replace(/\-/g,"−");
+                    dict[morse] = { seq: plain, weight: English.LETTER_FREQUENCY_EXT[plain] };
+                }
+                return dict;
+            }
         }
         Decode as Lang.ClassIf;
         Object.freeze(Decode);

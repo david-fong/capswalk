@@ -38,14 +38,13 @@ export namespace Korean {
         });
 
         public constructor(weightScaling: number) {
-            super(
-                "kore-dub",
-                INITIALIZE((ij, mj, fj) => {
-                    const atoms = [ij, mj, fj].flatMap((jamos) => jamos.atoms.split("")) as Array<keyof typeof Dubeolsik.DUB_KEYBOARD>;
-                    return atoms.map((atom) => Dubeolsik.DUB_KEYBOARD[atom]).join("");
-                }),
-                weightScaling,
-            );
+            super("kore-dub", weightScaling);
+        }
+        public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+            return INITIALIZE((ij, mj, fj) => {
+                const atoms = [ij, mj, fj].flatMap((jamos) => jamos.atoms.split("")) as Array<keyof typeof Dubeolsik.DUB_KEYBOARD>;
+                return atoms.map((atom) => Dubeolsik.DUB_KEYBOARD[atom]).join("");
+            });
         }
     }
     Dubeolsik as Lang.ClassIf;
@@ -99,15 +98,16 @@ export namespace Korean {
             },
         });
 
-        public constructor(weightScaling: number) { super(
-            "kore-sub",
-            INITIALIZE((ij, mj, fj) => {
+        public constructor(weightScaling: number) {
+            super("kore-sub", weightScaling);
+        }
+        public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+            return INITIALIZE((ij, mj, fj) => {
                 return Sebeolsik.SEB_KEYBOARD.INITIALS[ij.value]
                     + Sebeolsik.SEB_KEYBOARD.MEDIALS[mj.value]
                     + Sebeolsik.SEB_KEYBOARD.FINALS[fj.value];
-            }),
-            weightScaling,
-        ); }
+            });
+        }
     }
     Sebeolsik as Lang.ClassIf;
     Object.freeze(Sebeolsik);
@@ -122,13 +122,14 @@ export namespace Korean {
      * https://www.korean.go.kr/front_eng/roman/roman_01.do
      */
     export class Romanization extends Lang {
-        public constructor(weightScaling: number) { super(
-            "kore-rom",
-            INITIALIZE((ij, mj, fj) => {
+        public constructor(weightScaling: number) {
+            super("kore-rom", weightScaling);
+        }
+        public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+            return INITIALIZE((ij, mj, fj) => {
                 return ij.roman + mj.roman + fj.roman;
-            }),
-            weightScaling,
-        ); }
+            });
+        }
     }
     Romanization as Lang.ClassIf;
     Object.freeze(Romanization);

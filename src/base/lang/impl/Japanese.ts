@@ -105,11 +105,10 @@ export namespace Japanese {
         });
 
         public constructor(weightScaling: number) {
-            super(
-                "japn-hir",
-                Hiragana.INITIALIZER,
-                weightScaling,
-            );
+            super("japn-hir", weightScaling);
+        }
+        public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+            return Hiragana.INITIALIZER;
         }
     }
     Hiragana as Lang.ClassIf;
@@ -211,11 +210,10 @@ export namespace Japanese {
         });
 
         public constructor(weightScaling: number) {
-            super(
-                "japn-kat",
-                Katakana.INITIALIZER,
-                weightScaling,
-            );
+            super("japn-kat", weightScaling);
+        }
+        public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+            return Katakana.INITIALIZER;
         }
     }
     Katakana as Lang.ClassIf;
