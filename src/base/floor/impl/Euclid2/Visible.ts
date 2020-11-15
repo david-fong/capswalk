@@ -1,4 +1,4 @@
-import "./style.m.css";
+import CSS from "./style.m.css";
 import { JsUtils } from "defs/JsUtils";
 import type { Coord as BaseCoord } from "floor/Tile";
 import type { VisibleTile } from "floor/VisibleTile";
@@ -27,6 +27,7 @@ export class Euclid2VisibleGrid extends Euclid2.Grid implements VisibleGrid<S> {
             }
         }
         this._superVisibleGrid(desc, gridElem);
+        gridElem.classList.add(CSS["grid"]);
     }
 }
 export interface Euclid2VisibleGrid extends VisibleGridMixin<S> { };

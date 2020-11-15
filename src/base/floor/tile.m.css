@@ -1,5 +1,4 @@
 :import("../game/player/player.m.css") {
-    _player: this;
     _player__face: face;
 }
 
@@ -59,9 +58,9 @@
     font-family:    inherit;
     visibility:     hidden;
 }
-.pointer-hitbox:hover ~ ._player > ._player__face {
+/* .pointer-hitbox:hover ~ ._player > ._player__face {
     visibility:     hidden;
-}
+} */
 .pointer-hitbox:hover ~ .char {
     color:          transparent;
 }

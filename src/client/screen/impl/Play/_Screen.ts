@@ -82,7 +82,7 @@ export abstract class _PlayScreen<
             CSS["this"],
         );
 
-        const gridHtml = _PlayScreen.createCenterColElem();
+        const gridHtml = _PlayScreen.createGridWrapper();
         // @ts-expect-error : RO=
         this._gridBaseElem = gridHtml.grid;
         // @ts-expect-error : RO=
@@ -373,7 +373,7 @@ export abstract class _PlayScreen<
 export namespace _PlayScreen {
     /**
      */
-    export function createCenterColElem(): Readonly<{
+    export function createGridWrapper(): Readonly<{
         top: HTMLElement,
         grid: HTMLElement,
         intersectionRoot: HTMLElement,
@@ -382,6 +382,7 @@ export namespace _PlayScreen {
     }> {
         const CSS_FX = OmHooks.General.Class;
         const base = JsUtils.mkEl("div", [CSS["grid-wrapper"]]);
+        base.setAttribute("role", "presentation");
 
         const grid = JsUtils.mkEl("div", [
             //CSS_FX.CENTER_CONTENTS,
@@ -430,7 +431,7 @@ export namespace _PlayScreen {
 
         grid.appendChild(scrollOuter);
         base.appendChild(grid);
-        return Object.freeze(<ReturnType<typeof _PlayScreen.createCenterColElem>>{
+        return Object.freeze(<ReturnType<typeof _PlayScreen.createGridWrapper>>{
             top: base,
             grid,
             intersectionRoot: scrollOuter,

@@ -9,7 +9,7 @@
     --colour-spotlight: var(--colour-mainBg);
     contain: size;
 }
-.this > .face {
+.face {
     z-index:        11;
     border-color:   var(--colour-tileBd);
     contain:        strict;

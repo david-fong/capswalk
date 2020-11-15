@@ -129,6 +129,7 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
             minimizerOptions: { preset: ["default", { discardComments: { removeAll: true }}], },
         }), "..."],
         splitChunks: { chunks: "all", cacheGroups: {} },
+        removeAvailableModules: (PACK_MODE === "production"),
     },
     watchOptions: {
         ignored: [ "node_modules", ],

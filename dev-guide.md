@@ -6,6 +6,7 @@
 1. Clone from the git repo. The default branch is `dev`.
 1. `npm install`.
 1. `npm run build`.
+    - Note that tsc may err on the first build after adding a css module class since css-modules-typescript-loader hasn't generated the .d.ts changes for the new class yet.
 1. To test off the local filesystem (no online-game capabilities), open `file://<path-to-project-root>/dist/client/index.html`.
 1. To test off a local server, do `npm start`.
     - Instead of the file protocol, load the site at localhost.

@@ -70,7 +70,7 @@ export class VisibleGridMixin<S extends Coord.System> {
         }
         const OHG = OmHooks.Grid;
         gridImpl.setAttribute("role", "presentation");
-        gridImpl.classList.add(...CSS["impl-body"].split(" "));
+        gridImpl.classList.add(CSS["impl-body"]);
         gridImpl.dataset[OHG.Dataset.IMPL_COORD_SYS] = desc.coordSys;
         gridImpl.translate  = false; // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/translate
         gridImpl.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
