@@ -107,13 +107,13 @@ const Descs = <const>{
         blurb: "",
     },
     "mors-enc": <Info>{
-        module: "English", export: "Morse.Encode", numLeaves: 30,
+        module: "English", export: "Morse.Encode", numLeaves: 20,
         remapFunc: (input) => { return input; }, // TODO.impl
         displayName: "Morse Encoder",
         blurb: "",
     },
     "mors-dec": <Info>{
-        module: "English", export: "Morse.Decode", numLeaves: 40,
+        module: "English", export: "Morse.Decode", numLeaves: 41,
         remapFunc: REMAP.LOWER,
         displayName: "Morse Decoder",
         blurb: "",

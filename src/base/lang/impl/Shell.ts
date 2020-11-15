@@ -9,7 +9,7 @@ export namespace Shell {
         // "uname", "users", "whoami", "df", "du", "uptime",
         // "date", "cal",
         "env", "chroot", "fg", "bg", "ps", "jobs", "kill",
-        "source", "test", /* "timeout", "yes", */ "time",
+        "source", "xargs", "test", /* "timeout", "yes", */ "time",
         "echo", "printf",
 
         "cd", "pwd",
@@ -20,13 +20,16 @@ export namespace Shell {
         "more", "less",
         // "cut", "paste", "expand", "unexpand", "fold",
         "sort", "uniq",
-        "cksum", "wc",
+        "file", "cksum", "wc",
         "awk", "sed",
     ]);
     export const Other = Object.freeze(<const>[
+        "vim", "vi", "nano",
+        "tig",
+        "perl",
     ]);
     export const Git = Object.freeze(<const>[
-        "init", "fetch", "merge", "push",
+        "init", "clone", "fetch", "merge", "push",
         "status", "diff", "add", "restore", "commit",
         "switch", "branch", "worktree",
         "gc", "fsck", "prune",

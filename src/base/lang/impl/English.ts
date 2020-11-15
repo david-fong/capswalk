@@ -98,7 +98,7 @@ export namespace English {
     /**
      * Values obtained from https://wikipedia.org/wiki/Letter_frequency
      */
-    const LETTER_FREQUENCY = Object.freeze(<const>{
+    export const LETTER_FREQUENCY = Object.freeze(<const>{
         a: 8.167, b: 1.492, c: 2.202, d: 4.253,
         e:12.702, f: 2.228, g: 2.015, h: 6.094,
         i: 6.966, j: 0.153, k: 1.292, l: 4.025,
@@ -107,7 +107,7 @@ export namespace English {
         u: 2.758, v: 0.978, w: 2.560, x: 0.150,
         y: 1.994, z: 0.077,
     });
-    const LETTER_FREQUENCY_EXT = Object.freeze(Object.assign(
+    export const LETTER_FREQUENCY_EXT = Object.freeze(Object.assign(
         (() => {
             const freq: Record<string, number> = {
                 ".": 65.3, ",": 61.3, "\"": 26.7, "'": 24.3, "-": 15.3,
@@ -129,68 +129,81 @@ export namespace English {
         })(),
         LETTER_FREQUENCY,
     ));
-    export const Morse = _Morse;
+
+    /**
+     */
+    export namespace Morse {
+        /**
+         * You see letters and numbers and you type sequences of dots and dashes.
+         */
+        export class Encode extends Lang {
+            public constructor(weightScaling: number) { super(
+                "mors-enc", (() => {
+                    const dict: Lang.CharSeqPair.WeightedForwardMap = {};
+                    for (const [plain,cipher] of Object.entries(Dict)) {
+                        dict[plain] = { seq: cipher, weight: English.LETTER_FREQUENCY_EXT[plain] };
+                    }
+                    return dict;
+                })(), weightScaling,
+            ); }
+        }
+        Encode as Lang.ClassIf;
+        Object.freeze(Encode);
+        Object.freeze(Encode.prototype);
+
+
+        /**
+         * You see dots and dashes and you type alphanumeric characters.
+         */
+        export class Decode extends Lang {
+            public constructor(weightScaling: number) { super(
+                "mors-dec", (() => {
+                    const dict: Lang.CharSeqPair.WeightedForwardMap = {};
+                    for (const [plain,cipher] of Object.entries(Dict)) {
+                        const morse = cipher.replace(/\./g,"•").replace(/\-/g,"−");
+                        dict[morse] = { seq: plain, weight: English.LETTER_FREQUENCY_EXT[plain] };
+                    }
+                    return dict;
+                })(), weightScaling,
+            ); }
+        }
+        Decode as Lang.ClassIf;
+        Object.freeze(Decode);
+        Object.freeze(Decode.prototype);
+
+        // Also see https://en.wikipedia.org/wiki/Prosigns_for_Morse_code
+        export const Dict = Object.freeze(<const>{
+            "0": "-----", "5": ".....",
+            "1": ".----", "6": "-....",
+            "2": "..---", "7": "--...",
+            "3": "...--", "8": "---..",
+            "4": "....-", "9": "----.",
+            // =======================,
+            "a": ".-"   , "n": "-."   ,
+            "b": "-..." , "o": "---"  ,
+            "c": "-.-." , "p": ".--." ,
+            "d": "-.."  , "q": "--.-" ,
+            "e": "."    , "r": ".-."  ,
+            "f": "..-." , "s": "..."  ,
+            "g": "--."  , "t": "-"    ,
+            "h": "...." , "u": "..-"  ,
+            "i": ".."   , "v": "...-" ,
+            "j": ".---" , "w": ".--"  ,
+            "k": "-.-"  , "x": "-..-" ,
+            "l": ".-.." , "y": "-.--" ,
+            "m": "--"   , "z": "--.." ,
+            // =======================,
+            ".": ".-.-.-",
+            ",": "--..--",
+            "?": "..--..",
+            "!": "-.-.--",
+            "-": "-....-",
+            // "/": "-..-.",
+            // "@": ".--.-.",
+            // "(": "-.--.",
+            // ")": "-.--.-"
+        });
+    }
+    Object.freeze(Morse);
 }
 Object.freeze(English);
-
-/**
- */
-export namespace _Morse {
-    /**
-     * You see letters and numbers and you type sequences of dots and dashes.
-     */
-    export class Encode extends Lang {
-        public constructor(weightScaling: number) { super(
-            "mors-enc", undefined!, weightScaling,
-        ); }
-    }
-    Encode as Lang.ClassIf;
-    Object.freeze(Encode);
-    Object.freeze(Encode.prototype);
-
-
-    /**
-     * You see dots and dashes and you type alphanumeric characters.
-     */
-    export class Decode extends Lang {
-        public constructor(weightScaling: number) { super(
-            "mors-enc", undefined!, weightScaling,
-        ); }
-    }
-    Decode as Lang.ClassIf;
-    Object.freeze(Decode);
-    Object.freeze(Decode.prototype);
-
-    // Also see https://en.wikipedia.org/wiki/Prosigns_for_Morse_code
-    export const Dict = Object.freeze(<const>{
-        "0": "-----", "5": ".....",
-        "1": ".----", "6": "-....",
-        "2": "..---", "7": "--...",
-        "3": "...--", "8": "---..",
-        "4": "....-", "9": "----.",
-        // =======================,
-        "a": ".-"   , "n": "-."   ,
-        "b": "-..." , "o": "---"  ,
-        "c": "-.-." , "p": ".--." ,
-        "d": "-.."  , "q": "--.-" ,
-        "e": "."    , "r": ".-."  ,
-        "f": "..-." , "s": "..."  ,
-        "g": "--."  , "t": "-"    ,
-        "h": "...." , "u": "..-"  ,
-        "i": ".."   , "v": "...-" ,
-        "j": ".---" , "w": ".--"  ,
-        "k": "-.-"  , "x": "-..-" ,
-        "l": ".-.." , "y": "-.--" ,
-        "m": "--"   , "z": "--.." ,
-        // =======================,
-        ".": ".-.-.-",
-        ",": "--..--",
-        "?": "..--..",
-        "!": "-.-.--",
-        "-": "-....-",
-        // "/": "-..-.",
-        // "@": ".--.-.",
-        // "(": "-.--.",
-        // ")": "-.--.-"
-    });
-}
