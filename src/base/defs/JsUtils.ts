@@ -172,7 +172,9 @@ export namespace JsUtils {
     ): HTMLElementTagNameMap[K] {
         const el = document.createElement(tagName);
         try { Object.seal(el); } catch (e) {};
-        el.classList.add(...classNames);
+        if (classNames.length) {
+            el.classList.add(...classNames);
+        }
 
         if (tagName === "button") {
             (el as HTMLButtonElement).type = "button"; // instead of "submit".

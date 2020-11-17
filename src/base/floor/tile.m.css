@@ -4,10 +4,10 @@
     --border-radius: 0.35em;
     /* DO NOT create a new stacking context, which
     breaks the spotlight display. */
+    pointer-events: none;
     contain:        size style;
 }
 .this * {
-    pointer-events: none;
     height: 100%; width: 100%;
 }
 

@@ -34,7 +34,7 @@ export namespace General {
 
 export namespace Tile {
     export const Dataset = <const>{
-        HEALTH:         "health",
+        HEALTH: "health",
     };
 }
 
@@ -45,13 +45,7 @@ export namespace Grid {
          * system-specific styling. This is set on the `impl-body`
          * element. See `VisibleGridMixin`.
          */
-        IMPL_COORD_SYS:  "coordSys",
-        /**
-         * This is set on the `game-grid` element by `__PlayScreen`.
-         */
-        GAME_STATE: { KEY: "gameState", VALUES: <const>{
-            PLAYING: "playing", PAUSED: "paused", OVER: "over",
-        }},
+        IMPL_COORD_SYS: "coordSys",
     };
 }
 
@@ -60,7 +54,7 @@ export namespace Player {
         DOWNED: { KEY: "downed", VALUES: <const>{
             TEAM: "team", SELF: "self", NO: "no",
         }},
-        FACE_SWATCH:    "face",
+        FACE_SWATCH: "face",
     };
 }
 

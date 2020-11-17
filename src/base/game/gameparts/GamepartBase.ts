@@ -168,6 +168,10 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
     }
 
     public deserializeResetState(ser: Game.ResetSer<S>): void {
+        Object.freeze(ser.healthCoords);
+        Object.freeze(ser.playerCoords);
+        Object.freeze(ser);
+
         // Could also use `csps.unshift`, but that may be slower
         // because it modifies csps, which we don't need to do.
         this.grid.forEachTile((tile, index) => {

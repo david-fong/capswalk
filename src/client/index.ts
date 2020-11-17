@@ -2,7 +2,17 @@
 import "assets/style/initial/_barrel.css";
 
 // None shall touch Object.prototype >:(
-Object.freeze(Object.prototype);
+[
+    Object, Array, Map, Set, WeakMap, WeakSet,
+    String, Number, RegExp,
+    HTMLElement, HTMLDivElement, HTMLSpanElement, HTMLPreElement,
+    HTMLButtonElement, HTMLInputElement, HTMLSelectElement, HTMLOptionElement,
+    HTMLScriptElement, HTMLStyleElement, HTMLLinkElement,
+]
+.forEach((intrinsic) => {
+    Object.freeze(intrinsic);
+    Object.freeze(intrinsic?.prototype);
+});
 
 import { TopLevel } from "./TopLevel";
 

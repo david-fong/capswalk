@@ -102,21 +102,23 @@ export namespace LangSeqTree {
                     :  (weightScaling === 1) ? (originalWeight: number) => originalWeight
                     : (originalWeight: number) => Math.pow(originalWeight / averageWeight, weightScaling);
             })();
+            Object.freeze(scaleWeight);
+
             // Reverse the map:
             const reverseDict: Map<Lang.Seq, Array<WeightedLangChar>> = new Map();
-            for (const char in forwardDict) {
-                const seq = forwardDict[char].seq;
+            Object.entries(forwardDict).forEach(([char, {seq,weight}]) => {
                 const weightedChar = new WeightedLangChar(
-                    char, scaleWeight(forwardDict[char].weight),
+                    char, scaleWeight(weight),
                 );
                 const charArray = reverseDict.get(seq);
-                if (charArray) {
+                if (charArray !== undefined) {
                     // The entry was already made:
                     charArray.push(weightedChar);
                 } else {
                     reverseDict.set(seq, [weightedChar]);
                 }
-            }
+            });
+
             // Add mappings in ascending order of sequence length:
             // (this is so that no merging of branches needs to be done)
             const rootNode = new ParentNode();
@@ -303,7 +305,6 @@ class WeightedLangChar {
      * hit-counts before they were returned, since the last reset.
      */
     public readonly weightInv: number;
-    public hitCount: number;
     public weightedHitCount: number;
 
     public constructor(
@@ -323,19 +324,16 @@ class WeightedLangChar {
     }
 
     public reset(): void {
-        this.hitCount = 0;
         this.weightedHitCount = 0.000;
     }
 
     public _incrementNumHits(): void {
-        this.hitCount += 1;
         this.weightedHitCount += this.weightInv;
     }
 
     public simpleView(): object {
         return Object.assign(Object.create(null), {
             char: this.char,
-            hits: this.hitCount,
         });
     }
 

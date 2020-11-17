@@ -20,14 +20,13 @@
 .scroll-outer {
     position:       relative;
 }
-.intersection-root {
+/* .intersection-root {
     position:       fixed;
     z-index:        100;
     pointer-events: none;
     padding:        20%;
-}
+} */
 
-/*  */
 .scroll-outer {
     contain:        style; /* Do not use contain. */
     overflow:       auto auto;
@@ -43,8 +42,9 @@
     height: 0px;
 }
 
-.kbd-dc,
 .pause-overlay {
+    pointer-events: none;
+    contain:        strict;
     cursor:         pointer;
     position:       fixed;
     padding:        3em;
@@ -52,21 +52,12 @@
     color:          white;
     visibility:     hidden;
 }
-.kbd-dc {
-    z-index: 1;
-    background-color: #00000020;
-}
 .pause-overlay {
     z-index: 2;
-    background-color: #00000040;
 }
 
 @media screen {
     .this:focus {
         outline:    none;
-    }
-    .this[data-game-state="paused"] .pause-overlay,
-    .this:not([data-game-state="paused"]):not(:focus) .kbd-dc {
-        visibility: visible;
     }
 }

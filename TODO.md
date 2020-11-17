@@ -11,15 +11,14 @@
 
 ### Things I feel like doing
 
+1. Try out changing webpack build to not use eval in development mode and see how the performance is.
+    - If it is okay, keep it, and tighten node sandbox and browser CSP's to disallow `eval`.
 1. See which callbacks can be defined higher up to make it easier for javascript engine parsers.
-1. Remove tile tooltips. But first see if they are using display: none and if so switch to visibility: none and check if there are less style re-calcs / second afterward.
 1. Freeze DTO's upon reception where possible- especially arrays.
 1. Find out why dom nodes are being continually created as players move.
     - Perhaps tiles are being passed as arguments to populate DTO fields?
+    - Or maybe this is just some weird side-effect of having the devtools pane open?
 1. Take a look at [compression-webpack-plugin](https://webpack.js.org/plugins/compression-webpack-plugin/#using-brotli).
-1. Find out how to share game CSS and grid between entry and game chunks.
-    - Maybe [this](https://www.npmjs.com/package/mini-css-extract-plugin#extracting-css-based-on-entry) is what I need?
-    - Take a look at Tile and Player and possibly putting them into one file?
 
 ### Things that I feel less like doing
 

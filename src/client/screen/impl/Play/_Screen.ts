@@ -23,27 +23,31 @@ export abstract class _PlayScreen<
 > extends SkScreen<SID> {
 
     /**
-     * Hosts the implementation-specific grid element's scroll-wrapper,
-     * as well as some other game-status overlays.
+     * Hosts the scroll-wrapper and game-status overlays.
      */
-    protected readonly _gridBaseElem: HTMLElement;
-    private   readonly _gridImplHost: HTMLElement;
-    //private   readonly _gridIsecObserver: IntersectionObserver;
+    private readonly grid: Readonly<{
+        base: HTMLElement;
+        implHost: HTMLElement;
+        pauseOl: HTMLElement;
+        //isecObserver: IntersectionObserver;
+    }>;
 
     private readonly playersBar: HTMLElement;
 
-    /**
-     * Must be disabled when
-     * - The game does not exist.
-     * - The game is over.
-     */
-    private readonly pauseButton: HTMLButtonElement;
-    /**
-     * Must be disabled when
-     * - The game does not exist.
-     * - The game is playing.
-     */
-    private readonly resetButton: HTMLButtonElement;
+    private readonly btn: Readonly<{
+        /**
+         * Must be disabled when
+         * - The game does not exist.
+         * - The game is over.
+         */
+        pause: HTMLButtonElement;
+        /**
+         * Must be disabled when
+         * - The game does not exist.
+         * - The game is playing.
+         */
+        reset: HTMLButtonElement;
+    }>;
 
     /**
      * This field is defined when this is the current screen, and next
@@ -82,28 +86,33 @@ export abstract class _PlayScreen<
             CSS["this"],
         );
 
-        const gridHtml = _PlayScreen.createGridWrapper();
+        const _gridHtml = _PlayScreen.createGridWrapper();
         // @ts-expect-error : RO=
-        this._gridBaseElem = gridHtml.grid;
-        // @ts-expect-error : RO=
-        this._gridImplHost = gridHtml.implHost;
-        this._gridImplHost.appendChild(document.createComment("grid impl host"));
-        this.baseElem.appendChild(gridHtml.top);
-        gridHtml.pauseOl.addEventListener("click", (ev) => {
+        this.grid = Object.freeze({
+            base: _gridHtml.top,
+            implHost: _gridHtml.implHost,
+            pauseOl: _gridHtml.pauseOl,
+        });
+        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["grid"]);
+        JsUtils.prependComment(this.grid.implHost, "grid impl host");
+        this.grid.implHost.appendChild(document.createComment("grid impl"));
+
+        this.baseElem.appendChild(_gridHtml.top);
+        _gridHtml.pauseOl.addEventListener("focus", (ev) => {
             const game = this.currentGame;
             if (game !== undefined && game.status === Game.Status.PAUSED) {
+                this.grid.base.focus();
                 this._requestStatusBecomePlaying();
             }
         });
         // ^Purposely make the grid the first child so it gets tabbed to first.
-        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["_gridBaseElem", "_gridImplHost"]);
 
         // See below link for an illustrative guide on the intersection observer API:
         // https://blog.arnellebalane.com/the-intersection-observer-api-d441be0b088d
         // Unfortunately, it seems like intersection observer is not able to do what
         // I want. It will no trigger when the target's position changes.
         // // @ts-expect-error Assignment to readonly property: `_gridIsecObserver`:
-        // this._gridIsecObserver = new IntersectionObserver((entries, observer) => {
+        // this.grid.isecObserver = new IntersectionObserver((entries, observer) => {
         //     entries.forEach((value) => {
         //         console.log(value.intersectionRatio);
         //         if (!value.isIntersecting) {
@@ -111,7 +120,7 @@ export abstract class _PlayScreen<
         //         }
         //     });
         // }, {
-        //     root: gridHtml.intersectionRoot,
+        //     root: _gridHtml.intersectionRoot,
         //     rootMargin: "-20%",
         // });
 
@@ -144,13 +153,13 @@ export abstract class _PlayScreen<
         args: SkScreen.EntranceArgs[SID],
     ): Promise<void> {
         document.addEventListener("visibilitychange", this.#onVisibilityChange);
-        this.pauseButton.disabled = true;
+        this.btn.pause.disabled = true;
         this._statusBecomePaused(); // <-- Leverage some state initialization.
 
         this.#currentGame = await this._createNewGame(
             args as Game.CtorArgs<G,Coord.System>,
         );
-        this._gridBaseElem.addEventListener("keydown", this.#gridOnKeyDown, {
+        this.grid.base.addEventListener("keydown", this.#gridOnKeyDown, {
             // the handler will call stopPropagation. As a result,
             // nothing inside this element can ever receive keyboard events.
             capture: true,
@@ -159,12 +168,12 @@ export abstract class _PlayScreen<
         // ^Wait until resetting has finished before attaching the
         // grid element to the screen so that the DOM changes made
         // by populating tiles with CSP's will be batched.
-        this._gridImplHost.appendChild(this.currentGame.htmlElements.gridImpl);
+        this.grid.implHost.appendChild(this.currentGame.htmlElements.gridImpl);
         this.playersBar.appendChild(this.currentGame.htmlElements.playersBar);
         // ^The order of insertion does not matter (it used to).
 
-        this.pauseButton.onclick = this._requestStatusBecomePlaying.bind(this);
-        this.pauseButton.disabled = false;
+        this.btn.pause.onclick = this._requestStatusBecomePlaying.bind(this);
+        this.btn.pause.disabled = false;
         if (this.wantsAutoPlayPause) {
             setTimeout(() => {
                 if (!document.hidden) { this._requestStatusBecomePlaying(); }
@@ -193,7 +202,7 @@ export abstract class _PlayScreen<
             elem.textContent = "";
             elem.remove();
         }
-        this._gridBaseElem.removeEventListener("keydown", this.#gridOnKeyDown);
+        this.grid.base.removeEventListener("keydown", this.#gridOnKeyDown);
         this.#currentGame = undefined;
         return true;
     }
@@ -262,37 +271,33 @@ export abstract class _PlayScreen<
     }
 
     protected _statusBecomePlaying(): void {
-        const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame.statusBecomePlaying();
-        this.pauseButton.textContent = "Pause";
+        this.btn.pause.textContent = "Pause";
+        this.grid.pauseOl.style.visibility = "hidden";
         this.#pauseReason = undefined;
-        this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
 
-        this.pauseButton.onclick = this._requestStatusBecomePaused.bind(this);
-        this.resetButton.disabled = true;
+        this.btn.pause.onclick = this._requestStatusBecomePaused.bind(this);
+        this.btn.reset.disabled = true;
 
-        this._gridBaseElem.focus();
+        this.grid.base.focus();
     }
 
     protected _statusBecomePaused(): void {
-        const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
         this.currentGame?.statusBecomePaused(); // intentional `?` for when initializing UI.
-        this.pauseButton.textContent = "Unpause";
+        this.btn.pause.textContent = "Unpause";
+        this.grid.pauseOl.style.visibility = "visible";
         this.#pauseReason = document.hidden ? "page-hide" : "other";
-        this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
 
-        this.pauseButton.onclick    = this._requestStatusBecomePlaying.bind(this);
-        this.resetButton.disabled   = false;
+        this.btn.pause.onclick = this._requestStatusBecomePlaying.bind(this);
+        this.btn.reset.disabled = false;
     }
 
     /**
      * A callback passed to the constructed game to call when it ends.
      */
     protected _onGameBecomeOver(): void {
-        const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
-        this.pauseButton.disabled = true;
-        this.resetButton.disabled = false;
-        this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.OVER;
+        this.btn.pause.disabled = true;
+        this.btn.reset.disabled = false;
     }
 
     /**
@@ -302,7 +307,7 @@ export abstract class _PlayScreen<
      */
     protected _resetGame(): void {
         this.currentGame.reset();
-        this.pauseButton.disabled = false;
+        this.btn.pause.disabled = false;
         if (this.wantsAutoPlayPause) {
             this._requestStatusBecomePlaying();
         }
@@ -336,26 +341,20 @@ export abstract class _PlayScreen<
             return button as HTMLButtonElement;
         }
         controlsBar.addEventListener("pointerleave", (ev) => {
-            this._gridBaseElem.focus();
+            this.grid.base.focus();
         });
 
         { const bth = createControlButton("<Back Button Text>", this.nav.prev);
         }
 
-        { const pause
-            // @ts-expect-error : RO=
-            = this.pauseButton
-            = createControlButton("");
-        }
+        // @ts-expect-error : RO=
+        this.btn = Object.freeze({
+            pause: createControlButton(""),
+            reset: createControlButton("Reset"),
+        });
+        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["btn"]);
+        this.btn.reset.onclick = this._resetGame.bind(this);
 
-        { const reset
-            // @ts-expect-error : RO=
-            = this.resetButton
-            = createControlButton("Reset");
-        reset.onclick = this._resetGame.bind(this);
-        }
-
-        JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["pauseButton", "resetButton"]);
         this.baseElem.appendChild(controlsBar);
     }
 
@@ -397,19 +396,7 @@ export namespace _PlayScreen {
             GRID_CSS["scroll-outer"],
         ]);
         scrollOuter.setAttribute("role", "presentation");
-        {
-            // Add a "keyboard-disconnected" overlay if not added already:
-            const kbdDcBase = JsUtils.mkEl("div", [
-                CSS_FX.FILL_PARENT,
-                CSS_FX.CENTER_CONTENTS,
-                GRID_CSS["kbd-dc"],
-            ]);
-            // TODO.impl Add an <svg> with icon instead please.
-            kbdDcBase.appendChild(JsUtils.mkEl("div", [], {
-                textContent: "(click here to continue typing)",
-            }));
-            scrollOuter.appendChild(kbdDcBase);
-        }
+
         const pauseOl = JsUtils.mkEl("div", [
             CSS_FX.FILL_PARENT,
             CSS_FX.CENTER_CONTENTS,
@@ -440,6 +427,7 @@ export namespace _PlayScreen {
 }
 JsUtils.protoNoEnum(_PlayScreen, [
     "probeCurrentGame", // At runtime, this is identical to this.currentGame.
+    "_statusBecomePlaying", "_statusBecomePaused",
 ]);
 JsUtils.instNoEnum(_PlayScreen, [
     "createGridWrapper",
