@@ -59,8 +59,6 @@ margins and padding, and its own padding. */
 .sk-input-group .sk-input-group-item:focus {
     outline:        none;
     border-color:   var(--colour-tileBd);
-    box-shadow:     inset 0px 0px 20px #00000040;
-    text-shadow:    0px 0px 8px #000000ff;
     animation: 0.4s ease-in-out -0.5s infinite alternate sk-input-group-item-focus;
 }
 .sk-input-group:focus-within .sk-input-group-item:not(:focus) {

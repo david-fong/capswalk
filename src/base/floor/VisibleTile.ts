@@ -14,7 +14,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 
     readonly #baseElem:             HTMLDivElement;
     private readonly langCharElem:  HTMLDivElement;
-    private readonly langSeqElem:   HTMLDivElement;
 
     public constructor(coordDesc: Tile<S>["coord"]) {
         super(coordDesc);
@@ -25,24 +24,14 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
                 CSS["this"],
             ]);
             base.setAttribute("aria-label", "Tile");
-        } {
-            // Pointer hitbox element.
-            // Must be the first child. See note in CSS class hook.
-            const pthb = JsUtils.mkEl("div", [CSS["pointer-hitbox"]]);
-            pthb.setAttribute("aria-hidden", "true");
-            this.#baseElem.appendChild(pthb);
-        } {
+        }{
             const charWrap = JsUtils.mkEl("div", [CSS["char"]]);
             charWrap.setAttribute("role", "presentation");
             const charElem = this.langCharElem = JsUtils.mkEl("div", []);
             charWrap.appendChild(charElem);
             this.#baseElem.appendChild(charWrap);
-        } {
-            const seqElem = this.langSeqElem = JsUtils.mkEl("div", [CSS["seq"]]);
-            seqElem.setAttribute("role", "tooltip");
-            this.#baseElem.appendChild(seqElem);
         }
-        JsUtils.propNoWrite(this as VisibleTile<S>, ["langCharElem", "langSeqElem"]);
+        JsUtils.propNoWrite(this as VisibleTile<S>, ["langCharElem"]);
     }
 
     public _addToDom(parent: HTMLElement): void {
@@ -61,18 +50,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
         // CSS can create a fading trail effect. It must go after the
         // hitbox so that it can be hidden to avoid covering the tooltip.
         this.langCharElem.parentElement!.insertAdjacentElement("beforebegin", immigrantInfo.playerElem);
-        this.langSeqElem.textContent = immigrantInfo.username;
-    }
-
-
-    /**
-     * @override
-     */
-    public evictOccupant(): void {
-        super.evictOccupant();
-        // Undo setting mouseover text to something player-related
-        // (See `__setOccupant` for what we did and now need to undo):
-        this.langSeqElem.textContent = this.langSeq;
     }
 
     /**
@@ -103,7 +80,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
     public setLangCharSeqPair(charSeqPair: Lang.CharSeqPair): void {
         super.setLangCharSeqPair(charSeqPair);
         this.langCharElem.textContent = this.langChar;
-        this.langSeqElem.textContent  = this.langSeq;
     }
 
 }

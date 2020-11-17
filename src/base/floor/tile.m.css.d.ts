@@ -2,8 +2,6 @@
 // Please do not change this file!
 interface CssExports {
   'char': string;
-  'pointer-hitbox': string;
-  'seq': string;
   'this': string;
 }
 export const cssExports: CssExports;

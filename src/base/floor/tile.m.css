@@ -4,25 +4,18 @@
     --border-radius: 0.35em;
     /* DO NOT create a new stacking context, which
     breaks the spotlight display. */
-    pointer-events: none;
     contain:        size style;
 }
 .this * {
+    pointer-events: none;
     height: 100%; width: 100%;
 }
-.pointer-hitbox {
-    pointer-events: initial;
-    contain:        strict;
-    top: 40%; left: 40%;
-    /* border-color: black; */
-}
 
-.char, .seq {
+.char {
     box-sizing: border-box;
     border: var(--border-width) solid transparent;
     border-radius: var(--border-radius);
 }
-
 .char {
     contain:        strict;
     background-color: var(--colour-tileBg);
@@ -42,27 +35,4 @@
     transition-property: color, background-color;
     transition-duration: 0.5s;
     transition-timing-function: ease-in;
-}
-
-.seq {
-    z-index:        13;
-    contain:        content;
-    padding:        0ch  0.4ch;
-    /* bottom:     0%; */
-    min-height: 100%; height: max-content;
-    min-width:  100%; width:  max-content;
-    color:          white;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-color:   white;
-    font-family:    inherit;
-    visibility:     hidden;
-}
-/* .pointer-hitbox:hover ~ ._player > ._player__face {
-    visibility:     hidden;
-} */
-.pointer-hitbox:hover ~ .char {
-    color:          transparent;
-}
-.pointer-hitbox:hover ~ .seq {
-    visibility:     visible;
 }
