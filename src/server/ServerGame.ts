@@ -70,7 +70,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
         // Start with a call to the super constructor:
         super(
             Game.Type.SERVER, {
-            onGameBecomeOver: () => { this.terminate(); },
+            onGameBecomeOver: () => {},
             tileClass: Tile,
             playerStatusCtor: PlayerStatus,
             }, args.gameDesc,
@@ -180,6 +180,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
                 if (socket.client === this._groupHostClient) {
                     this.statusBecomeOver();
                     socket.broadcast.emit(GameEv.RETURN_TO_LOBBY);
+                    this.terminate();
                 } else {
                     socket.broadcast.emit(GameEv.RETURN_TO_LOBBY, socket.id);
                 }

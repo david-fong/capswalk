@@ -1,8 +1,7 @@
-:import("../game/player/player.m.css") {
-    _player__face: face;
-}
 
 .this {
+    --border-width: 0.14em;
+    --border-radius: 0.35em;
     /* DO NOT create a new stacking context, which
     breaks the spotlight display. */
     pointer-events: none;
@@ -18,10 +17,10 @@
     /* border-color: black; */
 }
 
-.char, .seq, ._player__face {
+.char, .seq {
     box-sizing: border-box;
-    border: 0.14em solid transparent;
-    border-radius: 0.35em;
+    border: var(--border-width) solid transparent;
+    border-radius: var(--border-radius);
 }
 
 .char {

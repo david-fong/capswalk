@@ -85,7 +85,6 @@ export class SkSockets {
         this.#sock[name] = socket;
         const byeBye = (): void => {
             socket.offAny();
-            socket.disconnect();
             this.#sock[name] = undefined;
         };
         socket

@@ -26,7 +26,7 @@ export class Group extends _Group {
     private _sessionHost: Group.Socket;
 
     private readonly socketListeners: Readonly<{
-        [evName : string]: (this: Group, socket: Group.Socket, ...args: any[]) => void,
+        [evName : string]: (socket: Group.Socket, ...args: any[]) => void,
     }>;
 
     private readonly _initialTtlTimeout: NodeJS.Timeout;
@@ -65,7 +65,7 @@ export class Group extends _Group {
         }, (Group.DEFAULT_TTL * 1000)).unref();
 
         this.socketListeners = Object.freeze({
-            ["disconnect"]: (socket: io.Socket): void => {
+            ["disconnect"]: (socket: io.Socket, reason): void => {
                 if (socket === this._sessionHost) {
                     // If the host disconnects, end the session.
                     // TODO.impl this seems like a bad decision. What about just broadcasting
@@ -74,7 +74,7 @@ export class Group extends _Group {
                     this.terminate();
                     return;
                 }
-                if (socket.nsp.sockets.size === 1) {
+                if (this.namespace.sockets.size === 1) {
                     this.terminate();
                     return;
                 }

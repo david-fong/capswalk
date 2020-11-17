@@ -185,7 +185,7 @@ export abstract class _PlayScreen<
 
         // Release the game:
         // See docs in Game.ts : Pausing is done to cancel scheduled callbacks.
-        this.currentGame.statusBecomePaused();
+        this.currentGame.statusBecomeOver();
         for (const elem of Object.values(this.currentGame.htmlElements)) {
             // IMPORTANT NOTE: For some reason, clearing children from the
             // grid-impl element is necessary to allow for garbage collection
@@ -194,8 +194,6 @@ export abstract class _PlayScreen<
             elem.remove();
         }
         this._gridBaseElem.removeEventListener("keydown", this.#gridOnKeyDown);
-        //// @ts-expect-error Experiment with freeing grid reference to speed up garbage collection?
-        //game.grid = undefined;
         this.#currentGame = undefined;
         return true;
     }
@@ -265,7 +263,7 @@ export abstract class _PlayScreen<
 
     protected _statusBecomePlaying(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
-        this.probeCurrentGame?.statusBecomePlaying();
+        this.currentGame.statusBecomePlaying();
         this.pauseButton.textContent = "Pause";
         this.#pauseReason = undefined;
         this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PLAYING;
@@ -278,7 +276,7 @@ export abstract class _PlayScreen<
 
     protected _statusBecomePaused(): void {
         const OHGD = OmHooks.Grid.Dataset.GAME_STATE;
-        this.probeCurrentGame?.statusBecomePaused();
+        this.currentGame?.statusBecomePaused(); // intentional `?` for when initializing UI.
         this.pauseButton.textContent = "Unpause";
         this.#pauseReason = document.hidden ? "page-hide" : "other";
         this._gridBaseElem.dataset[OHGD.KEY] = OHGD.VALUES.PAUSED;
@@ -444,7 +442,7 @@ JsUtils.protoNoEnum(_PlayScreen, [
     "probeCurrentGame", // At runtime, this is identical to this.currentGame.
 ]);
 JsUtils.instNoEnum(_PlayScreen, [
-    "createCenterColElem",
+    "createGridWrapper",
 ]);
 Object.freeze(_PlayScreen);
 Object.freeze(_PlayScreen.prototype);

@@ -96,19 +96,20 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 
         } else {
             this.nav.next.disabled = true;
+            this.in.passphrase.value = "";
 
             if (newState === State.CHOOSING_HOST) {
                 this.in.groupName.disabled    = true;
                 this.in.groupName.value       = "";
                 // Fun fact on an alternative for clearing children: https://stackoverflow.com/a/22966637/11107541
-                this.groupNameDataList.innerText = "";
+                this.groupNameDataList.textContent = "";
                 this.in.passphrase.disabled   = true;
-                this.in.passphrase.value      = "";
                 this.in.hostUrl.focus();
                 ;
             } else if (newState === State.CHOOSING_GROUP) {
                 this.in.groupName.disabled    = false;
                 this.in.passphrase.disabled   = false;
+                this.#clientIsGroupHost       = false;
                 this.in.groupName.focus();
             }
         }
@@ -134,7 +135,6 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             if (this.groupSocket?.io!["opts"].hostname === gameServerUrl.hostname) {
                 if (this.groupSocket!.connected) {
                     this._setFormState(State.CHOOSING_GROUP);
-                    this.in.groupName.focus(); // No changes have occurred.
                 } else {
                     // Impatient client is spamming.
                 }
@@ -241,7 +241,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
                 // ^This will take us back to the state `CHOOSING_GROUP`.
             }
             this.in.passphrase.value = "";
-            this.#clientIsGroupHost = false; // <-- Not necessary. Just feels nice to do.
+            this.#clientIsGroupHost = false;
         };
         input.onkeydown = (ev) => {
             if (ev.isTrusted && ev.key === "Enter") submitInput();
@@ -290,6 +290,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
     }
 
     /**
+     * Automatically disconnects from the current group (if it exists).
      */
     private _attemptToJoinExistingGroup(): void {
         this.groupSocket?.disconnect();
@@ -305,9 +306,11 @@ export class GroupJoinerScreen extends SkScreen<SID> {
             this._setFormState(State.IN_GROUP);
         })
         .on("connect_error", (error: object) => {
+            this._setFormState(State.CHOOSING_GROUP);
             top.toast("Unable to connect to the specified group.");
         })
         .on("disconnect", (reason: string) => {
+            this._setFormState(State.CHOOSING_GROUP);
             if (reason === "io server disconnect") {
                 top.toast("The server disconnected you from your group.");
                 if (this.top.currentScreen !== this) {

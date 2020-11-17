@@ -10,6 +10,11 @@
     contain: size;
 }
 .face {
+    box-sizing: border-box;
+    border: var(--border-width) solid transparent;
+    border-radius: var(--border-radius);
+}
+.face {
     z-index:        11;
     border-color:   var(--colour-tileBd);
     contain:        strict;

@@ -33,13 +33,14 @@ export class GroupLobbyScreen extends SkScreen<SID> {
      * @override
      */
     protected _lazyLoad(): void {
+        this.baseElem.classList.add(CSS["this"]);
         // @ts-expect-error : RO=
         this._players = new Map();
         this._createInputs();
         this.nav.prev.textContent = "Return To Joiner";
 
         /* @ts-expect-error : RO= */
-        this.teamsElem = JsUtils.mkEl("div", [OMHC.SEC_TEAMS]);
+        this.teamsElem = JsUtils.mkEl("div", [CSS["teams-section"]]);
         this.baseElem.appendChild(this.teamsElem);
 
         // @ts-expect-error : RO=

@@ -90,7 +90,10 @@ export class TopLevel {
     }
 
     /**
+     * @deprecated
      * For debugging purposes- especially in the browser console.
+     *
+     * Not actually deprecated :P
      */
     public get game(): BrowserGameMixin<Game.Type.Browser,Coord.System> | undefined {
         return (this.#allScreens.dict.playOffline).probeCurrentGame
@@ -98,6 +101,7 @@ export class TopLevel {
     }
 
     /**
+     * @deprecated
      * For debugging purposes- especially in the browser console.
      */
     public get currentScreen(): SkScreen<SkScreen.Id> {

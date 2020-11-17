@@ -56,7 +56,9 @@ Use single-underscore enclosures to italicize. Use double-asterisk enclosures to
 
 ### Socket.IO
 
-Use `socket.connect` instead of `socket.open`. Use `socket.disconnect` instead of `socket.close`.
+- Use `socket.connect` instead of `socket.open`.
+- Use `socket.disconnect` instead of `socket.close`.
+- Use `to` instead of `in`.
 
 ### ES6 #private Fields
 
