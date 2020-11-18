@@ -13,12 +13,13 @@ export namespace LangSeqTree {
      */
     export class ParentNode {
 
+        public readonly seq = "" as Lang.Seq;
         protected readonly children: TU.RoArr<ChildNode>;
         /**
          * Equals this node's own weighted hit count plus all its ancestors'
          * weighted hit counts.
          */
-        protected inheritingWeightedHitCount: number;
+        protected branchHits: number;
 
         public constructor() {
             this.children = [];
@@ -27,7 +28,7 @@ export namespace LangSeqTree {
 
         public reset(): void {
             for (const child of this.children) child.reset();
-            this.inheritingWeightedHitCount = 0.000;
+            this.branchHits = 0.000;
         }
 
         protected _finalize(): void {
@@ -37,37 +38,14 @@ export namespace LangSeqTree {
             // compiler that the override has protected access to us.
         }
 
-        /**
-         *
-         * @param seq The typeable sequence corresponding to entries of `chars`.
-         * @param chars A collection of unique characters in a written language.
-         */
-        private _addCharMapping(seq: Lang.Seq, chars: TU.RoArr<WeightedLangChar>): void {
-            if (DEF.DevAssert && !(_Lang.Seq.REGEXP.test(seq))) {
-                // If this errs, and the offending character is one that can
-                // be easily entered on a generic keyboard, don't be afraid
-                // to just add it to the regexp.
-                throw new RangeError(`Mapping-sequence \"${seq}\" did not match the`
-                + ` required regular expression \"${_Lang.Seq.REGEXP.source}\".`
-                );
-            }
-            let node: ParentNode = this; {
-                let childNode: ParentNode | undefined;
-                while ((childNode = node.children.find((child) => seq.startsWith(child.sequence))) !== undefined) {
-                    node = childNode;
-                }
-            }
-            (node.children as ChildNode[]).push(new ChildNode(node, seq, chars));
-        }
-
-        public getLeafNodes(): Array<ChildNode> {
+        public getLeaves(): Array<ChildNode> {
             const leafNodes: Array<ChildNode> = [];
-            this._recursiveGetLeafNodes(leafNodes);
+            this._rGetLeaves(leafNodes);
             return leafNodes;
         }
-        protected _recursiveGetLeafNodes(leafNodes: Array<ChildNode>): void {
+        protected _rGetLeaves(leafNodes: Array<ChildNode>): void {
             if (this.children.length) {
-                for (const child of this.children) child._recursiveGetLeafNodes(leafNodes);
+                for (const child of this.children) child._rGetLeaves(leafNodes);
             } else {
                 leafNodes.push(this as ParentNode as ChildNode);
             }
@@ -92,10 +70,10 @@ export namespace LangSeqTree {
                 const weightedChar = new WeightedLangChar(
                     char, scaleWeight(weight),
                 );
-                const charArray = reverseDict.get(seq);
-                if (charArray !== undefined) {
+                const chars = reverseDict.get(seq);
+                if (chars !== undefined) {
                     // The entry was already made:
-                    charArray.push(weightedChar);
+                    chars.push(weightedChar);
                 } else {
                     reverseDict.set(seq, [weightedChar]);
                 }
@@ -104,22 +82,25 @@ export namespace LangSeqTree {
             // Add mappings in ascending order of sequence length:
             // (this is so that no merging of branches needs to be done)
             const rootNode = new ParentNode();
-            for (const args of Array
-                .from(reverseDict)
-                .sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
-                //.sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
-            ) {
-                rootNode._addCharMapping(...args);
+            JsUtils.propNoWrite(rootNode as ParentNode, ["children"]);
+            let cursor: ChildNode | ParentNode = rootNode;
+            for (const [seq, chars] of Array.from(reverseDict).sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1)) {
+                while (!seq.startsWith(cursor.seq)) {
+                    cursor = (cursor as ChildNode).parent;
+                }
+                const newChild: ChildNode = new ChildNode(cursor, seq, chars);
+                ((cursor as ParentNode).children as ChildNode[]).push(newChild);
+                cursor = newChild;
             }
             rootNode._finalize();
             return rootNode;
         }
 
         public static readonly LEAF_CMP: LangSorter<ChildNode> = (a, b) => {
-            return a.inheritingWeightedHitCount - b.inheritingWeightedHitCount;
+            return a.branchHits - b.branchHits;
         };
     }
-    JsUtils.protoNoEnum(ParentNode, ["_finalize", "_recursiveGetLeafNodes"]);
+    JsUtils.protoNoEnum(ParentNode, ["_finalize", "_rGetLeaves"]);
     Object.freeze(ParentNode);
     Object.freeze(ParentNode.prototype);
 
@@ -138,10 +119,9 @@ export namespace LangSeqTree {
      */
     export class ChildNode extends ParentNode {
 
-        public readonly sequence: Lang.Seq;
-        readonly #parent:     ChildNode | ParentNode;
+        public readonly seq: Lang.Seq;
+        public readonly parent: ChildNode | ParentNode;
         readonly #characters: TU.RoArr<WeightedLangChar>;
-
 
         public constructor(
             parent:     ParentNode,
@@ -149,10 +129,10 @@ export namespace LangSeqTree {
             characters: TU.RoArr<WeightedLangChar>,
         ) {
             super();
-            this.sequence    = sequence;
+            this.seq    = sequence;
             this.#characters = characters;
-            this.#parent     = parent;
-            JsUtils.propNoWrite(this as ChildNode, ["sequence"]);
+            this. parent     = parent;
+            JsUtils.propNoWrite(this as ChildNode, ["seq", "parent"]);
         }
 
         /**
@@ -170,7 +150,7 @@ export namespace LangSeqTree {
             // reset to zero after starting to inherit seeding hits.
             for (const char of this.#characters) {
                 char.reset();
-                this.incrementNumHits(char, Math.random() * _Lang.CHAR_HIT_COUNT_SEED_CEILING);
+                this.incrHits(char, Math.random() * _Lang.CHAR_HIT_COUNT_SEED_CEILING);
             }
         }
 
@@ -195,23 +175,23 @@ export namespace LangSeqTree {
             }
             const pair: Lang.CharSeqPair = {
                 char: weightedChar.char,
-                seq:  this.sequence,
+                seq:  this.seq,
             };
-            this.incrementNumHits(weightedChar);
+            this.incrHits(weightedChar);
             return pair;
         }
-        private incrementNumHits(wCharToHit: WeightedLangChar, numTimes: number = 1): void {
+        private incrHits(wCharToHit: WeightedLangChar, numTimes: number = 1): void {
             wCharToHit._incrementNumHits();
-            this._recursiveIncrementNumHits(wCharToHit.weightInv * numTimes);
+            this._rIncrHits(wCharToHit.weightInv * numTimes);
         }
-        private _recursiveIncrementNumHits(weightInv: number): void {
-            this.inheritingWeightedHitCount += weightInv;
-            for (const child of this.children) child._recursiveIncrementNumHits(weightInv);
+        private _rIncrHits(weightInv: number): void {
+            this.branchHits += weightInv;
+            for (const child of this.children) child._rIncrHits(weightInv);
         }
 
-        public get personalWeightedHitCount(): number {
-            return this.inheritingWeightedHitCount
-            - (this.#parent as ChildNode).inheritingWeightedHitCount;
+        public get ownHits(): number {
+            return this.branchHits
+            - (this.parent as ChildNode).branchHits;
             // The above cast is only to allow us to access a
             // protected property from the parent in this subclass.
         }
@@ -221,7 +201,7 @@ export namespace LangSeqTree {
             for (
                 let node: ParentNode | ChildNode = this;
                 node instanceof ChildNode;
-                node = node.#parent
+                node = node.parent
             ) {
                 upstreamNodes.push(node);
             }
@@ -234,17 +214,17 @@ export namespace LangSeqTree {
         public simpleView(): object {
             let chars = this.#characters.map((char) => char.simpleView());
             return Object.assign(Object.create(null), {
-                seq: this.sequence,
+                seq: this.seq,
                 chars: (chars.length === 1) ? chars[0] : chars,
                 kids: this.children.map((child) => child.simpleView()),
             });
         }
 
         public static readonly PATH_CMP: LangSorter<ChildNode> = (a, b) => {
-            return a.personalWeightedHitCount - b.personalWeightedHitCount;
+            return a.ownHits - b.ownHits;
         };
     }
-    JsUtils.protoNoEnum(ChildNode, ["_finalize", "_recursiveIncrementNumHits"]);
+    JsUtils.protoNoEnum(ChildNode, ["_finalize", "_rIncrHits"]);
     Object.freeze(ChildNode);
     Object.freeze(ChildNode.prototype);
 

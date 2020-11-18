@@ -63,7 +63,7 @@ export abstract class Lang extends _Lang {
             (Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD(),
             weightExaggeration,
         );
-        this.leafNodes = this.treeMap.getLeafNodes();
+        this.leafNodes = this.treeMap.getLeaves();
         JsUtils.propNoWrite(this as Lang, [
             "frontendDesc", "treeMap", "leafNodes",
         ]);
@@ -128,10 +128,10 @@ export abstract class Lang extends _Lang {
             const upstreamNodes = leaf.andNonRootParents();
             for (let i = 0; i < upstreamNodes.length; i++) {
                 const conflictSeq: Lang.Seq | undefined = avoid.find((avoidSeq) => {
-                    return avoidSeq.startsWith(upstreamNodes[i].sequence);
+                    return avoidSeq.startsWith(upstreamNodes[i].seq);
                 });
                 if (conflictSeq) {
-                    if (conflictSeq === upstreamNodes[i].sequence) {
+                    if (conflictSeq === upstreamNodes[i].seq) {
                         // Cannot use anything on this upstream path because
                         // an avoid-node is directly inside it.
                         upstreamNodes.length = 0;
@@ -148,7 +148,7 @@ export abstract class Lang extends _Lang {
                 // Find the node with the lowest personal hit-count:
                 nodeToHit = upstreamNodes[0];
                 for (const node of upstreamNodes) {
-                    if (node.personalWeightedHitCount < nodeToHit.personalWeightedHitCount) {
+                    if (node.ownHits < nodeToHit.ownHits) {
                         nodeToHit = node;
                     }
                 }

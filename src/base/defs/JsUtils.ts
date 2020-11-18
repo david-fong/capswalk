@@ -1,4 +1,6 @@
 
+const NO_ENUM  = Object.freeze(<const>{ enumerable: false });
+const NO_WRITE = Object.freeze(<const>{ writable: false });
 
 export namespace JsUtils {
     /**
@@ -85,7 +87,7 @@ export namespace JsUtils {
                     throw new TypeError(msg); // Mismatched property name.
                 }
             }
-            Object.defineProperty(ctor.prototype, propName, { enumerable: false });
+            Object.defineProperty(ctor.prototype, propName, NO_ENUM);
         });
     }
 
@@ -95,7 +97,7 @@ export namespace JsUtils {
         inst: T,
         propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>,
     ): void {
-        _configProp(inst, propNames, { enumerable: false });
+        _configProp(inst, propNames, NO_ENUM);
     }
 
     /**
@@ -104,7 +106,7 @@ export namespace JsUtils {
         inst: T,
         propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>,
     ): void {
-        _configProp(inst, propNames, { writable: false });
+        _configProp(inst, propNames, NO_WRITE);
     }
 
     function _configProp<T>(
