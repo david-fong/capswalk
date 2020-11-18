@@ -17,8 +17,6 @@
 1. Verify that lang tree reset doesn't overwrite sets of hit-counts to zero.
 1. See which callbacks can be defined higher up to make it easier for javascript engine parsers.
 1. Freeze DTO's upon reception where possible- especially arrays.
-1. ~Find out why dom nodes are being continually created as players move.~
-    - Pressing the devtool GC button shows that there isn't a memory leak. Whew. Interesting though... Does re-parenting a node actually create a new element?
 1. Take a look at [compression-webpack-plugin](https://webpack.js.org/plugins/compression-webpack-plugin/#using-brotli).
 
 ### Things that I feel less like doing

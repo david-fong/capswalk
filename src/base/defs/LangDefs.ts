@@ -130,6 +130,12 @@ const Descs = <const>{
         displayName: "English Trigrams",
         blurb: "",
     },
+    "numpad": <Info>{
+        module: "Numpad", export: "Numpad", numLeaves: 100,
+        remapFunc: REMAP.LOWER,
+        displayName: "Number Pad",
+        blurb: "",
+    },
 };
 Object.entries(Descs).forEach(([id,desc]) => {
     desc.id = id;
