@@ -7,5 +7,5 @@
         { "path": "../defs" },
         { "path": "./tsconfig.json" }
     ],
-    "include": ["./impl/*"]
+    "include": ["./impl/**/*", "./impl/defs/*.json"]
 }

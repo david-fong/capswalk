@@ -67,7 +67,7 @@ const Descs = <const>{
         blurb: "",
     },
     "japn-kat": <Info>{
-        module: "Japanese", export: "Katakana", numLeaves: 70,
+        module: "Japanese", export: "Katakana", numLeaves: 69,
         remapFunc: REMAP.LOWER,
         displayName: "Japanese Katakana",
         blurb: "",
@@ -116,6 +116,18 @@ const Descs = <const>{
         module: "English", export: "Morse.Decode", numLeaves: 41,
         remapFunc: REMAP.LOWER,
         displayName: "Morse Decoder",
+        blurb: "",
+    },
+    "ngram2": <Info>{
+        module: "Ngrams", export: "Ngram2", numLeaves: 200,
+        remapFunc: REMAP.LOWER,
+        displayName: "English Bigrams",
+        blurb: "",
+    },
+    "ngram3": <Info>{
+        module: "Ngrams", export: "Ngram3", numLeaves: 401,
+        remapFunc: REMAP.LOWER,
+        displayName: "English Trigrams",
         blurb: "",
     },
 };

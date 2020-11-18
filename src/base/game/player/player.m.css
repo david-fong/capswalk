@@ -7,10 +7,10 @@
     child of a tile instead of a player (would double
     the number of DOM operations per operator movement. */
     --colour-spotlight: var(--colour-mainBg);
-    pointer-events: initial;
     contain: size;
 }
 .face {
+    pointer-events: initial;
     box-sizing: border-box;
     border: var(--border-width) solid transparent;
     border-radius: var(--border-radius);

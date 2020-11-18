@@ -34,7 +34,7 @@
         "sysname",
         "typeable",
         "unts",
-        "engl", "japn", "kore", "jamo",
+        "engl", "japn", "kore", "jamo", "ngram", "ngrams",
         "smoothstone",
 
         // Programming terminology:
@@ -69,6 +69,7 @@
         // Tooling and Programming Languages:
         "API's",
         "devtool",
+        "endregion", // for IDE folding
         "entrypoint",
         "eslintrc's",
         "heroku",

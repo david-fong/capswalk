@@ -6,11 +6,10 @@ import type { Lang } from "./Lang";
 type LangSorter<T> = (a: T, b: T) => number;
 
 /**
- *
  */
 export namespace LangSeqTree {
+
     /**
-     *
      */
     export class ParentNode {
 
@@ -52,22 +51,11 @@ export namespace LangSeqTree {
                 + ` required regular expression \"${_Lang.Seq.REGEXP.source}\".`
                 );
             }
-            if (DEF.DevAssert && chars.length === 0) {
-                // Must not make a mapping without written characters.
-                throw new RangeError("never");
-            }
             let node: ParentNode = this; {
                 let childNode: ParentNode | undefined;
                 while ((childNode = node.children.find((child) => seq.startsWith(child.sequence))) !== undefined) {
                     node = childNode;
                 }
-            }
-            if (DEF.DevAssert && (node as ChildNode).sequence === seq) {
-                // This should never happen.
-                throw new Error(`Mappings for all written-characters with a common`
-                + `corresponding typeable-sequence should be registered together,`
-                + `but an existing mapping for the sequence \"${seq}\" was found.`
-                );
             }
             (node.children as ChildNode[]).push(new ChildNode(node, seq, chars));
         }
@@ -96,13 +84,7 @@ export namespace LangSeqTree {
             forwardDict: Lang.CharSeqPair.WeightedForwardMap,
             weightScaling: Lang.WeightExaggeration,
         ): LangSeqTree.ParentNode {
-            const averageWeight = Object.values(forwardDict).reduce((sum, next) => sum += next.weight, 0);
-            const scaleWeight = (function(): (ogWeight: number) => number {
-                return (weightScaling === 0) ? (originalWeight: number) => 1
-                    :  (weightScaling === 1) ? (originalWeight: number) => originalWeight
-                    : (originalWeight: number) => Math.pow(originalWeight / averageWeight, weightScaling);
-            })();
-            Object.freeze(scaleWeight);
+            const scaleWeight = LangSeqTree.GET_SCALE_WEIGHT_FUNC(weightScaling, forwardDict);
 
             // Reverse the map:
             const reverseDict: Map<Lang.Seq, Array<WeightedLangChar>> = new Map();
@@ -124,7 +106,8 @@ export namespace LangSeqTree {
             const rootNode = new ParentNode();
             for (const args of Array
                 .from(reverseDict)
-                .sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
+                .sort((mappingA, mappingB) => mappingA[0].localeCompare(mappingB[0]))
+                //.sort((mappingA, mappingB) => mappingA[0].length - mappingB[0].length)
             ) {
                 rootNode._addCharMapping(...args);
             }
@@ -264,6 +247,18 @@ export namespace LangSeqTree {
     JsUtils.protoNoEnum(ChildNode, ["_finalize", "_recursiveIncrementNumHits"]);
     Object.freeze(ChildNode);
     Object.freeze(ChildNode.prototype);
+
+    export function GET_SCALE_WEIGHT_FUNC(
+        weightScaling: Lang.WeightExaggeration,
+        forwardDict: Lang.CharSeqPair.WeightedForwardMap,
+    ): (ogWeight: number) => number {
+        if (weightScaling === 0) return (ogWgt: number) => 1;
+        if (weightScaling === 1) return (ogWgt: number) => ogWgt;
+        const values = Object.values(forwardDict);
+        const averageWeight = values.reduce((sum, next) => sum += next.weight, 0) / values.length;
+        return (originalWeight: number) => Math.pow(originalWeight / averageWeight, weightScaling);
+    };
+    Object.freeze(GET_SCALE_WEIGHT_FUNC);
 }
 Object.freeze(LangSeqTree);
 
@@ -311,11 +306,6 @@ class WeightedLangChar {
         char: Lang.Char,
         weight: number,
     ) {
-        if (DEF.DevAssert && weight <= 0) {
-            throw new RangeError(`All weights must be positive, but we`
-            + ` were passed the value \"${weight}\" for the character`
-            + ` \"${char}\".`);
-        }
         this.char = char;
         this.weightInv = 1.000 / weight;
         // The above choice of a numerator is not behaviourally significant.
@@ -337,11 +327,6 @@ class WeightedLangChar {
         });
     }
 
-    /**
-     * @param a -
-     * @param b -
-     * @returns -
-     */
     public static readonly CMP: LangSorter<WeightedLangChar> = (a, b) => {
         return a.weightedHitCount - b.weightedHitCount;
     };

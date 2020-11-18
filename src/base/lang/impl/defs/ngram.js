@@ -28,10 +28,11 @@ const dict = {};
     for (const gram in dict) {
         dict[gram] = +(dict[gram] * 1000 / sum).toFixed(3);
     }
-    fs.writeFileSync(path.resolve(__dirname, FILENAME + ".ts"),
-        "import { JsUtils } from \"../../../defs/JsUtils\";"
-        + "\nexport default JsUtils.deepFreeze("
-        + JSON.stringify(dict, null, "  ")
-        + ");",
+    fs.writeFileSync(path.resolve(__dirname, FILENAME + ".json"),
+        // "import { JsUtils } from \"../../../defs/JsUtils\";"
+        // + "\nexport default JsUtils.deepFreeze("
+        // + JSON.stringify(dict, null, "")
+        // + ");",
+        JSON.stringify(dict, null, "")
     );
 });

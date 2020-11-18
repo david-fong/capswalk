@@ -18,12 +18,7 @@ export namespace English {
             super("engl-low", weightScaling);
         }
         public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
-            return Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
-                (accumulator, [char,weight]) => {
-                    accumulator[char] = { seq: char, weight };
-                    return accumulator;
-                }, {},
-            );
+            return Lang.BuildUtils.WORD_FOR_WORD(LETTER_FREQUENCY);
         }
     }
     Lowercase as Lang.ClassIf;
@@ -94,20 +89,21 @@ export namespace English {
             })
         );
     }
+    Object.freeze(OldCellphone);
 
 
     /**
      * Values obtained from https://wikipedia.org/wiki/Letter_frequency
      */
-    export const LETTER_FREQUENCY = Object.freeze(<const>{
-        a: 8.167, b: 1.492, c: 2.202, d: 4.253,
-        e:12.702, f: 2.228, g: 2.015, h: 6.094,
-        i: 6.966, j: 0.153, k: 1.292, l: 4.025,
-        m: 2.406, n: 6.749, o: 7.507, p: 1.929,
-        q: 0.095, r: 5.987, s: 6.327, t: 9.356,
-        u: 2.758, v: 0.978, w: 2.560, x: 0.150,
-        y: 1.994, z: 0.077,
-    });
+    export const LETTER_FREQUENCY = Object.freeze(<Record<string,number>>JSON.parse(`{
+        "a": 8.167, "b": 1.492, "c": 2.202, "d": 4.253,
+        "e":12.702, "f": 2.228, "g": 2.015, "h": 6.094,
+        "i": 6.966, "j": 0.153, "k": 1.292, "l": 4.025,
+        "m": 2.406, "n": 6.749, "o": 7.507, "p": 1.929,
+        "q": 0.095, "r": 5.987, "s": 6.327, "t": 9.356,
+        "u": 2.758, "v": 0.978, "w": 2.560, "x": 0.150,
+        "y": 1.994, "z": 0.077
+    }`));
     export const LETTER_FREQUENCY_EXT = Object.freeze(Object.assign(
         (() => {
             const freq: Record<string, number> = {
@@ -175,13 +171,13 @@ export namespace English {
         Object.freeze(Decode.prototype);
 
         // Also see https://en.wikipedia.org/wiki/Prosigns_for_Morse_code
-        export const Dict = Object.freeze(<const>{
+        export const Dict = Object.freeze(<Record<string,string>>JSON.parse(`{
             "0": "-----", "5": ".....",
             "1": ".----", "6": "-....",
             "2": "..---", "7": "--...",
             "3": "...--", "8": "---..",
             "4": "....-", "9": "----.",
-            // =======================,
+
             "a": ".-"   , "n": "-."   ,
             "b": "-..." , "o": "---"  ,
             "c": "-.-." , "p": ".--." ,
@@ -195,17 +191,17 @@ export namespace English {
             "k": "-.-"  , "x": "-..-" ,
             "l": ".-.." , "y": "-.--" ,
             "m": "--"   , "z": "--.." ,
-            // =======================,
+
             ".": ".-.-.-",
             ",": "--..--",
             "?": "..--..",
             "!": "-.-.--",
-            "-": "-....-",
-            // "/": "-..-.",
-            // "@": ".--.-.",
-            // "(": "-.--.",
-            // ")": "-.--.-"
-        });
+            "-": "-....-"
+        }`));
+        // "/": "-..-.",
+        // "@": ".--.-.",
+        // "(": "-.--.",
+        // ")": "-.--.-"
     }
     Object.freeze(Morse);
 }

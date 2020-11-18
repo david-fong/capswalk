@@ -80,14 +80,6 @@ export abstract class Lang extends _Lang {
      */
     public reset(): void {
         this.treeMap.reset();
-
-        // The below method of shuffling is not used because its effects
-        // on state are weaker / less desirable than those achieved by
-        // the currently-used method found in ChildNode.reset, whose
-        // drawback is that it is more performance costly.
-
-        // Shuffle the initial leaf order:
-        // this.leafNodes.sort((a,b) => Math.random() - 0.5);
     }
 
 
@@ -196,7 +188,15 @@ export namespace Lang {
      * Utility functions for implementations to use in their static
      * `.BUILD` function.
      */
-    export namespace BUILD {
+    export namespace BuildUtils {
+        export function WORD_FOR_WORD(seq2Weight: Record<Lang.Seq,number>): Lang.CharSeqPair.WeightedForwardMap {
+            return Object.entries(seq2Weight).reduce<Lang.CharSeqPair.WeightedForwardMap>(
+                (accumulator, [char,weight]) => {
+                    accumulator[char] = { seq: char, weight };
+                    return accumulator;
+                }, {},
+            );
+        }
     }
 
     /**
@@ -231,7 +231,7 @@ export namespace Lang {
         export type WeightedForwardMap = Record<
             Lang.Char,
             Readonly<{seq: Lang.Seq, weight: number,}>
-        >;
+        >/* | Readonly<Record<Lang.Seq, number>> */;
     }
 
     /**

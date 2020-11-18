@@ -9,6 +9,7 @@
         "importHelpers": true,
         "skipLibCheck": true, // time-saving measure.
         "importsNotUsedAsValues": "error",
+        "resolveJsonModule": true,
 
         // Language Settings:
         "target": "es6",

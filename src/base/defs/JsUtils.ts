@@ -85,9 +85,7 @@ export namespace JsUtils {
                     throw new TypeError(msg); // Mismatched property name.
                 }
             }
-            Object.defineProperty(ctor.prototype, propName, {
-                enumerable: false,
-            });
+            Object.defineProperty(ctor.prototype, propName, { enumerable: false });
         });
     }
 
