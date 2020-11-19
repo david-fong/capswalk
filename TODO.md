@@ -13,8 +13,8 @@
 
 1. Try out changing webpack build to not use eval in development mode and see how the performance is.
     - If it is okay, keep it, and tighten node sandbox and browser CSP's to disallow `eval`.
-1. Change `LangSeqTree.Parent._addCharMapping` to externalize its search and use the sorted reverse map entries to optimize.
 1. Verify that lang tree reset doesn't overwrite sets of hit-counts to zero.
+1. Try out EJS include directive.
 1. See which callbacks can be defined higher up to make it easier for javascript engine parsers.
 1. Freeze DTO's upon reception where possible- especially arrays.
 1. Take a look at [compression-webpack-plugin](https://webpack.js.org/plugins/compression-webpack-plugin/#using-brotli).

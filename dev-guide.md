@@ -14,11 +14,18 @@
     - Avoid commands that would delete either of the file `dist/.git` or `dist/client/.git`.
     - If you accidentally delete them, recreate them with the contents `gitdir: ../../.git/worktrees/client` and `gitdir: ../.git/worktrees/client` respectively.
 
+## Recommended VS Code Extensions
+
+- Todo Tree
+- Code Spell Checker
+- ESLint
+- EJS language support
+
 ## Release Procedure
 
 ### GitHub Pages Deployment
 
-```shell
+```sh
 export NODE_ENV='production'
 ./scripts/pack.sh
 # Sanity check that everything is running properly for online and offline implementations.
@@ -36,7 +43,7 @@ git push --tags
 
 Now let's go back to development:
 
-```shell
+```sh
 cd ../..
 export NODE_ENV='development'
 ./scripts/pack.sh
@@ -59,6 +66,8 @@ Use single-underscore enclosures to italicize. Use double-asterisk enclosures to
 - Use `socket.connect` instead of `socket.open`.
 - Use `socket.disconnect` instead of `socket.close`.
 - Use `to` instead of `in`.
+
+- On the serverside, bind events to functions declared on a prototype (when possible) to avoid creating unnecessary function objects. This is not important for the client since only one connection for namespace is made.
 
 ### ES6 #private Fields
 
@@ -85,7 +94,3 @@ Full Explanation: Do this if:
 - The _method_ has a good reason to exist and must grant public access, but is able to put an entity into a bad state. Such methods should be called very intentionally in very specific places. The reason is usually that it behaves as a setter (abstracts away management of internal representation), or that it is a hook for extension classes to perform implementation-specific duties. Those two scenarios are actually not all that different. See `Tile._setOccupant`, `GameBase._abstractStatusBecome*`, `Player._abstractNotifyThatGameStatusBecame*` for examples of this.
   - The _method_ is used to abstract the construction of an object of some abstract type. See `GameBase._playerStatusCtor`, `GameBase._getGridImplementation`, `GameBase._createOperatorPlayer` for examples of this. This is a weak-rationale strain of the above classification. The main benefit being sought here is that in autocompletion, its naming will communicate that it was created to be used in a very specific place (typically in constructors).
 - The _object_ is a dictionary / registry for enumerated constructor functions for instances sharing a common interface. See `base/game/IndexTasks.ts` for examples of this. These typically ask to be accessed indirectly through a more type-friendly function (one that handles any type-casting when TypeScript has a hard time tracking what's going on).
-
-### Socket.IO
-
-- On the serverside, bind events to functions declared on a prototype (when possible) to avoid creating unnecessary function objects.

@@ -22,7 +22,7 @@
 *.bat             text eol=crlf
 *.cmd             text eol=crlf
 *.coffee          text
-*.css             text
+*.css             text diff=css
 *.htm             text diff=html
 *.html            text diff=html
 *.inc             text
@@ -57,12 +57,12 @@ Dockerfile        text
 
 # Documentation
 *.ipynb           text
-*.markdown        text
-*.md              text
-*.mdwn            text
-*.mdown           text
-*.mkd             text
-*.mkdn            text
+*.markdown        text diff=markdown
+*.md              text diff=markdown
+*.mdwn            text diff=markdown
+*.mdown           text diff=markdown
+*.mkd             text diff=markdown
+*.mkdn            text diff=markdown
 *.mdtxt           text
 *.mdtext          text
 *.txt             text
@@ -83,7 +83,7 @@ TODO              text
 
 # Templates
 *.dot             text
-*.ejs             text
+*.ejs             text diff=html
 *.haml            text
 *.handlebars      text
 *.hbs             text
