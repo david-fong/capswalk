@@ -17,43 +17,43 @@ InitBrowserGameCtorMaps();
  */
 export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> {
 
-    declare public readonly currentOperator: OperatorPlayer<S>;
+	declare public readonly currentOperator: OperatorPlayer<S>;
 
-    public readonly htmlElements: BrowserGameMixin.HtmlElements;
+	public readonly htmlElements: BrowserGameMixin.HtmlElements;
 
-    /**
-     * Classes using this mixin should call this somewhere in their
-     * constructor.
-     */
-    public _ctorBrowserGame(): void {
-        // @ts-expect-error : RO=
-        this.htmlElements = Object.freeze<BrowserGameMixin.HtmlElements>({
-            gridImpl: this.grid.baseElem,
-            playersBar: document.createElement("div"), // TODO.design
-        });
-        JsUtils.propNoWrite(this as BrowserGameMixin<G,S>, ["htmlElements"]);
-    }
+	/**
+	 * Classes using this mixin should call this somewhere in their
+	 * constructor.
+	 */
+	public _ctorBrowserGame(): void {
+		// @ts-expect-error : RO=
+		this.htmlElements = Object.freeze<BrowserGameMixin.HtmlElements>({
+			gridImpl: this.grid.baseElem,
+			playersBar: document.createElement("div"), // TODO.design
+		});
+		JsUtils.propNoWrite(this as BrowserGameMixin<G,S>, ["htmlElements"]);
+	}
 
-    /**
-     * @override
-     */
-    protected _getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
-        return VisibleGrid.getImplementation(coordSys);
-    }
+	/**
+	 * @override
+	 */
+	protected _getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
+		return VisibleGrid.getImplementation(coordSys);
+	}
 
-    /**
-     * @override
-     */
-    public _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S> {
-        return new OperatorPlayer<S>(this, desc);
-    }
+	/**
+	 * @override
+	 */
+	public _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S> {
+		return new OperatorPlayer<S>(this, desc);
+	}
 }
 export interface BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> extends GamepartBase<G,S> {};
 export namespace BrowserGameMixin {
-    export type HtmlElements = Readonly<{
-        gridImpl:   HTMLElement;
-        playersBar: HTMLElement;
-    }>;
+	export type HtmlElements = Readonly<{
+		gridImpl:   HTMLElement;
+		playersBar: HTMLElement;
+	}>;
 }
 JsUtils.protoNoEnum(BrowserGameMixin, ["_getGridImplementation"]);
 Object.freeze(BrowserGameMixin);

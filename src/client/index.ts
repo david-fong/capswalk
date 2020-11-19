@@ -3,15 +3,15 @@ import "assets/style/initial/_barrel.css";
 
 // None shall touch Object.prototype >:(
 [
-    Object, Array, Map, Set, WeakMap, WeakSet,
-    String, Number, RegExp,
-    HTMLElement, HTMLDivElement, HTMLSpanElement, HTMLPreElement,
-    HTMLButtonElement, HTMLInputElement, HTMLSelectElement, HTMLOptionElement,
-    HTMLScriptElement, HTMLStyleElement, HTMLLinkElement,
+	Object, Array, Map, Set, WeakMap, WeakSet,
+	String, Number, RegExp,
+	HTMLElement, HTMLDivElement, HTMLSpanElement, HTMLPreElement,
+	HTMLButtonElement, HTMLInputElement, HTMLSelectElement, HTMLOptionElement,
+	HTMLScriptElement, HTMLStyleElement, HTMLLinkElement,
 ]
 .forEach((intrinsic) => {
-    Object.freeze(intrinsic);
-    Object.freeze(intrinsic?.prototype);
+	Object.freeze(intrinsic);
+	Object.freeze(intrinsic?.prototype);
 });
 
 import { TopLevel } from "./TopLevel";
@@ -25,14 +25,14 @@ export { OmHooks } from "defs/OmHooks";
 
 const _top = new TopLevel();
 export const top = (() => {
-    return (DEF.NodeEnv === "development") ? _top : undefined;
+	return (DEF.NodeEnv === "development") ? _top : undefined;
 })();
 
 export function screen(): TopLevel["currentScreen"] {
-    return _top.currentScreen;
+	return _top.currentScreen;
 }
 export function game(): TopLevel["game"] {
-    return _top.game;
+	return _top.game;
 }
 
 console.info("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
@@ -44,17 +44,17 @@ console.info("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
  */
 ((): void => {
 if (_top.webpageHostType === TopLevel.WebpageHostType.GITHUB && "serviceWorker" in navigator) {
-    window.addEventListener('load', function() {
-        // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
-        navigator.serviceWorker.register("/ServiceWorker.js").then(
-        (registration) => {
-            console.info('ServiceWorker registration successful with scope: ', registration.scope);
-        },
-        (err) => {
-            console.info('ServiceWorker registration failed: ', err);
-        });
-        // TODO.learn Using Service Workers to make an offline-friendly PWA.
-        // https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
-    });
+	window.addEventListener('load', function() {
+		// https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
+		navigator.serviceWorker.register("/ServiceWorker.js").then(
+		(registration) => {
+			console.info('ServiceWorker registration successful with scope: ', registration.scope);
+		},
+		(err) => {
+			console.info('ServiceWorker registration failed: ', err);
+		});
+		// TODO.learn Using Service Workers to make an offline-friendly PWA.
+		// https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
+	});
 }
 })();

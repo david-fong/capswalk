@@ -10,13 +10,13 @@ type S = BaseCoord.System.BEEHIVE;
  */
 // Separated for tree-shaking.
 export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
-    public constructor(desc: AbstractGrid.CtorArgs<S>) {
-        super(desc);
-        const domGrid: HTMLElement = undefined!;
-        // TODO.impl Beehive VisibleGrid ctor.
-        this._superVisibleGrid(desc, domGrid);
-        domGrid.classList.add(CSS["grid"]);
-    }
+	public constructor(desc: AbstractGrid.CtorArgs<S>) {
+		super(desc);
+		const domGrid: HTMLElement = undefined!;
+		// TODO.impl Beehive VisibleGrid ctor.
+		this._superVisibleGrid(desc, domGrid);
+		domGrid.classList.add(CSS["grid"]);
+	}
 }
 export interface BeehiveVisibleGrid extends VisibleGridMixin<S> { };
 JsUtils.applyMixins(BeehiveVisibleGrid, [VisibleGridMixin]);

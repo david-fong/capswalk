@@ -23,122 +23,122 @@ import { JsUtils } from "defs/JsUtils";
  * @returns
  */
 const REMAP = Object.freeze(<const>{
-    IDENT: (input: string): string => input,
-    LOWER: (input: string): string => input.toLowerCase(),
+	IDENT: (input: string): string => input,
+	LOWER: (input: string): string => input.toLowerCase(),
 });
 REMAP as Readonly<Record<string, {(input: string): string}>>;
 
 export type Info = {
-    id?:        string;
-    /**
-     * Pretty much a file name.
-     */
-    module:     string;
-    /**
-     * A property-access chain.
-     */
-    export:     string;
-    remapFunc:  {(input: string): string};
-    numLeaves:  number;
-    displayName:string;
-    blurb:      string;
+	id?:        string;
+	/**
+	 * Pretty much a file name.
+	 */
+	module:     string;
+	/**
+	 * A property-access chain.
+	 */
+	export:     string;
+	remapFunc:  {(input: string): string};
+	numLeaves:  number;
+	displayName:string;
+	blurb:      string;
 };
 
 /**
  *
  */
 const Descs = <const>{
-    "engl-low": <Info>{
-        module: "English", export: "Lowercase", numLeaves: 26,
-        remapFunc: REMAP.LOWER,
-        displayName: "English Lowercase (qwerty)",
-        blurb: "",
-    },
-    "engl-mix": <Info>{
-        module: "English", export: "MixedCase", numLeaves: 52,
-        remapFunc: REMAP.IDENT,
-        displayName: "English Mixed-Case (Querty)",
-        blurb: "",
-    },
-    "japn-hir": <Info>{
-        module: "Japanese", export: "Hiragana", numLeaves: 71,
-        remapFunc: REMAP.LOWER,
-        displayName: "Japanese Hiragana",
-        blurb: "",
-    },
-    "japn-kat": <Info>{
-        module: "Japanese", export: "Katakana", numLeaves: 69,
-        remapFunc: REMAP.LOWER,
-        displayName: "Japanese Katakana",
-        blurb: "",
-    },
-    "kore-dub": <Info>{
-        module: "Korean", export: "Dubeolsik", numLeaves: 8778,
-        remapFunc: REMAP.IDENT,
-        displayName: "Korean Dubeolsik (두벌식 키보드)",
-        blurb: "The most common keyboard layout, and South Korea's only Hangul"
-        + " standard since 1969. Consonants are on the left, and vowels on"
-        + " the right.",
-    },
-    "kore-sub": <Info>{
-        module: "Korean", export: "Sebeolsik", numLeaves: 10206,
-        remapFunc: REMAP.IDENT,
-        displayName: "Korean Sebeolsik (세벌식 최종 키보드)",
-        blurb: "Another Hangul keyboard layout used in South Korea, and the"
-        + " final Sebeolsik layout designed by Dr. Kong Byung Woo, hence"
-        + " the name. Syllable-initial consonants are on the right, final"
-        + " consonants on the left, and vowels in the middle. It is more"
-        + " ergonomic than the dubeolsik, but not widely used.",
-    },
-    "kore-rom": <Info>{
-        module: "Korean", export: "Romanization", numLeaves: 3990,
-        remapFunc: REMAP.LOWER,
-        displayName: "Korean Revised Romanization",
-        blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
-        + " 表記法) is the official South Korean language romanization system. It"
-        + " was developed by the National Academy of the Korean Language from 1995,"
-        + " and was released on 7 July 2000 by South Korea's Ministry of Culture"
-        + " and Tourism",
-    },
-    "engl-cell-enc": <Info>{
-        module: "English", export: "OldCellphone.Encode", numLeaves: 8,
-        remapFunc: REMAP.IDENT,
-        displayName: "Old Cellphone Keyboard",
-        blurb: "",
-    },
-    "mors-enc": <Info>{
-        module: "English", export: "Morse.Encode", numLeaves: 20,
-        remapFunc: (input) => { return input; }, // TODO.impl
-        displayName: "Morse Encoder",
-        blurb: "",
-    },
-    "mors-dec": <Info>{
-        module: "English", export: "Morse.Decode", numLeaves: 41,
-        remapFunc: REMAP.LOWER,
-        displayName: "Morse Decoder",
-        blurb: "",
-    },
-    "ngram2": <Info>{
-        module: "Ngrams", export: "Ngram2", numLeaves: 200,
-        remapFunc: REMAP.LOWER,
-        displayName: "English Bigrams",
-        blurb: "",
-    },
-    "ngram3": <Info>{
-        module: "Ngrams", export: "Ngram3", numLeaves: 401,
-        remapFunc: REMAP.LOWER,
-        displayName: "English Trigrams",
-        blurb: "",
-    },
-    "numpad": <Info>{
-        module: "Numpad", export: "Numpad", numLeaves: 100,
-        remapFunc: REMAP.LOWER,
-        displayName: "Number Pad",
-        blurb: "",
-    },
+	"engl-low": <Info>{
+		module: "English", export: "Lowercase", numLeaves: 26,
+		remapFunc: REMAP.LOWER,
+		displayName: "English Lowercase (qwerty)",
+		blurb: "",
+	},
+	"engl-mix": <Info>{
+		module: "English", export: "MixedCase", numLeaves: 52,
+		remapFunc: REMAP.IDENT,
+		displayName: "English Mixed-Case (Querty)",
+		blurb: "",
+	},
+	"japn-hir": <Info>{
+		module: "Japanese", export: "Hiragana", numLeaves: 71,
+		remapFunc: REMAP.LOWER,
+		displayName: "Japanese Hiragana",
+		blurb: "",
+	},
+	"japn-kat": <Info>{
+		module: "Japanese", export: "Katakana", numLeaves: 69,
+		remapFunc: REMAP.LOWER,
+		displayName: "Japanese Katakana",
+		blurb: "",
+	},
+	"kore-dub": <Info>{
+		module: "Korean", export: "Dubeolsik", numLeaves: 8778,
+		remapFunc: REMAP.IDENT,
+		displayName: "Korean Dubeolsik (두벌식 키보드)",
+		blurb: "The most common keyboard layout, and South Korea's only Hangul"
+		+ " standard since 1969. Consonants are on the left, and vowels on"
+		+ " the right.",
+	},
+	"kore-sub": <Info>{
+		module: "Korean", export: "Sebeolsik", numLeaves: 10206,
+		remapFunc: REMAP.IDENT,
+		displayName: "Korean Sebeolsik (세벌식 최종 키보드)",
+		blurb: "Another Hangul keyboard layout used in South Korea, and the"
+		+ " final Sebeolsik layout designed by Dr. Kong Byung Woo, hence"
+		+ " the name. Syllable-initial consonants are on the right, final"
+		+ " consonants on the left, and vowels in the middle. It is more"
+		+ " ergonomic than the dubeolsik, but not widely used.",
+	},
+	"kore-rom": <Info>{
+		module: "Korean", export: "Romanization", numLeaves: 3990,
+		remapFunc: REMAP.LOWER,
+		displayName: "Korean Revised Romanization",
+		blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
+		+ " 表記法) is the official South Korean language romanization system. It"
+		+ " was developed by the National Academy of the Korean Language from 1995,"
+		+ " and was released on 7 July 2000 by South Korea's Ministry of Culture"
+		+ " and Tourism",
+	},
+	"engl-cell-enc": <Info>{
+		module: "English", export: "OldCellphone.Encode", numLeaves: 8,
+		remapFunc: REMAP.IDENT,
+		displayName: "Old Cellphone Keyboard",
+		blurb: "",
+	},
+	"mors-enc": <Info>{
+		module: "English", export: "Morse.Encode", numLeaves: 20,
+		remapFunc: (input) => { return input; }, // TODO.impl
+		displayName: "Morse Encoder",
+		blurb: "",
+	},
+	"mors-dec": <Info>{
+		module: "English", export: "Morse.Decode", numLeaves: 41,
+		remapFunc: REMAP.LOWER,
+		displayName: "Morse Decoder",
+		blurb: "",
+	},
+	"ngram2": <Info>{
+		module: "Ngrams", export: "Ngram2", numLeaves: 200,
+		remapFunc: REMAP.LOWER,
+		displayName: "English Bigrams",
+		blurb: "",
+	},
+	"ngram3": <Info>{
+		module: "Ngrams", export: "Ngram3", numLeaves: 401,
+		remapFunc: REMAP.LOWER,
+		displayName: "English Trigrams",
+		blurb: "",
+	},
+	"numpad": <Info>{
+		module: "Numpad", export: "Numpad", numLeaves: 100,
+		remapFunc: REMAP.LOWER,
+		displayName: "Number Pad",
+		blurb: "",
+	},
 };
 Object.entries(Descs).forEach(([id,desc]) => {
-    desc.id = id;
+	desc.id = id;
 });
 JsUtils.deepFreeze(Descs);
 export default Descs;

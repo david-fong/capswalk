@@ -17,103 +17,103 @@ import { SkSockets }    from "./SkSockets";
  */
 export class TopLevel {
 
-    public readonly defaultDocTitle: string;
+	public readonly defaultDocTitle: string;
 
-    public readonly webpageHostType: TopLevel.WebpageHostType;
+	public readonly webpageHostType: TopLevel.WebpageHostType;
 
-    public readonly storage: typeof StorageHooks;
+	public readonly storage: typeof StorageHooks;
 
-    public readonly transition: ScreenTransition;
-    /**
-     * Purposely made private. Screens are intended to navigate
-     * between each other without reference to this field.
-     */
-    readonly #allScreens: AllSkScreens;
+	public readonly transition: ScreenTransition;
+	/**
+	 * Purposely made private. Screens are intended to navigate
+	 * between each other without reference to this field.
+	 */
+	readonly #allScreens: AllSkScreens;
 
-    //public readonly bgMusic: BgMusic;
-    //public readonly sfx: SoundEffects;
+	//public readonly bgMusic: BgMusic;
+	//public readonly sfx: SoundEffects;
 
-    public readonly sockets: SkSockets;
+	public readonly sockets: SkSockets;
 
-    /**
-     */
-    public get clientIsGroupHost(): boolean {
-        return this.#allScreens.dict.groupJoiner.clientIsGroupHost;
-    }
-    public get groupLoginInfo(): Readonly<{ name?: string, passphrase?: string }> {
-        return this.#allScreens.dict.groupJoiner.loginInfo;
-    }
+	/**
+	 */
+	public get clientIsGroupHost(): boolean {
+		return this.#allScreens.dict.groupJoiner.clientIsGroupHost;
+	}
+	public get groupLoginInfo(): Readonly<{ name?: string, passphrase?: string }> {
+		return this.#allScreens.dict.groupJoiner.loginInfo;
+	}
 
 
-    public constructor() {
-        this.defaultDocTitle = document.title;
-        this.webpageHostType = (() => {
-            if (window.location.hostname.match(/github\.io/)) {
-                return TopLevel.WebpageHostType.GITHUB;
-            } else if (window.location.protocol.startsWith("file")) {
-                return TopLevel.WebpageHostType.FILESYSTEM;
-            } else {
-                return TopLevel.WebpageHostType.SNAKEY_SERVER;
-            }
-        })();
-        JsUtils.propNoWrite(this as TopLevel, [
-            "defaultDocTitle", "webpageHostType",
-        ]);
+	public constructor() {
+		this.defaultDocTitle = document.title;
+		this.webpageHostType = (() => {
+			if (window.location.hostname.match(/github\.io/)) {
+				return TopLevel.WebpageHostType.GITHUB;
+			} else if (window.location.protocol.startsWith("file")) {
+				return TopLevel.WebpageHostType.FILESYSTEM;
+			} else {
+				return TopLevel.WebpageHostType.SNAKEY_SERVER;
+			}
+		})();
+		JsUtils.propNoWrite(this as TopLevel, [
+			"defaultDocTitle", "webpageHostType",
+		]);
 
-        this.storage = StorageHooks;
-        this.sockets = new SkSockets();
-        this.transition = new ScreenTransition();
-        JsUtils.propNoWrite(this as TopLevel, [
-            "storage", "sockets", "transition",
-        ]);
+		this.storage = StorageHooks;
+		this.sockets = new SkSockets();
+		this.transition = new ScreenTransition();
+		JsUtils.propNoWrite(this as TopLevel, [
+			"storage", "sockets", "transition",
+		]);
 
-        const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
-        if (!allScreensElem) { throw new Error("never"); }
-        JsUtils.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
-        this.#allScreens = new AllSkScreens(this, allScreensElem);
+		const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
+		if (!allScreensElem) { throw new Error("never"); }
+		JsUtils.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
+		this.#allScreens = new AllSkScreens(this, allScreensElem);
 
-        //
-        // this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
-        // this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
-        JsUtils.propNoWrite(this as TopLevel, [
-            /* "bgMusic", "sfx", */ // TODO.build uncomment when music classes implemented.
-        ]);
-    }
+		//
+		// this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
+		// this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
+		JsUtils.propNoWrite(this as TopLevel, [
+			/* "bgMusic", "sfx", */ // TODO.build uncomment when music classes implemented.
+		]);
+	}
 
-    public toast(message: string): void {
-        // TODO.impl
-        console.info(message);
-    }
-    public confirm(message: string): boolean {
-        // TODO.impl
-        return window.confirm(message);
-    }
+	public toast(message: string): void {
+		// TODO.impl
+		console.info(message);
+	}
+	public confirm(message: string): boolean {
+		// TODO.impl
+		return window.confirm(message);
+	}
 
-    /**
-     * @deprecated
-     * For debugging purposes- especially in the browser console.
-     *
-     * Not actually deprecated :P
-     */
-    public get game(): BrowserGameMixin<Game.Type.Browser,Coord.System> | undefined {
-        return (this.#allScreens.dict.playOffline).probeCurrentGame
-            ?? (this.#allScreens.dict.playOnline ).probeCurrentGame;
-    }
+	/**
+	 * @deprecated
+	 * For debugging purposes- especially in the browser console.
+	 *
+	 * Not actually deprecated :P
+	 */
+	public get game(): BrowserGameMixin<Game.Type.Browser,Coord.System> | undefined {
+		return (this.#allScreens.dict.playOffline).probeCurrentGame
+			?? (this.#allScreens.dict.playOnline ).probeCurrentGame;
+	}
 
-    /**
-     * @deprecated
-     * For debugging purposes- especially in the browser console.
-     */
-    public get currentScreen(): SkScreen<SkScreen.Id> {
-        return this.#allScreens.currentScreen;
-    }
+	/**
+	 * @deprecated
+	 * For debugging purposes- especially in the browser console.
+	 */
+	public get currentScreen(): SkScreen<SkScreen.Id> {
+		return this.#allScreens.currentScreen;
+	}
 }
 export namespace TopLevel {
-    export const enum WebpageHostType {
-        GITHUB        = "github",
-        FILESYSTEM    = "filesystem",
-        SNAKEY_SERVER = "sk-server",
-    }
+	export const enum WebpageHostType {
+		GITHUB        = "github",
+		FILESYSTEM    = "filesystem",
+		SNAKEY_SERVER = "sk-server",
+	}
 }
 Object.freeze(TopLevel);
 Object.freeze(TopLevel.prototype);

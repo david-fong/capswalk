@@ -11,24 +11,24 @@ type S = BaseCoord.System.EUCLID2;
  */
 // Separated for tree-shaking.
 export class Euclid2VisibleGrid extends Euclid2.Grid implements VisibleGrid<S> {
-    /**
-     * @override
-     */
-    declare protected readonly grid: TU.RoArr<TU.RoArr<VisibleTile<S>>>;
+	/**
+	 * @override
+	 */
+	declare protected readonly grid: TU.RoArr<TU.RoArr<VisibleTile<S>>>;
 
-    public constructor(desc: AbstractGrid.CtorArgs<S>) {
-        super(desc);
-        const gridElem = JsUtils.mkEl("div", []);
-        gridElem.style.setProperty("--euclid2-grid-width",  this.dimensions.width.toString());
-        // At below use of for loop without breaks: For shallower stack when debugging.
-        for (const row of this.grid) {
-            for (const tile of row) {
-                tile._addToDom(gridElem);
-            }
-        }
-        this._superVisibleGrid(desc, gridElem);
-        gridElem.classList.add(CSS["grid"]);
-    }
+	public constructor(desc: AbstractGrid.CtorArgs<S>) {
+		super(desc);
+		const gridElem = JsUtils.mkEl("div", []);
+		gridElem.style.setProperty("--euclid2-grid-width",  this.dimensions.width.toString());
+		// At below use of for loop without breaks: For shallower stack when debugging.
+		for (const row of this.grid) {
+			for (const tile of row) {
+				tile._addToDom(gridElem);
+			}
+		}
+		this._superVisibleGrid(desc, gridElem);
+		gridElem.classList.add(CSS["grid"]);
+	}
 }
 export interface Euclid2VisibleGrid extends VisibleGridMixin<S> { };
 JsUtils.applyMixins(Euclid2VisibleGrid, [VisibleGridMixin]);
