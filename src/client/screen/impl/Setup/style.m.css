@@ -1,22 +1,22 @@
 
 .this {
-    display: grid;
-    justify-content: center;
-    justify-items: center;
-    align-content: center;
-    align-items: center;
-    gap: 1.0em;
+	display: grid;
+	justify-content: center;
+	justify-items: center;
+	align-content: center;
+	align-items: center;
+	gap: 1.0em;
 }
 
 .this :global(.screen--prev-button),
 .this :global(.screen--next-button) {
-    padding: 0.3em 0.7em;
-    font-size: 2.0em;
+	padding: 0.3em 0.7em;
+	font-size: 2.0em;
 }
 
 .lang-sel {
 }
 
 .lang-weight-exagg {
-    width: 100%;
+	width: 100%;
 }

@@ -1,39 +1,39 @@
 .this {
-    display:        grid;
-    justify-items:  center;
-    align-content:  center;
+	display:        grid;
+	justify-items:  center;
+	align-content:  center;
 }
 
 .client-info-section {
-    --spacing:       0.2em;
-    --border-radius: 0.8em;
-    gap: 0.2em; margin: 0.2em;
-    height:  6em; max-height: 80vh;
-    width:  15em; /* max-width:  30vw; */
-    display:        grid;
-    grid-template-rows: 1fr 1fr;
+	--spacing:       0.2em;
+	--border-radius: 0.8em;
+	gap: 0.2em; margin: 0.2em;
+	height:  6em; max-height: 80vh;
+	width:  15em; /* max-width:  30vw; */
+	display:        grid;
+	grid-template-rows: 1fr 1fr;
 }
 
 .teams-section {
-    display:        grid;
+	display:        grid;
 }
 
 .team {
 }
 
 .player {
-    max-width: 20em;
-    display: grid;
-    grid-template-columns: 3em 2em 1fr;
+	max-width: 20em;
+	display: grid;
+	grid-template-columns: 3em 2em 1fr;
 }
 .player * {
-    pointer-events: none;
+	pointer-events: none;
 }
 .player__name {
-    justify-self: start;
-    padding-inline-start: 0.5em;
+	justify-self: start;
+	padding-inline-start: 0.5em;
 }
 
 .this :global(.screen--next-button):disabled {
-    display: none;
+	display: none;
 }

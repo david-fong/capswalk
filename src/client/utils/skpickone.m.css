@@ -1,33 +1,33 @@
 
 .this {
-    display:        flex;
-    flex-direction: column;
-    align-items:    stretch;
-    overflow-x:     hidden;
-    overflow-y:     auto;
+	display:        flex;
+	flex-direction: column;
+	align-items:    stretch;
+	overflow-x:     hidden;
+	overflow-y:     auto;
 
-    border-color:   var(--colour-tileBd);
-    text-align:     start;
+	border-color:   var(--colour-tileBd);
+	text-align:     start;
 }
 .this:focus {
-    outline:        none;
+	outline:        none;
 }
 
 .opt {
-    overflow:   hidden hidden;
-    cursor:     default;
-    transition-property: opacity;
-    transition-duration: 0.35s;
-    transition-timing-function: ease-out;
+	overflow:   hidden hidden;
+	cursor:     default;
+	transition-property: opacity;
+	transition-duration: 0.35s;
+	transition-timing-function: ease-out;
 }
 .this:focus .opt:not([aria-active-descendant="true"]):not([aria-selected="true"]) {
-    opacity:    0.4;
+	opacity:    0.4;
 }
 .opt[aria-selected="true"] {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 
 .this[aria-invalid="true"] {
-    border-style: dotted;
-    border-width: 0.3rem;
+	border-style: dotted;
+	border-width: 0.3rem;
 }

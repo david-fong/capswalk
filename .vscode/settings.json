@@ -57,4 +57,14 @@
     "css.lint.validProperties": [
         "composes",
     ],
+
+    "[typescript]": {
+        "editor.insertSpaces": false,
+    },
+    "[css]": {
+        "editor.insertSpaces": false,
+    },
+    "[html]": {
+        "editor.insertSpaces": false,
+    },
 }

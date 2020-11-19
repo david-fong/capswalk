@@ -1,12 +1,12 @@
 
 .grid {
-    --track-size: 1.67em;
-    display:    grid;
-    grid-template-columns:
-        repeat(var(--euclid2-grid-width), var(--track-size));
-    grid-auto-rows: var(--track-size);
+	--track-size: 1.67em;
+	display:    grid;
+	grid-template-columns:
+		repeat(var(--euclid2-grid-width), var(--track-size));
+	grid-auto-rows: var(--track-size);
 }
 .grid > * {
-    margin:     5%;
-    scroll-snap-align: center;
+	margin:     5%;
+	scroll-snap-align: center;
 }

@@ -1,29 +1,29 @@
 
 .fill-parent {
-    position: absolute;
-    top: 0; right: 0; bottom: 0; left: 0;
-    overflow: hidden hidden;
+	position: absolute;
+	top: 0; right: 0; bottom: 0; left: 0;
+	overflow: hidden hidden;
 }
 
 .text-select-disabled {
-    user-select:        none;
-    -moz-user-select:   none;
-    -webkit-user-select:none;
-    -ms-user-select:    none;
+	user-select:        none;
+	-moz-user-select:   none;
+	-webkit-user-select:none;
+	-ms-user-select:    none;
 }
 
 .center-contents {
-    display:            inline-flex;
-    justify-content:    center;
-    align-content:      center;
-    justify-items:      center;
-    align-items:        center;
+	display:            inline-flex;
+	justify-content:    center;
+	align-content:      center;
+	justify-items:      center;
+	align-items:        center;
 }
 .stack-contents {
-    position:   relative;
+	position:   relative;
 }
 .stack-contents > * {
-    position:   absolute;
+	position:   absolute;
 }
 
 
@@ -31,47 +31,47 @@
 calculations except by setting its own items'
 margins and padding, and its own padding. */
 .sk-input-group {
-    background-color: var(--colour-mainBg);
-    padding: var(--spacing);
-    border-radius: calc(
-        var(--border-radius) + (2.0 * var(--spacing))
-    );
+	background-color: var(--colour-mainBg);
+	padding: var(--spacing);
+	border-radius: calc(
+		var(--border-radius) + (2.0 * var(--spacing))
+	);
 }
 .sk-input-group > * {
-    contain:        strict;
-    position:       relative;
+	contain:        strict;
+	position:       relative;
 }
 .sk-input-group input.sk-input-group-item {
-    padding:        0px;
+	padding:        0px;
 }
 .sk-input-group input.sk-input-group-item:invalid {
-    border-style:   dotted;
+	border-style:   dotted;
 }
 .sk-input-group .sk-input-group-item {
-    border-radius:  var(--border-radius);
-    margin:         var(--spacing);
-    border:   0px solid var(--colour-tileBg);
-    color:              var(--colour-tileFg);
-    background-color:   var(--colour-tileBg);
-    transition: all 0.15s ease-in;
+	border-radius:  var(--border-radius);
+	margin:         var(--spacing);
+	border:   0px solid var(--colour-tileBg);
+	color:              var(--colour-tileFg);
+	background-color:   var(--colour-tileBg);
+	transition: all 0.15s ease-in;
 }
 /* Note: The javascript focuses these on pointer entry. */
 .sk-input-group .sk-input-group-item:focus {
-    outline:        none;
-    border-color:   var(--colour-tileBd);
-    animation: 0.4s ease-in-out -0.5s infinite alternate sk-input-group-item-focus;
+	outline:        none;
+	border-color:   var(--colour-tileBd);
+	animation: 0.4s ease-in-out -0.5s infinite alternate sk-input-group-item-focus;
 }
 .sk-input-group:focus-within .sk-input-group-item:not(:focus) {
-    filter:         brightness(0.9);
-    opacity:        0.6;
+	filter:         brightness(0.9);
+	opacity:        0.6;
 }
 @keyframes sk-input-group-item-focus {
-    from {
-        margin: calc(var(--spacing) / 3.0);
-        border-width: calc(1.2 * var(--spacing));
-    }
-    to {
-        margin: calc(var(--spacing) * 2.0 / 3.0);
-        border-width: calc(1.4 * var(--spacing));
-    }
+	from {
+		margin: calc(var(--spacing) / 3.0);
+		border-width: calc(1.2 * var(--spacing));
+	}
+	to {
+		margin: calc(var(--spacing) * 2.0 / 3.0);
+		border-width: calc(1.4 * var(--spacing));
+	}
 }

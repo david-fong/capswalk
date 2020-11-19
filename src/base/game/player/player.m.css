@@ -1,46 +1,46 @@
 
 .this {
-    /* DO NOT create a new stacking context. Doing so
-    breaks the ability for the spotlight to hide faraway
-    tile sequence hints. If this requirement becomes a
-    major hinderance, then consider making it an HTML
-    child of a tile instead of a player (would double
-    the number of DOM operations per operator movement. */
-    --colour-spotlight: var(--colour-mainBg);
-    contain: size;
+	/* DO NOT create a new stacking context. Doing so
+	breaks the ability for the spotlight to hide faraway
+	tile sequence hints. If this requirement becomes a
+	major hinderance, then consider making it an HTML
+	child of a tile instead of a player (would double
+	the number of DOM operations per operator movement. */
+	--colour-spotlight: var(--colour-mainBg);
+	contain: size;
 }
 .face {
-    pointer-events: initial;
-    box-sizing: border-box;
-    border: var(--border-width) solid transparent;
-    border-radius: var(--border-radius);
+	pointer-events: initial;
+	box-sizing: border-box;
+	border: var(--border-width) solid transparent;
+	border-radius: var(--border-radius);
 }
 .face {
-    z-index:        11;
-    border-color:   var(--colour-tileBd);
-    contain:        strict;
-    transition:     background-color 0.7s ease-in-out;
+	z-index:        11;
+	border-color:   var(--colour-tileBd);
+	contain:        strict;
+	transition:     background-color 0.7s ease-in-out;
 }
 .spotlight-short,
 .spotlight-long {
-    will-change: transform;
+	will-change: transform;
 }
 .this[data-face="me"] > .face {
-    z-index:        21;
-    /* Both `contain` and `will-change` are required
-    here to constrain repaints (due to animations) on
-    this element to the smallest possible box. It is
-    also required to put the spotlights on separate
-    compositing layers. */
-    will-change:    transform;
+	z-index:        21;
+	/* Both `contain` and `will-change` are required
+	here to constrain repaints (due to animations) on
+	this element to the smallest possible box. It is
+	also required to put the spotlights on separate
+	compositing layers. */
+	will-change:    transform;
 }
 .downed-overlay {
-    z-index: 12;
-    background-color: red;
-    opacity: 0.2;
+	z-index: 12;
+	background-color: red;
+	opacity: 0.2;
 }
 .this[data-downed="no"] .downed-overlay {
-    visibility: hidden;
+	visibility: hidden;
 }
 
 /* Only applied for clientside operator player since
@@ -48,11 +48,11 @@ using certain properties will create a new stacking
 context, and we decided that we will allow this for
 such players' face element. */
 /* .this[data-face="me"] > .anim-player__on-move {
-    animation: 0.2s
-            anim-frames-player__on-move;
+	animation: 0.2s
+			anim-frames-player__on-move;
 } */@keyframes anim-frames-player__on-move {
-     0% { transform: scale(1.1); }
-    37% { transform: scale(1.3); }
+	 0% { transform: scale(1.1); }
+	37% { transform: scale(1.3); }
 }
 
 
@@ -62,55 +62,55 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
 https://www.w3schools.com/cssref/pr_background-blend-mode.asp
  */
 .spotlight-short {
-    z-index: 10;
-    background-image: radial-gradient(
-        farthest-side,
-        transparent 21%, 46%, var(--colour-spotlight)
-    );
-    padding:    1400%;
-    border:     100vmax solid var(--colour-spotlight);
+	z-index: 10;
+	background-image: radial-gradient(
+		farthest-side,
+		transparent 21%, 46%, var(--colour-spotlight)
+	);
+	padding:    1400%;
+	border:     100vmax solid var(--colour-spotlight);
 }
 .spotlight-long {
-    z-index: 20;
-    background-image: radial-gradient(
-        farthest-side,
-        transparent 15%, var(--colour-spotlight)
-    );
-    padding:    1700%;
-    border:     100vmax solid var(--colour-spotlight);
-    opacity:    0.92;
+	z-index: 20;
+	background-image: radial-gradient(
+		farthest-side,
+		transparent 15%, var(--colour-spotlight)
+	);
+	padding:    1700%;
+	border:     100vmax solid var(--colour-spotlight);
+	opacity:    0.92;
 }
 @media print {
-    .spotlight-short {
-        visibility: hidden;
-    }
-    .spotlight-long {
-        visibility: hidden;
-    }
+	.spotlight-short {
+		visibility: hidden;
+	}
+	.spotlight-long {
+		visibility: hidden;
+	}
 }
 
 
 .this[data-face="me"] > .face/* ,
 .this[data-face="me"] ~ .tile__char */ {
-    background-color: var(--colour-pFaceMe);
+	background-color: var(--colour-pFaceMe);
 }
 .this[data-face="meOppo"] > .face/* ,
 .this[data-face="meOppo"] ~ .tile__char */ {
-    background-color: var(--colour-pFaceMeOppo);
+	background-color: var(--colour-pFaceMeOppo);
 }
 .this[data-face="teammate"] > .face/* ,
 .this[data-face="teammate"] ~ .tile__char */ {
-    background-color: var(--colour-pFaceTeammate);
+	background-color: var(--colour-pFaceTeammate);
 }
 .this[data-face="opponent"] > .face/* ,
 .this[data-face="opponent"] ~ .tile__char */ {
-    background-color: var(--colour-pFaceOpponent);
+	background-color: var(--colour-pFaceOpponent);
 }
 .this[data-face="teammate"][data-downed="team"] > .face/* ,
 .this[data-face="teammate"][data-downed="team"] ~ .tile__char */ {
-    background-color: var(--colour-pFaceImtlTeammate);
+	background-color: var(--colour-pFaceImtlTeammate);
 }
 .this[data-face="opponent"][data-downed="team"] > .face/* ,
 .this[data-face="opponent"][data-downed="team"] ~ .tile__char */ {
-    background-color: var(--colour-pFaceImtlOpponent);
+	background-color: var(--colour-pFaceImtlOpponent);
 }

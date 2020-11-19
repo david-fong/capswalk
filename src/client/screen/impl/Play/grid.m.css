@@ -1,63 +1,63 @@
 
 .this {
-    /* Since this is given the `center-contents` and
-    `stack-contents` classes, it defaults to taking
-    up no space (its children all have their position
-    property set to `absolute`). We rectify this case
-    by giving `.impl-body` `position: static`. */
-    contain:        content;
-    height:         100%;
-    /* width:          fit-content; */
-    display:        grid;
-    align-content:  center;
+	/* Since this is given the `center-contents` and
+	`stack-contents` classes, it defaults to taking
+	up no space (its children all have their position
+	property set to `absolute`). We rectify this case
+	by giving `.impl-body` `position: static`. */
+	contain:        content;
+	height:         100%;
+	/* width:          fit-content; */
+	display:        grid;
+	align-content:  center;
 
-    /* This would make it impossible to scroll if it
-    covers the screen like it might in our vertical
-    layout. That's why it's commented out right now. */
-    /* overscroll-behavior: contain; */
+	/* This would make it impossible to scroll if it
+	covers the screen like it might in our vertical
+	layout. That's why it's commented out right now. */
+	/* overscroll-behavior: contain; */
 }
 .this,
 .scroll-outer {
-    position:       relative;
+	position:       relative;
 }
 /* .intersection-root {
-    position:       fixed;
-    z-index:        100;
-    pointer-events: none;
-    padding:        20%;
+	position:       fixed;
+	z-index:        100;
+	pointer-events: none;
+	padding:        20%;
 } */
 
 .scroll-outer {
-    contain:        style; /* Do not use contain. */
-    overflow:       auto auto;
-    /* overflow: overlay overlay; */
-    scroll-snap-type: both;
-    scrollbar-width: none;
-    box-sizing:     border-box;
-    border:         5px double var(--colour-tileBd);
-    border-radius:  15px;
+	contain:        style; /* Do not use contain. */
+	overflow:       auto auto;
+	/* overflow: overlay overlay; */
+	scroll-snap-type: both;
+	scrollbar-width: none;
+	box-sizing:     border-box;
+	border:         5px double var(--colour-tileBd);
+	border-radius:  15px;
 }
 .scroll-outer::-webkit-scrollbar {
-    width:  0px;
-    height: 0px;
+	width:  0px;
+	height: 0px;
 }
 
 .pause-overlay {
-    pointer-events: none;
-    contain:        strict;
-    cursor:         pointer;
-    position:       fixed;
-    padding:        3em;
-    border-radius:  inherit;
-    color:          white;
-    visibility:     hidden;
+	pointer-events: none;
+	contain:        strict;
+	cursor:         pointer;
+	position:       fixed;
+	padding:        3em;
+	border-radius:  inherit;
+	color:          white;
+	visibility:     hidden;
 }
 .pause-overlay {
-    z-index: 2;
+	z-index: 2;
 }
 
 @media screen {
-    .this:focus {
-        outline:    none;
-    }
+	.this:focus {
+		outline:    none;
+	}
 }

@@ -1,17 +1,17 @@
 /*
 :import("./tile.m.css") {
-    _tile: this;
-    _tile__char: char;
-    _tile__seq: seq;
+	_tile: this;
+	_tile__char: char;
+	_tile__seq: seq;
 }
 :import("./grid.m.css") {
-    _grid-impl-body: impl-body;
+	_grid-impl-body: impl-body;
 }
 :import("../game/player/player.m.css") {
-    _player: this;
-    _player__face: face;
-    _player__spotlight-long: spotlight-long;
-    _player__spotlight-short: spotlight-short;
+	_player: this;
+	_player__face: face;
+	_player__spotlight-long: spotlight-long;
+	_player__spotlight-short: spotlight-short;
 }
 */
 

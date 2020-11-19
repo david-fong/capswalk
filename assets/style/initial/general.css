@@ -1,70 +1,70 @@
 
 /* If anything goes into fullscreen mode: */
 ::backdrop {
-    background-color: var(--colour-mainBg);
+	background-color: var(--colour-mainBg);
 }
 @media (light-level: dim) {
-    body {
-        filter: brightness(0.7);
-    }
+	body {
+		filter: brightness(0.7);
+	}
 }
 
 html {
-    scroll-behavior: smooth;
+	scroll-behavior: smooth;
 }
 
 body {
-    margin: 0;
-    font-family:
-        "Trebuchet MS",
-        "Lucida Sans Unicode",
-        "MS PGothic"            /* Japanese */
-        ;
-    font-weight:    bold;
-    color:          var(--colour-mainFg);
-    text-align:     center;
-    transition:     filter 0.5s ease-in-out;
+	margin: 0;
+	font-family:
+		"Trebuchet MS",
+		"Lucida Sans Unicode",
+		"MS PGothic"            /* Japanese */
+		;
+	font-weight:    bold;
+	color:          var(--colour-mainFg);
+	text-align:     center;
+	transition:     filter 0.5s ease-in-out;
 }
 
 :disabled {
-    cursor:         not-allowed;
+	cursor:         not-allowed;
 }
 
 * {
-    scrollbar-width: thin;
-    scrollbar-color: transparent;
-    scrollbar-track-color: var(--colour-tileBd);
+	scrollbar-width: thin;
+	scrollbar-color: transparent;
+	scrollbar-track-color: var(--colour-tileBd);
 }
 ::-webkit-scrollbar {
-    width:  8px;
-    height: 8px;
+	width:  8px;
+	height: 8px;
 }
 ::-webkit-scrollbar-track {
-    background-color: transparent;
+	background-color: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background:     var(--colour-tileBd);
-    border-radius:  30px;
-    border: 2px solid transparent;
+	background:     var(--colour-tileBd);
+	border-radius:  30px;
+	border: 2px solid transparent;
 }
 ::-webkit-scrollbar-corner {
-    visibility:     hidden;
+	visibility:     hidden;
 }
 
 table {
-    border-spacing: 0;
+	border-spacing: 0;
 }
 button {
-    font:       inherit;
-    color:      inherit;
-    padding:    0px;
-    background-color: var(--colour-tileBg);
+	font:       inherit;
+	color:      inherit;
+	padding:    0px;
+	background-color: var(--colour-tileBg);
 }
 button:disabled {
-    opacity:    0.7;
+	opacity:    0.7;
 }
 input {
-    font:           inherit;
-    text-align:     inherit;
-    box-sizing:     border-box;
+	font:           inherit;
+	text-align:     inherit;
+	box-sizing:     border-box;
 }
