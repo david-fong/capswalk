@@ -114,7 +114,7 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 	// https://webpack.js.org/plugins/source-map-dev-tool-plugin/
 	devtool: (PACK_MODE === "production")
 		? "nosources-source-map"
-		: "eval-cheap-source-map",
+		: "cheap-source-map",
 	output: {
 		path: path.resolve(PROJECT_ROOT, "dist", distSubFolder),
 		publicPath: `./`, // need trailing "/".
@@ -214,7 +214,7 @@ const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>
 	config.output.devtoolModuleFilenameTemplate = "../[resource-path]?[loaders]";
 	config.devtool = (PACK_MODE === "production")
 		? "cheap-module-source-map"
-		: "eval-cheap-module-source-map";
+		: "cheap-module-source-map";
 };
 
 /**

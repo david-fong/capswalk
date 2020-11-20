@@ -161,6 +161,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			const nullSeq = Lang.CharSeqPair.NULL.seq;
 			avoid = avoid.filter((seq) => seq !== nullSeq);
 		}
+		Object.freeze(avoid);
 		return this.lang.getNonConflictingChar(avoid);
 	}
 

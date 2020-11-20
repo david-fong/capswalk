@@ -1,3 +1,7 @@
 #!/bin/sh
 # This is for development purposes only.
-node --enable-source-maps --interactive --eval='require("./dist/server/index.js")'
+
+# --frozen-intrinsics \ # cjs >:(
+# --experimental-policy='policy.json' \
+# --disallow-code-generation-from-strings # >:( depd
+node --enable-source-maps --disable-proto=delete "./dist/server/index.js"

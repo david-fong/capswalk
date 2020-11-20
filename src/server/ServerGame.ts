@@ -2,7 +2,7 @@ import type * as io from "socket.io";
 import { setTimeout } from "timers";
 
 import { JsUtils } from "defs/JsUtils";
-import { GameEv, Group, GroupEv, SkServer } from "defs/OnlineDefs";
+import { GameEv, GroupEv, SkServer } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import { Coord, Tile } from "floor/Tile";
 import { Grid } from "floor/Grid";

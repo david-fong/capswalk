@@ -23,7 +23,7 @@
         "scripts/webpack/*.js": true,
     },
     "files.associations": {
-        "**/dist/{client,server}/**/*.js": "json", // Loads bundled js much faster.
+        //"**/dist/{client,server}/**/*.js": "json", // Loads bundled js much faster.
     },
     "json.schemas": [
         {
