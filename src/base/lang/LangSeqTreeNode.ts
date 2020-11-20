@@ -19,7 +19,7 @@ export namespace LangSeqTree {
 		 * Equals this node's own weighted hit count plus all its ancestors'
 		 * weighted hit counts.
 		 */
-		protected branchHits: number;
+		protected carryHits: number;
 
 		public constructor() {
 			this.children = [];
@@ -28,7 +28,7 @@ export namespace LangSeqTree {
 
 		public reset(): void {
 			for (const child of this.children) child.reset();
-			this.branchHits = 0.000;
+			this.carryHits = 0.000;
 		}
 
 		protected _finalize(): void {
@@ -86,7 +86,7 @@ export namespace LangSeqTree {
 			let cursor: ChildNode | ParentNode = rootNode;
 			for (const [seq, chars] of Array.from(reverseDict).sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1)) {
 				while (!seq.startsWith(cursor.seq)) {
-					cursor = (cursor as ChildNode).parent;
+					cursor = (cursor as ChildNode).parent ?? rootNode;
 				}
 				const newChild: ChildNode = new ChildNode(cursor, seq, chars);
 				((cursor as ParentNode).children as ChildNode[]).push(newChild);
@@ -97,7 +97,7 @@ export namespace LangSeqTree {
 		}
 
 		public static readonly LEAF_CMP: LangSorter<ChildNode> = (a, b) => {
-			return a.branchHits - b.branchHits;
+			return a.carryHits - b.carryHits;
 		};
 	}
 	JsUtils.protoNoEnum(ParentNode, ["_finalize", "_rGetLeaves"]);
@@ -119,8 +119,11 @@ export namespace LangSeqTree {
 	 */
 	export class ChildNode extends ParentNode {
 
+		/**
+		 * Is `undefined` if this is a child of the root node.
+		 */
+		public readonly parent: ChildNode | undefined;
 		public readonly seq: Lang.Seq;
-		public readonly parent: ChildNode | ParentNode;
 		readonly #characters: TU.RoArr<WeightedLangChar>;
 
 		public constructor(
@@ -129,9 +132,9 @@ export namespace LangSeqTree {
 			characters: TU.RoArr<WeightedLangChar>,
 		) {
 			super();
-			this.seq    = sequence;
+			this.seq = sequence;
 			this.#characters = characters;
-			this. parent     = parent;
+			this.parent = (parent instanceof ChildNode) ? parent : undefined;
 			JsUtils.propNoWrite(this as ChildNode, ["seq", "parent"]);
 		}
 
@@ -167,17 +170,17 @@ export namespace LangSeqTree {
 		 *      been selected the least according to the specified scheme.
 		 */
 		public chooseOnePair(): Lang.CharSeqPair {
-			let weightedChar: WeightedLangChar = this.#characters[0];
-			for (const otherWeightedChar of this.#characters) {
-				if (otherWeightedChar.weightedHitCount < weightedChar.weightedHitCount) {
-					weightedChar = otherWeightedChar;
+			let wgtChar: WeightedLangChar = this.#characters[0];
+			for (const wc of this.#characters) {
+				if (wc.hits < wgtChar.hits) {
+					wgtChar = wc;
 				}
 			}
 			const pair: Lang.CharSeqPair = {
-				char: weightedChar.char,
+				char: wgtChar.char,
 				seq:  this.seq,
 			};
-			this.incrHits(weightedChar);
+			this.incrHits(wgtChar);
 			return pair;
 		}
 		private incrHits(wCharToHit: WeightedLangChar, numTimes: number = 1): void {
@@ -185,27 +188,12 @@ export namespace LangSeqTree {
 			this._rIncrHits(wCharToHit.weightInv * numTimes);
 		}
 		private _rIncrHits(weightInv: number): void {
-			this.branchHits += weightInv;
+			this.carryHits += weightInv;
 			for (const child of this.children) child._rIncrHits(weightInv);
 		}
 
 		public get ownHits(): number {
-			return this.branchHits
-			- (this.parent as ChildNode).branchHits;
-			// The above cast is only to allow us to access a
-			// protected property from the parent in this subclass.
-		}
-
-		public andNonRootParents(): Array<ChildNode> {
-			const upstreamNodes: Array<ChildNode> = [];
-			for (
-				let node: ParentNode | ChildNode = this;
-				node instanceof ChildNode;
-				node = node.parent
-			) {
-				upstreamNodes.push(node);
-			}
-			return upstreamNodes;
+			return this.carryHits - (this.parent?.carryHits ?? 0);
 		}
 
 		/**
@@ -228,6 +216,8 @@ export namespace LangSeqTree {
 	Object.freeze(ChildNode);
 	Object.freeze(ChildNode.prototype);
 
+	/**
+	 */
 	export function GET_SCALE_WEIGHT_FUNC(
 		weightScaling: Lang.WeightExaggeration,
 		forwardDict: Lang.CharSeqPair.WeightedForwardMap,
@@ -280,7 +270,10 @@ class WeightedLangChar {
 	 * hit-counts before they were returned, since the last reset.
 	 */
 	public readonly weightInv: number;
-	public weightedHitCount: number;
+	/**
+	 * This value is weighted according to `weightInv`.
+	 */
+	public hits: number;
 
 	public constructor(
 		char: Lang.Char,
@@ -294,11 +287,11 @@ class WeightedLangChar {
 	}
 
 	public reset(): void {
-		this.weightedHitCount = 0.000;
+		this.hits = 0.000;
 	}
 
 	public _incrementNumHits(): void {
-		this.weightedHitCount += this.weightInv;
+		this.hits += this.weightInv;
 	}
 
 	public simpleView(): object {
@@ -308,7 +301,7 @@ class WeightedLangChar {
 	}
 
 	public static readonly CMP: LangSorter<WeightedLangChar> = (a, b) => {
-		return a.weightedHitCount - b.weightedHitCount;
+		return a.hits - b.hits;
 	};
 };
 Object.freeze(WeightedLangChar);

@@ -115,53 +115,47 @@ export abstract class Lang extends _Lang {
 		// characters from nodes that are not descendants or ancestors
 		// of nodes for sequences to avoid. We can be sure that none of
 		// the ancestors or descendants of avoid-nodes are avoid-nodes.
+		type ChildNode = LangSeqTree.ChildNode;
 
 		// Start by sorting according to the desired balancing scheme:
 		this.leafNodes.sort(LangSeqTree.ParentNode.LEAF_CMP);
 
-		let nodeToHit: LangSeqTree.ChildNode | undefined = undefined;
 		for (const leaf of this.leafNodes) {
 			// Take the next leaf node (don't remove it!), and if none of
 			// its parents are avoid-nodes, then, from the set of nodes
 			// including the leaf node and all its parents (minus the root),
 			// choose the node with the least actual/personal hit-count.
-			const upstreamNodes = leaf.andNonRootParents();
-			for (let i = 0; i < upstreamNodes.length; i++) {
-				const conflictSeq: Lang.Seq | undefined = avoid.find((avoidSeq) => {
-					return avoidSeq.startsWith(upstreamNodes[i].seq);
-				});
-				if (conflictSeq) {
-					if (conflictSeq === upstreamNodes[i].seq) {
-						// Cannot use anything on this upstream path because
-						// an avoid-node is directly inside it.
-						upstreamNodes.length = 0;
-					} else {
+			let nopeNode: ChildNode | undefined;
+			let _continue = false;
+			for (nopeNode = leaf; nopeNode !== undefined; nopeNode = nopeNode.parent) {
+				const superSeq = avoid.find((avoidSeq) => avoidSeq.startsWith(nopeNode!.seq));
+				// ^Using `find` is fine. There can only ever be one or none.
+				if (superSeq !== undefined) {
+					if (superSeq.length > nopeNode.seq.length) {
 						// Found a node on an upstream path of an avoid-node.
 						// Doesn't stop us from using what we've found so far.
-						upstreamNodes.splice(i);
+					} else {
+						// Cannot use a branch containing an avoid node.
+						_continue = true;
 					}
 					break;
 				}
 			}
-			if (upstreamNodes.length) {
-				// Found a non-conflicting upstream node.
+			if (_continue) continue;
+
+			// TODO.impl try partially merging this below block into the above block.
+			let hitNode = leaf;
+			for (let node = leaf; node !== nopeNode; node = node.parent!) {
 				// Find the node with the lowest personal hit-count:
-				nodeToHit = upstreamNodes[0];
-				for (const node of upstreamNodes) {
-					if (node.ownHits < nodeToHit.ownHits) {
-						nodeToHit = node;
-					}
+				if (node.ownHits < hitNode.ownHits) {
+					hitNode = node;
 				}
-				break;
 			}
+			return hitNode.chooseOnePair();
 		}
-		if (nodeToHit === undefined) {
-			// Should never reach here because there is a check in the
-			// constructor for this invariant.
-			throw new Error(`Invariants guaranteeing that a LangSeq can`
-			+ `always be shuffled-in were not met.`);
-		}
-		return nodeToHit.chooseOnePair();
+		// Enforced by UI and server:
+		throw new Error(`never. Invariants guaranteeing that a LangSeq`
+		+ ` can always be shuffled-in were not met.`);
 	}
 
 	/**
