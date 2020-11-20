@@ -88,7 +88,10 @@ export namespace LangSeqTree {
 				while (!seq.startsWith(cursor.seq)) {
 					cursor = (cursor as ChildNode).parent ?? rootNode;
 				}
-				const newChild: ChildNode = new ChildNode(cursor, seq, chars);
+				const newChild: ChildNode = new ChildNode(
+					cursor === rootNode ? undefined : cursor as ChildNode,
+					seq, chars,
+				);
 				((cursor as ParentNode).children as ChildNode[]).push(newChild);
 				cursor = newChild;
 			}
@@ -127,14 +130,14 @@ export namespace LangSeqTree {
 		readonly #characters: TU.RoArr<WeightedLangChar>;
 
 		public constructor(
-			parent:     ParentNode,
+			parent:     ChildNode | undefined,
 			sequence:   Lang.Seq,
 			characters: TU.RoArr<WeightedLangChar>,
 		) {
 			super();
 			this.seq = sequence;
 			this.#characters = characters;
-			this.parent = (parent instanceof ChildNode) ? parent : undefined;
+			this.parent = parent;
 			JsUtils.propNoWrite(this as ChildNode, ["seq", "parent"]);
 		}
 

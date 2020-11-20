@@ -99,7 +99,8 @@ export abstract class Lang extends _Lang {
 	 * @param avoid
 	 * A collection of `Lang.Seq`s to avoid conflicts with when choosing
 	 * a `Lang.Char` to return. Is allowed to contain empty strings,
-	 * which will be ignored as if those entries did not exist.
+	 * which will be ignored as if those entries did not exist. Freezing
+	 * this before the call may result in better performance.
 	 *
 	 * @requires
 	 * In order for this language to satisfy these constraints, it must
@@ -111,41 +112,31 @@ export abstract class Lang extends _Lang {
 	public getNonConflictingChar(
 		avoid: TU.RoArr<Lang.Seq>,
 	): Lang.CharSeqPair {
-		// Wording the spec closer to this implementation: We must find
-		// characters from nodes that are not descendants or ancestors
-		// of nodes for sequences to avoid. We can be sure that none of
-		// the ancestors or descendants of avoid-nodes are avoid-nodes.
+		// Internal explainer: We must find characters from nodes that
+		// are not descendants or ancestors of nodes in `avoid`. It is
+		// sure that none of the ancestors or descendants of nodes in
+		// `avoid` are also in `avoid`.
 		type ChildNode = LangSeqTree.ChildNode;
 
 		// Start by sorting according to the desired balancing scheme:
 		this.leafNodes.sort(LangSeqTree.ParentNode.LEAF_CMP);
 
+		search_branch:
 		for (const leaf of this.leafNodes) {
-			// Take the next leaf node (don't remove it!), and if none of
-			// its parents are avoid-nodes, then, from the set of nodes
-			// including the leaf node and all its parents (minus the root),
-			// choose the node with the least actual/personal hit-count.
-			let nopeNode: ChildNode | undefined;
-			let _continue = false;
-			for (nopeNode = leaf; nopeNode !== undefined; nopeNode = nopeNode.parent) {
-				const superSeq = avoid.find((avoidSeq) => avoidSeq.startsWith(nopeNode!.seq));
+			let hitNode = leaf;
+			for (let node: ChildNode | undefined = leaf; node; node = node.parent) {
+				const superSeq = avoid.find((avoidSeq) => avoidSeq.startsWith(node!.seq));
 				// ^Using `find` is fine. There can only ever be one or none.
-				if (superSeq !== undefined) {
-					if (superSeq.length > nopeNode.seq.length) {
+				if (superSeq) {
+					if (superSeq.length > node.seq.length) {
 						// Found a node on an upstream path of an avoid-node.
 						// Doesn't stop us from using what we've found so far.
+						break;
 					} else {
 						// Cannot use a branch containing an avoid node.
-						_continue = true;
+						continue search_branch;
 					}
-					break;
 				}
-			}
-			if (_continue) continue;
-
-			// TODO.impl try partially merging this below block into the above block.
-			let hitNode = leaf;
-			for (let node = leaf; node !== nopeNode; node = node.parent!) {
 				// Find the node with the lowest personal hit-count:
 				if (node.ownHits < hitNode.ownHits) {
 					hitNode = node;
