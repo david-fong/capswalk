@@ -144,7 +144,7 @@ export namespace _SetupScreen {
 			Object.values(Lang.FrontendDescs).forEach((desc) => {
 				this.addOption(new LangPickOne.Option(desc));
 			});
-			this.selectOpt(this.options[0]);
+			this.selectOpt(this.options[0]!);
 		}
 		public _onHoverOpt(opt: LangPickOne.Option): void {
 			;

@@ -155,7 +155,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 */
 	protected executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
 		// console.log(desc);
-		const player = this.players[desc.playerId];
+		const player = this.players[desc.playerId]!;
 		const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
 
 		if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
@@ -211,7 +211,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * @param desc -
 	 */
 	protected executePlayerBubbleEvent(desc: Readonly<PlayerActionEvent.Bubble>): void {
-		const bubbler = this.players[desc.playerId];
+		const bubbler = this.players[desc.playerId]!;
 
 		bubbler.requestInFlight = false;
 

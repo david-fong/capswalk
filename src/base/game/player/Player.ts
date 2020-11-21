@@ -95,7 +95,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	}
 
 	public get team(): Team<S> {
-		return this.game.teams[this.teamId];
+		return this.game.teams[this.teamId]!;
 	}
 
 	public isTeamedWith(other: Player<S>): boolean {
@@ -182,7 +182,7 @@ export namespace Player {
 				}, [] as Array<Team.Id>);
 
 			return playerDescs.slice()
-			.sort((pda, pdb) => teamIdCleaner[pda.teamId] - teamIdCleaner[pdb.teamId])
+			.sort((pda, pdb) => teamIdCleaner[pda.teamId]! - teamIdCleaner[pdb.teamId]!)
 			.map<CtorArgs>((playerDesc, index) => Object.assign({}, playerDesc, {
 				playerId:   index,
 				teamId:     teamIdCleaner[playerDesc.teamId],

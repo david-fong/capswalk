@@ -18,6 +18,7 @@
         "noImplicitReturns":    true,
         "strictBindCallApply":  true,
         "noImplicitThis":       true,
+        "noUncheckedIndexedAccess": true,
     },
     "files": [
         "webpack.config.ts",

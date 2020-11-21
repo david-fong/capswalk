@@ -173,7 +173,7 @@ export namespace LangSeqTree {
 		 *      been selected the least according to the specified scheme.
 		 */
 		public chooseOnePair(): Lang.CharSeqPair {
-			let wgtChar: WeightedLangChar = this.#characters[0];
+			let wgtChar = this.#characters[0]!;
 			for (const wc of this.#characters) {
 				if (wc.hits < wgtChar.hits) {
 					wgtChar = wc;

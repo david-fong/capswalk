@@ -68,7 +68,7 @@ export namespace English {
 			public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
 				return Object.entries(LETTER_FREQUENCY).reduce<Lang.CharSeqPair.WeightedForwardMap>(
 					(accumulator, [char,weight], index) => {
-						accumulator[char] = { seq: NUMPAD[index], weight };
+						accumulator[char] = { seq: NUMPAD[index]!, weight };
 						return accumulator;
 					}, {},
 				);
@@ -115,7 +115,7 @@ export namespace English {
 			}
 			let sum = 0;
 			for (const key in freq) {
-				sum += freq[key as keyof typeof freq];
+				sum += freq[key]!;
 			}
 			for (const key in freq) {
 				freq[key as keyof typeof freq] *= 8 / sum;
@@ -140,7 +140,7 @@ export namespace English {
 			public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
 				const dict: Lang.CharSeqPair.WeightedForwardMap = {};
 				for (const [plain,cipher] of Object.entries(Dict)) {
-					dict[plain] = { seq: cipher, weight: English.LETTER_FREQUENCY_EXT[plain] };
+					dict[plain] = { seq: cipher, weight: English.LETTER_FREQUENCY_EXT[plain]! };
 				}
 				return dict;
 			}
@@ -161,7 +161,7 @@ export namespace English {
 				const dict: Lang.CharSeqPair.WeightedForwardMap = {};
 				for (const [plain,cipher] of Object.entries(Dict)) {
 					const morse = cipher.replace(/\./g,"•").replace(/\-/g,"−");
-					dict[morse] = { seq: plain, weight: English.LETTER_FREQUENCY_EXT[plain] };
+					dict[morse] = { seq: plain, weight: English.LETTER_FREQUENCY_EXT[plain]! };
 				}
 				return dict;
 			}

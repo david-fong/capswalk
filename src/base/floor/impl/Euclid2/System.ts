@@ -183,7 +183,7 @@ export namespace Euclid2 {
 			}
 			if (options.length === 1) {
 				// Minor optimization:
-				return options[0];
+				return options[0]!;
 			}
 			options.sort((tileA, TileB) => {
 				// Break (some) ties by one-norm:
@@ -192,37 +192,38 @@ export namespace Euclid2 {
 				// Break (some) ties by one-norm:
 				return tileA.coord.infNorm(intendedDest) - TileB.coord.infNorm(intendedDest);
 			});
+			const best = options[0]!;
 			// Filter out options that are not equally favourable as the
 			// most favourable option. I think this is the best method:
 			// Note: it is safe to start at index `1` because of the
 			// above short-circuit if `options.length === 1`.
 			for (let i = 1; i < options.length; i++) {
-				if (options[i].coord.infNorm(intendedDest) > options[0].coord.infNorm(intendedDest)) {
+				if (options[i]!.coord.infNorm(intendedDest) > best.coord.infNorm(intendedDest)) {
 					options.splice(i);
 					break;
 				}
 			}
 			if (options.length === 1) {
 				// Minor optimization:
-				return options[0];
+				return options[0]!;
 			}
 			// Choose one of the most favourable using some randomness
 			// weighted to follow a straight-looking path of movement.
-			if (options[0].coord.x - sourceCoord.x === 0 || options[0].coord.y - sourceCoord.y === 0) {
+			if (best.coord.x - sourceCoord.x === 0 || best.coord.y - sourceCoord.y === 0) {
 				// (the axial option (if it exists) should be the first
 				// due to the previous sort's tie-breaker.
 				if (sourceCoord.axialAlignment(sourceCoord.sub(intendedDest)) - 0.5 > 0.0) {
 					// The path to the intended destination is aligned more
 					// with the x or y axis than they are with those axes
 					// rotated 45 degrees.
-					return options[0];
+					return best;
 				} else {
 					// Ignore the axial option in further computations:
 					options.shift();
 				}
 			}
 			// Choose a random non-axial option:
-			return options[Math.floor(options.length * Math.random())];
+			return options[Math.floor(options.length * Math.random())]!;
 		}
 
 		public getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile<S> {
@@ -253,7 +254,7 @@ export namespace Euclid2 {
 			// ) {
 			//     throw new RangeError("Out of bounds. No such tile exists.");
 			// }
-			return this.grid[coord.y][coord.x];
+			return this.grid[coord.y]![coord.x]!;
 		}
 
 		public _getTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {

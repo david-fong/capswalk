@@ -116,7 +116,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		// Prepare for all group members to join the game namespace:
 		const resolvers = new Map<io.Socket["client"]["id"], () => void>();
 		const promises = Array.from(args.groupNsps.sockets.values(), (groupSocket) => {
-			return new Promise((resolve, reject) => {
+			return new Promise<void>((resolve) => {
 				resolvers.set(groupSocket.client["id"], resolve);
 			});
 		});
@@ -165,7 +165,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		}
 
 		Promise.all(Array.from(this.namespace.sockets.values(), (socket) => {
-			return new Promise((resolve, reject) => {
+			return new Promise<void>((resolve) => {
 				socket.once(GameEv.RESET, () => {
 					resolve();
 				});
@@ -207,7 +207,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 	public async reset(): Promise<void> {
 		// Be ready for clients to indicate readiness to unpause.
 		Promise.all(Array.from(this.namespace.sockets.values(), (socket) => {
-			return new Promise((resolve, reject) => {
+			return new Promise<void>((resolve) => {
 				socket.once(GameEv.UNPAUSE, () => {
 					resolve();
 				});

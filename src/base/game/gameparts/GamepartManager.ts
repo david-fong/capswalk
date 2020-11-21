@@ -115,7 +115,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		);
 		this.teams.forEach((team, teamIndex) => {
 			team.members.forEach((member, memberIndex) => {
-				member.reset(this.grid.tile.at(spawnPoints[teamIndex][memberIndex]));
+				member.reset(this.grid.tile.at(spawnPoints[teamIndex]![memberIndex]!));
 			});
 		});
 		this.scoreInfo.reset();
@@ -330,7 +330,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		}
 
 		// Update stats records:
-		const playerScoreInfo = this.scoreInfo.entries[player.playerId];
+		const playerScoreInfo = this.scoreInfo.entries[player.playerId]!;
 		playerScoreInfo.totalHealthPickedUp += dest.freeHealth;
 		playerScoreInfo.moveCounts[desc.moveType] += 1;
 

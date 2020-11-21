@@ -30,6 +30,7 @@
         "strictBindCallApply":  true,
         "noImplicitThis":       true,
         "noImplicitAny":        true,
+        "noUncheckedIndexedAccess": true,
 
         // Linting:
         "noFallthroughCasesInSwitch": true,

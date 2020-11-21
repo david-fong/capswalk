@@ -78,7 +78,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 				if (!teams[player.teamId]) {
 					teams[player.teamId] = [];
 				}
-				teams[player.teamId].push(player);
+				teams[player.teamId]!.push(player);
 			});
 			this.teams = teams.map((teammateArray, teamId) => {
 				return new Team<S>(teamId, teammateArray);
@@ -175,11 +175,11 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		// Could also use `csps.unshift`, but that may be slower
 		// because it modifies csps, which we don't need to do.
 		this.grid.forEachTile((tile, index) => {
-			tile.setLangCharSeqPair(ser.csps[index]);
+			tile.setLangCharSeqPair(ser.csps[index]!);
 			tile.lastKnownUpdateId++;
 		});
 		ser.playerCoords.forEach((coord, index) => {
-			this.players[index].reset(this.grid.tile.at(coord));
+			this.players[index]!.reset(this.grid.tile.at(coord));
 		});
 		ser.healthCoords.forEach((desc) => {
 			this.grid.tile.at(desc.coord).freeHealth = desc.health;
@@ -190,7 +190,8 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		return this.#currentOperator;
 	}
 	public setCurrentOperator(nextOperatorIndex: number): void {
-		const nextOperator = this.operators[nextOperatorIndex];
+		const nextOperator = this.operators[nextOperatorIndex]!;
+		if (!DEF.DevAssert && nextOperator === undefined) throw new Error("never");
 		if (this.currentOperator !== nextOperator)
 		{
 			nextOperator._notifyWillBecomeCurrent();

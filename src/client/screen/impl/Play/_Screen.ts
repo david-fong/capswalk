@@ -219,7 +219,7 @@ export abstract class _PlayScreen<
 		return this.#currentGame;
 	}
 
-	protected abstract async _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<Game>;
+	protected abstract _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<Game>;
 
 
 	/**

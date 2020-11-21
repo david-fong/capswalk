@@ -113,7 +113,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
 			const hoverOptIndex = this.options.indexOf(this.hoveredOpt);
 			if (ev.key === "ArrowDown" || ev.key === "Down") {
 				for (let i = hoverOptIndex + 1; i < (this.options.length); i++) {
-					const opt = this.options[i];
+					const opt = this.options[i]!;
 					if (opt.disabled) continue;
 					this.hoverOpt(opt);
 					ev.preventDefault();
@@ -121,7 +121,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
 				}
 			} else if (ev.key === "ArrowUp" || ev.key === "Up") {
 				for (let i = hoverOptIndex - 1; i >= 0; i--) {
-					const opt = this.options[i];
+					const opt = this.options[i]!;
 					if (opt.disabled) continue;
 					this.hoverOpt(opt);
 					ev.preventDefault();
