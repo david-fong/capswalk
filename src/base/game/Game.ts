@@ -211,11 +211,16 @@ export namespace Game {
 		 * latency. See `EVENT_RECORD_FORWARD_WINDOW_LENGTH` for more
 		 * explanation.
 		 */
-		EVENT_RECORD_WRAPPING_BUFFER_LENGTH: 128,
+		EVENT_RECORD_WRAPPING_BUFFER_LENGTH: 50,
 
 		/**
+		 * Must be less than `EVENT_RECORD_WRAPPING_BUFFER_LENGTH`.
 		 */
-		EVENT_RECORD_FORWARD_WINDOW_LENGTH: 64,
+		EVENT_RECORD_FORWARD_WINDOW_LENGTH: 25,
 	});
+
+	if (DEF.DevAssert && K.EVENT_RECORD_FORWARD_WINDOW_LENGTH >= K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH) {
+		throw new Error("never");
+	}
 }
 Object.freeze(Game);

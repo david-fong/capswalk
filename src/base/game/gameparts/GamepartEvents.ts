@@ -7,6 +7,7 @@ import type { TileModEvent }    from "../events/PlayerActionEvent";
 export { PlayerActionEvent, TileModEvent };
 
 import { GamepartBase } from "./GamepartBase";
+import { JsUtils } from "base/defs/JsUtils";
 
 
 /**
@@ -59,6 +60,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	) {
 		super(gameType, impl, gameDesc);
 		this.eventRecordBitmap = [];
+		JsUtils.propNoWrite(this as GamepartEvents<G,S>, ["eventRecordBitmap"]);
 	}
 
 	public reset(): Promise<void> {
@@ -117,7 +119,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		desc: Readonly<TileModEvent<S>>,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): Tile<S> {
-		Object.freeze(desc);
+		JsUtils.deepFreeze(desc);
 		const dest = this.grid.tile.at(desc.coord);
 		if (dest.lastKnownUpdateId  >  desc.lastKnownUpdateId) return dest;
 		if (DEF.DevAssert) {
@@ -154,6 +156,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * A descriptor for all changes mandated by the player-movement event.
 	 */
 	protected executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
+		JsUtils.deepFreeze(desc);
 		// console.log(desc);
 		const player = this.players[desc.playerId]!;
 		const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
@@ -219,7 +222,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 			this._recordEvent(desc); // Record the event.
 		}
 	}
-
 }
+JsUtils.protoNoEnum(GamepartEvents, ["nextUnusedEventId", "_recordEvent"]);
 Object.freeze(GamepartEvents);
 Object.freeze(GamepartEvents.prototype);

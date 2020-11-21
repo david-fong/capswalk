@@ -149,8 +149,6 @@ export namespace PlayerActionEvent {
 			this.destModDesc = {
 				coord:              destTile.coord,
 				lastKnownUpdateId:  destTile.lastKnownUpdateId,
-				newCharSeqPair:     undefined,
-				newFreeHealth:      undefined,
 			};
 			this.moveType = moveType;
 		}

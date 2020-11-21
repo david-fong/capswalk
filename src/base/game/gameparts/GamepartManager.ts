@@ -219,7 +219,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 					retval.push({
 						coord: tile.coord,
 						lastKnownUpdateId: 1 + tile.lastKnownUpdateId,
-						newCharSeqPair: undefined, // "do not change".
+						// newCharSeqPair: undefined, // "do not change".
 						newFreeHealth: tile.freeHealth + tileHealthToAdd,
 					});
 				}
@@ -237,7 +237,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		desc: Readonly<TileModEvent<S>>,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): Tile<S> {
-		Object.freeze(desc);
+		JsUtils.deepFreeze(desc);
 		const tile = this.grid.tile.at(desc.coord);
 		// NOTE: This assertion must be performed before executing
 		// changes by making a supercall or else the previous state

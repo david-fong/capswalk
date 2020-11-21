@@ -11,7 +11,8 @@
 
 ### Things I feel like doing
 
-1. Verify that lang tree reset doesn't overwrite sets of hit-counts to zero.
+1. Make the `JsUtil` property configurers take a property name instead of an array of property names.
+    - Call sites can use `Array.forEach` if they want to operate on several property names.
 1. Try out EJS include directive.
 1. See which callbacks can be defined higher up to make it easier for javascript engine parsers.
 1. Freeze DTO's upon reception where possible- especially arrays.
