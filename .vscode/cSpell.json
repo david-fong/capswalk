@@ -68,6 +68,7 @@
 
         // Tooling and Programming Languages:
         "API's",
+        "brotli",
         "devtool",
         "endregion", // for IDE folding
         "entrypoint",

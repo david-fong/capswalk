@@ -13,9 +13,7 @@
 
 1. Make the `JsUtil` property configurers take a property name instead of an array of property names.
     - Call sites can use `Array.forEach` if they want to operate on several property names.
-1. Try out EJS include directive.
 1. See which callbacks can be defined higher up to make it easier for javascript engine parsers.
-1. Freeze DTO's upon reception where possible- especially arrays.
 1. Take a look at [compression-webpack-plugin](https://webpack.js.org/plugins/compression-webpack-plugin/#using-brotli).
 
 ### Things that I feel less like doing
@@ -36,6 +34,7 @@
 1. Display the operator's current sequence buffer.
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
+1. Try out EJS include directive.
 
 ### Routine Checkups
 

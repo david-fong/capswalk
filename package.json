@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
+    "express-static-gzip": "^2.1.0",
     "socket.io": "^3.0.3",
     "tslib": "^2.0.3"
   },
@@ -29,6 +30,7 @@
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
     "bytesize-icons": "^1.4.0",
+    "compression-webpack-plugin": "^6.1.1",
     "copy-webpack-plugin": "^6.3.2",
     "css-loader": "^5.0.1",
     "css-minimizer-webpack-plugin": "^1.1.5",

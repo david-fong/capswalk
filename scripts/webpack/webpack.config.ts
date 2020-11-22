@@ -1,5 +1,6 @@
 import path     = require("path");
 import webpack  = require("webpack");
+import zlib     = require("zlib");
 
 // https://github.com/TypeStrong/ts-loader#loader-options
 import type * as tsloader from "ts-loader/dist/interfaces";
@@ -9,6 +10,7 @@ import CopyWebpackPlugin    = require("copy-webpack-plugin");
 import HtmlPlugin           = require("html-webpack-plugin");
 import MiniCssExtractPlugin = require("mini-css-extract-plugin");
 import CssMinimizerPlugin   = require("css-minimizer-webpack-plugin");
+import CompressionPlugin    = require("compression-webpack-plugin");
 
 type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
@@ -188,6 +190,14 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 			to: "vendor/socket.io.[ext]",
 			flatten: true,
 		}],}),
+		new CompressionPlugin({
+			filename: "[path][base].br",
+			algorithm: "brotliCompress",
+			test: /\.(js|css|html|svg)$/,
+			compressionOptions: { params: {} /* https://brotli.org/encode.html */ },
+			threshold: 10240,
+			minRatio: 0.8,
+		}),
 	);
 	if (PACK_MODE === "production") {
 		config.plugins.push();

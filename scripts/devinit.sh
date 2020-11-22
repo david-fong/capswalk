@@ -4,7 +4,7 @@
 
 # Make the TypeScript compiler use tabs for indentation.
 # https://github.com/Microsoft/TypeScript/issues/4042
-sed -i 's/\["", "    "\];/\["", "\\t"\];/g' node_modules/typescript/lib/*.js
+sed -i 's/"    "/"\\t"/g' node_modules/typescript/lib/*.js
 
 declare -r root="$(dirname "${BASH_SOURCE[0]}")/.."
 git config --local 'core.hooksPath' "${root}/scripts/githooks"

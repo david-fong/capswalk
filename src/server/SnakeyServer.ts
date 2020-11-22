@@ -2,6 +2,7 @@ import os       = require("os");
 import path     = require("path");
 import http     = require("http");
 import express  = require("express");
+import expressStaticGzip = require("express-static-gzip");
 import * as io from "socket.io";
 import type * as net from "net";
 
@@ -54,11 +55,8 @@ export class SnakeyServer extends _SnakeyServer {
 		// At runtime, __dirname resolves to ":/dist/server/"
 		const CLIENT_ROOT = path.resolve(__dirname, "../client");
 		this.app.disable("x-powered-by");
-		this.app.get("/", (req, res) => {
-			res.sendFile(path.resolve(__dirname, path.resolve(CLIENT_ROOT, "index.html")));
-		});
-		this.app.use("/", express.static(CLIENT_ROOT, {
-			index: false,
+		this.app.use("/", expressStaticGzip(CLIENT_ROOT, {
+			enableBrotli: true,
 		}));
 
 		this.http.listen(<net.ListenOptions>{ port, host }, (): void => {
