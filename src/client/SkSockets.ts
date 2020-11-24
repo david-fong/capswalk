@@ -29,7 +29,10 @@ export class SkSockets {
 	 * Makes the first connection to a game-hosting server.
 	 */
 	public async joinerSocketConnect(args: { serverUrl: URL, }): Promise<Socket> {
-		const manager = new (await SkSockets.socketIo()).Manager(args.serverUrl.toString(), {
+		const manager = new ((await import(
+			/* webpackPreload: true */
+			"socket.io-client"
+		) as any).default as typeof SocketIo).Manager(args.serverUrl.toString(), {
 			// https://socket.io/docs/client-api/#new-Manager-url-options
 			reconnectionAttempts: Group.GameServerReconnectionAttempts,
 			autoConnect: false,
@@ -99,25 +102,6 @@ export class SkSockets {
 				byeBye();
 			}
 		});
-	}
-}
-export namespace SkSockets {
-	const globalSocketIoHref = (document.getElementById("socket.io-preload") as HTMLLinkElement).href;
-	let globalSocketIo: undefined | Promise<typeof SocketIo>;
-	/**
-	 */
-	export function socketIo(): Promise<typeof SocketIo> {
-		return globalSocketIo
-		?? (globalSocketIo = new Promise<typeof SocketIo>((resolve, reject): void => {
-			const script = JsUtils.mkEl("script", []);
-			script.type = "module";
-			script.onload = (): void => {
-				//resolve(import(href));
-				resolve((window as any).io);
-			};
-			script.src = globalSocketIoHref;
-			document.body.appendChild(script);
-		}));
 	}
 }
 JsUtils.protoNoEnum(SkSockets,

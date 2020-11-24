@@ -5,7 +5,6 @@ import webpack  = require("webpack");
 import type * as tsloader from "ts-loader/dist/interfaces";
 
 import nodeExternals        = require("webpack-node-externals");
-import CopyWebpackPlugin    = require("copy-webpack-plugin");
 import HtmlPlugin           = require("html-webpack-plugin");
 import MiniCssExtractPlugin = require("mini-css-extract-plugin");
 import CssMinimizerPlugin   = require("css-minimizer-webpack-plugin");
@@ -110,6 +109,7 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 			path.resolve(PROJECT_ROOT, "src/base"),
 			path.resolve(PROJECT_ROOT, "node_modules"),
 		], // match tsconfig.baseUrl
+		alias: { /* Left to each branch config */ },
 	},
 	module: { rules: MODULE_RULES(), },
 	// https://webpack.js.org/plugins/source-map-dev-tool-plugin/
@@ -149,15 +149,18 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 		target: "web",
 		entry: {["index"]: `./src/client/index.ts`},
 		externals: [nodeExternals({
-			allowlist: ["tslib"],
+			allowlist: ["tslib", "socket.io-client"],
 			importType: "root",
 		})],
 	});
 	config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
 	config.module!.rules!.push(...WEB_MODULE_RULES());
-	// config.resolve.alias = config.resolve.alias || {
-	//     "socket.io-client": "socket.io-client/dist/socket.io.slim.js",
-	// };
+	Object.assign(config.resolve.alias, {
+		"socket.io-client": path.resolve(PROJECT_ROOT,
+		`node_modules/socket.io-client/dist/socket.io${
+			(PACK_MODE === "development") ? "" : ".min"
+		}.js`),
+	});
 	const htmlPluginOptions: HtmlPlugin.Options = {
 		template:   path.resolve(PROJECT_ROOT, "src/client/index.ejs"),
 		favicon:    "./assets/favicon.png",
@@ -181,14 +184,6 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 			filename: "_barrel.css",
 			chunkFilename: "chunk/[name].css",
 		}) as webpack.WebpackPluginInstance, // TODO.build remove this when https://github.com/webpack-contrib/mini-css-extract-plugin/pull/594
-		new CopyWebpackPlugin({ patterns: [{
-			context: "node_modules/socket.io-client/dist/",
-			from: `socket.io${(
-				PACK_MODE === "production" ? ".min" : ""
-			)}.js` + "*", // <- glob to include sourcemap file.
-			to: "vendor/socket.io.[ext]",
-			flatten: true,
-		}],}),
 		new CompressionPlugin({
 			filename: "[path][base].br",
 			algorithm: "brotliCompress",

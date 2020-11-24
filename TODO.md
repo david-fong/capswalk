@@ -11,9 +11,7 @@
 
 ### Things I feel like doing
 
-1. Switch socket.io loading to use webpack dynamic import and [webpackPreload](https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import). Then we can uninstall `copy-webpack-plugin`. Will need to make an alias in the webpack config to resolve to the `.min` version for production build.
 1. See which callbacks can be defined higher up to make it easier for javascript engine parsers.
-1. Take a look at [compression-webpack-plugin](https://webpack.js.org/plugins/compression-webpack-plugin/#using-brotli).
 
 ### Things that I feel less like doing
 

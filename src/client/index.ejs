@@ -11,7 +11,7 @@
 		<meta http-equiv="Content-Security-Policy" content=
 			"default-src 'self' 'unsafe-inline';
 			child-src 'none'; object-src 'none'; base-uri 'none';
-			connect-src 'self' <%= wellKnownGameServers.map(origin => `wss://${origin}/socket.io/`).join(' ') %>;"
+			connect-src 'self' <%- wellKnownGameServers.map(origin => `wss://${origin}/socket.io/`).join(' ') %>;"
 		/>
 
 		<%= htmlWebpackPlugin.tags.headTags.join("\n        ") %>
@@ -19,16 +19,16 @@
 		<meta name="og:description" content="A multiplayer typing game for learning written languages."/>
 		<meta name="og:image"  content="https://raw.githubusercontent.com/david-fong/snakey3/dev/assets/images/screenshots/snakey_version3_blanktitle.png"/>
 
-		<link rel="prefetch" as="script" id="socket.io-preload" href="./vendor/socket.io.js"/>
-		<%= htmlWebpackPlugin.files.js.map((href)  => `<link rel="preload" as="script" href="${href}"/>`).join("\n") %>
+		<%= htmlWebpackPlugin.files.js.map((href) => `<link rel="preload" as="script" href="${href}"/>`).join("\n\t\t") %>
 	</head>
 
 
 	<body class="fill-parent">
 		<datalist id="public-game-hosts-list">
-			<%= wellKnownGameServers.map((host) => `<option value=\"https://${host}"\></option>`).join() %>
+			<%- wellKnownGameServers.map((host) => `<option value=\"https://${host}"\></option>`).join() %>
 		</datalist>
-		<script> // TODO.build move to separate file and remove CSP 'unsafe-inline'
+		<%# TODO.build move below script to a separate file and remove CSP 'unsafe-inline' %>
+		<script>
 		{ // Load up last used colour scheme (or default):
 			const cssl = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
 			const root = document.documentElement;
@@ -39,6 +39,6 @@
 		<div id="all-screens-container"></div>
 		<div id="screen-tint"    class="sk-screen" aria-hidden="true"></div>
 		<div id="screen-texture" class="sk-screen" aria-hidden="true"></div>
-		<%= htmlWebpackPlugin.tags.bodyTags.join("\n        ") %>
+		<%= htmlWebpackPlugin.tags.bodyTags.join("\n\t\t") %>
 	</body>
 </html>
