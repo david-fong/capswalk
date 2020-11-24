@@ -2,19 +2,14 @@
 <html lang="en">
 	<head>
 		<title>snakey3</title>
-		<meta name="author"         content="David Fong"/>
-		<meta name="description"    content="A multiplayer typing game for learning written languages."/>
-		<meta name="viewport"       content="width=device-width, initial-scale=1.0"/>
-		<meta name="referrer"       content="same-origin"/>
+		<meta name="author"      content="David Fong"/>
+		<meta name="description" content="A multiplayer typing game for learning written languages."/>
+		<meta name="viewport"    content="width=device-width, initial-scale=1.0"/>
+		<meta name="referrer"    content="same-origin"/>
 		<meta charset="UTF-8"/>
 		<!-- <link rel="manifest" href="manifest.webmanifest"/> -->
-		<meta http-equiv="Content-Security-Policy" content=
-			"default-src 'self' 'unsafe-inline';
-			child-src 'none'; object-src 'none'; base-uri 'none';
-			connect-src 'self' <%- wellKnownGameServers.map(origin => `wss://${origin}/socket.io/`).join(' ') %>;"
-		/>
 
-		<%= htmlWebpackPlugin.tags.headTags.join("\n        ") %>
+		<%= htmlWebpackPlugin.tags.headTags.join("\n\t\t") %>
 		<meta name="og:title"  content="snakey3"/>
 		<meta name="og:description" content="A multiplayer typing game for learning written languages."/>
 		<meta name="og:image"  content="https://raw.githubusercontent.com/david-fong/snakey3/dev/assets/images/screenshots/snakey_version3_blanktitle.png"/>
@@ -27,12 +22,14 @@
 		<datalist id="public-game-hosts-list">
 			<%- wellKnownGameServers.map((host) => `<option value=\"https://${host}"\></option>`).join() %>
 		</datalist>
-		<%# TODO.build move below script to a separate file and remove CSP 'unsafe-inline' %>
 		<script>
 		{ // Load up last used colour scheme (or default):
 			const cssl = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
 			const root = document.documentElement;
-			if (cssl) { root.setAttribute("style", cssl); }
+			if (cssl) { cssl.split(";").forEach((rule) => {
+				const [name,val] = rule.split(":");
+				root.style.setProperty(name,val);
+			}); }
 			else { root.dataset["skColourScheme"] = "snakey"; }
 		} </script>
 		<div id="background"     class="sk-screen" aria-hidden="true"></div>

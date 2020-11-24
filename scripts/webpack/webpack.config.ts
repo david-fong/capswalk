@@ -6,6 +6,7 @@ import type * as tsloader from "ts-loader/dist/interfaces";
 
 import nodeExternals        = require("webpack-node-externals");
 import HtmlPlugin           = require("html-webpack-plugin");
+import CspHtmlPlugin        = require("csp-html-webpack-plugin");
 import MiniCssExtractPlugin = require("mini-css-extract-plugin");
 import CssMinimizerPlugin   = require("css-minimizer-webpack-plugin");
 import CompressionPlugin    = require("compression-webpack-plugin");
@@ -15,6 +16,7 @@ type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
 const PACK_MODE = (process.env.NODE_ENV) as ("development" | "production") || "development";
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const GAME_SERVERS = require("../../servers.json");
 
 const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> => { return [
 	new webpack.WatchIgnorePlugin({ paths: [
@@ -177,9 +179,18 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 	config.plugins.push(
 		new HtmlPlugin(htmlPluginOptions),
 		// new HtmlPlugin(Object.assign({}, htmlPluginOptions, <HtmlPlugin.Options>{
-		//     chunks: [],
-		//     filename: "404.html",
+		// 	chunks: [],
+		// 	filename: "404.html",
 		// })),
+		new CspHtmlPlugin({
+			"default-src": ["'self'"],
+			"script-src": "'self'", "style-src": "'self'",
+			"child-src": "'none'", "object-src": "'none'", "base-uri": "'none'",
+			"connect-src": ["'self'", ...GAME_SERVERS.map((origin: string) => `wss://${origin}/socket.io/`)],
+		},{
+			hashingMethod: "sha256",
+			hashEnabled: { "script-src": true, "style-src": false },
+		}),
 		new MiniCssExtractPlugin({
 			filename: "_barrel.css",
 			chunkFilename: "chunk/[name].css",
