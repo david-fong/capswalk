@@ -120,9 +120,9 @@ export namespace SkSockets {
 		}));
 	}
 }
-JsUtils.protoNoEnum(SkSockets, [
+JsUtils.protoNoEnum(SkSockets,
 	"joinerSocketConnect", "groupSocketConnect", "gameSocketConnect",
 	"_groupSocketHelper", "_registerSocket",
-]);
+);
 Object.freeze(SkSockets);
 Object.freeze(SkSockets.prototype);

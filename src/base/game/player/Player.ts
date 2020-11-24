@@ -39,9 +39,9 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		this.teamId   = desc.teamId;
 		this.username = desc.username;
 		this.avatar   = desc.avatar ?? Player.Avatar.GET_RANDOM();
-		JsUtils.propNoWrite(this as Player<S>, [
+		JsUtils.propNoWrite(this as Player<S>,
 			"familyId", "teamId", "username", "avatar",
-		]);
+		);
 	}
 
 	public reset(spawnTile: Tile<S>): void {
@@ -191,8 +191,8 @@ export namespace Player {
 	}
 	Object.freeze(CtorArgs);
 }
-JsUtils.protoNoEnum(Player, [
+JsUtils.protoNoEnum(Player,
 	"_notifyGameNowPaused", "_notifyGameNowPlaying", "_notifyGameNowOver",
-]);
+);
 Object.freeze(Player);
 Object.freeze(Player.prototype);

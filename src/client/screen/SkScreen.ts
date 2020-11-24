@@ -80,9 +80,9 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 			prev: JsUtils.mkEl("button", []),
 			next: JsUtils.mkEl("button", []),
 		});
-		JsUtils.propNoWrite(this as SkScreen<SID>, [
+		JsUtils.propNoWrite(this as SkScreen<SID>,
 			"screenId", "top", "baseElem", "nav", "requestGoToScreen",
-		]);
+		);
 		this.nav.prev.classList.add(OMHC.NAV_PREV);
 		this.nav.next.classList.add(OMHC.NAV_NEXT);
 		this.nav.prev.textContent = "Back";

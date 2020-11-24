@@ -31,7 +31,7 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 			charWrap.appendChild(charElem);
 			this.#baseElem.appendChild(charWrap);
 		}
-		JsUtils.propNoWrite(this as VisibleTile<S>, ["langCharElem"]);
+		JsUtils.propNoWrite(this as VisibleTile<S>, "langCharElem");
 	}
 
 	public _addToDom(parent: HTMLElement): void {
@@ -85,6 +85,6 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 }
 // Assert that this extension's constructor has a compatible signature:
 VisibleTile as Tile.ClassIf<Coord.System>;
-JsUtils.protoNoEnum(VisibleTile, ["_addToDom"]);
+JsUtils.protoNoEnum(VisibleTile, "_addToDom");
 Object.freeze(VisibleTile);
 Object.freeze(VisibleTile.prototype);

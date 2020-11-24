@@ -404,7 +404,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 			this.nav.next.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
 			contentWrapper.appendChild(this.nav.next);
 		}
-		JsUtils.propNoWrite(this as GroupJoinerScreen, ["in", "groupNameDataList"]);
+		JsUtils.propNoWrite(this as GroupJoinerScreen, "in", "groupNameDataList");
 		Object.freeze(this.in);
 		return contentWrapper;
 	}

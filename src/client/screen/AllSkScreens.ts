@@ -51,7 +51,7 @@ export class AllSkScreens {
 			[ Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(Id.GROUP_LOBBY  ,t,p,g),
 			[ Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(Id.PLAY_ONLINE  ,t,p,g),
 		});
-		JsUtils.propNoWrite(this as AllSkScreens, ["dict"]);
+		JsUtils.propNoWrite(this as AllSkScreens, "dict");
 
 		// note: "isr" as in "Initial Screen Request".
 		const isr = SkScreen.NavTree[window.location.hash.slice(1) as SkScreen.Id];

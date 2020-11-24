@@ -19,7 +19,7 @@ export class PlayerStatus<S extends Coord.System> {
 	public constructor(player: Readonly<Player<S>>, noCheckGameOver: boolean) {
 		this.player = player;
 		this.noCheckGameOver = noCheckGameOver;
-		JsUtils.instNoEnum(this as PlayerStatus<S>, ["player"]);
+		JsUtils.instNoEnum(this as PlayerStatus<S>, "player");
 	}
 
 	public reset(): void {
@@ -72,6 +72,6 @@ export class PlayerStatus<S extends Coord.System> {
 		return this.health < 0.0;
 	}
 }
-JsUtils.protoNoEnum(PlayerStatus, ["_afterAllPlayersConstruction"]);
+JsUtils.protoNoEnum(PlayerStatus, "_afterAllPlayersConstruction");
 Object.freeze(PlayerStatus);
 Object.freeze(PlayerStatus.prototype);

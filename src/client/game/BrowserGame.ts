@@ -31,7 +31,7 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 			gridImpl: this.grid.baseElem,
 			playersBar: document.createElement("div"), // TODO.design
 		});
-		JsUtils.propNoWrite(this as BrowserGameMixin<G,S>, ["htmlElements"]);
+		JsUtils.propNoWrite(this as BrowserGameMixin<G,S>, "htmlElements");
 	}
 
 	/**
@@ -55,6 +55,6 @@ export namespace BrowserGameMixin {
 		playersBar: HTMLElement;
 	}>;
 }
-JsUtils.protoNoEnum(BrowserGameMixin, ["_getGridImplementation"]);
+JsUtils.protoNoEnum(BrowserGameMixin, "_getGridImplementation");
 Object.freeze(BrowserGameMixin);
 Object.freeze(BrowserGameMixin.prototype);

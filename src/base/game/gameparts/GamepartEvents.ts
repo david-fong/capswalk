@@ -60,7 +60,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	) {
 		super(gameType, impl, gameDesc);
 		this.eventRecordBitmap = [];
-		JsUtils.propNoWrite(this as GamepartEvents<G,S>, ["eventRecordBitmap"]);
+		JsUtils.propNoWrite(this as GamepartEvents<G,S>, "eventRecordBitmap");
 	}
 
 	public reset(): Promise<void> {
@@ -223,6 +223,6 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		}
 	}
 }
-JsUtils.protoNoEnum(GamepartEvents, ["nextUnusedEventId", "_recordEvent"]);
+JsUtils.protoNoEnum(GamepartEvents, "nextUnusedEventId", "_recordEvent");
 Object.freeze(GamepartEvents);
 Object.freeze(GamepartEvents.prototype);

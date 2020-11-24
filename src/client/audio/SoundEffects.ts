@@ -19,7 +19,7 @@ export class SoundEffects {
 			latencyHint: "interactive",
 			sampleRate: sfxDesc.sampleRate,
 		});
-		JsUtils.propNoWrite(this as SoundEffects, ["context"]);
+		JsUtils.propNoWrite(this as SoundEffects, "context");
 	}
 }
 export namespace SoundEffects {

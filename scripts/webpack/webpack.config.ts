@@ -1,6 +1,5 @@
 import path     = require("path");
 import webpack  = require("webpack");
-import zlib     = require("zlib");
 
 // https://github.com/TypeStrong/ts-loader#loader-options
 import type * as tsloader from "ts-loader/dist/interfaces";

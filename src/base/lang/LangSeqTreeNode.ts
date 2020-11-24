@@ -23,7 +23,7 @@ export namespace LangSeqTree {
 
 		public constructor() {
 			this.children = [];
-			JsUtils.propNoWrite(this as ParentNode, ["children"]);
+			JsUtils.propNoWrite(this as ParentNode, "children");
 		}
 
 		public reset(): void {
@@ -82,7 +82,7 @@ export namespace LangSeqTree {
 			// Add mappings in ascending order of sequence length:
 			// (this is so that no merging of branches needs to be done)
 			const rootNode = new ParentNode();
-			JsUtils.propNoWrite(rootNode as ParentNode, ["children"]);
+			JsUtils.propNoWrite(rootNode as ParentNode, "children");
 			let cursor: ChildNode | ParentNode = rootNode;
 			for (const [seq, chars] of Array.from(reverseDict).sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1)) {
 				while (!seq.startsWith(cursor.seq)) {
@@ -103,7 +103,7 @@ export namespace LangSeqTree {
 			return a.carryHits - b.carryHits;
 		};
 	}
-	JsUtils.protoNoEnum(ParentNode, ["_finalize", "_rGetLeaves"]);
+	JsUtils.protoNoEnum(ParentNode, "_finalize", "_rGetLeaves");
 	Object.freeze(ParentNode);
 	Object.freeze(ParentNode.prototype);
 
@@ -138,7 +138,7 @@ export namespace LangSeqTree {
 			this.seq = sequence;
 			this.#characters = characters;
 			this.parent = parent;
-			JsUtils.propNoWrite(this as ChildNode, ["seq", "parent"]);
+			JsUtils.propNoWrite(this as ChildNode, "seq", "parent");
 		}
 
 		/**
@@ -215,7 +215,7 @@ export namespace LangSeqTree {
 			return a.ownHits - b.ownHits;
 		};
 	}
-	JsUtils.protoNoEnum(ChildNode, ["_finalize", "_rIncrHits"]);
+	JsUtils.protoNoEnum(ChildNode, "_finalize", "_rIncrHits");
 	Object.freeze(ChildNode);
 	Object.freeze(ChildNode.prototype);
 

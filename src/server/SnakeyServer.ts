@@ -48,9 +48,9 @@ export class SnakeyServer extends _SnakeyServer {
 			// Note: socket.io.js is alternatively hosted on GitHub Pages.
 		});
 		this.allGroups = new Map();
-		JsUtils.propNoWrite(this as SkServer, [
+		JsUtils.propNoWrite(this as SkServer,
 			"http", "app", "io", "allGroups",
-		]);
+		);
 
 		// At runtime, __dirname resolves to ":/dist/server/"
 		const CLIENT_ROOT = path.resolve(__dirname, "../client");
@@ -100,8 +100,8 @@ export class SnakeyServer extends _SnakeyServer {
 				socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
 			},
 		});
-		JsUtils.instNoEnum( this as SnakeyServer, ["_joinerSocketListeners"]);
-		JsUtils.propNoWrite(this as SnakeyServer, ["_joinerSocketListeners"]);
+		JsUtils.instNoEnum( this as SnakeyServer, "_joinerSocketListeners");
+		JsUtils.propNoWrite(this as SnakeyServer, "_joinerSocketListeners");
 
 		this.io.of(SnakeyServer.Nsps.GROUP_JOINER)
 			.on("connection", this.onJoinerNspsConnection.bind(this));

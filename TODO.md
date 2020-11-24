@@ -11,8 +11,7 @@
 
 ### Things I feel like doing
 
-1. Make the `JsUtil` property configurers take a property name instead of an array of property names.
-    - Call sites can use `Array.forEach` if they want to operate on several property names.
+1. Switch socket.io loading to use webpack dynamic import and [webpackPreload](https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import). Then we can uninstall `copy-webpack-plugin`. Will need to make an alias in the webpack config to resolve to the `.min` version for production build.
 1. See which callbacks can be defined higher up to make it easier for javascript engine parsers.
 1. Take a look at [compression-webpack-plugin](https://webpack.js.org/plugins/compression-webpack-plugin/#using-brotli).
 
@@ -89,6 +88,7 @@
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
 - In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
 - Take a look at [eslint-plugin-css-modules](https://www.npmjs.com/package/eslint-plugin-css-modules).
+- May be able to remove dependency on `express-static-gzip` after [this](https://github.com/expressjs/compression/issues/71) is resolved. But actually probably not :P. I think that thread is about dynamic compression.
 
 ---
 

@@ -91,10 +91,10 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 				throw new Error("All teams are immortal. The game will never end.");
 			}
 		}
-		JsUtils.propNoWrite(this as GamepartBase<G,S>, [
+		JsUtils.propNoWrite(this as GamepartBase<G,S>,
 			"gameType", "grid", "langFrontend",
 			"players", "operators", "teams", "_playerStatusCtor",
-		]);
+		);
 		this.players.forEach((player) => player._afterAllPlayersConstruction());
 		this.setCurrentOperator(0);
 	}
@@ -269,6 +269,5 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	public abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
 	protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
 }
-JsUtils.protoNoEnum(GamepartBase, []);
 Object.freeze(GamepartBase);
 Object.freeze(GamepartBase.prototype);

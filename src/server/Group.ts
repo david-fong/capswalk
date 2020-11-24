@@ -100,8 +100,8 @@ export class Group extends _Group {
 				//console.log("change ", res);
 			},
 		});
-		JsUtils.instNoEnum( this as Group, ["socketListeners"]);
-		JsUtils.propNoWrite(this as Group, ["socketListeners"]);
+		JsUtils.instNoEnum( this as Group, "socketListeners");
+		JsUtils.propNoWrite(this as Group, "socketListeners");
 
 		// Call the connection-event handler:
 		this.namespace.use((socket, next) => {
@@ -288,6 +288,6 @@ export namespace Group {
 		export type NotifyStatus    = _Group.Exist.NotifyStatus;
 	}
 }
-JsUtils.protoNoEnum(Group, ["_socketOnHostCreateGame"]);
+JsUtils.protoNoEnum(Group, "_socketOnHostCreateGame");
 Object.freeze(Group);
 Object.freeze(Group.prototype);

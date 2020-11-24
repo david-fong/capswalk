@@ -331,7 +331,7 @@ export namespace Euclid2 {
 			width:  number,
 		};
 	}
-	JsUtils.protoNoEnum(Grid, ["_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo"]);
+	JsUtils.protoNoEnum(Grid, "_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo");
 	Object.freeze(Grid);
 	Object.freeze(Grid.prototype);
 }

@@ -22,7 +22,7 @@ export class ScoreInfo {
 			entries[id] = new ScoreInfo.Entry();
 		}
 		this.entries = entries;
-		JsUtils.propNoWrite(this as ScoreInfo, ["entries"]);
+		JsUtils.propNoWrite(this as ScoreInfo, "entries");
 	}
 
 	public reset(): void {

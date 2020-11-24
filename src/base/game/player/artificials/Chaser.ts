@@ -43,10 +43,10 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 		// @ts-expect-error : RO=
 		this.targetProximity = [...this.threatProximity];
 
-		JsUtils.propNoWrite(this as Chaser<S>, [
+		JsUtils.propNoWrite(this as Chaser<S>,
 			"threatProximity", "targetProximity",
 			"behaviour", "grid",
-		]);
+		);
 	}
 
 	public reset(spawnTile: Tile<S>): void {
@@ -170,6 +170,6 @@ export namespace Chaser {
 		});
 	}
 }
-JsUtils.protoNoEnum(Chaser, ["_afterAllPlayersConstruction"]);
+JsUtils.protoNoEnum(Chaser, "_afterAllPlayersConstruction");
 Object.freeze(Chaser);
 Object.freeze(Chaser.prototype);

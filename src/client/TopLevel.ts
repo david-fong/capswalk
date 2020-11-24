@@ -56,16 +56,12 @@ export class TopLevel {
 				return TopLevel.WebpageHostType.SNAKEY_SERVER;
 			}
 		})();
-		JsUtils.propNoWrite(this as TopLevel, [
-			"defaultDocTitle", "webpageHostType",
-		]);
+		JsUtils.propNoWrite(this as TopLevel, "defaultDocTitle", "webpageHostType");
 
 		this.storage = StorageHooks;
 		this.sockets = new SkSockets();
 		this.transition = new ScreenTransition();
-		JsUtils.propNoWrite(this as TopLevel, [
-			"storage", "sockets", "transition",
-		]);
+		JsUtils.propNoWrite(this as TopLevel, "storage", "sockets", "transition");
 
 		const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
 		if (!allScreensElem) { throw new Error("never"); }
@@ -75,9 +71,9 @@ export class TopLevel {
 		//
 		// this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
 		// this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
-		JsUtils.propNoWrite(this as TopLevel, [
+		JsUtils.propNoWrite(this as TopLevel,
 			/* "bgMusic", "sfx", */ // TODO.build uncomment when music classes implemented.
-		]);
+		);
 	}
 
 	public toast(message: string): void {

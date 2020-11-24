@@ -25,7 +25,7 @@ export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
 				this.top.storage.Local,
 				this.top.transition,
 			);
-		JsUtils.propNoWrite(this as ColourCtrlScreen, ["sel"]);
+		JsUtils.propNoWrite(this as ColourCtrlScreen, "sel");
 		this.baseElem.appendChild(sel.baseElem);
 
 		// Highlight the user's last selected colour scheme (if it exists).

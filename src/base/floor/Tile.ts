@@ -41,7 +41,7 @@ export class Tile<S extends Coord.System> {
 	 */
 	public constructor(coord: Coord[S]) {
 		this.coord = coord;
-		JsUtils.propNoWrite(this as Tile<S>, ["coord"]);
+		JsUtils.propNoWrite(this as Tile<S>, "coord");
 		this.#occupantId = Player.Id.NULL;
 	}
 

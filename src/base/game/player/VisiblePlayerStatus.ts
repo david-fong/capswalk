@@ -148,6 +148,6 @@ export namespace VisiblePlayerStatus {
 		}
 	}
 }
-JsUtils.protoNoEnum(VisiblePlayerStatus, ["_afterAllPlayersConstruction"]);
+JsUtils.protoNoEnum(VisiblePlayerStatus, "_afterAllPlayersConstruction");
 Object.freeze(VisiblePlayerStatus);
 Object.freeze(VisiblePlayerStatus.prototype);

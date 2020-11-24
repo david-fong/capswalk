@@ -25,7 +25,7 @@ export class BgMusic {
 			latencyHint: "playback",
 			sampleRate: this.desc.sampleRate,
 		});
-		JsUtils.propNoWrite(this as BgMusic, ["desc", "context"]);
+		JsUtils.propNoWrite(this as BgMusic, "desc", "context");
 
 		Promise.all(this.desc.trackDescs.map(async (trackDesc) => {
 			// Fetch each track's audio file:
@@ -79,13 +79,13 @@ export class BgMusic {
 			merge.connect(this.masterFader);
 			this.masterFader.connect(context.destination);
 
-			JsUtils.propNoWrite(this as BgMusic, [
+			JsUtils.propNoWrite(this as BgMusic,
 				"source",
 				"sourceBuffer",
 				"sourceDestination",
 				"layerFaders",
 				"masterFader",
-			]);
+			);
 		});
 	}
 

@@ -93,7 +93,7 @@ export abstract class _PlayScreen<
 			implHost: _gridHtml.implHost,
 			pauseOl: _gridHtml.pauseOl,
 		});
-		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["grid"]);
+		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, "grid");
 		JsUtils.prependComment(this.grid.implHost, "grid impl host");
 		this.grid.implHost.appendChild(document.createComment("grid impl"));
 
@@ -352,7 +352,7 @@ export abstract class _PlayScreen<
 			pause: createControlButton(""),
 			reset: createControlButton("Reset"),
 		});
-		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["btn"]);
+		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, "btn");
 		this.btn.reset.onclick = this._resetGame.bind(this);
 
 		this.baseElem.appendChild(controlsBar);
@@ -363,7 +363,7 @@ export abstract class _PlayScreen<
 			// @ts-expect-error : RO=
 			= this.playersBar
 			= JsUtils.mkEl("div", [CSS["players-bar"]]);
-		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, ["playersBar"]);
+		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, "playersBar");
 		this.baseElem.appendChild(playersBar);
 	}
 }
@@ -425,12 +425,10 @@ export namespace _PlayScreen {
 		});
 	}
 }
-JsUtils.protoNoEnum(_PlayScreen, [
+JsUtils.protoNoEnum(_PlayScreen,
 	"probeCurrentGame", // At runtime, this is identical to this.currentGame.
 	"_statusBecomePlaying", "_statusBecomePaused",
-]);
-JsUtils.instNoEnum(_PlayScreen, [
-	"createGridWrapper",
-]);
+);
+JsUtils.instNoEnum(_PlayScreen, "createGridWrapper");
 Object.freeze(_PlayScreen);
 Object.freeze(_PlayScreen.prototype);

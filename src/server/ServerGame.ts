@@ -77,8 +77,8 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		);
 		this._groupHostClient = args.groupHostClient;
 		this._deleteExternalRefs = args.deleteExternalRefs;
-		JsUtils.instNoEnum (this as ServerGame<S>, ["operators", "_deleteExternalRefs"]);
-		JsUtils.propNoWrite(this as ServerGame<S>, ["_groupHostClient", "_deleteExternalRefs"]);
+		JsUtils.instNoEnum (this as ServerGame<S>, "operators", "_deleteExternalRefs");
+		JsUtils.propNoWrite(this as ServerGame<S>, "_groupHostClient", "_deleteExternalRefs");
 
 		this.namespace = args.groupNsps.server.of(
 			SkServer.Nsps.GROUP_GAME_PREFIX + args.groupNsps.name.replace(SkServer.Nsps.GROUP_LOBBY_PREFIX, "")
@@ -91,7 +91,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 			};
 			return next();
 		}) */
-		JsUtils.propNoWrite(this as ServerGame<S>, ["namespace"]);
+		JsUtils.propNoWrite(this as ServerGame<S>, "namespace");
 
 		this.gameEvSocketListeners = Object.freeze({
 			[PlayerActionEvent.EVENT_NAME.MOVEMENT]: this.processMoveRequest.bind(this),
@@ -99,8 +99,8 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 			[GameEv.PAUSE]: this.statusBecomePaused.bind(this),
 			[GameEv.UNPAUSE]: this.statusBecomePlaying.bind(this),
 		});
-		JsUtils.instNoEnum (this as ServerGame<S>, ["gameEvSocketListeners"]);
-		JsUtils.propNoWrite(this as ServerGame<S>, ["gameEvSocketListeners"]);
+		JsUtils.instNoEnum (this as ServerGame<S>, "gameEvSocketListeners");
+		JsUtils.propNoWrite(this as ServerGame<S>, "gameEvSocketListeners");
 
 		this._awaitGameSockets(args);
 	}
@@ -161,7 +161,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 				build.set(playerDesc.playerId, gameSocket);
 				return build;
 			}, new Map());
-			JsUtils.propNoWrite(this as ServerGame<S>, ["playerSockets"]);
+			JsUtils.propNoWrite(this as ServerGame<S>, "playerSockets");
 		}
 
 		Promise.all(Array.from(this.namespace.sockets.values(), (socket) => {
@@ -323,10 +323,10 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		this._deleteExternalRefs();
 	}
 }
-JsUtils.protoNoEnum(ServerGame, [
+JsUtils.protoNoEnum(ServerGame,
 	"_awaitGameSockets", "_greetGameSockets",
 	"_getGridImplementation",
 	"_createOperatorPlayer", "setCurrentOperator",
-]);
+);
 Object.freeze(ServerGame);
 Object.freeze(ServerGame.prototype);

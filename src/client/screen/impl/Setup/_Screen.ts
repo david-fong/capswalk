@@ -36,7 +36,7 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 
 		this._createLangWeightExaggerationInput();
 
-		JsUtils.propNoWrite(this as _SetupScreen<SID>, ["langSel", "langWeightExaggeration"]);
+		JsUtils.propNoWrite(this as _SetupScreen<SID>, "langSel", "langWeightExaggeration");
 
 		this.baseElem.appendChild(this.nav.next);
 		this._loadLastUsedPreset();

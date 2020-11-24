@@ -46,9 +46,9 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 		// @ts-expect-error : RO=
 		this.teamElems = new Map();
 
-		JsUtils.propNoWrite(this as GroupLobbyScreen, [
+		JsUtils.propNoWrite(this as GroupLobbyScreen,
 			"_players", "teamsElem", "teamElems", "in",
-		]);
+		);
 
 		{const goSetup = this.nav.next;
 		goSetup.textContent = "Setup Game";
@@ -251,7 +251,7 @@ export namespace GroupLobbyScreen {
 			this.el.username.classList.add(CSS["player__name"]);
 			this.username = desc.username;
 			this.teamId = desc.teamId;
-			JsUtils.propNoWrite(this as UserInfo, ["base", "el"]);
+			JsUtils.propNoWrite(this as UserInfo, "base", "el");
 		}
 
 		public update(desc: Player.UserInfo): void {
@@ -285,6 +285,6 @@ export namespace GroupLobbyScreen {
 		}
 	}
 }
-JsUtils.protoNoEnum(GroupLobbyScreen, ["_createInputs", "_submitInputs"]);
+JsUtils.protoNoEnum(GroupLobbyScreen, "_createInputs", "_submitInputs");
 Object.freeze(GroupLobbyScreen);
 Object.freeze(GroupLobbyScreen.prototype);

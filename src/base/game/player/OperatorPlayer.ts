@@ -155,6 +155,6 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 		return this.#seqBuffer;
 	}
 }
-JsUtils.protoNoEnum(OperatorPlayer, ["_notifyWillBecomeCurrent"]);
+JsUtils.protoNoEnum(OperatorPlayer, "_notifyWillBecomeCurrent");
 Object.freeze(OperatorPlayer);
 Object.freeze(OperatorPlayer.prototype);

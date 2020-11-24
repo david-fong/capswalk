@@ -75,7 +75,7 @@ export namespace JsUtils {
 	 */
 	export function protoNoEnum<T>(
 		ctor: {new(...args: any[]): T} | Function, // <- allow abstract classes
-		propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>,
+		...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
 		// ^This weird looking typing allows for autocomplete for
 		// public prototype properties, and inclusion of non-public
 		// prototype properties (without static checking existence).
@@ -95,16 +95,15 @@ export namespace JsUtils {
 	 */
 	export function instNoEnum<T>(
 		inst: T,
-		propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>,
+		...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
 	): void {
 		_configProp(inst, propNames, NO_ENUM);
 	}
-
 	/**
 	 */
 	export function propNoWrite<T>(
 		inst: T,
-		propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>,
+		...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
 	): void {
 		_configProp(inst, propNames, NO_WRITE);
 	}

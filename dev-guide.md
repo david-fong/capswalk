@@ -4,7 +4,7 @@
 ## Cloning and Building
 
 1. Clone from the git repo. The default branch is `dev`.
-1. `npm install`.
+1. `npm install`. Note on a sneaky gotcha: Make sure your shell doesn't have `NODE_ENV=production`.
 1. `npm run build`.
     - Note that tsc may err on the first build after adding a css module class since css-modules-typescript-loader hasn't generated the .d.ts changes for the new class yet.
 1. To test off the local filesystem (no online-game capabilities), open `file://<path-to-project-root>/dist/client/index.html`.
@@ -23,15 +23,19 @@
 
 ## Release Procedure
 
+```sh
+rm -r dist/{client,server}/*
+# bump package version in package.json.
+```
+
 ### GitHub Pages Deployment
 
 ```sh
 export NODE_ENV='production'
-./scripts/pack.sh
+./scripts/pack.sh -t
 # Sanity check that everything is running properly for online and offline implementations.
 
 cd dist/client
-git rm -r --cached .
 git add .
 git commit # Start message with current hash of dev branch.
 git push

@@ -48,11 +48,8 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 			desc.noCheckGameOver,
 		);
 		this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
-		JsUtils.instNoEnum( this as PlayerSkeleton<S>, ["game"]);
-		JsUtils.propNoWrite(this as PlayerSkeleton<S>, [
-			"playerId", "isALocalOperator",
-			"game", "status", "tile",
-		]);
+		JsUtils.instNoEnum(this as PlayerSkeleton<S>, "game");
+		JsUtils.propNoWrite(this as PlayerSkeleton<S>, "playerId", "isALocalOperator", "game", "status", "tile");
 	}
 
 	public _afterAllPlayersConstruction(): void {
@@ -159,6 +156,6 @@ export namespace PlayerSkeleton {
 	Object.freeze(TileGetterSource);
 	Object.freeze(TileGetterSource.prototype);
 }
-JsUtils.protoNoEnum(PlayerSkeleton, ["_afterAllPlayersConstruction"]);
+JsUtils.protoNoEnum(PlayerSkeleton, "_afterAllPlayersConstruction");
 Object.freeze(PlayerSkeleton);
 Object.freeze(PlayerSkeleton.prototype);

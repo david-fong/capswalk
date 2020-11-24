@@ -18,7 +18,7 @@ export class ScreenTransition {
 	public constructor() {
 		this.baseElem = document.getElementById(OmHooks.Screen.Id.SCREEN_TINT)!;
 		this.#currentRequest = undefined;
-		JsUtils.propNoWrite(this as ScreenTransition, ["baseElem"]);
+		JsUtils.propNoWrite(this as ScreenTransition, "baseElem");
 	}
 
 	/**
@@ -88,6 +88,6 @@ export namespace ScreenTransition {
 		beforeUnblur?: () => void,
 	}>;
 }
-JsUtils.protoNoEnum(ScreenTransition, ["_atomicDo", "_triggerCssTransition"]);
+JsUtils.protoNoEnum(ScreenTransition, "_atomicDo", "_triggerCssTransition");
 Object.freeze(ScreenTransition);
 Object.freeze(ScreenTransition.prototype);

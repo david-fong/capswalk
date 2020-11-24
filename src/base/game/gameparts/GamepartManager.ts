@@ -55,9 +55,9 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		);
 		this.#freeHealthTiles = new Set();
 		this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
-		JsUtils.propNoWrite(this as GamepartManager<G,S>, [
+		JsUtils.propNoWrite(this as GamepartManager<G,S>,
 			"averageFreeHealth", "averageFreeHealthPerTile", "healthCostOfBoost", "scoreInfo",
-		]);
+		);
 
 		// https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
 		this.#langImportPromise = (import(
@@ -70,7 +70,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			) as Lang.ClassIf;
 			// @ts-expect-error : RO=
 			this.lang = new LangConstructor(desc.langWeightExaggeration);
-			JsUtils.propNoWrite(this as GamepartManager<G,S>, ["lang"]);
+			JsUtils.propNoWrite(this as GamepartManager<G,S>, "lang");
 
 			const minLangLeaves = this.grid.static.getAmbiguityThreshold();
 			if (DEF.DevAssert && this.lang.numLeaves < minLangLeaves) {
@@ -443,6 +443,6 @@ export namespace GamepartManager {
 		return fr;
 	}
 }
-JsUtils.protoNoEnum(GamepartManager, ["managerCheckGamePlayingRequest"]);
+JsUtils.protoNoEnum(GamepartManager, "managerCheckGamePlayingRequest");
 Object.freeze(GamepartManager);
 Object.freeze(GamepartManager.prototype);
