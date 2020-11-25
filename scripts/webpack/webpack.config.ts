@@ -189,12 +189,15 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 			"connect-src": ["'self'", ...GAME_SERVERS.map((origin: string) => `wss://${origin}/socket.io/`)],
 		},{
 			hashingMethod: "sha256",
-			hashEnabled: { "script-src": true, "style-src": false },
+			hashEnabled:  { "script-src": true,  "style-src": false },
+			nonceEnabled: { "script-src": false, "style-src": false },
 		}),
 		new MiniCssExtractPlugin({
 			filename: "_barrel.css",
 			chunkFilename: "chunk/[name].css",
 		}) as webpack.WebpackPluginInstance, // TODO.build remove this when https://github.com/webpack-contrib/mini-css-extract-plugin/pull/594
+	);
+	if (PACK_MODE === "production") { config.plugins.push(
 		new CompressionPlugin({
 			filename: "[path][base].br",
 			algorithm: "brotliCompress",
@@ -203,10 +206,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 			threshold: 10240,
 			minRatio: 0.8,
 		}),
-	);
-	if (PACK_MODE === "production") {
-		config.plugins.push();
-	}
+	); }
 }
 
 
