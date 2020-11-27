@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "dbaeumer.vscode-eslint",
+        "DavidAnson.vscode-markdownlint",
+        "streetsidesoftware.code-spell-checker",
+
+        "Gruntfuggly.todo-tree",
+
+        "DigitalBrainstem.javascript-ejs-support",
+    ],
+
+    "unwantedRecommendations": [
+        "ms-vscode.vscode-typescript-tslint-plugin",
+    ],
+}

@@ -1,6 +1,6 @@
 
 /**/*
 !/.gitignore
+!/extensions.json
 !/settings.json
 !/cSpell.json
-*.code-workspace

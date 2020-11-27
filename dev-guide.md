@@ -14,13 +14,6 @@
     - Avoid commands that would delete either of the file `dist/.git` or `dist/client/.git`.
     - If you accidentally delete them, recreate them with the contents `gitdir: ../../.git/worktrees/client` and `gitdir: ../.git/worktrees/client` respectively.
 
-## Recommended VS Code Extensions
-
-- Todo Tree
-- Code Spell Checker
-- ESLint
-- EJS language support
-
 ## Release Procedure
 
 ```sh
