@@ -11,7 +11,7 @@
         "{**/.templates/,**/*tsconfig.json}": true,
         "{**/.eslintrc.*,.eslintignore}": true,
         "scripts/webpack/*.js": true,
-        //"**/*.css.d.ts": true,
+        "**/*.css.d.ts": true,
     },
     "search.exclude": {
         "**/node_modules": true,
@@ -19,7 +19,7 @@
         "**/*.code-search": true,
         "*cache.json": true,
 
-        "{**/.templates/,**/tsconfig.json}": false,
+        "{**/.templates/,**/*tsconfig.json}": false,
         "scripts/webpack/*.js": true,
     },
     "files.associations": {

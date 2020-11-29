@@ -2,9 +2,9 @@
     "extends": "../.templates/tsconfig.json",
     "compilerOptions": {
         "module": "CommonJS",
-        "target": "ES2019",
+        "target": "ES2019", // can use es2020 for node 14.
         "lib":   ["ES2019"], // no dom.
-        "types": ["snakey-type-utils", "node", "express"],
+        "types": ["my-type-utils", "node", "express"],
     },
     "references": [
         { "path": "../base" },

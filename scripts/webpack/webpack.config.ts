@@ -24,7 +24,7 @@ const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> 
 		/\.js$/,
 	]}),
 	new webpack.DefinePlugin({
-		// See [](src/node_modules/@types/snakey-type-utils.dts).
+		// See [](src/node_modules/@types/my-type-utils.dts).
 		"DEF.NodeEnv":   JSON.stringify(PACK_MODE),
 		"DEF.DevAssert": JSON.stringify(PACK_MODE === "development"),
 	}),
@@ -54,6 +54,7 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 }, ];};
 const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 	test: /\.css$/,
+	issuer: { not: [/\.m\.css/] },
 	use: [{
 		loader: MiniCssExtractPlugin.loader, options: {}
 	},{

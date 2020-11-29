@@ -1,7 +1,7 @@
 {
     "extends": "../.templates/tsconfig.json",
     "compilerOptions": {
-        "types": ["snakey-type-utils"],
+        "types": ["my-type-utils"],
     },
     "references": [
         { "path": "../base/defs" },
