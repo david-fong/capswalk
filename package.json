@@ -12,7 +12,7 @@
   "type": "commonjs",
   "files": [],
   "scripts": {
-    "postinstall": "bash scripts/devinit.sh",
+    "devinit": "bash scripts/devinit.sh",
     "build": "bash scripts/pack.sh",
     "start": "bash scripts/server.sh"
   },

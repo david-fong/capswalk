@@ -5,6 +5,7 @@
 
 1. Clone from the git repo. The default branch is `dev`.
 1. `npm install`. Note on a sneaky gotcha: Make sure your shell doesn't have `NODE_ENV=production`.
+1. `npm run devinit`.
 1. `npm run build`.
     - Note that tsc may err on the first build after adding a css module class since css-modules-typescript-loader hasn't generated the .d.ts changes for the new class yet.
 1. To test off the local filesystem (no online-game capabilities), open `file://<path-to-project-root>/dist/client/index.html`.
@@ -12,7 +13,7 @@
     - Instead of the file protocol, load the site at localhost.
 1. Notes on repairing git worktrees used for deployment:
     - Avoid commands that would delete either of the file `dist/.git` or `dist/client/.git`.
-    - If you accidentally delete them, recreate them with the contents `gitdir: ../../.git/worktrees/client` and `gitdir: ../.git/worktrees/client` respectively.
+    - If you accidentally delete them, just rerun `npm run devinit`, which recreates them with the contents `gitdir: ../.git/worktrees/dist` and `gitdir: ../../.git/worktrees/client` respectively.
 
 ## Release Procedure
 
