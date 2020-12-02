@@ -38,17 +38,6 @@ export namespace Tile {
 	};
 }
 
-export namespace Grid {
-	export const Dataset = <const>{
-		/**
-		 * Used as a part of CSS selector queries to specify coord-
-		 * system-specific styling. This is set on the `impl-body`
-		 * element. See `VisibleGridMixin`.
-		 */
-		IMPL_COORD_SYS: "coordSys",
-	};
-}
-
 export namespace Player {
 	export const Dataset = <const>{
 		DOWNED: { KEY: "downed", VALUES: <const>{

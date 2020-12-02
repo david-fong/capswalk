@@ -1,5 +1,6 @@
 // STYLE IMPORT:
 import "assets/style/initial/_barrel.css";
+import "assets/style/initial/common.css";
 
 // None shall touch Object.prototype >:(
 [
@@ -7,7 +8,8 @@ import "assets/style/initial/_barrel.css";
 	String, Number, RegExp,
 	HTMLElement, HTMLDivElement, HTMLSpanElement, HTMLPreElement,
 	HTMLButtonElement, HTMLInputElement, HTMLSelectElement, HTMLOptionElement,
-	HTMLScriptElement, HTMLStyleElement, HTMLLinkElement,
+	HTMLScriptElement, HTMLStyleElement, HTMLLinkElement, HTMLAnchorElement,
+	HTMLDocument, HTMLIFrameElement, HTMLCanvasElement,
 ]
 .forEach((intrinsic) => {
 	Object.freeze(intrinsic);

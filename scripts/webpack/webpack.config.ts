@@ -10,6 +10,7 @@ import CspHtmlPlugin        = require("csp-html-webpack-plugin");
 import MiniCssExtractPlugin = require("mini-css-extract-plugin");
 import CssMinimizerPlugin   = require("css-minimizer-webpack-plugin");
 import CompressionPlugin    = require("compression-webpack-plugin");
+type SplitChunksOpts = Exclude<NonNullable<webpack.Configuration["optimization"]>["splitChunks"], undefined | false>["cacheGroups"];
 
 type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
@@ -149,8 +150,16 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
  */
 const CLIENT_CONFIG = __BaseConfig("client"); {
 	const config  = Object.assign(CLIENT_CONFIG, <Partial<webpack.Configuration>>{
-		target: "web",
-		entry: {["index"]: `./src/client/index.ts`},
+		target: ["web", "es6"],
+		entry: {
+			"index": {
+				import: "./src/client/index.ts",
+				dependOn: "css-common",
+			},
+			"css-common": {
+				import: "./assets/style/initial/common.css",
+			},
+		},
 		externals: [nodeExternals({
 			allowlist: ["tslib", "socket.io-client"],
 			importType: "root",
@@ -164,11 +173,20 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 			(PACK_MODE === "development") ? "" : ".min"
 		}.js`),
 	});
+	Object.assign((config.optimization?.splitChunks as any).cacheGroups, <SplitChunksOpts>{
+		"game-css": {
+			test: /src[/\\]base[/\\].*\.css$/,
+			name: "game-css",
+			chunks: "all",
+			priority: 1,
+			reuseExistingChunk: true,
+		},
+	});
 	const htmlPluginOptions: HtmlPlugin.Options = {
-		template:   path.resolve(PROJECT_ROOT, "src/client/index.ejs"),
-		favicon:    "./assets/favicon.png",
+		template: path.resolve(PROJECT_ROOT, "src/client/index.ejs"),
+		favicon: "./assets/favicon.png",
 		scriptLoading: "defer",
-		inject: false, // (I specify where each injection goes in the template).
+		inject: false, // (I'll do it myself).
 		templateParameters: (compilation, assets, assetTags, options) => { return {
 			compilation, webpackConfig: compilation.options,
 			htmlWebpackPlugin: { tags: assetTags, files: assets, options, },
@@ -194,7 +212,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 			nonceEnabled: { "script-src": false, "style-src": false },
 		}),
 		new MiniCssExtractPlugin({
-			filename: "_barrel.css",
+			filename: "[name].css",
 			chunkFilename: "chunk/[name].css",
 		}) as webpack.WebpackPluginInstance, // TODO.build remove this when https://github.com/webpack-contrib/mini-css-extract-plugin/pull/594
 	);
@@ -215,7 +233,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 /**
  */
 const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>): void => {
-	config.target = "node";
+	config.target = "node12";
 	config.externals = [ nodeExternals(), ], // <- Does not whitelist tslib.
 	// alternative to above: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))
 	config.resolve.extensions!.push(".js");

@@ -62,20 +62,29 @@ export class VisibleGridMixin<S extends Coord.System> {
 	 * now to get around no-multiple-inheritance.
 	 *
 	 * @param desc -
-	 * @param gridImpl -
+	 * @param tiles -
 	 */
-	public _superVisibleGrid(desc: Grid.CtorArgs<S>, gridImpl: HTMLElement): void {
+	public _superVisibleGrid(desc: Grid.CtorArgs<S>, tiles: HTMLElement): void {
 		if (desc.tileClass !== VisibleTile) {
 			throw new TypeError("never");
 		}
-		const OHG = OmHooks.Grid;
-		gridImpl.setAttribute("role", "presentation");
-		gridImpl.classList.add(CSS["impl-body"]);
-		gridImpl.dataset[OHG.Dataset.IMPL_COORD_SYS] = desc.coordSys;
-		gridImpl.translate  = false; // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/translate
-		gridImpl.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
+		tiles.setAttribute("role", "presentation");
+		tiles.translate  = false; // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/translate
+		tiles.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
+
 		// @ts-expect-error : RO=
-		this.baseElem = gridImpl;
+		const base = this.baseElem = JsUtils.mkEl("div", [CSS["impl-body"]]);
+		const root = base.attachShadow({ mode: "closed" });
+		tiles.classList.add(CSS["impl-body"]);
+		root.appendChild(tiles);
+		root.appendChild(JsUtils.mkEl("link", [], {
+			rel: "stylesheet",
+			href: "css-common.css",
+		}));
+		root.appendChild(JsUtils.mkEl("link", [], {
+			rel: "stylesheet",
+			href: "chunk/game-css.css",
+		}));
 
 		// Initialize spotlight elements:
 		const shortSpotlight = JsUtils.mkEl("div", [PLAYER_CSS["spotlight-short"]]);

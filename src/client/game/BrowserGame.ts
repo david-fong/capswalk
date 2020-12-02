@@ -28,7 +28,7 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 	public _ctorBrowserGame(): void {
 		// @ts-expect-error : RO=
 		this.htmlElements = Object.freeze<BrowserGameMixin.HtmlElements>({
-			gridImpl: this.grid.baseElem,
+			grid: this.grid.baseElem,
 			playersBar: document.createElement("div"), // TODO.design
 		});
 		JsUtils.propNoWrite(this as BrowserGameMixin<G,S>, "htmlElements");
@@ -51,8 +51,9 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 export interface BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> extends GamepartBase<G,S> {};
 export namespace BrowserGameMixin {
 	export type HtmlElements = Readonly<{
-		gridImpl:   HTMLElement;
+		grid:   HTMLElement;
 		playersBar: HTMLElement;
+		// TODO.design seqBuffer
 	}>;
 }
 JsUtils.protoNoEnum(BrowserGameMixin, "_getGridImplementation");

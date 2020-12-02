@@ -3,17 +3,17 @@
 	<head>
 		<meta charset="UTF-8"/>
 		<title>snakey3</title>
-		<meta name="referrer"    content="same-origin"/>
-		<meta name="viewport"    content="width=device-width, initial-scale=1.0"/>
+		<meta name="referrer" content="same-origin"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<!-- <link rel="manifest" href="manifest.webmanifest"/> -->
 
 		<%= htmlWebpackPlugin.tags.headTags.join("\n\t\t") %>
 		<%= htmlWebpackPlugin.files.js.map((href) => `<link rel="preload" as="script" href="${href}"/>`).join("\n\t\t") %>
-		<meta name="author"      content="David Fong"/>
-		<meta name="description" content="A multiplayer typing game for learning written languages."/>
-		<meta name="og:title"  content="snakey3"/>
+		<meta name="og:title"       content="snakey3"/>
+		<meta name="author"         content="David Fong"/>
+		<meta name="description"    content="A multiplayer typing game for learning written languages."/>
 		<meta name="og:description" content="A multiplayer typing game for learning written languages."/>
-		<meta name="og:image"  content="https://raw.githubusercontent.com/david-fong/snakey3/dev/assets/images/screenshots/snakey_version3_blanktitle.png"/>
+		<meta name="og:image"       content="https://raw.githubusercontent.com/david-fong/snakey3/dev/assets/images/screenshots/snakey_version3_blanktitle.png"/>
 	</head>
 
 

@@ -59,14 +59,14 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
 	/**
 	 * @override
 	 */
-	protected _requestStatusBecomePlaying(): void {
+	protected _reqStatusPlaying(): void {
 		this.socket.emit(GameEv.UNPAUSE);
 	}
 
 	/**
 	 * @override
 	 */
-	protected _requestStatusBecomePaused(): void {
+	protected _reqStatusPaused(): void {
 		this.socket.emit(GameEv.PAUSE);
 	}
 

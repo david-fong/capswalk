@@ -11,7 +11,16 @@
 
 ### Things I feel like doing
 
+1. Move global CSS to go under the `src/` directory.
+1. Try turning on `webpack.experiments.module`.
+1. Configure terser function name mangling.
+1. Fix: for some reason the pause overlay class is less specific than the fill-parent class on the same object.
+1. Display the operator's current sequence buffer.
 1. See which callbacks can be defined higher up to make it easier for javascript engine parsers.
+1. Add git lfs support to heroku.
+1. Add `[ext]` to brotli output filename option.
+1. Make a json file or something defining all the webpack chunk names I have defined.
+1. Set CSP `form-action` to `'none'`.
 
 ### Things that I feel less like doing
 
@@ -20,7 +29,6 @@
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
 1. Server authentication is not working. Please debug and fix.
 1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
-1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
 1. Fill in implementation of bubble event handler.
 
 ### Things that are low priority
@@ -28,10 +36,10 @@
 1. Spectator mode for online games? O_o
 1. Implement the scores/player-listing sidebar in __PlayScreen.
     - Also show scores (very small size) on top of player faces.
-1. Display the operator's current sequence buffer.
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
 1. Try out EJS include directive.
+1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
 
 ### Routine Checkups
 
@@ -68,7 +76,6 @@
 - Read about these topics and see how they might be useful
   - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Concepts_Behind_IndexedDB)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB)
-  - [](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API)
   - [](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
   - [](https://github.com/actions/cache)
   - Heroku
@@ -110,12 +117,6 @@ https://github.com/whatwg/html/issues/4078
 
 https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
 ```
-
-### Rel-Noopener
-
-- [Explainer by Mathias Bynens](https://mathiasbynens.github.io/rel-noopener/)
-  - [better default becoming standardized](https://github.com/whatwg/html/pull/4330)
-    - [Chrome is still working on it](https://bugs.chromium.org/p/chromium/issues/detail?id=898942)
 
 ## Research / Learning Links
 

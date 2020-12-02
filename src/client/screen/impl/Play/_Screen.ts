@@ -102,7 +102,7 @@ export abstract class _PlayScreen<
 			const game = this.currentGame;
 			if (game !== undefined && game.status === Game.Status.PAUSED) {
 				this.grid.base.focus();
-				this._requestStatusBecomePlaying();
+				this._reqStatusPlaying();
 			}
 		});
 		// ^Purposely make the grid the first child so it gets tabbed to first.
@@ -134,11 +134,11 @@ export abstract class _PlayScreen<
 				if (this.#pauseReason === undefined) {
 					const game = this.currentGame;
 					if (game === undefined || (game !== undefined && game.status !== Game.Status.OVER)) {
-						this._requestStatusBecomePaused();
+						this._reqStatusPaused();
 					}
 				}
 			} else {
-				if (this.#pauseReason === "page-hide") { this._requestStatusBecomePlaying(); }
+				if (this.#pauseReason === "page-hide") { this._reqStatusPlaying(); }
 			}
 		};
 		// @ts-expect-error : RO=
@@ -156,30 +156,30 @@ export abstract class _PlayScreen<
 		this.btn.pause.disabled = true;
 		this._statusBecomePaused(); // <-- Leverage some state initialization.
 
-		this.#currentGame = await this._createNewGame(
+		const game = this.#currentGame = await this._createNewGame(
 			args as Game.CtorArgs<G,Coord.System>,
 		);
+		await game.reset();
+		// ^Wait until resetting has finished before attaching the
+		// grid element to the screen so that the DOM changes made
+		// by populating tiles with CSP's will be batched.
+		this.grid.implHost.appendChild(game.htmlElements.grid);
+		this.playersBar.appendChild(game.htmlElements.playersBar);
+		// ^The order of insertion does not matter (it used to).
+
+		this.btn.pause.onclick = this._reqStatusPlaying.bind(this);
+		this.btn.pause.disabled = false;
+		if (this.wantsAutoPlayPause) {
+			setTimeout(() => {
+				if (!document.hidden) { this._reqStatusPlaying(); }
+			}, 500);
+			// ^This delay is for "aesthetic" purposes (not functional).
+		}
 		this.grid.base.addEventListener("keydown", this.#gridOnKeyDown, {
 			// the handler will call stopPropagation. As a result,
 			// nothing inside this element can ever receive keyboard events.
 			capture: true,
 		});
-		await this.currentGame.reset();
-		// ^Wait until resetting has finished before attaching the
-		// grid element to the screen so that the DOM changes made
-		// by populating tiles with CSP's will be batched.
-		this.grid.implHost.appendChild(this.currentGame.htmlElements.gridImpl);
-		this.playersBar.appendChild(this.currentGame.htmlElements.playersBar);
-		// ^The order of insertion does not matter (it used to).
-
-		this.btn.pause.onclick = this._requestStatusBecomePlaying.bind(this);
-		this.btn.pause.disabled = false;
-		if (this.wantsAutoPlayPause) {
-			setTimeout(() => {
-				if (!document.hidden) { this._requestStatusBecomePlaying(); }
-			}, 500);
-			// ^This delay is for "aesthetic" purposes (not functional).
-		}
 	}
 
 	/**
@@ -262,11 +262,11 @@ export abstract class _PlayScreen<
 		return true;
 	}
 
-	protected _requestStatusBecomePlaying(): void {
+	protected _reqStatusPlaying(): void {
 		this._statusBecomePlaying();
 	}
 
-	protected _requestStatusBecomePaused(): void {
+	protected _reqStatusPaused(): void {
 		this._statusBecomePaused();
 	}
 
@@ -276,7 +276,7 @@ export abstract class _PlayScreen<
 		this.grid.pauseOl.style.visibility = "hidden";
 		this.#pauseReason = undefined;
 
-		this.btn.pause.onclick = this._requestStatusBecomePaused.bind(this);
+		this.btn.pause.onclick = this._reqStatusPaused.bind(this);
 		this.btn.reset.disabled = true;
 
 		this.grid.base.focus();
@@ -288,7 +288,7 @@ export abstract class _PlayScreen<
 		this.grid.pauseOl.style.visibility = "visible";
 		this.#pauseReason = document.hidden ? "page-hide" : "other";
 
-		this.btn.pause.onclick = this._requestStatusBecomePlaying.bind(this);
+		this.btn.pause.onclick = this._reqStatusPlaying.bind(this);
 		this.btn.reset.disabled = false;
 	}
 
@@ -309,7 +309,7 @@ export abstract class _PlayScreen<
 		this.currentGame.reset();
 		this.btn.pause.disabled = false;
 		if (this.wantsAutoPlayPause) {
-			this._requestStatusBecomePlaying();
+			this._reqStatusPlaying();
 		}
 	}
 
@@ -383,7 +383,7 @@ export namespace _PlayScreen {
 
 		const grid = JsUtils.mkEl("div", [
 			//CSS_FX.CENTER_CONTENTS,
-			CSS_FX.STACK_CONTENTS,
+			//CSS_FX.STACK_CONTENTS,
 			CSS_FX.TEXT_SELECT_DISABLED,
 			GRID_CSS["this"],
 		], { tabIndex: 0 });
