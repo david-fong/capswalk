@@ -1,8 +1,8 @@
-import os       = require("os");
-import path     = require("path");
-import http     = require("http");
-import express  = require("express");
-import expressStaticGzip = require("express-static-gzip");
+import * as os from "os";
+import * as path from "path";
+import * as http from "http";
+import * as express from "express";
+import * as expressStaticGzip from "express-static-gzip";
 import * as io from "socket.io";
 import type * as net from "net";
 

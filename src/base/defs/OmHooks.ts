@@ -16,7 +16,7 @@ export const GLOBAL_IDS = <const>{
 };
 
 /**
- * See `:/assets/style/utils.css`.
+ * See `:/src/style/utils.css`.
  */
 export namespace General {
 	export const Class = <const>{

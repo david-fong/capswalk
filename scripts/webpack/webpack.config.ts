@@ -157,7 +157,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 				dependOn: "css-common",
 			},
 			"css-common": {
-				import: "./assets/style/initial/common.css",
+				import: "./src/style/common.css",
 			},
 		},
 		externals: [nodeExternals({
@@ -206,6 +206,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 			"script-src": "'self'", "style-src": "'self'",
 			"child-src": "'none'", "object-src": "'none'", "base-uri": "'none'",
 			"connect-src": ["'self'", ...GAME_SERVERS.map((origin: string) => `wss://${origin}/socket.io/`)],
+			"form-action": "'none'",
 		},{
 			hashingMethod: "sha256",
 			hashEnabled:  { "script-src": true,  "style-src": false },

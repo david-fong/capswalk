@@ -11,7 +11,6 @@
 
 ### Things I feel like doing
 
-1. Move global CSS to go under the `src/` directory.
 1. Try turning on `webpack.experiments.module`.
 1. Configure terser function name mangling.
 1. Fix: for some reason the pause overlay class is less specific than the fill-parent class on the same object.
@@ -20,7 +19,6 @@
 1. Add git lfs support to heroku.
 1. Add `[ext]` to brotli output filename option.
 1. Make a json file or something defining all the webpack chunk names I have defined.
-1. Set CSP `form-action` to `'none'`.
 
 ### Things that I feel less like doing
 

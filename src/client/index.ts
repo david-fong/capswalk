@@ -1,6 +1,6 @@
 // STYLE IMPORT:
-import "assets/style/initial/_barrel.css";
-import "assets/style/initial/common.css";
+import "style/_barrel.css";
+import "style/common.css";
 
 // None shall touch Object.prototype >:(
 [
