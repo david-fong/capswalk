@@ -104,27 +104,13 @@
 ## Good Reads
 
 ```text
-https://javascript.info/class-inheritance
-https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b
-https://www.quirksmode.org/js/events_order.html#link4
 https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
-https://javascript.info/mixins
 https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
-
-https://github.com/whatwg/html/issues/4078
 
 https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
 ```
 
 ## Research / Learning Links
-
-### Licensing
-
-```text
-https://creativecommons.org/faq/#can-i-apply-a-creative-commons-license-to-software
-https://www.gnu.org/licenses/copyleft.html
-https://opensource.org/licenses
-```
 
 ### Dynamic imports
 
@@ -135,13 +121,9 @@ Links no longer needed. Good things to know: both TypeScript and WebPack impleme
 I might use [this](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) for choosing which team you want to be part of.
 
 ```text
-https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets
-
 https://developer.mozilla.org/en-US/docs/Web/API
 https://web.dev/add-manifest/
 https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
-https://www.w3schools.com/html/html5_webstorage.asp
-https://www.w3schools.com/html/html5_serversentevents.asp
 Navigator.{keyboard,online,connection,language,languages,battery}
 https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
 https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API
@@ -159,8 +141,6 @@ Presentation API:
 
 When playing and pausing music, I can [fade it in and out](https://devdocs.io/dom/audioparam/exponentialramptovalueattime) and then pause and resume the audio context to save device power. Either that, or I can [apply a muffling effect](https://devdocs.io/dom/biquadfilternode) when paused.
 
-For the background music track, I will have multiple layers. They will all be the same length, except for the main melody track that will be some whole-number multiple in length. For all the short ones, we can [load them up into mono buffers](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/decodeAudioData) using the [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), and then combine all those buffers as channels in one [AudioBuffer](https://devdocs.io/dom/audiobuffer). That will be the buffer for a looping [AudioBufferSourceNode](https://devdocs.io/dom/audiobuffersourcenode). I connect that source node to a [ChannelSplitterNode](https://devdocs.io/dom/channelsplitternode), which passes each channel through a gain node, then joins them back into one node via [ChannelMergerNode](https://devdocs.io/dom/channelmergernode). Those fader-mixed tracks (channels) will be connected to some more stereo effects, and finally to the context output destination.
-
 I should keep my audio loops as short as possible. Ie. Every audio file 4 measures long except the melody file which is maybe 12 measures long.
 
 Here's [something fun I can do](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API) (but don't have to).
@@ -171,43 +151,6 @@ https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
 https://www.html5rocks.com/en/tutorials/webaudio/positional_audio/
 https://github.com/GoogleChromeLabs/web-audio-samples/
 https://github.com/bbc/r-audio
-```
-
-```text
-https://expressjs.com/en/api.html#app.set
-https://stackoverflow.com/a/38129612/11107541
-```
-
-### CSS
-
-```text
-styling east-asian fonts: https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-east-asian
-https://stackoverflow.com/a/45802847/11107541
-https://devdocs.io/css/clip-path
-https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
-https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Backgrounds_and_borders
-https://developer.mozilla.org/en-US/docs/Web/CSS/display
-flex playground: https://codepen.io/enxaneta/full/adLPwv/
-https://developers.google.com/web/updates/2018/01/paintapi
-https://drafts.csswg.org/mediaqueries-5/#custom-mq
-https://developers.google.com/web/updates/2019/02/constructable-stylesheets
-https://github.com/fergald/docs/blob/master/explainers/css-shadow-parts-1.md
-https://medium.com/seek-blog/the-end-of-global-css-90d2a4a06284
-```
-
-### ARIA
-
-```text
-https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles
-https://a11yproject.com/checklist/
-```
-
-### ES6 modules in NodeJS
-
-```text
-https://stackoverflow.com/questions/45854169/how-can-i-use-an-es6-import-in-node
-https://medium.com/@iamstan/typescript-es-modules-micheal-jackson-2040216be793
-https://nodejs.org/api/esm.html#esm_enabling
 ```
 
 ### JsDoc

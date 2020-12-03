@@ -215,7 +215,8 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 		new MiniCssExtractPlugin({
 			filename: "[name].css",
 			chunkFilename: "chunk/[name].css",
-		}) as webpack.WebpackPluginInstance, // TODO.build remove this when https://github.com/webpack-contrib/mini-css-extract-plugin/pull/594
+			insert: (link: HTMLLinkElement) => {},
+		}),
 	);
 	if (PACK_MODE === "production") { config.plugins.push(
 		new CompressionPlugin({
