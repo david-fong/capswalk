@@ -11,14 +11,16 @@
 
 ### Things I feel like doing
 
+1. Add CSS `text-rendering: optimizeSpeed` for game grid.
+1. Try adding `Content-Type: no-sniff`.
+1. Add `[ext]` to brotli output filename option. Add `[hash]` to output filenames and chunkFilenames when production mode.
 1. Try turning on `webpack.experiments.module`.
 1. Configure terser function name mangling.
 1. Fix: for some reason the pause overlay class is less specific than the fill-parent class on the same object.
 1. Display the operator's current sequence buffer.
 1. See which callbacks can be defined higher up to make it easier for javascript engine parsers.
-1. Add git lfs support to heroku.
-1. Add `[ext]` to brotli output filename option.
 1. Make a json file or something defining all the webpack chunk names I have defined.
+1. Add git lfs support to heroku.
 
 ### Things that I feel less like doing
 
@@ -31,8 +33,8 @@
 
 ### Things that are low priority
 
-1. Spectator mode for online games? O_o
-1. Implement the scores/player-listing sidebar in __PlayScreen.
+1. Spectator mode for online games? O\_o
+1. Implement the scores/player-listing sidebar in `__PlayScreen`.
     - Also show scores (very small size) on top of player faces.
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)

@@ -215,7 +215,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 		new MiniCssExtractPlugin({
 			filename: "[name].css",
 			chunkFilename: "chunk/[name].css",
-			insert: (link: HTMLLinkElement) => {},
+			attributes: { disable: "true" }, // TODO.design this is a little weird. Used for moving to shadow-root.
 		}),
 	);
 	if (PACK_MODE === "production") { config.plugins.push(
