@@ -7,4 +7,5 @@
 	height:     fit-content;
 	width:      fit-content;
 	padding:    0.4em;
+	text-rendering: optimizeSpeed;
 }

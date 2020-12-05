@@ -11,9 +11,9 @@
 
 ### Things I feel like doing
 
-1. Add CSS `text-rendering: optimizeSpeed` for game grid.
-1. Try adding `Content-Type: no-sniff`.
-1. Add `[ext]` to brotli output filename option. Add `[hash]` to output filenames and chunkFilenames when production mode.
+1. Add `[query]` to brotli output filename option.
+1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
+    - Set the maxAge option for express to at least a year.
 1. Try turning on `webpack.experiments.module`.
 1. Configure terser function name mangling.
 1. Fix: for some reason the pause overlay class is less specific than the fill-parent class on the same object.

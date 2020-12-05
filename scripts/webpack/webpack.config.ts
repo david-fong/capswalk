@@ -26,6 +26,7 @@ const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> 
 	]}),
 	new webpack.DefinePlugin({
 		// See [](src/node_modules/@types/my-type-utils.dts).
+		"DEF.PRODUCTION": JSON.stringify(PACK_MODE === "production"),
 		"DEF.NodeEnv":   JSON.stringify(PACK_MODE),
 		"DEF.DevAssert": JSON.stringify(PACK_MODE === "development"),
 	}),

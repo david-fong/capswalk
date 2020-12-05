@@ -10,7 +10,6 @@ import { JsUtils } from "defs/JsUtils";
 import { Group } from "./Group";
 import { SkServer, SkServer as _SnakeyServer } from "defs/OnlineDefs";
 
-
 /**
  * Creates and performs management operations on {@link ServerGame}s.
  */
@@ -42,9 +41,9 @@ export class SnakeyServer extends _SnakeyServer {
 		host: string | undefined = undefined,
 	) {
 		super();
-		this.app    = express();
-		this.http   = http.createServer({}, this.app);
-		this.io     = new io.Server(this.http, {
+		this.app  = express();
+		this.http = http.createServer({}, this.app);
+		this.io   = new io.Server(this.http, {
 			// Note: socket.io.js is alternatively hosted on GitHub Pages.
 		});
 		this.allGroups = new Map();
@@ -57,6 +56,18 @@ export class SnakeyServer extends _SnakeyServer {
 		this.app.disable("x-powered-by");
 		this.app.use("/", expressStaticGzip(CLIENT_ROOT, {
 			enableBrotli: true,
+			serveStatic: {
+				setHeaders: (res, path, stat): void => {
+					res.setHeader("X-Content-Type-Options", "nosniff");
+					const mime = express.static.mime.getType(path);
+					if (mime === "text/html" /* xhtml? */) {
+						res.setHeader("Cache-Control", "public, max-age=0");
+					}
+				},
+				// TODO.build enable this when lang term caching is configured for webpack.
+				//immutable: DEF.PRODUCTION,
+				//maxAge: 31536000000, // 1 year.
+			},
 		}));
 
 		this.http.listen(<net.ListenOptions>{ port, host }, (): void => {
