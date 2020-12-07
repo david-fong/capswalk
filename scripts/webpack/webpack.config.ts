@@ -217,7 +217,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 			filename: "[name].css",
 			chunkFilename: "chunk/[name].css",
 			attributes: { disable: "true" }, // TODO.design this is a little weird. Used for moving to shadow-root.
-		}),
+		} as any) as unknown as webpack.WebpackPluginInstance, // TODO.build waiting on my PR to DefinitelyTyped.
 	);
 	if (PACK_MODE === "production") { config.plugins.push(
 		new CompressionPlugin({
