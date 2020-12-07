@@ -1,6 +1,13 @@
 
-# npm
-/node_modules/
+# yarn
+# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+yarn-error.log
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
 
 # build
 /dist/

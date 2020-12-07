@@ -28,6 +28,8 @@
 *.inc             text
 *.ini             text
 *.js              text
+*.cjs             text
+*.mjs             text
 *.json            text
 *.jsx             text
 *.less            text

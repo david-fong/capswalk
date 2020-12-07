@@ -1,2 +1,2 @@
 #!/bin/bash
-time npx --no-install eslint --color --cache --cache-location './scripts/eslint-cache.json' "${@:-./src/**/*}"
+time yarn run eslint --color --cache --cache-location './scripts/eslint-cache.json' "${@:-./src/**/*}"

@@ -11,6 +11,9 @@
 
 ### Things I feel like doing
 
+1. [clear heroku app cache](https://devcenter.heroku.com/articles/migrating-to-yarn-2#clear-heroku-app-cache) when publishing next version now that we have moved to yarn.
+1. Switch gitattributes file to use logical ordering instead of alphabetic.
+1. Do I need to handle cors for websockets?
 1. Add `[query]` to brotli output filename option.
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
     - Set the maxAge option for express to at least a year.
