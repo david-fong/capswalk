@@ -11,14 +11,14 @@
 
 ### Things I feel like doing
 
+1. Mashup some CSS resets and normalizers for this repo.
 1. Add `[query]` to brotli output filename option.
-1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
-    - Set the maxAge option for express to at least a year.
 1. Try turning on `webpack.experiments.module`.
 1. Configure terser function name mangling.
 1. Fix: for some reason the pause overlay class is less specific than the fill-parent class on the same object.
 1. Display the operator's current sequence buffer.
-1. See which callbacks can be defined higher up to make it easier for javascript engine parsers.
+1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
+    - Set the maxAge option for express to at least a year.
 1. Make a json file or something defining all the webpack chunk names I have defined.
 1. Add git lfs support to heroku.
 
