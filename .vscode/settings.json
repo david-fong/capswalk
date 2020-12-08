@@ -9,7 +9,7 @@
 
         // things that I might like to toggle:
         "node_modules/": true,
-        "{**/.templates/,**/*tsconfig.json}": true,
+        //"{**/.templates/,**/*tsconfig.json}": true,
         "{**/.eslintrc.*,.eslintignore}": true,
         "scripts/webpack/*.js": true,
         "**/*.css.d.ts": true,

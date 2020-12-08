@@ -11,10 +11,18 @@
 
 ### Things I feel like doing
 
+1. tsconfig test useDefineForClassFields, and disable searching for the tests projects.
+1. Try using tsconfig path inheritance.
+1. Rename output ts folder to `.ts` to hint to developers that it isn't part of the published package.
+1. Copy exact package versions for dist/package.json
+1. Rickroll users (production only) who open the developer console.
 1. Mashup some CSS resets and normalizers for this repo.
+1. Feature-detect `DocumentOrShadowRoot.adoptedStyleSheets` and use it if available for shadow-root CSS.
 1. Add `[query]` to brotli output filename option.
 1. Try turning on `webpack.experiments.module`.
 1. Configure terser function name mangling.
+1. Webpack use the runtime chunk `"single"`.
+1. Make the colours screen dynamically import the stylesheets.
 1. Fix: for some reason the pause overlay class is less specific than the fill-parent class on the same object.
 1. Display the operator's current sequence buffer.
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.

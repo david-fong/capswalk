@@ -1,28 +1,27 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "lib": ["es2020"],
-        "module": "CommonJS",
-        "rootDir": ".",
-        "outDir": ".",
-        "listEmittedFiles": true,
-        "incremental": true,
-        "resolveJsonModule": true,
+	"compilerOptions": {
+		"target": "es6",
+		"lib": ["es2020"],
+		"module": "CommonJS",
+		"rootDir": ".",
+		"outDir": ".",
+		"listEmittedFiles": true,
+		"incremental": true,
+		"resolveJsonModule": true,
 
-        "removeComments": true,
-        "alwaysStrict": true,
-        "skipLibCheck": true, // time-saving measure.
+		"removeComments": true,
+		"alwaysStrict": true,
+		"skipLibCheck": true, // time-saving measure.
 
-        // Grammar Checking:
-        "strictNullChecks":     true,
-        "strictFunctionTypes":  true,
-        "noImplicitReturns":    true,
-        "strictBindCallApply":  true,
-        "noImplicitThis":       true,
-        "noUncheckedIndexedAccess": true,
-    },
-    "files": [
-        "webpack.config.ts",
-        "pack.ts",
-    ],
+		// Grammar Checking:
+		"strict": true,
+		"strictPropertyInitialization": false,
+		"noImplicitAny": false,
+		"noImplicitReturns": true,
+		"noUncheckedIndexedAccess": true,
+	},
+	"files": [
+		"webpack.config.ts",
+		"pack.ts",
+	],
 }

@@ -1,9 +1,9 @@
 {
-    "extends": "../../.templates/tsconfig.json",
-    "compilerOptions": {
-        "baseUrl": "../..",
-        "rootDir": "../..",
-        "outDir":  "../../../dist/ts/src",
-        "types": ["my-type-utils"],
-    },
+	"extends": "../../.templates/tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": "../..",
+		"rootDir": "../..",
+		"outDir":  "../../../dist/ts/src",
+		"types": ["my-type-utils"],
+	},
 }

@@ -6,13 +6,15 @@ import configs = require("./webpack.config");
 import type * as DistPkg from "./templates/package.json";
 if (process.env.NODE_ENV === "production") {
 	// Generate dist/package.json:
-	const  srcPkg = require("../../package.json");
-	const distPkg = require("./templates/package.json");
-	const pkg = distPkg as (typeof DistPkg | Partial<typeof srcPkg>); ([
+	const srcPkgKeys = Object.freeze(<const>[
 		"name", "author",
 		"description", "keywords",
 		"version", "dependencies", "repository",
-	] as ReadonlyArray<keyof typeof srcPkg>).forEach((key) => { pkg[key] = srcPkg[key]; });
+	]);
+	const  srcPkg = require("../../package.json") as Record<typeof srcPkgKeys[number], any>;
+	const distPkg = require("./templates/package.json");
+	const pkg = distPkg as (typeof DistPkg & typeof srcPkg); (
+		srcPkgKeys).forEach((key) => { pkg[key] = srcPkg[key]; });
 	pkg["repository"] += "/tree/dist"; // Point to the dist branch.
 
 	fs.writeFile(

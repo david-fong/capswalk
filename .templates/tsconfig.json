@@ -1,38 +1,35 @@
 {
-    "compilerOptions": {
-        // Project References:
-        "composite": true,
+	"compilerOptions": {
+		// Project References:
+		"composite": true,
 
-        // Compiler Behaviour:
-        "moduleResolution": "node",
-        "forceConsistentCasingInFileNames": true,
-        "importHelpers": true,
-        "skipLibCheck": true, // time-saving measure.
-        "importsNotUsedAsValues": "error",
-        "resolveJsonModule": true,
+		// Compiler Behaviour:
+		"moduleResolution": "node",
+		"forceConsistentCasingInFileNames": true,
+		"importHelpers": true,
+		"skipLibCheck": true, // time-saving measure.
+		"importsNotUsedAsValues": "error",
+		"resolveJsonModule": true,
 
-        // Language Settings:
-        "target": "es6",
-        "module": "ES2020",
-        "lib": [ "ES2020", "dom", ],
-        "experimentalDecorators": true,
+		// Language Settings:
+		"target": "es6",
+		"module": "ES2020",
+		"lib": [ "ES2020", "dom", ],
+		"experimentalDecorators": true,
 
-        // Emit Flags:
-        "sourceMap":      true,
-        //"removeComments": true,
-        "alwaysStrict":   true,
-        "preserveConstEnums": true,
+		// Emit Flags:
+		"sourceMap": true,
+		//"removeComments": true,
+		"alwaysStrict": true,
+		"preserveConstEnums": true,
 
-        // Grammar Checking:
-        "strictNullChecks":     true,
-        "strictFunctionTypes":  true,
-        "noImplicitReturns":    true,
-        "strictBindCallApply":  true,
-        "noImplicitThis":       true,
-        "noImplicitAny":        true,
-        "noUncheckedIndexedAccess": true,
+		// Grammar Checking:
+		"strict": true,
+		"strictPropertyInitialization": false,
+		"noImplicitReturns": true,
+		"noUncheckedIndexedAccess": true,
 
-        // Linting:
-        "noFallthroughCasesInSwitch": true,
-    },
+		// Linting:
+		"noFallthroughCasesInSwitch": true,
+	},
 }
