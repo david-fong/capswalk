@@ -11,14 +11,13 @@
 
 ### Things I feel like doing
 
-1. tsconfig test useDefineForClassFields, and disable searching for the tests projects.
-1. Try using tsconfig path inheritance.
-1. Rename output ts folder to `.ts` to hint to developers that it isn't part of the published package.
-1. Copy exact package versions for dist/package.json
+1. Debug and fix: The server serves the JS, but the client doesn't seem to be running it...
+1. [only allow pnpm](https://pnpm.js.org/en/only-allow-pnpm)
+1. Make a release now that the socket.io disconnect bug is fixed.
+1. Replace `CSS` clientside variables with lowercase version, since that name will eventually be a browser global object!
 1. Rickroll users (production only) who open the developer console.
 1. Mashup some CSS resets and normalizers for this repo.
 1. Feature-detect `DocumentOrShadowRoot.adoptedStyleSheets` and use it if available for shadow-root CSS.
-1. Add `[query]` to brotli output filename option.
 1. Try turning on `webpack.experiments.module`.
 1. Configure terser function name mangling.
 1. Webpack use the runtime chunk `"single"`.

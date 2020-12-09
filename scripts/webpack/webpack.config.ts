@@ -221,7 +221,7 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 	);
 	if (PACK_MODE === "production") { config.plugins.push(
 		new CompressionPlugin({
-			filename: "[path][base].br",
+			filename: "[path][base].br[query]",
 			algorithm: "brotliCompress",
 			test: /\.(js|css|html|svg)$/,
 			compressionOptions: { params: {} /* https://brotli.org/encode.html */ },

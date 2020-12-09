@@ -6,7 +6,7 @@
 	"compilerOptions": {
 		"baseUrl": "..",
 		"rootDir": "..",
-		"outDir":  "../../dist/ts/src",
+		"outDir":  "../../dist/.ts/src",
 		"paths": {
 			"*": ["*", "base/*"],
 		},

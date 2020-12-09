@@ -1,10 +1,9 @@
 {
 	"extends": "./.templates/tsconfig.json",
 	"compilerOptions": {
-		"baseUrl": ".",
-		"outDir": "./dist/ts",
+		"rootDir": ".",
+		"outDir": "./dist/.ts",
 	},
-
 	"files": [],
 	"references": [
 		{ "path": "src", },

@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"baseUrl": "../../src",
 		"rootDir": "../..",
-		"outDir": "../../dist/ts",
+		"outDir": "../../dist/.ts",
+		"disableSolutionSearching": true,
 	},
 }

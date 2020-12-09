@@ -1,7 +1,7 @@
 {
 	"extends": "../.templates/tsconfig.json",
 	"compilerOptions": {
-		// "module": "CommonJS", // do not. WebPack will handle this.
+		// "module": "CommonJS", // do not >:( WebPack will handle this.
 		"target": "ES2019", // can use es2020 for node 14.
 		"lib":   ["ES2019"], // no dom.
 		"types": ["my-type-utils", "node", "express"],

@@ -22,6 +22,7 @@
 		//"removeComments": true,
 		"alwaysStrict": true,
 		"preserveConstEnums": true,
+		"useDefineForClassFields": true,
 
 		// Grammar Checking:
 		"strict": true,

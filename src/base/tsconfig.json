@@ -1,5 +1,9 @@
 {
     "extends": "../.templates/tsconfig.json",
+    "compilerOptions": {
+        "rootDir": "../..",
+        "outDir": "../../dist/.ts"
+    },
     "files": [],
     "references": [
         { "path": "defs"  },

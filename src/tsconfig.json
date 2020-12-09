@@ -2,7 +2,7 @@
 	"extends": "../.templates/tsconfig.json",
 	"compilerOptions": {
 		"rootDir": "..",
-		"outDir": "../dist/ts",
+		"outDir": "../dist/.ts",
 	},
 	"files": [],
 	"references": [

@@ -16,6 +16,10 @@ if (process.env.NODE_ENV === "production") {
 	const pkg = distPkg as (typeof DistPkg & typeof srcPkg); (
 		srcPkgKeys).forEach((key) => { pkg[key] = srcPkg[key]; });
 	pkg["repository"] += "/tree/dist"; // Point to the dist branch.
+	for (let [name,at] of Object.entries<string>(pkg.dependencies)) {
+		if (at[0] === "^") { at = "=" + at.slice(1); }
+		pkg.dependencies[name] = at;
+	}
 
 	fs.writeFile(
 		path.resolve(__dirname, "../../dist/package.json"),

@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"baseUrl": "../..",
 		"rootDir": "../..",
-		"outDir":  "../../../dist/ts/src",
+		"outDir":  "../../../dist/.ts/src",
 		"types": ["my-type-utils"],
 	},
 }
