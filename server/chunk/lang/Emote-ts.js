@@ -1,2 +1,2 @@
-exports.id=858,exports.ids=[858],exports.modules={981:(e,t,r)=>{"use strict";r.r(t),r.d(t,{Emote:()=>s});var s,o=r(979);!function(e){class t extends o.U{}e.GitHub=t,Object.freeze(t),Object.freeze(t.prototype)}(s||(s={})),Object.freeze(s)}};
+exports.id=858,exports.ids=[858],exports.modules={655:(e,t,r)=>{"use strict";r.r(t),r.d(t,{Emote:()=>s});var s,o=r(115);!function(e){class t extends o.U{}e.GitHub=t,Object.freeze(t),Object.freeze(t.prototype)}(s||(s={})),Object.freeze(s)}};
 //# sourceMappingURL=Emote-ts.js.map

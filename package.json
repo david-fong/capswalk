@@ -21,11 +21,12 @@
     "typing",
     "game"
   ],
-  "version": "0.8.1",
+  "version": "0.9.0",
   "dependencies": {
-    "express": "^4.17.1",
-    "socket.io": "^3.0.0",
-    "tslib": "^2.0.3"
+    "express": "=4.17.1",
+    "express-static-gzip": "=2.1.0",
+    "socket.io": "=3.0.4",
+    "tslib": "=2.0.3"
   },
   "repository": "github:david-fong/snakey3/tree/dist"
 }
