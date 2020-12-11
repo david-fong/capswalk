@@ -1,5 +1,4 @@
 import type * as io from "socket.io";
-import { setTimeout } from "timers";
 
 import { JsUtils } from "defs/JsUtils";
 import { GameEv, GroupEv, SkServer } from "defs/OnlineDefs";

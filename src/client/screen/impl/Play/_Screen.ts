@@ -5,8 +5,8 @@ import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 import type { BrowserGameMixin } from "../../../game/BrowserGame";
 
 import { JsUtils, OmHooks, Coord, SkScreen } from "../../SkScreen";
-import CSS from "./style.m.css";
-import GRID_CSS from "./grid.m.css";
+import style from "./style.m.css";
+import GRID_style from "./grid.m.css";
 
 /**
  * If and only if this screen is the current screen, then its
@@ -83,7 +83,7 @@ export abstract class _PlayScreen<
 	protected _lazyLoad(): void {
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,
-			CSS["this"],
+			style["this"],
 		);
 
 		const _gridHtml = _PlayScreen.createGridWrapper();
@@ -321,7 +321,7 @@ export abstract class _PlayScreen<
 		const controlsBar = JsUtils.mkEl("div", [
 			OmHooks.General.Class.CENTER_CONTENTS,
 			OmHooks.General.Class.INPUT_GROUP,
-			CSS["controls-bar"],
+			style["controls-bar"],
 		]);
 		controlsBar.setAttribute("role", "menu");
 
@@ -362,7 +362,7 @@ export abstract class _PlayScreen<
 		const playersBar
 			// @ts-expect-error : RO=
 			= this.playersBar
-			= JsUtils.mkEl("div", [CSS["players-bar"]]);
+			= JsUtils.mkEl("div", [style["players-bar"]]);
 		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, "playersBar");
 		this.baseElem.appendChild(playersBar);
 	}
@@ -378,14 +378,14 @@ export namespace _PlayScreen {
 		pauseOl: HTMLElement,
 	}> {
 		const CSS_FX = OmHooks.General.Class;
-		const base = JsUtils.mkEl("div", [CSS["grid-wrapper"]]);
+		const base = JsUtils.mkEl("div", [style["grid-wrapper"]]);
 		base.setAttribute("role", "presentation");
 
 		const grid = JsUtils.mkEl("div", [
 			//CSS_FX.CENTER_CONTENTS,
 			//CSS_FX.STACK_CONTENTS,
 			CSS_FX.TEXT_SELECT_DISABLED,
-			GRID_CSS["this"],
+			GRID_style["this"],
 		], { tabIndex: 0 });
 		grid.setAttribute("role", "textbox");
 		grid.setAttribute("aria-label", "Game Grid");
@@ -393,14 +393,14 @@ export namespace _PlayScreen {
 		// Grid Scroll Wrapper:
 		const scrollOuter = JsUtils.mkEl("div", [
 			//CSS_FX.FILL_PARENT,
-			GRID_CSS["scroll-outer"],
+			GRID_style["scroll-outer"],
 		]);
 		scrollOuter.setAttribute("role", "presentation");
 
 		const pauseOl = JsUtils.mkEl("div", [
 			CSS_FX.FILL_PARENT,
 			CSS_FX.CENTER_CONTENTS,
-			GRID_CSS["pause-overlay"],
+			GRID_style["pause-overlay"],
 		], {});
 		pauseOl.appendChild(JsUtils.mkEl("div", [], {
 			textContent: "(Click to Unpause)"
@@ -410,7 +410,7 @@ export namespace _PlayScreen {
 		// intersectionRoot.setAttribute("aria-hidden", "true");
 		// intersectionRoot.classList.add(
 		//     CSS_FX.FILL_PARENT,
-		//     GRID_CSS["intersection-root"],
+		//     GRID_style["intersection-root"],
 		// );
 		// scrollOuter.appendChild(intersectionRoot);
 

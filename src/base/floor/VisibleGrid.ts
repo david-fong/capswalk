@@ -1,7 +1,5 @@
-import CSS from "./grid.m.css";
-import PLAYER_CSS from "game/player/player.m.css";
-// import "./zindex.m.css"; // not used. file only contains documentation.
-import { OmHooks } from "defs/OmHooks";
+import style from "./grid.m.css";
+import player_style from "game/player/player.m.css";
 import { JsUtils } from "defs/JsUtils";
 
 import type { Coord, Tile } from "floor/Tile";
@@ -73,9 +71,9 @@ export class VisibleGridMixin<S extends Coord.System> {
 		tiles.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
 
 		// @ts-expect-error : RO=
-		const base = this.baseElem = JsUtils.mkEl("div", [CSS["impl-body"]]);
+		const base = this.baseElem = JsUtils.mkEl("div", [style["impl-body"]]);
 		const root = base.attachShadow({ mode: "closed" });
-		tiles.classList.add(CSS["impl-body"]);
+		tiles.classList.add(style["impl-body"]);
 		root.appendChild(tiles);
 		root.appendChild(JsUtils.mkEl("link", [], {
 			rel: "stylesheet",
@@ -87,8 +85,8 @@ export class VisibleGridMixin<S extends Coord.System> {
 		}));
 
 		// Initialize spotlight elements:
-		const shortSpotlight = JsUtils.mkEl("div", [PLAYER_CSS["spotlight-short"]]);
-		const longSpotlight  = JsUtils.mkEl("div", [PLAYER_CSS["spotlight-long"]]);
+		const shortSpotlight = JsUtils.mkEl("div", [player_style["spotlight-short"]]);
+		const longSpotlight  = JsUtils.mkEl("div", [player_style["spotlight-long"]]);
 		// @ts-expect-error : RO=
 		this.spotlightElems = Object.freeze([ shortSpotlight, longSpotlight ]);
 	}

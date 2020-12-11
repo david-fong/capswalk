@@ -102,7 +102,7 @@ Object.freeze(SysName);
 **In `SysName/Visible.ts`**
 
 ```typescript
-import CSS from "./style.m.css";
+import style from "./style.m.css";
 import { JsUtils } from "defs/JsUtils";
 import type { Coord as BaseCoord } from "floor/Tile";
 import type { VisibleTile } from "floor/VisibleTile";
@@ -120,7 +120,7 @@ export class SysNameVisibleGrid extends SysName.Grid implements VisibleGrid<S> {
         // Set up DOM fields for rendering the grid.
         // Add tile elements to the grid element.
         this._superVisibleGrid(desc, gridElem);
-        gridElem.classList.add(CSS["grid"]);
+        gridElem.classList.add(style["grid"]);
     }
 }
 export interface SysNameVisibleGrid extends VisibleGridMixin<S> { };

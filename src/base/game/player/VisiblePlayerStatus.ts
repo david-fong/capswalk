@@ -1,4 +1,4 @@
-import CSS from "./player.m.css";
+import style from "./player.m.css";
 import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
@@ -26,11 +26,11 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 			this.#baseElem = JsUtils.mkEl("div", [
 				OmHooks.General.Class.CENTER_CONTENTS,
 				OmHooks.General.Class.STACK_CONTENTS,
-				CSS["this"],
+				style["this"],
 			]);
 		} {
 			// Setup face element:
-			const faceElem = JsUtils.mkEl("div", [CSS["face"]], {});
+			const faceElem = JsUtils.mkEl("div", [style["face"]], {});
 			const vBellAnims
 			= this.#vBellAnims
 			= (this.player.isALocalOperator) ? [
@@ -46,7 +46,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 			vBellAnims.forEach((anim) => anim.pause());
 
 			// Setup downedOverlay element:
-			faceElem.appendChild(JsUtils.mkEl("div", [CSS["downed-overlay"]]));
+			faceElem.appendChild(JsUtils.mkEl("div", [style["downed-overlay"]]));
 			this.#baseElem.appendChild(faceElem);
 		}
 	}

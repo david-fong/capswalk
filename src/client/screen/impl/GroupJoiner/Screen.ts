@@ -5,7 +5,7 @@ import { SkServer } from "defs/OnlineDefs";
 
 import { JsUtils, OmHooks, SkScreen, StorageHooks } from "../../SkScreen";
 type SID = SkScreen.Id.GROUP_JOINER;
-import CSS from "./style.m.css";
+import style from "./style.m.css";
 
 
 /**
@@ -45,7 +45,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 	protected _lazyLoad(): void {
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,
-			CSS["this"],
+			style["this"],
 		);
 		const contentWrapper = this._initializeFormContents();
 		const huiSubmit = this._initializeHostUrlHandlers();
@@ -337,7 +337,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 		this.in = {};
 		const contentWrapper = JsUtils.mkEl("div"/*"form"*/, [
 			OmHooks.General.Class.INPUT_GROUP,
-			CSS["content-wrapper"],
+			style["content-wrapper"],
 		], {
 			// contentWrapper.method = "POST"; // Not actually used, since the default onsubmit behaviour is prevented.
 		});
@@ -359,7 +359,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 		}{
 			// @ts-expect-error : RO=
 			const hostUrl = this.in.hostUrl
-			= Object.assign(createGenericTextInput("Host URL", CSS["host-url"]), <Partial<HTMLInputElement>>{
+			= Object.assign(createGenericTextInput("Host URL", style["host-url"]), <Partial<HTMLInputElement>>{
 				type: "url",
 				maxLength: 128,
 				autocomplete: "on",
@@ -379,7 +379,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 		}{
 			// @ts-expect-error : RO=
 			const nspsName = this.in.groupName
-			= Object.assign(createGenericTextInput("Group Name", CSS["group-name"]),
+			= Object.assign(createGenericTextInput("Group Name", style["group-name"]),
 			<Partial<HTMLInputElement>>{
 				pattern: Group.Name.REGEXP.source,
 				minLength: 1,
@@ -397,7 +397,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 			const pass
 				// @ts-expect-error : RO=
 				= this.in.passphrase
-				= createGenericTextInput("Group Passphrase", CSS["passphrase"]);
+				= createGenericTextInput("Group Passphrase", style["passphrase"]);
 			pass.pattern   = Group.Passphrase.REGEXP.source;
 			pass.maxLength = Group.Passphrase.MaxLength;
 		}{

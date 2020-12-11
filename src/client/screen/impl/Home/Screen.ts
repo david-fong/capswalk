@@ -1,5 +1,5 @@
 import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
-import CSS from "./style.m.css";
+import style from "./style.m.css";
 
 
 /**
@@ -15,7 +15,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 	protected _lazyLoad(): void {
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,
-			CSS["this"],
+			style["this"],
 		);
 
 		const nav
@@ -24,7 +24,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 			= JsUtils.mkEl("div", [
 				OmHooks.General.Class.TEXT_SELECT_DISABLED,
 				OmHooks.General.Class.INPUT_GROUP,
-				CSS["nav"],
+				style["nav"],
 			]);
 		nav.setAttribute("role", "navigation");
 		nav.addEventListener("pointerleave", () => {
@@ -53,28 +53,28 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 		// buttons should be tabbed through via keyboard.
 		(<const>[{
 			text:    "Offline Single-player",
-			cssClass: CSS["nav--play-offline"],
+			cssClass: style["nav--play-offline"],
 			screenId: SkScreen.Id.SETUP_OFFLINE,
 		},{
 			text:    "Online Multi-player",
-			cssClass: CSS["nav--play-online"],
+			cssClass: style["nav--play-online"],
 			screenId: SkScreen.Id.GROUP_JOINER,
 		},{
 			text:    "How To Play",
-			cssClass: CSS["nav--how-to-play"],
+			cssClass: style["nav--how-to-play"],
 			screenId: SkScreen.Id.HOW_TO_PLAY,
 		},{
 			text:    "How To Host",
-			cssClass: CSS["nav--how-to-host"],
+			cssClass: style["nav--how-to-host"],
 			screenId: SkScreen.Id.HOW_TO_HOST,
 		},{
 			text:    "Colour Schemes",
-			cssClass: CSS["nav--colour-scheme"],
+			cssClass: style["nav--colour-scheme"],
 			screenId: SkScreen.Id.COLOUR_CTRL,
 		}])
 		.map<Readonly<{
 			text: string;
-			cssClass: typeof CSS[keyof typeof CSS];
+			cssClass: typeof style[keyof typeof style];
 			screenId: SkScreen.Id | ((ev: MouseEvent) => void);
 		}>>((desc) => Object.freeze(desc))
 		.forEach((desc) => {
@@ -89,16 +89,16 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 
 		(<const>[{
 			text:    "Visit\nRepo",
-			cssClass: CSS["nav--goto-repo"],
+			cssClass: style["nav--goto-repo"],
 			href:     new window.URL("https://github.com/david-fong/snakey3"),
 		},{
 			text:    "Report\nIssue",
-			cssClass: CSS["nav--report-issue"],
+			cssClass: style["nav--report-issue"],
 			href:     new window.URL("https://github.com/david-fong/snakey3/issues"),
 		}])
 		.map<Readonly<{
 			text: string;
-			cssClass: typeof CSS[keyof typeof CSS];
+			cssClass: typeof style[keyof typeof style];
 			href: URL;
 		}>>((desc) => Object.freeze(desc))
 		.forEach((desc) => {

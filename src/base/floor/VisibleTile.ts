@@ -1,4 +1,4 @@
-import CSS from "./tile.m.css";
+import style from "./tile.m.css";
 import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import type { Lang, Player } from "defs/TypeDefs";
@@ -21,11 +21,11 @@ export class VisibleTile<S extends Coord.System> extends Tile<S> {
 			const base = this.#baseElem = JsUtils.mkEl("div", [
 				OmHooks.General.Class.CENTER_CONTENTS,
 				OmHooks.General.Class.STACK_CONTENTS,
-				CSS["this"],
+				style["this"],
 			]);
 			base.setAttribute("aria-label", "Tile");
 		}{
-			const charWrap = JsUtils.mkEl("div", [CSS["char"]]);
+			const charWrap = JsUtils.mkEl("div", [style["char"]]);
 			charWrap.setAttribute("role", "presentation");
 			const charElem = this.langCharElem = JsUtils.mkEl("div", []);
 			charWrap.appendChild(charElem);
