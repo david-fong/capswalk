@@ -131,9 +131,9 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 	},
 
 	optimization: {
-		minimizer: [new CssMinimizerPlugin({
+		minimizer: ["...", new CssMinimizerPlugin({
 			minimizerOptions: { preset: ["default", { discardComments: { removeAll: true }}], },
-		}), "..."],
+		})],
 		splitChunks: { chunks: "all", cacheGroups: {} },
 		removeAvailableModules: (PACK_MODE === "production"),
 	},
@@ -177,10 +177,8 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 	Object.assign((config.optimization?.splitChunks as any).cacheGroups, <SplitChunksOpts>{
 		"game-css": {
 			test: /src[/\\]base[/\\].*\.css$/,
-			name: "game-css",
-			chunks: "all",
-			priority: 1,
-			reuseExistingChunk: true,
+			name: "game-css", chunks: "all", priority: 10,
+			reuseExistingChunk: true, enforce: true,
 		},
 	});
 	const htmlPluginOptions: HtmlPlugin.Options = {
