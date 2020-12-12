@@ -23,16 +23,15 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 
 	public readonly isALocalOperator: boolean;
 
-	/**
-	 * The game object that this player belongs to.
-	 */
 	public readonly game: GamepartBase<any,S>;
 
 	public readonly status: PlayerStatus<S>;
 
-	#hostTile: Tile<S>;
+	#hostTile: Tile;
 
-	public readonly tile: TileGetter<S,[]>;
+	public readonly tile: TileGetter<[]>;
+
+	public coord: Coord;
 
 
 	protected constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
@@ -63,94 +62,43 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 	 *
 	 * @param spawnTile -
 	 */
-	protected reset(spawnTile: Tile<S>): void {
+	public reset(coord: Coord): void {
+		this.coord = coord;
 		this.#hostTile = spawnTile;
 		this.hostTile._setOccupant(
 			this.playerId,
-			this.status.immigrantInfo,
 		);
 	}
 
-
-	public get coord(): Coord[S] {
-		return this.hostTile.coord;
-	}
-
-	public get hostTile(): Tile<S> {
-		return this.#hostTile;
-	}
-
 	/**
-	 * Evicts this `Player` from its last known position (which may be
-	 * lagging behind the state of the master copy of the game.
+	 * Notify this Player.
 	 *
-	 * This must be called after all same-event changes pertaining to
-	 * this player's fields have been enacted.
-	 *
-	 * @param dest -
+	 * Causes this Player to update its internal state.
 	 */
-	public moveTo(dest: Tile<S>): void {
-		// Evict self from current `Tile`.
-		if (this.hostTile.occupantId !== this.playerId) {
-			if (DEF.DevAssert && this.game.gameType !== Game.Type.ONLINE) {
-				// Should never happen.
-				throw new Error("Linkage between player and occupied tile disagrees.");
-			}
-			/* Otherwise, this corner case is guaranteed to follow the events
-			described in the below comment: at this `OnlineGame`, `p2` will
-			move off of the `Tile` currently occupied by this `Player`. */
-		}
-		else {
-			// Move off of current host `Tile`:
-			this.hostTile.evictOccupant();
-		}
-		// Occupy the destination `Tile.
-		if (dest.isOccupied) {
-			if (DEF.DevAssert && this.game.gameType !== Game.Type.ONLINE) {
-				// Should be enforced by `GamepartManager`
-				throw new Error("Only one player can occupy a tile at a time.");
-			}
-			/* Otherwise, this is actually possible in a variant of the _DAS_
-			where another `Player` `p2` moves to `B`, I receive that update,
-			then `p2` makes a request to move to `C`, which the Game Manager
-			accepts and begins to notify my `OnlineGame` of, but between the
-			time that the GM accepts the request and when I receive the update,
-			I make a request to move to `B`, which gets accepted by the GM,
-			and because I might not be using websockets as my underlying
-			transport, I receive the update for my own request first, which
-			would appear to my `OnlineGame` as if I was moving onto the `Tile`
-			occupied by `p2`. */
-		}
-		else {
-			// Move to occupy the destination `Tile`:
-			this.#hostTile = dest;
-			dest._setOccupant(this.playerId, this.status.immigrantInfo);
-		}
+	public moveTo(dest: Tile): void {
+		// TODO.impl
 	}
 }
 export namespace PlayerSkeleton {
 	/**
 	 */
-	export class TileGetterSource<S extends Coord.System> implements TileGetter.Source<S,[]> {
+	export class TileGetterSource<S extends Coord.System> implements TileGetter.Source<[]> {
 
 		readonly #player: PlayerSkeleton<S>;
-		readonly #superTileSrc: TileGetter.Source<S,[Coord.Bare[S]]>;
+		readonly src: TileGetter.Source<[Coord]>;
 
 		public constructor(player: PlayerSkeleton<S>) {
 			this.#player = player;
-			this.#superTileSrc = player.game.grid.tile._source;
+			this.src = player.game.grid;
 		}
-
-		public _getTileAt(): Tile<S> {
-			return this.#superTileSrc._getTileAt(this.#player.coord);
+		public _getTileAt(): Tile {
+			return this.src._getTileAt(this.#player.coord);
 		}
-
-		public _getTileDestsFrom(): Array<Tile<S>> {
-			return this.#superTileSrc._getTileDestsFrom(this.#player.coord);
+		public _getTileDestsFrom(): Tile[] {
+			return this.src._getTileDestsFrom(this.#player.coord);
 		}
-
-		public _getTileSourcesTo(): Array<Tile<S>> {
-			return this.#superTileSrc._getTileSourcesTo(this.#player.coord);
+		public _getTileSourcesTo(): Tile[] {
+			return this.src._getTileSourcesTo(this.#player.coord);
 		}
 	}
 	Object.freeze(TileGetterSource);

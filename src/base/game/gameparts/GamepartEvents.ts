@@ -55,7 +55,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 
 	public constructor(
 		gameType: G,
-		impl:     Game.ImplArgs<G,S>,
+		impl:     Game.ImplArgs,
 		gameDesc: Game.CtorArgs<G,S>,
 	) {
 		super(gameType, impl, gameDesc);
@@ -116,15 +116,15 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 
 
 	protected executeTileModEvent(
-		desc: Readonly<TileModEvent<S>>,
+		desc: Readonly<TileModEvent>,
 		doCheckOperatorSeqBuffer: boolean = true,
-	): Tile<S> {
+	): Tile {
 		JsUtils.deepFreeze(desc);
 		const dest = this.grid.tile.at(desc.coord);
-		if (dest.lastKnownUpdateId  >  desc.lastKnownUpdateId) return dest;
+		if (dest.now  >  desc.lastKnownUpdateId) return dest;
 		if (DEF.DevAssert) {
 			// Enforced By: `GamepartManager.dryRunSpawnFreeHealth`.
-			if (dest.lastKnownUpdateId === desc.lastKnownUpdateId) throw new RangeError("never");
+			if (dest.now === desc.lastKnownUpdateId) throw new RangeError("never");
 		}
 
 		if (desc.newCharSeqPair) {
@@ -137,8 +137,8 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 				}).forEach((op) => op.seqBufferAcceptKey(""));
 			}
 		}
-		dest.lastKnownUpdateId = desc.lastKnownUpdateId;
-		dest.freeHealth = desc.newFreeHealth!;
+		dest.now = desc.lastKnownUpdateId;
+		dest.health = desc.newFreeHealth!;
 		return dest;
 	}
 

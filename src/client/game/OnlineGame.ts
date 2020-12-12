@@ -3,7 +3,7 @@ import { GameEv, SkServer } from "defs/OnlineDefs";
 import {
 	JsUtils,
 	Game,
-	Coord, VisibleTile,
+	Coord,
 	BrowserGameMixin,
 	Player, OperatorPlayer, VisiblePlayerStatus,
 } from "./BrowserGame";
@@ -48,7 +48,6 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 		super(
 			Game.Type.ONLINE, {
 			onGameBecomeOver,
-			tileClass: VisibleTile,
 			playerStatusCtor: VisiblePlayerStatus,
 			}, gameDesc,
 		);

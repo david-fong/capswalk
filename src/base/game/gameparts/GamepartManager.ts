@@ -2,8 +2,7 @@ import { JsUtils } from "defs/JsUtils";
 import { Lang } from "lang/Lang";
 import { Game } from "game/Game";
 
-import { Coord } from "floor/Coord";
-import type { Tile } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 import { Player } from "../player/Player";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { ScoreInfo } from "../ScoreInfo";
@@ -27,7 +26,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	public readonly averageFreeHealthPerTile: Player.Health;
 	public readonly healthCostOfBoost: Player.Health;
 	#currentFreeHealth: Player.Health;
-	readonly #freeHealthTiles: Set<Tile<S>>;
+	readonly #freeHealthTiles: Set<Tile>;
 
 	public readonly lang: Lang;
 	readonly #langImportPromise: Promise<Lang>;
@@ -36,14 +35,10 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 
 	/**
 	 * Performs the "no invincible player" check (See {@link Player#teamSet}).
-	 *
-	 * @param gameType -
-	 * @param impl -
-	 * @param desc -
 	 */
 	public constructor(
 		gameType: G,
-		impl: Game.ImplArgs<G,S>,
+		impl: Game.ImplArgs,
 		desc: Game.CtorArgs<G,S>,
 	) {
 		super(gameType, impl, desc);
@@ -88,7 +83,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	}
 
 	/**
-	 *
 	 */
 	public async reset(): Promise<void> {
 		// Reset the grid and event record:
@@ -115,7 +109,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		);
 		this.teams.forEach((team, teamIndex) => {
 			team.members.forEach((member, memberIndex) => {
-				member.reset(this.grid.tile.at(spawnPoints[teamIndex]![memberIndex]!));
+				member.reset(spawnPoints[teamIndex]![memberIndex]!);
 			});
 		});
 		this.scoreInfo.reset();
@@ -146,14 +140,14 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * A {@link Lang.CharSeqPair} that can be used as a replacement
 	 * for that currently being used by `tile`.
 	 */
-	public dryRunShuffleLangCharSeqAt(targetTile: Tile<S>, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
+	public dryRunShuffleLangCharSeqAt(targetTile: Tile, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
 		// First, clear values for the target tile so its current
 		// (to-be-previous) values don't get unnecessarily avoided.
 		targetTile.setLangCharSeqPair(Lang.CharSeqPair.NULL);
 
 		let avoid: TU.RoArr<Lang.Seq> = this.grid
 			.getDestsFromSourcesTo(targetTile.coord)
-			.map((tile) => tile.langSeq);
+			.map((tile) => tile.seq);
 		// ^ Note: An array of CharSeq from unique Tiles. It is okay
 		// for those tiles to include `targetTile`, and it is okay for
 		// those
@@ -169,7 +163,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		return this.#currentFreeHealth;
 	}
 
-	public get freeHealthTiles(): ReadonlySet<Tile<S>> {
+	public get freeHealthTiles(): ReadonlySet<Tile> {
 		return this.#freeHealthTiles;
 	}
 
@@ -193,34 +187,34 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * could mess up `lastKnownUpdateId` counters at those locations.
 	 */
 	public dryRunSpawnFreeHealth(
-		sameReqOtherModDescs: TU.RoArr<TileModEvent<S>>,
-	): TU.RoArr<TileModEvent<S>> | undefined {
+		sameReqOtherModDescs: TU.RoArr<TileModEvent>,
+	): TU.RoArr<TileModEvent> | undefined {
 		let healthToSpawn = this.averageFreeHealth - this.currentFreeHealth;
 		if (healthToSpawn <= 0) return undefined;
-		const retval: Array<TileModEvent<S>> = [];
+		const retval: Array<TileModEvent> = [];
 		while (healthToSpawn > 0) {
-			let tile: Tile<S>;
+			let tile: Tile;
 			do {
 				tile = this.grid.tile.at(this.grid.getRandomCoord());
 			} while ((() => {
-				return tile.isOccupied
+				return tile.occId !== undefined
 				// The below equality check is necessary to prevent counting bugs.
-				|| retval.find((desc) => Coord.equals(tile.coord, desc.coord));
+				|| retval.find((desc) => tile.coord === desc.coord);
 				// TODO.impl add other checks to improve distribution and reduce
 				// crowding of freeHealth. Make sure it is sensitive to
 				// `this.averageFreeHealthPerTile`.
 			})());
 			const tileHealthToAdd = Game.K.AVERAGE_HEALTH_TO_SPAWN_ON_TILE;
 			if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
-				let otherDesc: TileModEvent<S> | undefined;
-				if (otherDesc = sameReqOtherModDescs.find((desc) => Coord.equals(tile.coord, desc.coord))) {
+				let otherDesc: TileModEvent | undefined;
+				if (otherDesc = sameReqOtherModDescs.find((desc) => tile.coord === desc.coord)) {
 					otherDesc.newFreeHealth = (otherDesc.newFreeHealth ?? 0) + tileHealthToAdd;
 				} else {
 					retval.push({
 						coord: tile.coord,
-						lastKnownUpdateId: 1 + tile.lastKnownUpdateId,
+						lastKnownUpdateId: 1 + tile.now,
 						// newCharSeqPair: undefined, // "do not change".
-						newFreeHealth: tile.freeHealth + tileHealthToAdd,
+						newFreeHealth: tile.health + tileHealthToAdd,
 					});
 				}
 			}
@@ -234,19 +228,19 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * @override
 	 */
 	protected executeTileModEvent(
-		desc: Readonly<TileModEvent<S>>,
+		desc: Readonly<TileModEvent>,
 		doCheckOperatorSeqBuffer: boolean = true,
-	): Tile<S> {
+	): Tile {
 		JsUtils.deepFreeze(desc);
 		const tile = this.grid.tile.at(desc.coord);
 		// NOTE: This assertion must be performed before executing
 		// changes by making a supercall or else the previous state
 		// will be gone.
-		if (DEF.DevAssert && desc.lastKnownUpdateId !== (1 + tile.lastKnownUpdateId)) {
+		if (DEF.DevAssert && desc.lastKnownUpdateId !== (1 + tile.now)) {
 			// We literally just specified this in processMoveRequest.
 			throw new RangeError("never");
 		}
-		this.#currentFreeHealth += desc.newFreeHealth! - tile.freeHealth;
+		this.#currentFreeHealth += desc.newFreeHealth! - tile.health;
 		if (desc.newFreeHealth === 0) {
 			this.#freeHealthTiles.delete(tile);
 		} else {
@@ -308,8 +302,8 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			return;
 		}
 		const dest = this.grid.tile.at(desc.destModDesc.coord);
-		if (dest.isOccupied ||
-			dest.lastKnownUpdateId !== desc.destModDesc.lastKnownUpdateId) {
+		if (dest.occId !== undefined ||
+			dest.now !== desc.destModDesc.lastKnownUpdateId) {
 			// The update ID check is not essential, but it helps
 			// enforce stronger client-experience consistency: they cannot
 			// move somewhere where they have not realized the `LangSeq` has
@@ -320,7 +314,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		const moveIsBoost = (desc.moveType === Player.MoveType.BOOST);
 		const newPlayerHealthValue
 			= player.status.health
-			+ (dest.freeHealth * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
+			+ (dest.health * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
 			- (moveIsBoost ? this.healthCostOfBoost : 0);
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make
@@ -331,7 +325,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 
 		// Update stats records:
 		const playerScoreInfo = this.scoreInfo.entries[player.playerId]!;
-		playerScoreInfo.totalHealthPickedUp += dest.freeHealth;
+		playerScoreInfo.totalHealthPickedUp += dest.health;
 		playerScoreInfo.moveCounts[desc.moveType] += 1;
 
 		// Set response fields according to spec in `PlayerMovementEvent`:
@@ -339,7 +333,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		desc.newPlayerHealth = {
 			health: newPlayerHealthValue,
 		};
-		desc.destModDesc.lastKnownUpdateId = (1 + dest.lastKnownUpdateId);
+		desc.destModDesc.lastKnownUpdateId = (1 + dest.now);
 		desc.destModDesc.newFreeHealth     = 0;
 		desc.destModDesc.newCharSeqPair    = this.dryRunShuffleLangCharSeqAt(dest);
 		desc.tileHealthModDescs = this.dryRunSpawnFreeHealth([desc.destModDesc]);

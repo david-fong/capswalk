@@ -3,7 +3,7 @@ import type * as io from "socket.io";
 import { JsUtils } from "defs/JsUtils";
 import { GameEv, GroupEv, SkServer } from "defs/OnlineDefs";
 import { Game } from "game/Game";
-import { Coord, Tile } from "floor/Tile";
+import type { Coord } from "floor/Tile";
 import { Grid } from "floor/Grid";
 import { Player, PlayerStatus } from "game/player/Player";
 
@@ -70,7 +70,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		super(
 			Game.Type.SERVER, {
 			onGameBecomeOver: () => {},
-			tileClass: Tile,
 			playerStatusCtor: PlayerStatus,
 			}, args.gameDesc,
 		);

@@ -44,8 +44,8 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		);
 	}
 
-	public reset(spawnTile: Tile<S>): void {
-		super.reset(spawnTile);
+	public reset(coord: Coord): void {
+		super.reset(coord);
 		this.status.reset();
 		this.lastAcceptedRequestId = PlayerActionEvent.INITIAL_REQUEST_ID;
 		this.requestInFlight = false;
@@ -75,7 +75,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	 * @param dest -
 	 * @throws A previous request is still in flight (unacknowledged).
 	 */
-	protected makeMovementRequest(dest: Tile<S>, type: Player.MoveType): void {
+	protected makeMovementRequest(dest: Tile, type: Player.MoveType): void {
 		if (DEF.DevAssert) {
 			if (this.game.status !== Game.Status.PLAYING) {
 				throw new Error("This is not a necessary precondition, but we're doing it anyway.");

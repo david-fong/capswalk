@@ -11,8 +11,16 @@
 
 ### Things I feel like doing
 
-1. Make a release now that the socket.io disconnect bug is fixed.
+1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate.
 1. Switch to canvas for game grid instead of DOM.
+    - Is it reasonable to switch Coord to be just a number?
+    - Do we need `Coord.System` anymore? Since it's so ingrained, let's only take it out if we finish and feel sure that we don't need it.
+    - Run a sed command to change all `Tile<S>` to `Tile`.
+1. Refactor reset methods to use `Object.assign`.
+1. Refactor JsUtils descriptor methods to reuse result of properties query and to use `Object.defineProperties` to batch it.
+    - Also do this for the Lang-related constructors.
+1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
+1. Represent lang trees as arrays, where child-parent relationships are just indices.
 1. Mashup some CSS resets and normalizers for this repo.
 1. Feature-detect `DocumentOrShadowRoot.adoptedStyleSheets` and use it if available for shadow-root CSS.
 1. Try turning on `webpack.experiments.module`.

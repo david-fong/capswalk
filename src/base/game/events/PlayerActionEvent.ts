@@ -4,8 +4,8 @@ import type { Player } from "game/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
 
 
-export type TileModEvent<S extends Coord.System> = {
-	readonly coord: Coord.Bare[S];
+export type TileModEvent = {
+	readonly coord: Coord;
 
 	/**
 	 * The requester should set this field to the highest value they
@@ -125,14 +125,14 @@ export namespace PlayerActionEvent {
 			health: Player.Health;
 		} = undefined;
 
-		public readonly destModDesc: TileModEvent<S>;
+		public readonly destModDesc: TileModEvent;
 
 		public readonly moveType: Player.MoveType;
 
 		/**
 		 * Undefined is equivalent to an empty array.
 		 */
-		public tileHealthModDescs?: TU.RoArr<TileModEvent<S>> = undefined;
+		public tileHealthModDescs?: TU.RoArr<TileModEvent> = undefined;
 
 		public playerHealthModDescs?: TU.RoArr<{
 			playerId:  Player.Id;
@@ -142,13 +142,13 @@ export namespace PlayerActionEvent {
 		public constructor(
 			playerId: Player.Id,
 			lastAcceptedRequestId: number,
-			destTile: Tile<S>,
+			destTile: Tile,
 			moveType: Player.MoveType
 		) {
 			super(playerId, lastAcceptedRequestId);
 			this.destModDesc = {
 				coord:              destTile.coord,
-				lastKnownUpdateId:  destTile.lastKnownUpdateId,
+				lastKnownUpdateId:  destTile.now,
 			};
 			this.moveType = moveType;
 		}

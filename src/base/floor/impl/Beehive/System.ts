@@ -1,7 +1,7 @@
 import { JsUtils } from "defs/JsUtils";
-import type { Coord as BaseCoord, Tile } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 import { Grid as AbstractGrid } from "floor/Grid";
-type S = BaseCoord.System.BEEHIVE;
+type S = Coord.System.BEEHIVE;
 
 /**
  * # 🐝 BEES !
@@ -24,7 +24,7 @@ export namespace Beehive {
 	/**
 	 * # Beehive Coord
 	 */
-	export class Coord implements BaseCoord.Abstract.LatticeCoord<S>, Coord.Bare {
+	export class IAC {
 
 		/**
 		 * # 🕒 3'o'clock direction
@@ -36,17 +36,13 @@ export namespace Beehive {
 		 */
 		public readonly bash: number;
 
-		public constructor(desc: Coord.Bare) {
+		public constructor(desc: IAC.Bare) {
 			this.dash = desc.dash;
 			this.bash = desc.bash;
 			Object.freeze(this);
 		}
 
-		public _equals(other: Coord.Bare): boolean {
-			return (this.dash === other.dash) && (this.bash === other.bash);
-		}
-
-		public round(): Coord {
+		public round(): IAC {
 			// I'm pretty proud of this despite the fact that I don't
 			// think there's anything very impressive about it.
 			const floorDash = Math.floor(this.dash);
@@ -54,46 +50,46 @@ export namespace Beehive {
 			const d = floorDash - this.dash;
 			const b = floorBash - this.bash;
 			if (d > 2 * b) {
-				return new Coord({ dash: floorDash+1, bash: floorBash   });
+				return new IAC({ dash: floorDash+1, bash: floorBash   });
 			} else if (d < 0.5 * b) {
-				return new Coord({ dash: floorDash  , bash: floorBash+1 });
+				return new IAC({ dash: floorDash  , bash: floorBash+1 });
 			} else if (Math.min(d, b) > 0.5) {
-				return new Coord({ dash: floorDash+1, bash: floorBash+1 });
+				return new IAC({ dash: floorDash+1, bash: floorBash+1 });
 			} else {
-				return new Coord({ dash: floorDash  , bash: floorBash   });
+				return new IAC({ dash: floorDash  , bash: floorBash   });
 			}
 		}
 
-		public add(other: Coord.Bare): Coord {
-			return new Coord({
+		public add(other: IAC.Bare): IAC {
+			return new IAC({
 				dash: this.dash + other.dash,
 				bash: this.bash + other.bash,
 			});
 		}
 
-		public sub(other: Coord.Bare): Coord {
-			return new Coord({
+		public sub(other: IAC.Bare): IAC {
+			return new IAC({
 				dash: this.dash - other.dash,
 				bash: this.bash - other.bash,
 			});
 		}
 
-		public mul(scalar: number): Coord {
-			return new Coord({
+		public mul(scalar: number): IAC {
+			return new IAC({
 				dash: scalar * this.dash,
 				bash: scalar * this.bash,
 			});
 		}
 	}
 
-	export namespace Coord {
+	export namespace IAC {
 		export type Bare = Readonly<{
 			dash: number;
 			bash: number;
 		}>;
 	}
-	Object.freeze(Coord);
-	Object.freeze(Coord.prototype);
+	Object.freeze(IAC);
+	Object.freeze(IAC.prototype);
 
 
 
@@ -102,9 +98,6 @@ export namespace Beehive {
 	 */
 	export class Grid extends AbstractGrid<S> {
 
-		/**
-		 * @override
-		 */
 		public static getAmbiguityThreshold(): 18 {
 			return 18;
 		}
@@ -124,7 +117,7 @@ export namespace Beehive {
 		// TODO.design determine spec for indexing
 		// Then initialize the field in the constructor
 		// Also design HTML representation and initialize in Grid.Visible
-		private readonly grid: TU.RoArr<TU.RoArr<Tile<S>>>;
+		private readonly grid: TU.RoArr<TU.RoArr<Tile>>;
 
 		public constructor(desc: AbstractGrid.CtorArgs<S>) {
 			super(desc);
@@ -134,7 +127,7 @@ export namespace Beehive {
 			this.grid = Object.freeze(grid);
 		}
 
-		public forEachTile(consumer: (tile: Tile<S>, index: number) => void): void {
+		public forEachTile(consumer: (tile: Tile, index: number) => void): void {
 			let i = 0;
 			for (const row of this.grid) {
 				for (const tile of row) {
@@ -142,50 +135,46 @@ export namespace Beehive {
 				}
 			}
 		}
-		public shuffledForEachTile(consumer: (tile: Tile<S>) => void): void {
+		public shuffledForEachTile(consumer: (tile: Tile) => void): void {
 			this.grid.flat()
 			.sort((a,b) => Math.random() - 0.5)
 			.forEach((tile) => consumer(tile));
 		}
 
-		public getUntToward(intendedDest: Coord.Bare, sourceCoord: Coord): Tile<S> {
+		public getUntToward(intendedDest: IAC, sourceCoord: IAC): Tile {
 			return undefined!;
 		}
 
-		public getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile<S> {
+		public getUntAwayFrom(avoidCoord: IAC, sourceCoord: IAC): Tile {
 			return this.getUntToward(
 				sourceCoord.add(sourceCoord.sub(avoidCoord)),
 				sourceCoord,
 			);
 		}
 
-		public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {
+		public getRandomCoordAround(origin: Coord, radius: number): Coord {
 			// Note to self when I implement this:
 			// Be careful about getting proper uniform random distribution!
 			return undefined!;
 		}
 
-
-		public _getTileAt(coord: Coord.Bare): Tile<S> {
+		public _getTileAt(coord: Coord): Tile {
 			return undefined!;
 		}
 
-		public _getTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
+		public _getTileDestsFrom(coord: Coord, radius: number = 1): Array<Tile> {
 			return undefined!;
 		}
 
-		public _getTileSourcesTo(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
+		public _getTileSourcesTo(coord: Coord, radius: number = 1): Array<Tile> {
 			return undefined!;
 		}
 
-		public minMovesFromTo(source: Coord.Bare, dest: Coord.Bare): number {
+		public minMovesFromTo(source: Coord, dest: Coord): number {
 			return undefined!;
 		}
 
-		/**
-		 * @override
-		 */
-		public getDestsFromSourcesTo(originCoord: Coord): Array<Tile<S>> {
+		public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
 			return this._getTileDestsFrom(originCoord, 2);
 		}
 
@@ -193,7 +182,7 @@ export namespace Beehive {
 		public static getSpawnCoords(
 			playerCounts: TU.RoArr<number>,
 			dimensions: Grid.Dimensions,
-		): TU.RoArr<TU.RoArr<Coord.Bare>> {
+		): TU.RoArr<TU.RoArr<Coord>> {
 			return undefined!;
 		}
 
@@ -217,8 +206,8 @@ export namespace Beehive {
 			return 1 + (2 * radius);
 		}
 
-		public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
-			return new Coord(undefined!);
+		public static getRandomCoord(dimensions: Grid.Dimensions): IAC {
+			return new IAC(undefined!);
 		}
 	}
 	export namespace Grid {

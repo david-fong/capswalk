@@ -41,11 +41,7 @@ export namespace Group {
 			 */
 			export const EVENT_NAME = "group-lobby-user-info-change";
 
-			/**
-			 */
 			export type Req = Player.UserInfo;
-			/**
-			 */
 			export type Res = Record<Socket["id"], Player.UserInfo | undefined>;
 		}
 	}

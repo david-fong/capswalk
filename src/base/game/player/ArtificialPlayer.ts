@@ -52,7 +52,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 	 * movement request. Pos may contain non-integer coordinate values,
 	 * and it does not have to be inside the bounds of the {@link Grid}.
 	 */
-	protected abstract computeDesiredDest(): Coord[S];
+	protected abstract computeDesiredDest(): Coord;
 
 	protected abstract getNextMoveType(): Player.MoveType;
 
@@ -84,7 +84,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 		// humans must pay the penalty before landing on the tile, but
 		// in the implementation here, it's much easier to simulate such
 		// a penalty if it applies _after_ landing on the tile.
-		this._nextMovementTimerMultiplier = this.game.grid.tile.at(desiredDest).langSeq.length;
+		this._nextMovementTimerMultiplier = this.game.grid.tile.at(desiredDest).seq.length;
 
 		this.makeMovementRequest(
 			this.game.grid.getUntToward(

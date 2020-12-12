@@ -20,7 +20,7 @@
         "*cache.json": true,
 
         "{**/.templates/,**/*tsconfig.json}": false,
-        "scripts/webpack/*.js": true,
+        "**/*.css.d.ts": false,
     },
     "files.associations": {
         //"**/dist/{client,server}/**/*.js": "json", // Loads bundled js much faster.

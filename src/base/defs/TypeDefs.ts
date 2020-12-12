@@ -32,14 +32,6 @@ export namespace Player {
 	 */
 	export type Id = number;
 
-	export namespace Id {
-		/**
-		 * See the main documentation in game/player/Player.
-		 */
-		export const NULL = undefined;
-		export type Nullable = Player.Id | typeof Player.Id.NULL;
-	}
-
 	export type Username = string;
 	export namespace Username {
 		// /**

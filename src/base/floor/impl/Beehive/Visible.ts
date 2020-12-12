@@ -1,9 +1,8 @@
-import style from "./style.m.css";
 import { JsUtils } from "defs/JsUtils";
 import type { Coord as BaseCoord } from "floor/Tile";
 import type { Grid as AbstractGrid } from "floor/Grid";
-import { VisibleGrid, VisibleGridMixin } from "floor/VisibleGrid";
 import { Beehive } from "./System";
+import { VisibleGrid, VisibleGridMixin } from "floor/VisibleGrid";
 type S = BaseCoord.System.BEEHIVE;
 
 /**
@@ -14,8 +13,7 @@ export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
 		super(desc);
 		const domGrid: HTMLElement = undefined!;
 		// TODO.impl Beehive VisibleGrid ctor.
-		this._superVisibleGrid(desc, domGrid);
-		domGrid.classList.add(style["grid"]);
+		this._superVisibleGrid(domGrid);
 	}
 }
 export interface BeehiveVisibleGrid extends VisibleGridMixin<S> { };

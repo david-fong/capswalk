@@ -1,6 +1,6 @@
 import type { Lang } from "defs/TypeDefs";
 
-import type { Coord, Tile } from "floor/Tile";
+import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { Player, PlayerStatus } from "./player/Player";
 
@@ -17,8 +17,7 @@ import type { Player, PlayerStatus } from "./player/Player";
  * and {@link Player} objects. As a design choice, players can only join
  * a game before it starts, and actions such as changing the language or
  * difficulty require a restart. These actions that require a restart will
- * all be exposed to operators through a pre-game page. Other such actions
- * include: changing teams.
+ * all be exposed through a pre-game page.
  *
  * There are overlaps between what each implementation needs to do:
  * - Offline and Server games maintain and control the master-game-state.
@@ -44,12 +43,8 @@ export namespace Game {
 	 * These are abstract handles to game-implementation-dependant
 	 * components.
 	 */
-	export type ImplArgs<
-		G extends Game.Type,
-		S extends Coord.System,
-	> = {
+	export type ImplArgs = {
 		onGameBecomeOver: () => void,
-		tileClass: Tile.ClassIf<S>,
 		playerStatusCtor: typeof PlayerStatus,
 	};
 
@@ -69,7 +64,7 @@ export namespace Game {
 		S extends Coord.System,
 	> = Readonly<{
 		coordSys: S;
-		gridDimensions: Grid.Dimensions<S>;
+		gridDimensions: Grid.Dimensions[S];
 		averageFreeHealthPerTile: Player.Health;
 
 		langId: Lang.FrontendDesc["id"];
@@ -96,9 +91,9 @@ export namespace Game {
 	 */
 	export type ResetSer<S extends Coord.System> = Readonly<{
 		csps: TU.RoArr<Lang.CharSeqPair>;
-		playerCoords: TU.RoArr<Coord.Bare[S]>;
+		playerCoords: TU.RoArr<Coord>;
 		healthCoords: TU.RoArr<{
-			coord: Coord.Bare[S];
+			coord: Coord;
 			health: Player.Health;
 		}>;
 	}>;

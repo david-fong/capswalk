@@ -10,15 +10,11 @@ import { PlayerStatus } from "./PlayerStatus";
 
 
 /**
- *
  */
 export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S> {
 
 	readonly #baseElem: HTMLElement;
 	readonly #vBellAnims: Animation[];
-
-	readonly #immigrantInfoCache: Tile.VisibleImmigrantInfo;
-
 
 	public constructor(player: Player<S>, noCheckGameOver: boolean) {
 		super(player, noCheckGameOver);
@@ -71,10 +67,6 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 		// circuit=optimization made when `isDowned` hasn't changed.
 	}
 
-	public get immigrantInfo(): Tile.VisibleImmigrantInfo {
-		return this.#immigrantInfoCache;
-	}
-
 	public _notifyWillBecomeCurrent(spotlightElems: TU.RoArr<HTMLElement>): void {
 		const currOperator = this.player.game.currentOperator;
 		const nextOperator = this.player as OperatorPlayer<S>;
@@ -91,7 +83,7 @@ export class VisiblePlayerStatus<S extends Coord.System> extends PlayerStatus<S>
 		spotlightElems.forEach((elem) => {
 			this.#baseElem.appendChild(elem);
 		});
-		nextOperator.status.immigrantInfo.playerElem.scrollIntoView(SCROLL_INTO_CENTER);
+		// TODO.impl center on player.
 	}
 
 	public visualBell(): void {

@@ -140,6 +140,9 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 	watchOptions: {
 		ignored: [ "node_modules", ],
 	},
+	// experiments: {
+	// 	outputModule: true,
+	// },
 }; };
 
 

@@ -1,7 +1,7 @@
 import {
 	JsUtils,
 	Game,
-	Coord, VisibleTile,
+	Coord,
 	BrowserGameMixin,
 	// Player, OperatorPlayer,
 	VisiblePlayerStatus,
@@ -39,7 +39,6 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
 		super(
 			Game.Type.OFFLINE, {
 			onGameBecomeOver,
-			tileClass: VisibleTile,
 			playerStatusCtor: VisiblePlayerStatus,
 			}, gameDesc,
 		);

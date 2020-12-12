@@ -7,22 +7,23 @@ import type { Beehive } from "./impl/Beehive/System";
 
 
 /**
- * # 🗺 The Grid Class
- *
  * A Collection of Tiles.
+ *
+ * @template IAC
+ * _Internal_ Augmented Coord
  */
-export abstract class Grid<S extends Coord.System> implements TileGetter.Source<S> {
+export abstract class Grid<S extends Coord.System, IAC extends object = object> implements TileGetter.Source {
 
 	// A type-annotated alias to this.constructor.
 	public readonly static: Grid.ClassIf<S>;
 
-	public readonly dimensions: Grid.Dimensions<S>;
+	public readonly dimensions: Grid.Dimensions[S];
 
 	public get area(): number {
 		return this.static.getArea(this.dimensions);
 	}
 
-	public readonly tile: TileGetter<S,[Coord.Bare[S]]>;
+	public readonly tile: TileGetter<[Coord]>;
 
 
 	/**
@@ -32,34 +33,28 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 	 * @param desc -
 	 */
 	protected constructor(desc: Grid.CtorArgs<S>) {
-		this.static = desc.gridClass;
+		this.static = desc.Grid;
 		this.dimensions = desc.dimensions;
 		this.tile = new TileGetter(this);
 		JsUtils.propNoWrite(this as Grid<S>, "static", "dimensions", "tile");
 	}
 
 	/**
-	 * Calls {@link Tile#reset} for each {@link Tile} in this `Grid`.
 	 */
 	public reset(): void {
-		this.forEachTile((tile) => tile.reset());
+		// TODO.impl
 	}
-
 
 	/**
 	 * For BaseGame's implementation of SER/DES to work, the traversal
 	 * order taken by an implementation of this method must depend
-	 * only on the dimensions of the instance. Ie. If two Grids (such
-	 * as those at the Client and Server when separated by a network)
-	 * were constructed with the same arguments for their dimensions,
-	 * then their Tiles should be traversed in the same order by this
-	 * function.
+	 * only on the dimensions of the instance.
 	 *
 	 * @param consumer -
 	 */
-	public abstract forEachTile(consumer: (tile: Tile<S>, index: number) => void): void;
+	public abstract forEachTile(consumer: (tile: Tile, index: number) => void): void;
 
-	public abstract shuffledForEachTile(consumer: (tile: Tile<S>) => void): void;
+	public abstract shuffledForEachTile(consumer: (tile: Tile) => void): void;
 
 	/**
 	 * @returns
@@ -79,15 +74,12 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 	 * @param sourceCoord
 	 * The coordinate from which to find the next hop.
 	 */
-	public abstract getUntToward(intendedDest: Coord[S], sourceCoord: Coord[S]): Tile<S>;
+	public abstract getUntToward(intendedDest: IAC, sourceCoord: IAC): Tile;
 
 	/**
 	 * The opposite of `getUntToward`.
-	 *
-	 * @param avoidCoord -
-	 * @param sourceCoord -
 	 */
-	public abstract getUntAwayFrom(avoidCoord: Coord[S], sourceCoord: Coord[S]): Tile<S>;
+	public abstract getUntAwayFrom(avoidCoord: IAC, sourceCoord: IAC): Tile;
 
 	/**
 	 * This action is commonly performed by the GameManager when
@@ -95,14 +87,14 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 	 * encouraged to override it if they have a more efficient way to
 	 * produce the same result.
 	 */
-	public getDestsFromSourcesTo(originCoord: Coord[S]): Array<Tile<S>> {
+	public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
 		return Array.from(new Set(
-			this.tile.sourcesTo(originCoord).get
-				.flatMap((sourceToTarget) => this.tile.destsFrom(sourceToTarget.coord).get)
+			this._getTileSourcesTo(originCoord)
+				.flatMap((sourceToTarget) => this._getTileDestsFrom(sourceToTarget.coord))
 		));
 	}
 
-	public getRandomCoord(): Coord[S] {
+	public getRandomCoord(): Coord {
 		return this.static.getRandomCoord(this.dimensions);
 	}
 
@@ -115,42 +107,32 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source<
 	 *
 	 * The returned value should follow a uniform distribution.
 	 */
-	public abstract getRandomCoordAround(origin: Coord.Bare[S], radius: number): Coord[S];
+	public abstract getRandomCoordAround(origin: Coord, radius: number): Coord;
 
 
-	/**
-	 * @override
-	 */
-	public abstract _getTileAt(coord: Coord.Bare[S]): Tile<S>;
+	/** @override */
+	public abstract _getTileAt(coord: Coord): Tile;
 
-	/**
-	 * @override
-	 */
-	public abstract _getTileDestsFrom(coord: Coord.Bare[S]): Array<Tile<S>>;
+	/** @override */
+	public abstract _getTileDestsFrom(coord: Coord): Array<Tile>;
 
-	/**
-	 * @override
-	 */
-	public abstract _getTileSourcesTo(coord: Coord.Bare[S]): Array<Tile<S>>;
+	/** @override */
+	public abstract _getTileSourcesTo(coord: Coord): Array<Tile>;
 
 	/**
 	 * The returned value must be consistent with results from the
 	 * methods `_getTileDestsFrom` and `_getTileSourcesTo`.
-	 *
-	 * @param source -
-	 * @param dest -
 	 */
-	public abstract minMovesFromTo(source: Coord.Bare[S], dest: Coord.Bare[S]): number;
+	public abstract minMovesFromTo(source: Coord, dest: Coord): number;
 }
 export namespace Grid {
 
 	/**
-	 * Values do not _need_ to be in range or integers.
 	 */
-	export type Dimensions<S extends Coord.System>
-		= S extends Coord.System.EUCLID2 ? Euclid2.Grid.Dimensions
-		: S extends Coord.System.BEEHIVE ? Beehive.Grid.Dimensions
-		: never;
+	export interface Dimensions {
+		[Coord.System.EUCLID2]: Euclid2.Grid.Dimensions;
+		[Coord.System.BEEHIVE]: Beehive.Grid.Dimensions;
+	};
 
 	// ==============================================================
 	// Note: The below exports do not require any modifications with
@@ -158,10 +140,9 @@ export namespace Grid {
 	// ==============================================================
 
 	export type CtorArgs<S extends Coord.System> = Readonly<{
-		gridClass: Grid.ClassIf<S>;
-		tileClass: Tile.ClassIf<S>;
-		coordSys: S;
-		dimensions: Dimensions<S>;
+		Grid: Grid.ClassIf<S>;
+		system: S;
+		dimensions: Dimensions[S];
 	}>;
 
 	/**
@@ -195,10 +176,8 @@ export namespace Grid {
 		/**
 		 * @returns
 		 * The number of Tiles that could fit in a Grid of such bounds.
-		 *
-		 * @param bounds -
 		 */
-		getArea(bounds: Dimensions<S>): number;
+		getArea(bounds: Dimensions[S]): number;
 
 		/**
 		 * \*Assuming the grid is lattice-like and is partitioned into
@@ -218,7 +197,7 @@ export namespace Grid {
 		 * @param boundX An exclusive bound on x-coordinate.
 		 * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to `boundX`.
 		 */
-		getRandomCoord(bounds: Dimensions<S>): Coord[S];
+		getRandomCoord(bounds: Dimensions[S]): Coord;
 
 		/**
 		 * Return values do not need to be the same for repeated calls
@@ -229,8 +208,8 @@ export namespace Grid {
 		 */
 		getSpawnCoords(
 			playerCounts: TU.RoArr<number>,
-			dimensions: Dimensions<S>,
-		): TU.RoArr<TU.RoArr<Coord.Bare[S]>>;
+			dimensions: Dimensions[S],
+		): TU.RoArr<TU.RoArr<Coord>>;
 
 	};
 
@@ -242,8 +221,6 @@ export namespace Grid {
 	/**
 	 * @returns
 	 * A Grid class for the specified coordinate system.
-	 *
-	 * @param coordSys -
 	 */
 	export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
 		// Note: At the time of writing this, separating this into
@@ -259,7 +236,7 @@ export namespace Grid {
 	 * Upper and lower bounds must be strictly positive integer values.
 	 */
 	export type DimensionBounds<S extends Coord.System> = Readonly<{
-		[ P in keyof Dimensions<S> ]: Readonly<{
+		[ P in keyof Dimensions[S] ]: Readonly<{
 			min: number;
 			max: number;
 		}>;

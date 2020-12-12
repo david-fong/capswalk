@@ -1,7 +1,6 @@
 import { JsUtils }              from "defs/JsUtils";                    export { JsUtils };
 import { Game }                 from "game/Game";                       export { Game };
 import type { Coord }           from "floor/Coord";                     export { Coord };
-import { VisibleTile }          from "floor/VisibleTile";               export { VisibleTile };
 import { VisibleGrid }          from "floor/VisibleGrid";
 import type { GamepartBase }    from "game/gameparts/GamepartBase";
 import { Player }               from "game/player/Player";              export { Player };

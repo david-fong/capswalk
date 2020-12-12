@@ -1,9 +1,7 @@
 import type { Coord, Tile } from "./Tile";
 
 
-type CoordSys = Coord.System;
-
-type Arguments<S extends CoordSys> = [ Coord.Bare[S], ] | [];
+type _Arguments = [ Coord, ] | [];
 
 /**
  * A utility class to get destinations-to or sources-from a tile at
@@ -22,25 +20,25 @@ type Arguments<S extends CoordSys> = [ Coord.Bare[S], ] | [];
  * part of its spec, as is appropriate with a player.
  *
  */
-export class TileGetter<S extends CoordSys, A extends Arguments<S>> {
+export class TileGetter<A extends _Arguments> {
 
-	readonly #source: TileGetter.Source<S,A>;
-	public get _source(): TileGetter.Source<S,A> {
+	readonly #source: TileGetter.Source<A>;
+	public get _source(): TileGetter.Source<A> {
 		return this.#source;
 	}
 
-	public constructor(source: TileGetter.Source<S,A>) {
+	public constructor(source: TileGetter.Source<A>) {
 		this.#source = source;
 		Object.freeze(this);
 	}
 
-	public at(...args: A): Tile<S> {
+	public at(...args: A): Tile {
 		return this.#source._getTileAt(...args);
 	}
-	public destsFrom(...args: A): Query<S> {
+	public destsFrom(...args: A): Query {
 		return new Query(this.#source._getTileDestsFrom(...args));
 	}
-	public sourcesTo(...args: A): Query<S> {
+	public sourcesTo(...args: A): Query {
 		return new Query(this.#source._getTileSourcesTo(...args));
 	}
 }
@@ -48,12 +46,12 @@ export namespace TileGetter {
 	/**
 	 * A Tile should always be a source-to and destination-from itself.
 	 */
-	export interface Source<S extends CoordSys, A extends Arguments<S> = [Coord.Bare[S]]> {
-		_getTileAt(...args: A): Tile<S>;
+	export interface Source<A extends _Arguments = [Coord]> {
+		_getTileAt(...args: A): Tile;
 		// NOTE: do we need to add an optional argument for range?
 		// If so, document that it must default to `1` if unspecified.
-		_getTileDestsFrom(...args: A): Array<Tile<S>>;
-		_getTileSourcesTo(...args: A): Array<Tile<S>>;
+		_getTileDestsFrom(...args: A): Array<Tile>;
+		_getTileSourcesTo(...args: A): Array<Tile>;
 	}
 }
 Object.freeze(TileGetter);
@@ -63,23 +61,23 @@ Object.freeze(TileGetter.prototype);
 /**
  *
  */
-class Query<S extends CoordSys> {
+class Query {
 
-	public constructor(protected contents: Array<Tile<S>>) {
+	public constructor(protected contents: Array<Tile>) {
 		Object.seal(this);
 	}
 
-	public get occupied(): Omit<Query<S>, "unoccupied"> {
-		this.contents = this.contents.filter((tile) => tile.isOccupied);
+	public get occupied(): Omit<Query, "unoccupied"> {
+		this.contents = this.contents.filter((tile) => tile.occId);
 		return this;
 	}
 
-	public get unoccupied(): Omit<Query<S>, "occupied"> {
-		this.contents = this.contents.filter((tile) => !tile.isOccupied);
+	public get unoccupied(): Omit<Query, "occupied"> {
+		this.contents = this.contents.filter((tile) => !tile.occId);
 		return this;
 	}
 
-	public get get(): Array<Tile<S>> {
+	public get get(): Array<Tile> {
 		const retval = this.contents;
 		return retval;
 	}

@@ -2,7 +2,6 @@ import { JsUtils } from "defs/JsUtils";
 import type { Lang as _Lang } from "defs/TypeDefs";
 import { Game } from "game/Game";
 
-import type { VisibleTile } from "floor/VisibleTile";
 import type { VisiblePlayerStatus } from "./VisiblePlayerStatus";
 import type { GamepartBase } from "game/gameparts/GamepartBase";
 import { Coord } from "floor/Coord";
@@ -25,12 +24,6 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	/**
 	 * @override
 	 */
-	// @ts-expect-error : Redeclaring accessor as property.
-	declare public hostTile: VisibleTile<S>;
-
-	/**
-	 * @override
-	 */
 	declare public readonly status: VisiblePlayerStatus<S>;
 
 	/**
@@ -41,7 +34,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
 	readonly #langRemappingFunc: {(input: string): string};
 
-	private prevCoord: Coord[S];
+	private prevCoord: Coord;
 
 
 	public constructor(game: GamepartBase<any,S>, desc: Player._CtorArgs<"HUMAN">) {
@@ -49,9 +42,9 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 		this.#langRemappingFunc = this.game.langFrontend.remapFunc;
 	}
 
-	public reset(spawnTile: Tile<S>): void {
-		super.reset(spawnTile);
-		this.prevCoord = spawnTile.coord;
+	public reset(coord: Coord): void {
+		super.reset(coord);
+		this.prevCoord = coord;
 		this.#seqBuffer = "";
 	}
 
@@ -140,7 +133,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	 *
 	 * @override
 	 */
-	public moveTo(dest: Tile<S>): void {
+	public moveTo(dest: Tile): void {
 		// Clear my `seqBuffer` first:
 		this.#seqBuffer = "";
 		this.prevCoord = this.coord;

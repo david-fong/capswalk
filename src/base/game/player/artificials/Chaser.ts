@@ -20,7 +20,6 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 	private readonly behaviour: Required<Readonly<Chaser.Behaviour>>;
 
 	private readonly grid: Chaser<S>["game"]["grid"];
-	#prevCoord: Coord[S];
 
 	public constructor(game: GamepartManager<any,S>, desc: Player._CtorArgs<"CHASER">) {
 		super(game, desc);
@@ -49,17 +48,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 		);
 	}
 
-	public reset(spawnTile: Tile<S>): void {
-		super.reset(spawnTile);
-		this.#prevCoord = this.coord;
-	}
-
-	public moveTo(dest: Tile<S>): void {
-		this.#prevCoord = this.coord;
-		super.moveTo(dest);
-	}
-
-	protected computeDesiredDest(): Coord[S] {
+	protected computeDesiredDest(): Coord {
 		// Check if there is anyone to run away from:
 		this.threatProximity.sort((pa,pb) => {
 			return this.grid.minMovesFromTo(pa.coord, this.coord)
@@ -105,7 +94,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 				);
 			}
 		}
-		let closestFht: Tile<S> = undefined!;
+		let closestFht: Tile = undefined!;
 		let closestFhtDistance = Infinity;
 		for (const fht of this.game.freeHealthTiles) {
 			const distance = this.grid.minMovesFromTo(this.coord, fht.coord);

@@ -50,15 +50,14 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	 */
 	public constructor(
 		gameType: G,
-		impl: Game.ImplArgs<G,S>,
+		impl: Game.ImplArgs,
 		desc: Game.CtorArgs<G,S>,
 	) {
 		this.gameType = gameType;
 		const gridClass = this._getGridImplementation(desc.coordSys);
 		this.grid = new (gridClass)({
-			gridClass:  gridClass,
-			tileClass:  impl.tileClass,
-			coordSys:   desc.coordSys,
+			Grid:  gridClass,
+			system:   desc.coordSys,
 			dimensions: desc.gridDimensions,
 		}) as GamepartBase<G,S>["grid"];
 		this.#onGameBecomeOver = impl.onGameBecomeOver;
@@ -119,10 +118,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 
 
 	/**
-	 * Private helper for the constructor to create player objects.
-	 *
-	 * @param gameDesc -
-	 * @returns A bundle of the constructed players.
+	 * Helper for the constructor.
 	 */
 	private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GamepartBase<G,S>["players"] {
 		type PCtorArgs = TU.RoArr<Player.CtorArgs>;
@@ -147,20 +143,22 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	public abstract _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S>;
 	protected abstract _createArtifPlayer(desc: Player._CtorArgs<Player.FamilyArtificial>): Player<S>;
 
+	/**
+	 */
 	public serializeResetState(): Game.ResetSer<S> {
 		const csps: Array<Lang.CharSeqPair> = [];
 		const playerCoords = this.players.map((player) => player.coord);
 		const healthCoords: TU.NoRo<Game.ResetSer<S>["healthCoords"]> = [];
 		this.grid.forEachTile((tile) => {
-			tile.lastKnownUpdateId++;
+			tile.now++;
 			csps.push({
-				char: tile.langChar,
-				seq:  tile.langSeq,
+				char: tile.char,
+				seq:  tile.seq,
 			});
-			if (tile.freeHealth) {
+			if (tile.health) {
 				healthCoords.push({
 					coord:  tile.coord,
-					health: tile.freeHealth,
+					health: tile.health,
 				});
 			}
 		});
@@ -169,6 +167,8 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		return retval;
 	}
 
+	/**
+	 */
 	public deserializeResetState(ser: Game.ResetSer<S>): void {
 		JsUtils.deepFreeze(ser);
 
@@ -176,13 +176,13 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		// because it modifies csps, which we don't need to do.
 		this.grid.forEachTile((tile, index) => {
 			tile.setLangCharSeqPair(ser.csps[index]!);
-			tile.lastKnownUpdateId++;
+			tile.now++;
 		});
 		ser.playerCoords.forEach((coord, index) => {
-			this.players[index]!.reset(this.grid.tile.at(coord));
+			this.players[index]!.reset(coord);
 		});
 		ser.healthCoords.forEach((desc) => {
-			this.grid.tile.at(desc.coord).freeHealth = desc.health;
+			this.grid.tile.at(desc.coord).health = desc.health;
 		});
 	}
 

@@ -1,5 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
-import type { Coord as BaseCoord, Tile } from "floor/Tile";
+import type { Coord as BaseCoord, Coord, Tile } from "floor/Tile";
 import { Grid as AbstractGrid } from "floor/Grid";
 type S = BaseCoord.System.EUCLID2;
 
@@ -8,25 +8,25 @@ type S = BaseCoord.System.EUCLID2;
 export namespace Euclid2 {
 
 	/**
-	 * # Euclid2 Coord
+	 * Euclid2 Internal Augmented Coord
 	 */
-	export class Coord implements BaseCoord.Abstract.LatticeCoord<S>, Coord.Bare {
+	export class IAC  {
 
 		public readonly x: number;
 		public readonly y: number;
 
-		public constructor(desc: Coord.Bare) {
+		public constructor(desc: IAC.Bare) {
 			this.x = desc.x;
 			this.y = desc.y;
 			Object.freeze(this);
 		}
 
-		public _equals(other: Coord.Bare): boolean {
+		public _equals(other: IAC.Bare): boolean {
 			return (this.x === other.x) && (this.y === other.y);
 		}
 
-		public round(): Coord {
-			return new Coord({
+		public round(): IAC {
+			return new IAC({
 				x: Math.round(this.x),
 				y: Math.round(this.y),
 			});
@@ -42,7 +42,7 @@ export namespace Euclid2 {
 		 * @param other - The norm is taken relative to `other`.
 		 * @returns The sum of the absolute values of each coordinate.
 		 */
-		public oneNorm(other: Coord.Bare): number {
+		public oneNorm(other: IAC.Bare): number {
 			return this.sub(other).originOneNorm();
 		}
 
@@ -57,7 +57,7 @@ export namespace Euclid2 {
 		 * @param other - The norm is taken relative to `other`.
 		 * @returns The length of the longest dimension.
 		 */
-		public infNorm(other: Coord.Bare): number {
+		public infNorm(other: IAC.Bare): number {
 			return this.sub(other).originInfNorm();
 		}
 
@@ -81,7 +81,7 @@ export namespace Euclid2 {
 		 *
 		 * @param other - The alignment is taken relative to `other`.
 		 */
-		public axialAlignment(other: Coord.Bare): number {
+		public axialAlignment(other: IAC.Bare): number {
 			return this.sub(other).originAxialAlignment();
 		}
 
@@ -90,15 +90,15 @@ export namespace Euclid2 {
 				/ (Math.abs(this.x) + Math.abs(this.y));
 		}
 
-		public add(other: Coord.Bare): Coord {
-			return new Coord({
+		public add(other: IAC.Bare): IAC {
+			return new IAC({
 				x: this.x + other.x,
 				y: this.y + other.y,
 			});
 		}
 
-		public sub(other: Coord.Bare): Coord {
-			return new Coord({
+		public sub(other: IAC.Bare): IAC {
+			return new IAC({
 				x: this.x - other.x,
 				y: this.y - other.y,
 			});
@@ -107,37 +107,37 @@ export namespace Euclid2 {
 		/**
 		 * @override
 		 */
-		public mul(scalar: number): Coord {
-			return new Coord({
+		public mul(scalar: number): IAC {
+			return new IAC({
 				x: scalar * this.x,
 				y: scalar * this.y,
 			});
 		}
 	}
-	export namespace Coord {
+	export namespace IAC {
 		export type Bare = Readonly<{
 			x: number;
 			y: number;
 		}>;
 	}
-	Object.freeze(Coord);
-	Object.freeze(Coord.prototype);
+	Object.freeze(IAC);
+	Object.freeze(IAC.prototype);
 
 
 
 	/**
-	 * # Euclid2 Grid
+	 * Euclid2 Grid
 	 */
-	export class Grid extends AbstractGrid<S> {
+	export class Grid extends AbstractGrid<S,IAC> {
 
 		public static getAmbiguityThreshold(): 24 {
 			return 24;
 		}
 
 		public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
-		private static readonly SIZE_LIMITS = Object.freeze(<const>{
-			height: Object.freeze(<const>{ min: 11, max: 51 }),
-			width:  Object.freeze(<const>{ min: 11, max: 51 }),
+		private static readonly SIZE_LIMITS = JsUtils.deepFreeze(<const>{
+			height: <const>{ min: 11, max: 51 },
+			width:  <const>{ min: 11, max: 51 },
 		});
 
 		/**
@@ -145,52 +145,40 @@ export namespace Euclid2 {
 		 * their corresponding fields, containing `Tile` objects with `pos`
 		 * fields allowing indexing to themselves. Uses _row-major_ ordering.
 		 */
-		protected readonly grid: TU.RoArr<TU.RoArr<Tile<S>>>;
+		protected readonly grid: TU.RoArr<Tile>;
 
 		public constructor(desc: AbstractGrid.CtorArgs<S>) {
 			super(desc);
 
-			const grid: Array<TU.RoArr<Tile<S>>> = [];
-			for (let row = 0; row < this.dimensions.height; row++) {
-				const newRow: Array<Tile<S>> = [];
-				for (let col = 0; col < this.dimensions.width; col++) {
-					const newTile = new desc.tileClass(new Coord({ x: col, y: row }));
-					newRow.push(newTile);
-				}
-				grid.push(Object.freeze(newRow));
-			}
+			const grid: TU.RoArr<Tile> = [];
+			// TODO.impl
 			this.grid = Object.freeze(grid);
 		}
 
-		public forEachTile(consumer: (tile: Tile<S>, index: number) => void): void {
-			let i = 0;
-			for (const row of this.grid) {
-				for (const tile of row) {
-					consumer(tile, i++);
-				}
-			}
+		public forEachTile(consumer: (tile: Tile, index: number) => void): void {
+			this.grid.forEach(consumer);
 		}
-		public shuffledForEachTile(consumer: (tile: Tile<S>) => void): void {
-			this.grid.flat()
+		public shuffledForEachTile(consumer: (tile: Tile) => void): void {
+			this.grid.slice()
 			.sort((a,b) => Math.random() - 0.5)
 			.forEach((tile) => consumer(tile));
 		}
 
-		public getUntToward(intendedDest: Coord.Bare, sourceCoord: Coord): Tile<S> {
+		public getUntToward(intendedDest: IAC, sourceCoord: IAC): Tile {
 			const options = this.tile.destsFrom(sourceCoord).unoccupied.get;
 			if (options.length === 0) {
-				return this.tile.at(sourceCoord);
+				return this._getTileAt(sourceCoord);
 			}
 			if (options.length === 1) {
 				// Minor optimization:
 				return options[0]!;
 			}
-			options.sort((tileA, TileB) => {
+			options.sort((ta, tb) => {
 				// Break (some) ties by one-norm:
-				return tileA.coord.oneNorm(intendedDest) - TileB.coord.oneNorm(intendedDest);
-			}).sort((tileA, TileB) => {
+				return ta.coord.oneNorm(intendedDest) - tb.coord.oneNorm(intendedDest);
+			}).sort((ta, tb) => {
 				// Break (some) ties by one-norm:
-				return tileA.coord.infNorm(intendedDest) - TileB.coord.infNorm(intendedDest);
+				return ta.coord.infNorm(intendedDest) - tb.coord.infNorm(intendedDest);
 			});
 			const best = options[0]!;
 			// Filter out options that are not equally favourable as the
@@ -226,38 +214,30 @@ export namespace Euclid2 {
 			return options[Math.floor(options.length * Math.random())]!;
 		}
 
-		public getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile<S> {
+		public getUntAwayFrom(avoidCoord: IAC, sourceCoord: IAC): Tile {
 			return this.getUntToward(
 				sourceCoord.add(sourceCoord.sub(avoidCoord)),
 				sourceCoord,
 			);
 		}
 
-		/**
-		 * @override
-		 */
-		public getDestsFromSourcesTo(originCoord: Coord): Array<Tile<S>> {
+		public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
 			return this._getTileDestsFrom(originCoord, 2);
 		}
 
-		public getRandomCoordAround(origin: Coord.Bare, radius: number): Coord {
-			return new Coord({
+		public getRandomCoordAround(origin: Coord, radius: number): Coord {
+			return new IAC({
 				x: origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
 				y: origin.y + Math.trunc(2 * radius * (Math.random() - 0.5)),
 			});
 		}
 
 
-		public _getTileAt(coord: Coord.Bare): Tile<S> {
-			// if (coord.x < 0 || coord.x >= this.dimensions.width ||
-			//     coord.y < 0 || coord.y >= this.dimensions.height
-			// ) {
-			//     throw new RangeError("Out of bounds. No such tile exists.");
-			// }
-			return this.grid[coord.y]![coord.x]!;
+		public _getTileAt(coord: Coord): Tile {
+			return this.grid[coord]!;
 		}
 
-		public _getTileDestsFrom(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
+		public _getTileDestsFrom(coord: Coord, radius: number = 1): Array<Tile> {
 			let t = coord.y - radius;
 			let b = coord.y + radius + 1;
 			let l = coord.x - radius;
@@ -275,12 +255,12 @@ export namespace Euclid2 {
 			));
 		}
 
-		public _getTileSourcesTo(coord: Coord.Bare, radius: number = 1): Array<Tile<S>> {
+		public _getTileSourcesTo(coord: Coord, radius: number = 1): Array<Tile> {
 			// Same behaviour as getting destinations from `coord`.
 			return this._getTileDestsFrom(coord, radius);
 		}
 
-		public minMovesFromTo(source: Coord.Bare, dest: Coord.Bare): number {
+		public minMovesFromTo(source: Coord, dest: Coord): number {
 			return Math.min(
 				Math.abs(dest.x - source.x),
 				Math.abs(dest.y - source.y),
@@ -291,12 +271,12 @@ export namespace Euclid2 {
 		public static getSpawnCoords(
 			playerCounts: TU.RoArr<number>,
 			dimensions: Grid.Dimensions,
-		): TU.RoArr<TU.RoArr<Coord.Bare>> {
-			const avoidSet: Array<Coord.Bare> = [];
+		): TU.RoArr<TU.RoArr<IAC.Bare>> {
+			const avoidSet: Array<IAC.Bare> = [];
 			return playerCounts.map((numMembers: number) => {
-				const teamSpawnCoords: Array<Coord.Bare> = [];
+				const teamSpawnCoords: Array<IAC.Bare> = [];
 				while (numMembers > 0) {
-					let coord: Coord;
+					let coord: IAC;
 					do {
 						coord = Grid.getRandomCoord(dimensions);
 					} while (avoidSet.find((other) => coord._equals(other)));
@@ -319,7 +299,7 @@ export namespace Euclid2 {
 		public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
 			const x = Math.floor(dimensions.width  * Math.random());
 			const y = Math.floor(dimensions.height * Math.random());
-			return new Coord({x,y});
+			return new IAC({x,y});
 		}
 	}
 	export namespace Grid {
