@@ -1,43 +1,10 @@
-import type { Lang } from "defs/TypeDefs";
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import { EventRecordEntry, PlayerGeneratedRequest } from "./EventRecordEntry";
 
 
-export type TileModEvent = {
-	readonly coord: Coord;
-
-	/**
-	 * The requester should set this field to the highest value they
-	 * received from any previous responses from the server. In normal
-	 * cases (no message reordering), this should be equal to the last
-	 * value seen in the response from the server.
-	 *
-	 * The server should respond with the increment of this value. A
-	 * movement event causes a shuffle-in at the destination position,
-	 * which can affect whether another player intending to move to
-	 * the same position can do so. For this reason, the server should
-	 * reject requests where the requester has not received changes
-	 * involving a shuffle-in at their desired destination. This is
-	 * not mandatory, but preferred behaviour.
-	 */
-	lastKnownUpdateId: number;
-
-	newFreeHealth?: Player.Health;
-
-	/**
-	 * Any value assigned by the requester to this field should be
-	 * ignored by the server.
-	 *
-	 * The server must set this to describe the new values to be
-	 * shuffled-in to the destination tile. It may set the field
-	 * to `undefined` if it wants to leave the CSP unchanged.
-	 */
-	newCharSeqPair?: Lang.CharSeqPair;
-};
-
-
-
+/**
+ */
 export namespace PlayerActionEvent {
 
 	/**
@@ -55,7 +22,6 @@ export namespace PlayerActionEvent {
 
 
 	/**
-	 *
 	 */
 	export class Bubble implements PlayerGeneratedRequest {
 
@@ -114,30 +80,23 @@ export namespace PlayerActionEvent {
 	 *   excessively / unnecessarily throttling the request-making ability
 	 *   or throughput of any clients.
 	 */
-	export class Movement<S extends Coord.System> extends Bubble {
+	export class Movement extends Bubble {
 
-		/**
-		 * Any value assigned by the requester to this field should be
-		 * ignored by the server. The server should respond with the new
-		 * values taken on by the player for these fields.
-		 */
-		public newPlayerHealth?: {
-			health: Player.Health;
-		} = undefined;
-
-		public readonly destModDesc: TileModEvent;
+		public readonly destModDesc: Partial<Tile>;
 
 		public readonly moveType: Player.MoveType;
 
 		/**
 		 * Undefined is equivalent to an empty array.
 		 */
-		public tileHealthModDescs?: TU.RoArr<TileModEvent> = undefined;
+		public tileHealthModDescs?: TU.RoArr<Partial<Tile>> = undefined;
 
-		public playerHealthModDescs?: TU.RoArr<{
-			playerId:  Player.Id;
-			newHealth: Player.Health;
-		}>;
+		/**
+		 * Any value assigned by the requester to this field should be
+		 * ignored by the server. The server should respond with the new
+		 * values taken on by the player for these fields.
+		 */
+		public newPlayerHealth?: Readonly<Record<Player.Id, Player.Health>> = undefined;
 
 		public constructor(
 			playerId: Player.Id,
@@ -147,8 +106,8 @@ export namespace PlayerActionEvent {
 		) {
 			super(playerId, lastAcceptedRequestId);
 			this.destModDesc = {
-				coord:              destTile.coord,
-				lastKnownUpdateId:  destTile.now,
+				coord: destTile.coord,
+				now: destTile.now,
 			};
 			this.moveType = moveType;
 		}

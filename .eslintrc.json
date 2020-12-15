@@ -22,7 +22,8 @@
             "./test/lang/tsconfig.json"
         ],
         "sourceType": "module",
-        "extraFileExtensions": [".json"]
+        "extraFileExtensions": [".json"],
+        "ecmaVersion": 8
     },
     "plugins": [
         "@typescript-eslint"

@@ -20,6 +20,7 @@
         "*cache.json": true,
 
         "{**/.templates/,**/*tsconfig.json}": false,
+        "{**/.eslintrc.*,.eslintignore}": false,
         "**/*.css.d.ts": false,
     },
     "files.associations": {
@@ -38,7 +39,10 @@
         }, {
             "fileMatch": [ "/scripts/webpack/.dist-package.json", ],
             "url": "https://json.schemastore.org/package",
-        }
+        }, {
+            "fileMatch": [ "/**/.eslintrc.json", ],
+            "url": "https://json.schemastore.org/eslintrc",
+        },
     ],
 
     "files.trimTrailingWhitespace": true,

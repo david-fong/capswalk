@@ -2,10 +2,8 @@ import { JsUtils } from "defs/JsUtils";
 import type { Lang as _Lang } from "defs/TypeDefs";
 import { Game } from "game/Game";
 
-import type { VisiblePlayerStatus } from "./VisiblePlayerStatus";
 import type { GamepartBase } from "game/gameparts/GamepartBase";
-import { Coord } from "floor/Coord";
-import type { Tile } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 
 import { Player } from "./Player";
 
@@ -16,15 +14,8 @@ import { Player } from "./Player";
  */
 export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	declare public readonly game: GamepartBase<(Game.Type.Browser),S>;
-
-	/**
-	 * @override
-	 */
-	declare public readonly status: VisiblePlayerStatus<S>;
 
 	/**
 	 * Invariant: always matches the prefix of the {@link LangSeq} of
@@ -34,8 +25,6 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
 	readonly #langRemappingFunc: {(input: string): string};
 
-	private prevCoord: Coord;
-
 
 	public constructor(game: GamepartBase<any,S>, desc: Player._CtorArgs<"HUMAN">) {
 		super(game, desc);
@@ -44,7 +33,6 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
 	public reset(coord: Coord): void {
 		super.reset(coord);
-		this.prevCoord = coord;
 		this.#seqBuffer = "";
 	}
 
@@ -65,7 +53,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 			// Only process movement-type input if the last request got
 			// acknowledged by the Game Manager and the game is playing.
 			if (event.key === " ") {
-				if (!Coord.equals(this.coord, this.prevCoord)) {
+				if (this.coord !== this.prevCoord) {
 					this.makeMovementRequest(
 						this.game.grid.getUntAwayFrom(this.prevCoord, this.coord),
 						Player.MoveType.BOOST,
@@ -90,7 +78,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	 * maintain its invariant.
 	 */
 	public seqBufferAcceptKey(key: string | undefined): void {
-		const unts = this.tile.destsFrom().unoccupied.get;
+		const unts = Object.freeze(this.tile.destsFrom().unoccupied.get);
 		if (unts.length === 0) {
 			// Every neighbouring `Tile` is occupied!
 			// In this case, no movement is possible.
@@ -99,7 +87,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 		if (key) {
 			key = this.#langRemappingFunc(key);
 		} else {
-			const possibleTarget = unts.find((tile) => tile.langSeq.startsWith(this.seqBuffer));
+			const possibleTarget = unts.find((tile) => tile.seq.startsWith(this.seqBuffer));
 			if (!possibleTarget) {
 				// If the thing I was trying to get to is gone, clear the buffer.
 				this.#seqBuffer = "";
@@ -114,18 +102,17 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 		) {
 			// look for the longest suffixing substring of `newSeqBuffer`
 			// that is a prefixing substring of any UNT's.
-			const possibleTarget = unts.find((tile) => tile.langSeq.startsWith(newSeqBuffer));
+			const possibleTarget = unts.find((tile) => tile.seq.startsWith(newSeqBuffer));
 			if (possibleTarget) {
 				this.#seqBuffer = newSeqBuffer;
-				if (possibleTarget.langSeq === newSeqBuffer) {
-					this.makeMovementRequest(possibleTarget, Player.MoveType.NORMAL);
+				if (possibleTarget.seq === newSeqBuffer) {
+					this.makeMovementRequest(possibleTarget, "NORMAL");
 				}
 				return;
 			}
 		}
 		// Operator's new `seqBuffer` didn't match anything.
 		this.#seqBuffer = "";
-		this.status.visualBell();
 	}
 
 	/**
@@ -136,12 +123,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	public moveTo(dest: Tile): void {
 		// Clear my `seqBuffer` first:
 		this.#seqBuffer = "";
-		this.prevCoord = this.coord;
 		super.moveTo(dest);
-	}
-
-	public _notifyWillBecomeCurrent(): void {
-		this.status._notifyWillBecomeCurrent(this.game.grid.spotlightElems);
 	}
 
 	public get seqBuffer(): _Lang.Seq {

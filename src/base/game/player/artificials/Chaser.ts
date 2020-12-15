@@ -87,7 +87,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 				return this.grid.getRandomCoordAround(this.coord, 3);
 			} else {
 				// Continue wandering with a subtle, random direction:
-				const awayFunc = this.grid.getUntAwayFrom.bind(this.grid, this.#prevCoord);
+				const awayFunc = this.grid.getUntAwayFrom.bind(this.grid, this.prevCoord);
 				return this.grid.getRandomCoordAround(
 					awayFunc(awayFunc(this.coord).coord).coord,
 					1,

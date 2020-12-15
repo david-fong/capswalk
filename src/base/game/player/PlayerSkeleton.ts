@@ -27,11 +27,10 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 
 	public readonly status: PlayerStatus<S>;
 
-	#hostTile: Tile;
-
 	public readonly tile: TileGetter<[]>;
 
 	public coord: Coord;
+	public prevCoord: Coord;
 
 
 	protected constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
@@ -64,10 +63,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 	 */
 	public reset(coord: Coord): void {
 		this.coord = coord;
-		this.#hostTile = spawnTile;
-		this.hostTile._setOccupant(
-			this.playerId,
-		);
+		this.prevCoord = coord;
 	}
 
 	/**
@@ -77,6 +73,8 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 	 */
 	public moveTo(dest: Tile): void {
 		// TODO.impl
+		this.prevCoord = this.coord;
+		this.coord = dest.coord;
 	}
 }
 export namespace PlayerSkeleton {

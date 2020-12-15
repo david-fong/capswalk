@@ -145,10 +145,10 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 
 	/**
 	 */
-	public serializeResetState(): Game.ResetSer<S> {
+	public serializeResetState(): Game.ResetSer {
 		const csps: Array<Lang.CharSeqPair> = [];
 		const playerCoords = this.players.map((player) => player.coord);
-		const healthCoords: TU.NoRo<Game.ResetSer<S>["healthCoords"]> = [];
+		const healthCoords: TU.NoRo<Game.ResetSer["healthCoords"]> = [];
 		this.grid.forEachTile((tile) => {
 			tile.now++;
 			csps.push({
@@ -169,7 +169,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 
 	/**
 	 */
-	public deserializeResetState(ser: Game.ResetSer<S>): void {
+	public deserializeResetState(ser: Game.ResetSer): void {
 		JsUtils.deepFreeze(ser);
 
 		// Could also use `csps.unshift`, but that may be slower
@@ -182,7 +182,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 			this.players[index]!.reset(coord);
 		});
 		ser.healthCoords.forEach((desc) => {
-			this.grid.tile.at(desc.coord).health = desc.health;
+			this.grid._getTileAt(desc.coord).health = desc.health;
 		});
 	}
 
@@ -194,7 +194,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		if (!DEF.DevAssert && nextOperator === undefined) throw new Error("never");
 		if (this.currentOperator !== nextOperator)
 		{
-			nextOperator._notifyWillBecomeCurrent();
 			this.#currentOperator = nextOperator;
 			// IMPORTANT: The order of the above lines matters
 			// (hence the method name "notifyWillBecomeCurrent").
@@ -205,6 +204,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	public get status(): Game.Status {
 		return this.#status;
 	}
+
 	/**
 	 * On the client side, this should only be accessed through a
 	 * wrapper function that also makes UI-related changes.
@@ -224,6 +224,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		});
 		this.#status = Game.Status.PLAYING;
 	}
+
 	/**
 	 * On the client side, this should only be accessed through a
 	 * wrapper function that also makes UI-related changes.
@@ -243,6 +244,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		});
 		this.#status = Game.Status.PAUSED;
 	}
+
 	/**
 	 * This should be called when all non-immortal teams have been
 	 * eliminated. A team is immortal if all its members have the
@@ -266,7 +268,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	GameManager. These protected declarations higher up the class
 	hierarchy exist to allow OnlineGame to override them to send
 	a request to the ServerGame. */
-	public abstract processMoveRequest(desc: PlayerActionEvent.Movement<S>): void;
+	public abstract processMoveRequest(desc: PlayerActionEvent.Movement): void;
 	protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
 }
 Object.freeze(GamepartBase);

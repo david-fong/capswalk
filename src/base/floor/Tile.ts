@@ -4,23 +4,35 @@ import type { Coord } from "./Coord"; export { Coord };
 /**
  * A DTO 📦
  */
-export interface Tile {
-
-	readonly coord: Coord;
-	occId:  Player.Id | undefined;
-	health: Player.Health;
-	char:   Lang.Char;
-	seq:    Lang.Seq;
-
+export interface Tile extends Required<Tile.Changes> {
+}
+export namespace Tile {
 	/**
-	 * The number of times this `Tile` was occupied since the last
-	 * reset.
-	 *
-	 * This is used to ensure that in online sessions, each
-	 * client has a synchronized copy of the game. The Game Manager
-	 * will drop requests for movements made by players who made the
-	 * request at a time when they had not yet received information
-	 * related to the game-state in affected-zones of their request.
+	 * A DTO of changes 📦
 	 */
-	now: number;
+	export interface Changes {
+		readonly coord: Coord;
+		readonly occId:  Player.Id | undefined;
+		readonly health: Player.Health;
+		readonly char:   Lang.Char;
+		readonly seq:    Lang.Seq;
+
+		/**
+		 * The requester should set this field to the highest value they
+		 * received from any previous responses from the server. In normal
+		 * cases (no message reordering), this should be equal to the last
+		 * value seen in the response from the server.
+		 *
+		 * The server should respond with the increment of this value.
+		 * The server must reject requests where the requester has not
+		 * received changes concerning their desired destination.
+		 *
+		 * This is used to ensure that in online sessions, each
+		 * client has a synchronized copy of the game. The Game Manager
+		 * will drop requests for movements made by players who made the
+		 * request at a time when they had not yet received information
+		 * related to the game-state in affected-zones of their request.
+		 */
+		readonly now: number;
+	}
 }

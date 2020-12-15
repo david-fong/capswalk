@@ -4,9 +4,9 @@ import { Grid as AbstractGrid } from "floor/Grid";
 type S = Coord.System.BEEHIVE;
 
 /**
- * # 🐝 BEES !
+ * ### 🐝 BEES !
  *
- * # 🐝 BEES !
+ * ## 🐝 BEES !
  *
  * # 🐝 BEES !
  *
@@ -141,11 +141,11 @@ export namespace Beehive {
 			.forEach((tile) => consumer(tile));
 		}
 
-		public getUntToward(intendedDest: IAC, sourceCoord: IAC): Tile {
+		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {
 			return undefined!;
 		}
 
-		public getUntAwayFrom(avoidCoord: IAC, sourceCoord: IAC): Tile {
+		public getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile {
 			return this.getUntToward(
 				sourceCoord.add(sourceCoord.sub(avoidCoord)),
 				sourceCoord,

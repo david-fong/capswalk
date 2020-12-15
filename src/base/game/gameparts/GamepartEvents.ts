@@ -1,10 +1,9 @@
 import type { Coord, Tile } from "floor/Tile";
 import { Game } from "../Game";
 
-import { EventRecordEntry }     from "../events/EventRecordEntry";
-import { PlayerActionEvent }    from "../events/PlayerActionEvent";
-import type { TileModEvent }    from "../events/PlayerActionEvent";
-export { PlayerActionEvent, TileModEvent };
+import { EventRecordEntry }  from "../events/EventRecordEntry";
+import { PlayerActionEvent } from "../events/PlayerActionEvent";
+export { PlayerActionEvent };
 
 import { GamepartBase } from "./GamepartBase";
 import { JsUtils } from "base/defs/JsUtils";
@@ -39,11 +38,6 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * in a {@link OnlineGame} may at any instant be missing trailing
 	 * entries, or contain some trailing holes, but such gaps should
 	 * eventually be filled to match those in the Game Manager.
-	 *
-	 * Do not modify this directly. To register an accepted event,
-	 * call the {@link Game#recordEvent} method, passing it the event
-	 * descriptor. To create a new event ID at the Game Manager, just
-	 * take the current length of this array.
 	 *
 	 * This array has a fixed length to put a bound on the amount of
 	 * memory it consumes. Therefore, any accesses to it must use a
@@ -82,8 +76,6 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	/**
 	 * Basically does `this.eventRecord[id] = desc;` with value checking.
 	 *
-	 * @param desc -
-	 *
 	 * @throws
 	 * (Only in the development environment) In the given order of priority:
 	 * - TypeError if the event ID indicates a rejected request
@@ -115,31 +107,32 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	}
 
 
+	/**
+	 */
 	protected executeTileModEvent(
-		desc: Readonly<TileModEvent>,
+		desc: Readonly<Tile.Changes>,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): Tile {
 		JsUtils.deepFreeze(desc);
-		const dest = this.grid.tile.at(desc.coord);
-		if (dest.now  >  desc.lastKnownUpdateId) return dest;
+		const dest = this.grid._getTileAt(desc.coord);
+		if (dest.now > desc.now) return dest;
 		if (DEF.DevAssert) {
 			// Enforced By: `GamepartManager.dryRunSpawnFreeHealth`.
-			if (dest.now === desc.lastKnownUpdateId) throw new RangeError("never");
+			if (dest.now === desc.now) throw new RangeError("never");
 		}
 
-		if (desc.newCharSeqPair) {
-			dest.setLangCharSeqPair(desc.newCharSeqPair);
+		if (desc.char !== undefined) {
 			// Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
 			if (doCheckOperatorSeqBuffer) {
 				// ^Do this when non-operator moves into the the operator's vicinity.
-				this.operators.filter((op) => {
-					return op.tile.destsFrom().get.includes(dest);
-				}).forEach((op) => op.seqBufferAcceptKey(""));
+				this.operators.forEach((op) => {
+					if (op.tile.destsFrom().get.includes(dest)) {
+						op.seqBufferAcceptKey("");
+					}
+				});
 			}
 		}
-		dest.now = desc.lastKnownUpdateId;
-		dest.health = desc.newFreeHealth!;
-		return dest;
+		return (Object.freeze(Object.assign({}, dest, desc)));
 	}
 
 	/**
@@ -148,16 +141,12 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * is the newest one for the specified `Player`.
 	 *
 	 * Updates that are received after others that are more recent and
-	 * concern the same {@link Tile} are ignored. This is okay since
-	 * the only thing that matters about a {@link Tile} to the outside
+	 * concern the same Tile are ignored. This is okay since
+	 * the only thing that matters about a Tile to the outside
 	 * world is its last known state.
-	 *
-	 * @param desc
-	 * A descriptor for all changes mandated by the player-movement event.
 	 */
-	protected executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
+	protected executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement>): void {
 		JsUtils.deepFreeze(desc);
-		// console.log(desc);
 		const player = this.players[desc.playerId]!;
 		const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
 
@@ -167,7 +156,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 			if (clientEventLag === 0) {
 				player.requestInFlight = false;
 			}
-			return; // Short-circuit!
+			return; //⚡
 		}
 		this._recordEvent(desc);
 		const dest = this.executeTileModEvent(desc.destModDesc, player !== this.currentOperator);
@@ -184,7 +173,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 				// in-flight request at a time.
 				throw new Error("never");
 			}
-			return; // Short-circuit!
+			return; //⚡
 		}
 		// Okay- the response is an acceptance of the specified player's most
 		// recent request pending this acknowledgement.
@@ -192,7 +181,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		if ((player === this.currentOperator)
 			? (clientEventLag === 1)
 			: (clientEventLag <= 1)) {
-			player.status.health = desc.newPlayerHealth!.health;
+			player.status.health = desc.newPlayerHealth!;
 
 			player.moveTo(dest);
 			// Below is computationally the same as "(player.lastAcceptedRequestId)++"
@@ -207,11 +196,8 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 
 
 	/**
-	 *
 	 * Automatically lowers the {@link Player#requestInFlight} field
 	 * for the requesting `Player`.
-	 *
-	 * @param desc -
 	 */
 	protected executePlayerBubbleEvent(desc: Readonly<PlayerActionEvent.Bubble>): void {
 		const bubbler = this.players[desc.playerId]!;

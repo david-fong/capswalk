@@ -50,11 +50,11 @@ export abstract class Grid<S extends Coord.System, IAC extends object = object> 
 	 * order taken by an implementation of this method must depend
 	 * only on the dimensions of the instance.
 	 *
-	 * @param consumer -
+	 * @param callback -
 	 */
-	public abstract forEachTile(consumer: (tile: Tile, index: number) => void): void;
+	public abstract forEachTile(callback: (tile: Tile, index: number) => void): void;
 
-	public abstract shuffledForEachTile(consumer: (tile: Tile) => void): void;
+	public abstract shuffledForEachTile(callback: (tile: Tile) => void): void;
 
 	/**
 	 * @returns
@@ -68,18 +68,18 @@ export abstract class Grid<S extends Coord.System, IAC extends object = object> 
 	 * return `sourceCoord`.
 	 *
 	 * @param intendedDest
-	 * Does not need to be within the boundaries of the {@link Game}'s
-	 * grid, or have integer-valued coordinate values.
 	 *
 	 * @param sourceCoord
 	 * The coordinate from which to find the next hop.
 	 */
-	public abstract getUntToward(intendedDest: IAC, sourceCoord: IAC): Tile;
+	public abstract getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile;
 
 	/**
 	 * The opposite of `getUntToward`.
+	 *
+	 * Behaviour is undefined when both arguments are the same.
 	 */
-	public abstract getUntAwayFrom(avoidCoord: IAC, sourceCoord: IAC): Tile;
+	public abstract getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile;
 
 	/**
 	 * This action is commonly performed by the GameManager when
@@ -210,7 +210,6 @@ export namespace Grid {
 			playerCounts: TU.RoArr<number>,
 			dimensions: Dimensions[S],
 		): TU.RoArr<TU.RoArr<Coord>>;
-
 	};
 
 	// Each implementation must register itself into this dictionary.

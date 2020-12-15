@@ -11,19 +11,21 @@
 
 ### Things I feel like doing
 
+1. Turn all events into one interface, `GameEvent` and rename `Movement.action` to `GameEvent.type`.
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate.
 1. Switch to canvas for game grid instead of DOM.
-    - Is it reasonable to switch Coord to be just a number?
-    - Do we need `Coord.System` anymore? Since it's so ingrained, let's only take it out if we finish and feel sure that we don't need it.
-    - Run a sed command to change all `Tile<S>` to `Tile`.
-1. Refactor reset methods to use `Object.assign`.
 1. Refactor JsUtils descriptor methods to reuse result of properties query and to use `Object.defineProperties` to batch it.
     - Also do this for the Lang-related constructors.
+1. Get rid of "immortality". It's too complicated and I don't think it has any significant benefit anymore.
 1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
+1. Rename player "family" to "type".
+1. Rename `process_` and `execute_` to `prep_` and `exec_`.
+1. Make `GamepartEvents.eventRecordBitmap: Array<boolean>` into `#hist: Uint8Array`.
+1. Do not initialize undefined request fields. This should save some bandwidth.
+1. Change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Represent lang trees as arrays, where child-parent relationships are just indices.
 1. Mashup some CSS resets and normalizers for this repo.
 1. Feature-detect `DocumentOrShadowRoot.adoptedStyleSheets` and use it if available for shadow-root CSS.
-1. Try turning on `webpack.experiments.module`.
 1. Configure terser function name mangling.
 1. Make the colours screen dynamically import its stylesheets.
 1. Fix: for some reason the pause overlay class is less specific than the fill-parent class on the same object.
@@ -99,6 +101,7 @@
 
 ### Dependency Management
 
+- Try turning on `webpack.experiments.module`.
 - Use es6 #private syntax for getter-backing fields
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.

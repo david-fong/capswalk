@@ -72,7 +72,6 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	 * implementations.
 	 *
 	 * @final
-	 * @param dest -
 	 * @throws A previous request is still in flight (unacknowledged).
 	 */
 	protected makeMovementRequest(dest: Tile, type: Player.MoveType): void {

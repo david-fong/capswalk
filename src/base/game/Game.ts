@@ -89,7 +89,7 @@ export namespace Game {
 	 * Only contains state information that would not be known by a
 	 * non-Game Manager.
 	 */
-	export type ResetSer<S extends Coord.System> = Readonly<{
+	export type ResetSer = Readonly<{
 		csps: TU.RoArr<Lang.CharSeqPair>;
 		playerCoords: TU.RoArr<Coord>;
 		healthCoords: TU.RoArr<{

@@ -9,6 +9,8 @@ export namespace Euclid2 {
 
 	/**
 	 * Euclid2 Internal Augmented Coord
+	 *
+	 * Immutable.
 	 */
 	export class IAC  {
 
@@ -16,15 +18,12 @@ export namespace Euclid2 {
 		public readonly y: number;
 
 		public constructor(desc: IAC.Bare) {
-			this.x = desc.x;
-			this.y = desc.y;
-			Object.freeze(this);
+			Object.freeze(Object.assign(this, desc));
 		}
 
 		public _equals(other: IAC.Bare): boolean {
 			return (this.x === other.x) && (this.y === other.y);
 		}
-
 		public round(): IAC {
 			return new IAC({
 				x: Math.round(this.x),
@@ -32,13 +31,10 @@ export namespace Euclid2 {
 			});
 		}
 
-
-
 		/**
 		 * Also known as the "manhattan norm".
 		 *
-		 * _Do not override this._
-		 *
+		 * @final _Do not override this._
 		 * @param other - The norm is taken relative to `other`.
 		 * @returns The sum of the absolute values of each coordinate.
 		 */
@@ -51,10 +47,7 @@ export namespace Euclid2 {
 		}
 
 		/**
-		 *
-		 * _Do not override this._
-		 *
-		 * @param other - The norm is taken relative to `other`.
+		 * @final _Do not override this._
 		 * @returns The length of the longest dimension.
 		 */
 		public infNorm(other: IAC.Bare): number {
@@ -96,17 +89,12 @@ export namespace Euclid2 {
 				y: this.y + other.y,
 			});
 		}
-
 		public sub(other: IAC.Bare): IAC {
 			return new IAC({
 				x: this.x - other.x,
 				y: this.y - other.y,
 			});
 		}
-
-		/**
-		 * @override
-		 */
 		public mul(scalar: number): IAC {
 			return new IAC({
 				x: scalar * this.x,
@@ -164,20 +152,16 @@ export namespace Euclid2 {
 			.forEach((tile) => consumer(tile));
 		}
 
-		public getUntToward(intendedDest: IAC, sourceCoord: IAC): Tile {
+		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {
 			const options = this.tile.destsFrom(sourceCoord).unoccupied.get;
 			if (options.length === 0) {
 				return this._getTileAt(sourceCoord);
-			}
-			if (options.length === 1) {
-				// Minor optimization:
-				return options[0]!;
 			}
 			options.sort((ta, tb) => {
 				// Break (some) ties by one-norm:
 				return ta.coord.oneNorm(intendedDest) - tb.coord.oneNorm(intendedDest);
 			}).sort((ta, tb) => {
-				// Break (some) ties by one-norm:
+				// Break (some) ties by inf-norm:
 				return ta.coord.infNorm(intendedDest) - tb.coord.infNorm(intendedDest);
 			});
 			const best = options[0]!;
@@ -214,7 +198,7 @@ export namespace Euclid2 {
 			return options[Math.floor(options.length * Math.random())]!;
 		}
 
-		public getUntAwayFrom(avoidCoord: IAC, sourceCoord: IAC): Tile {
+		public getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile {
 			return this.getUntToward(
 				sourceCoord.add(sourceCoord.sub(avoidCoord)),
 				sourceCoord,
