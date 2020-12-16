@@ -11,18 +11,20 @@
 
 ### Things I feel like doing
 
-1. Turn all events into one interface, `GameEvent` and rename `Movement.action` to `GameEvent.type`.
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate.
 1. Switch to canvas for game grid instead of DOM.
 1. Refactor JsUtils descriptor methods to reuse result of properties query and to use `Object.defineProperties` to batch it.
     - Also do this for the Lang-related constructors.
-1. Get rid of "immortality". It's too complicated and I don't think it has any significant benefit anymore.
+1. Get rid of player "immortality". It's too complicated and I don't think see much merit anymore.
 1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
-1. Rename player "family" to "type".
-1. Rename `process_` and `execute_` to `prep_` and `exec_`.
-1. Make `GamepartEvents.eventRecordBitmap: Array<boolean>` into `#hist: Uint8Array`.
+1. I think we no longer need to prefix socket.io event names as long as they are scoped to a namespace-type.
+1. Rename / Refactor
+    - player "family" to "type".
+    - `processXxxEvent` and `executeXxxEvent` to `stageXxxEvent` and `commitXxxEvent`.
+    - `GamepartEvents.eventRecordBitmap: Array<boolean>` into `#hist: Uint8Array`.
+    - `dryRunShuffleLangCharSeqAt` to `dryRunShuffleLangCspAt`.
 1. Do not initialize undefined request fields. This should save some bandwidth.
-1. Change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
+1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Represent lang trees as arrays, where child-parent relationships are just indices.
 1. Mashup some CSS resets and normalizers for this repo.
 1. Feature-detect `DocumentOrShadowRoot.adoptedStyleSheets` and use it if available for shadow-root CSS.

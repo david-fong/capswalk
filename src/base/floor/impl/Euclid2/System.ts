@@ -116,7 +116,7 @@ export namespace Euclid2 {
 	/**
 	 * Euclid2 Grid
 	 */
-	export class Grid extends AbstractGrid<S,IAC> {
+	export class Grid extends AbstractGrid<S> {
 
 		public static getAmbiguityThreshold(): 24 {
 			return 24;

@@ -136,6 +136,10 @@ export const enum GameEv {
 	PAUSE = "game-pause",
 
 	/**
+	 */
+	IN_GAME = "game-ingame",
+
+	/**
 	 * The server will send this event with no arguments to indicate
 	 * that everyone must now return to the lobby, or with a socket
 	 * ID as an argument to indicate that all players operated by

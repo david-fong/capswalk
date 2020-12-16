@@ -8,13 +8,13 @@ import type { ArtificialPlayer } from "./ArtificialPlayer";
 import type { GamepartBase }    from "game/gameparts/GamepartBase";
 import type { Team }            from "./Team";
 
-import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
-import { PlayerSkeleton }       from "./PlayerSkeleton";    export { PlayerSkeleton };
-import { PlayerStatus }         from "./PlayerStatus";      export { PlayerStatus };
+import { PlayerSkeleton } from "./PlayerSkeleton"; export { PlayerSkeleton };
+import { PlayerStatus }   from "./PlayerStatus"; export { PlayerStatus };
+import { StateChange } from "game/StateChange";
+
 
 
 /**
- *
  */
 export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements _Player.UserInfo {
 
@@ -26,7 +26,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 
 	public readonly avatar: Player.Avatar;
 
-	public lastAcceptedRequestId: number;
+	public now: number;
 
 	public requestInFlight: boolean;
 
@@ -47,7 +47,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	public reset(coord: Coord): void {
 		super.reset(coord);
 		this.status.reset();
-		this.lastAcceptedRequestId = PlayerActionEvent.INITIAL_REQUEST_ID;
+		this.now = StateChange.INITIAL_REQUEST_ID;
 		this.requestInFlight = false;
 	}
 
@@ -84,9 +84,9 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		}
 		this.requestInFlight = true;
 		this.game.processMoveRequest(
-			new PlayerActionEvent.Movement(
+			new StateChange.Req(
 				this.playerId,
-				this.lastAcceptedRequestId,
+				this.now,
 				dest,
 				type,
 			),

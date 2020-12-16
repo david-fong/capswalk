@@ -11,12 +11,7 @@ export namespace Tile {
 	 * A DTO of changes 📦
 	 */
 	export interface Changes {
-		readonly coord: Coord;
-		readonly occId:  Player.Id | undefined;
-		readonly health: Player.Health;
-		readonly char:   Lang.Char;
-		readonly seq:    Lang.Seq;
-
+		readonly coord:   Coord;
 		/**
 		 * The requester should set this field to the highest value they
 		 * received from any previous responses from the server. In normal
@@ -34,5 +29,10 @@ export namespace Tile {
 		 * related to the game-state in affected-zones of their request.
 		 */
 		readonly now: number;
+
+		readonly occId?:  Player.Id | undefined;
+		readonly health?: Player.Health;
+		readonly char?:   Lang.Char;
+		readonly seq?:    Lang.Seq;
 	}
 }

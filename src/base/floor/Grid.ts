@@ -8,11 +8,8 @@ import type { Beehive } from "./impl/Beehive/System";
 
 /**
  * A Collection of Tiles.
- *
- * @template IAC
- * _Internal_ Augmented Coord
  */
-export abstract class Grid<S extends Coord.System, IAC extends object = object> implements TileGetter.Source {
+export abstract class Grid<S extends Coord.System> implements TileGetter.Source {
 
 	// A type-annotated alias to this.constructor.
 	public readonly static: Grid.ClassIf<S>;
@@ -42,6 +39,13 @@ export abstract class Grid<S extends Coord.System, IAC extends object = object> 
 	/**
 	 */
 	public reset(): void {
+		// TODO.impl
+	}
+
+	/**
+	 * @virtual
+	 */
+	public editTile(stateUpdates: Tile): void {
 		// TODO.impl
 	}
 

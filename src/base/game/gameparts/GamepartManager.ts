@@ -1,19 +1,16 @@
 import { JsUtils } from "defs/JsUtils";
 import { Lang } from "lang/Lang";
-import { Game } from "game/Game";
+import { Game } from "../Game";
 
 import type { Coord, Tile } from "floor/Tile";
 import { Player } from "../player/Player";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { ScoreInfo } from "../ScoreInfo";
 
-import type { PlayerGeneratedRequest } from "../events/EventRecordEntry";
-import {
-	PlayerActionEvent,
-	GamepartEvents,
-} from "./GamepartEvents";
+import { GamepartEvents } from "./GamepartEvents";
 
-import InitGameManagerCtorMaps from "game/ctormaps/CmapManager";
+import InitGameManagerCtorMaps from "../ctormaps/CmapManager";
+import type { StateChange } from "../StateChange";
 InitGameManagerCtorMaps();
 
 
@@ -184,31 +181,32 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * could mess up `lastKnownUpdateId` counters at those locations.
 	 */
 	public dryRunSpawnFreeHealth(
-		sameReqOtherModDescs: TU.RoArr<Tile>,
-	): TU.RoArr<Tile> | undefined {
+		sameReqOtherModDescs: TU.RoArr<Tile.Changes>,
+	): TU.RoArr<Tile.Changes> | undefined {
 		let healthToSpawn = this.avgHealth - this.currentFreeHealth;
 		if (healthToSpawn <= 0) return undefined;
-		const retval: Array<Tile> = [];
+		const retval: Array<Tile.Changes> = [];
 		while (healthToSpawn > 0) {
 			let tile: Tile;
 			do {
 				tile = this.grid._getTileAt(this.grid.getRandomCoord());
-			} while ((() => {
-				return tile.occId !== undefined
+			} while (
+				tile.occId !== undefined
 				// The below equality check is necessary to prevent counting bugs.
-				|| retval.find((desc) => tile.coord === desc.coord);
+				|| retval.find((desc) => tile.coord === desc.coord)
 				// TODO.impl add other checks to improve distribution and reduce
 				// crowding of freeHealth. Make sure it is sensitive to
 				// `this.averageFreeHealthPerTile`.
-			})());
+			);
 			const tileHealthToAdd = Game.K.AVERAGE_HEALTH_TO_SPAWN_ON_TILE;
 			if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
-				let otherDesc: Tile | undefined;
+				let otherDesc: Tile.Changes | undefined = undefined;
 				if (otherDesc = sameReqOtherModDescs.find((desc) => desc.coord === tile.coord)) {
-					otherDesc.health += tileHealthToAdd;
+					otherDesc.health = (otherDesc.health ?? 0) + tileHealthToAdd;
 				} else {
 					retval.push({
 						now: 1 + tile.now,
+						coord: tile.coord,
 						// newCharSeqPair: undefined, // "do not change".
 						health: tile.health + tileHealthToAdd,
 					});
@@ -255,7 +253,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * game is not playing, in which case the event request should
 	 * be rejected.
 	 */
-	private managerCheckGamePlayingRequest(desc: PlayerGeneratedRequest): Player<S> | undefined {
+	private managerCheckGamePlayingRequest(desc: StateChange.Req): Player<S> | undefined {
 		if (this.status !== Game.Status.PLAYING) {
 			return undefined;
 		}
@@ -263,8 +261,8 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		if (!player) {
 			throw new Error("No such player exists.");
 		}
-		if (desc.playerLastAcceptedRequestId !== player.lastAcceptedRequestId) {
-			throw new RangeError((desc.playerLastAcceptedRequestId < player.lastAcceptedRequestId)
+		if (desc.playerNow !== player.now) {
+			throw new RangeError((desc.playerNow < player.now)
 			? ("Clients should not make requests until they have"
 				+ " received my response to their last request.")
 			: ("Client seems to have incremented the request ID"
@@ -276,8 +274,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 
 
 	/**
-	 * @see PlayerMovementEvent
-	 *
 	 * Reject the request if `dest` is occupied, or if the specified
 	 * player does not exist, or the client is missing updates for the
 	 * destination they requested to move to, or the player is bubbling.
@@ -288,16 +284,16 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * state at the time of the request. Is modified to describe changes
 	 * to be made.
 	 */
-	public processMoveRequest(desc: PlayerActionEvent.Movement): void {
+	public processMoveRequest(desc: StateChange.Req): void {
 		const player = this.managerCheckGamePlayingRequest(desc);
 		if (player === undefined) {
 			this.executePlayerMoveEvent(desc); // Reject the request:
-			return;
+			return; //⚡
 		}
-		const dest = this.grid._getTileAt(desc.destModDesc.coord);
-		if (dest.occId !== undefined || dest.now !== desc.destModDesc.now) {
+		const dest = this.grid._getTileAt(desc.destMod.coord);
+		if (dest.occId !== undefined || dest.now !== desc.destMod.now) {
 			this.executePlayerMoveEvent(desc); // Reject the request.
-			return;
+			return; //⚡
 		}
 		const moveIsBoost = (desc.moveType === Player.MoveType.BOOST);
 		const newPlayerHealthValue
@@ -308,7 +304,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			// Reject a boost-type movement request if it would make
 			// the player become downed (or if they are already downed):
 			this.executePlayerMoveEvent(desc);
-			return;
+			return; //⚡
 		}
 
 		// Update stats records:
@@ -317,14 +313,14 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		playerScoreInfo.moveCounts[desc.moveType] += 1;
 
 		// Set response fields according to spec in `PlayerMovementEvent`:
-		desc.playerLastAcceptedRequestId = (1 + player.lastAcceptedRequestId);
+		desc.playerNow = (1 + player.now);
 		desc.newPlayerHealth = {
 			[player.playerId]: newPlayerHealthValue,
 		};
-		desc.destModDesc.now = (1 + dest.now);
-		desc.destModDesc.health = 0;
-		desc.destModDesc.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
-		desc.tileHealthModDescs = this.dryRunSpawnFreeHealth([desc.destModDesc]);
+		desc.destMod.now = (1 + dest.now);
+		desc.destMod.health = 0;
+		desc.destMod.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
+		desc.tileHealthModDescs = this.dryRunSpawnFreeHealth([desc.destMod]);
 
 		// Accept the request, and trigger calculation
 		// and enactment of the requested changes:
@@ -339,37 +335,18 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * - When done automatically, health will be levelled-down enough to cause as many changes in downed-ness as possible by changing other opponents' health to -1 and teammates' health to 0.
 	 * - If done by pressing space, health will be levelled further until the space-presser's health is at zero.
 	 * - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
-	 *   - If the attacker is downed (ie. everyone in the interaction is downed), no changes should be made. Just short circuit.
-	 *   - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness), the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would cause it to become downed.
+	 *   - If the attacker is downed (ie. everyone in the interaction is downed), no changes should be made.
+	 *     Just short circuit.
+	 *   - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness),
+	 *     the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed
+	 *     (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would
+	 *     cause it to become downed.
 	 *   - If it still has more health, it does something similar for its teammates.
 	 *
 	 * @param sourceP
 	 */
-	private processPlayerContact(sourceP: Player<S>): PlayerActionEvent.Movement["playerHealth"] {
+	private _processPlayerContact(sourceP: Player<S>): StateChange.Req["playerHealth"] {
 		return undefined!;
-	}
-
-
-	/**
-	 * @see PlayerActionEvent.Bubble
-	 * @param desc - Is modified to describe changes to be made.
-	 */
-	public processBubbleRequest(desc: PlayerActionEvent.Bubble): void {
-		// TODO.impl
-		// - If successful, make sure to lower the health field.
-		// - Make an abstract method in the OperatorPlayer class called in
-		//   the top-level input processor for it to trigger this event.
-		const bubbler = this.managerCheckGamePlayingRequest(desc);
-		if (!bubbler) {
-			// Reject the request:
-			this.executePlayerBubbleEvent(desc);
-			return;
-		}
-		desc.playerLastAcceptedRequestId = (1 + bubbler.lastAcceptedRequestId);
-
-		// We are all go! Do it.
-		desc.eventId = this.nextUnusedEventId;
-		this.executePlayerBubbleEvent(desc);
 	}
 
 
@@ -425,6 +402,6 @@ export namespace GamepartManager {
 		return fr;
 	}
 }
-JsUtils.protoNoEnum(GamepartManager, "managerCheckGamePlayingRequest");
+JsUtils.protoNoEnum(GamepartManager, "managerCheckGamePlayingRequest", "_processPlayerContact");
 Object.freeze(GamepartManager);
 Object.freeze(GamepartManager.prototype);

@@ -26,7 +26,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	readonly #langRemappingFunc: {(input: string): string};
 
 
-	public constructor(game: GamepartBase<any,S>, desc: Player._CtorArgs<"HUMAN">) {
+	public constructor(game: GamepartBase<Game.Type,S>, desc: Player._CtorArgs<"HUMAN">) {
 		super(game, desc);
 		this.#langRemappingFunc = this.game.langFrontend.remapFunc;
 	}
@@ -74,11 +74,10 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	 *
 	 * @param key
 	 * The pressed typeable key as a string. Pass an empty string to
-	 * trigger a refresh of the {@link OperatorPlayer#_seqBuffer} to
-	 * maintain its invariant.
+	 * trigger a refresh of the seqBuffer to maintain its invariant.
 	 */
 	public seqBufferAcceptKey(key: string | undefined): void {
-		const unts = Object.freeze(this.tile.destsFrom().unoccupied.get);
+		const unts = Object.freeze(this.game.grid.tile.destsFrom(this.coord).unoccupied.get);
 		if (unts.length === 0) {
 			// Every neighbouring `Tile` is occupied!
 			// In this case, no movement is possible.
@@ -116,8 +115,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	}
 
 	/**
-	 * Automatically clears the {@link OperatorPlayer#seqBuffer}.
-	 *
+	 * Automatically clears the seqBuffer.
 	 * @override
 	 */
 	public moveTo(dest: Tile): void {

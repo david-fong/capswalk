@@ -1,12 +1,11 @@
 import type { Coord, Tile } from "floor/Tile";
 import { Game } from "../Game";
 
-import { EventRecordEntry }  from "../events/EventRecordEntry";
-import { PlayerActionEvent } from "../events/PlayerActionEvent";
-export { PlayerActionEvent };
+import { StateChange }  from "../StateChange";
+export { StateChange as GameStateDelta };
 
 import { GamepartBase } from "./GamepartBase";
-import { JsUtils } from "base/defs/JsUtils";
+import { JsUtils } from "defs/JsUtils";
 
 
 /**
@@ -45,7 +44,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * ID's are _not_ wrapped in their representation.
 	 */
 	private readonly eventRecordBitmap: Array<boolean>;
-	#nextUnusedEventId: EventRecordEntry["eventId"];
+	#nextUnusedEventId: StateChange.Res["eventId"];
 
 	public constructor(
 		gameType: G,
@@ -68,7 +67,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		return superPromise;
 	}
 
-	protected get nextUnusedEventId(): EventRecordEntry["eventId"] {
+	protected get nextUnusedEventId(): StateChange.Res["eventId"] {
 		return this.#nextUnusedEventId;
 	}
 
@@ -82,12 +81,12 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * - RangeError if it is not a positive integer
 	 * - Error if another event was already recorded with the same ID.
 	 */
-	private _recordEvent(desc: Readonly<EventRecordEntry>): void {
+	private _recordEvent(desc: StateChange.Res): void {
 		const id = desc.eventId;
 		const wrappedId = id % Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH;
 		if (DEF.DevAssert) {
 			// Enforced By: Checks at internal call sites.
-			if (id === EventRecordEntry.EVENT_ID_REJECT) {
+			if (id === StateChange.EVENT_ID_REJECT) {
 				throw new TypeError("Do not try to record events for rejected requests.");
 			} else if (id < 0 || id !== Math.trunc(id)) {
 				throw new RangeError("Event ID's must only be assigned positive, integer values.");
@@ -145,21 +144,22 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * the only thing that matters about a Tile to the outside
 	 * world is its last known state.
 	 */
-	protected executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement>): void {
+	protected executePlayerMoveEvent(desc: StateChange.Res): void {
 		JsUtils.deepFreeze(desc);
 		const player = this.players[desc.playerId]!;
-		const clientEventLag = desc.playerLastAcceptedRequestId - player.lastAcceptedRequestId;
+		const clientEventLag = desc.playerNow - player.now;
 
-		if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
+		if (desc.eventId === StateChange.EVENT_ID_REJECT) {
 			// Rejected request. Implies either that: clientEventLag === 0,
-			// or that (at Game Manager): dest.numTimesOccupied > desc.destNumTimesOccupied
+			// or that (at Game Manager): dest.now > desc.now
 			if (clientEventLag === 0) {
 				player.requestInFlight = false;
 			}
 			return; //⚡
 		}
 		this._recordEvent(desc);
-		const dest = this.executeTileModEvent(desc.destModDesc, player !== this.currentOperator);
+
+		const dest = this.executeTileModEvent(desc.destMod, player !== this.currentOperator);
 		desc.tileHealthModDescs?.forEach((desc) => {
 			this.executeTileModEvent(desc);
 		});
@@ -185,27 +185,12 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 
 			player.moveTo(dest);
 			// Below is computationally the same as "(player.lastAcceptedRequestId)++"
-			player.lastAcceptedRequestId = desc.playerLastAcceptedRequestId;
+			player.now = desc.playerNow;
 
 		} else {
 			// Apparent negative lag. The operator may somehow have
 			// tampered with their player's request counter.
 			throw new RangeError("never");
-		}
-	}
-
-
-	/**
-	 * Automatically lowers the {@link Player#requestInFlight} field
-	 * for the requesting `Player`.
-	 */
-	protected executePlayerBubbleEvent(desc: Readonly<PlayerActionEvent.Bubble>): void {
-		const bubbler = this.players[desc.playerId]!;
-
-		bubbler.requestInFlight = false;
-
-		if (desc.eventId !== EventRecordEntry.EVENT_ID_REJECT) {
-			this._recordEvent(desc); // Record the event.
 		}
 	}
 }

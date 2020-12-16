@@ -7,8 +7,7 @@ import type { Coord } from "floor/Tile";
 import { Grid } from "floor/Grid";
 import { Player, PlayerStatus } from "game/player/Player";
 
-import { EventRecordEntry } from "game/events/EventRecordEntry";
-import { PlayerActionEvent } from "game/events/PlayerActionEvent";
+import { StateChange } from "game/StateChange";
 
 import { GamepartManager } from "game/gameparts/GamepartManager";
 
@@ -20,9 +19,7 @@ type G = Game.Type.SERVER;
  */
 export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.
 	declare public currentOperator: undefined;
 
@@ -56,9 +53,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 	 * Attach listeners for requests to each socket.
 	 *
 	 * Broadcasts constructor arguments to all clients.
-	 *
-	 * @param groupNsps -
-	 * @param gameDesc -
 	 */
 	public constructor(args: Readonly<{
 		groupNsps: io.Namespace,
@@ -92,8 +86,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		JsUtils.propNoWrite(this as ServerGame<S>, "namespace");
 
 		this.gameEvSocketListeners = Object.freeze({
-			[PlayerActionEvent.EVENT_NAME.MOVEMENT]: this.processMoveRequest.bind(this),
-			[PlayerActionEvent.EVENT_NAME.BUBBLE]: this.processBubbleRequest.bind(this),
+			[GameEv.IN_GAME]: this.processMoveRequest.bind(this),
 			[GameEv.PAUSE]: this.statusBecomePaused.bind(this),
 			[GameEv.UNPAUSE]: this.statusBecomePlaying.bind(this),
 		});
@@ -128,7 +121,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		this.namespace.on("connect", (gameSocket: io.Socket): void => {
 			gameSocket.on("disconnect", () => {
 				if (this.namespace.sockets.size === 1) {
-					this.terminate();
+					this._terminate();
 				}
 			});
 			resolvers.get(gameSocket.client["id"])!();
@@ -178,7 +171,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 				if (socket.client === this._groupHostClient) {
 					this.statusBecomeOver();
 					socket.broadcast.emit(GameEv.RETURN_TO_LOBBY);
-					this.terminate();
+					this._terminate();
 				} else {
 					socket.broadcast.emit(GameEv.RETURN_TO_LOBBY, socket.id);
 				}
@@ -199,9 +192,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		}
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	public async reset(): Promise<void> {
 		// Be ready for clients to indicate readiness to unpause.
 		Promise.all(Array.from(this.namespace.sockets.values(), (socket) => {
@@ -224,95 +215,59 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		return superPromise;
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	public _createOperatorPlayer(desc: Player.CtorArgs): never {
 		throw new TypeError("This should never be called for a ServerGame.");
 	}
-	/**
-	 * @override
-	 */
+	/** @override */
 	public setCurrentOperator(nextOperatorIndex: number): void {
 		// no-op
 	}
 
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	public setTimeout(callback: () => void, millis: number, ...args: any[]): NodeJS.Timeout {
 		return setTimeout(callback, millis, args).unref();
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	public cancelTimeout(handle: NodeJS.Timeout): void {
 		clearTimeout(handle);
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	public statusBecomePlaying(): void {
 		super.statusBecomePlaying();
 		this.namespace.emit(GameEv.UNPAUSE);
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	public statusBecomePaused(): void {
 		super.statusBecomePaused();
 		this.namespace.emit(GameEv.PAUSE);
 	}
 
-	/**
-	 * @override
-	 */
-	public executePlayerMoveEvent(desc: Readonly<PlayerActionEvent.Movement<S>>): void {
+	/** @override */
+	public executePlayerMoveEvent(desc: StateChange.Res): void {
 		super.executePlayerMoveEvent(desc);
 
-		if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
+		if (desc.eventId === StateChange.EVENT_ID_REJECT) {
 			// The request was rejected- Notify the requester.
 			this.playerSockets.get(desc.playerId)!.emit(
-				PlayerActionEvent.EVENT_NAME.MOVEMENT,
+				GameEv.IN_GAME,
 				desc,
 			);
 		} else {
 			// Request was accepted.
 			// Pass change descriptor to all clients:
 			this.namespace.emit(
-				PlayerActionEvent.EVENT_NAME.MOVEMENT,
+				GameEv.IN_GAME,
 				desc,
 			);
 		}
 	}
 
-	/**
-	 * @override
-	 */
-	public executePlayerBubbleEvent(desc: Readonly<PlayerActionEvent.Bubble>): void {
-		super.executePlayerBubbleEvent(desc);
-
-		if (desc.eventId === EventRecordEntry.EVENT_ID_REJECT) {
-			// The request was rejected- Notify the requester.
-			this.playerSockets.get(desc.playerId)!.emit(
-				PlayerActionEvent.EVENT_NAME.BUBBLE,
-				desc,
-			);
-		} else {
-			// Request was accepted.
-			// Pass on change descriptor to all clients:
-			this.namespace.emit(
-				PlayerActionEvent.EVENT_NAME.BUBBLE,
-				desc,
-			);
-		}
-	}
-
-	private terminate(): void {
+	private _terminate(): void {
 		for (const socket of this.namespace.sockets.values()) {
 			socket.disconnect();
 			socket.removeAllListeners();
@@ -325,6 +280,7 @@ JsUtils.protoNoEnum(ServerGame,
 	"_awaitGameSockets", "_greetGameSockets",
 	"_getGridImplementation",
 	"_createOperatorPlayer", "setCurrentOperator",
+	"_terminate",
 );
 Object.freeze(ServerGame);
 Object.freeze(ServerGame.prototype);

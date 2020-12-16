@@ -10,7 +10,7 @@ import { Player } from "../player/Player";
 import type { PlayerStatus } from "../player/PlayerStatus";
 import { Team } from "../player/Team";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
-import type { PlayerActionEvent } from "game/events/PlayerActionEvent";
+import type { StateChange } from "../StateChange";
 
 
 /**
@@ -177,6 +177,9 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		this.grid.forEachTile((tile, index) => {
 			tile.setLangCharSeqPair(ser.csps[index]!);
 			tile.now++;
+			this.grid.editTile({
+				// TODO.impl
+			});
 		});
 		ser.playerCoords.forEach((coord, index) => {
 			this.players[index]!.reset(coord);
@@ -268,8 +271,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	GameManager. These protected declarations higher up the class
 	hierarchy exist to allow OnlineGame to override them to send
 	a request to the ServerGame. */
-	public abstract processMoveRequest(desc: PlayerActionEvent.Movement): void;
-	protected abstract processBubbleRequest(desc: PlayerActionEvent.Bubble): void;
+	public abstract processMoveRequest(desc: StateChange.Req): void;
 }
 Object.freeze(GamepartBase);
 Object.freeze(GamepartBase.prototype);
