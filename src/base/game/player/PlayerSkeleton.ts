@@ -71,10 +71,10 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 	 *
 	 * Causes this Player to update its internal state.
 	 */
-	public moveTo(dest: Tile): void {
+	public moveTo(dest: Coord): void {
 		// TODO.impl
 		this.prevCoord = this.coord;
-		this.coord = dest.coord;
+		this.coord = dest;
 	}
 }
 export namespace PlayerSkeleton {

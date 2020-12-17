@@ -111,13 +111,13 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	protected executeTileModEvent(
 		desc: Readonly<Tile.Changes>,
 		doCheckOperatorSeqBuffer: boolean = true,
-	): Tile {
+	): void {
 		JsUtils.deepFreeze(desc);
-		const dest = this.grid._getTileAt(desc.coord);
-		if (dest.now > desc.now) return dest;
+		const curr = this.grid._getTileAt(desc.coord);
+		if (curr.now > desc.now) return;
 		if (DEF.DevAssert) {
 			// Enforced By: `GamepartManager.dryRunSpawnFreeHealth`.
-			if (dest.now === desc.now) throw new RangeError("never");
+			if (curr.now === desc.now) throw new RangeError("never");
 		}
 
 		if (desc.char !== undefined) {
@@ -125,13 +125,13 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 			if (doCheckOperatorSeqBuffer) {
 				// ^Do this when non-operator moves into the the operator's vicinity.
 				this.operators.forEach((op) => {
-					if (op.tile.destsFrom().get.includes(dest)) {
+					if (op.tile.destsFrom().get.includes(curr)) {
 						op.seqBufferAcceptKey("");
 					}
 				});
 			}
 		}
-		return (Object.freeze(Object.assign({}, dest, desc)));
+		this.grid.editTile(desc.coord, desc);
 	}
 
 	/**
@@ -159,8 +159,8 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		}
 		this._recordEvent(desc);
 
-		const dest = this.executeTileModEvent(desc.destMod, player !== this.currentOperator);
-		desc.tileHealthModDescs?.forEach((desc) => {
+		this.executeTileModEvent(desc.dest, player !== this.currentOperator);
+		desc.tiles?.forEach((desc) => {
 			this.executeTileModEvent(desc);
 		});
 
@@ -181,9 +181,9 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		if ((player === this.currentOperator)
 			? (clientEventLag === 1)
 			: (clientEventLag <= 1)) {
-			player.status.health = desc.newPlayerHealth!;
+			player.status.health = desc.playersHealth!;
 
-			player.moveTo(dest);
+			player.moveTo(desc.dest.coord);
 			// Below is computationally the same as "(player.lastAcceptedRequestId)++"
 			player.now = desc.playerNow;
 

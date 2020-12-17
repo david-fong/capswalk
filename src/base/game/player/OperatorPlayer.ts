@@ -118,9 +118,10 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	 * Automatically clears the seqBuffer.
 	 * @override
 	 */
-	public moveTo(dest: Tile): void {
+	public moveTo(dest: Coord): void {
 		// Clear my `seqBuffer` first:
 		this.#seqBuffer = "";
+
 		super.moveTo(dest);
 	}
 

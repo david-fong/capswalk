@@ -1,8 +1,9 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "./Tile";
 import { TileGetter } from "./TileGetter";
+export type { TileGetter } from "./TileGetter";
 
-import type { Euclid2 } from "./impl/Euclid2/System";
+import type { WrappedEuclid2 } from "./impl/Euclid2/System";
 import type { Beehive } from "./impl/Beehive/System";
 
 
@@ -45,7 +46,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	/**
 	 * @virtual
 	 */
-	public editTile(stateUpdates: Tile): void {
+	public editTile(stateUpdates: Readonly<Tile.Changes>): void {
 		// TODO.impl
 	}
 
@@ -134,7 +135,7 @@ export namespace Grid {
 	/**
 	 */
 	export interface Dimensions {
-		[Coord.System.EUCLID2]: Euclid2.Grid.Dimensions;
+		[Coord.System.W_EUCLID2]: WrappedEuclid2.Grid.Dimensions;
 		[Coord.System.BEEHIVE]: Beehive.Grid.Dimensions;
 	};
 

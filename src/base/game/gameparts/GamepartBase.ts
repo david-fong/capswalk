@@ -148,23 +148,13 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	public serializeResetState(): Game.ResetSer {
 		const csps: Array<Lang.CharSeqPair> = [];
 		const playerCoords = this.players.map((player) => player.coord);
-		const healthCoords: TU.NoRo<Game.ResetSer["healthCoords"]> = [];
-		this.grid.forEachTile((tile) => {
-			tile.now++;
-			csps.push({
+		this.grid.forEachTile((tile, index) => {
+			csps[index] = {
 				char: tile.char,
 				seq:  tile.seq,
-			});
-			if (tile.health) {
-				healthCoords.push({
-					coord:  tile.coord,
-					health: tile.health,
-				});
-			}
+			};
 		});
-		const retval = { csps, playerCoords, healthCoords };
-		JsUtils.deepFreeze(retval);
-		return retval;
+		return JsUtils.deepFreeze({ csps, playerCoords });
 	}
 
 	/**
@@ -175,17 +165,15 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		// Could also use `csps.unshift`, but that may be slower
 		// because it modifies csps, which we don't need to do.
 		this.grid.forEachTile((tile, index) => {
-			tile.setLangCharSeqPair(ser.csps[index]!);
-			tile.now++;
 			this.grid.editTile({
-				// TODO.impl
+				coord: tile.coord,
+				now: tile.now,
+				...ser.csps[index]!,
 			});
 		});
+		// TODO refactor this to work similarly to health as seen above: map from coords to players.
 		ser.playerCoords.forEach((coord, index) => {
 			this.players[index]!.reset(coord);
-		});
-		ser.healthCoords.forEach((desc) => {
-			this.grid._getTileAt(desc.coord).health = desc.health;
 		});
 	}
 

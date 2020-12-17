@@ -11,20 +11,26 @@
 
 ### Things I feel like doing
 
-1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate.
-1. Switch to canvas for game grid instead of DOM.
-1. Refactor JsUtils descriptor methods to reuse result of properties query and to use `Object.defineProperties` to batch it.
+1. Mega-task: change Tiles to DTO's and enable Grid implementations to decide how to do display (eg. DOM, SVG, Canvas).
+    - Update documentation wherever needed- especially the floor readme.
+1. Update dependencies.
+1. Turn off TypeScript experimental decorators.
+    - Rationale: After reading [the TC39 proposal docs](https://github.com/tc39/proposal-decorators#option-b-init-method-decorators) and seeing how much they differ from TypeScript's current spec, I don't want to commit to something that will likely change drastically in the future.
+1. In package.json > exports, mark global css files as side-effectful.
+1. Refactor JsUtils descriptor methods to reuse frozen result of propertyNames query and to use `Object.defineProperties` to batch it.
+1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.
     - Also do this for the Lang-related constructors.
 1. Get rid of player "immortality". It's too complicated and I don't think see much merit anymore.
+1. Call `Object.preventExtensions` at the end of constructors where possible. This is more okay now that `useDefineForClassFields` is set to true.
+1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
-1. I think we no longer need to prefix socket.io event names as long as they are scoped to a namespace-type.
 1. Rename / Refactor
     - player "family" to "type".
     - `processXxxEvent` and `executeXxxEvent` to `stageXxxEvent` and `commitXxxEvent`.
     - `GamepartEvents.eventRecordBitmap: Array<boolean>` into `#hist: Uint8Array`.
     - `dryRunShuffleLangCharSeqAt` to `dryRunShuffleLangCspAt`.
-1. Do not initialize undefined request fields. This should save some bandwidth.
-1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
+    - I think we no longer need to prefix socket.io event names as long as they are scoped to a namespace-type.
+1. Extract hot, anonymous sorting functions to non-exported globals so the runtime engine can cache parameter shapes.
 1. Represent lang trees as arrays, where child-parent relationships are just indices.
 1. Mashup some CSS resets and normalizers for this repo.
 1. Feature-detect `DocumentOrShadowRoot.adoptedStyleSheets` and use it if available for shadow-root CSS.
@@ -67,7 +73,7 @@
 
 - Make a decorator to prevent overrides of a method.
   - Make JsUtils have a non-exported `WeakSet<Functions>`.
-  - Make a JsUtil function that checks if a class declares any functions with the same name as anything higher in the prototype chain (see `Object.getPrototypeOf()`).
+  - Make a JsUtil function that checks if a class declares any functions with the same name as anything higher in the prototype chain (see `Object.getPrototypeOf()`). Make it only apply during development.
 - Start a skeleton for a "Chess Knight" Grid implementation. That would be pretty mind boggling both to play and to develop...
 - Investigate whether we can create fewer functions for socket event listeners by making custom subclasses of Socket.
 - When TypeScript 4.1 comes out, use the improved `@see` JSdoc annotations.
@@ -104,7 +110,7 @@
 ### Dependency Management
 
 - Try turning on `webpack.experiments.module`.
-- Use es6 #private syntax for getter-backing fields
+- ~Use es6 #private syntax for getter-backing fields~
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
   - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
 - In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
@@ -118,15 +124,6 @@
 - Make sound settings stubs for playing music and sound effects.
   - make BGM have a track that varies with lang and different selectable style variations such as jazz cafe/elevator music, fast 13/8.
   - Make movement sound effects able to depend on translated key input like morse sounds.
-
-## Good Reads
-
-```text
-https://www.mikedoesweb.com/2017/dynamic-super-classes-extends-in-es6/
-https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript
-
-https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
-```
 
 ## Research / Learning Links
 

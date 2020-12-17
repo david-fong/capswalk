@@ -1,24 +1,32 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord as BaseCoord, Coord, Tile } from "floor/Tile";
-import { Grid as AbstractGrid } from "floor/Grid";
-type S = BaseCoord.System.EUCLID2;
+import { TileGetter, Grid as AbstractGrid } from "floor/Grid";
+type S = BaseCoord.System.W_EUCLID2;
 
 /**
+ * Edges are wrapped.
  */
-export namespace Euclid2 {
+export namespace WrappedEuclid2 {
 
 	/**
 	 * Euclid2 Internal Augmented Coord
 	 *
 	 * Immutable.
 	 */
-	export class IAC  {
+	export class IAC {
 
 		public readonly x: number;
 		public readonly y: number;
 
 		public constructor(desc: IAC.Bare) {
 			Object.freeze(Object.assign(this, desc));
+		}
+		public static from(coord: Coord, dimensions: Grid.Dimensions): IAC {
+			return new IAC({x: coord % dimensions.width, y: Math.floor(coord / dimensions.width)});
+		}
+
+		public toCoord(dimensions: Grid.Dimensions): Coord {
+			return (this.y * dimensions.width) + this.x;
 		}
 
 		public _equals(other: IAC.Bare): boolean {
@@ -38,10 +46,13 @@ export namespace Euclid2 {
 		 * @param other - The norm is taken relative to `other`.
 		 * @returns The sum of the absolute values of each coordinate.
 		 */
+		// TODO.impl make this an instance method of Grid taking two arguments.
 		public oneNorm(other: IAC.Bare): number {
 			return this.sub(other).originOneNorm();
+			// TODO.impl find minimal value considering wrapped edges. If ia and ib are sorted, only four possibilities need to be checked.
 		}
 
+		// TODO.impl make this an instance method of Grid taking one argument.
 		public originOneNorm(): number {
 			return Math.abs(this.x) + Math.abs(this.y);
 		}
@@ -50,10 +61,13 @@ export namespace Euclid2 {
 		 * @final _Do not override this._
 		 * @returns The length of the longest dimension.
 		 */
+		// TODO.impl make this an instance method of Grid taking two arguments.
 		public infNorm(other: IAC.Bare): number {
+			// TODO.impl find minimal value considering wrapped edges.
 			return this.sub(other).originInfNorm();
 		}
 
+		// TODO.impl make this an instance method of Grid taking one argument.
 		public originInfNorm(): number {
 			return Math.max(Math.abs(this.x), Math.abs(this.y));
 		}
@@ -153,7 +167,10 @@ export namespace Euclid2 {
 		}
 
 		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {
-			const options = this.tile.destsFrom(sourceCoord).unoccupied.get;
+			const options = this.tile.destsFrom(sourceCoord).unoccupied.get
+			.map((tile) => { const isc = IAC.from(tile.coord); return {
+				tile, isc, infNorm: isc.oneNorm(intendedDest)
+			}}); // TODO.impl continue optimizing.
 			if (options.length === 0) {
 				return this._getTileAt(sourceCoord);
 			}
@@ -213,14 +230,15 @@ export namespace Euclid2 {
 			return new IAC({
 				x: origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
 				y: origin.y + Math.trunc(2 * radius * (Math.random() - 0.5)),
-			});
+			}).toCoord(this.dimensions);
 		}
 
-
+		/** @see TileGetter.Source */
 		public _getTileAt(coord: Coord): Tile {
 			return this.grid[coord]!;
 		}
 
+		/** @see TileGetter.Source */
 		public _getTileDestsFrom(coord: Coord, radius: number = 1): Array<Tile> {
 			let t = coord.y - radius;
 			let b = coord.y + radius + 1;
@@ -232,17 +250,15 @@ export namespace Euclid2 {
 				// filter for included rows:
 				Math.max(0, t),
 				Math.min(this.dimensions.height, b),
-			).flatMap((gridRow) => gridRow.slice(
+			).map((gridRow) => gridRow.slice(
 				// filter for included slices of rows (columns):
 				Math.max(0, l),
 				Math.min(this.dimensions.width, r),
 			));
 		}
 
-		public _getTileSourcesTo(coord: Coord, radius: number = 1): Array<Tile> {
-			// Same behaviour as getting destinations from `coord`.
-			return this._getTileDestsFrom(coord, radius);
-		}
+		/** @see TileGetter.Source */
+		public _getTileSourcesTo = Grid.prototype._getTileDestsFrom;
 
 		public minMovesFromTo(source: Coord, dest: Coord): number {
 			return Math.min(
@@ -255,15 +271,15 @@ export namespace Euclid2 {
 		public static getSpawnCoords(
 			playerCounts: TU.RoArr<number>,
 			dimensions: Grid.Dimensions,
-		): TU.RoArr<TU.RoArr<IAC.Bare>> {
-			const avoidSet: Array<IAC.Bare> = [];
+		): TU.RoArr<TU.RoArr<Coord>> {
+			const avoidSet: Array<Coord> = [];
 			return playerCounts.map((numMembers: number) => {
-				const teamSpawnCoords: Array<IAC.Bare> = [];
+				const teamSpawnCoords: Array<Coord> = [];
 				while (numMembers > 0) {
-					let coord: IAC;
+					let coord: Coord;
 					do {
 						coord = Grid.getRandomCoord(dimensions);
-					} while (avoidSet.find((other) => coord._equals(other)));
+					} while (avoidSet.find((other) => coord === other));
 					teamSpawnCoords.push(coord);
 					avoidSet.push(coord);
 					numMembers--;
@@ -283,7 +299,7 @@ export namespace Euclid2 {
 		public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
 			const x = Math.floor(dimensions.width  * Math.random());
 			const y = Math.floor(dimensions.height * Math.random());
-			return new IAC({x,y});
+			return (y * dimensions.width) + x;
 		}
 	}
 	export namespace Grid {
@@ -299,4 +315,4 @@ export namespace Euclid2 {
 	Object.freeze(Grid);
 	Object.freeze(Grid.prototype);
 }
-Object.freeze(Euclid2);
+Object.freeze(WrappedEuclid2);

@@ -66,13 +66,11 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			const minLangLeaves = this.grid.static.getAmbiguityThreshold();
 			if (DEF.DevAssert && this.lang.numLeaves < minLangLeaves) {
 				// Enforced By: UI code, and `GamepartManager.CHECK_VALID_CTOR_ARGS`.
-				throw new Error(`Found ${this.lang.numLeaves} leaves, but at`
-				+ ` least ${minLangLeaves} were required. The provided mappings`
-				+ ` composing the current Lang-under-construction are not`
-				+ ` sufficient to ensure that a shuffling operation will always`
-				+ ` be able to find a safe candidate to use as a replacement.`
-				+ ` Please see the spec for Lang.getNonConflictingChar.`
-				);
+				throw new Error("never");
+				/* The provided mappings composing the current Lang-under-construction
+				are not sufficient to ensure that a shuffling operation will always
+				be able to find a safe candidate to use as a replacement. Please see
+				the spec for Lang.getNonConflictingChar. */
 			}
 			return this.lang;
 		});
@@ -134,16 +132,18 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * A {@link Lang.CharSeqPair} that can be used as a replacement
 	 * for that currently being used by `tile`.
 	 */
-	public dryRunShuffleLangCharSeqAt(targetTile: Tile, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
+	public dryRunShuffleLangCharSeqAt(coord: Coord, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
 		// First, clear values for the target tile so its current
 		// (to-be-previous) values don't get unnecessarily avoided.
-		targetTile.setLangCharSeqPair(Lang.CharSeqPair.NULL);
+		this.grid.editTile({
+			coord, ...Lang.CharSeqPair.NULL
+		});
 
 		let avoid: TU.RoArr<Lang.Seq> = this.grid
-			.getDestsFromSourcesTo(targetTile.coord)
+			.getDestsFromSourcesTo(coord)
 			.map((tile) => tile.seq);
 		// ^ Note: An array of CharSeq from unique Tiles. It is okay
-		// for those tiles to include `targetTile`, and it is okay for
+		// for those tiles to include `coord`, and it is okay for
 		// those
 		if (doCheckEmptyTiles) {
 			const nullSeq = Lang.CharSeqPair.NULL.seq;
@@ -222,7 +222,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	protected executeTileModEvent(
 		desc: Readonly<Tile>,
 		doCheckOperatorSeqBuffer: boolean = true,
-	): Tile {
+	): void {
 		JsUtils.deepFreeze(desc);
 		const tile = this.grid._getTileAt(desc.coord);
 		// NOTE: This assertion must be performed before executing
@@ -239,7 +239,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			this.#healthTiles.add(tile);
 		}
 		super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
-		return tile;
 	}
 
 	/**
@@ -290,8 +289,8 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			this.executePlayerMoveEvent(desc); // Reject the request:
 			return; //⚡
 		}
-		const dest = this.grid._getTileAt(desc.destMod.coord);
-		if (dest.occId !== undefined || dest.now !== desc.destMod.now) {
+		const dest = this.grid._getTileAt(desc.dest.coord);
+		if (dest.occId !== undefined || dest.now !== desc.dest.now) {
 			this.executePlayerMoveEvent(desc); // Reject the request.
 			return; //⚡
 		}
@@ -317,10 +316,10 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		desc.newPlayerHealth = {
 			[player.playerId]: newPlayerHealthValue,
 		};
-		desc.destMod.now = (1 + dest.now);
-		desc.destMod.health = 0;
-		desc.destMod.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest);
-		desc.tileHealthModDescs = this.dryRunSpawnFreeHealth([desc.destMod]);
+		desc.dest.now = (1 + dest.now);
+		desc.dest.health = 0;
+		desc.dest.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest.coord);
+		desc.tileHealthModDescs = this.dryRunSpawnFreeHealth([desc.dest]);
 
 		// Accept the request, and trigger calculation
 		// and enactment of the requested changes:

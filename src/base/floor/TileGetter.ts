@@ -18,7 +18,6 @@ type _Arguments = [ Coord, ] | [];
  * specifier as an argument, such as is appropriate with a grid,
  * or to provide that information implicitly inside itself as
  * part of its spec, as is appropriate with a player.
- *
  */
 export class TileGetter<A extends _Arguments> {
 

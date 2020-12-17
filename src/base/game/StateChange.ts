@@ -62,7 +62,10 @@ export namespace StateChange {
 
 		readonly moveType: Player.MoveType;
 
-		readonly destMod: Tile.Changes;
+		/**
+		 * Where the player wants to move to.
+		 */
+		readonly dest: Tile.Changes;
 	}
 
 	/**
@@ -74,8 +77,15 @@ export namespace StateChange {
 		 */
 		readonly eventId: number;
 
-		readonly tileHealthModDescs: TU.RoArr<Tile.Changes>;
-		readonly newPlayerHealth: Readonly<Record<Player.Id, Player.Health>>;
+		/**
+		 * Tiles other than the tile that the initiating player is moving to.
+		 */
+		readonly tiles: TU.RoArr<Tile.Changes>;
+
+		/**
+		 * Health changes to players.
+		 */
+		readonly playersHealth: Readonly<Record<Player.Id, Player.Health>>;
 	}
 }
 Object.freeze(StateChange);
