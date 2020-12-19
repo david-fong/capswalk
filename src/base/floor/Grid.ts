@@ -27,8 +27,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	/**
 	 * Protected. See `Grid.getImplementation` for how to access class
 	 * literals for construction.
-	 *
-	 * @param desc -
 	 */
 	protected constructor(desc: Grid.CtorArgs<S>) {
 		this.static = desc.Grid;
@@ -40,22 +38,27 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	/**
 	 */
 	public reset(): void {
-		// TODO.impl
+		this.forEachTile((tile, index) => {
+			this.editTile({
+				coord: tile.coord,
+				now: 0,
+				occId: undefined,
+				health: 0,
+				char: "",
+				seq: "",
+			});
+		});
 	}
 
 	/**
-	 * @virtual
 	 */
-	public editTile(stateUpdates: Readonly<Tile.Changes>): void {
-		// TODO.impl
-	}
+	public abstract editTile(changes: Readonly<Tile.InternalChanges>): void;
 
 	/**
 	 * For BaseGame's implementation of SER/DES to work, the traversal
 	 * order taken by an implementation of this method must depend
-	 * only on the dimensions of the instance.
-	 *
-	 * @param callback -
+	 * only on the dimensions of the instance. The index is not required
+	 * to equal the tile's coord.
 	 */
 	public abstract forEachTile(callback: (tile: Tile, index: number) => void): void;
 
@@ -91,6 +94,11 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 * shuffling in new CSP's to its grid. Grid implementations are
 	 * encouraged to override it if they have a more efficient way to
 	 * produce the same result.
+	 *
+	 * Implementations with wrapping edges must make sure that the
+	 * return value does not contain duplicate tile entries.
+	 *
+	 * @virtual
 	 */
 	public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
 		return Array.from(new Set(
@@ -114,21 +122,15 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 */
 	public abstract getRandomCoordAround(origin: Coord, radius: number): Coord;
 
-
-	/** @override */
 	public abstract _getTileAt(coord: Coord): Tile;
-
-	/** @override */
 	public abstract _getTileDestsFrom(coord: Coord): Array<Tile>;
-
-	/** @override */
 	public abstract _getTileSourcesTo(coord: Coord): Array<Tile>;
 
 	/**
 	 * The returned value must be consistent with results from the
 	 * methods `_getTileDestsFrom` and `_getTileSourcesTo`.
 	 */
-	public abstract minMovesFromTo(source: Coord, dest: Coord): number;
+	public abstract dist(source: Coord, dest: Coord): number;
 }
 export namespace Grid {
 

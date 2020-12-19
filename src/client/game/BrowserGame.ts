@@ -6,8 +6,6 @@ import type { GamepartBase }    from "game/gameparts/GamepartBase";
 import { Player }               from "game/player/Player";              export { Player };
 import { OperatorPlayer }       from "game/player/OperatorPlayer";      export { OperatorPlayer };
 
-export { VisiblePlayerStatus }  from "game/player/VisiblePlayerStatus";
-
 import InitBrowserGameCtorMaps from "game/ctormaps/CmapBrowser";
 InitBrowserGameCtorMaps();
 
@@ -33,16 +31,12 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 		JsUtils.propNoWrite(this as BrowserGameMixin<G,S>, "htmlElements");
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _getGridImplementation(coordSys: S): VisibleGrid.ClassIf<S> {
 		return VisibleGrid.getImplementation(coordSys);
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	public _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S> {
 		return new OperatorPlayer<S>(this, desc);
 	}

@@ -47,7 +47,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	public reset(coord: Coord): void {
 		super.reset(coord);
 		this.status.reset();
-		this.now = StateChange.INITIAL_REQUEST_ID;
+		this.now = StateChange.INITIAL_PLAYER_REQUEST_ID;
 		this.requestInFlight = false;
 	}
 
@@ -83,14 +83,12 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 			}
 		}
 		this.requestInFlight = true;
-		this.game.processMoveRequest(
-			new StateChange.Req(
-				this.playerId,
-				this.now,
-				dest,
-				type,
-			),
-		);
+		this.game.processMoveRequest({
+			playerId: this.playerId,
+			playerNow: this.now,
+			dest,
+			moveType: type,
+		});
 	}
 
 	public get team(): Team<S> {
@@ -100,11 +98,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	public isTeamedWith(other: Player<S>): boolean {
 		return this.team.members.includes(other);
 	}
-
 }
-
-
-
 export namespace Player {
 
 	export type Family = _Player.Family;
@@ -128,7 +122,7 @@ export namespace Player {
 	export type MoveType = _Player.MoveType;
 
 	/**
-	 * # Player Constructor Arguments
+	 * Player Constructor Arguments
 	 */
 	export type CtorArgs = _CtorArgs<Player.Family>;
 	export type _CtorArgs<FGroup extends Player.Family> = any extends FGroup ? never
@@ -165,9 +159,6 @@ export namespace Player {
 		/**
 		 * @returns
 		 * Squashes teamId fields to be suitable for array indices.
-		 *
-		 * @param playerDescs -
-		 * @param langName -
 		 */
 		export function finalize(playerDescs: TU.RoArr<CtorArgs.PreIdAssignment>): TU.RoArr<CtorArgs> {
 			// Map team ID's to consecutive numbers

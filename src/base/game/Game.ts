@@ -2,7 +2,7 @@ import type { Lang } from "defs/TypeDefs";
 
 import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
-import type { Player, PlayerStatus } from "./player/Player";
+import type { Player } from "./player/Player";
 
 
 /**
@@ -45,7 +45,6 @@ export namespace Game {
 	 */
 	export type ImplArgs = {
 		onGameBecomeOver: () => void,
-		playerStatusCtor: typeof PlayerStatus,
 	};
 
 	/**

@@ -1,13 +1,10 @@
 import { JsUtils } from "defs/JsUtils";
 import { Player as _Player } from "defs/TypeDefs";
-import { Game } from "game/Game";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
 import type { GamepartBase } from "game/gameparts/GamepartBase";
 import type { PlayerStatus } from "./PlayerStatus";
-
-import { TileGetter } from "floor/TileGetter";
 
 
 /**
@@ -27,8 +24,6 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 
 	public readonly status: PlayerStatus<S>;
 
-	public readonly tile: TileGetter<[]>;
-
 	public coord: Coord;
 	public prevCoord: Coord;
 
@@ -45,7 +40,6 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 			this as PlayerSkeleton<S> as Player<S>,
 			desc.noCheckGameOver,
 		);
-		this.tile = new TileGetter(new PlayerSkeleton.TileGetterSource(this));
 		JsUtils.instNoEnum(this as PlayerSkeleton<S>, "game");
 		JsUtils.propNoWrite(this as PlayerSkeleton<S>, "playerId", "isALocalOperator", "game", "status", "tile");
 	}
@@ -76,31 +70,6 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 		this.prevCoord = this.coord;
 		this.coord = dest;
 	}
-}
-export namespace PlayerSkeleton {
-	/**
-	 */
-	export class TileGetterSource<S extends Coord.System> implements TileGetter.Source<[]> {
-
-		readonly #player: PlayerSkeleton<S>;
-		readonly src: TileGetter.Source<[Coord]>;
-
-		public constructor(player: PlayerSkeleton<S>) {
-			this.#player = player;
-			this.src = player.game.grid;
-		}
-		public _getTileAt(): Tile {
-			return this.src._getTileAt(this.#player.coord);
-		}
-		public _getTileDestsFrom(): Tile[] {
-			return this.src._getTileDestsFrom(this.#player.coord);
-		}
-		public _getTileSourcesTo(): Tile[] {
-			return this.src._getTileSourcesTo(this.#player.coord);
-		}
-	}
-	Object.freeze(TileGetterSource);
-	Object.freeze(TileGetterSource.prototype);
 }
 JsUtils.protoNoEnum(PlayerSkeleton, "_afterAllPlayersConstruction");
 Object.freeze(PlayerSkeleton);

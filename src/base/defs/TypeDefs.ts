@@ -10,7 +10,6 @@ SCROLL_INTO_CENTER as ScrollIntoViewOptions;
 
 
 /**
- *
  */
 export abstract class Player<S> { }
 export namespace Player {
@@ -72,6 +71,7 @@ export namespace Player {
 	 */
 	export type Health = number;
 
+	/** @enum */
 	export type MoveType = keyof typeof MoveType;
 	export const MoveType = Object.freeze(<const>{
 		NORMAL: "NORMAL",
@@ -84,7 +84,6 @@ Object.freeze(Player.prototype);
 
 
 /**
- *
  */
 export abstract class Lang {}
 export namespace Lang {

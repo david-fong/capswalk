@@ -1,34 +1,28 @@
 import type { Socket } from "socket.io-client";
-import { GameEv, SkServer } from "defs/OnlineDefs";
+import { GameEv } from "defs/OnlineDefs";
 import {
 	JsUtils,
 	Game,
 	Coord,
 	BrowserGameMixin,
-	Player, OperatorPlayer, VisiblePlayerStatus,
+	Player, OperatorPlayer,
 } from "./BrowserGame";
 
-import { PlayerActionEvent }    from "game/events/PlayerActionEvent";
-import { GamepartEvents }       from "game/gameparts/GamepartEvents";
+import { GamepartEvents, StateChange } from "game/gameparts/GamepartEvents";
 
 
 type G = Game.Type.ONLINE;
 
 /**
- *
  */
 export class OnlineGame<S extends Coord.System>
 extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.
 	declare public readonly currentOperator: OperatorPlayer<S>;
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	declare public htmlElements: BrowserGameMixin.HtmlElements;
 
 	public readonly socket: Socket;
@@ -48,7 +42,6 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 		super(
 			Game.Type.ONLINE, {
 			onGameBecomeOver,
-			playerStatusCtor: VisiblePlayerStatus,
 			}, gameDesc,
 		);
 		this.socket = gameSocket;
@@ -56,24 +49,19 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 
 		if (DEF.DevAssert) {
 			// Enforcer: SkSockets calls `offAny` upon socket disconnect.
-			if (this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.MOVEMENT)
-			 || this.socket.hasListeners(PlayerActionEvent.EVENT_NAME.BUBBLE)
+			if (this.socket.hasListeners(GameEv.IN_GAME)
 			 || this.socket.hasListeners(GameEv.RESET)
 			) {
 				throw new Error("never");
 			}
 		}
 		this.socket.on(
-			PlayerActionEvent.EVENT_NAME.MOVEMENT,
+			GameEv.IN_GAME,
 			this.executePlayerMoveEvent.bind(this),
 		);
 		this.socket.on(
-			PlayerActionEvent.EVENT_NAME.BUBBLE,
-			this.executePlayerBubbleEvent.bind(this),
-		);
-		this.socket.on(
 			GameEv.RESET,
-			async (ser: Game.ResetSer<S>) => {
+			async (ser: Game.ResetSer) => {
 				await this.reset();
 				this.deserializeResetState(ser);
 				// See the PlayOnline screen for the registration of
@@ -84,14 +72,10 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 		this.socket.emit(GameEv.RESET);
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _createArtifPlayer(desc: Player.CtorArgs): Player<S> {
 		return new Player(this, desc);
 	}
@@ -104,19 +88,8 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 	 *
 	 * @override
 	 */
-	public processMoveRequest(desc: PlayerActionEvent.Movement<S>): void {
-		this.socket.emit(PlayerActionEvent.EVENT_NAME.MOVEMENT, desc);
-	}
-
-	/**
-	 * Normally calls {@link Game#processBubbleMakeExecute}. However,
-	 * here, that should be done as a callback to an event created by
-	 * the server.
-	 *
-	 * @override
-	 */
-	public processBubbleRequest(desc: PlayerActionEvent.Bubble): void {
-		this.socket.emit(PlayerActionEvent.EVENT_NAME.BUBBLE, desc);
+	public processMoveRequest(desc: StateChange.Req): void {
+		this.socket.emit(GameEv.IN_GAME, desc);
 	}
 }
 export interface OnlineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};

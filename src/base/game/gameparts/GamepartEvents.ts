@@ -1,8 +1,8 @@
 import type { Coord, Tile } from "floor/Tile";
 import { Game } from "../Game";
 
-import { StateChange }  from "../StateChange";
-export { StateChange as GameStateDelta };
+import { StateChange } from "../StateChange";
+export { StateChange };
 
 import { GamepartBase } from "./GamepartBase";
 import { JsUtils } from "defs/JsUtils";
@@ -86,7 +86,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		const wrappedId = id % Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH;
 		if (DEF.DevAssert) {
 			// Enforced By: Checks at internal call sites.
-			if (id === StateChange.EVENT_ID_REJECT) {
+			if (id === undefined) {
 				throw new TypeError("Do not try to record events for rejected requests.");
 			} else if (id < 0 || id !== Math.trunc(id)) {
 				throw new RangeError("Event ID's must only be assigned positive, integer values.");
@@ -125,13 +125,13 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 			if (doCheckOperatorSeqBuffer) {
 				// ^Do this when non-operator moves into the the operator's vicinity.
 				this.operators.forEach((op) => {
-					if (op.tile.destsFrom().get.includes(curr)) {
+					if (this.grid._getTileDestsFrom(op.coord).includes(curr)) {
 						op.seqBufferAcceptKey("");
 					}
 				});
 			}
 		}
-		this.grid.editTile(desc.coord, desc);
+		this.grid.editTile(desc);
 	}
 
 	/**
@@ -144,14 +144,12 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * the only thing that matters about a Tile to the outside
 	 * world is its last known state.
 	 */
-	protected executePlayerMoveEvent(desc: StateChange.Res): void {
+	protected executePlayerMoveEvent(desc: StateChange.Res | StateChange.Req): void {
 		JsUtils.deepFreeze(desc);
 		const player = this.players[desc.playerId]!;
 		const clientEventLag = desc.playerNow - player.now;
 
-		if (desc.eventId === StateChange.EVENT_ID_REJECT) {
-			// Rejected request. Implies either that: clientEventLag === 0,
-			// or that (at Game Manager): dest.now > desc.now
+		if (desc.eventId === undefined) {
 			if (clientEventLag === 0) {
 				player.requestInFlight = false;
 			}
@@ -163,6 +161,10 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		desc.tiles?.forEach((desc) => {
 			this.executeTileModEvent(desc);
 		});
+		Object.entries(desc.playersHealth).forEach(([pid, health]) => {
+			this.players[pid as unknown as number]!.status.health = health;
+		});
+
 
 		if (clientEventLag > 1) {
 			// ===== Out of order receipt (clientside) =====
@@ -181,7 +183,6 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		if ((player === this.currentOperator)
 			? (clientEventLag === 1)
 			: (clientEventLag <= 1)) {
-			player.status.health = desc.playersHealth!;
 
 			player.moveTo(desc.dest.coord);
 			// Below is computationally the same as "(player.lastAcceptedRequestId)++"

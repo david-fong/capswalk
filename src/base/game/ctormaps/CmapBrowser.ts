@@ -10,7 +10,7 @@ export default (): void => {
 	// @ts-expect-error : RO=
 	VGr._Constructors
 	= Object.freeze<typeof VGr._Constructors>({
-		[ "EUCLID2" ]: Euclid2VisibleGrid,
+		[ "W_EUCLID2" ]: Euclid2VisibleGrid,
 		[ "BEEHIVE" ]: BeehiveVisibleGrid,
 	});
 	Object.freeze(VGr);

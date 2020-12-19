@@ -1,28 +1,32 @@
 import type { Tile } from "floor/Tile";
 import type { Player } from "game/player/Player";
 
+// This helps the IDE synchronize renaming.
+type HasEventId = {
+	eventId?: number | undefined;
+};
+
 /**
  */
 export namespace StateChange {
-	/**
-	 * The Game Manager should assign this value to the `eventId` field
-	 * of a request-type event to signal if a request has been rejected.
-	 * It is convenient to use as a default value.
-	 */
-	export const EVENT_ID_REJECT = (-1);
-
 	/**
 	 * This is the agreed upon value that both the server and client
 	 * copies of a game should set as the initial value for request id
 	 * counters. Remember that a request ID is a property of a player,
 	 * whereas an event ID is a property tied to a game.
 	 */
-	export const INITIAL_REQUEST_ID = 0;
+	export const INITIAL_PLAYER_REQUEST_ID = 0;
 
 	/**
 	 * An immutable Request DTO 📦
 	 */
-	export interface Req {
+	export interface Req extends HasEventId {
+		/**
+		 * The requester does not need to set this field. It is only
+		 * here for typing purposes to differentiate between rejected
+		 * and accepted requests when executing responses.
+		 */
+		readonly eventId?: undefined;
 
 		readonly playerId: Player.Id;
 
@@ -50,10 +54,10 @@ export namespace StateChange {
 		 * requester, this would mean that the requester didn't wait for a
 		 * response to its previous request, which it is not supposed to do.
 		 *
-		 * **Note:** If the above requirement is ever changed, (in
-		 * addition to other mechanisms I haven't reasoned through,) this
-		 * field's spec should change to require _all_ server responses to
-		 * have this field set to an incremented value, including rejects.
+		 * **Note:** If the above requirement is ever changed to allow request
+		 * pipelining, this field's spec must change to require _all_ server
+		 * responses to have this field set to an incremented value, including
+		 * rejects.
 		 *
 		 * The server should never receive a request with a value higher
 		 * than the one it provided in its last response to this requester.
@@ -71,7 +75,7 @@ export namespace StateChange {
 	/**
 	 * An immutable Response DTO 📦
 	 */
-	export interface Res extends Readonly<Req> {
+	export interface Res extends Readonly<TU.Omit<Req,"eventId">>, HasEventId {
 		/**
 		 * A positive, unique, integer-valued identifier for an event.
 		 */

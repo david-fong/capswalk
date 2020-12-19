@@ -9,8 +9,6 @@ import {
 
 
 /**
- *
- * @extends ArtificialPlayer
  */
 export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 
@@ -51,11 +49,11 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 	protected computeDesiredDest(): Coord {
 		// Check if there is anyone to run away from:
 		this.threatProximity.sort((pa,pb) => {
-			return this.grid.minMovesFromTo(pa.coord, this.coord)
-				-  this.grid.minMovesFromTo(pb.coord, this.coord);
+			return this.grid.dist(pa.coord, this.coord)
+				-  this.grid.dist(pb.coord, this.coord);
 		});
 		for (const threatP of this.threatProximity) {
-			if (this.grid.minMovesFromTo(threatP.coord, this.coord)
+			if (this.grid.dist(threatP.coord, this.coord)
 				> this.behaviour.fearDistance) break;
 			if (threatP.status.isDowned) continue;
 			if (threatP.status.health > this.status.health) {
@@ -66,12 +64,12 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 		// If there is nobody to run away from,
 		// Check if there is anyone we want to attack:
 		this.targetProximity.sort((pa,pb) => {
-			return this.grid.minMovesFromTo(this.coord, pa.coord)
-				-  this.grid.minMovesFromTo(this.coord, pb.coord);
+			return this.grid.dist(this.coord, pa.coord)
+				-  this.grid.dist(this.coord, pb.coord);
 		});
 		if (this.status.isDowned) {
 			for (const targetP of this.targetProximity) {
-				if (this.grid.minMovesFromTo(this.coord, targetP.coord)
+				if (this.grid.dist(this.coord, targetP.coord)
 					> this.behaviour.bloodThirstDistance) break;
 				if (targetP.status.health < this.status.health - this.behaviour.healthReserve) {
 					return targetP.coord;
@@ -97,7 +95,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 		let closestFht: Tile = undefined!;
 		let closestFhtDistance = Infinity;
 		for (const fht of this.game.freeHealthTiles) {
-			const distance = this.grid.minMovesFromTo(this.coord, fht.coord);
+			const distance = this.grid.dist(this.coord, fht.coord);
 			if (distance < closestFhtDistance) {
 				closestFht = fht;
 				closestFhtDistance = distance;

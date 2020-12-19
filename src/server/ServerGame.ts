@@ -7,7 +7,7 @@ import type { Coord } from "floor/Tile";
 import { Grid } from "floor/Grid";
 import { Player, PlayerStatus } from "game/player/Player";
 
-import { StateChange } from "game/StateChange";
+import type { StateChange } from "game/StateChange";
 
 import { GamepartManager } from "game/gameparts/GamepartManager";
 
@@ -64,7 +64,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		super(
 			Game.Type.SERVER, {
 			onGameBecomeOver: () => {},
-			playerStatusCtor: PlayerStatus,
 			}, args.gameDesc,
 		);
 		this._groupHostClient = args.groupHostClient;
@@ -87,7 +86,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 
 		this.gameEvSocketListeners = Object.freeze({
 			[GameEv.IN_GAME]: this.processMoveRequest.bind(this),
-			[GameEv.PAUSE]: this.statusBecomePaused.bind(this),
+			[GameEv.PAUSE]:   this.statusBecomePaused.bind(this),
 			[GameEv.UNPAUSE]: this.statusBecomePlaying.bind(this),
 		});
 		JsUtils.instNoEnum (this as ServerGame<S>, "gameEvSocketListeners");
@@ -248,10 +247,10 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 	}
 
 	/** @override */
-	public executePlayerMoveEvent(desc: StateChange.Res): void {
+	public executePlayerMoveEvent(desc: StateChange.Res | StateChange.Req): void {
 		super.executePlayerMoveEvent(desc);
 
-		if (desc.eventId === StateChange.EVENT_ID_REJECT) {
+		if (desc.eventId === undefined) {
 			// The request was rejected- Notify the requester.
 			this.playerSockets.get(desc.playerId)!.emit(
 				GameEv.IN_GAME,

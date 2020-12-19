@@ -7,7 +7,7 @@ import type { Grid } from "floor/Grid";
 import type { VisibleGrid } from "floor/VisibleGrid";
 
 import { Player } from "../player/Player";
-import type { PlayerStatus } from "../player/PlayerStatus";
+import { PlayerStatus } from "../player/PlayerStatus";
 import { Team } from "../player/Team";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { StateChange } from "../StateChange";
@@ -65,7 +65,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId)!;
 
 		// Construct players:
-		this._playerStatusCtor = impl.playerStatusCtor;
+		this._playerStatusCtor = PlayerStatus;
 		this.players = this.createPlayers(desc);
 
 		this.operators = Object.freeze(
@@ -167,7 +167,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		this.grid.forEachTile((tile, index) => {
 			this.grid.editTile({
 				coord: tile.coord,
-				now: tile.now,
 				...ser.csps[index]!,
 			});
 		});
@@ -243,7 +242,8 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	 * (and subsequently, unconditionally stays) eliminated when all
 	 * their members are in a downed state at the same time.
 	 *
-	 * This should not be controllable by UI input elements.
+	 * This should not be controllable by UI input elements. Instead,
+	 * The UI layer can pass a callback to the constructor.
 	 */
 	public statusBecomeOver(): void {
 		if (this.status === Game.Status.OVER) return;

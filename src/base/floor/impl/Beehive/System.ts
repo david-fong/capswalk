@@ -22,24 +22,24 @@ type S = Coord.System.BEEHIVE;
 export namespace Beehive {
 
 	/**
-	 * # Beehive Coord
+	 * Beehive Internal Augmented Coord
 	 */
 	export class IAC {
 
-		/**
-		 * # 🕒 3'o'clock direction
-		 */
+		/** 🕒 3'o'clock direction */
 		public readonly dash: number;
 
-		/**
-		 * # 🕔 5'o'clock direction
-		 */
+		/** 🕔 5'o'clock direction */
 		public readonly bash: number;
 
 		public constructor(desc: IAC.Bare) {
 			this.dash = desc.dash;
 			this.bash = desc.bash;
 			Object.freeze(this);
+		}
+		public toCoord(): Coord {
+			// TODO.impl
+			return undefined!;
 		}
 
 		public round(): IAC {
@@ -59,21 +59,18 @@ export namespace Beehive {
 				return new IAC({ dash: floorDash  , bash: floorBash   });
 			}
 		}
-
 		public add(other: IAC.Bare): IAC {
 			return new IAC({
 				dash: this.dash + other.dash,
 				bash: this.bash + other.bash,
 			});
 		}
-
 		public sub(other: IAC.Bare): IAC {
 			return new IAC({
 				dash: this.dash - other.dash,
 				bash: this.bash - other.bash,
 			});
 		}
-
 		public mul(scalar: number): IAC {
 			return new IAC({
 				dash: scalar * this.dash,
@@ -81,7 +78,6 @@ export namespace Beehive {
 			});
 		}
 	}
-
 	export namespace IAC {
 		export type Bare = Readonly<{
 			dash: number;
@@ -127,6 +123,10 @@ export namespace Beehive {
 			this.grid = Object.freeze(grid);
 		}
 
+		public editTile(changes: Tile.InternalChanges): void {
+			// TODO.impl
+		}
+
 		public forEachTile(consumer: (tile: Tile, index: number) => void): void {
 			let i = 0;
 			for (const row of this.grid) {
@@ -144,17 +144,25 @@ export namespace Beehive {
 		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {
 			return undefined!;
 		}
+		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Tile {
+			// return this.getUntToward(
+			// 	sourceCoord.add(sourceCoord.sub(avoidCoord)),
+			// 	sourceCoord,
+			// );
+			return undefined!;
+		}
 
-		public getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile {
-			return this.getUntToward(
-				sourceCoord.add(sourceCoord.sub(avoidCoord)),
-				sourceCoord,
-			);
+		public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
+			return this._getTileDestsFrom(originCoord, 2);
 		}
 
 		public getRandomCoordAround(origin: Coord, radius: number): Coord {
 			// Note to self when I implement this:
 			// Be careful about getting proper uniform random distribution!
+			return undefined!;
+		}
+
+		public dist(source: Coord, dest: Coord): number {
 			return undefined!;
 		}
 
@@ -168,14 +176,6 @@ export namespace Beehive {
 
 		public _getTileSourcesTo(coord: Coord, radius: number = 1): Array<Tile> {
 			return undefined!;
-		}
-
-		public minMovesFromTo(source: Coord, dest: Coord): number {
-			return undefined!;
-		}
-
-		public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
-			return this._getTileDestsFrom(originCoord, 2);
 		}
 
 
@@ -206,8 +206,8 @@ export namespace Beehive {
 			return 1 + (2 * radius);
 		}
 
-		public static getRandomCoord(dimensions: Grid.Dimensions): IAC {
-			return new IAC(undefined!);
+		public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
+			return new IAC(undefined!).toCoord();
 		}
 	}
 	export namespace Grid {

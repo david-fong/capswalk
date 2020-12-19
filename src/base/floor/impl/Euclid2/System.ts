@@ -21,80 +21,53 @@ export namespace WrappedEuclid2 {
 		public constructor(desc: IAC.Bare) {
 			Object.freeze(Object.assign(this, desc));
 		}
-		public static from(coord: Coord, dimensions: Grid.Dimensions): IAC {
+		public static from(dimensions: Grid.Dimensions, coord: Coord): IAC {
 			return new IAC({x: coord % dimensions.width, y: Math.floor(coord / dimensions.width)});
 		}
-
 		public toCoord(dimensions: Grid.Dimensions): Coord {
 			return (this.y * dimensions.width) + this.x;
 		}
 
-		public _equals(other: IAC.Bare): boolean {
-			return (this.x === other.x) && (this.y === other.y);
+		public static distX(dim: Grid.Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
+			dist: number, wrap: boolean,
+		} {
+			let dist = Math.abs(i1.x - i2.x);
+			if (dist < dim.width / 2) return { dist, wrap: false };
+			return { dist: dim.width - dist, wrap: true };
 		}
-		public round(): IAC {
-			return new IAC({
-				x: Math.round(this.x),
-				y: Math.round(this.y),
-			});
+		public static distY(dim: Grid.Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
+			dist: number, wrap: boolean,
+		} {
+			let dist = Math.abs(i1.y - i2.y);
+			if (dist < dim.height / 2) return { dist, wrap: false };
+			return { dist: dim.height - dist, wrap: true };
 		}
-
-		/**
-		 * Also known as the "manhattan norm".
-		 *
-		 * @final _Do not override this._
-		 * @param other - The norm is taken relative to `other`.
-		 * @returns The sum of the absolute values of each coordinate.
-		 */
-		// TODO.impl make this an instance method of Grid taking two arguments.
-		public oneNorm(other: IAC.Bare): number {
-			return this.sub(other).originOneNorm();
-			// TODO.impl find minimal value considering wrapped edges. If ia and ib are sorted, only four possibilities need to be checked.
+		public static oneNorm(dim: Grid.Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
+			norm: number, wrapX: boolean, wrapY: boolean,
+		} {
+			const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
+			return { norm: dX.dist + dY.dist, wrapX: dX.wrap, wrapY: dY.wrap };
 		}
-
-		// TODO.impl make this an instance method of Grid taking one argument.
-		public originOneNorm(): number {
-			return Math.abs(this.x) + Math.abs(this.y);
+		public static infNorm(dim: Grid.Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
+			norm: number, wrapX: boolean, wrapY: boolean,
+		} {
+			const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
+			return { norm: Math.max(dX.dist, dY.dist), wrapX: dX.wrap, wrapY: dY.wrap };
 		}
-
-		/**
-		 * @final _Do not override this._
-		 * @returns The length of the longest dimension.
-		 */
-		// TODO.impl make this an instance method of Grid taking two arguments.
-		public infNorm(other: IAC.Bare): number {
-			// TODO.impl find minimal value considering wrapped edges.
-			return this.sub(other).originInfNorm();
-		}
-
-		// TODO.impl make this an instance method of Grid taking one argument.
-		public originInfNorm(): number {
-			return Math.max(Math.abs(this.x), Math.abs(this.y));
-		}
-
 		/**
 		 * @returns
-		 * A number in the range (0, 1). `One` means the x and y coordinates
-		 * align to the x or y axis, and `Zero` means they are plus or minus
-		 * 45 degrees from the x or y axis.
-		 *
-		 * You can try this yourself in [Desmos](https://www.desmos.com/calculator)
-		 * by pasting in the below code segment and adding a slider for `a`
-		 * for continuous values between zero and one.
+		 * A number in the range (0, 1). `One` means the x and y
+		 * coordinates align to the x or y axis, and `Zero` means they
+		 * are 45 degrees from the x or y axis.
 		 *
 		 * ```latex
 		 * \frac{\left|\left|x\right|-\left|y\right|\right|}{\left|x\right|+\left|y\right|}=a
 		 * ```
-		 *
-		 * @param other - The alignment is taken relative to `other`.
 		 */
-		public axialAlignment(other: IAC.Bare): number {
-			return this.sub(other).originAxialAlignment();
-		}
-
-		public originAxialAlignment(): number {
-			return Math.abs(Math.abs(this.x) - Math.abs(this.y))
-				/ (Math.abs(this.x) + Math.abs(this.y));
+		public static axialAlignment(dim: Grid.Dimensions, _i1: Coord, _i2: Coord): number {
+			const i1 = IAC.from(dim, _i1), i2 = IAC.from(dim, _i2);
+			const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
+			return (Math.abs(dX.dist - dY.dist)) / (dX.dist + dY.dist);
 		}
 
 		public add(other: IAC.Bare): IAC {
@@ -117,10 +90,10 @@ export namespace WrappedEuclid2 {
 		}
 	}
 	export namespace IAC {
-		export type Bare = Readonly<{
-			x: number;
-			y: number;
-		}>;
+		export type Bare = {
+			readonly x: number;
+			readonly y: number;
+		};
 	}
 	Object.freeze(IAC);
 	Object.freeze(IAC.prototype);
@@ -138,8 +111,8 @@ export namespace WrappedEuclid2 {
 
 		public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
 		private static readonly SIZE_LIMITS = JsUtils.deepFreeze(<const>{
-			height: <const>{ min: 11, max: 51 },
-			width:  <const>{ min: 11, max: 51 },
+			height: <const>{ min: 5, max: 51 },
+			width:  <const>{ min: 5, max: 51 },
 		});
 
 		/**
@@ -149,12 +122,28 @@ export namespace WrappedEuclid2 {
 		 */
 		protected readonly grid: TU.RoArr<Tile>;
 
+		protected readonly iacCache: TU.RoArr<IAC>;
+
 		public constructor(desc: AbstractGrid.CtorArgs<S>) {
 			super(desc);
 
 			const grid: TU.RoArr<Tile> = [];
 			// TODO.impl
 			this.grid = Object.freeze(grid);
+
+			const iacCache = [];
+			for (let y = 0; y < desc.dimensions.height; y++) {
+				for (let x = 0; x < desc.dimensions.width; x++) {
+					iacCache.push(new IAC({x,y}));
+				}
+			}
+			this.iacCache = Object.freeze(iacCache);
+			JsUtils.instNoEnum(this as Grid, "iacCache");
+			JsUtils.propNoWrite(this as Grid, "grid", "iacCache");
+		}
+
+		public editTile(changes: Tile.InternalChanges): void {
+			// TODO.impl
 		}
 
 		public forEachTile(consumer: (tile: Tile, index: number) => void): void {
@@ -168,57 +157,57 @@ export namespace WrappedEuclid2 {
 
 		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {
 			const options = this.tile.destsFrom(sourceCoord).unoccupied.get
-			.map((tile) => { const isc = IAC.from(tile.coord); return {
-				tile, isc, infNorm: isc.oneNorm(intendedDest)
-			}}); // TODO.impl continue optimizing.
+			.map((tile) => {
+				const tileIac = this.iacCache[tile.coord]!;
+				const destIac = this.iacCache[intendedDest]!;
+				return {
+					tile, iac: tileIac,
+					infNorm: IAC.infNorm(this.dimensions, tileIac, destIac).norm,
+					oneNorm: IAC.oneNorm(this.dimensions, tileIac, destIac).norm,
+				};
+			});
 			if (options.length === 0) {
 				return this._getTileAt(sourceCoord);
 			}
-			options.sort((ta, tb) => {
-				// Break (some) ties by one-norm:
-				return ta.coord.oneNorm(intendedDest) - tb.coord.oneNorm(intendedDest);
-			}).sort((ta, tb) => {
-				// Break (some) ties by inf-norm:
-				return ta.coord.infNorm(intendedDest) - tb.coord.infNorm(intendedDest);
-			});
+			options.sort((ta, tb) =>  ta.infNorm - tb.infNorm);
+			options.length = 3;
+			options.sort((ta, tb) => ta.oneNorm - tb.oneNorm);
 			const best = options[0]!;
-			// Filter out options that are not equally favourable as the
-			// most favourable option. I think this is the best method:
-			// Note: it is safe to start at index `1` because of the
-			// above short-circuit if `options.length === 1`.
+			// Filter out non-optimal options:
 			for (let i = 1; i < options.length; i++) {
-				if (options[i]!.coord.infNorm(intendedDest) > best.coord.infNorm(intendedDest)) {
+				if (options[i]!.infNorm > best.infNorm) {
 					options.splice(i);
 					break;
 				}
 			}
 			if (options.length === 1) {
 				// Minor optimization:
-				return options[0]!;
+				return best.tile;
 			}
 			// Choose one of the most favourable using some randomness
 			// weighted to follow a straight-looking path of movement.
-			if (best.coord.x - sourceCoord.x === 0 || best.coord.y - sourceCoord.y === 0) {
+			if (best.infNorm === best.oneNorm) {
 				// (the axial option (if it exists) should be the first
 				// due to the previous sort's tie-breaker.
-				if (sourceCoord.axialAlignment(sourceCoord.sub(intendedDest)) - 0.5 > 0.0) {
+				if (IAC.axialAlignment(this.dimensions, sourceCoord, intendedDest) > 0.5) {
 					// The path to the intended destination is aligned more
 					// with the x or y axis than they are with those axes
 					// rotated 45 degrees.
-					return best;
+					return best.tile;
 				} else {
 					// Ignore the axial option in further computations:
 					options.shift();
 				}
 			}
 			// Choose a random non-axial option:
-			return options[Math.floor(options.length * Math.random())]!;
+			return options[Math.floor(options.length * Math.random())]!.tile;
 		}
-
-		public getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile {
+		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Tile {
+			const avoidCoord  = IAC.from(this.dimensions, _avoidCoord);
+			const sourceCoord = IAC.from(this.dimensions, _sourceCoord);
 			return this.getUntToward(
-				sourceCoord.add(sourceCoord.sub(avoidCoord)),
-				sourceCoord,
+				sourceCoord.add(sourceCoord.sub(avoidCoord)).toCoord(this.dimensions),
+				_sourceCoord,
 			);
 		}
 
@@ -226,45 +215,48 @@ export namespace WrappedEuclid2 {
 			return this._getTileDestsFrom(originCoord, 2);
 		}
 
-		public getRandomCoordAround(origin: Coord, radius: number): Coord {
+		public getRandomCoordAround(_origin: Coord, radius: number): Coord {
+			const origin = IAC.from(this.dimensions, _origin);
 			return new IAC({
 				x: origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
 				y: origin.y + Math.trunc(2 * radius * (Math.random() - 0.5)),
 			}).toCoord(this.dimensions);
 		}
 
-		/** @see TileGetter.Source */
+		public dist(source: Coord, dest: Coord): number {
+			return IAC.infNorm(this.dimensions,
+				IAC.from(this.dimensions, source),
+				IAC.from(this.dimensions, dest),
+			).norm;
+		}
+
 		public _getTileAt(coord: Coord): Tile {
 			return this.grid[coord]!;
 		}
-
-		/** @see TileGetter.Source */
 		public _getTileDestsFrom(coord: Coord, radius: number = 1): Array<Tile> {
-			let t = coord.y - radius;
-			let b = coord.y + radius + 1;
-			let l = coord.x - radius;
-			let r = coord.x + radius + 1;
-			if (t >= this.dimensions.height || b < 0
-			 || l >= this.dimensions.width  || r < 0) return [];
-			return this.grid.slice(
-				// filter for included rows:
-				Math.max(0, t),
-				Math.min(this.dimensions.height, b),
-			).map((gridRow) => gridRow.slice(
-				// filter for included slices of rows (columns):
-				Math.max(0, l),
-				Math.min(this.dimensions.width, r),
-			));
+			const dim = this.dimensions;
+			const iac = IAC.from(dim, coord);
+			let wrapX = false, wrapY = false;
+			let t = (iac.y - radius); if (t < 0) { t += dim.height; wrapY = true; }
+			let b = (iac.y + radius) % dim.height;
+			let l = (iac.x - radius); if (l < 0) { l += dim.width; wrapX = true; }
+			let r = (iac.x + radius) % dim.width;
+			const dests: Array<Tile> = [];
+			if (wrapX) {
+				const _t = t * dim.width;
+				dests.push(...this.grid.slice(_t, _t+r+1));
+				if (wrapY) {
+					dests.push(...this.grid.slice(0, r+1));
+				}
+			}
+			for (let row = 0;;) {
+				;
+			}
+			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
+			return dests;
 		}
-
-		/** @see TileGetter.Source */
-		public _getTileSourcesTo = Grid.prototype._getTileDestsFrom;
-
-		public minMovesFromTo(source: Coord, dest: Coord): number {
-			return Math.min(
-				Math.abs(dest.x - source.x),
-				Math.abs(dest.y - source.y),
-			);
+		public _getTileSourcesTo(coord: Coord, radius: number = 1): Array<Tile> {
+			return this._getTileDestsFrom(coord, radius);
 		}
 
 
@@ -311,6 +303,7 @@ export namespace WrappedEuclid2 {
 			width:  number,
 		};
 	}
+	Grid.prototype._getTileSourcesTo = Grid.prototype._getTileDestsFrom;
 	JsUtils.protoNoEnum(Grid, "_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo");
 	Object.freeze(Grid);
 	Object.freeze(Grid.prototype);

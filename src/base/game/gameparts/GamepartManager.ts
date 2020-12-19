@@ -92,7 +92,10 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		this.lang.reset();
 		// Shuffle everything:
 		this.grid.shuffledForEachTile((tile) => {
-			tile.setLangCharSeqPair(this.dryRunShuffleLangCharSeqAt(tile));
+			this.grid.editTile({
+				coord: tile.coord,
+				...this.dryRunShuffleLangCspAt(tile.coord)
+			});
 		});
 
 		// Reset and spawn players:
@@ -132,7 +135,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * A {@link Lang.CharSeqPair} that can be used as a replacement
 	 * for that currently being used by `tile`.
 	 */
-	public dryRunShuffleLangCharSeqAt(coord: Coord, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
+	public dryRunShuffleLangCspAt(coord: Coord, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
 		// First, clear values for the target tile so its current
 		// (to-be-previous) values don't get unnecessarily avoided.
 		this.grid.editTile({
@@ -202,7 +205,9 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
 				let otherDesc: Tile.Changes | undefined = undefined;
 				if (otherDesc = sameReqOtherModDescs.find((desc) => desc.coord === tile.coord)) {
-					otherDesc.health = (otherDesc.health ?? 0) + tileHealthToAdd;
+					// @ts-expect-error : RO=
+					otherDesc.health
+						= (otherDesc.health ?? 0) + tileHealthToAdd;
 				} else {
 					retval.push({
 						now: 1 + tile.now,
@@ -225,9 +230,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	): void {
 		JsUtils.deepFreeze(desc);
 		const tile = this.grid._getTileAt(desc.coord);
-		// NOTE: This assertion must be performed before executing
-		// changes by making a supercall or else the previous state
-		// will be gone.
 		if (DEF.DevAssert && desc.now !== (1 + tile.now)) {
 			// We literally just specified this in processMoveRequest.
 			throw new RangeError("never");
@@ -246,22 +248,21 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * a player can perform while the game is playing (ie. not paused
 	 * or over).
 	 *
-	 * @param desc -
 	 * @returns
 	 * The player specified by the given ID, or undefined if the
 	 * game is not playing, in which case the event request should
 	 * be rejected.
 	 */
-	private managerCheckGamePlayingRequest(desc: StateChange.Req): Player<S> | undefined {
+	private managerCheckGamePlayingRequest(req: StateChange.Req): Player<S> | undefined {
 		if (this.status !== Game.Status.PLAYING) {
 			return undefined;
 		}
-		const player = this.players[desc.playerId];
+		const player = this.players[req.playerId];
 		if (!player) {
 			throw new Error("No such player exists.");
 		}
-		if (desc.playerNow !== player.now) {
-			throw new RangeError((desc.playerNow < player.now)
+		if (req.playerNow !== player.now) {
+			throw new RangeError((req.playerNow < player.now)
 			? ("Clients should not make requests until they have"
 				+ " received my response to their last request.")
 			: ("Client seems to have incremented the request ID"
@@ -277,24 +278,24 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * player does not exist, or the client is missing updates for the
 	 * destination they requested to move to, or the player is bubbling.
 	 *
-	 * @param desc
+	 * @param req
 	 * A descriptor of the request describing the requester's views
 	 * of critical parts of the game-state from their copy of the game
 	 * state at the time of the request. Is modified to describe changes
 	 * to be made.
 	 */
-	public processMoveRequest(desc: StateChange.Req): void {
-		const player = this.managerCheckGamePlayingRequest(desc);
+	public processMoveRequest(req: StateChange.Req): void {
+		const player = this.managerCheckGamePlayingRequest(req);
 		if (player === undefined) {
-			this.executePlayerMoveEvent(desc); // Reject the request:
+			this.executePlayerMoveEvent(req); // Reject the request:
 			return; //⚡
 		}
-		const dest = this.grid._getTileAt(desc.dest.coord);
-		if (dest.occId !== undefined || dest.now !== desc.dest.now) {
-			this.executePlayerMoveEvent(desc); // Reject the request.
+		const dest = this.grid._getTileAt(req.dest.coord);
+		if (dest.occId !== undefined || dest.now !== req.dest.now) {
+			this.executePlayerMoveEvent(req); // Reject the request.
 			return; //⚡
 		}
-		const moveIsBoost = (desc.moveType === Player.MoveType.BOOST);
+		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
 		const newPlayerHealthValue
 			= player.status.health
 			+ (dest.health * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
@@ -302,29 +303,32 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make
 			// the player become downed (or if they are already downed):
-			this.executePlayerMoveEvent(desc);
+			this.executePlayerMoveEvent(req);
 			return; //⚡
 		}
 
 		// Update stats records:
 		const playerScoreInfo = this.scoreInfo.entries[player.playerId]!;
 		playerScoreInfo.totalHealthPickedUp += dest.health;
-		playerScoreInfo.moveCounts[desc.moveType] += 1;
+		playerScoreInfo.moveCounts[req.moveType] += 1;
 
 		// Set response fields according to spec in `PlayerMovementEvent`:
-		desc.playerNow = (1 + player.now);
-		desc.newPlayerHealth = {
-			[player.playerId]: newPlayerHealthValue,
-		};
-		desc.dest.now = (1 + dest.now);
-		desc.dest.health = 0;
-		desc.dest.newCharSeqPair = this.dryRunShuffleLangCharSeqAt(dest.coord);
-		desc.tileHealthModDescs = this.dryRunSpawnFreeHealth([desc.dest]);
-
-		// Accept the request, and trigger calculation
-		// and enactment of the requested changes:
-		desc.eventId = this.nextUnusedEventId;
-		this.executePlayerMoveEvent(desc);
+		this.executePlayerMoveEvent(<StateChange.Res>{
+			eventId: this.nextUnusedEventId,
+			playerId: req.playerId,
+			moveType: req.moveType,
+			playerNow: (1 + player.now),
+			playersHealth: {
+				[player.playerId]: newPlayerHealthValue,
+			},
+			dest: {
+				coord: dest.coord,
+				now: (1 + dest.now),
+				health: 0,
+				...this.dryRunShuffleLangCspAt(dest.coord),
+			},
+			tiles: this.dryRunSpawnFreeHealth([req.dest]),
+		});
 	}
 
 	/**
@@ -344,7 +348,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 *
 	 * @param sourceP
 	 */
-	private _processPlayerContact(sourceP: Player<S>): StateChange.Req["playerHealth"] {
+	private _processPlayerContact(sourceP: Player<S>): StateChange.Res["playersHealth"] {
 		return undefined!;
 	}
 

@@ -11,7 +11,7 @@ export namespace Tile {
 	 * A DTO of changes 📦
 	 */
 	export interface Changes {
-		readonly coord:   Coord;
+		readonly coord: Coord;
 		/**
 		 * The requester should set this field to the highest value they
 		 * received from any previous responses from the server. In normal
@@ -34,5 +34,11 @@ export namespace Tile {
 		readonly health?: Player.Health;
 		readonly char?:   Lang.Char;
 		readonly seq?:    Lang.Seq;
+	}
+	/**
+	 * Does not require a now field.
+	 */
+	export interface InternalChanges extends TU.Omit<Changes,"now"> {
+		readonly now?: number;
 	}
 }

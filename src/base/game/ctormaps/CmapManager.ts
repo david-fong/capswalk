@@ -10,7 +10,7 @@ export default (): void => {{
 	// @ts-expect-error : RO=
 	Grid._Constructors
 	= Object.freeze<typeof Grid._Constructors>({
-		["EUCLID2"]: WrappedEuclid2.Grid,
+		["W_EUCLID2"]: WrappedEuclid2.Grid,
 		["BEEHIVE"]: Beehive.Grid,
 	});
 	Object.freeze(Grid);
