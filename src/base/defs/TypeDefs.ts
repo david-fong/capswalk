@@ -30,6 +30,9 @@ export namespace Player {
 	 * See the main documentation in game/player/Player.
 	 */
 	export type Id = number;
+	export namespace Id {
+		export const NULL = (-1);
+	}
 
 	export type Username = string;
 	export namespace Username {

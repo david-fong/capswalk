@@ -18,7 +18,7 @@ import type { Grid } from "floor/Grid";
  * _server_ related code will benefit from this choice.
  */
 export interface VisibleGrid<S extends Coord.System>
-extends Grid<S>, VisibleGridMixin<S> { }
+extends Grid<S>, VisibleGridMixin { }
 
 export namespace VisibleGrid {
 
@@ -43,7 +43,7 @@ export namespace VisibleGrid {
 
 /**
  */
-export class VisibleGridMixin<S extends Coord.System> {
+export class VisibleGridMixin {
 	/**
 	 * Contains the implementation-dependant HTML representation of
 	 * the grid.
@@ -82,6 +82,6 @@ export class VisibleGridMixin<S extends Coord.System> {
 		this.spotlightElems = Object.freeze([ shortSpotlight, longSpotlight ]);
 	}
 }
-export interface VisibleGridMixin<S extends Coord.System> {};
+export interface VisibleGridMixin {};
 Object.freeze(VisibleGridMixin);
 Object.freeze(VisibleGridMixin.prototype);

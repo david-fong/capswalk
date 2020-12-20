@@ -30,7 +30,10 @@ export namespace Tile {
 		 */
 		readonly now: number;
 
-		readonly occId?:  Player.Id | undefined;
+		/**
+		 * To evict an occupant, pass `Player.Id.NULL`.
+		 */
+		readonly occId?:  Player.Id;
 		readonly health?: Player.Health;
 		readonly char?:   Lang.Char;
 		readonly seq?:    Lang.Seq;

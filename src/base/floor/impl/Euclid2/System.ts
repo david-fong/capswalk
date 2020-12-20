@@ -1,6 +1,7 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord as BaseCoord, Coord, Tile } from "floor/Tile";
-import { TileGetter, Grid as AbstractGrid } from "floor/Grid";
+import { Grid as AbstractGrid } from "floor/Grid";
+import { Player } from "base/defs/TypeDefs";
 type S = BaseCoord.System.W_EUCLID2;
 
 /**
@@ -111,8 +112,8 @@ export namespace WrappedEuclid2 {
 
 		public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
 		private static readonly SIZE_LIMITS = JsUtils.deepFreeze(<const>{
-			height: <const>{ min: 5, max: 51 },
-			width:  <const>{ min: 5, max: 51 },
+			height: <const>{ min: 11, max: 51 },
+			width:  <const>{ min: 11, max: 51 },
 		});
 
 		/**
@@ -127,9 +128,17 @@ export namespace WrappedEuclid2 {
 		public constructor(desc: AbstractGrid.CtorArgs<S>) {
 			super(desc);
 
-			const grid: TU.RoArr<Tile> = [];
-			// TODO.impl
-			this.grid = Object.freeze(grid);
+			const grid: Array<Tile> = [];
+			for (let y = 0; y < this.dimensions.height; y++) {
+				for (let x = 0; x < this.dimensions.width; x++) {
+					grid.push({
+						coord: (y * this.dimensions.width) + x, now: 0,
+						occId: Player.Id.NULL,
+						health: 0, char: "", seq: "",
+					});
+				}
+			}
+			this.grid = grid;
 
 			const iacCache = [];
 			for (let y = 0; y < desc.dimensions.height; y++) {
@@ -143,7 +152,7 @@ export namespace WrappedEuclid2 {
 		}
 
 		public editTile(changes: Tile.InternalChanges): void {
-			// TODO.impl
+			Object.assign(this.grid[changes.coord], changes);
 		}
 
 		public forEachTile(consumer: (tile: Tile, index: number) => void): void {
@@ -203,8 +212,8 @@ export namespace WrappedEuclid2 {
 			return options[Math.floor(options.length * Math.random())]!.tile;
 		}
 		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Tile {
-			const avoidCoord  = IAC.from(this.dimensions, _avoidCoord);
-			const sourceCoord = IAC.from(this.dimensions, _sourceCoord);
+			const avoidCoord  = this.iacCache[_avoidCoord]!;
+			const sourceCoord = this.iacCache[_sourceCoord]!;
 			return this.getUntToward(
 				sourceCoord.add(sourceCoord.sub(avoidCoord)).toCoord(this.dimensions),
 				_sourceCoord,
@@ -216,7 +225,7 @@ export namespace WrappedEuclid2 {
 		}
 
 		public getRandomCoordAround(_origin: Coord, radius: number): Coord {
-			const origin = IAC.from(this.dimensions, _origin);
+			const origin = this.iacCache[_origin]!;
 			return new IAC({
 				x: origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
 				y: origin.y + Math.trunc(2 * radius * (Math.random() - 0.5)),
@@ -225,8 +234,8 @@ export namespace WrappedEuclid2 {
 
 		public dist(source: Coord, dest: Coord): number {
 			return IAC.infNorm(this.dimensions,
-				IAC.from(this.dimensions, source),
-				IAC.from(this.dimensions, dest),
+				this.iacCache[source]!,
+				this.iacCache[dest]!,
 			).norm;
 		}
 
@@ -235,7 +244,7 @@ export namespace WrappedEuclid2 {
 		}
 		public _getTileDestsFrom(coord: Coord, radius: number = 1): Array<Tile> {
 			const dim = this.dimensions;
-			const iac = IAC.from(dim, coord);
+			const iac = this.iacCache[coord]!;
 			let wrapX = false, wrapY = false;
 			let t = (iac.y - radius); if (t < 0) { t += dim.height; wrapY = true; }
 			let b = (iac.y + radius) % dim.height;
@@ -249,8 +258,20 @@ export namespace WrappedEuclid2 {
 					dests.push(...this.grid.slice(0, r+1));
 				}
 			}
-			for (let row = 0;;) {
-				;
+
+			const b1 = wrapY ? dim.height : b;
+			const sliceLength = (radius * 2) + 1;
+			for (let y = t; y < b1; y++) {
+				const begin = (y * dim.width) + l;
+				dests.push(...this.grid.slice(begin, begin+sliceLength));
+			}
+			if (wrapX) { dests.length -= r+1 }
+			if (wrapY) {
+				for (let y = 0; y < b; y++) {
+					const begin = (y * dim.width) + l;
+					dests.push(...this.grid.slice(begin, begin+sliceLength));
+				}
+				if (wrapX) { dests.length -= r+1 }
 			}
 			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
 			return dests;

@@ -12,6 +12,7 @@
 ### Things I feel like doing
 
 1. Mega-task: change Tiles to DTO's and enable Grid implementations to decide how to do display (eg. DOM, SVG, Canvas).
+    - Make TileGetter.Source methods return readonly arrays.
     - Update documentation wherever needed- especially the floor readme.
 1. Update dependencies.
 1. Turn off TypeScript experimental decorators?

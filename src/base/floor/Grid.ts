@@ -5,6 +5,7 @@ export type { TileGetter } from "./TileGetter";
 
 import type { WrappedEuclid2 } from "./impl/Euclid2/System";
 import type { Beehive } from "./impl/Beehive/System";
+import { Player } from "base/defs/TypeDefs";
 
 
 /**
@@ -40,12 +41,9 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	public reset(): void {
 		this.forEachTile((tile, index) => {
 			this.editTile({
-				coord: tile.coord,
-				now: 0,
-				occId: undefined,
-				health: 0,
-				char: "",
-				seq: "",
+				coord: tile.coord, now: 0,
+				occId: Player.Id.NULL,
+				health: 0, char: "", seq: "",
 			});
 		});
 	}
