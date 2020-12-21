@@ -52,14 +52,17 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	}
 
 	/**
+	 * @virtual
 	 * Overrides must call super.
 	 */
 	public _notifyGameNowPlaying(): void { }
 	/**
+	 * @virtual
 	 * The default implementation does nothing.
 	 */
 	public _notifyGameNowPaused(): void { }
 	/**
+	 * @virtual
 	 * The default implementation does nothing.
 	 */
 	public _notifyGameNowOver(): void { }

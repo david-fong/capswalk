@@ -146,7 +146,7 @@ export namespace WrappedEuclid2 {
 			JsUtils.propNoWrite(this as Grid, "grid", "iacCache");
 		}
 
-		public editTile(changes: Tile.InternalChanges): void {
+		public editTile(changes: Tile.Changes): void {
 			Object.assign(this.grid[changes.coord], changes);
 		}
 

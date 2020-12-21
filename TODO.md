@@ -11,7 +11,6 @@
 
 ### Things I feel like doing
 
-1. Nuke the event-ordering-handling. WebSocket messages are received in the same order that they are sent in.
 1. Mega-task: change Tiles to DTO's and enable Grid implementations to decide how to do display (eg. DOM, SVG, Canvas).
     - Make TileGetter.Source methods return readonly arrays.
     - Update documentation wherever needed- especially the floor readme.

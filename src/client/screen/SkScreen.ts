@@ -59,9 +59,6 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 
 
 	/**
-	 *
-	 * @param parentElem -
-	 * @param requestGoToScreen -
 	 */
 	public constructor(
 		screenId: SID,

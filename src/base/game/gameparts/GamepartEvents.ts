@@ -114,11 +114,6 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	): void {
 		JsUtils.deepFreeze(patch);
 		const tile = this.grid._getTileAt(patch.coord);
-		if (tile.now > patch.now) return;
-		if (DEF.DevAssert) {
-			// Enforced By: `GamepartManager.dryRunSpawnFreeHealth`.
-			if (tile.now === patch.now) throw new RangeError("never");
-		}
 
 		if (patch.char !== undefined) {
 			// Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
@@ -188,8 +183,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 			player.now = desc.playerNow;
 
 		} else {
-			// Apparent negative lag. The operator may somehow have
-			// tampered with their player's request counter.
+			// Apparent negative lag. Suspected tampering.
 			throw new RangeError("never");
 		}
 	}

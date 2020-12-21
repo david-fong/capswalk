@@ -20,10 +20,6 @@ const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const GAME_SERVERS = require("../../servers.json");
 
 const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> => { return [
-	new webpack.WatchIgnorePlugin({ paths: [
-		/\.d\.ts$/, // Importantly, this also covers .css.d.ts files.
-		/\.js$/,
-	]}),
 	new webpack.DefinePlugin({
 		// See [](src/node_modules/@types/my-type-utils.dts).
 		"DEF.PRODUCTION": JSON.stringify(PACK_MODE === "production"),
@@ -37,6 +33,7 @@ const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> 
  */
 const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 	test: /\.ts$/,
+	exclude: [/node_modules/, /\.d\.ts$/],
 	use: {
 		loader: "ts-loader",
 		options: <tsloader.LoaderOptions>{
@@ -52,7 +49,6 @@ const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 			experimentalFileCaching: true,
 		},
 	},
-	exclude: [/node_modules/,/\.d\.ts$/],
 }, ];};
 const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 	test: /\.css$/,
@@ -137,8 +133,11 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 		splitChunks: { chunks: "all", cacheGroups: {} },
 		removeAvailableModules: (PACK_MODE === "production"),
 	},
+	cache: {
+		type: "filesystem",
+	},
 	watchOptions: {
-		ignored: [ "node_modules", ],
+		ignored: [ "node_modules", "**/*.d.ts", "**/*.js", ],
 	},
 	// experiments: {
 	// 	outputModule: true,

@@ -212,7 +212,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 						= (otherDesc.health ?? 0) + tileHealthToAdd;
 				} else {
 					retval.push({
-						now: 1 + tile.now,
 						coord: tile.coord,
 						// newCharSeqPair: undefined, // "do not change".
 						health: tile.health + tileHealthToAdd,
@@ -232,10 +231,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	): void {
 		JsUtils.deepFreeze(desc);
 		const tile = this.grid._getTileAt(desc.coord);
-		if (DEF.DevAssert && desc.now !== (1 + tile.now)) {
-			// We literally just specified this in processMoveRequest.
-			throw new RangeError("never");
-		}
 		this.#currentFreeHealth += desc.health! - tile.health;
 		if (desc.health === 0) {
 			this.#healthTiles.delete(tile);
@@ -261,9 +256,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		const player = this.players[req.playerId]!;
 		const reqDest = this.grid._getTileAt(req.dest.coord);
 		if (  this.status !== Game.Status.PLAYING
-		 ||        player === undefined
 		 || reqDest.occId !== Player.Id.NULL
-		 ||   reqDest.now !== req.dest.now
 		) {
 			this.executePlayerMoveEvent(req); // Reject the request:
 			return; //⚡
@@ -288,7 +281,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		// Set response fields according to spec in `PlayerMovementEvent`:
 		const resDest: Tile.Changes = {
 			coord: reqDest.coord,
-			now: (1 + reqDest.now),
 			health: 0,
 			...this.dryRunShuffleLangCspAt(reqDest.coord),
 		};
@@ -303,7 +295,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			dest: resDest,
 			tiles: this.dryRunSpawnFreeHealth([req.dest, {
 				coord: player.coord,
-				now: this.grid._getTileAt(player.coord).now + 1,
 				occId: Player.Id.NULL,
 			}]),
 		});
