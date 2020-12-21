@@ -2,7 +2,7 @@ import { JsUtils } from "defs/JsUtils";
 import type { Coord as BaseCoord } from "floor/Tile";
 import type { Grid as AbstractGrid } from "floor/Grid";
 import { Beehive } from "./System";
-import { VisibleGrid, VisibleGridMixin } from "floor/VisibleGrid";
+import { VisibleGrid, VisibleGridMixin } from "floor/visible/VisibleGrid";
 type S = BaseCoord.System.BEEHIVE;
 
 /**

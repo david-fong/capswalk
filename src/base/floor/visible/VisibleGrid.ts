@@ -23,9 +23,7 @@ extends Grid<S>, VisibleGridMixin { }
 export namespace VisibleGrid {
 
 	export interface ClassIf<S extends Coord.System> extends Grid.ClassIf<S> {
-		/**
-		 * @override
-		 */
+		/** @override */
 		new(desc: Grid.CtorArgs<S>): VisibleGrid<S>;
 	};
 
@@ -52,9 +50,7 @@ export class VisibleGridMixin {
 	declare public readonly spotlightElems: TU.RoArr<HTMLElement>;
 
 	/**
-	 * Note: I would rather have this implementation go under the
-	 * `VisibleGrid` class, but I don't want to get into mixins as of
-	 * now to get around no-multiple-inheritance.
+	 * Implementations must call this within their constructors.
 	 */
 	public _superVisibleGrid(tiles: HTMLElement): void {
 		tiles.setAttribute("role", "presentation");

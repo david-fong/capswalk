@@ -49,8 +49,8 @@ export namespace TileGetter {
 		_getTileAt(...args: A): Tile;
 		// NOTE: do we need to add an optional argument for range?
 		// If so, document that it must default to `1` if unspecified.
-		_getTileDestsFrom(...args: A): Array<Tile>;
-		_getTileSourcesTo(...args: A): Array<Tile>;
+		_getTileDestsFrom(...args: A): TU.RoArr<Tile>;
+		_getTileSourcesTo(...args: A): TU.RoArr<Tile>;
 	}
 }
 Object.freeze(TileGetter);
@@ -62,7 +62,7 @@ Object.freeze(TileGetter.prototype);
  */
 class Query {
 
-	public constructor(protected contents: Array<Tile>) {
+	public constructor(protected contents: TU.RoArr<Tile>) {
 		Object.seal(this);
 	}
 
@@ -76,9 +76,8 @@ class Query {
 		return this;
 	}
 
-	public get get(): Array<Tile> {
-		const retval = this.contents;
-		return retval;
+	public get get(): TU.RoArr<Tile> {
+		return Object.freeze(this.contents);
 	}
 }
 Object.freeze(Query);

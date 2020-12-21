@@ -1,7 +1,7 @@
 import { JsUtils }              from "defs/JsUtils";                    export { JsUtils };
 import { Game }                 from "game/Game";                       export { Game };
 import type { Coord }           from "floor/Coord";                     export { Coord };
-import { VisibleGrid }          from "floor/VisibleGrid";
+import { VisibleGrid }          from "floor/visible/VisibleGrid";       export { VisibleGrid };
 import type { GamepartBase }    from "game/gameparts/GamepartBase";
 import { Player }               from "game/player/Player";              export { Player };
 import { OperatorPlayer }       from "game/player/OperatorPlayer";      export { OperatorPlayer };
@@ -14,13 +14,15 @@ InitBrowserGameCtorMaps();
  */
 export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> {
 
+	declare public readonly grid: VisibleGrid<S>;
+
 	declare public readonly currentOperator: OperatorPlayer<S>;
 
 	public readonly htmlElements: BrowserGameMixin.HtmlElements;
 
 	/**
-	 * Classes using this mixin should call this somewhere in their
-	 * constructor.
+	 * Classes using this mixin should call this after calling the
+	 * super constructor.
 	 */
 	public _ctorBrowserGame(): void {
 		// @ts-expect-error : RO=
@@ -37,7 +39,7 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 	}
 
 	/** @override */
-	public _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S> {
+	protected _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S> {
 		return new OperatorPlayer<S>(this, desc);
 	}
 }

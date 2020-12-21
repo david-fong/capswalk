@@ -2,9 +2,9 @@ import { JsUtils} from "defs/JsUtils";
 import { Game } from "../Game";
 import { Lang } from "defs/TypeDefs";
 
-import type { Coord, Tile } from "floor/Tile";
+import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
-import type { VisibleGrid } from "floor/VisibleGrid";
+import type { VisibleGrid } from "floor/visible/VisibleGrid";
 
 import { Player } from "../player/Player";
 import { PlayerStatus } from "../player/PlayerStatus";
@@ -20,7 +20,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 
 	public readonly gameType: G;
 
-	public readonly grid: G extends Game.Type.SERVER ? Grid<S> : VisibleGrid<S>;
+	public readonly grid: Grid<S>;
 
 	readonly #onGameBecomeOver: () => void;
 
@@ -38,15 +38,9 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 
 	#status: Game.Status;
 
-	public readonly _playerStatusCtor: typeof PlayerStatus;
-
 
 	/**
 	 * Performs the "no invincible player" check (See {@link Player#teamSet}).
-	 *
-	 * @param gameType -
-	 * @param impl -
-	 * @param desc -
 	 */
 	public constructor(
 		gameType: G,
@@ -54,18 +48,19 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		desc: Game.CtorArgs<G,S>,
 	) {
 		this.gameType = gameType;
+
 		const gridClass = this._getGridImplementation(desc.coordSys);
 		this.grid = new (gridClass)({
-			Grid:  gridClass,
-			system:   desc.coordSys,
+			Grid: gridClass,
+			system: desc.coordSys,
 			dimensions: desc.gridDimensions,
 		}) as GamepartBase<G,S>["grid"];
+
 		this.#onGameBecomeOver = impl.onGameBecomeOver;
 
 		this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId)!;
 
 		// Construct players:
-		this._playerStatusCtor = PlayerStatus;
 		this.players = this.createPlayers(desc);
 
 		this.operators = Object.freeze(
@@ -92,7 +87,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		}
 		JsUtils.propNoWrite(this as GamepartBase<G,S>,
 			"gameType", "grid", "langFrontend",
-			"players", "operators", "teams", "_playerStatusCtor",
+			"players", "operators", "teams",
 		);
 		this.players.forEach((player) => player._afterAllPlayersConstruction());
 		this.setCurrentOperator(0);
@@ -140,7 +135,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 			}
 		}));
 	}
-	public abstract _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S>;
+	protected abstract _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S>;
 	protected abstract _createArtifPlayer(desc: Player._CtorArgs<Player.FamilyArtificial>): Player<S>;
 
 	/**

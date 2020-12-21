@@ -215,7 +215,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 	}
 
 	/** @override */
-	public _createOperatorPlayer(desc: Player.CtorArgs): never {
+	protected _createOperatorPlayer(desc: Player.CtorArgs): never {
 		throw new TypeError("This should never be called for a ServerGame.");
 	}
 	/** @override */

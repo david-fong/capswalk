@@ -12,37 +12,27 @@ type G = Game.Type.ONLINE;
 /**
  */
 export class PlayOnlineScreen extends _PlayScreen<SID, G> {
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected readonly askConfirmBeforeLeave = false;
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.
 	declare protected readonly currentGame: OnlineGame<Coord.System>;
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected readonly wantsAutoPlayPause = false;
 
 	private get socket(): Socket {
 		return this.top.sockets.gameSocket!;
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _lazyLoad(): void {
 		super._lazyLoad();
 		this.nav.prev.innerHTML = "Return To&nbsp;Lobby";
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
 		const leaveConfirmed = super._abstractOnBeforeLeave(navDir);
 		if (leaveConfirmed) {
@@ -56,24 +46,18 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
 		return leaveConfirmed;
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _reqStatusPlaying(): void {
 		this.socket.emit(GameEv.UNPAUSE);
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _reqStatusPaused(): void {
 		this.socket.emit(GameEv.PAUSE);
 	}
 
-	/**
-	 * @override
-	 */
-	protected async _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<OnlineGame<Coord.System>> {
+	/** @override */
+	protected async _createNewGame<S extends Coord.System>(ctorArgs: Game.CtorArgs<G,S>): Promise<OnlineGame<S>> {
 		const game = new (await import(
 			/* webpackChunkName: "game/online" */
 			"../../../game/OnlineGame"
@@ -101,9 +85,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
 		return Promise.resolve(game);
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _onGameBecomeOver(): void {
 		super._onGameBecomeOver();
 	}

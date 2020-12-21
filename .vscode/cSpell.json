@@ -79,6 +79,7 @@
         "linting",
         "markup",
         "Procfile",
+        "pnpm", "pnpx",
         "readmes",
         "todos",
         "transpiled",

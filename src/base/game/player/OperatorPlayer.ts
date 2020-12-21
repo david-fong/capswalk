@@ -77,7 +77,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	 * trigger a refresh of the seqBuffer to maintain its invariant.
 	 */
 	public seqBufferAcceptKey(key: string | undefined): void {
-		const unts = Object.freeze(this.game.grid.tile.destsFrom(this.coord).unoccupied.get);
+		const unts = this.game.grid.tile.destsFrom(this.coord).unoccupied.get;
 		if (unts.length === 0) {
 			// Every neighbouring `Tile` is occupied!
 			// In this case, no movement is possible.
@@ -129,6 +129,5 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 		return this.#seqBuffer;
 	}
 }
-JsUtils.protoNoEnum(OperatorPlayer, "_notifyWillBecomeCurrent");
 Object.freeze(OperatorPlayer);
 Object.freeze(OperatorPlayer.prototype);

@@ -131,11 +131,11 @@ export namespace WrappedEuclid2 {
 			const grid: Array<Tile> = [];
 			for (let y = 0; y < this.dimensions.height; y++) {
 				for (let x = 0; x < this.dimensions.width; x++) {
-					grid.push({
+					grid.push(Object.seal({
 						coord: (y * this.dimensions.width) + x, now: 0,
 						occId: Player.Id.NULL,
 						health: 0, char: "", seq: "",
-					});
+					}));
 				}
 			}
 			this.grid = grid;

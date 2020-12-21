@@ -89,14 +89,14 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 
 	/**
 	 * This action is commonly performed by the GameManager when
-	 * shuffling in new CSP's to its grid. Grid implementations are
-	 * encouraged to override it if they have a more efficient way to
-	 * produce the same result.
+	 * shuffling in new CSP's to its grid.
 	 *
 	 * Implementations with wrapping edges must make sure that the
 	 * return value does not contain duplicate tile entries.
 	 *
 	 * @virtual
+	 * Grid implementations are encouraged to override this if they
+	 * have a more efficient way to produce the same result.
 	 */
 	public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
 		return Array.from(new Set(

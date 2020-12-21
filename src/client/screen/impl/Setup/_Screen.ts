@@ -102,7 +102,7 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 export namespace _SetupScreen {
 
 	export const DEFAULT_PRESET = (): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> => { return {
-		coordSys: "EUCLID2" as Coord.System.W_EUCLID2,
+		coordSys: "W_EUCLID2" as Coord.System.W_EUCLID2,
 		gridDimensions: {
 			height: 21,
 			width:  21,

@@ -1,9 +1,7 @@
 import type { Socket } from "socket.io-client";
 import { GameEv } from "defs/OnlineDefs";
 import {
-	JsUtils,
-	Game,
-	Coord,
+	JsUtils, Game, Coord, VisibleGrid,
 	BrowserGameMixin,
 	Player, OperatorPlayer,
 } from "./BrowserGame";
@@ -18,15 +16,7 @@ type G = Game.Type.ONLINE;
 export class OnlineGame<S extends Coord.System>
 extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 
-	/** @override */
-	// @ts-expect-error : Redeclaring accessor as property.
-	declare public readonly currentOperator: OperatorPlayer<S>;
-
-	/** @override */
-	declare public htmlElements: BrowserGameMixin.HtmlElements;
-
 	public readonly socket: Socket;
-
 
 	/**
 	 * Note that this class does not extend `GameManager`.
@@ -80,9 +70,12 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 		return new Player(this, desc);
 	}
 
+	/** @override */
+	declare protected _createOperatorPlayer: BrowserGameMixin<G,S>["_createOperatorPlayer"];
+
 
 	/**
-	 * Normally calls {@link Game#processMoveExecute}. However, here,
+	 * Normally immediately executes the changes. However, here,
 	 * that should be done as a callback to an event created by the
 	 * server.
 	 *
@@ -92,7 +85,18 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 		this.socket.emit(GameEv.IN_GAME, desc);
 	}
 }
-export interface OnlineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {};
+export interface OnlineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {
+
+	/** @override */
+	readonly htmlElements: BrowserGameMixin.HtmlElements;
+
+	/** @override */
+	readonly grid: VisibleGrid<S>;
+
+	/** @override */
+	// @ts-expect-error : Redeclaring accessor as property.
+	readonly currentOperator: OperatorPlayer<S>;
+};
 JsUtils.applyMixins(OnlineGame, [BrowserGameMixin]);
 Object.freeze(OnlineGame);
 Object.freeze(OnlineGame.prototype);

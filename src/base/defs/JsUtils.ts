@@ -73,6 +73,12 @@ export namespace JsUtils {
 
 	/**
 	 */
+	export function hasProp<T, K extends keyof T>(obj: T, key: K): boolean {
+		return Object.prototype.hasOwnProperty.call(obj, key);
+	}
+
+	/**
+	 */
 	export function protoNoEnum<T>(
 		ctor: {new(...args: any[]): T} | Function, // <- allow abstract classes
 		...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>

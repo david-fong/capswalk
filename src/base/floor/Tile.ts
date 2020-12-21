@@ -3,6 +3,12 @@ import type { Coord } from "./Coord"; export { Coord };
 
 /**
  * A DTO 📦
+ *
+ * None of the fields can be `undefined`. This simplifies detection
+ * of "nullifying" fields vs leaving fields unchanged when processing
+ * state change descriptors.
+ *
+ * @see Tile.ImplementationNotes
  */
 export interface Tile extends Required<Tile.Changes> {
 }
@@ -44,4 +50,16 @@ export namespace Tile {
 	export interface InternalChanges extends TU.Omit<Changes,"now"> {
 		readonly now?: number;
 	}
+
+	/**
+	 * Implementations may design their internals in any way they wish.
+	 *
+	 * - They may store tiles as separate arrays for each Tile field.
+	 * - They may use compile-time Tile immutability and freeze their Tile array.
+	 *   - Then they must copy on read during development.
+	 *   - They may seal after construction.
+	 * - They may use at-runtime Tile immutability with a mutable Tile array.
+	 *   - Then they must copy and freeze on write.
+	 */
+	export type ImplementationNotes = undefined;
 }

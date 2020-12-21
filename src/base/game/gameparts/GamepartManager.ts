@@ -194,7 +194,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			do {
 				tile = this.grid._getTileAt(this.grid.getRandomCoord());
 			} while (
-				tile.occId !== undefined
+				tile.occId !== Player.Id.NULL
 				// The below equality check is necessary to prevent counting bugs.
 				|| retval.find((desc) => tile.coord === desc.coord)
 				// TODO.impl add other checks to improve distribution and reduce
@@ -291,7 +291,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			return; //⚡
 		}
 		const dest = this.grid._getTileAt(req.dest.coord);
-		if (dest.occId !== undefined || dest.now !== req.dest.now) {
+		if (dest.occId !== Player.Id.NULL || dest.now !== req.dest.now) {
 			this.executePlayerMoveEvent(req); // Reject the request.
 			return; //⚡
 		}

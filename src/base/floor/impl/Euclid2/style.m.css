@@ -1,0 +1,9 @@
+.grid {
+	display: grid;
+	grid-template-columns: repeat(var(--euclid2-grid-width), 1.67em);
+	grid-auto-rows: 1.67em;
+}
+.grid > * {
+	margin: 5%;
+	scroll-snap-align: center;
+}
