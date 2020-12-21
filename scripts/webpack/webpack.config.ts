@@ -135,6 +135,9 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 	},
 	cache: {
 		type: "filesystem",
+		buildDependencies: {
+			config: [__filename],
+		},
 	},
 	watchOptions: {
 		ignored: [ "node_modules", "**/*.d.ts", "**/*.js", ],

@@ -1,15 +1,12 @@
 ## GITATTRIBUTES FOR WEB PROJECTS
 #
-# These settings are for any web project.
-#
 # Details per file setting:
 #   text    These files should be normalized (i.e. convert CRLF to LF).
 #   binary  These files are binary and should be left untouched.
 #
 # Note that binary is a macro for -text -diff.
 #
-# Courtesy of https://github.com/alexkaratarakis/gitattributes
-######################################################################
+# Based on https://github.com/alexkaratarakis/gitattributes
 
 # Auto detect
 ##   Handle line endings automatically for files detected as
@@ -82,20 +79,20 @@ readme            text
 TODO              text
 
 # Templates
-*.dot             text
+#*.dot             text
 *.ejs             text diff=html
-*.haml            text
+#*.haml            text
 *.handlebars      text
 *.hbs             text
-*.hbt             text
-*.jade            text
-*.latte           text
-*.mustache        text
-*.njk             text
-*.phtml           text
-*.tmpl            text
-*.tpl             text
-*.twig            text
+#*.hbt             text
+#*.jade            text
+#*.latte           text
+#*.mustache        text
+#*.njk             text
+#*.phtml           text
+#*.tmpl            text
+#*.tpl             text
+#*.twig            text
 *.vue             text
 
 # Configs
@@ -108,8 +105,9 @@ TODO              text
 .gitconfig        text
 .htaccess         text
 *.lock            text -diff
-package-lock.json text -diff
-pnpm-lock.yaml    text -diff
+package.json      text eol=lf
+package-lock.json text eol=lf -diff
+pnpm-lock.yaml    text eol=lf -diff
 *.toml            text
 *.yaml            text
 *.yml             text
@@ -121,21 +119,21 @@ makefile          text
 Procfile          text
 
 # Graphics
-*.ai              binary
-*.bmp             binary
-*.eps             binary
+#*.ai              binary
+#*.bmp             binary
+#*.eps             binary
 *.gif             binary
-*.gifv            binary
+#*.gifv            binary
 *.ico             binary
 *.jng             binary
 *.jp2             binary
 *.jpg             binary
 *.jpeg            binary
-*.jpx             binary
-*.jxr             binary
+#*.jpx             binary
+#*.jxr             binary
 *.pdf             binary
 *.png             binary
-*.psb             binary
+#*.psb             binary
 *.psd             binary
 # SVG treated as an asset (binary) by default.
 *.svg             text
@@ -149,30 +147,30 @@ Procfile          text
 *.webp            binary
 
 # Audio
-*.kar             binary
+#*.kar             binary
 *.m4a             binary
 *.mid             binary
 *.midi            binary
 *.mp3             binary
 *.ogg             binary
-*.ra              binary
+#*.ra              binary
 
 # Video
-*.3gpp            binary
-*.3gp             binary
-*.as              binary
-*.asf             binary
-*.asx             binary
+#*.3gpp            binary
+#*.3gp             binary
+#*.as              binary
+#*.asf             binary
+#*.asx             binary
 *.fla             binary
 *.flv             binary
 *.m4v             binary
-*.mng             binary
+#*.mng             binary
 *.mov             binary
 *.mp4             binary
 *.mpeg            binary
 *.mpg             binary
-*.ogv             binary
-*.swc             binary
+#*.ogv             binary
+#*.swc             binary
 *.swf             binary
 *.webm            binary
 

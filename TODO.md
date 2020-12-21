@@ -20,7 +20,6 @@
 1. In package.json > exports, mark global css files as side-effectful.
     - Hopefully this will help get rid of some empty-js-for-css files from MiniCssExtractPlugin.
 1. Refactor JsUtils descriptor methods to reuse frozen result of propertyNames query and maybe to use `Object.defineProperties` to batch it.
-1. Remove the import-path alias for `base/` from client and server. Also update webpack `resolve.modules`.
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.
     - Also do this for the Lang-related constructors.
 1. Get rid of player "immortality". It's too complicated and I don't think see much merit anymore.

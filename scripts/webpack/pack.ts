@@ -26,11 +26,6 @@ if (process.env.NODE_ENV === "production") {
 		JSON.stringify(pkg, undefined, "  "),
 		null, (err) => console.error(err),
 	);
-	fs.copyFile(
-		path.resolve(__dirname, "templates/stage.sh"),
-		path.resolve(__dirname, "../../dist/stage.sh"),
-		(err) => console.error(err),
-	);
 }
 
 
