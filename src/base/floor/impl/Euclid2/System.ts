@@ -116,11 +116,6 @@ export namespace WrappedEuclid2 {
 			width:  <const>{ min: 11, max: 51 },
 		});
 
-		/**
-		 * A 2-dimensional rectangular array with height and width following
-		 * their corresponding fields, containing `Tile` objects with `pos`
-		 * fields allowing indexing to themselves. Uses _row-major_ ordering.
-		 */
 		protected readonly grid: TU.RoArr<Tile>;
 
 		protected readonly iacCache: TU.RoArr<IAC>;
@@ -138,7 +133,7 @@ export namespace WrappedEuclid2 {
 					}));
 				}
 			}
-			this.grid = grid;
+			this.grid = Object.freeze(grid);
 
 			const iacCache = [];
 			for (let y = 0; y < desc.dimensions.height; y++) {

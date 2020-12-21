@@ -177,18 +177,20 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * does not update until after the movement request has been
 	 * executed.
 	 *
-	 * @param sameReqOtherModDescs
+	 * @param otherTiles
 	 * A list of other descs including those specifying modifications
 	 * to be made in the same `execute???Request` function as the one
 	 * for which this is being called. Without this information, we
 	 * could mess up `lastKnownUpdateId` counters at those locations.
 	 */
 	public dryRunSpawnFreeHealth(
-		sameReqOtherModDescs: TU.RoArr<Tile.Changes>,
+		otherTiles: Array<Tile.Changes>,
 	): TU.RoArr<Tile.Changes> | undefined {
 		let healthToSpawn = this.avgHealth - this.currentFreeHealth;
-		if (healthToSpawn <= 0) return undefined;
-		const retval: Array<Tile.Changes> = [];
+		if (healthToSpawn <= 0) {
+			return undefined; //⚡
+		}
+		const retval: Array<Tile.Changes> = otherTiles;
 		while (healthToSpawn > 0) {
 			let tile: Tile;
 			do {
@@ -204,7 +206,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			const tileHealthToAdd = Game.K.AVERAGE_HEALTH_TO_SPAWN_ON_TILE;
 			if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
 				let otherDesc: Tile.Changes | undefined = undefined;
-				if (otherDesc = sameReqOtherModDescs.find((desc) => desc.coord === tile.coord)) {
+				if (otherDesc = otherTiles.find((desc) => desc.coord === tile.coord)) {
 					// @ts-expect-error : RO=
 					otherDesc.health
 						= (otherDesc.health ?? 0) + tileHealthToAdd;
@@ -225,7 +227,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 
 	/** @override */
 	protected executeTileModEvent(
-		desc: Readonly<Tile>,
+		desc: Tile.Changes,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
 		JsUtils.deepFreeze(desc);
@@ -243,35 +245,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
 	}
 
-	/**
-	 * Perform checks on an incoming event request for some action that
-	 * a player can perform while the game is playing (ie. not paused
-	 * or over).
-	 *
-	 * @returns
-	 * The player specified by the given ID, or undefined if the
-	 * game is not playing, in which case the event request should
-	 * be rejected.
-	 */
-	private managerCheckGamePlayingRequest(req: StateChange.Req): Player<S> | undefined {
-		if (this.status !== Game.Status.PLAYING) {
-			return undefined;
-		}
-		const player = this.players[req.playerId];
-		if (!player) {
-			throw new Error("No such player exists.");
-		}
-		if (req.playerNow !== player.now) {
-			throw new RangeError((req.playerNow < player.now)
-			? ("Clients should not make requests until they have"
-				+ " received my response to their last request.")
-			: ("Client seems to have incremented the request ID"
-				+ " counter on their own, which is is illegal.")
-			);
-		}
-		return player;
-	}
-
 
 	/**
 	 * Reject the request if `dest` is occupied, or if the specified
@@ -285,20 +258,20 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * to be made.
 	 */
 	public processMoveRequest(req: StateChange.Req): void {
-		const player = this.managerCheckGamePlayingRequest(req);
-		if (player === undefined) {
+		const player = this.players[req.playerId]!;
+		const reqDest = this.grid._getTileAt(req.dest.coord);
+		if (  this.status !== Game.Status.PLAYING
+		 ||        player === undefined
+		 || reqDest.occId !== Player.Id.NULL
+		 ||   reqDest.now !== req.dest.now
+		) {
 			this.executePlayerMoveEvent(req); // Reject the request:
-			return; //⚡
-		}
-		const dest = this.grid._getTileAt(req.dest.coord);
-		if (dest.occId !== Player.Id.NULL || dest.now !== req.dest.now) {
-			this.executePlayerMoveEvent(req); // Reject the request.
 			return; //⚡
 		}
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
 		const newPlayerHealthValue
 			= player.status.health
-			+ (dest.health * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
+			+ (reqDest.health * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
 			- (moveIsBoost ? this.healthCostOfBoost : 0);
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make
@@ -309,10 +282,16 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 
 		// Update stats records:
 		const playerScoreInfo = this.scoreInfo.entries[player.playerId]!;
-		playerScoreInfo.totalHealthPickedUp += dest.health;
+		playerScoreInfo.totalHealthPickedUp += reqDest.health;
 		playerScoreInfo.moveCounts[req.moveType] += 1;
 
 		// Set response fields according to spec in `PlayerMovementEvent`:
+		const resDest: Tile.Changes = {
+			coord: reqDest.coord,
+			now: (1 + reqDest.now),
+			health: 0,
+			...this.dryRunShuffleLangCspAt(reqDest.coord),
+		};
 		this.executePlayerMoveEvent(<StateChange.Res>{
 			eventId: this.nextUnusedEventId,
 			playerId: req.playerId,
@@ -321,13 +300,12 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			playersHealth: {
 				[player.playerId]: newPlayerHealthValue,
 			},
-			dest: {
-				coord: dest.coord,
-				now: (1 + dest.now),
-				health: 0,
-				...this.dryRunShuffleLangCspAt(dest.coord),
-			},
-			tiles: this.dryRunSpawnFreeHealth([req.dest]),
+			dest: resDest,
+			tiles: this.dryRunSpawnFreeHealth([req.dest, {
+				coord: player.coord,
+				now: this.grid._getTileAt(player.coord).now + 1,
+				occId: Player.Id.NULL,
+			}]),
 		});
 	}
 

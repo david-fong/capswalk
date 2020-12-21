@@ -109,29 +109,29 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	/**
 	 */
 	protected executeTileModEvent(
-		desc: Readonly<Tile.Changes>,
+		patch: Tile.Changes,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
-		JsUtils.deepFreeze(desc);
-		const curr = this.grid._getTileAt(desc.coord);
-		if (curr.now > desc.now) return;
+		JsUtils.deepFreeze(patch);
+		const tile = this.grid._getTileAt(patch.coord);
+		if (tile.now > patch.now) return;
 		if (DEF.DevAssert) {
 			// Enforced By: `GamepartManager.dryRunSpawnFreeHealth`.
-			if (curr.now === desc.now) throw new RangeError("never");
+			if (tile.now === patch.now) throw new RangeError("never");
 		}
 
-		if (desc.char !== undefined) {
+		if (patch.char !== undefined) {
 			// Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
 			if (doCheckOperatorSeqBuffer) {
 				// ^Do this when non-operator moves into the the operator's vicinity.
 				this.operators.forEach((op) => {
-					if (this.grid._getTileDestsFrom(op.coord).includes(curr)) {
+					if (this.grid._getTileDestsFrom(op.coord).includes(tile)) {
 						op.seqBufferAcceptKey("");
 					}
 				});
 			}
 		}
-		this.grid.editTile(desc);
+		this.grid.editTile(patch);
 	}
 
 	/**
@@ -158,7 +158,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		this._recordEvent(desc);
 
 		this.executeTileModEvent(desc.dest, player !== this.currentOperator);
-		desc.tiles?.forEach((desc) => {
+		desc.tiles.forEach((desc) => {
 			this.executeTileModEvent(desc);
 		});
 		Object.entries(desc.playersHealth).forEach(([pid, health]) => {
@@ -185,7 +185,6 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 			: (clientEventLag <= 1)) {
 
 			player.moveTo(desc.dest.coord);
-			// Below is computationally the same as "(player.lastAcceptedRequestId)++"
 			player.now = desc.playerNow;
 
 		} else {

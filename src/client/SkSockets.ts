@@ -7,7 +7,6 @@ type SockName = "joiner" | "group" | "game";
 
 
 /**
- *
  */
 export class SkSockets {
 
@@ -37,6 +36,9 @@ export class SkSockets {
 			reconnectionAttempts: Group.GameServerReconnectionAttempts,
 			autoConnect: false,
 			transports: ["websocket"],
+			// ^This is important. Long-polling makes no guarantees
+			// about whether messages will be received in the order
+			// in which they were sent.
 		});
 		const socket = manager.socket(SkServer.Nsps.GROUP_JOINER);
 		this._registerSocket(socket, "joiner");
