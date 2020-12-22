@@ -15,7 +15,7 @@
 		"target": "es6",
 		"module": "ES2020",
 		"lib": [ "ES2020", "dom", ],
-		"experimentalDecorators": true,
+		//"experimentalDecorators": true,
 
 		// Emit Flags:
 		"sourceMap": true,

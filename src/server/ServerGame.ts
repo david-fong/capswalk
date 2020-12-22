@@ -247,12 +247,12 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 	}
 
 	/** @override */
-	public executePlayerMoveEvent(desc: StateChange.Res | StateChange.Req): void {
-		super.executePlayerMoveEvent(desc);
+	public commitStateChange(desc: StateChange.Res): void {
+		super.commitStateChange(desc);
 
 		if (desc.eventId === undefined) {
 			// The request was rejected- Notify the requester.
-			this.playerSockets.get(desc.playerId)!.emit(
+			this.playerSockets.get(desc.initiator)!.emit(
 				GameEv.IN_GAME,
 				desc,
 			);

@@ -1,11 +1,9 @@
-import type { Coord, Tile } from "floor/Tile";
+import { JsUtils } from "defs/JsUtils";
 import { Game } from "../Game";
-
-import { StateChange } from "../StateChange";
-export { StateChange };
+import type { Coord, Tile } from "floor/Tile";
+import { StateChange } from "../StateChange"; export { StateChange };
 
 import { GamepartBase } from "./GamepartBase";
-import { JsUtils } from "defs/JsUtils";
 
 
 /**
@@ -44,7 +42,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * ID's are _not_ wrapped in their representation.
 	 */
 	private readonly eventRecordBitmap: Array<boolean>;
-	#nextUnusedEventId: StateChange.Res["eventId"];
+	#nextUnusedEventId: StateChange.Res.Accepted["eventId"];
 
 	public constructor(
 		gameType: G,
@@ -81,7 +79,7 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * - RangeError if it is not a positive integer
 	 * - Error if another event was already recorded with the same ID.
 	 */
-	private _recordEvent(desc: StateChange.Res): void {
+	private _recordEvent(desc: StateChange.Res.Accepted): void {
 		const id = desc.eventId;
 		const wrappedId = id % Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH;
 		if (DEF.DevAssert) {
@@ -133,59 +131,26 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 	 * Automatically lowers the {@link Player#requestInFlight} field
 	 * for the requesting `Player` if the arriving event description
 	 * is the newest one for the specified `Player`.
-	 *
-	 * Updates that are received after others that are more recent and
-	 * concern the same Tile are ignored. This is okay since
-	 * the only thing that matters about a Tile to the outside
-	 * world is its last known state.
 	 */
-	protected executePlayerMoveEvent(desc: StateChange.Res | StateChange.Req): void {
+	protected commitStateChange(desc: StateChange.Res): void {
 		JsUtils.deepFreeze(desc);
-		const player = this.players[desc.playerId]!;
-		const clientEventLag = desc.playerNow - player.now;
+		const player = this.players[desc.initiator]!;
 
 		if (desc.eventId === undefined) {
-			if (clientEventLag === 0) {
-				player.requestInFlight = false;
-			}
+			player.requestInFlight = false;
 			return; //⚡
 		}
 		this._recordEvent(desc);
 
-		this.executeTileModEvent(desc.dest, player !== this.currentOperator);
 		desc.tiles.forEach((desc) => {
 			this.executeTileModEvent(desc);
 		});
-		Object.entries(desc.playersHealth).forEach(([pid, health]) => {
-			this.players[pid as unknown as number]!.status.health = health;
+		Object.entries(desc.players).forEach(([pid, changes]) => {
+			const player = this.players[pid as unknown as number]!;
+			player.status.health = changes.health;
+			player.moveTo(changes.coord);
 		});
 
-
-		if (clientEventLag > 1) {
-			// ===== Out of order receipt (clientside) =====
-			// Already received more recent request responses.
-			if (DEF.DevAssert && player === this.currentOperator) {
-				// Operator never receives their own updates out of
-				// order because they only have one unacknowledged
-				// in-flight request at a time.
-				throw new Error("never");
-			}
-			return; //⚡
-		}
-		// Okay- the response is an acceptance of the specified player's most
-		// recent request pending this acknowledgement.
-		player.requestInFlight = false;
-		if ((player === this.currentOperator)
-			? (clientEventLag === 1)
-			: (clientEventLag <= 1)) {
-
-			player.moveTo(desc.dest.coord);
-			player.now = desc.playerNow;
-
-		} else {
-			// Apparent negative lag. Suspected tampering.
-			throw new RangeError("never");
-		}
 	}
 }
 JsUtils.protoNoEnum(GamepartEvents, "nextUnusedEventId", "_recordEvent");

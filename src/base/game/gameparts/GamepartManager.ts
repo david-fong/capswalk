@@ -253,12 +253,12 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * to be made.
 	 */
 	public processMoveRequest(req: StateChange.Req): void {
-		const player = this.players[req.playerId]!;
-		const reqDest = this.grid._getTileAt(req.dest.coord);
+		const player = this.players[req.initiator]!;
+		const reqDest = this.grid._getTileAt(req.moveDest.coord);
 		if (  this.status !== Game.Status.PLAYING
 		 || reqDest.occId !== Player.Id.NULL
 		) {
-			this.executePlayerMoveEvent(req); // Reject the request:
+			this.commitStateChange({ initiator: req.initiator });
 			return; //⚡
 		}
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
@@ -269,7 +269,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make
 			// the player become downed (or if they are already downed):
-			this.executePlayerMoveEvent(req);
+			this.commitStateChange({ initiator: req.initiator });
 			return; //⚡
 		}
 
@@ -284,16 +284,15 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			health: 0,
 			...this.dryRunShuffleLangCspAt(reqDest.coord),
 		};
-		this.executePlayerMoveEvent(<StateChange.Res>{
+		this.commitStateChange(<StateChange.Res>{
 			eventId: this.nextUnusedEventId,
-			playerId: req.playerId,
+			initiator: req.initiator,
 			moveType: req.moveType,
-			playerNow: (1 + player.now),
-			playersHealth: {
+			players: {
 				[player.playerId]: newPlayerHealthValue,
 			},
 			dest: resDest,
-			tiles: this.dryRunSpawnFreeHealth([req.dest, {
+			tiles: this.dryRunSpawnFreeHealth([req.moveDest, {
 				coord: player.coord,
 				occId: Player.Id.NULL,
 			}]),
@@ -317,7 +316,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 *
 	 * @param sourceP
 	 */
-	private _processPlayerContact(sourceP: Player<S>): StateChange.Res["playersHealth"] {
+	private _processPlayerContact(sourceP: Player<S>): StateChange.Res["initiator"] {
 		return undefined!;
 	}
 

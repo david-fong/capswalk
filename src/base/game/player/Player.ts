@@ -26,8 +26,6 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 
 	public readonly avatar: Player.Avatar;
 
-	public now: number;
-
 	public requestInFlight: boolean;
 
 	/**
@@ -47,7 +45,6 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	public reset(coord: Coord): void {
 		super.reset(coord);
 		this.status.reset();
-		this.now = StateChange.INITIAL_PLAYER_REQUEST_ID;
 		this.requestInFlight = false;
 	}
 
@@ -87,9 +84,8 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		}
 		this.requestInFlight = true;
 		this.game.processMoveRequest({
-			playerId: this.playerId,
-			playerNow: this.now,
-			dest,
+			initiator: this.playerId,
+			moveDest: dest,
 			moveType: type,
 		});
 	}

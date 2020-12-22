@@ -1,10 +1,5 @@
-import type { Tile } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "game/player/Player";
-
-// This helps the IDE synchronize renaming.
-type HasEventId = {
-	eventId?: number | undefined;
-};
 
 /**
  */
@@ -17,79 +12,47 @@ export namespace StateChange {
 	 */
 	export const INITIAL_PLAYER_REQUEST_ID = 0;
 
+	export interface _Base {
+		readonly initiator: Player.Id;
+	}
+
 	/**
 	 * An immutable Request DTO 📦
 	 */
-	export interface Req extends HasEventId {
-		/**
-		 * The requester does not need to set this field. It is only
-		 * here for typing purposes to differentiate between rejected
-		 * and accepted requests when executing responses.
-		 */
-		readonly eventId?: undefined;
-
-		readonly playerId: Player.Id;
-
-		/**
-		 * ### Client Request
-		 *
-		 * The ID of the last request made by this player that the server
-		 * _accepted_. A requester cannot send a new request to
-		 * the Game Manager until it has received the Game Manager's
-		 * response to the last request it made.
-		 *
-		 * ### Server Response
-		 *
-		 * If the server accepts the request, it must broadcast a response
-		 * with this field set to the incremented value.
-		 *
-		 * If it rejects this request, it must directly acknowledge its
-		 * receipt of the request (no need to broadcast to all clients)
-		 * with this field unchanged.
-		 *
-		 * ### Things that should never happen
-		 *
-		 * If the Game Manager receives a request with a value in
-		 * this field lower than the one it set in its last response to the
-		 * requester, this would mean that the requester didn't wait for a
-		 * response to its previous request, which it is not supposed to do.
-		 *
-		 * **Note:** If the above requirement is ever changed to allow request
-		 * pipelining, this field's spec must change to require _all_ server
-		 * responses to have this field set to an incremented value, including
-		 * rejects.
-		 *
-		 * The server should never receive a request with a value higher
-		 * than the one it provided in its last response to this requester.
-		 */
-		readonly playerNow: number;
-
+	export interface Req extends _Base {
 		readonly moveType: Player.MoveType;
-
-		/**
-		 * Where the player wants to move to.
-		 */
-		readonly dest: Tile.Changes;
+		readonly moveDest: TU.Omit<Tile.Changes,"occId">;
 	}
 
 	/**
 	 * An immutable Response DTO 📦
 	 */
-	export interface Res extends Readonly<TU.Omit<Req,"eventId">>, HasEventId {
-		/**
-		 * A positive, unique, integer-valued identifier for an event.
-		 */
-		readonly eventId: number;
+	export type Res = Res.Accepted | Res.Rejected;
+	export namespace Res {
 
-		/**
-		 * Tiles other than the tile that the initiating player is moving to.
-		 */
-		readonly tiles: TU.RoArr<Tile.Changes>;
+		export interface Accepted extends _Base {
+			/**
+			 * A positive, unique, integer-valued identifier for an event.
+			 */
+			readonly eventId: number;
 
-		/**
-		 * Health changes to players.
-		 */
-		readonly playersHealth: Readonly<Record<Player.Id, Player.Health>>;
+			/**
+			 * Tiles other than the tile that the initiating player is moving to.
+			 *
+			 * Occupant changes are communicated in the `players` field- not here.
+			 */
+			readonly tiles: TU.RoArr<Tile.Changes>;
+
+			/**
+			 */
+			readonly players: Readonly<Record<Player.Id, {
+				coord: Coord,
+				health: Player.Health,
+			}>>;
+		}
+		export interface Rejected extends _Base {
+			readonly eventId?: undefined;
+		}
 	}
 }
 Object.freeze(StateChange);

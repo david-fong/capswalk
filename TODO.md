@@ -12,10 +12,9 @@
 ### Things I feel like doing
 
 1. Mega-task: change Tiles to DTO's and enable Grid implementations to decide how to do display (eg. DOM, SVG, Canvas).
-    - Remove `coord` field from `Tile.Changes` and make `StateChange.Req` have a map from coords to `Tile.Changes` objects.
+    - Remove `coord` field from `Tile.Changes` and make `StateChange.Req` have a map from coords to `Tile.Changes` objects. Pipe that map through `dryRunSpawnFreeHealthTiles`
     - Update documentation wherever needed- especially the floor readme.
-1. Turn off TypeScript experimental decorators?
-    - Rationale: After reading [the TC39 proposal docs](https://github.com/tc39/proposal-decorators#option-b-init-method-decorators) and seeing how much they differ from TypeScript's current spec, I don't want to commit to something that will likely change drastically in the future.
+1. Delete Player.now. In the future, replace it _and_ `Player.isRequestInFlight` with a undo-able queue of in-flight requests.
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.
     - Also do this for the Lang-related constructors.
 1. Get rid of player "immortality". It's too complicated and I don't think see much merit anymore.
@@ -113,6 +112,8 @@
 - In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
 - Take a look at [eslint-plugin-css-modules](https://www.npmjs.com/package/eslint-plugin-css-modules).
 - May be able to remove dependency on `express-static-gzip` after [this](https://github.com/expressjs/compression/issues/71) is resolved. But actually probably not :P. I think that thread is about dynamic compression.
+- Turn on TypeScript experimental decorators?
+  - After reading [the TC39 proposal docs](https://github.com/tc39/proposal-decorators#option-b-init-method-decorators) and seeing how much they differ from TypeScript's current spec, I don't want to commit to something that will likely change drastically in the future.
 
 ---
 

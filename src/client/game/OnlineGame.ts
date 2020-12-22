@@ -47,7 +47,7 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 		}
 		this.socket.on(
 			GameEv.IN_GAME,
-			this.executePlayerMoveEvent.bind(this),
+			this.commitStateChange.bind(this),
 		);
 		this.socket.on(
 			GameEv.RESET,
