@@ -374,6 +374,6 @@ export namespace GamepartManager {
 		return fr;
 	}
 }
-JsUtils.protoNoEnum(GamepartManager, "managerCheckGamePlayingRequest", "_processPlayerContact");
+JsUtils.protoNoEnum(GamepartManager, "_processPlayerContact");
 Object.freeze(GamepartManager);
 Object.freeze(GamepartManager.prototype);

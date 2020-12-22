@@ -86,9 +86,10 @@ export namespace JsUtils {
 		// public prototype properties, and inclusion of non-public
 		// prototype properties (without static checking existence).
 	): void {
+		const hasProps = Object.freeze(Object.getOwnPropertyNames(ctor.prototype));
 		propNames.forEach((propName) => {
 			if (DEF.DevAssert) {
-				if (!Object.getOwnPropertyNames(ctor.prototype).includes(propName as string)) {
+				if (!hasProps.includes(propName as string)) {
 					const msg = `\`${ctor.name}\` prototype has no property named \"${propName}\"`;
 					throw new TypeError(msg); // Mismatched property name.
 				}
@@ -117,9 +118,10 @@ export namespace JsUtils {
 	function _configProp<T>(
 		inst: T, propNames: TU.RoArr<string>, descriptor: PropertyDescriptor,
 	): void {
+		const hasProps = Object.freeze(Object.getOwnPropertyNames(inst));
 		propNames.forEach((propName) => {
 			if (DEF.DevAssert) {
-				if (!Object.getOwnPropertyNames(inst).includes(propName as string)) {
+				if (!hasProps.includes(propName as string)) {
 					const msg = `\`${(inst as any).__proto__.constructor.name}\``
 					+ ` instance has no property named \"${propName}\"`;
 					throw new TypeError(msg); // Mismatched property name.

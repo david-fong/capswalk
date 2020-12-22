@@ -133,12 +133,12 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 		splitChunks: { chunks: "all", cacheGroups: {} },
 		removeAvailableModules: (PACK_MODE === "production"),
 	},
-	cache: {
+	/* cache: {
 		type: "filesystem",
 		buildDependencies: {
 			config: [__filename],
 		},
-	},
+	}, */
 	watchOptions: {
 		ignored: [ "node_modules", "**/*.d.ts", "**/*.js", ],
 	},
@@ -242,7 +242,6 @@ const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>
 	config.target = "node12";
 	config.externals = [ nodeExternals(), ], // <- Does not whitelist tslib.
 	// alternative to above: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))
-	config.resolve.extensions!.push(".js");
 	config.node = {
 		__filename: false,
 		__dirname: false,

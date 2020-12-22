@@ -11,6 +11,7 @@
   "repository": "github:david-fong/snakey3",
   "type": "commonjs",
   "files": [],
+  "sideEffects": ["*.css"],
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "devinit": "bash scripts/devinit.sh",

@@ -34,11 +34,11 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 		if (JsUtils.hasProp(changes, "occId")) {
 			tile.occId = changes.occId!;
 		}
-		if (JsUtils.hasProp(changes, "char")) {
-			tile.char = changes.char!;
-		}
 		if (JsUtils.hasProp(changes, "health")) {
 			tile.health = changes.health!;
+		}
+		if (JsUtils.hasProp(changes, "char")) {
+			tile.char = changes.char!;
 		}
 	}
 }

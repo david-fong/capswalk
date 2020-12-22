@@ -126,11 +126,12 @@ export namespace WrappedEuclid2 {
 			const grid: Array<Tile> = [];
 			for (let y = 0; y < this.dimensions.height; y++) {
 				for (let x = 0; x < this.dimensions.width; x++) {
-					grid.push(Object.seal({
-						coord: (y * this.dimensions.width) + x, now: 0,
+					const tile: Tile = {
+						coord: (y * this.dimensions.width) + x,
 						occId: Player.Id.NULL,
 						health: 0, char: "", seq: "",
-					}));
+					};
+					grid.push(tile);
 				}
 			}
 			this.grid = Object.freeze(grid);
@@ -235,7 +236,7 @@ export namespace WrappedEuclid2 {
 		}
 
 		public _getTileAt(coord: Coord): Tile {
-			return this.grid[coord]!;
+			return Object.assign({}, this.grid[coord]!);
 		}
 		public _getTileDestsFrom(coord: Coord, radius: number = 1): Array<Tile> {
 			const dim = this.dimensions;
@@ -269,7 +270,7 @@ export namespace WrappedEuclid2 {
 				if (wrapX) { dests.length -= r+1 }
 			}
 			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
-			return dests;
+			return dests.map((tile) => Object.assign({}, tile));
 		}
 		public _getTileSourcesTo(coord: Coord, radius: number = 1): Array<Tile> {
 			return this._getTileDestsFrom(coord, radius);
