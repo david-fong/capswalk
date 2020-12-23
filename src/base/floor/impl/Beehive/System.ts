@@ -123,7 +123,7 @@ export namespace Beehive {
 			this.grid = Object.freeze(grid);
 		}
 
-		public editTile(changes: Tile.Changes): void {
+		public editTile(coord: Coord, changes: Tile.Changes): void {
 			// TODO.impl
 		}
 

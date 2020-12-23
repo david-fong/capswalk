@@ -92,8 +92,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		this.lang.reset();
 		// Shuffle everything:
 		this.grid.shuffledForEachTile((tile) => {
-			this.grid.editTile({
-				coord: tile.coord,
+			this.grid.editTile(tile.coord, {
 				...this.dryRunShuffleLangCspAt(tile.coord)
 			});
 		});
@@ -138,8 +137,8 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	public dryRunShuffleLangCspAt(coord: Coord, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
 		// First, clear values for the target tile so its current
 		// (to-be-previous) values don't get unnecessarily avoided.
-		this.grid.editTile({
-			coord, ...Lang.CharSeqPair.NULL
+		this.grid.editTile(coord, {
+			...Lang.CharSeqPair.NULL
 		});
 
 		let avoid: TU.RoArr<Lang.Seq> = this.grid
@@ -183,61 +182,54 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * for which this is being called. Without this information, we
 	 * could mess up `lastKnownUpdateId` counters at those locations.
 	 */
-	public dryRunSpawnFreeHealth(
-		otherTiles: Array<Tile.Changes>,
-	): TU.RoArr<Tile.Changes> | undefined {
+	public dryRunSpawnFreeHealth(changes: Record<Coord, Tile.Changes>): Record<Coord, Tile.Changes> | undefined {
 		let healthToSpawn = this.avgHealth - this.currentFreeHealth;
 		if (healthToSpawn <= 0) {
 			return undefined; //⚡
 		}
-		const retval: Array<Tile.Changes> = otherTiles;
 		while (healthToSpawn > 0) {
 			let tile: Tile;
 			do {
 				tile = this.grid._getTileAt(this.grid.getRandomCoord());
 			} while (
-				tile.occId !== Player.Id.NULL
-				// The below equality check is necessary to prevent counting bugs.
-				|| retval.find((desc) => tile.coord === desc.coord)
-				// TODO.impl add other checks to improve distribution and reduce
+				tile.occId !== Player.Id.NULL || changes[tile.coord] !== undefined
+				// TODO.design add other checks to improve distribution and reduce
 				// crowding of freeHealth. Make sure it is sensitive to
 				// `this.averageFreeHealthPerTile`.
 			);
 			const tileHealthToAdd = Game.K.AVERAGE_HEALTH_TO_SPAWN_ON_TILE;
 			if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
-				let otherDesc: Tile.Changes | undefined = undefined;
-				if (otherDesc = otherTiles.find((desc) => desc.coord === tile.coord)) {
+				let otherDesc = changes[tile.coord];
+				if (otherDesc !== undefined) {
 					// @ts-expect-error : RO=
-					otherDesc.health
-						= (otherDesc.health ?? 0) + tileHealthToAdd;
+					otherDesc.health = (otherDesc.health ?? 0) + tileHealthToAdd;
 				} else {
-					retval.push({
-						coord: tile.coord,
+					changes[tile.coord] = {
 						// newCharSeqPair: undefined, // "do not change".
 						health: tile.health + tileHealthToAdd,
-					});
+					};
 				}
 			}
 			healthToSpawn -= tileHealthToAdd;
 		}
-		return retval;
+		return changes;
 	}
 
 
 	/** @override */
 	protected commitTileMods(
-		desc: Tile.Changes,
+		coord: Coord, desc: Tile.Changes,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
 		JsUtils.deepFreeze(desc);
-		const tile = this.grid._getTileAt(desc.coord);
+		const tile = this.grid._getTileAt(coord);
 		this.#currentFreeHealth += desc.health! - tile.health;
 		if (desc.health === 0) {
 			this.#healthTiles.delete(tile);
 		} else {
 			this.#healthTiles.add(tile);
 		}
-		super.commitTileMods(desc, doCheckOperatorSeqBuffer);
+		super.commitTileMods(coord, desc, doCheckOperatorSeqBuffer);
 	}
 
 
@@ -248,7 +240,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 */
 	public processMoveRequest(req: StateChange.Req): void {
 		const initiator = this.players[req.initiator]!;
-		const reqDest = this.grid._getTileAt(req.moveDest.coord);
+		const reqDest = this.grid._getTileAt(req.moveDest);
 		if (  this.status !== Game.Status.PLAYING
 		 || reqDest.occId !== Player.Id.NULL
 		) {
@@ -273,21 +265,21 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		playerScoreInfo.moveCounts[req.moveType] += 1;
 
 		// Set response fields according to spec in `PlayerMovementEvent`:
-		const resDest: Tile.Changes = {
-			coord: reqDest.coord,
-			health: 0,
-			...this.dryRunShuffleLangCspAt(reqDest.coord),
-		};
 		this.commitStateChange(<StateChange.Res.Accepted>{
 			initiator: req.initiator,
 			moveType: req.moveType,
 			players: {
 				[initiator.playerId]: {
 					health: newPlayerHealthValue,
-					coord: resDest.coord
+					coord: req.moveDest,
 				},
 			},
-			tiles: this.dryRunSpawnFreeHealth([req.moveDest]),
+			tiles: this.dryRunSpawnFreeHealth({
+				[req.moveDest]: {
+					health: 0,
+					...this.dryRunShuffleLangCspAt(reqDest.coord),
+				},
+			}),
 		});
 	}
 

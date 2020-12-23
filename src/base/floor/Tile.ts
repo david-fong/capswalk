@@ -11,13 +11,13 @@ import type { Coord } from "./Coord"; export { Coord };
  * @see Tile.ImplementationNotes
  */
 export interface Tile extends Required<Tile.Changes> {
+	readonly coord: Coord;
 }
 export namespace Tile {
 	/**
 	 * A DTO of changes 📦
 	 */
 	export interface Changes {
-		readonly coord: Coord;
 
 		/**
 		 * To evict an occupant, pass `Player.Id.NULL`.

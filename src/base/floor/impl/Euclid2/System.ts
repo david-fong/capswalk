@@ -147,8 +147,8 @@ export namespace WrappedEuclid2 {
 			JsUtils.propNoWrite(this as Grid, "grid", "iacCache");
 		}
 
-		public editTile(changes: Tile.Changes): void {
-			Object.assign(this.grid[changes.coord], changes);
+		public editTile(coord: Coord, changes: Tile.Changes): void {
+			Object.assign(this.grid[coord], changes);
 		}
 
 		public forEachTile(consumer: (tile: Tile, index: number) => void): void {

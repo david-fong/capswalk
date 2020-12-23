@@ -28,9 +28,9 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 		this._superVisibleGrid(gridElem);
 	}
 	/** @override */
-	public editTile(changes: Tile.Changes): void {
-		super.editTile(changes);
-		const tile = this.#tiles[changes.coord]!;
+	public editTile(coord: Coord, changes: Tile.Changes): void {
+		super.editTile(coord, changes);
+		const tile = this.#tiles[coord]!;
 		if (JsUtils.hasProp(changes, "occId")) {
 			tile.occId = changes.occId!;
 		}

@@ -82,7 +82,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		this.requestInFlight = true;
 		this.game.processMoveRequest({
 			initiator: this.playerId,
-			moveDest: dest,
+			moveDest: dest.coord,
 			moveType: type,
 		});
 	}

@@ -40,8 +40,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 */
 	public reset(): void {
 		this.forEachTile((tile, index) => {
-			this.editTile({
-				coord: tile.coord,
+			this.editTile(tile.coord, {
 				occId: Player.Id.NULL,
 				health: 0, char: "", seq: "",
 			});
@@ -50,7 +49,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 
 	/**
 	 */
-	public abstract editTile(changes: Readonly<Tile.Changes>): void;
+	public abstract editTile(coord: Coord, changes: Readonly<Tile.Changes>): void;
 
 	/**
 	 * For BaseGame's implementation of SER/DES to work, the traversal

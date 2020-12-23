@@ -21,7 +21,7 @@ export namespace StateChange {
 	 */
 	export interface Req extends _Base {
 		readonly moveType: Player.MoveType;
-		readonly moveDest: TU.Omit<Tile.Changes,"occId">;
+		readonly moveDest: Coord;
 	}
 
 	/**
@@ -31,14 +31,14 @@ export namespace StateChange {
 	export namespace Res {
 
 		export interface Accepted extends _Base {
-			rejected?: undefined;
+			readonly rejected?: undefined;
 
 			/**
 			 * Tiles other than the tile that the initiating player is moving to.
 			 *
 			 * Occupant changes are communicated in the `players` field- not here.
 			 */
-			readonly tiles: TU.RoArr<Tile.Changes>;
+			readonly tiles: Record<Coord, Tile.Changes>;
 
 			/**
 			 */

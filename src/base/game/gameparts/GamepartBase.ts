@@ -150,8 +150,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		// Could also use `csps.unshift`, but that may be slower
 		// because it modifies csps, which we don't need to do.
 		this.grid.forEachTile((tile, index) => {
-			this.grid.editTile({
-				coord: tile.coord,
+			this.grid.editTile(tile.coord, {
 				...ser.csps[index]!,
 			});
 		});
@@ -244,11 +243,12 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	/**
 	 */
 	protected commitTileMods(
+		coord: Coord,
 		patch: Tile.Changes,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
 		JsUtils.deepFreeze(patch);
-		const tile = this.grid._getTileAt(patch.coord);
+		const tile = this.grid._getTileAt(coord);
 
 		if (patch.char !== undefined) {
 			// Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
@@ -261,7 +261,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 				});
 			}
 		}
-		this.grid.editTile(patch);
+		this.grid.editTile(coord, patch);
 	}
 
 	/**
@@ -275,8 +275,8 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 			return; //⚡
 		}
 
-		desc.tiles.forEach((desc) => {
-			this.commitTileMods(desc);
+		Object.entries(desc.tiles).forEach(([coord, changes]) => {
+			this.commitTileMods(parseInt(coord), changes);
 		});
 		Object.entries(desc.players).forEach(([pid, changes]) => {
 			const player = this.players[pid as unknown as number]!;
