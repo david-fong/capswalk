@@ -6,7 +6,8 @@ import {
 	Player, OperatorPlayer,
 } from "./BrowserGame";
 
-import { GamepartEvents, StateChange } from "game/gameparts/GamepartEvents";
+import type { StateChange } from "game/StateChange";
+import { GamepartBase } from "game/gameparts/GamepartBase";
 
 
 type G = Game.Type.ONLINE;
@@ -14,7 +15,7 @@ type G = Game.Type.ONLINE;
 /**
  */
 export class OnlineGame<S extends Coord.System>
-extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
+extends GamepartBase<G,S> implements BrowserGameMixin<G,S> {
 
 	public readonly socket: Socket;
 
@@ -78,6 +79,8 @@ extends GamepartEvents<G,S> implements BrowserGameMixin<G,S> {
 	 * Normally immediately executes the changes. However, here,
 	 * that should be done as a callback to an event created by the
 	 * server.
+	 *
+	 * > 💢 I would like to speak to your manager. I'll wait.
 	 *
 	 * @override
 	 */

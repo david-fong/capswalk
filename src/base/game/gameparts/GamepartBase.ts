@@ -2,14 +2,13 @@ import { JsUtils} from "defs/JsUtils";
 import { Game } from "../Game";
 import { Lang } from "defs/TypeDefs";
 
-import type { Coord } from "floor/Tile";
+import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
-import type { VisibleGrid } from "floor/visible/VisibleGrid";
+import type { OperatorPlayer } from "../player/OperatorPlayer";
+import type { StateChange } from "../StateChange";
 
 import { Player } from "../player/Player";
 import { Team } from "../player/Team";
-import type { OperatorPlayer } from "../player/OperatorPlayer";
-import type { StateChange } from "../StateChange";
 
 
 /**
@@ -108,7 +107,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		// ctorAsync getter, we don't need to use `await`.
 	}
 
-	protected abstract _getGridImplementation(coordSys: S): Grid.ClassIf<S> | VisibleGrid.ClassIf<S>;
+	protected abstract _getGridImplementation(coordSys: S): Grid.ClassIf<S>;
 
 
 	/**
@@ -254,6 +253,54 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	hierarchy exist to allow OnlineGame to override them to send
 	a request to the ServerGame. */
 	public abstract processMoveRequest(desc: StateChange.Req): void;
+
+	/**
+	 */
+	protected commitTileMods(
+		patch: Tile.Changes,
+		doCheckOperatorSeqBuffer: boolean = true,
+	): void {
+		JsUtils.deepFreeze(patch);
+		const tile = this.grid._getTileAt(patch.coord);
+
+		if (patch.char !== undefined) {
+			// Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
+			if (doCheckOperatorSeqBuffer) {
+				// ^Do this when non-operator moves into the the operator's vicinity.
+				this.operators.forEach((op) => {
+					if (this.grid._getTileDestsFrom(op.coord).includes(tile)) {
+						op.seqBufferAcceptKey("");
+					}
+				});
+			}
+		}
+		this.grid.editTile(patch);
+	}
+
+	/**
+	 * Automatically lowers the {@link Player#requestInFlight} field
+	 * for the requesting `Player` if the arriving event description
+	 * is the newest one for the specified `Player`.
+	 */
+	protected commitStateChange(desc: StateChange.Res): void {
+		JsUtils.deepFreeze(desc);
+		const player = this.players[desc.initiator]!;
+
+		if (desc.rejected) {
+			player.requestInFlight = false;
+			return; //⚡
+		}
+
+		desc.tiles.forEach((desc) => {
+			this.commitTileMods(desc);
+		});
+		Object.entries(desc.players).forEach(([pid, changes]) => {
+			const player = this.players[pid as unknown as number]!;
+			player.requestInFlight = false;
+			player.status.health = changes.health;
+			player.moveTo(changes.coord);
+		});
+	}
 }
 Object.freeze(GamepartBase);
 Object.freeze(GamepartBase.prototype);

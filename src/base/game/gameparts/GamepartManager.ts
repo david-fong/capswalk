@@ -7,7 +7,7 @@ import { Player } from "../player/Player";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { ScoreInfo } from "../ScoreInfo";
 
-import { GamepartEvents } from "./GamepartEvents";
+import { GamepartBase } from "./GamepartBase";
 
 import InitGameManagerCtorMaps from "../ctormaps/CmapManager";
 import type { StateChange } from "../StateChange";
@@ -16,7 +16,7 @@ InitGameManagerCtorMaps();
 
 /**
  */
-export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coord.System> extends GamepartEvents<G,S> {
+export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coord.System> extends GamepartBase<G,S> {
 
 	public readonly avgHealth: Player.Health;
 	public readonly avgHealthPerTile: Player.Health;
@@ -247,7 +247,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * destination they requested to move to, or the player is bubbling.
 	 */
 	public processMoveRequest(req: StateChange.Req): void {
-		const player = this.players[req.initiator]!;
+		const initiator = this.players[req.initiator]!;
 		const reqDest = this.grid._getTileAt(req.moveDest.coord);
 		if (  this.status !== Game.Status.PLAYING
 		 || reqDest.occId !== Player.Id.NULL
@@ -257,8 +257,8 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		}
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
 		const newPlayerHealthValue
-			= player.status.health
-			+ (reqDest.health * (player.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
+			= initiator.status.health
+			+ (reqDest.health * (initiator.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
 			- (moveIsBoost ? this.healthCostOfBoost : 0);
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make
@@ -268,7 +268,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		}
 
 		// Update stats records:
-		const playerScoreInfo = this.scoreInfo.entries[player.playerId]!;
+		const playerScoreInfo = this.scoreInfo.entries[initiator.playerId]!;
 		playerScoreInfo.totalHealthPickedUp += reqDest.health;
 		playerScoreInfo.moveCounts[req.moveType] += 1;
 
@@ -282,15 +282,12 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			initiator: req.initiator,
 			moveType: req.moveType,
 			players: {
-				[player.playerId]: {
+				[initiator.playerId]: {
 					health: newPlayerHealthValue,
 					coord: resDest.coord
 				},
 			},
-			tiles: this.dryRunSpawnFreeHealth([req.moveDest, {
-				coord: player.coord,
-				occId: Player.Id.NULL,
-			}]),
+			tiles: this.dryRunSpawnFreeHealth([req.moveDest]),
 		});
 	}
 

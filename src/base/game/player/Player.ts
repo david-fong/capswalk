@@ -10,9 +10,6 @@ import type { Team }            from "./Team";
 
 import { PlayerSkeleton } from "./PlayerSkeleton"; export { PlayerSkeleton };
 import { PlayerStatus }   from "./PlayerStatus"; export { PlayerStatus };
-import { StateChange } from "game/StateChange";
-
-
 
 /**
  */

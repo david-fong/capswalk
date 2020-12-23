@@ -38,6 +38,9 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
 	declare protected _createOperatorPlayer: BrowserGameMixin<G,S>["_createOperatorPlayer"];
 
 	/** @override */
+	declare protected readonly commitTileMods: GamepartManager<G,S>["commitTileMods"];
+
+	/** @override */
 	public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
 		return setTimeout(callback, millis, args);
 	}
