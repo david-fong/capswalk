@@ -1,5 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
-import { Game } from "../Game";
+import type { Game } from "../Game";
 import type { Coord, Tile } from "floor/Tile";
 import { StateChange } from "../StateChange"; export { StateChange };
 
@@ -30,83 +30,26 @@ import { GamepartBase } from "./GamepartBase";
  */
 export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System> extends GamepartBase<G,S> {
 
-	/**
-	 * All copies of the game should contain identical entries. That
-	 * in a {@link OnlineGame} may at any instant be missing trailing
-	 * entries, or contain some trailing holes, but such gaps should
-	 * eventually be filled to match those in the Game Manager.
-	 *
-	 * This array has a fixed length to put a bound on the amount of
-	 * memory it consumes. Therefore, any accesses to it must use a
-	 * wrapped (apply modulus operator) version of event ID's. Event
-	 * ID's are _not_ wrapped in their representation.
-	 */
-	private readonly eventRecordBitmap: Array<boolean>;
-	#nextUnusedEventId: StateChange.Res.Accepted["eventId"];
-
 	public constructor(
 		gameType: G,
 		impl:     Game.ImplArgs,
 		gameDesc: Game.CtorArgs<G,S>,
 	) {
 		super(gameType, impl, gameDesc);
-		this.eventRecordBitmap = [];
 		JsUtils.propNoWrite(this as GamepartEvents<G,S>, "eventRecordBitmap");
 	}
 
 	public reset(): Promise<void> {
 		const superPromise = super.reset();
 
-		// Clear the event record:
-		this.eventRecordBitmap.fill(false, 0, Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH);
-		this.#nextUnusedEventId = 0;
-
 		// Since we didn't wait for the superPromise, return it.
 		return superPromise;
 	}
 
-	protected get nextUnusedEventId(): StateChange.Res["eventId"] {
-		return this.#nextUnusedEventId;
-	}
-
-
-	/**
-	 * Basically does `this.eventRecord[id] = desc;` with value checking.
-	 *
-	 * @throws
-	 * (Only in the development environment) In the given order of priority:
-	 * - TypeError if the event ID indicates a rejected request
-	 * - RangeError if it is not a positive integer
-	 * - Error if another event was already recorded with the same ID.
-	 */
-	private _recordEvent(desc: StateChange.Res.Accepted): void {
-		const id = desc.eventId;
-		const wrappedId = id % Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH;
-		if (DEF.DevAssert) {
-			// Enforced By: Checks at internal call sites.
-			if (id === undefined) {
-				throw new TypeError("Do not try to record events for rejected requests.");
-			} else if (id < 0 || id !== Math.trunc(id)) {
-				throw new RangeError("Event ID's must only be assigned positive, integer values.");
-			} else if (this.eventRecordBitmap[wrappedId]) {
-				throw new Error("Event ID's must be assigned unique values.");
-			}
-		}
-		// TODO.impl Check for an OnlineGame that it is not far behind the Server.
-		// also design what should be done to handle that... Do we really need to
-		// recover from that?
-		this.eventRecordBitmap[wrappedId] = true;
-		this.eventRecordBitmap[(id
-			+ Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH
-			- Game.K.EVENT_RECORD_FORWARD_WINDOW_LENGTH)
-			% Game.K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH] = false;
-			this.#nextUnusedEventId++;
-	}
-
 
 	/**
 	 */
-	protected executeTileModEvent(
+	protected commitTileMods(
 		patch: Tile.Changes,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
@@ -136,14 +79,13 @@ export abstract class GamepartEvents<G extends Game.Type, S extends Coord.System
 		JsUtils.deepFreeze(desc);
 		const player = this.players[desc.initiator]!;
 
-		if (desc.eventId === undefined) {
+		if (desc.rejected) {
 			player.requestInFlight = false;
 			return; //⚡
 		}
-		this._recordEvent(desc);
 
 		desc.tiles.forEach((desc) => {
-			this.executeTileModEvent(desc);
+			this.commitTileMods(desc);
 		});
 		Object.entries(desc.players).forEach(([pid, changes]) => {
 			const player = this.players[pid as unknown as number]!;

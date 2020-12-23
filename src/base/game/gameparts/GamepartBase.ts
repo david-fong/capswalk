@@ -7,7 +7,6 @@ import type { Grid } from "floor/Grid";
 import type { VisibleGrid } from "floor/visible/VisibleGrid";
 
 import { Player } from "../player/Player";
-import { PlayerStatus } from "../player/PlayerStatus";
 import { Team } from "../player/Team";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 import type { StateChange } from "../StateChange";

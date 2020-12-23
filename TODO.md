@@ -12,7 +12,7 @@
 ### Things I feel like doing
 
 1. Mega-task: change Tiles to DTO's and enable Grid implementations to decide how to do display (eg. DOM, SVG, Canvas).
-    - Remove `coord` field from `Tile.Changes` and make `StateChange.Req` have a map from coords to `Tile.Changes` objects. Pipe that map through `dryRunSpawnFreeHealthTiles`
+    - Remove `coord` field from `Tile.Changes` and make `StateChange.Req` have a map from coords to `Tile.Changes` objects. Pipe that map through `dryRunSpawnFreeHealthTiles`. Make `Grid.editTile` and `GamepartManager.executeTileChanges` take the coord as the first argument.
     - Update documentation wherever needed- especially the floor readme.
 1. Delete Player.now. In the future, replace it _and_ `Player.isRequestInFlight` with a undo-able queue of in-flight requests.
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.

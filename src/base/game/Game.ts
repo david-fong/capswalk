@@ -192,25 +192,6 @@ export namespace Game {
 		 * not too much, not too little.
 		 */
 		HEALTH_EFFECT_FOR_DOWNED_PLAYER: 0.6,
-
-		/**
-		 * A strictly-positive integer.
-		 *
-		 * This describes a functionality put in place to limit memory
-		 * consumption for keeping track of events affected by network
-		 * latency. See `EVENT_RECORD_FORWARD_WINDOW_LENGTH` for more
-		 * explanation.
-		 */
-		EVENT_RECORD_WRAPPING_BUFFER_LENGTH: 50,
-
-		/**
-		 * Must be less than `EVENT_RECORD_WRAPPING_BUFFER_LENGTH`.
-		 */
-		EVENT_RECORD_FORWARD_WINDOW_LENGTH: 25,
 	});
-
-	if (DEF.DevAssert && K.EVENT_RECORD_FORWARD_WINDOW_LENGTH >= K.EVENT_RECORD_WRAPPING_BUFFER_LENGTH) {
-		throw new Error("never");
-	}
 }
 Object.freeze(Game);

@@ -250,7 +250,7 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 	public commitStateChange(desc: StateChange.Res): void {
 		super.commitStateChange(desc);
 
-		if (desc.eventId === undefined) {
+		if (desc.rejected) {
 			// The request was rejected- Notify the requester.
 			this.playerSockets.get(desc.initiator)!.emit(
 				GameEv.IN_GAME,

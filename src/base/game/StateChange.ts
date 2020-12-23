@@ -31,10 +31,7 @@ export namespace StateChange {
 	export namespace Res {
 
 		export interface Accepted extends _Base {
-			/**
-			 * A positive, unique, integer-valued identifier for an event.
-			 */
-			readonly eventId: number;
+			rejected?: undefined;
 
 			/**
 			 * Tiles other than the tile that the initiating player is moving to.
@@ -51,7 +48,7 @@ export namespace StateChange {
 			}>>;
 		}
 		export interface Rejected extends _Base {
-			readonly eventId?: undefined;
+			readonly rejected: true;
 		}
 	}
 }

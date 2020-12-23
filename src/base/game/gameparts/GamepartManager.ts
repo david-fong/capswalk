@@ -225,7 +225,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 
 
 	/** @override */
-	protected executeTileModEvent(
+	protected commitTileMods(
 		desc: Tile.Changes,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
@@ -237,7 +237,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		} else {
 			this.#healthTiles.add(tile);
 		}
-		super.executeTileModEvent(desc, doCheckOperatorSeqBuffer);
+		super.commitTileMods(desc, doCheckOperatorSeqBuffer);
 	}
 
 
@@ -245,12 +245,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * Reject the request if `dest` is occupied, or if the specified
 	 * player does not exist, or the client is missing updates for the
 	 * destination they requested to move to, or the player is bubbling.
-	 *
-	 * @param req
-	 * A descriptor of the request describing the requester's views
-	 * of critical parts of the game-state from their copy of the game
-	 * state at the time of the request. Is modified to describe changes
-	 * to be made.
 	 */
 	public processMoveRequest(req: StateChange.Req): void {
 		const player = this.players[req.initiator]!;
@@ -258,7 +252,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		if (  this.status !== Game.Status.PLAYING
 		 || reqDest.occId !== Player.Id.NULL
 		) {
-			this.commitStateChange({ initiator: req.initiator });
+			this.commitStateChange({ rejected: true, initiator: req.initiator });
 			return; //⚡
 		}
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
@@ -269,7 +263,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make
 			// the player become downed (or if they are already downed):
-			this.commitStateChange({ initiator: req.initiator });
+			this.commitStateChange({ rejected: true, initiator: req.initiator });
 			return; //⚡
 		}
 
@@ -284,14 +278,15 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			health: 0,
 			...this.dryRunShuffleLangCspAt(reqDest.coord),
 		};
-		this.commitStateChange(<StateChange.Res>{
-			eventId: this.nextUnusedEventId,
+		this.commitStateChange(<StateChange.Res.Accepted>{
 			initiator: req.initiator,
 			moveType: req.moveType,
 			players: {
-				[player.playerId]: newPlayerHealthValue,
+				[player.playerId]: {
+					health: newPlayerHealthValue,
+					coord: resDest.coord
+				},
 			},
-			dest: resDest,
 			tiles: this.dryRunSpawnFreeHealth([req.moveDest, {
 				coord: player.coord,
 				occId: Player.Id.NULL,
