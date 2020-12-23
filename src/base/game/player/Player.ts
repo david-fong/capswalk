@@ -136,7 +136,6 @@ export namespace Player {
 		clientId: F extends typeof Player.Family.HUMAN ? (io.Socket["client"]["id"] | undefined) : undefined;
 		username: Username;
 		avatar:   Avatar | undefined;
-		noCheckGameOver: boolean;
 		familyArgs: CtorArgs.FamilySpecificPart[F];
 	}>;
 	interface _PreIdAssignmentDict {

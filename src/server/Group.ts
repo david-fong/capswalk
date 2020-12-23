@@ -261,7 +261,6 @@ export class Group extends _Group {
 					clientId: socket.client["id"],
 					username: socket.userInfo.username,
 					avatar:   socket.userInfo.avatar,
-					noCheckGameOver: false, // TODO.design add a Group.Socket field for this.
 					familyArgs: {},
 				});
 			}),

@@ -38,7 +38,6 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 		this.game = game;
 		this.status = new PlayerStatus(
 			this as PlayerSkeleton<S> as Player<S>,
-			desc.noCheckGameOver,
 		);
 		JsUtils.instNoEnum(this as PlayerSkeleton<S>, "game");
 		JsUtils.propNoWrite(this as PlayerSkeleton<S>, "playerId", "isALocalOperator", "game", "status");

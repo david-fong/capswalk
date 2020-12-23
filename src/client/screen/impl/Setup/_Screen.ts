@@ -117,7 +117,6 @@ export namespace _SetupScreen {
 			clientId:   undefined,
 			username:   "chaser1",
 			avatar:     undefined,
-			noCheckGameOver: true,
 			familyArgs: {/* Uses all defaults. */},
 		}, {
 			isALocalOperator: false,
@@ -126,7 +125,6 @@ export namespace _SetupScreen {
 			clientId:   undefined,
 			username:   "chaser2",
 			avatar:     undefined,
-			noCheckGameOver: true,
 			familyArgs: {
 				fearDistance: 6,
 				bloodThirstDistance: 5,

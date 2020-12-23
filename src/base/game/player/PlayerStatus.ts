@@ -13,12 +13,10 @@ import { Team } from "game/player/Team";
 export class PlayerStatus<S extends Coord.System> {
 
 	protected readonly player: Readonly<Player<S>>; // Circular field reference.
-	public readonly noCheckGameOver: boolean;
 	#health: Player.Health;
 
-	public constructor(player: Readonly<Player<S>>, noCheckGameOver: boolean) {
+	public constructor(player: Readonly<Player<S>>) {
 		this.player = player;
-		this.noCheckGameOver = noCheckGameOver;
 		JsUtils.instNoEnum(this as PlayerStatus<S>, "player");
 	}
 
@@ -36,7 +34,7 @@ export class PlayerStatus<S extends Coord.System> {
 		const oldIsDowned = this.isDowned;
 		this.#health = newHealth;
 
-		if (oldIsDowned || !this.isDowned || this.noCheckGameOver) return;
+		if (oldIsDowned || !this.isDowned) return;
 		const team  = this.player.team;
 		const teams = this.player.game.teams;
 		if (team.elimOrder !== Team.ElimOrder.STANDING) {
@@ -44,18 +42,15 @@ export class PlayerStatus<S extends Coord.System> {
 		}
 		// Right before this downing event, the team has not been
 		// soft-eliminated yet, but it might be now. Check it:
-		if (team.members.every((player) => {
-			return player.status.noCheckGameOver || player.status.isDowned;
-		})) {
+		if (team.members.every((player) => player.status.isDowned)) {
 			// All players are downed! The team is now eliminated:
 			const numNonStandingTeams
 				= 1 + teams.filter((team) => {
 				return team.elimOrder !== Team.ElimOrder.STANDING;
 			}).length;
-			team.elimOrder
-				= 1 + teams.filter((team) => {
-				return team.elimOrder !== Team.ElimOrder.STANDING
-					&& team.elimOrder !== Team.ElimOrder.IMMORTAL;
+
+			team.elimOrder = 1 + teams.filter((team) => {
+				return team.elimOrder !== Team.ElimOrder.STANDING;
 			}).length;
 			// Now that a team is newly-eliminated, check if the
 			// game should end:

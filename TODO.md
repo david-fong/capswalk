@@ -17,7 +17,6 @@
 1. Delete Player.now. In the future, replace it _and_ `Player.isRequestInFlight` with a undo-able queue of in-flight requests.
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.
     - Also do this for the Lang-related constructors.
-1. Get rid of player "immortality". It's too complicated and I don't think see much merit anymore.
 1. Call `Object.preventExtensions` at the end of constructors where possible. This is more okay now that `useDefineForClassFields` is set to true.
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.

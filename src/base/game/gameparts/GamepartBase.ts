@@ -38,7 +38,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 
 
 	/**
-	 * Performs the "no invincible player" check (See {@link Player#teamSet}).
 	 */
 	public constructor(
 		gameType: G,
@@ -75,13 +74,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 			this.teams = teams.map((teammateArray, teamId) => {
 				return new Team<S>(teamId, teammateArray);
 			});
-			if (this.teams.every((team) => team.id === Team.ElimOrder.IMMORTAL)) {
-				// TODO.design put a check inside the UI code to prevent this.
-				// The purpose of this restriction is to prevent DoS attacks on
-				// a hosting server by creating games that can never end and
-				// leaving them open forever, thus leaking the server's resources.
-				throw new Error("All teams are immortal. The game will never end.");
-			}
 		}
 		JsUtils.propNoWrite(this as GamepartBase<G,S>,
 			"gameType", "grid", "langFrontend",
@@ -229,11 +221,10 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	}
 
 	/**
-	 * This should be called when all non-immortal teams have been
-	 * eliminated. A team is immortal if all its members have the
-	 * `noCheckGameOver` flag set to `true`. A mortal team becomes
-	 * (and subsequently, unconditionally stays) eliminated when all
-	 * their members are in a downed state at the same time.
+	 * This should be called when all teams have been eliminated.
+	 * A team becomes (and subsequently and unconditionally stays)
+	 * eliminated when all their members are in a downed state at
+	 * the same time.
 	 *
 	 * This should not be controllable by UI input elements. Instead,
 	 * The UI layer can pass a callback to the constructor.
@@ -248,10 +239,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		console.info("game is over!");
 	}
 
- /* The implementations are fully defined and publicly exposed by
-	GameManager. These protected declarations higher up the class
-	hierarchy exist to allow OnlineGame to override them to send
-	a request to the ServerGame. */
 	public abstract processMoveRequest(desc: StateChange.Req): void;
 
 	/**
@@ -278,9 +265,6 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	}
 
 	/**
-	 * Automatically lowers the {@link Player#requestInFlight} field
-	 * for the requesting `Player` if the arriving event description
-	 * is the newest one for the specified `Player`.
 	 */
 	protected commitStateChange(desc: StateChange.Res): void {
 		JsUtils.deepFreeze(desc);
