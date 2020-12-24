@@ -279,10 +279,16 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 			this.commitTileMods(parseInt(coord), changes);
 		});
 		Object.entries(desc.players).forEach(([pid, changes]) => {
-			const player = this.players[pid as unknown as number]!;
+			const player = this.players[parseInt(pid)]!;
 			player.requestInFlight = false;
 			player.status.health = changes.health;
-			player.moveTo(changes.coord);
+
+			if (changes.coord !== undefined) {
+				this.grid.editTile(player.coord,  {occId: Player.Id.NULL});
+				this.grid.editTile(changes.coord, {occId: player.playerId});
+				// === order matters ===
+				player.moveTo(changes.coord);
+			}
 		});
 	}
 }

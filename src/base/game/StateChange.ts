@@ -42,10 +42,7 @@ export namespace StateChange {
 
 			/**
 			 */
-			readonly players: Readonly<Record<Player.Id, {
-				coord: Coord,
-				health: Player.Health,
-			}>>;
+			readonly players: Readonly<Record<Player.Id, Player.Changes>>;
 		}
 		export interface Rejected extends _Base {
 			readonly rejected: true;

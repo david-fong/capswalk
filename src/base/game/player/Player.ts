@@ -116,6 +116,10 @@ export namespace Player {
 	export type UserInfo = _Player.UserInfo;
 
 	export type MoveType = _Player.MoveType;
+	export type Changes = {
+		readonly coord?: Coord,
+		readonly health: Player.Health,
+	};
 
 	/**
 	 * Player Constructor Arguments

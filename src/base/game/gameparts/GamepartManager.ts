@@ -271,7 +271,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			players: {
 				[initiator.playerId]: {
 					health: newPlayerHealthValue,
-					coord: req.moveDest,
+					coord: reqDest.coord,
 				},
 			},
 			tiles: this.dryRunSpawnFreeHealth({
