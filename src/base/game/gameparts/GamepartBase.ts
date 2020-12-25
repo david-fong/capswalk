@@ -128,8 +128,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	protected abstract _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S>;
 	protected abstract _createArtifPlayer(desc: Player._CtorArgs<Player.FamilyArtificial>): Player<S>;
 
-	/**
-	 */
+	/** @final */
 	public serializeResetState(): Game.ResetSer {
 		const csps: Array<Lang.CharSeqPair> = [];
 		const playerCoords = this.players.map((player) => player.coord);
@@ -142,8 +141,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		return JsUtils.deepFreeze({ csps, playerCoords });
 	}
 
-	/**
-	 */
+	/** @final */
 	public deserializeResetState(ser: Game.ResetSer): void {
 		JsUtils.deepFreeze(ser);
 

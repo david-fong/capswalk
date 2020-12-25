@@ -48,11 +48,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 	}
 
 	/**
-	 * Must be called _after_ the {@link Grid} has been reset.
-	 * Does not evict itself from its current host tile (if it
-	 * has one).
-	 *
-	 * @param spawnTile -
+	 * Must be called _after_ the grid has been reset.
 	 */
 	public reset(coord: Coord): void {
 		this.coord = coord;

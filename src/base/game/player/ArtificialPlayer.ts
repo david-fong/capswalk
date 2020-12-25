@@ -20,8 +20,6 @@ export { Player };
  * where they decide to move toward each time they move.
  *
  * Can be paused and un-paused by the Game Manager.
- *
- * @extends Player
  */
 export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S> {
 
@@ -32,11 +30,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 	private _scheduledMovementCallbackId: number | NodeJS.Timeout;
 
 	/**
-	 * See {@link ArtificialPlayer.of} for the public constructor
-	 * interface.
-	 *
-	 * @param game -
-	 * @param desc -
+	 * @see ArtificialPlayer.of for the public, non-abstract interface.
 	 */
 	protected constructor(game: GamepartManager<any,S>, desc: Player.CtorArgs) {
 		super(game, desc);
@@ -61,14 +55,17 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 	 */
 	protected abstract computeNextMovementTimer(): number;
 
+	/** @override */
 	public _notifyGameNowPlaying(): void {
 		super._notifyGameNowPlaying();
-		this.delayedMovementContinue();
+		this._delayedMovementContinue();
 	}
+	/** @override */
 	public _notifyGameNowPaused(): void {
 		this.game.cancelTimeout(this._scheduledMovementCallbackId);
 		this._scheduledMovementCallbackId = undefined!;
 	}
+	/** @override */
 	public _notifyGameNowOver(): void {
 		this.game.cancelTimeout(this._scheduledMovementCallbackId);
 		this._scheduledMovementCallbackId = undefined!;
@@ -77,14 +74,14 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 	/**
 	 * Executes a single movement and then calls `delayedMovementContinue`.
 	 */
-	private movementContinue(): void {
+	private _movementContinue(): void {
 		const desiredDest = this.computeDesiredDest();
 		// This is a little different than how human players experience
 		// "penalties" when moving to tiles with long language-sequences-
 		// humans must pay the penalty before landing on the tile, but
 		// in the implementation here, it's much easier to simulate such
 		// a penalty if it applies _after_ landing on the tile.
-		this._nextMovementTimerMultiplier = this.game.grid.tile.at(desiredDest).seq.length;
+		this._nextMovementTimerMultiplier = this.game.grid._getTileAt(desiredDest).seq.length;
 
 		this.makeMovementRequest(
 			this.game.grid.getUntToward(
@@ -94,16 +91,16 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 			this.getNextMoveType(),
 		);
 		// Schedule a task to do this again:
-		this.delayedMovementContinue();
+		this._delayedMovementContinue();
 	}
 
 	/**
 	 * Schedules a call to `movementContinue`.
 	 */
-	private delayedMovementContinue(): void {
+	private _delayedMovementContinue(): void {
 		// Schedule the next movement.
 		this._scheduledMovementCallbackId = this.game.setTimeout(
-			this.movementContinue.bind(this),
+			this._movementContinue.bind(this),
 			this.computeNextMovementTimer() * this._nextMovementTimerMultiplier,
 			// * Callback function arguments go here.
 		);

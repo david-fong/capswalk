@@ -30,7 +30,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	private readonly scoreInfo: ScoreInfo;
 
 	/**
-	 * Performs the "no invincible player" check (See {@link Player#teamSet}).
 	 */
 	public constructor(
 		gameType: G,
@@ -175,12 +174,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * specifying changes to be made because `this.currentFreeHealth`
 	 * does not update until after the movement request has been
 	 * executed.
-	 *
-	 * @param otherTiles
-	 * A list of other descs including those specifying modifications
-	 * to be made in the same `execute???Request` function as the one
-	 * for which this is being called. Without this information, we
-	 * could mess up `lastKnownUpdateId` counters at those locations.
 	 */
 	public dryRunSpawnFreeHealth(changes: Record<Coord, Tile.Changes>): Record<Coord, Tile.Changes> | undefined {
 		let healthToSpawn = this.avgHealth - this.currentFreeHealth;
