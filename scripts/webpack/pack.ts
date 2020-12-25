@@ -3,6 +3,8 @@ import path    = require("path");
 import webpack = require("webpack");
 import configs = require("./webpack.config");
 
+const DO_WATCH: boolean = process.env.WEBPACK_WATCH !== undefined;
+
 import type * as DistPkg from "./templates/package.json";
 if (process.env.NODE_ENV === "production") {
 	// Generate dist/package.json:
@@ -34,17 +36,23 @@ if (process.env.NODE_ENV === "production") {
 // https://webpack.js.org/api/node/
 (configs as webpack.Configuration[]).forEach((config) => {
 	const compiler = webpack(config);
-	compiler.run((err, stats) => {
-		console.log(`\n\n${"=".repeat(32)} ${config.name!.toUpperCase()} ${"=".repeat(32)}\n`);
-		if (err) {
-			console.error(err.stack || err);
-			if (err["details"]) {
-				console.error(err["details"]);
+	if (DO_WATCH) {
+		compiler.watch(config.watchOptions!, (stats) => {
+			if (stats) console.log(stats);
+		});
+	} else {
+		compiler.run((err, stats) => {
+			console.log(`\n\n${"=".repeat(32)} ${config.name!.toUpperCase()} ${"=".repeat(32)}\n`);
+			if (err) {
+				console.error(err.stack || err);
+				if (err["details"]) {
+					console.error(err["details"]);
+				}
+				return;
 			}
-			return;
-		}
-		console.log(stats?.toString(config.stats));
-		console.log();
-	});
-	compiler.close((err, result) => {});
+			console.log(stats?.toString(config.stats));
+			console.log();
+		});
+		compiler.close((err, result) => {});
+	}
 });

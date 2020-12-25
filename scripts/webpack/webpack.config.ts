@@ -61,7 +61,7 @@ const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 		loader: "css-loader", options: {
 			modules: {
 				auto: /\.m\.css$/,
-				localIdentName: "[name]_[local]_[hash:base64:5]",
+				//localIdentName: "[name]_[local]_[hash:base64:5]",
 			},
 		},
 	}],
