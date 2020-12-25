@@ -89,6 +89,14 @@ export namespace WrappedEuclid2 {
 				y: scalar * this.y,
 			});
 		}
+		public mod(dim: Grid.Dimensions): IAC {
+			let {x,y} = this;
+			while (x < 0) x += dim.width;
+			while (y < 0) y += dim.height;
+			x %= dim.width;
+			y %= dim.height;
+			return new IAC({x,y});
+		}
 	}
 	export namespace IAC {
 		export type Bare = {
@@ -112,11 +120,11 @@ export namespace WrappedEuclid2 {
 
 		public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
 		private static readonly SIZE_LIMITS = JsUtils.deepFreeze(<const>{
-			height: <const>{ min: 11, max: 51 },
-			width:  <const>{ min: 11, max: 51 },
+			height: <const>{ min: 10, max: 51 },
+			width:  <const>{ min: 10, max: 51 },
 		});
 
-		protected readonly grid: TU.RoArr<Tile>;
+		private readonly _grid: Array<Tile>;
 
 		protected readonly iacCache: TU.RoArr<IAC>;
 
@@ -134,7 +142,7 @@ export namespace WrappedEuclid2 {
 					grid.push(tile);
 				}
 			}
-			this.grid = Object.freeze(grid);
+			this._grid = Object.seal(grid);
 
 			const iacCache = [];
 			for (let y = 0; y < desc.dimensions.height; y++) {
@@ -144,18 +152,18 @@ export namespace WrappedEuclid2 {
 			}
 			this.iacCache = Object.freeze(iacCache);
 			JsUtils.instNoEnum(this as Grid, "iacCache");
-			JsUtils.propNoWrite(this as Grid, "grid", "iacCache");
+			JsUtils.propNoWrite(this as Grid, "_grid", "iacCache");
 		}
 
 		public editTile(coord: Coord, changes: Tile.Changes): void {
-			Object.assign(this.grid[coord], changes);
+			this._grid[coord] = Object.freeze(Object.assign({}, this._grid[coord], changes));
 		}
 
 		public forEachTile(consumer: (tile: Tile, index: number) => void): void {
-			this.grid.forEach(consumer);
+			this._grid.forEach(consumer);
 		}
 		public shuffledForEachTile(consumer: (tile: Tile) => void): void {
-			this.grid.slice()
+			this._grid.slice()
 			.sort((a,b) => Math.random() - 0.5)
 			.forEach((tile) => consumer(tile));
 		}
@@ -208,12 +216,11 @@ export namespace WrappedEuclid2 {
 			return options[Math.floor(options.length * Math.random())]!.tile;
 		}
 		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Tile {
-			const avoidCoord  = this.iacCache[_avoidCoord]!;
-			const sourceCoord = this.iacCache[_sourceCoord]!;
-			return this.getUntToward(
-				sourceCoord.add(sourceCoord.sub(avoidCoord)).toCoord(this.dimensions),
-				_sourceCoord,
-			);
+			const t = this.getUntToward(_avoidCoord, _sourceCoord);
+			const avoid = this.iacCache[_avoidCoord]!;
+			const src = this.iacCache[_sourceCoord]!;
+			const dest = src.add(src.sub(avoid)).mod(this.dimensions);
+			return this._grid[dest.toCoord(this.dimensions)]!;
 		}
 
 		public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
@@ -236,66 +243,47 @@ export namespace WrappedEuclid2 {
 		}
 
 		public _getTileAt(coord: Coord): Tile {
-			return Object.assign({}, this.grid[coord]!);
+			return this._grid[coord]!;
 		}
 		public _getTileDestsFrom(coord: Coord, radius: number = 1): Array<Tile> {
-			const dim = this.dimensions;
 			const iac = this.iacCache[coord]!;
 			let wrapX = false, wrapY = false;
-			let t = (iac.y - radius); if (t < 0) { t += dim.height; wrapY = true; }
-			let b = (iac.y + radius) % dim.height;
-			let l = (iac.x - radius); if (l < 0) { l += dim.width; wrapX = true; }
-			let r = (iac.x + radius) % dim.width;
+			const W = this.dimensions.width, H = this.dimensions.height;
+			let t = (iac.y - radius);    if (t < 0) { t += H; wrapY = true; }
+			let l = (iac.x - radius);    if (l < 0) { l += W; wrapX = true; }
+			let b = (iac.y + radius +1); if (b > H) { b -= H; wrapY = true; }
+			let r = (iac.x + radius +1); if (r > W) { r -= W; wrapX = true; }
 			const dests: Array<Tile> = [];
 			if (wrapX) {
-				const _t = t * dim.width;
-				dests.push(...this.grid.slice(_t, _t+r+1));
+				const _t = t * W;
+				dests.push(...this._grid.slice(_t, _t+r));
 				if (wrapY) {
-					dests.push(...this.grid.slice(0, r+1));
+					dests.push(...this._grid.slice(0, r));
 				}
 			}
 
-			const b1 = wrapY ? dim.height : b;
+			const b1 = wrapY ? H : b;
 			const sliceLength = (radius * 2) + 1;
 			for (let y = t; y < b1; y++) {
-				const begin = (y * dim.width) + l;
-				dests.push(...this.grid.slice(begin, begin+sliceLength));
+				const begin = (y * W) + l;
+				dests.push(...this._grid.slice(begin, begin+sliceLength));
 			}
-			if (wrapX) { dests.length -= r+1 }
+			if (wrapX && !wrapY) { dests.length -= r }
 			if (wrapY) {
 				for (let y = 0; y < b; y++) {
-					const begin = (y * dim.width) + l;
-					dests.push(...this.grid.slice(begin, begin+sliceLength));
+					const begin = (y * W) + l;
+					dests.push(...this._grid.slice(begin, begin+sliceLength));
 				}
-				if (wrapX) { dests.length -= r+1 }
+				if (wrapX) { dests.length -= r }
 			}
 			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
-			return dests.map((tile) => Object.assign({}, tile));
+			return dests;
 		}
 		public _getTileSourcesTo(coord: Coord, radius: number = 1): Array<Tile> {
 			return this._getTileDestsFrom(coord, radius);
 		}
 
-
-		public static getSpawnCoords(
-			playerCounts: TU.RoArr<number>,
-			dimensions: Grid.Dimensions,
-		): TU.RoArr<TU.RoArr<Coord>> {
-			const avoidSet: Array<Coord> = [];
-			return playerCounts.map((numMembers: number) => {
-				const teamSpawnCoords: Array<Coord> = [];
-				while (numMembers > 0) {
-					let coord: Coord;
-					do {
-						coord = Grid.getRandomCoord(dimensions);
-					} while (avoidSet.find((other) => coord === other));
-					teamSpawnCoords.push(coord);
-					avoidSet.push(coord);
-					numMembers--;
-				}
-				return teamSpawnCoords;
-			});
-		}
+		declare public static getSpawnCoords: AbstractGrid.ClassIf<S>["getSpawnCoords"];
 
 		public static getArea(dim: Grid.Dimensions): number {
 			return dim.height * dim.width;

@@ -18,7 +18,7 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 		gridElem.style.setProperty("--euclid2-grid-width", this.dimensions.width.toString());
 
 		const tiles: Array<VisibleTile> = [];
-		this.grid.forEach((tile) => {
+		this.forEachTile((tile) => {
 			const vTile = new VisibleTile();
 			tiles.push(vTile);
 			gridElem.appendChild(vTile.baseElem);

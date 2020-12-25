@@ -128,6 +128,31 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 * methods `_getTileDestsFrom` and `_getTileSourcesTo`.
 	 */
 	public abstract dist(source: Coord, dest: Coord): number;
+
+	/**
+	 * @virtual
+	 * Implementations are free to override this to spawn players in
+	 * pretty patterns.
+	 */
+	public static getSpawnCoords(
+		playerCounts: TU.RoArr<number>,
+		dimensions: Grid.Dimensions[Coord.System],
+	): TU.RoArr<TU.RoArr<Coord>> {
+		const avoidSet: Array<Coord> = [];
+		return Object.freeze(playerCounts.map((numMembers: number) => {
+			const teamSpawnCoords: Array<Coord> = [];
+			while (numMembers > 0) {
+				let coord: Coord;
+				do {
+					coord = (this as unknown as Grid.ClassIf<any>).getRandomCoord(dimensions);
+				} while (avoidSet.includes(coord));
+				teamSpawnCoords.push(coord);
+				avoidSet.push(coord);
+				numMembers--;
+			}
+			return Object.freeze(teamSpawnCoords);
+		}));
+	}
 }
 export namespace Grid {
 

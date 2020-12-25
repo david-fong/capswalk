@@ -92,7 +92,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		// Shuffle everything:
 		this.grid.shuffledForEachTile((tile) => {
 			this.grid.editTile(tile.coord, {
-				...this.dryRunShuffleLangCspAt(tile.coord)
+				...this.dryRunShuffleLangCspAt(tile.coord, true)
 			});
 		});
 
@@ -104,7 +104,11 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		);
 		this.teams.forEach((team, teamIndex) => {
 			team.members.forEach((member, memberIndex) => {
-				member.reset(spawnPoints[teamIndex]![memberIndex]!);
+				const coord = spawnPoints[teamIndex]![memberIndex]!;
+				member.reset(coord);
+				this.grid.editTile(coord, {
+					occId: member.playerId,
+				});
 			});
 		});
 		this.scoreInfo.reset();
@@ -175,10 +179,10 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * does not update until after the movement request has been
 	 * executed.
 	 */
-	public dryRunSpawnFreeHealth(changes: Record<Coord, Tile.Changes>): Record<Coord, Tile.Changes> | undefined {
+	public dryRunSpawnFreeHealth(changes: Record<Coord, Tile.Changes>): Record<Coord, Tile.Changes> {
 		let healthToSpawn = this.avgHealth - this.currentFreeHealth;
 		if (healthToSpawn <= 0) {
-			return undefined; //⚡
+			return changes;
 		}
 		while (healthToSpawn > 0) {
 			let tile: Tile;
@@ -270,7 +274,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			tiles: this.dryRunSpawnFreeHealth({
 				[req.moveDest]: {
 					health: 0,
-					...this.dryRunShuffleLangCspAt(reqDest.coord),
+					...this.dryRunShuffleLangCspAt(reqDest.coord, true),
 				},
 			}),
 		});

@@ -178,13 +178,7 @@ export namespace Beehive {
 			return undefined!;
 		}
 
-
-		public static getSpawnCoords(
-			playerCounts: TU.RoArr<number>,
-			dimensions: Grid.Dimensions,
-		): TU.RoArr<TU.RoArr<Coord>> {
-			return undefined!;
-		}
+		declare public static getSpawnCoords: AbstractGrid.ClassIf<S>["getSpawnCoords"];
 
 		public static getArea(dim: Grid.Dimensions): number {
 			const shorterSide = Math.min(dim.fslash, dim.bslash);

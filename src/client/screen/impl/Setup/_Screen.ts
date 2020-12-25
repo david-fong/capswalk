@@ -104,8 +104,8 @@ export namespace _SetupScreen {
 	export const DEFAULT_PRESET = (): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> => { return {
 		coordSys: "W_EUCLID2" as Coord.System.W_EUCLID2,
 		gridDimensions: {
-			height: 21,
-			width:  21,
+			height: 10,
+			width:  10,
 		},
 		averageFreeHealthPerTile: 1.0 / 45.0,
 		langWeightExaggeration: 1.0,

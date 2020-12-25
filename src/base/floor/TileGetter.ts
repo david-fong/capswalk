@@ -1,4 +1,5 @@
 import type { Coord, Tile } from "./Tile";
+import { Player } from "defs/TypeDefs";
 
 
 type _Arguments = [ Coord, ] | [];
@@ -67,12 +68,12 @@ class Query {
 	}
 
 	public get occupied(): Omit<Query, "unoccupied"> {
-		this.contents = this.contents.filter((tile) => tile.occId);
+		this.contents = this.contents.filter((tile) => tile.occId !== Player.Id.NULL);
 		return this;
 	}
 
 	public get unoccupied(): Omit<Query, "occupied"> {
-		this.contents = this.contents.filter((tile) => !tile.occId);
+		this.contents = this.contents.filter((tile) => tile.occId === Player.Id.NULL);
 		return this;
 	}
 

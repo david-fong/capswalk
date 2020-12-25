@@ -34,8 +34,8 @@ export namespace Tile {
 	 * - They may store tiles as separate arrays for each Tile field.
 	 * - They may use compile-time Tile immutability and freeze their Tile array.
 	 *   - Then they must copy on read during development.
-	 *   - They may seal after construction.
-	 * - They may use at-runtime Tile immutability with a mutable Tile array.
+	 *   - They may seal the Tile objects after construction.
+	 * - They may use at-runtime Tile immutability with a sealed Tile array.
 	 *   - Then they must copy and freeze on write.
 	 */
 	export type ImplementationNotes = undefined;
