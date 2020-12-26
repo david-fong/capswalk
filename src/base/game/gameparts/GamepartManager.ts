@@ -18,11 +18,11 @@ InitGameManagerCtorMaps();
  */
 export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coord.System> extends GamepartBase<G,S> {
 
-	public readonly avgHealth: Player.Health;
-	public readonly avgHealthPerTile: Player.Health;
-	public readonly healthCostOfBoost: Player.Health;
-	#currentFreeHealth: Player.Health;
-	readonly #healthTiles: Set<Tile>;
+	public readonly avgHealth: Player.Health = 0.0;
+	public readonly avgHealthPerTile: Player.Health = 0.0;
+	public readonly healthCostOfBoost: Player.Health = 0.0;
+	#currentFreeHealth: Player.Health = 0.0;
+	readonly #healthTiles = new Set<Tile>();
 
 	public readonly lang: Lang;
 	readonly #langImportPromise: Promise<Lang>;
@@ -43,7 +43,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			this.avgHealthPerTile,
 			this.grid.static.getDiameterOfLatticePatchHavingArea,
 		);
-		this.#healthTiles = new Set();
 		this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
 		JsUtils.propNoWrite(this as GamepartManager<G,S>,
 			"avgHealth", "avgHealthPerTile", "healthCostOfBoost", "scoreInfo",
@@ -274,7 +273,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			tiles: this.dryRunSpawnFreeHealth({
 				[req.moveDest]: {
 					health: 0,
-					...this.dryRunShuffleLangCspAt(reqDest.coord, true),
+					...this.dryRunShuffleLangCspAt(reqDest.coord),
 				},
 			}),
 		});

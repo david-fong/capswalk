@@ -28,7 +28,7 @@ export class VisibleTile implements TU.Pikk<Tile,"occId"|"health"|"char"> {
 			charWrap.appendChild(charElem);
 			this.baseElem.appendChild(charWrap);
 		}
-		JsUtils.propNoWrite(this as VisibleTile, "charElem");
+		Object.freeze(this);
 	}
 
 	public set occId(playerId: Player.Id) {

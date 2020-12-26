@@ -14,21 +14,20 @@ export namespace LangSeqTree {
 	export class ParentNode {
 
 		public readonly seq = "" as Lang.Seq;
-		protected readonly children: TU.RoArr<ChildNode>;
+		protected readonly children: TU.RoArr<ChildNode> = [];
 		/**
 		 * Equals this node's own weighted hit count plus all its ancestors'
 		 * weighted hit counts.
 		 */
-		protected carryHits: number;
+		protected carryHits: number = 0.0;
 
 		public constructor() {
-			this.children = [];
 			JsUtils.propNoWrite(this as ParentNode, "children");
 		}
 
 		public reset(): void {
 			for (const child of this.children) child.reset();
-			this.carryHits = 0.000;
+			this.carryHits = 0.0;
 		}
 
 		protected _finalize(): void {
@@ -49,10 +48,6 @@ export namespace LangSeqTree {
 			} else {
 				leafNodes.push(this as ParentNode as ChildNode);
 			}
-		}
-
-		public simpleView(): object {
-			return this.children;
 		}
 
 		/**
@@ -82,7 +77,7 @@ export namespace LangSeqTree {
 			// Add mappings in ascending order of sequence length:
 			// (this is so that no merging of branches needs to be done)
 			const rootNode = new ParentNode();
-			JsUtils.propNoWrite(rootNode as ParentNode, "children");
+			Object.seal(rootNode);
 			let cursor: ChildNode | ParentNode = rootNode;
 			for (const [seq, chars] of Array.from(reverseDict).sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1)) {
 				while (!seq.startsWith(cursor.seq)) {
@@ -136,19 +131,13 @@ export namespace LangSeqTree {
 		) {
 			super();
 			this.seq = sequence;
-			this.#characters = characters;
+			this.#characters = Object.freeze(characters);
 			this.parent = parent;
 			JsUtils.propNoWrite(this as ChildNode, "seq", "parent");
+			Object.seal(this);
 		}
 
-		/**
-		 * @override
-		 */
-		protected _finalize(): void {
-			Object.freeze(this.#characters);
-			super._finalize();
-		}
-
+		/** @override */
 		public reset(): void {
 			super.reset();
 			// Order matters! The below work must be done after `super.reset`
@@ -161,16 +150,16 @@ export namespace LangSeqTree {
 		}
 
 		/**
-		 * #### How it works:
-		 *
+		 * @description
 		 * Incrementing the hit-count makes this node less likely to be
 		 * used for a shuffle-in. Shuffle-in option searching is easy to
 		 * taking the viewpoint of leaf-nodes, so this implementation is
 		 * geared toward indicating hit-count through leaf-nodes, hence
 		 * the bubble-down of hit-count incrementation.
 		 *
-		 * @returns A character / sequence pair from this node that has
-		 *      been selected the least according to the specified scheme.
+		 * @returns
+		 * A character / sequence pair from this node that has been
+		 * selected the least according to the specified scheme.
 		 */
 		public chooseOnePair(): Lang.CharSeqPair {
 			let wgtChar = this.#characters[0]!;
@@ -199,23 +188,11 @@ export namespace LangSeqTree {
 			return this.carryHits - (this.parent?.carryHits ?? 0);
 		}
 
-		/**
-		 * For debugging purposes.
-		 */
-		public simpleView(): object {
-			let chars = this.#characters.map((char) => char.simpleView());
-			return Object.assign(Object.create(null), {
-				seq: this.seq,
-				chars: (chars.length === 1) ? chars[0] : chars,
-				kids: this.children.map((child) => child.simpleView()),
-			});
-		}
-
 		public static readonly PATH_CMP: LangSorter<ChildNode> = (a, b) => {
 			return a.ownHits - b.ownHits;
 		};
 	}
-	JsUtils.protoNoEnum(ChildNode, "_finalize", "_rIncrHits");
+	JsUtils.protoNoEnum(ChildNode, "_rIncrHits");
 	Object.freeze(ChildNode);
 	Object.freeze(ChildNode.prototype);
 
@@ -257,50 +234,31 @@ class WeightedLangChar {
 	 * Specifically, a character A with a weight N times that of some
 	 * other character B will, on average, be returned N times more
 	 * often by the `chooseOnePair` method than B.
-	 *
-	 * This is implemented using counters that last for the lifetime
-	 * of one game, that increment for a chosen character by the inverse
-	 * of its weight every time it is chosen. Choosing the character
-	 * with the lowest such counter at a given time will produce the
-	 * desired effect:
-	 *
-	 * If there are three characters mapped with weights `cA: 1`, `cB:
-	 * 2`, `cC: 3`, and share no prefixing substrings and we pretend
-	 * that there are never any sequences to avoid when shuffling in
-	 * characters, then the results of consecutive calls should produce
-	 * something like: `A(0), B(0), C(0), A(1/3), B(1/2), A(2/3),
-	 * (repeat forever)`, where the bracketed values are their weighted
-	 * hit-counts before they were returned, since the last reset.
 	 */
-	public readonly weightInv: number;
+	public readonly weightInv: number = 1.0;
 	/**
 	 * This value is weighted according to `weightInv`.
 	 */
-	public hits: number;
+	public hits: number = 0.0;
 
 	public constructor(
 		char: Lang.Char,
 		weight: number,
 	) {
 		this.char = char;
-		this.weightInv = 1.000 / weight;
+		this.weightInv = 1.0 / weight;
 		// The above choice of a numerator is not behaviourally significant.
 		// All that is required is that all single-mappings in a `Lang` use
 		// a consistent value.
+		Object.seal(this);
 	}
 
 	public reset(): void {
-		this.hits = 0.000;
+		this.hits = 0.0;
 	}
 
 	public _incrementNumHits(): void {
 		this.hits += this.weightInv;
-	}
-
-	public simpleView(): object {
-		return Object.assign(Object.create(null), {
-			char: this.char,
-		});
 	}
 
 	public static readonly CMP: LangSorter<WeightedLangChar> = (a, b) => {

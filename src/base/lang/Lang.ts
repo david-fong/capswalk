@@ -44,14 +44,6 @@ export abstract class Lang extends _Lang {
 
 
 	/**
-	 * @param frontendDescId -
-	 *
-	 * @param forwardDict
-	 * Weights are _relative_ values handled by tree nodes, which
-	 * require the provided values to all be strictly positive values.
-	 * Ie. They do not need to sum up to any specific value.
-	 *
-	 * @param weightExaggeration -
 	 */
 	protected constructor(
 		frontendDescId: Lang.FrontendDesc["id"],
@@ -96,14 +88,12 @@ export abstract class Lang extends _Lang {
 	 *
 	 * @param avoid
 	 * A collection of `Lang.Seq`s to avoid conflicts with when choosing
-	 * a `Lang.Char` to return. Is allowed to contain empty strings,
-	 * which will be ignored as if those entries did not exist. Freezing
-	 * this before the call may result in better performance.
+	 * a `Lang.Char` to return. Empty-string entries are ignored. Freezing
+	 * may result in better performance.
 	 *
 	 * @requires
-	 * In order for this language to satisfy these constraints, it must
-	 * be true that the number of leaf nodes in its tree-structure must
-	 * provably be greater than the number of non-empty entries in
+	 * The number of leaves in an implementation's tree-structure must
+	 * be greater than the number of non-empty entries in
 	 * `avoid` for all expected combinations of internal state and
 	 * passed-arguments under which it could be called.
 	 */
@@ -114,7 +104,6 @@ export abstract class Lang extends _Lang {
 		// are not descendants or ancestors of nodes in `avoid`. It is
 		// sure that none of the ancestors or descendants of nodes in
 		// `avoid` are also in `avoid`.
-		type ChildNode = LangSeqTree.ChildNode;
 
 		// Start by sorting according to the desired balancing scheme:
 		this.leafNodes.sort(LangSeqTree.ParentNode.LEAF_CMP);
@@ -122,16 +111,19 @@ export abstract class Lang extends _Lang {
 		search_branch:
 		for (const leaf of this.leafNodes) {
 			let hitNode = leaf;
-			for (let node: ChildNode | undefined = leaf; node; node = node.parent) {
+			for (
+				let node: LangSeqTree.ChildNode | undefined = leaf;
+				node !== undefined;
+				node = node.parent
+			) {
 				const superSeq = avoid.find((avoidSeq) => avoidSeq.startsWith(node!.seq));
 				// ^Using `find` is fine. There can only ever be one or none.
 				if (superSeq) {
 					if (superSeq.length > node.seq.length) {
-						// Found a node on an upstream path of an avoid-node.
-						// Doesn't stop us from using what we've found so far.
+						// Nothing shorter/upstream will work.
 						break;
 					} else {
-						// Cannot use a branch containing an avoid node.
+						// Branch contains an avoid node.
 						continue search_branch;
 					}
 				}
@@ -145,17 +137,6 @@ export abstract class Lang extends _Lang {
 		// Enforced by UI and server:
 		throw new Error(`never. Invariants guaranteeing that a LangSeq`
 		+ ` can always be shuffled-in were not met.`);
-	}
-
-	/**
-	 */
-	public simpleView(): object {
-		return Object.freeze(Object.assign(Object.create(null), {
-			id: this.frontendDesc.id,
-			displayName: this.frontendDesc.displayName,
-			root: this.treeMap.simpleView(),
-			numLeaves: this.leafNodes.length,
-		}));
 	}
 }
 export namespace Lang {

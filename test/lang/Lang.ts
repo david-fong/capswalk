@@ -17,7 +17,7 @@ export namespace Lang {
 	.forEach((langImpl) => {
 		const inst = new (langImpl)(1.0);
 		inst.reset();
-		console.info(inst.simpleView());
+		console.info(inst);
 
 		// TODO.impl test a set of alphanumeric character inputs for each lang's remapping function.
 		// also check that none of the weights are negative or zero.

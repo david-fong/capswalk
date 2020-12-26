@@ -42,7 +42,7 @@ export namespace Korean {
 		}
 		public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
 			return INITIALIZE((ij, mj, fj) => {
-				const atoms = [ij, mj, fj].flatMap((jamos) => jamos.atoms.split("")) as Array<keyof typeof Dubeolsik.DUB_KEYBOARD>;
+				const atoms = Object.freeze([ij, mj, fj].flatMap((jamos) => jamos.atoms.split("")) as Array<keyof typeof Dubeolsik.DUB_KEYBOARD>);
 				return atoms.map((atom) => Dubeolsik.DUB_KEYBOARD[atom]).join("");
 			});
 		}

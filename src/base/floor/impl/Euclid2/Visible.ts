@@ -14,6 +14,7 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 	#tiles: TU.RoArr<VisibleTile>;
 	public constructor(desc: AbstractGrid.CtorArgs<S>) {
 		super(desc);
+
 		const gridElem = JsUtils.mkEl("div", [style["grid"]]);
 		gridElem.style.setProperty("--euclid2-grid-width", this.dimensions.width.toString());
 
@@ -26,6 +27,7 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 		this.#tiles = tiles;
 
 		this._superVisibleGrid(gridElem);
+		Object.seal(this);
 	}
 	/** @override */
 	public editTile(coord: Coord, changes: Tile.Changes): void {
