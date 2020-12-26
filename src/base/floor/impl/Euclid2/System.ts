@@ -4,110 +4,114 @@ import { Grid as AbstractGrid } from "floor/Grid";
 import { Player } from "base/defs/TypeDefs";
 type S = BaseCoord.System.W_EUCLID2;
 
+export type _Dimensions = {
+	height: number,
+	width:  number,
+};
+
+/**
+ * Euclid2 Internal Augmented Coord
+ *
+ * Immutable.
+ */
+class IAC {
+
+	public constructor(
+		public readonly x: number,
+		public readonly y: number,
+	) {
+		Object.freeze(this);
+	}
+	public static from(dimensions: _Dimensions, coord: Coord): IAC {
+		return new IAC(coord % dimensions.width, Math.floor(coord / dimensions.width));
+	}
+	public toCoord(dimensions: _Dimensions): Coord {
+		return (this.y * dimensions.width) + this.x;
+	}
+
+	public static distX(dim: _Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
+		dist: number, wrap: boolean,
+	} {
+		let dist = Math.abs(i1.x - i2.x);
+		if (dist < dim.width / 2) return { dist, wrap: false };
+		return { dist: dim.width - dist, wrap: true };
+	}
+	public static distY(dim: _Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
+		dist: number, wrap: boolean,
+	} {
+		let dist = Math.abs(i1.y - i2.y);
+		if (dist < dim.height / 2) return { dist, wrap: false };
+		return { dist: dim.height - dist, wrap: true };
+	}
+	public static oneNorm(dim: _Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
+		norm: number, wrapX: boolean, wrapY: boolean,
+	} {
+		const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
+		return { norm: dX.dist + dY.dist, wrapX: dX.wrap, wrapY: dY.wrap };
+	}
+	public static infNorm(dim: _Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
+		norm: number, wrapX: boolean, wrapY: boolean,
+	} {
+		const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
+		return { norm: Math.max(dX.dist, dY.dist), wrapX: dX.wrap, wrapY: dY.wrap };
+	}
+	/**
+	 * @returns
+	 * A number in the range (0, 1). `One` means the x and y
+	 * coordinates align to the x or y axis, and `Zero` means they
+	 * are 45 degrees from the x or y axis.
+	 *
+	 * ```latex
+	 * \frac{\left|\left|x\right|-\left|y\right|\right|}{\left|x\right|+\left|y\right|}=a
+	 * ```
+	 */
+	public static axialAlignment(dim: _Dimensions, _i1: Coord, _i2: Coord): number {
+		const i1 = IAC.from(dim, _i1), i2 = IAC.from(dim, _i2);
+		const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
+		return (Math.abs(dX.dist - dY.dist)) / (dX.dist + dY.dist);
+	}
+
+	public add(other: IAC.Bare): IAC {
+		return new IAC(
+			this.x + other.x,
+			this.y + other.y,
+		);
+	}
+	public sub(other: IAC.Bare): IAC {
+		return new IAC(
+			this.x - other.x,
+			this.y - other.y,
+		);
+	}
+	public mul(scalar: number): IAC {
+		return new IAC(
+			scalar * this.x,
+			scalar * this.y,
+		);
+	}
+	public mod(dim: _Dimensions): IAC {
+		let {x,y} = this;
+		while (x < 0) x += dim.width;
+		while (y < 0) y += dim.height;
+		x %= dim.width;
+		y %= dim.height;
+		return new IAC(x,y);
+	}
+}
+export namespace IAC {
+	export type Bare = {
+		readonly x: number;
+		readonly y: number;
+	};
+}
+Object.freeze(IAC);
+Object.freeze(IAC.prototype);
+
+
 /**
  * Edges are wrapped.
  */
 export namespace WrappedEuclid2 {
-
-	/**
-	 * Euclid2 Internal Augmented Coord
-	 *
-	 * Immutable.
-	 */
-	export class IAC {
-
-		public readonly x: number;
-		public readonly y: number;
-
-		public constructor(desc: IAC.Bare) {
-			Object.freeze(Object.assign(this, desc));
-		}
-		public static from(dimensions: Grid.Dimensions, coord: Coord): IAC {
-			return new IAC({x: coord % dimensions.width, y: Math.floor(coord / dimensions.width)});
-		}
-		public toCoord(dimensions: Grid.Dimensions): Coord {
-			return (this.y * dimensions.width) + this.x;
-		}
-
-		public static distX(dim: Grid.Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
-			dist: number, wrap: boolean,
-		} {
-			let dist = Math.abs(i1.x - i2.x);
-			if (dist < dim.width / 2) return { dist, wrap: false };
-			return { dist: dim.width - dist, wrap: true };
-		}
-		public static distY(dim: Grid.Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
-			dist: number, wrap: boolean,
-		} {
-			let dist = Math.abs(i1.y - i2.y);
-			if (dist < dim.height / 2) return { dist, wrap: false };
-			return { dist: dim.height - dist, wrap: true };
-		}
-		public static oneNorm(dim: Grid.Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
-			norm: number, wrapX: boolean, wrapY: boolean,
-		} {
-			const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
-			return { norm: dX.dist + dY.dist, wrapX: dX.wrap, wrapY: dY.wrap };
-		}
-		public static infNorm(dim: Grid.Dimensions, i1: IAC.Bare, i2: IAC.Bare): {
-			norm: number, wrapX: boolean, wrapY: boolean,
-		} {
-			const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
-			return { norm: Math.max(dX.dist, dY.dist), wrapX: dX.wrap, wrapY: dY.wrap };
-		}
-		/**
-		 * @returns
-		 * A number in the range (0, 1). `One` means the x and y
-		 * coordinates align to the x or y axis, and `Zero` means they
-		 * are 45 degrees from the x or y axis.
-		 *
-		 * ```latex
-		 * \frac{\left|\left|x\right|-\left|y\right|\right|}{\left|x\right|+\left|y\right|}=a
-		 * ```
-		 */
-		public static axialAlignment(dim: Grid.Dimensions, _i1: Coord, _i2: Coord): number {
-			const i1 = IAC.from(dim, _i1), i2 = IAC.from(dim, _i2);
-			const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
-			return (Math.abs(dX.dist - dY.dist)) / (dX.dist + dY.dist);
-		}
-
-		public add(other: IAC.Bare): IAC {
-			return new IAC({
-				x: this.x + other.x,
-				y: this.y + other.y,
-			});
-		}
-		public sub(other: IAC.Bare): IAC {
-			return new IAC({
-				x: this.x - other.x,
-				y: this.y - other.y,
-			});
-		}
-		public mul(scalar: number): IAC {
-			return new IAC({
-				x: scalar * this.x,
-				y: scalar * this.y,
-			});
-		}
-		public mod(dim: Grid.Dimensions): IAC {
-			let {x,y} = this;
-			while (x < 0) x += dim.width;
-			while (y < 0) y += dim.height;
-			x %= dim.width;
-			y %= dim.height;
-			return new IAC({x,y});
-		}
-	}
-	export namespace IAC {
-		export type Bare = {
-			readonly x: number;
-			readonly y: number;
-		};
-	}
-	Object.freeze(IAC);
-	Object.freeze(IAC.prototype);
-
-
 
 	/**
 	 * Euclid2 Grid
@@ -147,7 +151,7 @@ export namespace WrappedEuclid2 {
 			const iacCache = [];
 			for (let y = 0; y < desc.dimensions.height; y++) {
 				for (let x = 0; x < desc.dimensions.width; x++) {
-					iacCache.push(new IAC({x,y}));
+					iacCache.push(new IAC(x,y));
 				}
 			}
 			this.iacCache = Object.freeze(iacCache);
@@ -229,10 +233,10 @@ export namespace WrappedEuclid2 {
 
 		public getRandomCoordAround(_origin: Coord, radius: number): Coord {
 			const origin = this.iacCache[_origin]!;
-			return new IAC({
-				x: origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
-				y: origin.y + Math.trunc(2 * radius * (Math.random() - 0.5)),
-			}).toCoord(this.dimensions);
+			return new IAC(
+				origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
+				origin.y + Math.trunc(2 * radius * (Math.random() - 0.5)),
+			).toCoord(this.dimensions);
 		}
 
 		public dist(source: Coord, dest: Coord): number {
@@ -303,10 +307,7 @@ export namespace WrappedEuclid2 {
 		/**
 		 * If `width` is not specified, `height` is taken as its default value.
 		 */
-		export type Dimensions = {
-			height: number,
-			width:  number,
-		};
+		export type Dimensions = _Dimensions;
 	}
 	Grid.prototype._getTileSourcesTo = Grid.prototype._getTileDestsFrom;
 	JsUtils.protoNoEnum(Grid, "_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo");
