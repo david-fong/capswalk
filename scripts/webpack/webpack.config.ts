@@ -158,12 +158,12 @@ const CLIENT_CONFIG = __BaseConfig("client"); {
 	const config  = Object.assign(CLIENT_CONFIG, <Partial<webpack.Configuration>>{
 		target: ["web", "es6"],
 		entry: {
+			"css-common": {
+				import: "./src/style/common.css",
+			},
 			"index": {
 				import: "./src/client/index.ts",
 				dependOn: "css-common",
-			},
-			"css-common": {
-				import: "./src/style/common.css",
 			},
 		},
 		externals: [nodeExternals({
