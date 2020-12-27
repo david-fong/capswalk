@@ -20,6 +20,7 @@ export namespace StateChange {
 	 * An immutable Request DTO 📦
 	 */
 	export interface Req extends _Base {
+		readonly lastRejectId: number;
 		readonly moveType: Player.MoveType;
 		readonly moveDest: Coord;
 	}
@@ -31,21 +32,21 @@ export namespace StateChange {
 	export namespace Res {
 
 		export interface Accepted extends _Base {
-			readonly rejected?: undefined;
+			readonly rejectId?: undefined;
 
 			/**
 			 * Tiles other than the tile that the initiating player is moving to.
 			 *
 			 * Occupant changes are communicated in the `players` field- not here.
 			 */
-			readonly tiles: Record<Coord, Tile.Changes>;
+			readonly tiles: Record<Coord, TU.Omit<Tile.Changes,"occId">>;
 
 			/**
 			 */
 			readonly players: Readonly<Record<Player.Id, Player.Changes>>;
 		}
 		export interface Rejected extends _Base {
-			readonly rejected: true;
+			readonly rejectId: number;
 		}
 	}
 }

@@ -9,13 +9,8 @@ import type { Grid } from "floor/Grid";
  * All implementations must call `Grid._superVisibleGrid` at the end
  * of their constructors.
  *
- * NOTE: This is put in a separate file from the
- * base `Grid` class with a _separate_ dictionary of implementation
- * literals so that the build tooling can infer that this code can
- * be excluded (tree shaking). The implementations may still go in
- * the same file as their non-visible implementation since they are
- * separate exports (this can be tree-shaken). Specifically, the
- * _server_ related code will benefit from this choice.
+ * NOTE: Use separate files from the base implementation for tree
+ * shaking.
  */
 export interface VisibleGrid<S extends Coord.System>
 extends Grid<S>, VisibleGridMixin { }

@@ -192,6 +192,12 @@ export namespace Game {
 		 * not too much, not too little.
 		 */
 		HEALTH_EFFECT_FOR_DOWNED_PLAYER: 0.6,
+
+		/**
+		 * A strictly-positive integer. Indicates the maximum number
+		 * of requests which a clientside player can buffer.
+		 */
+		REQUEST_BUFFER_LENGTH: 5,
 	});
 }
 Object.freeze(Game);

@@ -36,6 +36,10 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 		this.#seqBuffer = "";
 	}
 
+	public get seqBuffer(): _Lang.Seq {
+		return this.#seqBuffer;
+	}
+
 
 	/**
 	 * Callback function invoked when the Operator presses a key while
@@ -44,26 +48,23 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	 * operation (implementation must not intermediately schedule any
 	 * other task-relevant callbacks until all critical operations are
 	 * complete).
-	 *
-	 * @param event - The object describing the `KeyboardEvent`.
 	 */
 	public processKeyboardInput(event: KeyboardEvent): void {
-		if (this.game.status !== Game.Status.PLAYING) return;
-		if (!this.requestInFlight) {
-			// Only process movement-type input if the last request got
-			// acknowledged by the Game Manager and the game is playing.
-			if (event.key === " ") {
-				if (this.coord !== this.prevCoord) {
-					this.makeMovementRequest(
-						this.game.grid.getUntAwayFrom(this.prevCoord, this.coord),
-						Player.MoveType.BOOST,
-					);
-				}
-			} else if (event.key.length === 1 && !event.repeat) {
-				// TODO.design is the above condition okay? will any
-				// languages require different behaviour?
-				this.seqBufferAcceptKey(event.key);
+		if (this.game.status !== Game.Status.PLAYING
+		 || !this.reqBuffer.isFull
+		) return; //⚡
+
+		if (event.key === " ") {
+			if (this.coord !== this.prevCoord) {
+				this.makeMovementRequest(
+					this.game.grid.getUntAwayFrom(this.prevCoord, this.coord),
+					Player.MoveType.BOOST,
+				);
 			}
+		} else if (event.key.length === 1 && !event.repeat) {
+			// TODO.learn is the above condition okay? will any
+			// languages require different behaviour?
+			this.seqBufferAcceptKey(event.key);
 		}
 	}
 
@@ -83,15 +84,15 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 			// In this case, no movement is possible.
 			return;
 		}
-		if (key) {
-			key = this.#langRemappingFunc(key);
-		} else {
+		if (key === undefined) {
 			const possibleTarget = unts.find((tile) => tile.seq.startsWith(this.seqBuffer));
 			if (!possibleTarget) {
 				// If the thing I was trying to get to is gone, clear the buffer.
 				this.#seqBuffer = "";
 			}
-			return;
+			return; //⚡
+		} else {
+			key = this.#langRemappingFunc(key);
 		}
 
 		for ( // loop through substring start offset of newSeqBuffer:
@@ -123,10 +124,6 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 		this.#seqBuffer = "";
 
 		super.moveTo(dest);
-	}
-
-	public get seqBuffer(): _Lang.Seq {
-		return this.#seqBuffer;
 	}
 }
 Object.freeze(OperatorPlayer);

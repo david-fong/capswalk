@@ -9,21 +9,18 @@ import type { GamepartBase }    from "game/gameparts/GamepartBase";
 import type { Team }            from "./Team";
 
 import { PlayerSkeleton } from "./PlayerSkeleton"; export { PlayerSkeleton };
-import { PlayerStatus }   from "./PlayerStatus"; export { PlayerStatus };
+import { PlayerStatus }   from "./PlayerStatus";import type { StateChange } from "base/game/StateChange";
+ export { PlayerStatus };
 
 /**
  */
 export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements _Player.UserInfo {
 
 	public readonly familyId: Player.Family;
-
 	public readonly teamId: Team.Id;
-
 	public readonly username: Player.Username;
-
 	public readonly avatar: Player.Avatar;
-
-	public requestInFlight: boolean;
+	public readonly reqBuffer: Player.RequestBuffer;
 
 	/**
 	 */
@@ -34,33 +31,26 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		this.teamId   = desc.teamId;
 		this.username = desc.username;
 		this.avatar   = desc.avatar ?? Player.Avatar.GET_RANDOM();
+		this.reqBuffer = new Player.RequestBuffer();
 		JsUtils.propNoWrite(this as Player<S>,
-			"familyId", "teamId", "username", "avatar",
+			"familyId", "teamId", "username", "avatar", "reqBuffer",
 		);
 	}
 
 	public reset(coord: Coord): void {
 		super.reset(coord);
 		this.status.reset();
-		this.requestInFlight = false;
+		this.reqBuffer.reset();
 	}
 
-	/**
-	 * @virtual
-	 * Overrides must call super.
-	 */
+	/** @virtual Overrides must call super. */
 	public _notifyGameNowPlaying(): void { }
-	/**
-	 * @virtual
-	 * The default implementation does nothing.
-	 */
-	public _notifyGameNowPaused(): void { }
-	/**
-	 * @virtual
-	 * The default implementation does nothing.
-	 */
-	public _notifyGameNowOver(): void { }
 
+	/** @virtual The default implementation does nothing. */
+	public _notifyGameNowPaused(): void { }
+
+	/** @virtual The default implementation does nothing. */
+	public _notifyGameNowOver(): void { }
 
 	/**
 	 * Called automatically by {@link OperatorPlayer#seqBufferAcceptKey}
@@ -75,16 +65,16 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		if (DEF.DevAssert) {
 			if (this.game.status !== Game.Status.PLAYING) {
 				throw new Error("This is not a necessary precondition, but we're doing it anyway.");
-			} else if (this.requestInFlight) {
-				throw new Error("Only one request should ever be in flight at a time.");
 			}
 		}
-		this.requestInFlight = true;
-		this.game.processMoveRequest({
+		if (this.reqBuffer.isFull) return; //⚡
+
+		this.game.processMoveRequest(this.reqBuffer.signRequest({
 			initiator: this.playerId,
+			lastRejectId: this.reqBuffer.lastRejectId,
 			moveDest: dest.coord,
 			moveType: type,
-		});
+		}));
 	}
 
 	public get team(): Team<S> {
@@ -179,6 +169,61 @@ export namespace Player {
 		};
 	}
 	Object.freeze(CtorArgs);
+
+
+	/**
+	 * Used to buffer requests when there is network delay.
+	 *
+	 * This allows for the client to pipeline a certain number of
+	 * requests. If a request is rejected, all following requests are
+	 * invalid, and the server can
+	 */
+	export class RequestBuffer {
+
+		public lastRejectId = 0; // Can just alternate 0 and 1.
+		public length = 0;
+
+		public reset(): void {
+			this.lastRejectId = 0;
+			this.length = 0;
+		}
+
+		public get isFull(): boolean {
+			return this.length === Game.K.REQUEST_BUFFER_LENGTH;
+		}
+
+		/** @requires `!this.isFull` */
+		public signRequest(req: StateChange.Req): StateChange.Req {
+			if (DEF.DevAssert && this.isFull) {
+				throw new Error("never");
+			}
+			this.length++;
+			return req as StateChange.Req;
+		}
+
+		public getNextRejectId(): number {
+			// return (this.lastRejectId === 0) ? 1 : 0;
+			// Above option returns an "elegant" value.
+			// Below returns a hard-to-guess value.
+			return (this.lastRejectId + Math.floor(99 * Math.random())) % 100;
+		}
+		/**
+		 * Every request signed with the previous rejectId will be
+		 * silently dropped by the game manager.
+		 */
+		public reject(rejectId: number): void {
+			this.lastRejectId = rejectId;
+			this.length = 0;
+		}
+		public acceptOldest(): void {
+			if (DEF.DevAssert && this.length === 0) {
+				throw new Error("never");
+			}
+			this.length--;
+		}
+	}
+	Object.freeze(RequestBuffer);
+	Object.freeze(RequestBuffer.prototype);
 }
 JsUtils.protoNoEnum(Player,
 	"_notifyGameNowPaused", "_notifyGameNowPlaying", "_notifyGameNowOver",

@@ -236,11 +236,17 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 */
 	public processMoveRequest(req: StateChange.Req): void {
 		const initiator = this.players[req.initiator]!;
+		if (req.lastRejectId !== initiator.reqBuffer.lastRejectId) {
+			return; //⚡
+		}
 		const reqDest = this.grid._getTileAt(req.moveDest);
 		if (  this.status !== Game.Status.PLAYING
 		 || reqDest.occId !== Player.Id.NULL
 		) {
-			this.commitStateChange({ rejected: true, initiator: req.initiator });
+			this.commitStateChange({
+				rejectId: initiator.reqBuffer.getNextRejectId(),
+				initiator: req.initiator,
+			});
 			return; //⚡
 		}
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
@@ -251,7 +257,10 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make
 			// the player become downed (or if they are already downed):
-			this.commitStateChange({ rejected: true, initiator: req.initiator });
+			this.commitStateChange({
+				rejectId: initiator.reqBuffer.getNextRejectId(),
+				initiator: req.initiator,
+			});
 			return; //⚡
 		}
 

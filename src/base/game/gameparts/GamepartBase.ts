@@ -254,7 +254,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 				// ^Do this when non-operator moves into the the operator's vicinity.
 				this.operators.forEach((op) => {
 					if (this.grid._getTileDestsFrom(op.coord).includes(tile)) {
-						op.seqBufferAcceptKey("");
+						op.seqBufferAcceptKey(undefined);
 					}
 				});
 			}
@@ -268,8 +268,8 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		JsUtils.deepFreeze(desc);
 		const player = this.players[desc.initiator]!;
 
-		if (desc.rejected) {
-			player.requestInFlight = false;
+		if (desc.rejectId !== undefined) {
+			player.reqBuffer.reject(desc.rejectId);
 			return; //⚡
 		}
 
@@ -278,7 +278,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		});
 		Object.entries(desc.players).forEach(([pid, changes]) => {
 			const player = this.players[parseInt(pid)]!;
-			player.requestInFlight = false;
+			player.reqBuffer.acceptOldest();
 			player.status.health = changes.health;
 
 			if (changes.coord !== undefined) {
