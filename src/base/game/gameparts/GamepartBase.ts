@@ -269,7 +269,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		const player = this.players[desc.initiator]!;
 
 		if (desc.rejectId !== undefined) {
-			player.reqBuffer.reject(desc.rejectId);
+			player.reqBuffer.reject(desc.rejectId, player.coord);
 			return; //⚡
 		}
 

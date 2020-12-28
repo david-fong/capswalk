@@ -24,7 +24,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 
 	public readonly status: PlayerStatus<S>;
 
-	public coord: Coord;
+	#coord: Coord; public get coord(): Coord { return this.#coord; }
 	public prevCoord: Coord;
 
 
@@ -51,7 +51,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 	 * Must be called _after_ the grid has been reset.
 	 */
 	public reset(coord: Coord): void {
-		this.coord = coord;
+		this.#coord = coord;
 		this.prevCoord = coord;
 	}
 
@@ -62,7 +62,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 	 */
 	public moveTo(dest: Coord): void {
 		this.prevCoord = this.coord;
-		this.coord = dest;
+		this.#coord = dest;
 	}
 }
 JsUtils.protoNoEnum(PlayerSkeleton, "_afterAllPlayersConstruction");

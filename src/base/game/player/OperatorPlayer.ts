@@ -78,7 +78,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	 * trigger a refresh of the seqBuffer to maintain its invariant.
 	 */
 	public seqBufferAcceptKey(key: string | undefined): void {
-		const unts = this.game.grid.tile.destsFrom(this.coord).unoccupied.get;
+		const unts = this.game.grid.tile.destsFrom(this.reqBuffer.predictedCoord).unoccupied.get;
 		if (unts.length === 0) {
 			// Every neighbouring `Tile` is occupied!
 			// In this case, no movement is possible.

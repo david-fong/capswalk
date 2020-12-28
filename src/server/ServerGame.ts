@@ -60,7 +60,6 @@ export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
 		deleteExternalRefs: () => void,
 		gameDesc: Game.CtorArgs<G,S>,
 	}>) {
-		// Start with a call to the super constructor:
 		super(
 			Game.Type.SERVER, {
 			onGameBecomeOver: () => {},

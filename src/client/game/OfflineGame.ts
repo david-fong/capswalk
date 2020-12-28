@@ -5,6 +5,7 @@ import {
 } from "./BrowserGame";
 
 import { GamepartManager } from "game/gameparts/GamepartManager";
+import type { StateChange } from "base/game/StateChange";
 
 
 type G = Game.Type.OFFLINE;
@@ -27,6 +28,13 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
 		);
 		this._ctorBrowserGame();
 	}
+
+	// NOTE: Uncomment this block to simulate network delay for testing.
+	// /** @override */
+	// public processMoveRequest(req: StateChange.Req): void {
+	// 	const func = () => super.processMoveRequest(req);
+	// 	setTimeout(func, 1000);
+	// }
 
 	/** @override */
 	declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];

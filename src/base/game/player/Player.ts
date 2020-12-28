@@ -40,7 +40,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	public reset(coord: Coord): void {
 		super.reset(coord);
 		this.status.reset();
-		this.reqBuffer.reset();
+		this.reqBuffer.reset(coord);
 	}
 
 	/** @virtual Overrides must call super. */
@@ -59,7 +59,6 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	 * implementations.
 	 *
 	 * @final
-	 * @throws A previous request is still in flight (unacknowledged).
 	 */
 	protected makeMovementRequest(dest: Coord, type: Player.MoveType): void {
 		if (DEF.DevAssert) {
@@ -180,12 +179,14 @@ export namespace Player {
 	 */
 	export class RequestBuffer {
 
-		public lastRejectId = 0; // Can just alternate 0 and 1.
-		public length = 0;
+		#lastRejectId = 0; public get lastRejectId(): number { return this.#lastRejectId; };
+		private length = 0;
+		public predictedCoord: Coord;
 
-		public reset(): void {
-			this.lastRejectId = 0;
+		public reset(coord: Coord): void {
+			this.#lastRejectId = 0;
 			this.length = 0;
+			this.predictedCoord = coord;
 		}
 
 		public get isFull(): boolean {
@@ -198,6 +199,7 @@ export namespace Player {
 				throw new Error("never");
 			}
 			this.length++;
+			this.predictedCoord = req.moveDest;
 			return req;
 		}
 
@@ -211,9 +213,10 @@ export namespace Player {
 		 * Every request signed with the previous rejectId will be
 		 * silently dropped by the game manager.
 		 */
-		public reject(rejectId: number): void {
-			this.lastRejectId = rejectId;
+		public reject(rejectId: number, realCoord: number): void {
+			this.#lastRejectId = rejectId;
 			this.length = 0;
+			this.predictedCoord = realCoord;
 		}
 		public acceptOldest(): void {
 			if (DEF.DevAssert && this.length === 0) {
