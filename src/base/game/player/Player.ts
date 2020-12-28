@@ -61,7 +61,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	 * @final
 	 * @throws A previous request is still in flight (unacknowledged).
 	 */
-	protected makeMovementRequest(dest: Tile, type: Player.MoveType): void {
+	protected makeMovementRequest(dest: Coord, type: Player.MoveType): void {
 		if (DEF.DevAssert) {
 			if (this.game.status !== Game.Status.PLAYING) {
 				throw new Error("This is not a necessary precondition, but we're doing it anyway.");
@@ -72,7 +72,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		this.game.processMoveRequest(this.reqBuffer.signRequest({
 			initiator: this.playerId,
 			lastRejectId: this.reqBuffer.lastRejectId,
-			moveDest: dest.coord,
+			moveDest: dest,
 			moveType: type,
 		}));
 	}
@@ -198,7 +198,7 @@ export namespace Player {
 				throw new Error("never");
 			}
 			this.length++;
-			return req as StateChange.Req;
+			return req;
 		}
 
 		public getNextRejectId(): number {

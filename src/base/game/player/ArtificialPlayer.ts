@@ -84,10 +84,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 		this._nextMovementTimerMultiplier = this.game.grid._getTileAt(desiredDest).seq.length;
 
 		this.makeMovementRequest(
-			this.game.grid.getUntToward(
-				desiredDest,
-				this.coord,
-			),
+			this.game.grid.getUntToward(desiredDest, this.coord).coord,
 			this.getNextMoveType(),
 		);
 		// Schedule a task to do this again:

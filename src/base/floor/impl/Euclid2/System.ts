@@ -83,6 +83,9 @@ class IAC {
 			this.y - other.y,
 		);
 	}
+	public iSub(other: IAC.Bare): IAC {
+		return this.add(this.sub(other));
+	}
 	public mul(scalar: number): IAC {
 		return new IAC(
 			scalar * this.x,
@@ -220,10 +223,9 @@ export namespace WrappedEuclid2 {
 			return options[Math.floor(options.length * Math.random())]!.tile;
 		}
 		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Tile {
-			const t = this.getUntToward(_avoidCoord, _sourceCoord);
 			const avoid = this.iacCache[_avoidCoord]!;
 			const src = this.iacCache[_sourceCoord]!;
-			const dest = src.add(src.sub(avoid)).mod(this.dimensions);
+			const dest = src.iSub(avoid).mod(this.dimensions);
 			return this._grid[dest.toCoord(this.dimensions)]!;
 		}
 

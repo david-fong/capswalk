@@ -10,8 +10,11 @@ export namespace JsUtils {
 	 * @param baseCtors -
 	 */
 	export function applyMixins(derivedCtor: any, baseCtors: any[]): void {
+		const inheritanceProps = Object.freeze(["constructor", "__proto__"]);
 		baseCtors.forEach((baseCtor) => {
-			Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
+			Object.getOwnPropertyNames(baseCtor.prototype)
+			.filter((name) => !(inheritanceProps.includes(name)))
+			.forEach((name) => {
 				Object.defineProperty(derivedCtor.prototype, name,
 					Object.getOwnPropertyDescriptor(baseCtor.prototype, name)!
 				);

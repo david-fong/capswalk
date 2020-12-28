@@ -188,7 +188,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			do {
 				tile = this.grid._getTileAt(this.grid.getRandomCoord());
 			} while (
-				tile.occId !== Player.Id.NULL || changes[tile.coord] !== undefined
+				tile.occId !== Player.Id.NULL
 				// TODO.design add other checks to improve distribution and reduce
 				// crowding of freeHealth. Make sure it is sensitive to
 				// `this.averageFreeHealthPerTile`.
@@ -201,7 +201,6 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 					otherDesc.health = (otherDesc.health ?? 0) + tileHealthToAdd;
 				} else {
 					changes[tile.coord] = {
-						// newCharSeqPair: undefined, // "do not change".
 						health: tile.health + tileHealthToAdd,
 					};
 				}

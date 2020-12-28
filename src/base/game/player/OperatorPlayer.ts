@@ -51,13 +51,13 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	 */
 	public processKeyboardInput(event: KeyboardEvent): void {
 		if (this.game.status !== Game.Status.PLAYING
-		 || !this.reqBuffer.isFull
+		 || this.reqBuffer.isFull
 		) return; //⚡
 
 		if (event.key === " ") {
 			if (this.coord !== this.prevCoord) {
 				this.makeMovementRequest(
-					this.game.grid.getUntAwayFrom(this.prevCoord, this.coord),
+					this.game.grid.getUntAwayFrom(this.prevCoord, this.coord).coord,
 					Player.MoveType.BOOST,
 				);
 			}
@@ -103,10 +103,10 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 			// look for the longest suffixing substring of `newSeqBuffer`
 			// that is a prefixing substring of any UNT's.
 			const possibleTarget = unts.find((tile) => tile.seq.startsWith(newSeqBuffer));
-			if (possibleTarget) {
+			if (possibleTarget !== undefined) {
 				this.#seqBuffer = newSeqBuffer;
 				if (possibleTarget.seq === newSeqBuffer) {
-					this.makeMovementRequest(possibleTarget, "NORMAL");
+					this.makeMovementRequest(possibleTarget.coord, "NORMAL");
 				}
 				return;
 			}
