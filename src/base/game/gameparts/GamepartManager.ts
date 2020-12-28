@@ -88,11 +88,9 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		// history of shuffle-ins has no effects on the new pairs.
 		await this.#langImportPromise;
 		this.lang.reset();
-		// Shuffle everything:
-		this.grid.shuffledForEachTile((tile) => {
-			this.grid.editTile(tile.coord, {
-				...this.dryRunShuffleLangCspAt(tile.coord, true)
-			});
+		this.grid.forEachShuffled((tile) => {
+			const c = tile.coord;
+			this.grid.write(c, this.dryRunShuffleLangCspAt(c, true));
 		});
 
 		// Reset and spawn players:
@@ -105,7 +103,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			team.members.forEach((member, memberIndex) => {
 				const coord = spawnPoints[teamIndex]![memberIndex]!;
 				member.reset(coord);
-				this.grid.editTile(coord, {
+				this.grid.write(coord, {
 					occId: member.playerId,
 				});
 			});
@@ -125,26 +123,24 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * **Important:** Nullifies the existing values at `tile` and does
 	 * not consume the returned values, which must be done externally.
 	 *
-	 * @param targetTile
-	 * The Tile to shuffle their {@link Lang.CharSeqPair}
-	 * pair for.
+	 * @param coord
 	 *
 	 * @param doCheckEmptyTiles
-	 * Pass `true` when populating a grid which has been reset.
+	 * Pass `true` when populating a grid which has been reset. This
+	 * is for performance optimization purposes. It can be safely
+	 * ignored.
 	 *
 	 * @returns
 	 * A {@link Lang.CharSeqPair} that can be used as a replacement
 	 * for that currently being used by `tile`.
 	 */
-	public dryRunShuffleLangCspAt(coord: Coord, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
+	private dryRunShuffleLangCspAt(coord: Coord, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
 		// First, clear values for the target tile so its current
 		// (to-be-previous) values don't get unnecessarily avoided.
-		this.grid.editTile(coord, {
-			...Lang.CharSeqPair.NULL
-		});
+		this.grid.write(coord, Lang.CharSeqPair.NULL);
 
-		let avoid: TU.RoArr<Lang.Seq> = this.grid
-			.getDestsFromSourcesTo(coord)
+		let avoid: TU.RoArr<Lang.Seq> = Object.freeze(this.grid
+			.getDestsFromSourcesTo(coord))
 			.map((tile) => tile.seq);
 		// ^ Note: An array of CharSeq from unique Tiles. It is okay
 		// for those tiles to include `coord`, and it is okay for
@@ -178,7 +174,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * does not update until after the movement request has been
 	 * executed.
 	 */
-	public dryRunSpawnFreeHealth(changes: Record<Coord, Tile.Changes>): Record<Coord, Tile.Changes> {
+	private dryRunSpawnHealth(changes: Record<Coord, Tile.Changes>): Record<Coord, Tile.Changes> {
 		let healthToSpawn = this.avgHealth - this.currentFreeHealth;
 		if (healthToSpawn <= 0) {
 			return changes;
@@ -186,26 +182,26 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		while (healthToSpawn > 0) {
 			let tile: Tile;
 			do {
-				tile = this.grid._getTileAt(this.grid.getRandomCoord());
+				tile = this.grid.tileAt(this.grid.getRandomCoord());
 			} while (
 				tile.occId !== Player.Id.NULL
 				// TODO.design add other checks to improve distribution and reduce
 				// crowding of freeHealth. Make sure it is sensitive to
 				// `this.averageFreeHealthPerTile`.
 			);
-			const tileHealthToAdd = Game.K.AVERAGE_HEALTH_TO_SPAWN_ON_TILE;
+			const healthToAdd = Game.K.AVERAGE_HEALTH_TO_SPAWN_ON_TILE;
 			if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
 				let otherDesc = changes[tile.coord];
 				if (otherDesc !== undefined) {
 					// @ts-expect-error : RO=
-					otherDesc.health = (otherDesc.health ?? 0) + tileHealthToAdd;
+					otherDesc.health = (otherDesc.health ?? 0) + healthToAdd;
 				} else {
 					changes[tile.coord] = {
-						health: tile.health + tileHealthToAdd,
+						health: tile.health + healthToAdd,
 					};
 				}
 			}
-			healthToSpawn -= tileHealthToAdd;
+			healthToSpawn -= healthToAdd;
 		}
 		return changes;
 	}
@@ -217,7 +213,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
 		JsUtils.deepFreeze(desc);
-		const tile = this.grid._getTileAt(coord);
+		const tile = this.grid.tileAt(coord);
 		this.#currentFreeHealth += desc.health! - tile.health;
 		if (desc.health === 0) {
 			this.#healthTiles.delete(tile);
@@ -232,13 +228,14 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 	 * Reject the request if `dest` is occupied, or if the specified
 	 * player does not exist, or the client is missing updates for the
 	 * destination they requested to move to, or the player is bubbling.
+	 * @override
 	 */
 	public processMoveRequest(req: StateChange.Req): void {
 		const initiator = this.players[req.initiator]!;
 		if (req.lastRejectId !== initiator.reqBuffer.lastRejectId) {
 			return; //⚡
 		}
-		const reqDest = this.grid._getTileAt(req.moveDest);
+		const reqDest = this.grid.tileAt(req.moveDest);
 		if (  this.status !== Game.Status.PLAYING
 		 || reqDest.occId !== Player.Id.NULL
 		) {
@@ -278,7 +275,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 					coord: reqDest.coord,
 				},
 			},
-			tiles: this.dryRunSpawnFreeHealth({
+			tiles: this.dryRunSpawnHealth({
 				[req.moveDest]: {
 					health: 0,
 					...this.dryRunShuffleLangCspAt(reqDest.coord),
@@ -323,6 +320,7 @@ export namespace GamepartManager {
 	export function CHECK_VALID_CTOR_ARGS(
 		args: TU.NoRo<Game.CtorArgs<Game.Type.SERVER,Coord.System>>,
 	): string[] {
+		//#region
 		const fr: string[] = [];
 		type Keys = keyof Game.CtorArgs<Game.Type,Coord.System>;
 		const requiredFields: {[K in Keys]: any} = Object.freeze({
@@ -359,6 +357,7 @@ export namespace GamepartManager {
 		//     );
 		// }
 		return fr;
+		//#endregion
 	}
 }
 JsUtils.protoNoEnum(GamepartManager, "_processPlayerContact");

@@ -2,7 +2,7 @@ import style from "./grid.m.css";
 import player_style from "game/player/player.m.css";
 import { JsUtils } from "defs/JsUtils";
 
-import type { Coord, Tile } from "floor/Tile";
+import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 
 /**
@@ -23,8 +23,11 @@ export namespace VisibleGrid {
 	};
 
 	// Each implementation must register itself into this dictionary.
-	export declare const _Constructors: {
+	export const _Constructors: {
 		readonly [ S in Coord.System ]: Grid.ClassIf<S>
+	} = {
+		["W_EUCLID2"]: undefined!,
+		["BEEHIVE"]: undefined!,
 	};
 
 	export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
@@ -32,6 +35,7 @@ export namespace VisibleGrid {
 		return ctor as unknown as ClassIf<S>;
 	};
 }
+Object.seal(VisibleGrid);
 
 
 /**

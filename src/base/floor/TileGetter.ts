@@ -12,8 +12,6 @@ type _Arguments = [ Coord, ] | [];
  * can be applied intermediately such as `unoccupied`. The query
  * ends with one of the getters `occupants` or `get`.
  *
- * @template S
- *
  * @template A
  * This allows `Source` implementations to accept a coordinate
  * specifier as an argument, such as is appropriate with a grid,
@@ -33,13 +31,13 @@ export class TileGetter<A extends _Arguments> {
 	}
 
 	public at(...args: A): Tile {
-		return this.#source._getTileAt(...args);
+		return this.#source.tileAt(...args);
 	}
 	public destsFrom(...args: A): Query {
-		return new Query(this.#source._getTileDestsFrom(...args));
+		return new Query(this.#source.tileDestsFrom(...args));
 	}
 	public sourcesTo(...args: A): Query {
-		return new Query(this.#source._getTileSourcesTo(...args));
+		return new Query(this.#source.tileSourcesTo(...args));
 	}
 }
 export namespace TileGetter {
@@ -47,11 +45,11 @@ export namespace TileGetter {
 	 * A Tile should always be a source-to and destination-from itself.
 	 */
 	export interface Source<A extends _Arguments = [Coord]> {
-		_getTileAt(...args: A): Tile;
+		tileAt(...args: A): Tile;
 		// NOTE: do we need to add an optional argument for range?
 		// If so, document that it must default to `1` if unspecified.
-		_getTileDestsFrom(...args: A): TU.RoArr<Tile>;
-		_getTileSourcesTo(...args: A): TU.RoArr<Tile>;
+		tileDestsFrom(...args: A): TU.RoArr<Tile>;
+		tileSourcesTo(...args: A): TU.RoArr<Tile>;
 	}
 }
 Object.freeze(TileGetter);

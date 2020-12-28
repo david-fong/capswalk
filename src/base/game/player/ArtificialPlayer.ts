@@ -81,7 +81,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 		// humans must pay the penalty before landing on the tile, but
 		// in the implementation here, it's much easier to simulate such
 		// a penalty if it applies _after_ landing on the tile.
-		this._nextMovementTimerMultiplier = this.game.grid._getTileAt(desiredDest).seq.length;
+		this._nextMovementTimerMultiplier = this.game.grid.tileAt(desiredDest).seq.length;
 
 		this.makeMovementRequest(
 			this.game.grid.getUntToward(desiredDest, this.coord).coord,
@@ -106,14 +106,16 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 }
 export namespace ArtificialPlayer {
 
-	export declare const _Constructors: Readonly<{
-		[ F in Player.FamilyArtificial ]: {
+	export const _Constructors: {
+		readonly [ F in Player.FamilyArtificial ]: {
 			new<S extends Coord.System>(
 				game: GamepartManager<Game.Type.Manager,S>,
 				desc: Player._CtorArgs<F>
 			): ArtificialPlayer<S>;
 		};
-	}>;
+	} = {
+		["CHASER"]: undefined!,
+	};
 
 	export interface FamilySpecificPart {
 		[Player.Family.CHASER]: Chaser.Behaviour;
@@ -135,3 +137,5 @@ export namespace ArtificialPlayer {
 }
 JsUtils.protoNoEnum(ArtificialPlayer, "_movementContinue");
 // ArtificialPlayer is frozen in PostInit after _Constructors get initialized.
+Object.seal(ArtificialPlayer);
+Object.freeze(ArtificialPlayer.prototype);

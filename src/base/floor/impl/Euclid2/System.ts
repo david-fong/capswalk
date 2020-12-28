@@ -15,7 +15,7 @@ export type _Dimensions = {
  * Immutable.
  */
 class IAC {
-
+	//#region
 	public constructor(
 		public readonly x: number,
 		public readonly y: number,
@@ -100,6 +100,7 @@ class IAC {
 		y %= dim.height;
 		return new IAC(x,y);
 	}
+	//#endregion
 }
 export namespace IAC {
 	export type Bare = {
@@ -162,14 +163,14 @@ export namespace WrappedEuclid2 {
 			JsUtils.propNoWrite(this as Grid, "_grid", "iacCache");
 		}
 
-		public editTile(coord: Coord, changes: Tile.Changes): void {
+		public write(coord: Coord, changes: Tile.Changes): void {
 			this._grid[coord] = Object.freeze(Object.assign({}, this._grid[coord], changes));
 		}
 
-		public forEachTile(consumer: (tile: Tile, index: number) => void): void {
+		public forEach(consumer: (tile: Tile, index: number) => void): void {
 			this._grid.forEach(consumer);
 		}
-		public shuffledForEachTile(consumer: (tile: Tile) => void): void {
+		public forEachShuffled(consumer: (tile: Tile) => void): void {
 			this._grid.slice()
 			.sort((a,b) => Math.random() - 0.5)
 			.forEach((tile) => consumer(tile));
@@ -187,7 +188,7 @@ export namespace WrappedEuclid2 {
 				};
 			});
 			if (options.length === 0) {
-				return this._getTileAt(sourceCoord);
+				return this.tileAt(sourceCoord);
 			}
 			options.sort((ta, tb) =>  ta.infNorm - tb.infNorm);
 			options.length = 3;
@@ -229,8 +230,8 @@ export namespace WrappedEuclid2 {
 			return this._grid[dest.toCoord(this.dimensions)]!;
 		}
 
-		public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
-			return this._getTileDestsFrom(originCoord, 2);
+		public getDestsFromSourcesTo(originCoord: Coord): TU.RoArr<Tile> {
+			return this.tileDestsFrom(originCoord, 2);
 		}
 
 		public getRandomCoordAround(_origin: Coord, radius: number): Coord {
@@ -248,10 +249,10 @@ export namespace WrappedEuclid2 {
 			).norm;
 		}
 
-		public _getTileAt(coord: Coord): Tile {
+		public tileAt(coord: Coord): Tile {
 			return this._grid[coord]!;
 		}
-		public _getTileDestsFrom(coord: Coord, radius: number = 1): Array<Tile> {
+		public tileDestsFrom(coord: Coord, radius: number = 1): TU.RoArr<Tile> {
 			const iac = this.iacCache[coord]!;
 			let wrapX = false, wrapY = false;
 			const W = this.dimensions.width, H = this.dimensions.height;
@@ -283,10 +284,10 @@ export namespace WrappedEuclid2 {
 				if (wrapX) { dests.length -= r }
 			}
 			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
-			return dests;
+			return Object.freeze(dests);
 		}
-		public _getTileSourcesTo(coord: Coord, radius: number = 1): Array<Tile> {
-			return this._getTileDestsFrom(coord, radius);
+		public tileSourcesTo(coord: Coord, radius: number = 1): TU.RoArr<Tile> {
+			return this.tileDestsFrom(coord, radius);
 		}
 
 		declare public static getSpawnCoords: AbstractGrid.ClassIf<S>["getSpawnCoords"];
@@ -311,8 +312,8 @@ export namespace WrappedEuclid2 {
 		 */
 		export type Dimensions = _Dimensions;
 	}
-	Grid.prototype._getTileSourcesTo = Grid.prototype._getTileDestsFrom;
-	JsUtils.protoNoEnum(Grid, "_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo");
+	Grid.prototype.tileSourcesTo = Grid.prototype.tileDestsFrom;
+	JsUtils.protoNoEnum(Grid, "tileAt", "tileDestsFrom", "tileSourcesTo");
 	Object.freeze(Grid);
 	Object.freeze(Grid.prototype);
 }

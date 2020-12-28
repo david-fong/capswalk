@@ -19,7 +19,7 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 		gridElem.style.setProperty("--euclid2-grid-width", this.dimensions.width.toString());
 
 		const tiles: Array<VisibleTile> = [];
-		this.forEachTile((tile) => {
+		this.forEach((tile) => {
 			const vTile = new VisibleTile();
 			tiles.push(vTile);
 			gridElem.appendChild(vTile.baseElem);
@@ -30,8 +30,8 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 		Object.seal(this);
 	}
 	/** @override */
-	public editTile(coord: Coord, changes: Tile.Changes): void {
-		super.editTile(coord, changes);
+	public write(coord: Coord, changes: Tile.Changes): void {
+		super.write(coord, changes);
 		const tile = this.#tiles[coord]!;
 		if (JsUtils.hasProp(changes, "occId")) {
 			tile.occId = changes.occId!;

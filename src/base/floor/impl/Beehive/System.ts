@@ -123,11 +123,11 @@ export namespace Beehive {
 			this.grid = Object.freeze(grid);
 		}
 
-		public editTile(coord: Coord, changes: Tile.Changes): void {
+		public write(coord: Coord, changes: Tile.Changes): void {
 			// TODO.impl
 		}
 
-		public forEachTile(consumer: (tile: Tile, index: number) => void): void {
+		public forEach(consumer: (tile: Tile, index: number) => void): void {
 			let i = 0;
 			for (const row of this.grid) {
 				for (const tile of row) {
@@ -135,7 +135,7 @@ export namespace Beehive {
 				}
 			}
 		}
-		public shuffledForEachTile(consumer: (tile: Tile) => void): void {
+		public forEachShuffled(consumer: (tile: Tile) => void): void {
 			this.grid.flat()
 			.sort((a,b) => Math.random() - 0.5)
 			.forEach((tile) => consumer(tile));
@@ -152,8 +152,8 @@ export namespace Beehive {
 			return undefined!;
 		}
 
-		public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
-			return this._getTileDestsFrom(originCoord, 2);
+		public getDestsFromSourcesTo(originCoord: Coord): TU.RoArr<Tile> {
+			return this.tileDestsFrom(originCoord, 2);
 		}
 
 		public getRandomCoordAround(origin: Coord, radius: number): Coord {
@@ -166,15 +166,16 @@ export namespace Beehive {
 			return undefined!;
 		}
 
-		public _getTileAt(coord: Coord): Tile {
+		public tileAt(coord: Coord): Tile {
 			return undefined!;
 		}
 
-		public _getTileDestsFrom(coord: Coord, radius: number = 1): Array<Tile> {
-			return undefined!;
+		public tileDestsFrom(coord: Coord, radius: number = 1): TU.RoArr<Tile> {
+			const result: TU.RoArr<Tile> = [];
+			return Object.freeze(result);
 		}
 
-		public _getTileSourcesTo(coord: Coord, radius: number = 1): Array<Tile> {
+		public tileSourcesTo(coord: Coord, radius: number = 1): TU.RoArr<Tile> {
 			return undefined!;
 		}
 
@@ -211,7 +212,7 @@ export namespace Beehive {
 			fslash: number;
 		};
 	}
-	JsUtils.protoNoEnum(Grid, "_getTileAt", "_getTileDestsFrom", "_getTileSourcesTo");
+	JsUtils.protoNoEnum(Grid, "tileAt", "tileDestsFrom", "tileSourcesTo");
 	Object.freeze(Grid);
 	Object.freeze(Grid.prototype);
 }

@@ -7,21 +7,15 @@ import { Chaser } from "../player/artificials/Chaser";
 
 export default (): void => {{
 	// Non-Visible Grid Implementation Registry:
-	// @ts-expect-error : RO=
-	Grid._Constructors
-	= Object.freeze<typeof Grid._Constructors>({
+	Object.freeze(Object.assign(Grid._Constructors, <typeof Grid._Constructors>{
 		["W_EUCLID2"]: WrappedEuclid2.Grid,
 		["BEEHIVE"]: Beehive.Grid,
-	});
+	}));
 	Object.freeze(Grid);
-	Object.freeze(Grid.prototype);
 }{
 	const AP = ArtificialPlayer;
-	// @ts-expect-error : RO=
-	AP._Constructors
-	= Object.freeze<typeof AP._Constructors>({
+	Object.freeze(Object.assign(AP._Constructors, <typeof AP._Constructors>{
 		["CHASER"]: Chaser,
-	});
+	}));
 	Object.freeze(AP);
-	Object.freeze(AP.prototype);
 }};

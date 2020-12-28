@@ -18,9 +18,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 
 	public readonly dimensions: Grid.Dimensions[S];
 
-	public get area(): number {
-		return this.static.getArea(this.dimensions);
-	}
+	public readonly area: number;
 
 	public readonly tile: TileGetter<[Coord]>;
 
@@ -30,8 +28,10 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 * literals for construction.
 	 */
 	protected constructor(desc: Grid.CtorArgs<S>) {
+		Object.freeze(desc);
 		this.static = desc.Grid;
 		this.dimensions = desc.dimensions;
+		this.area = desc.Grid.getArea(desc.dimensions);
 		this.tile = new TileGetter(this);
 		JsUtils.propNoWrite(this as Grid<S>, "static", "dimensions", "tile");
 	}
@@ -39,8 +39,8 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	/**
 	 */
 	public reset(): void {
-		this.forEachTile((tile, index) => {
-			this.editTile(tile.coord, {
+		this.forEach((tile) => {
+			this.write(tile.coord, {
 				occId: Player.Id.NULL,
 				health: 0, char: "", seq: "",
 			});
@@ -49,7 +49,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 
 	/**
 	 */
-	public abstract editTile(coord: Coord, changes: Readonly<Tile.Changes>): void;
+	public abstract write(coord: Coord, changes: Readonly<Tile.Changes>): void;
 
 	/**
 	 * For BaseGame's implementation of SER/DES to work, the traversal
@@ -57,9 +57,9 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 * only on the dimensions of the instance. The index is not required
 	 * to equal the tile's coord.
 	 */
-	public abstract forEachTile(callback: (tile: Tile, index: number) => void): void;
+	public abstract forEach(callback: (tile: Tile, index: number) => void): void;
 
-	public abstract shuffledForEachTile(callback: (tile: Tile) => void): void;
+	public abstract forEachShuffled(callback: (tile: Tile) => void): void;
 
 	/**
 	 * @returns
@@ -97,10 +97,10 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 * Grid implementations are encouraged to override this if they
 	 * have a more efficient way to produce the same result.
 	 */
-	public getDestsFromSourcesTo(originCoord: Coord): Array<Tile> {
+	public getDestsFromSourcesTo(originCoord: Coord): TU.RoArr<Tile> {
 		return Array.from(new Set(
-			this._getTileSourcesTo(originCoord)
-				.flatMap((sourceToTarget) => this._getTileDestsFrom(sourceToTarget.coord))
+			this.tileSourcesTo(originCoord)
+				.flatMap((sourceToTarget) => this.tileDestsFrom(sourceToTarget.coord))
 		));
 	}
 
@@ -119,9 +119,9 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 */
 	public abstract getRandomCoordAround(origin: Coord, radius: number): Coord;
 
-	public abstract _getTileAt(coord: Coord): Tile;
-	public abstract _getTileDestsFrom(coord: Coord): Array<Tile>;
-	public abstract _getTileSourcesTo(coord: Coord): Array<Tile>;
+	public abstract tileAt(coord: Coord): Tile;
+	public abstract tileDestsFrom(coord: Coord): TU.RoArr<Tile>;
+	public abstract tileSourcesTo(coord: Coord): TU.RoArr<Tile>;
 
 	/**
 	 * The returned value must be consistent with results from the
@@ -242,8 +242,12 @@ export namespace Grid {
 	};
 
 	// Each implementation must register itself into this dictionary.
-	export declare const _Constructors: {
+	// See CmapManager.ts.
+	export const _Constructors: {
 		readonly [ S in Coord.System ]: Grid.ClassIf<S>
+	} = {
+		["W_EUCLID2"]: undefined!,
+		["BEEHIVE"]: undefined!,
 	};
 
 	/**
@@ -269,6 +273,7 @@ export namespace Grid {
 			max: number;
 		}>;
 	}>;
-
 }
 // Grid gets frozen in PostInit after _Constructors get initialized.
+Object.seal(Grid);
+Object.freeze(Grid.prototype);

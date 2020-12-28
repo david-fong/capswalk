@@ -132,7 +132,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	public serializeResetState(): Game.ResetSer {
 		const csps: Array<Lang.CharSeqPair> = [];
 		const playerCoords = this.players.map((player) => player.coord);
-		this.grid.forEachTile((tile, index) => {
+		this.grid.forEach((tile, index) => {
 			csps[index] = {
 				char: tile.char,
 				seq:  tile.seq,
@@ -145,14 +145,11 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	public deserializeResetState(ser: Game.ResetSer): void {
 		JsUtils.deepFreeze(ser);
 
-		// Could also use `csps.unshift`, but that may be slower
-		// because it modifies csps, which we don't need to do.
-		this.grid.forEachTile((tile, index) => {
-			this.grid.editTile(tile.coord, {
+		this.grid.forEach((tile, index) => {
+			this.grid.write(tile.coord, {
 				...ser.csps[index]!,
 			});
 		});
-		// TODO refactor this to work similarly to health as seen above: map from coords to players.
 		ser.playerCoords.forEach((coord, index) => {
 			this.players[index]!.reset(coord);
 		});
@@ -246,20 +243,20 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
 		JsUtils.deepFreeze(patch);
-		const tile = this.grid._getTileAt(coord);
+		const tile = this.grid.tileAt(coord);
 
 		if (patch.char !== undefined) {
 			// Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
 			if (doCheckOperatorSeqBuffer) {
 				// ^Do this when non-operator moves into the the operator's vicinity.
 				this.operators.forEach((op) => {
-					if (this.grid._getTileDestsFrom(op.coord).includes(tile)) {
+					if (this.grid.tileDestsFrom(op.coord).includes(tile)) {
 						op.seqBufferAcceptKey(undefined);
 					}
 				});
 			}
 		}
-		this.grid.editTile(coord, patch);
+		this.grid.write(coord, patch);
 	}
 
 	/**
@@ -282,8 +279,8 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 			player.status.health = changes.health;
 
 			if (changes.coord !== undefined) {
-				this.grid.editTile(player.coord,  {occId: Player.Id.NULL});
-				this.grid.editTile(changes.coord, {occId: player.playerId});
+				this.grid.write(player.coord,  {occId: Player.Id.NULL});
+				this.grid.write(changes.coord, {occId: player.playerId});
 				// === order matters ===
 				player.moveTo(changes.coord);
 			}

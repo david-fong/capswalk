@@ -12,6 +12,7 @@
 ### Things I feel like doing
 
 1. Mega-task: change Tiles to DTO's and enable Grid implementations to decide how to do display (eg. DOM, SVG, Canvas).
+    - Fix: CSP's are not spawning properly.
     - Update documentation wherever needed- especially the floor readme.
 1. Crank up TypeScript and WebPack target to es2017?
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.

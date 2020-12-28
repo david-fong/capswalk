@@ -119,9 +119,7 @@ export namespace Lang {
 	}>;
 	export namespace CharSeqPair {
 		/**
-		 * Used to clear the {@link CharSeqPair} in a {@link Tile} during
-		 * a {@link Game} reset before grid-wide shuffling, or before a
-		 * single shuffling operation on the {@link Tile} to be shuffled.
+		 * Used at the beginning of the shuffling operation.
 		 */
 		export const NULL = Object.freeze(<const>{
 			char: "",
@@ -134,7 +132,7 @@ export namespace Lang {
 	export type WeightExaggeration = number;
 	export namespace WeightExaggeration {
 		/**
-		 * The choice of this value is somewhat of an art.
+		 * The choice of this value is somewhat up to taste.
 		 * It must be greater than one.
 		 */
 		export const MAX = 4;
