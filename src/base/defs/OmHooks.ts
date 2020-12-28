@@ -32,12 +32,6 @@ export namespace General {
 	};
 }
 
-export namespace Tile {
-	export const Dataset = <const>{
-		HEALTH: "health",
-	};
-}
-
 export namespace Player {
 	export const Dataset = <const>{
 		DOWNED: { KEY: "downed", VALUES: <const>{

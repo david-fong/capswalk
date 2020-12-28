@@ -1,8 +1,8 @@
 import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
-import type { Lang, Player } from "defs/TypeDefs";
+import { Lang, Player } from "defs/TypeDefs";
 
-import type { Coord, Tile } from "../Tile";
+import type { Tile } from "../Tile";
 import style from "./tile.m.css";
 
 /**
@@ -10,35 +10,32 @@ import style from "./tile.m.css";
  */
 export class VisibleTile implements TU.Pikk<Tile,"occId"|"health"|"char"> {
 
-	public  readonly baseElem: HTMLDivElement;
-	private readonly charElem: HTMLDivElement;
+	public readonly baseElem = JsUtils.mkEl("div", [
+		OmHooks.General.Class.CENTER_CONTENTS,
+		OmHooks.General.Class.STACK_CONTENTS,
+		style["this"],
+	]);
+	private readonly charElem = JsUtils.mkEl("div", []);
 
 	public constructor() {
-		{
-			const base = this.baseElem = JsUtils.mkEl("div", [
-				OmHooks.General.Class.CENTER_CONTENTS,
-				OmHooks.General.Class.STACK_CONTENTS,
-				style["this"],
-			]);
-			base.setAttribute("aria-label", "Tile");
-		}{
-			const charWrap = JsUtils.mkEl("div", [style["char"]]);
-			charWrap.setAttribute("role", "presentation");
-			const charElem = this.charElem = JsUtils.mkEl("div", []);
-			charWrap.appendChild(charElem);
-			this.baseElem.appendChild(charWrap);
-		}
+		const base = this.baseElem;
+		base.setAttribute("role", "presentation");
+		base.appendChild(this.charElem);
 		Object.freeze(this);
 	}
 
 	public set occId(playerId: Player.Id) {
-		//this.charElem.parentElement!.insertAdjacentElement("beforebegin", immigrantInfo.playerElem);
+		if (playerId === Player.Id.NULL) {
+			delete this.baseElem.dataset["occId"];
+		} else {
+			this.baseElem.dataset["occId"] = playerId.toString();
+		}
 	}
 	public set health(health: Player.Health) {
 		if (health > 0) {
-			this.baseElem.dataset[OmHooks.Tile.Dataset.HEALTH] = health.toString();
+			this.baseElem.dataset["health"] = health.toString();
 		} else {
-			delete this.baseElem.dataset[OmHooks.Tile.Dataset.HEALTH];
+			delete this.baseElem.dataset["health"];
 		}
 	}
 	public set char(char: Lang.Char) {
