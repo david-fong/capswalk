@@ -7,7 +7,7 @@ import {
 } from "./BrowserGame";
 
 import type { StateChange } from "game/StateChange";
-import { GamepartBase } from "game/gameparts/GamepartBase";
+import { GameMirror } from "base/game/gameparts/GameMirror";
 
 
 type G = Game.Type.ONLINE;
@@ -15,7 +15,7 @@ type G = Game.Type.ONLINE;
 /**
  */
 export class OnlineGame<S extends Coord.System>
-extends GamepartBase<G,S> implements BrowserGameMixin<G,S> {
+extends GameMirror<G,S> implements BrowserGameMixin<G,S> {
 
 	public readonly socket: Socket;
 

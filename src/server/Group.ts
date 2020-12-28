@@ -8,7 +8,7 @@ import type { Game } from "game/Game";
 import { ServerGame } from "./ServerGame";
 
 import { Group as _Group, SkServer } from "defs/OnlineDefs";
-import { GamepartManager } from "game/gameparts/GamepartManager";
+import { GameManager } from "base/game/gameparts/GameManager";
 
 export { ServerGame };
 
@@ -244,7 +244,7 @@ export class Group extends _Group {
 			failureReasons.push("a game is already in session for this group");
 			return failureReasons;
 		}
-		failureReasons.push(...GamepartManager.CHECK_VALID_CTOR_ARGS(ctorArgs));
+		failureReasons.push(...GameManager.CHECK_VALID_CTOR_ARGS(ctorArgs));
 		if (failureReasons.length) {
 			return failureReasons;
 		}

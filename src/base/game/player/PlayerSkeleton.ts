@@ -3,7 +3,7 @@ import { Player as _Player } from "defs/TypeDefs";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
-import type { GamepartBase } from "game/gameparts/GamepartBase";
+import type { GameMirror } from "base/game/gameparts/GameMirror";
 import { PlayerStatus } from "./PlayerStatus";
 
 
@@ -20,7 +20,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 
 	public readonly isALocalOperator: boolean;
 
-	public readonly game: GamepartBase<any,S>;
+	public readonly game: GameMirror<any,S>;
 
 	public readonly status: PlayerStatus<S>;
 
@@ -28,7 +28,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 	public prevCoord: Coord;
 
 
-	protected constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
+	protected constructor(game: GameMirror<any,S>, desc: Player.CtorArgs) {
 		super();
 		if (Math.trunc(desc.playerId) !== desc.playerId) {
 			throw new RangeError("Player ID's must be integer values.");

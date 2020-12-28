@@ -9,7 +9,7 @@ import { Player, PlayerStatus } from "game/player/Player";
 
 import type { StateChange } from "game/StateChange";
 
-import { GamepartManager } from "game/gameparts/GamepartManager";
+import { GameManager } from "base/game/gameparts/GameManager";
 
 type G = Game.Type.SERVER;
 
@@ -17,7 +17,7 @@ type G = Game.Type.SERVER;
  * Handles game-related events and attaches listeners to each client
  * socket.
  */
-export class ServerGame<S extends Coord.System> extends GamepartManager<G,S> {
+export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
 	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.

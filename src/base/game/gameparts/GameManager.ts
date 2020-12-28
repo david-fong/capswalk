@@ -7,7 +7,7 @@ import { Player } from "../player/Player";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { ScoreInfo } from "../ScoreInfo";
 
-import { GamepartBase } from "./GamepartBase";
+import { GameMirror } from "./GameMirror";
 
 import InitGameManagerCtorMaps from "../ctormaps/CmapManager";
 import type { StateChange } from "../StateChange";
@@ -16,7 +16,7 @@ InitGameManagerCtorMaps();
 
 /**
  */
-export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coord.System> extends GamepartBase<G,S> {
+export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.System> extends GameMirror<G,S> {
 
 	public readonly avgHealth: Player.Health = 0.0;
 	public readonly avgHealthPerTile: Player.Health = 0.0;
@@ -44,7 +44,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			this.grid.static.getDiameterOfLatticePatchHavingArea,
 		);
 		this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
-		JsUtils.propNoWrite(this as GamepartManager<G,S>,
+		JsUtils.propNoWrite(this as GameManager<G,S>,
 			"avgHealth", "avgHealthPerTile", "healthCostOfBoost", "scoreInfo",
 		);
 
@@ -59,7 +59,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 			) as Lang.ClassIf;
 			// @ts-expect-error : RO=
 			this.lang = new LangConstructor(desc.langWeightExaggeration);
-			JsUtils.propNoWrite(this as GamepartManager<G,S>, "lang");
+			JsUtils.propNoWrite(this as GameManager<G,S>, "lang");
 
 			const minLangLeaves = this.grid.static.getAmbiguityThreshold();
 			if (DEF.DevAssert && this.lang.numLeaves < minLangLeaves) {
@@ -311,7 +311,7 @@ export abstract class GamepartManager<G extends Game.Type.Manager, S extends Coo
 
 	public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
 }
-export namespace GamepartManager {
+export namespace GameManager {
 	/**
 	 * If cleaning can be appropriately performed, this function will
 	 * do so. If not, it will indicate invalidities in its return value.
@@ -360,6 +360,6 @@ export namespace GamepartManager {
 		//#endregion
 	}
 }
-JsUtils.protoNoEnum(GamepartManager, "_processPlayerContact");
-Object.freeze(GamepartManager);
-Object.freeze(GamepartManager.prototype);
+JsUtils.protoNoEnum(GameManager, "_processPlayerContact");
+Object.freeze(GameManager);
+Object.freeze(GameManager.prototype);

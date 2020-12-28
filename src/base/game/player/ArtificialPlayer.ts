@@ -1,11 +1,11 @@
 import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
-import type { GamepartManager } from "game/gameparts/GamepartManager";
+import type { GameManager } from "base/game/gameparts/GameManager";
 
 export { JsUtils };
 export type { Coord, Tile };
-export type { GamepartManager };
+export type { GameManager as GamepartManager };
 
 // Implementations:
 import type { Chaser } from "./artificials/Chaser";
@@ -23,7 +23,7 @@ export { Player };
  */
 export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S> {
 
-	declare public readonly game: GamepartManager<any,S>;
+	declare public readonly game: GameManager<any,S>;
 
 	private _nextMovementTimerMultiplier: number;
 
@@ -32,7 +32,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 	/**
 	 * @see ArtificialPlayer.of for the public, non-abstract interface.
 	 */
-	protected constructor(game: GamepartManager<any,S>, desc: Player.CtorArgs) {
+	protected constructor(game: GameManager<any,S>, desc: Player.CtorArgs) {
 		super(game, desc);
 		if (DEF.DevAssert && game.gameType === Game.Type.ONLINE) {
 			throw new TypeError("OnlineGames should be using regular Players instead.");
@@ -109,7 +109,7 @@ export namespace ArtificialPlayer {
 	export const _Constructors: {
 		readonly [ F in Player.FamilyArtificial ]: {
 			new<S extends Coord.System>(
-				game: GamepartManager<Game.Type.Manager,S>,
+				game: GameManager<Game.Type.Manager,S>,
 				desc: Player._CtorArgs<F>
 			): ArtificialPlayer<S>;
 		};
@@ -122,7 +122,7 @@ export namespace ArtificialPlayer {
 	}
 
 	export const of = <S extends Coord.System>(
-		game: GamepartManager<Game.Type.Manager,S>,
+		game: GameManager<Game.Type.Manager,S>,
 		playerDesc: Player._CtorArgs<Player.FamilyArtificial>,
 	): ArtificialPlayer<S> => {
 		const familyId = playerDesc.familyId as Player.FamilyArtificial;

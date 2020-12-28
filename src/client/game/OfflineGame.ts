@@ -4,7 +4,7 @@ import {
 	OperatorPlayer,
 } from "./BrowserGame";
 
-import { GamepartManager } from "game/gameparts/GamepartManager";
+import { GameManager } from "base/game/gameparts/GameManager";
 import type { StateChange } from "base/game/StateChange";
 
 
@@ -13,7 +13,7 @@ type G = Game.Type.OFFLINE;
 /**
  */
 export class OfflineGame<S extends Coord.System>
-extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
+extends GameManager<G,S> implements BrowserGameMixin<G,S> {
 
 	/**
 	 */
@@ -40,13 +40,13 @@ extends GamepartManager<G,S> implements BrowserGameMixin<G,S> {
 	declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
 
 	/** @override */
-	declare public readonly _createArtifPlayer: GamepartManager<G,S>["_createArtifPlayer"];
+	declare public readonly _createArtifPlayer: GameManager<G,S>["_createArtifPlayer"];
 
 	/** @override */
 	declare protected _createOperatorPlayer: BrowserGameMixin<G,S>["_createOperatorPlayer"];
 
 	/** @override */
-	declare protected readonly commitTileMods: GamepartManager<G,S>["commitTileMods"];
+	declare protected readonly commitTileMods: GameManager<G,S>["commitTileMods"];
 
 	/** @override */
 	public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {

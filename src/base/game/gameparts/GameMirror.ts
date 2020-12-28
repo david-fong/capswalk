@@ -14,7 +14,7 @@ import { Team } from "../player/Team";
 /**
  * Foundational parts of a Game that are not related to event handling.
  */
-export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> {
+export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 
 	public readonly gameType: G;
 
@@ -51,7 +51,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 			Grid: gridClass,
 			system: desc.coordSys,
 			dimensions: desc.gridDimensions,
-		}) as GamepartBase<G,S>["grid"];
+		}) as GameMirror<G,S>["grid"];
 
 		this.#onGameBecomeOver = impl.onGameBecomeOver;
 
@@ -75,7 +75,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 				return new Team<S>(teamId, teammateArray);
 			});
 		}
-		JsUtils.propNoWrite(this as GamepartBase<G,S>,
+		JsUtils.propNoWrite(this as GameMirror<G,S>,
 			"gameType", "grid", "langFrontend",
 			"players", "operators", "teams",
 		);
@@ -105,7 +105,7 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 	/**
 	 * Helper for the constructor.
 	 */
-	private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GamepartBase<G,S>["players"] {
+	private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameMirror<G,S>["players"] {
 		type PCtorArgs = TU.RoArr<Player.CtorArgs>;
 		const playerDescs: PCtorArgs
 			// @ts-expect-error : RO=
@@ -287,5 +287,5 @@ export abstract class GamepartBase<G extends Game.Type, S extends Coord.System> 
 		});
 	}
 }
-Object.freeze(GamepartBase);
-Object.freeze(GamepartBase.prototype);
+Object.freeze(GameMirror);
+Object.freeze(GameMirror.prototype);

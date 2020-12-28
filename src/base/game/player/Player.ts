@@ -5,7 +5,7 @@ import type * as io from "socket.io";
 import type { Coord, Tile }     from "floor/Tile";
 import type { Player as _Player } from "defs/TypeDefs";
 import type { ArtificialPlayer } from "./ArtificialPlayer";
-import type { GamepartBase }    from "game/gameparts/GamepartBase";
+import type { GameMirror }    from "base/game/gameparts/GameMirror";
 import type { Team }            from "./Team";
 
 import { PlayerSkeleton } from "./PlayerSkeleton"; export { PlayerSkeleton };
@@ -24,7 +24,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 
 	/**
 	 */
-	public constructor(game: GamepartBase<any,S>, desc: Player.CtorArgs) {
+	public constructor(game: GameMirror<any,S>, desc: Player.CtorArgs) {
 		super(game, desc);
 
 		this.familyId = desc.familyId;

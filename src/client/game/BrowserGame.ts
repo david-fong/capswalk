@@ -1,10 +1,10 @@
-import { JsUtils }              from "defs/JsUtils";                    export { JsUtils };
-import { Game }                 from "game/Game";                       export { Game };
-import type { Coord }           from "floor/Coord";                     export { Coord };
-import { VisibleGrid }          from "floor/visible/VisibleGrid";       export { VisibleGrid };
-import type { GamepartBase }    from "game/gameparts/GamepartBase";
-import { Player }               from "game/player/Player";              export { Player };
-import { OperatorPlayer }       from "game/player/OperatorPlayer";      export { OperatorPlayer };
+import { JsUtils }          from "defs/JsUtils";                    export { JsUtils };
+import { Game }             from "game/Game";                       export { Game };
+import type { Coord }       from "floor/Coord";                     export { Coord };
+import { VisibleGrid }      from "floor/visible/VisibleGrid";       export { VisibleGrid };
+import type { GameMirror }  from "base/game/gameparts/GameMirror";
+import { Player }           from "game/player/Player";              export { Player };
+import { OperatorPlayer }   from "game/player/OperatorPlayer";      export { OperatorPlayer };
 
 import InitBrowserGameCtorMaps from "game/ctormaps/CmapBrowser";
 InitBrowserGameCtorMaps();
@@ -43,7 +43,7 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 		return new OperatorPlayer<S>(this, desc);
 	}
 }
-export interface BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> extends GamepartBase<G,S> {};
+export interface BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> extends GameMirror<G,S> {};
 export namespace BrowserGameMixin {
 	export type HtmlElements = Readonly<{
 		grid:   HTMLElement;

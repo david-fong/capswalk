@@ -2,7 +2,7 @@ import { JsUtils } from "defs/JsUtils";
 import type { Lang as _Lang } from "defs/TypeDefs";
 import { Game } from "game/Game";
 
-import type { GamepartBase } from "game/gameparts/GamepartBase";
+import type { GameMirror } from "base/game/gameparts/GameMirror";
 import type { Coord, Tile } from "floor/Tile";
 
 import { Player } from "./Player";
@@ -15,7 +15,7 @@ import { Player } from "./Player";
 export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 
 	/** @override */
-	declare public readonly game: GamepartBase<(Game.Type.Browser),S>;
+	declare public readonly game: GameMirror<(Game.Type.Browser),S>;
 
 	/**
 	 * Invariant: always matches the prefix of the {@link LangSeq} of
@@ -26,7 +26,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	readonly #langRemappingFunc: {(input: string): string};
 
 
-	public constructor(game: GamepartBase<Game.Type,S>, desc: Player._CtorArgs<"HUMAN">) {
+	public constructor(game: GameMirror<Game.Type,S>, desc: Player._CtorArgs<"HUMAN">) {
 		super(game, desc);
 		this.#langRemappingFunc = this.game.langFrontend.remapFunc;
 	}
