@@ -247,7 +247,7 @@ export namespace WrappedEuclid2 {
 			return new IAC(
 				origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
 				origin.y + Math.trunc(2 * radius * (Math.random() - 0.5)),
-			).toCoord(this.dimensions);
+			).mod(this.dimensions).toCoord(this.dimensions);
 		}
 
 		public dist(source: Coord, dest: Coord): number {
