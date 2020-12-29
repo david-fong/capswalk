@@ -1,5 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
-import type { Player } from "./player/Player";
+import type { Player } from "../player/Player";
 import { Player as _Player } from "defs/TypeDefs";
 
 

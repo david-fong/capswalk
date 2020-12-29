@@ -190,7 +190,7 @@ export namespace Beehive {
 			return area;
 		}
 
-		public static getDiameterOfLatticePatchHavingArea(area: number): number {
+		public static getLatticePatchDiameter(area: number): number {
 			if (area < 0.25) {
 				throw new RangeError("determinant of a radical will be strictly negative.");
 			}

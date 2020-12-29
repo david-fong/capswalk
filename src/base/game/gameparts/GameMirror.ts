@@ -59,6 +59,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 
 		// Construct players:
 		this.players = this.createPlayers(desc);
+		Object.freeze(desc);
 
 		this.operators = Object.freeze(
 			this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[]

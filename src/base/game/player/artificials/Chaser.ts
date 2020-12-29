@@ -78,7 +78,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 		}
 		// If there is nobody we want to chase after to attack,
 		// Head toward the nearest free health if it exists.
-		if (this.game.freeHealthTiles.size === 0) {
+		if (this.game.health.tiles.size === 0) {
 			// No tiles close by. Wander around:
 			if (Math.random() < this.behaviour.wanderingAimlessness) {
 				// Big direction change:
@@ -94,7 +94,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 		}
 		let closestFht: Tile = undefined!;
 		let closestFhtDistance = Infinity;
-		for (const fht of this.game.freeHealthTiles) {
+		for (const fht of this.game.health.tiles.values()) {
 			const distance = this.grid.dist(this.coord, fht.coord);
 			if (distance < closestFhtDistance) {
 				closestFht = fht;

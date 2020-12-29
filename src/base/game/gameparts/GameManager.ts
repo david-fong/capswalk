@@ -5,12 +5,14 @@ import { Game } from "../Game";
 import type { Coord, Tile } from "floor/Tile";
 import { Player } from "../player/Player";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
-import { ScoreInfo } from "../ScoreInfo";
+import { HealthInfo } from "./HealthInfo";
+import { ScoreInfo } from "./ScoreInfo";
 
 import { GameMirror } from "./GameMirror";
 
 import InitGameManagerCtorMaps from "../ctormaps/CmapManager";
 import type { StateChange } from "../StateChange";
+import type { Grid } from "base/floor/Grid";
 InitGameManagerCtorMaps();
 
 
@@ -18,11 +20,7 @@ InitGameManagerCtorMaps();
  */
 export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.System> extends GameMirror<G,S> {
 
-	public readonly avgHealth: Player.Health = 0.0;
-	public readonly avgHealthPerTile: Player.Health = 0.0;
-	public readonly healthCostOfBoost: Player.Health = 0.0;
-	#currentFreeHealth: Player.Health = 0.0;
-	readonly #healthTiles = new Set<Tile>();
+	public readonly health: HealthInfo;
 
 	public readonly lang: Lang;
 	readonly #langImportPromise: Promise<Lang>;
@@ -37,15 +35,11 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 		desc: Game.CtorArgs<G,S>,
 	) {
 		super(gameType, impl, desc);
-		this.avgHealth = desc.averageFreeHealthPerTile * this.grid.area;
-		this.avgHealthPerTile = desc.averageFreeHealthPerTile;
-		this.healthCostOfBoost = Game.K.HEALTH_COST_OF_BOOST(
-			this.avgHealthPerTile,
-			this.grid.static.getDiameterOfLatticePatchHavingArea,
-		);
+
+		this.health = new HealthInfo(desc, this.grid.static as Grid.ClassIf<any>);
 		this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
 		JsUtils.propNoWrite(this as GameManager<G,S>,
-			"avgHealth", "avgHealthPerTile", "healthCostOfBoost", "scoreInfo",
+			"health", "scoreInfo",
 		);
 
 		// https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
@@ -80,8 +74,7 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 		// Reset the grid and event record:
 		await super.reset();
 
-		this.#currentFreeHealth = 0.0;
-		this.#healthTiles.clear();
+		this.health.reset();
 
 		// Reset hit-counters in the current language:
 		// This must be done before shuffling so that the previous
@@ -153,14 +146,6 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 		return this.lang.getNonConflictingChar(avoid);
 	}
 
-	public get currentFreeHealth(): Player.Health {
-		return this.#currentFreeHealth;
-	}
-
-	public get freeHealthTiles(): ReadonlySet<Tile> {
-		return this.#healthTiles;
-	}
-
 	/**
 	 * @returns
 	 * A descriptor of changes to make to tiles regarding health spawning.
@@ -175,7 +160,7 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 	 * executed.
 	 */
 	private dryRunSpawnHealth(changes: Record<Coord, Tile.Changes>): Record<Coord, Tile.Changes> {
-		let healthToSpawn = this.avgHealth - this.currentFreeHealth;
+		let healthToSpawn = this.health.K.avg - this.health.currentAmount;
 		if (healthToSpawn <= 0) {
 			return changes;
 		}
@@ -207,23 +192,6 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 	}
 
 
-	/** @override */
-	protected commitTileMods(
-		coord: Coord, desc: Tile.Changes,
-		doCheckOperatorSeqBuffer: boolean = true,
-	): void {
-		JsUtils.deepFreeze(desc);
-		const tile = this.grid.tileAt(coord);
-		this.#currentFreeHealth += desc.health! - tile.health;
-		if (desc.health === 0) {
-			this.#healthTiles.delete(tile);
-		} else {
-			this.#healthTiles.add(tile);
-		}
-		super.commitTileMods(coord, desc, doCheckOperatorSeqBuffer);
-	}
-
-
 	/**
 	 * Reject the request if `dest` is occupied, or if the specified
 	 * player does not exist, or the client is missing updates for the
@@ -249,7 +217,7 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 		const newPlayerHealthValue
 			= initiator.status.health
 			+ (reqDest.health * (initiator.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
-			- (moveIsBoost ? this.healthCostOfBoost : 0);
+			- (moveIsBoost ? this.health.K.costOfBoost : 0);
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make
 			// the player become downed (or if they are already downed):
@@ -305,6 +273,24 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 		return undefined!;
 	}
 
+	/** @override */
+	protected commitTileMods(
+		coord: Coord, desc: Tile.Changes,
+		doCheckOperatorSeqBuffer: boolean = true,
+	): void {
+		JsUtils.deepFreeze(desc);
+		const tile = this.grid.tileAt(coord);
+		if (desc.health !== undefined) {
+			this.health.add(desc.health - tile.health);
+			if (desc.health <= 0) {
+				this.health.tiles.delete(coord);
+			} else {
+				this.health.tiles.set(coord, tile);
+			}
+		}
+		super.commitTileMods(coord, desc, doCheckOperatorSeqBuffer);
+	}
+
 
 	public abstract setTimeout(callback: Function, millis: number, ...args: any[])
 	: number | NodeJS.Timeout;
@@ -324,7 +310,7 @@ export namespace GameManager {
 		const fr: string[] = [];
 		type Keys = keyof Game.CtorArgs<Game.Type,Coord.System>;
 		const requiredFields: {[K in Keys]: any} = Object.freeze({
-			coordSys: 0, gridDimensions: 0, averageFreeHealthPerTile: 0,
+			coordSys: 0, gridDimensions: 0, averageHealthPerTile: 0,
 			langId: 0, langWeightExaggeration: 0, playerDescs: 0,
 		});
 		const missingFields: string[] = [];

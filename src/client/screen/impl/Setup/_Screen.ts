@@ -107,7 +107,7 @@ export namespace _SetupScreen {
 			height: 10,
 			width:  10,
 		},
-		averageFreeHealthPerTile: 1.0 / 45.0,
+		averageHealthPerTile: 1.0 / 45.0,
 		langWeightExaggeration: 1.0,
 		langId: "engl-low",
 		playerDescs: ((): TU.RoArr<_Player.CtorArgs.PreIdAssignment> => [{

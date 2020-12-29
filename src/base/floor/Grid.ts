@@ -135,19 +135,19 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 * pretty patterns.
 	 */
 	public static getSpawnCoords(
-		playerCounts: TU.RoArr<number>,
+		teamSizes: TU.RoArr<number>,
 		dimensions: Grid.Dimensions[Coord.System],
 	): TU.RoArr<TU.RoArr<Coord>> {
-		const avoidSet: Array<Coord> = [];
-		return Object.freeze(playerCounts.map((numMembers: number) => {
+		const avoidSet = new Set<Coord>();
+		return Object.freeze(teamSizes.map((numMembers: number) => {
 			const teamSpawnCoords: Array<Coord> = [];
 			while (numMembers > 0) {
 				let coord: Coord;
 				do {
 					coord = (this as unknown as Grid.ClassIf<any>).getRandomCoord(dimensions);
-				} while (avoidSet.includes(coord));
+				} while (avoidSet.has(coord));
 				teamSpawnCoords.push(coord);
-				avoidSet.push(coord);
+				avoidSet.add(coord);
 				numMembers--;
 			}
 			return Object.freeze(teamSpawnCoords);
@@ -216,7 +216,7 @@ export namespace Grid {
 		 * of tiles that must be visited to get from the center of one
 		 * patch to any neighbouring patch.
 		 */
-		getDiameterOfLatticePatchHavingArea(area: number): number;
+		getLatticePatchDiameter(area: number): number;
 
 		/**
 		 * @returns
@@ -233,10 +233,10 @@ export namespace Grid {
 		 * with identical arguments. None of the returned coordinates
 		 * should be the same.
 		 *
-		 * @param playerCounts -
+		 * @param teamSizes -
 		 */
 		getSpawnCoords(
-			playerCounts: TU.RoArr<number>,
+			teamSizes: TU.RoArr<number>,
 			dimensions: Dimensions[S],
 		): TU.RoArr<TU.RoArr<Coord>>;
 	};

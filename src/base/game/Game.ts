@@ -64,7 +64,7 @@ export namespace Game {
 	> = Readonly<{
 		coordSys: S;
 		gridDimensions: Grid.Dimensions[S];
-		averageFreeHealthPerTile: Player.Health;
+		averageHealthPerTile: Player.Health;
 
 		langId: Lang.FrontendDesc["id"];
 		langWeightExaggeration: Lang.WeightExaggeration;

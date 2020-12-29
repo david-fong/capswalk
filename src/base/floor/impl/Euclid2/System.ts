@@ -296,7 +296,7 @@ export namespace WrappedEuclid2 {
 			return dim.height * dim.width;
 		}
 
-		public static getDiameterOfLatticePatchHavingArea(area: number): number {
+		public static getLatticePatchDiameter(area: number): number {
 			return Math.sqrt(area);
 		}
 
