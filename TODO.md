@@ -11,11 +11,8 @@
 
 ### Things I feel like doing
 
-1. Mega-task: change Tiles to DTO's and enable Grid implementations to decide how to do display (eg. DOM, SVG, Canvas).
-    - Fix: CSP's are not spawning properly.
-    - Fix: Make sure current implementations of computeDesiredDest never return an invalid coord. Check Euclid's getRandomCoordInRange
-    - Update documentation wherever needed- especially the floor readme.
 1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
+    - It is only being used for serializing the reset state.
 1. Crank up TypeScript and WebPack target to es2017?
 1. Utilities for `ArtificialPlayer.computeDesiredDest`:
     - Split each behaviour into private methods.
@@ -29,6 +26,7 @@
       - If when called, one returns a defined value, the index of that behaviour function is saved along with the internally-meaningful target-id.
       - `computeDesiredDest` will reuse a cached function only up to a fixed number of times (defined by a game constant). If the cached function returns `undefined` or the fixed number of reuses is reached, the internally-meaningful target-id is discarded, and the behaviour array is searched through again from the beginning.
 1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
+1. Investigate whether it works to use `Namespace.on` to cover all `socket.on`.
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.
 1. Call `Object.seal` at the end of constructors where possible now that `useDefineForClassFields` is set to true.
     - Also do this for the Lang-related constructors.

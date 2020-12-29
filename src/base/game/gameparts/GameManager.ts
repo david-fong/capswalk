@@ -274,20 +274,20 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 
 	/** @override */
 	protected commitTileMods(
-		coord: Coord, desc: Tile.Changes,
+		coord: Coord, changes: Tile.Changes,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
-		JsUtils.deepFreeze(desc);
+		JsUtils.deepFreeze(changes);
 		const tile = this.grid.tileAt(coord);
-		if (desc.health !== undefined) {
-			this.health.add(desc.health - tile.health);
-			if (desc.health <= 0) {
+		if (changes.health !== undefined) {
+			this.health.add(changes.health - tile.health);
+			if (changes.health <= 0) {
 				this.health.tiles.delete(coord);
 			} else {
 				this.health.tiles.set(coord, tile);
 			}
 		}
-		super.commitTileMods(coord, desc, doCheckOperatorSeqBuffer);
+		super.commitTileMods(coord, changes, doCheckOperatorSeqBuffer);
 	}
 
 

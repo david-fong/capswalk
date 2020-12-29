@@ -203,14 +203,13 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 			this.statusBecomePlaying();
 		});
 
-		const superPromise = super.reset();
-		await superPromise;
+		await super.reset();
 
 		this.namespace.emit(
 			GameEv.RESET,
 			this.serializeResetState(),
 		);
-		return superPromise;
+		return;
 	}
 
 	/** @override */

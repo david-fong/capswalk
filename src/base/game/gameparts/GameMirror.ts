@@ -240,13 +240,13 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 	 */
 	protected commitTileMods(
 		coord: Coord,
-		patch: Tile.Changes,
+		changes: Tile.Changes,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
-		JsUtils.deepFreeze(patch);
+		JsUtils.deepFreeze(changes);
 		const tile = this.grid.tileAt(coord);
 
-		if (patch.char !== undefined) {
+		if (changes.seq !== undefined) {
 			// Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
 			if (doCheckOperatorSeqBuffer) {
 				// ^Do this when non-operator moves into the the operator's vicinity.
@@ -257,7 +257,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 				});
 			}
 		}
-		this.grid.write(coord, patch);
+		this.grid.write(coord, changes);
 	}
 
 	/**
