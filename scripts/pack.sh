@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 declare -r root="$(dirname "${BASH_SOURCE[0]}")/.."
+declare -r dist="${root}/dist"
 declare -r scripts="$(dirname "${BASH_SOURCE[0]}")"
 
 # I want to write the config in Typescript, but I don't want to install
@@ -24,8 +25,11 @@ time node --title="webpack snakey3" "${scripts}/webpack/pack.js"
 if [[ "$NODE_ENV" = 'production' ]]
 then
     # Make sure dist has files needed for release:
-    echo '' > "${scripts}/../dist/client/.nojekyll"
-    cp "${scripts}/webpack/templates/stage.sh"   "${root}/dist/stage.sh"
-    echo 'gitdir: ../.git/worktrees/dist'      > "${root}/dist/.git"        # for repair purposes.
-    echo 'gitdir: ../../.git/worktrees/client' > "${root}/dist/client/.git" # for repair purposes.
+    cp "${scripts}/webpack/templates/stage.sh"   "${dist}/stage.sh"
+    cp "${root}/.gitattributes"                  "${dist}/.gitattributes"
+    cp "${root}/.gitattributes"                  "${dist}/client/.gitattributes"
+    echo '/.ts/'                               > "${dist}/.gitignore"
+    echo 'gitdir: ../.git/worktrees/dist'      > "${dist}/.git"        # for repair purposes.
+    echo 'gitdir: ../../.git/worktrees/client' > "${dist}/client/.git" # for repair purposes.
+    echo '' > "${dist}/client/.nojekyll"
 fi

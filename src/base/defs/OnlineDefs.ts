@@ -106,7 +106,7 @@ export const enum GroupEv {
 	/**
 	 * On the clientside, this event is registered to the group socket.
 	 */
-	CREATE_GAME = "group-game-create",
+	CREATE_GAME = "create-game",
 }
 
 /**
@@ -114,7 +114,7 @@ export const enum GroupEv {
 export const enum GameEv {
 	/**
 	 */
-	CREATE_GAME = "game-create",
+	CREATE_GAME = "create",
 
 	/**
 	 * Upon constructing a _new_ game, the server waits for all clients
@@ -122,22 +122,22 @@ export const enum GameEv {
 	 * any necessary HTML, and are now ready to receive the serialized
 	 * reset-state.
 	 */
-	RESET = "game-reset",
+	RESET = "reset",
 
 	/**
 	 * Client uses this event during reset procedure after receiving
 	 * the serialized reset-state to indicate that it is ready for
 	 * the game to be un-paused.
 	 */
-	UNPAUSE = "game-unpause",
+	UNPAUSE = "unpause",
 
 	/**
 	 */
-	PAUSE = "game-pause",
+	PAUSE = "pause",
 
 	/**
 	 */
-	IN_GAME = "game-ingame",
+	IN_GAME = "ingame",
 
 	/**
 	 * The server will send this event with no arguments to indicate
@@ -145,5 +145,5 @@ export const enum GameEv {
 	 * ID as an argument to indicate that all players operated by
 	 * a client with that socket ID are out of the game.
 	 */
-	RETURN_TO_LOBBY = "game-return-to-lobby",
+	RETURN_TO_LOBBY = "return-to-lobby",
 };

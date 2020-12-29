@@ -84,15 +84,6 @@ TODO              text
 #*.haml            text
 *.handlebars      text
 *.hbs             text
-#*.hbt             text
-#*.jade            text
-#*.latte           text
-#*.mustache        text
-#*.njk             text
-#*.phtml           text
-#*.tmpl            text
-#*.tpl             text
-#*.twig            text
 *.vue             text
 
 # Configs

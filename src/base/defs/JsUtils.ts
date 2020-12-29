@@ -200,5 +200,24 @@ export namespace JsUtils {
 		}
 		return el;
 	}
+
+	/**
+	 */
+	export function adoptStyleSheet(root: Document | ShadowRoot, href: string): void {
+		// if ("adoptedStyleSheets" in root) {
+		// 	const sheet = Array.from(document.styleSheets).find((sheet) => sheet.href?.endsWith(href));
+		// 	if (sheet !== undefined) {
+		// 		// TODO.build remove this any-casting when adoptedStyleSheets
+		// 		// stops being experimental and makes it into the DOM spec.
+		// 		(root as any).adoptedStyleSheets = [sheet];
+		// 		return;
+		// 	}
+		// }
+		// The client's browser does not support adoptedStyleSheets :(
+		root.appendChild(JsUtils.mkEl("link", [], {
+			rel: "stylesheet",
+			href: href,
+		}));
+	}
 }
 Object.freeze(JsUtils);

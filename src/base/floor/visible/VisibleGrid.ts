@@ -61,14 +61,8 @@ export class VisibleGridMixin {
 		const root = base.attachShadow({ mode: "closed" });
 		tiles.classList.add(style["impl-body"]);
 		root.appendChild(tiles);
-		root.appendChild(JsUtils.mkEl("link", [], {
-			rel: "stylesheet",
-			href: "css-common.css",
-		}));
-		root.appendChild(JsUtils.mkEl("link", [], {
-			rel: "stylesheet",
-			href: "chunk/game-css.css",
-		}));
+		JsUtils.adoptStyleSheet(root, "css-common.css");
+		JsUtils.adoptStyleSheet(root, "chunk/game-css.css");
 
 		// Initialize spotlight elements:
 		const shortSpotlight = JsUtils.mkEl("div", [player_style["spotlight-short"]]);
