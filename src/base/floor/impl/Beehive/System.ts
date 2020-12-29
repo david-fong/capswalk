@@ -135,10 +135,16 @@ export namespace Beehive {
 				}
 			}
 		}
-		public forEachShuffled(consumer: (tile: Tile) => void): void {
-			this.grid.flat()
-			.sort((a,b) => Math.random() - 0.5)
-			.forEach((tile) => consumer(tile));
+		public forEachShuffled(consumer: (tile: Tile, index: number) => void): void {
+			// const indices: Array<number> = new Array(this.area);
+			// for (let i = 0; i < this.area; i++) {
+			// 	indices[i] = i;
+			// }
+			// indices.sort((a,b) => Math.random() - 0.5);
+			// Object.freeze(indices);
+			// for (const index of indices) {
+			// 	consumer(this.grid[index]!, index);
+			// }
 		}
 
 		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {

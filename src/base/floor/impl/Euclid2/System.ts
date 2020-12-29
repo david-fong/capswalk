@@ -164,16 +164,24 @@ export namespace WrappedEuclid2 {
 		}
 
 		public write(coord: Coord, changes: Tile.Changes): void {
-			this._grid[coord] = Object.freeze(Object.assign({}, this._grid[coord], changes));
+			this._grid[coord] = Object.freeze(Object.assign(
+				Object.create(null), this._grid[coord], changes,
+			));
 		}
 
 		public forEach(consumer: (tile: Tile, index: number) => void): void {
 			this._grid.forEach(consumer);
 		}
-		public forEachShuffled(consumer: (tile: Tile) => void): void {
-			this._grid.slice()
-			.sort((a,b) => Math.random() - 0.5)
-			.forEach((tile) => consumer(tile));
+		public forEachShuffled(consumer: (tile: Tile, index: number) => void): void {
+			const indices: Array<number> = new Array(this.area);
+			for (let i = 0; i < this.area; i++) {
+				indices[i] = i;
+			}
+			indices.sort((a,b) => Math.random() - 0.5);
+			Object.freeze(indices);
+			for (const index of indices) {
+				consumer(this._grid[index]!, index);
+			}
 		}
 
 		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {

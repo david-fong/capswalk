@@ -13,17 +13,29 @@
 
 1. Mega-task: change Tiles to DTO's and enable Grid implementations to decide how to do display (eg. DOM, SVG, Canvas).
     - Fix: CSP's are not spawning properly.
+    - Fix: Make sure current implementations of computeDesiredDest never return an invalid coord. Check Euclid's getRandomCoordInRange
     - Update documentation wherever needed- especially the floor readme.
+1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
 1. Crank up TypeScript and WebPack target to es2017?
+1. Utilities for `ArtificialPlayer.computeDesiredDest`:
+    - Split each behaviour into private methods.
+      - They shall be bound to the instance and stored in an array.
+      - They shall take one or zero arguments:
+        - If zero, the surroundings are rechecked.
+        - If one, it is a numerical, internally-meaningful target-id to reuse if "caching" the target that was found.
+      - They shall return `undefined` if their use-condition is not matched.
+        - Otherwise, they shall return an object containing the value, and an internally-meaningful target-id to pass when reusing/caching.
+        - The last function in the array must never return `undefined`.
+      - If when called, one returns a defined value, the index of that behaviour function is saved along with the internally-meaningful target-id.
+      - `computeDesiredDest` will reuse a cached function only up to a fixed number of times (defined by a game constant). If the cached function returns `undefined` or the fixed number of reuses is reached, the internally-meaningful target-id is discarded, and the behaviour array is searched through again from the beginning.
+1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.
 1. Call `Object.seal` at the end of constructors where possible now that `useDefineForClassFields` is set to true.
     - Also do this for the Lang-related constructors.
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
 1. Rename / Refactor
-    - player "family" to "type".
     - I think we no longer need to prefix socket.io event names as long as they are scoped to a namespace-type.
-1. Extract hot, anonymous sorting functions to non-exported globals so the runtime engine can cache parameter shapes.
 1. Represent lang trees as arrays, where child-parent relationships are just indices.
 1. Mashup some CSS resets and normalizers for this repo.
 1. Feature-detect `DocumentOrShadowRoot.adoptedStyleSheets` and use it if available for shadow-root CSS.
@@ -53,6 +65,7 @@
 1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
 1. Try out EJS include directive.
 1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
+1. Extract hot, anonymous sorting functions to non-exported globals so the runtime engine can cache parameter shapes.
 
 ### Routine Checkups
 

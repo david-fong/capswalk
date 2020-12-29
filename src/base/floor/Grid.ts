@@ -59,7 +59,7 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 */
 	public abstract forEach(callback: (tile: Tile, index: number) => void): void;
 
-	public abstract forEachShuffled(callback: (tile: Tile) => void): void;
+	public abstract forEachShuffled(callback: (tile: Tile, index: number) => void): void;
 
 	/**
 	 * @returns
@@ -87,6 +87,9 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	public abstract getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile;
 
 	/**
+	 * The returned array should be assumed to be a shallow copy of
+	 * the corresponding Tile objects.
+	 *
 	 * This action is commonly performed by the GameManager when
 	 * shuffling in new CSP's to its grid.
 	 *
@@ -119,8 +122,11 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	 */
 	public abstract getRandomCoordAround(origin: Coord, radius: number): Coord;
 
+	/** Treat the result as a shallow copy. */
 	public abstract tileAt(coord: Coord): Tile;
+	/** Treat the result as a shallow copy. */
 	public abstract tileDestsFrom(coord: Coord): TU.RoArr<Tile>;
+	/** Treat the result as a shallow copy. */
 	public abstract tileSourcesTo(coord: Coord): TU.RoArr<Tile>;
 
 	/**

@@ -140,9 +140,8 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 		// those
 		if (doCheckEmptyTiles) {
 			const nullSeq = Lang.CharSeqPair.NULL.seq;
-			avoid = avoid.filter((seq) => seq !== nullSeq);
+			avoid = Object.freeze(avoid.filter((seq) => seq !== nullSeq));
 		}
-		Object.freeze(avoid);
 		return this.lang.getNonConflictingChar(avoid);
 	}
 

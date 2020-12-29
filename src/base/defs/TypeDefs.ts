@@ -113,10 +113,10 @@ export namespace Lang {
 	/**
 	 * See the main documentation in game/lang/Lang
 	 */
-	export type CharSeqPair = Readonly<{
-		char: Lang.Char,
-		seq:  Lang.Seq,
-	}>;
+	export type CharSeqPair = {
+		readonly char: Lang.Char,
+		readonly seq:  Lang.Seq,
+	};
 	export namespace CharSeqPair {
 		/**
 		 * Used at the beginning of the shuffling operation.
