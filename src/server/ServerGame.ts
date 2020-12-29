@@ -5,7 +5,7 @@ import { GameEv, GroupEv, SkServer } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
 import { Grid } from "floor/Grid";
-import { Player, PlayerStatus } from "game/player/Player";
+import { Player } from "game/player/Player";
 
 import type { StateChange } from "game/StateChange";
 
@@ -41,11 +41,9 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 	 */
 	protected readonly playerSockets: ReadonlyMap<Player.Id, io.Socket>;
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _getGridImplementation(coordSys: S): Grid.ClassIf<S> {
-		return Grid.getImplementation(coordSys);
+		return Grid.getImplementation(coordSys)!;
 	}
 
 
@@ -142,10 +140,11 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 			// @ts-expect-error : RO=
 			this.playerSockets
 			= humanPlayerDescs.reduce<Map<Player.Id, io.Socket>>((build, playerDesc) => {
-				if (playerDesc.clientId === undefined) {
+				const clientId = (playerDesc as Player._CtorArgs["HUMAN"]).clientId;
+				if (clientId === undefined) {
 					throw new Error("missing socket client for player with ID " + playerDesc.playerId);
 				}
-				const gameSocket = _clientToGameSocketMap.get(playerDesc.clientId);
+				const gameSocket = _clientToGameSocketMap.get(clientId);
 				if (gameSocket === undefined) throw new Error("never");
 				build.set(playerDesc.playerId, gameSocket);
 				return build;

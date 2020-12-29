@@ -32,7 +32,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 	/**
 	 * Indexable by team ID's.
 	 */
-	public readonly teams: TU.RoArr<Team<S>>;
+	public readonly teams: TU.RoArr<Team>;
 
 	#status: Game.Status;
 
@@ -58,12 +58,11 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 		this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId)!;
 
 		// Construct players:
-		this.players = this.createPlayers(desc);
+		const players  = this.createPlayers(desc);
+		this.players   = players.players;
+		this.operators = players.operators
 		Object.freeze(desc);
 
-		this.operators = Object.freeze(
-			this.players.filter((player) => player.isALocalOperator) as OperatorPlayer<S>[]
-		);
 		{
 			const teams: Array<Array<Player<S>>> = [];
 			this.players.forEach((player) => {
@@ -73,7 +72,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 				teams[player.teamId]!.push(player);
 			});
 			this.teams = teams.map((teammateArray, teamId) => {
-				return new Team<S>(teamId, teammateArray);
+				return new Team(teamId, teammateArray);
 			});
 		}
 		JsUtils.propNoWrite(this as GameMirror<G,S>,
@@ -106,17 +105,19 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 	/**
 	 * Helper for the constructor.
 	 */
-	private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): GameMirror<G,S>["players"] {
-		type PCtorArgs = TU.RoArr<Player.CtorArgs>;
-		const playerDescs: PCtorArgs
+	private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): {
+		players: TU.RoArr<Player<S>>,
+		operators: TU.RoArr<OperatorPlayer<S>>,
+	} {
+		const playerDescs
 			// @ts-expect-error : RO=
 			= gameDesc.playerDescs
 			= (this.gameType === Game.Type.ONLINE)
 				// The client receives these descriptors already finalized / cleaned by the server.
-				? (gameDesc.playerDescs as PCtorArgs)
+				? (gameDesc.playerDescs as TU.RoArr<Player.CtorArgs>)
 				: Player.CtorArgs.finalize(gameDesc.playerDescs);
 
-		return Object.freeze(playerDescs.map((playerDesc) => {
+		const players = Object.freeze(playerDescs.map((playerDesc) => {
 			if (playerDesc.familyId === Player.Family.HUMAN) {
 				return (playerDesc.isALocalOperator)
 					? this._createOperatorPlayer(playerDesc)
@@ -125,9 +126,19 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 				return this._createArtifPlayer(playerDesc) as Player<S>;
 			}
 		}));
+		const operators: OperatorPlayer<S>[] = [];
+		playerDescs.forEach((desc,i) => {
+			if (desc.familyId === Player.Family.HUMAN && desc.isALocalOperator) {
+				operators.push(players[i] as OperatorPlayer<S>);
+			}
+		})
+		return Object.freeze({
+			players,
+			operators,
+		});
 	}
-	protected abstract _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S>;
-	protected abstract _createArtifPlayer(desc: Player._CtorArgs<Player.FamilyArtificial>): Player<S>;
+	protected abstract _createOperatorPlayer(desc: Player._CtorArgs["HUMAN"]): OperatorPlayer<S>;
+	protected abstract _createArtifPlayer(desc: Player._CtorArgs[Player.FamilyArtificial]): Player<S>;
 
 	/** @final */
 	public serializeResetState(): Game.ResetSer {
@@ -147,9 +158,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 		JsUtils.deepFreeze(ser);
 
 		this.grid.forEach((tile, index) => {
-			this.grid.write(tile.coord, {
-				...ser.csps[index]!,
-			});
+			this.grid.write(tile.coord, ser.csps[index]!);
 		});
 		ser.playerCoords.forEach((coord, index) => {
 			this.players[index]!.reset(coord);

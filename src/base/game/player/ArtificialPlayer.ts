@@ -1,11 +1,11 @@
 import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
 import type { Coord, Tile } from "floor/Tile";
-import type { GameManager } from "base/game/gameparts/GameManager";
+import type { GameManager } from "game/gameparts/GameManager";
 
 export { JsUtils };
 export type { Coord, Tile };
-export type { GameManager as GamepartManager };
+export type { GameManager };
 
 // Implementations:
 import type { Chaser } from "./artificials/Chaser";
@@ -15,7 +15,7 @@ export { Player };
 
 
 /**
- * Unlike {@link HumanPlayer}s, these are not guided by human input.
+ * Unlike {@link OperatorPlayer}s, these are not guided by human input.
  * Instead, they are essentially defined by how often they move, and
  * where they decide to move toward each time they move.
  *
@@ -110,10 +110,11 @@ export namespace ArtificialPlayer {
 		readonly [ F in Player.FamilyArtificial ]: {
 			new<S extends Coord.System>(
 				game: GameManager<Game.Type.Manager,S>,
-				desc: Player._CtorArgs<F>
+				desc: Player._CtorArgs[F]
 			): ArtificialPlayer<S>;
 		};
 	} = {
+		// These are initialized later to avoid bootstrapping issues.
 		["CHASER"]: undefined!,
 	};
 
@@ -123,7 +124,7 @@ export namespace ArtificialPlayer {
 
 	export const of = <S extends Coord.System>(
 		game: GameManager<Game.Type.Manager,S>,
-		playerDesc: Player._CtorArgs<Player.FamilyArtificial>,
+		playerDesc: Player._CtorArgs[Player.FamilyArtificial],
 	): ArtificialPlayer<S> => {
 		const familyId = playerDesc.familyId as Player.FamilyArtificial;
 		if (DEF.DevAssert) {
@@ -134,6 +135,16 @@ export namespace ArtificialPlayer {
 		}
 		return new (_Constructors[familyId])(game, playerDesc);
 	};
+
+	/**
+	 * Provides slightly higher level abstractions for computing the
+	 * desired destination for the next movement.
+	 */
+	// export class PrioritizedBehaviours<S extends Coord.System> extends ArtificialPlayer<S> {
+	// 	public computeDesiredDest(): Coord {
+	// 		;
+	// 	}
+	// }
 }
 JsUtils.protoNoEnum(ArtificialPlayer, "_movementContinue");
 // ArtificialPlayer is frozen in PostInit after _Constructors get initialized.

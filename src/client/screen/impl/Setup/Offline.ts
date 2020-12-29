@@ -22,6 +22,7 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 		};
 	}
 
+	/** @override */
 	protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
 		type PArgs = Array<Player.CtorArgs.PreIdAssignment>;
 		const args = super.parseArgsFromGui();

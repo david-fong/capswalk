@@ -3,7 +3,7 @@ import { Player as _Player } from "defs/TypeDefs";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
-import type { GameMirror } from "base/game/gameparts/GameMirror";
+import type { GameMirror } from "game/gameparts/GameMirror";
 import { PlayerStatus } from "./PlayerStatus";
 
 
@@ -18,11 +18,9 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 
 	public readonly playerId: Player.Id;
 
-	public readonly isALocalOperator: boolean;
+	protected readonly game: GameMirror<any,any>;
 
-	public readonly game: GameMirror<any,S>;
-
-	public readonly status: PlayerStatus<S>;
+	public readonly status: PlayerStatus;
 
 	#coord: Coord; public get coord(): Coord { return this.#coord; }
 	public prevCoord: Coord;
@@ -34,18 +32,17 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 			throw new RangeError("Player ID's must be integer values.");
 		}
 		this.playerId = desc.playerId;
-		this.isALocalOperator = desc.isALocalOperator;
 		this.game = game;
 		this.status = new PlayerStatus(
 			this as PlayerSkeleton<S> as Player<S>,
+			this.game,
 		);
 		JsUtils.instNoEnum(this as PlayerSkeleton<S>, "game");
-		JsUtils.propNoWrite(this as PlayerSkeleton<S>, "playerId", "isALocalOperator", "game", "status");
+		JsUtils.propNoWrite(this as PlayerSkeleton<S>, "playerId", "game", "status");
 	}
 
-	public _afterAllPlayersConstruction(): void {
-		this.status._afterAllPlayersConstruction();
-	}
+	/** @virtual */
+	public _afterAllPlayersConstruction(): void { }
 
 	/**
 	 * Must be called _after_ the grid has been reset.

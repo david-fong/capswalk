@@ -39,7 +39,7 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 	}
 
 	/** @override */
-	protected _createOperatorPlayer(desc: Player._CtorArgs<"HUMAN">): OperatorPlayer<S> {
+	protected _createOperatorPlayer(desc: Player._CtorArgs["HUMAN"]): OperatorPlayer<S> {
 		return new OperatorPlayer<S>(this, desc);
 	}
 }

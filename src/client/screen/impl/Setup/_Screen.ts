@@ -111,18 +111,14 @@ export namespace _SetupScreen {
 		langWeightExaggeration: 1.0,
 		langId: "engl-low",
 		playerDescs: ((): TU.RoArr<_Player.CtorArgs.PreIdAssignment> => [{
-			isALocalOperator: false,
 			familyId:   "CHASER",
 			teamId:     1,
-			clientId:   undefined,
 			username:   "chaser1",
 			avatar:     undefined,
 			familyArgs: {/* Uses all defaults. */},
 		}, {
-			isALocalOperator: false,
 			familyId:   "CHASER",
 			teamId:     1,
-			clientId:   undefined,
 			username:   "chaser2",
 			avatar:     undefined,
 			familyArgs: {

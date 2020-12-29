@@ -254,7 +254,7 @@ export class Group extends _Group {
 		ctorArgs.playerDescs = [
 			...ctorArgs.playerDescs,
 			...Array.from(this.sockets.values(), (socket) => {
-				return Object.freeze(<Player.CtorArgs>{
+				return Object.freeze(<Player._CtorArgs["HUMAN"]>{
 					isALocalOperator: false,
 					familyId: "HUMAN",
 					teamId:   socket.userInfo.teamId,

@@ -1,8 +1,7 @@
 import { JsUtils } from "defs/JsUtils";
-import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "./Player";
-import { Team } from "game/player/Team";
-
+import type { GameMirror } from "game/gameparts/GameMirror";
+import { Team } from "./Team";
 
 /**
  * This abstracts acts of modification upon a player's state, allowing
@@ -10,22 +9,20 @@ import { Team } from "game/player/Team";
  * such as visually rendering updates to this state information in a
  * web browser, and playing sound effects.
  */
-export class PlayerStatus<S extends Coord.System> {
+export class PlayerStatus {
 
-	protected readonly player: Readonly<Player<S>>; // Circular field reference.
 	#health: Player.Health;
 
-	public constructor(player: Readonly<Player<S>>) {
-		this.player = player;
-		JsUtils.instNoEnum(this as PlayerStatus<S>, "player");
+	public constructor(
+		protected readonly player: Readonly<Player<any>>, // Circular field reference.
+		protected readonly game: GameMirror<any,any>, // Circular field reference.
+	) {
+		JsUtils.instNoEnum(this as PlayerStatus, "player", "game");
 	}
 
 	public reset(): void {
 		this.health = 0;
 	}
-
-	public _afterAllPlayersConstruction(): void { }
-
 
 	public get health(): Player.Health {
 		return this.#health;
@@ -36,7 +33,7 @@ export class PlayerStatus<S extends Coord.System> {
 
 		if (oldIsDowned || !this.isDowned) return;
 		const team  = this.player.team;
-		const teams = this.player.game.teams;
+		const teams = this.game.teams;
 		if (team.elimOrder !== Team.ElimOrder.STANDING) {
 			return;
 		}
@@ -55,7 +52,7 @@ export class PlayerStatus<S extends Coord.System> {
 			// Now that a team is newly-eliminated, check if the
 			// game should end:
 			if (numNonStandingTeams === teams.length) {
-				this.player.game.statusBecomeOver();
+				this.game.statusBecomeOver();
 			}
 		}
 	}
@@ -64,6 +61,5 @@ export class PlayerStatus<S extends Coord.System> {
 		return this.health < 0.0;
 	}
 }
-JsUtils.protoNoEnum(PlayerStatus, "_afterAllPlayersConstruction");
 Object.freeze(PlayerStatus);
 Object.freeze(PlayerStatus.prototype);

@@ -1,14 +1,9 @@
 import { JsUtils } from "defs/JsUtils";
-import type { Coord } from "floor/Tile";
 import type { Player } from "./Player";
 
 /**
  */
-export class Team<S extends Coord.System> {
-
-	public readonly id: Team.Id;
-
-	public readonly members: TU.RoArr<Player<S>>;
+export class Team {
 
 	/**
 	 * @returns
@@ -26,15 +21,16 @@ export class Team<S extends Coord.System> {
 	 */
 	public elimOrder: number;
 
-	public constructor(teamId: Team.Id, members: TU.RoArr<Player<S>>) {
+	public constructor(
+		public readonly id: Team.Id,
+		public readonly members: TU.RoArr<Player<any>>,
+	) {
 		if (members.length === 0) {
 			throw new Error("Teams must have at least one member.");
 		}
-		this.id = teamId;
-		this.members = members; // If paranoid, do a shallow copy.
 		this.elimOrder = Team.ElimOrder.STANDING;
 
-		JsUtils.propNoWrite(this as Team<S>, "id", "members");
+		JsUtils.propNoWrite(this as Team, "id", "members");
 	}
 
 	public reset(): void {

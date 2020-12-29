@@ -51,8 +51,8 @@ export namespace Game {
 	 * ## Game Constructor Arguments
 	 *
 	 * **IMPORTANT**: Upon modification, make appropriate changes to
-	 * GamepartManager's function for verifying validity of client
-	 * input on the server side.
+	 * GameManager's function for verifying validity of client input
+	 * on the server side.
 	 *
 	 * @template S
 	 * The coordinate system to use. The literal value must also be

@@ -24,7 +24,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 
 	/**
 	 */
-	public constructor(game: GameMirror<any,S>, desc: Player.CtorArgs) {
+	public constructor(game: GameMirror<Game.Type,S>, desc: Player.CtorArgs) {
 		super(game, desc);
 
 		this.familyId = desc.familyId;
@@ -76,7 +76,7 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		}));
 	}
 
-	public get team(): Team<S> {
+	public get team(): Team {
 		return this.game.teams[this.teamId]!;
 	}
 
@@ -113,28 +113,27 @@ export namespace Player {
 	/**
 	 * Player Constructor Arguments
 	 */
-	export type CtorArgs = _CtorArgs<Player.Family>;
-	export type _CtorArgs<FGroup extends Player.Family> = any extends FGroup ? never
-	: { [F in FGroup]: F extends Player.Family
-		? (_PreIdAssignmentDict[F] & Readonly<{
+	export type CtorArgs = _CtorArgs[Player.Family];
+	export type _CtorArgs = {
+		[F in Player.Family]: _PreIdAssignmentDict[F] & Readonly<{
 			playerId: Player.Id;
-		}>)
-		: never
-	}[FGroup];
+		}>;
+	};;
 
+	interface _PreIdAssignmentDict {
+		[Player.Family.HUMAN ]: _PreIdAssignmentConditional<typeof Player.Family.HUMAN> & {
+			readonly isALocalOperator: boolean;
+			readonly clientId: string | undefined;
+		};
+		[Player.Family.CHASER]: _PreIdAssignmentConditional<typeof Player.Family.CHASER>;
+	}
 	type _PreIdAssignmentConditional<F extends Player.Family> = Readonly<{
-		isALocalOperator: F extends typeof Player.Family.HUMAN ? boolean : false;
 		familyId: F;
 		teamId:   Team.Id;
-		clientId: F extends typeof Player.Family.HUMAN ? (io.Socket["client"]["id"] | undefined) : undefined;
 		username: Username;
 		avatar:   Avatar | undefined;
 		familyArgs: CtorArgs.FamilySpecificPart[F];
 	}>;
-	interface _PreIdAssignmentDict {
-		[Player.Family.HUMAN ]: _PreIdAssignmentConditional<typeof Player.Family.HUMAN >;
-		[Player.Family.CHASER]: _PreIdAssignmentConditional<typeof Player.Family.CHASER>;
-	}
 
 	export namespace CtorArgs {
 
@@ -159,12 +158,12 @@ export namespace Player {
 					return prev;
 				}, [] as Array<Team.Id>);
 
-			return playerDescs.slice()
-			.sort((pda, pdb) => teamIdCleaner[pda.teamId]! - teamIdCleaner[pdb.teamId]!)
+			return Object.freeze(Object.freeze(playerDescs.slice()
+			.sort((pda, pdb) => teamIdCleaner[pda.teamId]! - teamIdCleaner[pdb.teamId]!))
 			.map<CtorArgs>((playerDesc, index) => Object.assign({}, playerDesc, {
-				playerId:   index,
-				teamId:     teamIdCleaner[playerDesc.teamId],
-			}));
+				playerId: index,
+				teamId:   teamIdCleaner[playerDesc.teamId]!,
+			})));
 		};
 	}
 	Object.freeze(CtorArgs);
@@ -219,9 +218,13 @@ export namespace Player {
 			this.predictedCoord = realCoord;
 		}
 		public acceptOldest(): void {
-			if (DEF.DevAssert && this.length === 0) {
-				throw new Error("never");
-			}
+			// TODO.design this is technically invalid for artificial players
+			// on the client side of an online game... Can we move reqBuffer
+			// to be just for OperatorPlayers?
+
+			// if (DEF.DevAssert && this.length === 0) {
+			// 	throw new Error("never");
+			// }
 			this.length--;
 		}
 	}

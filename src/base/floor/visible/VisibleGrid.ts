@@ -26,6 +26,7 @@ export namespace VisibleGrid {
 	export const _Constructors: {
 		readonly [ S in Coord.System ]: Grid.ClassIf<S>
 	} = {
+		// These are initialized later to avoid bootstrapping issues.
 		["W_EUCLID2"]: undefined!,
 		["BEEHIVE"]: undefined!,
 	};

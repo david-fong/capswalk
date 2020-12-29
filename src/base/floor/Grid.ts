@@ -252,6 +252,7 @@ export namespace Grid {
 	export const _Constructors: {
 		readonly [ S in Coord.System ]: Grid.ClassIf<S>
 	} = {
+		// These are initialized later to avoid bootstrapping issues.
 		["W_EUCLID2"]: undefined!,
 		["BEEHIVE"]: undefined!,
 	};
@@ -260,7 +261,7 @@ export namespace Grid {
 	 * @returns
 	 * A Grid class for the specified coordinate system.
 	 */
-	export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
+	export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> | undefined => {
 		// Note: At the time of writing this, separating this into
 		// two lines is necessary (otherwise Typescript will feel
 		// overwhelmed)

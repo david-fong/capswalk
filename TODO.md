@@ -11,9 +11,11 @@
 
 ### Things I feel like doing
 
+1. Fix bug: It seems like players don't get rendered when deserializing reset state.
 1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
     - It is only being used for serializing the reset state.
 1. Crank up TypeScript and WebPack target to es2017?
+1. Investigate: Does `Player` need the `Coord.System` template type?
 1. Utilities for `ArtificialPlayer.computeDesiredDest`:
     - Split each behaviour into private methods.
       - They shall be bound to the instance and stored in an array.

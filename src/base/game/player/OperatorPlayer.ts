@@ -26,7 +26,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	readonly #langRemappingFunc: {(input: string): string};
 
 
-	public constructor(game: GameMirror<Game.Type,S>, desc: Player._CtorArgs<"HUMAN">) {
+	public constructor(game: GameMirror<Game.Type,S>, desc: Player._CtorArgs["HUMAN"]) {
 		super(game, desc);
 		this.#langRemappingFunc = this.game.langFrontend.remapFunc;
 	}

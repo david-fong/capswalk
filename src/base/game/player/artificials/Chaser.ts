@@ -3,7 +3,7 @@ import {
 	JsUtils,
 	Coord, Tile,
 	Player,
-	GamepartManager,
+	GameManager,
 	ArtificialPlayer,
 } from "../ArtificialPlayer";
 
@@ -19,7 +19,7 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 
 	private readonly grid: Chaser<S>["game"]["grid"];
 
-	public constructor(game: GamepartManager<any,S>, desc: Player._CtorArgs<"CHASER">) {
+	public constructor(game: GameManager<any,S>, desc: Player._CtorArgs["CHASER"]) {
 		super(game, desc);
 		this.behaviour = Object.freeze(Object.assign(
 			{},

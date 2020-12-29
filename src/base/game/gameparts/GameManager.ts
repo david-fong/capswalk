@@ -7,12 +7,12 @@ import { Player } from "../player/Player";
 import { ArtificialPlayer } from "../player/ArtificialPlayer";
 import { HealthInfo } from "./HealthInfo";
 import { ScoreInfo } from "./ScoreInfo";
+import { Grid } from "floor/Grid";
 
 import { GameMirror } from "./GameMirror";
 
 import InitGameManagerCtorMaps from "../ctormaps/CmapManager";
 import type { StateChange } from "../StateChange";
-import type { Grid } from "base/floor/Grid";
 InitGameManagerCtorMaps();
 
 
@@ -55,14 +55,9 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 			this.lang = new LangConstructor(desc.langWeightExaggeration);
 			JsUtils.propNoWrite(this as GameManager<G,S>, "lang");
 
-			const minLangLeaves = this.grid.static.getAmbiguityThreshold();
-			if (DEF.DevAssert && this.lang.numLeaves < minLangLeaves) {
-				// Enforced By: UI code, and `GamepartManager.CHECK_VALID_CTOR_ARGS`.
+			if (DEF.DevAssert && (this.lang.numLeaves < this.grid.static.getAmbiguityThreshold())) {
+				// Enforced By: clientside UI and `CHECK_VALID_CTOR_ARGS`.
 				throw new Error("never");
-				/* The provided mappings composing the current Lang-under-construction
-				are not sufficient to ensure that a shuffling operation will always
-				be able to find a safe candidate to use as a replacement. Please see
-				the spec for Lang.getNonConflictingChar. */
 			}
 			return this.lang;
 		});
@@ -107,7 +102,7 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 	}
 
 	/** @override */
-	protected _createArtifPlayer(desc: Player._CtorArgs<Player.FamilyArtificial>): ArtificialPlayer<S> {
+	protected _createArtifPlayer(desc: Player._CtorArgs[Player.FamilyArtificial]): ArtificialPlayer<S> {
 		return ArtificialPlayer.of(this, desc);
 	}
 
@@ -149,10 +144,6 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 	 * @returns
 	 * A descriptor of changes to make to tiles regarding health spawning.
 	 *
-	 * **`IMPORTANT`**: This method does not have any override structure
-	 * where the Server additionally notifies clients of the changes. It
-	 * is intended to be wrapped inside other events with such behaviour.
-	 *
 	 * Note that this will seem to have a one-movement-event delay in
 	 * specifying changes to be made because `this.currentFreeHealth`
 	 * does not update until after the movement request has been
@@ -191,12 +182,7 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 	}
 
 
-	/**
-	 * Reject the request if `dest` is occupied, or if the specified
-	 * player does not exist, or the client is missing updates for the
-	 * destination they requested to move to, or the player is bubbling.
-	 * @override
-	 */
+	/** @override */
 	public processMoveRequest(req: StateChange.Req): void {
 		const initiator = this.players[req.initiator]!;
 		if (req.lastRejectId !== initiator.reqBuffer.lastRejectId) {
@@ -301,12 +287,11 @@ export namespace GameManager {
 	 * If cleaning can be appropriately performed, this function will
 	 * do so. If not, it will indicate invalidities in its return value.
 	 */
-	// TODO.impl check lang and coord-sys compatibility.
 	export function CHECK_VALID_CTOR_ARGS(
 		args: TU.NoRo<Game.CtorArgs<Game.Type.SERVER,Coord.System>>,
 	): string[] {
 		//#region
-		const fr: string[] = [];
+		const bad: string[] = [];
 		type Keys = keyof Game.CtorArgs<Game.Type,Coord.System>;
 		const requiredFields: {[K in Keys]: any} = Object.freeze({
 			coordSys: 0, gridDimensions: 0, averageHealthPerTile: 0,
@@ -320,14 +305,25 @@ export namespace GameManager {
 			}
 		}
 		if (missingFields.length) {
-			fr.push("Missing the following arguments: " + missingFields);
+			bad.push("Missing the following arguments: " + missingFields);
 		}
-		if (Lang.GET_FRONTEND_DESC_BY_ID(args.langId) === undefined) {
-			fr.push(`No language with the ID \`${args.langId}\` exists.`);
+
+		const langDesc = Lang.GET_FRONTEND_DESC_BY_ID(args.langId);
+		const gridClass = Grid.getImplementation(args.coordSys);
+		if (langDesc === undefined) {
+			bad.push(`No language with the ID \`${args.langId}\` exists.`);
+		} else if (gridClass === undefined) {
+			bad.push(`No grid with the system ID \`${args.coordSys}\` exists.`);
+		} else {
+			if (langDesc.numLeaves < gridClass.getAmbiguityThreshold()) {
+				bad.push("The provided language does not have enough sequences"
+				+"to ensure that a shuffling operation will always succeed when"
+				+"paired with the provided grid system.");
+			}
 		}
 
 		if (parseInt(args.langWeightExaggeration as any) === NaN) {
-			fr.push(`Language Weight Exaggeration expected a number, but`
+			bad.push(`Language Weight Exaggeration expected a number, but`
 			+ `\`${args.langWeightExaggeration}\` is not a number.`);
 		} else {
 			args.langWeightExaggeration = Math.max(0, parseFloat(
@@ -341,7 +337,7 @@ export namespace GameManager {
 		//     + ` \"${Player.Username.REGEXP.source}\".`
 		//     );
 		// }
-		return fr;
+		return bad;
 		//#endregion
 	}
 }
