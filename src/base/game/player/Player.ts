@@ -8,23 +8,41 @@ import type { Team }             from "./Team";
 import type { StateChange }      from "game/StateChange";
 
 import { Player as _Player } from "defs/TypeDefs";
-import { PlayerSkeleton } from "./PlayerSkeleton"; export { PlayerSkeleton };
 import { PlayerStatus }   from "./PlayerStatus"; export { PlayerStatus };
 
 /**
  */
-export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements _Player.UserInfo {
+export class Player<S extends Coord.System> extends _Player implements _Player.UserInfo {
 
+	public readonly playerId: Player.Id;
 	public readonly familyId: Player.Family;
-	public readonly teamId: Team.Id;
+	public readonly teamId:   Team.Id;
 	public readonly username: Player.Username;
-	public readonly avatar: Player.Avatar;
+	public readonly avatar:   Player.Avatar;
+
 	public readonly reqBuffer: Player.RequestBuffer;
+	public readonly status: PlayerStatus;
+	protected readonly game: GameMirror<any,any>;
+
+	#coord: Coord;
+	public prevCoord: Coord;
+
+	public get coord(): Coord { return this.#coord; }
+	public get team(): Team { return this.game.teams[this.teamId]!; }
+
+	public isTeamedWith(other: Player<S>): boolean {
+		return this.team.members.includes(other);
+	}
 
 	/**
 	 */
 	public constructor(game: GameMirror<Game.Type,S>, desc: Player.CtorArgs) {
-		super(game, desc);
+		super();
+		this.playerId = desc.playerId;
+		this.game = game;
+		this.status = new PlayerStatus(this, this.game);
+		JsUtils.instNoEnum(this as Player<S>, "game");
+		JsUtils.propNoWrite(this as Player<S>, "playerId", "game", "status");
 
 		this.familyId = desc.familyId;
 		this.teamId   = desc.teamId;
@@ -36,8 +54,18 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		);
 	}
 
+	/** @virtual */
+	public onTeamsBootstrapped(): void { }
+
+	/**
+	 * Must be called _after_ the grid has been reset.
+	 */
 	public reset(coord: Coord): void {
-		super.reset(coord);
+		this.#coord = coord;
+		this.prevCoord = coord;
+		this.game.grid.write(coord, {
+			occId: this.playerId,
+		});
 		this.status.reset();
 		this.reqBuffer.reset(coord);
 	}
@@ -76,12 +104,14 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 		}));
 	}
 
-	public get team(): Team {
-		return this.game.teams[this.teamId]!;
-	}
-
-	public isTeamedWith(other: Player<S>): boolean {
-		return this.team.members.includes(other);
+	/**
+	 * Notify this Player.
+	 *
+	 * Causes this Player to update its internal state.
+	 */
+	public moveTo(dest: Coord): void {
+		this.prevCoord = this.coord;
+		this.#coord = dest;
 	}
 }
 export namespace Player {
@@ -124,12 +154,13 @@ export namespace Player {
 		}>;
 	};;
 
-	interface _PreIdAssignmentDict {
-		[Player.Family.HUMAN ]: _PreIdAssignmentConditional<typeof Player.Family.HUMAN> & {
+	type _PreIdAssignmentDict = {
+		[F in Player.Family]: F extends typeof Player.Family.HUMAN
+		? _PreIdAssignmentConditional<F> & {
 			readonly isALocalOperator: boolean;
 			readonly clientId: string | undefined;
-		};
-		[Player.Family.CHASER]: _PreIdAssignmentConditional<typeof Player.Family.CHASER>;
+		}
+		: _PreIdAssignmentConditional<F>;
 	}
 	type _PreIdAssignmentConditional<F extends Player.Family> = Readonly<{
 		familyId: F;
@@ -238,6 +269,7 @@ export namespace Player {
 Object.assign(Player, _Player);
 JsUtils.protoNoEnum(Player,
 	"onGamePlaying", "onGamePaused", "onGameOver",
+	"onTeamsBootstrapped",
 );
 Object.freeze(Player);
 Object.freeze(Player.prototype);
