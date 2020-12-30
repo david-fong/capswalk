@@ -4,6 +4,9 @@ import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import { Player as _Player } from "defs/TypeDefs";
 
+/**
+ * @final
+ */
 export class HealthInfo {
 
 	public readonly K: HealthInfo.K;
@@ -25,6 +28,7 @@ export class HealthInfo {
 			),
 		});
 		JsUtils.propNoWrite(this as HealthInfo, "K");
+		Object.seal(this);
 	}
 
 	public reset(): void {

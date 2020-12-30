@@ -12,6 +12,7 @@ export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
 		super(desc);
 		const domGrid: HTMLElement = undefined!;
 		this._superVisibleGrid(domGrid);
+		Object.seal(this);
 	}
 }
 export interface BeehiveVisibleGrid extends VisibleGridMixin { };

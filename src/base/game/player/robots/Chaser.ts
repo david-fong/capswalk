@@ -9,6 +9,7 @@ import {
 
 
 /**
+ * @final
  */
 export class Chaser extends RobotPlayer {
 
@@ -21,6 +22,7 @@ export class Chaser extends RobotPlayer {
 
 	public constructor(game: GameManager<any,any>, desc: Player._CtorArgs["CHASER"]) {
 		super(game, desc);
+		Object.seal(this);
 		this.behaviour = Object.freeze(Object.assign(
 			{},
 			Chaser.Behaviour.DEFAULT,

@@ -2,6 +2,7 @@ import { JsUtils } from "defs/JsUtils";
 import type { Player } from "./Player";
 
 /**
+ * @final
  */
 export class Team {
 
@@ -25,12 +26,13 @@ export class Team {
 		public readonly id: Team.Id,
 		public readonly members: TU.RoArr<Player>,
 	) {
+		JsUtils.propNoWrite(this as Team, "id", "members");
+		Object.seal(this);
 		if (members.length === 0) {
 			throw new Error("Teams must have at least one member.");
 		}
 		this.elimOrder = Team.ElimOrder.STANDING;
 
-		JsUtils.propNoWrite(this as Team, "id", "members");
 	}
 
 	public reset(): void {

@@ -130,7 +130,7 @@ export namespace Japanese {
 		 * https://link.springer.com/content/pdf/10.3758/BF03200819.pdf
 		 */
 		public static INITIALIZER = Object.freeze(<Lang.WeightedForwardMap>JSON.parse(
-		// #region JSON
+		//#region JSON
 		`{
 			"ン": { "seq": "nn", "weight": 290948 },
 			"ル": { "seq": "ru", "weight": 189442 },
@@ -214,7 +214,7 @@ export namespace Japanese {
 			"ヅ": { "seq": "du", "weight":    127 },
 			"ヲ": { "seq": "wo", "weight":    122 }
 		}`
-		// #endregion
+		//#endregion
 		));
 
 		public constructor(weightScaling: number) {

@@ -13,7 +13,6 @@
 
 1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
     - It is only being used for serializing the reset state.
-1. Investigate: Does `Player` need the `Coord.System` template type?
 1. Utilities for `ArtificialPlayer.computeDesiredDest`:
     - Split each behaviour into private methods.
       - They shall be bound to the instance and stored in an array.
@@ -28,8 +27,6 @@
 1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
 1. Investigate whether it works to use `Namespace.on` to cover all `socket.on`.
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.
-1. Call `Object.seal` at the end of constructors where possible now that `useDefineForClassFields` is set to true.
-    - Also do this for the Lang-related constructors.
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
 1. Represent lang trees as arrays, where child-parent relationships are just indices.

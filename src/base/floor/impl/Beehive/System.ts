@@ -121,6 +121,9 @@ export namespace Beehive {
 			// Initialize `grid`:
 			const grid = undefined!;
 			this.grid = Object.freeze(grid);
+			if (new.target === Grid) {
+				Object.seal(this);
+			}
 		}
 
 		public write(coord: Coord, changes: Tile.Changes): void {

@@ -7,6 +7,8 @@ import { Player } from "../player/Player";
  * last Game reset. This is separated from Player instances since
  * non-GameManagers have no need to maintain such records throughout
  * the game.
+ *
+ * @final
  */
 export class ScoreInfo {
 
@@ -22,6 +24,7 @@ export class ScoreInfo {
 		}
 		this.entries = entries;
 		JsUtils.propNoWrite(this as ScoreInfo, "entries");
+		Object.seal(this);
 	}
 
 	public reset(): void {

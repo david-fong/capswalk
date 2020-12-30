@@ -41,7 +41,7 @@ Object.seal(VisibleGrid);
 
 /**
  */
-export class VisibleGridMixin {
+export abstract class VisibleGridMixin {
 	/**
 	 * Contains the implementation-dependant HTML representation of
 	 * the grid.

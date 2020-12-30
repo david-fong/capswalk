@@ -18,6 +18,7 @@ export class PlayerStatus {
 		protected readonly game: GameMirror<any,any>, // Circular field reference.
 	) {
 		JsUtils.instNoEnum(this as PlayerStatus, "player", "game");
+		Object.seal(this);
 	}
 
 	public reset(): void {

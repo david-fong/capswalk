@@ -161,6 +161,9 @@ export namespace WrappedEuclid2 {
 			this.iacCache = Object.freeze(iacCache);
 			JsUtils.instNoEnum(this as Grid, "iacCache");
 			JsUtils.propNoWrite(this as Grid, "_grid", "iacCache");
+			if (new.target === Grid) {
+				Object.seal(this);
+			}
 		}
 
 		public write(coord: Coord, changes: Tile.Changes): void {

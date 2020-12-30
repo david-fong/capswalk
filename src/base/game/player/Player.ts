@@ -52,6 +52,9 @@ export class Player extends _Player implements _Player.UserInfo {
 		JsUtils.propNoWrite(this as Player,
 			"familyId", "teamId", "username", "avatar", "reqBuffer",
 		);
+		if (new.target === Player) {
+			Object.seal(this);
+		}
 	}
 
 	/** @virtual */

@@ -57,12 +57,13 @@ export abstract class Lang extends _Lang {
 		);
 		this.leafNodes = this.treeMap.getLeaves();
 		JsUtils.propNoWrite(this as Lang, "frontendDesc", "treeMap", "leafNodes");
+		Object.seal(this);
 
 		if (DEF.DevAssert && this.leafNodes.length !== this.frontendDesc.numLeaves) {
 			throw new Error(`maintenance required: the frontend constant`
-			+ ` for the language \"${this.frontendDesc.id}\" needs to`
-			+ ` be updated to the correct, computed value, which is`
-			+ ` \`${this.leafNodes.length}\`.`);
+			+` for the language \"${this.frontendDesc.id}\" needs to`
+			+` be updated to the correct, computed value, which is`
+			+` \`${this.leafNodes.length}\`.`);
 		}
 	}
 
@@ -136,7 +137,7 @@ export abstract class Lang extends _Lang {
 		}
 		// Enforced by UI and server:
 		throw new Error(`never. Invariants guaranteeing that a LangSeq`
-		+ ` can always be shuffled-in were not met.`);
+		+` can always be shuffled-in were not met.`);
 	}
 }
 export namespace Lang {
