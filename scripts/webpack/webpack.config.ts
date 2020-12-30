@@ -156,7 +156,7 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
  */
 const CLIENT_CONFIG = __BaseConfig("client"); {
 	const config  = Object.assign(CLIENT_CONFIG, <Partial<webpack.Configuration>>{
-		target: ["web", "es6"],
+		target: ["web", "es2017"],
 		entry: {
 			"css-common": {
 				import: "./src/style/common.css",

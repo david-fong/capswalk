@@ -12,9 +12,9 @@
 		"resolveJsonModule": true,
 
 		// Language Settings:
-		"target": "es6",
-		"module": "ES2020",
-		"lib": [ "ES2020", "dom", ],
+		"target": "es2017",
+		"module": "es2020",
+		"lib": [ "es2020", "dom", ],
 		//"experimentalDecorators": true,
 
 		// Emit Flags:
