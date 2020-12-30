@@ -91,9 +91,6 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 			team.members.forEach((member, memberIndex) => {
 				const coord = spawnPoints[teamIndex]![memberIndex]!;
 				member.reset(coord);
-				this.grid.write(coord, {
-					occId: member.playerId,
-				});
 			});
 		});
 		this.scoreInfo.reset();

@@ -11,7 +11,6 @@
 
 ### Things I feel like doing
 
-1. Fix bug: It seems like players don't get rendered when deserializing reset state.
 1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
     - It is only being used for serializing the reset state.
 1. Crank up TypeScript and WebPack target to es2017?

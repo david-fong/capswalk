@@ -50,6 +50,9 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 	public reset(coord: Coord): void {
 		this.#coord = coord;
 		this.prevCoord = coord;
+		this.game.grid.write(coord, {
+			occId: this.playerId,
+		});
 	}
 
 	/**
