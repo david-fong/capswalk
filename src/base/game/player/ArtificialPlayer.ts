@@ -27,7 +27,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 
 	private _nextMovementTimerMultiplier: number;
 
-	private _scheduledMovementCallbackId: number | NodeJS.Timeout;
+	private _scheduledMovementCallbackId: number;
 
 	/**
 	 * @see ArtificialPlayer.of for the public, non-abstract interface.
@@ -56,17 +56,17 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 	protected abstract computeNextMovementTimer(): number;
 
 	/** @override */
-	public _notifyGameNowPlaying(): void {
-		super._notifyGameNowPlaying();
+	public onGamePlaying(): void {
+		super.onGamePlaying();
 		this._delayedMovementContinue();
 	}
 	/** @override */
-	public _notifyGameNowPaused(): void {
+	public onGamePaused(): void {
 		this.game.cancelTimeout(this._scheduledMovementCallbackId);
 		this._scheduledMovementCallbackId = undefined!;
 	}
 	/** @override */
-	public _notifyGameNowOver(): void {
+	public onGameOver(): void {
 		this.game.cancelTimeout(this._scheduledMovementCallbackId);
 		this._scheduledMovementCallbackId = undefined!;
 	}

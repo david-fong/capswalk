@@ -101,8 +101,8 @@ export abstract class Lang extends _Lang {
 		avoid: TU.RoArr<Lang.Seq>,
 	): Lang.CharSeqPair {
 		// Internal explainer: We must find characters from nodes that
-		// are not descendants or ancestors of nodes in `avoid`. It is
-		// sure that none of the ancestors or descendants of nodes in
+		// are not descendants or ancestors of nodes in `avoid`. This
+		// means that none of the ancestors or descendants of nodes in
 		// `avoid` are also in `avoid`.
 
 		// Start by sorting according to the desired balancing scheme:
@@ -146,15 +146,15 @@ export namespace Lang {
 	 */
 	export interface ClassIf {
 		new (weightScaling: Lang.WeightExaggeration): Lang;
-		BUILD(): CharSeqPair.WeightedForwardMap;
+		BUILD(): WeightedForwardMap;
 	};
 	/**
 	 * Utility functions for implementations to use in their static
 	 * `.BUILD` function.
 	 */
 	export namespace BuildUtils {
-		export function WORD_FOR_WORD(seq2Weight: Record<Lang.Seq,number>): Lang.CharSeqPair.WeightedForwardMap {
-			return Object.entries(seq2Weight).reduce<Lang.CharSeqPair.WeightedForwardMap>(
+		export function WORD_FOR_WORD(seq2Weight: Record<Lang.Seq,number>): Lang.WeightedForwardMap {
+			return Object.entries(seq2Weight).reduce<Lang.WeightedForwardMap>(
 				(accumulator, [char,weight]) => {
 					accumulator[char] = { seq: char, weight };
 					return accumulator;
@@ -183,20 +183,19 @@ export namespace Lang {
 	 * `LangSeq`.
 	 */
 	export type CharSeqPair = _Lang.CharSeqPair;
-	export namespace CharSeqPair {
-		/**
-		 * A map from written characters to their corresponding typeable
-		 * keyboard sequence and relative spawn weight.
-		 *
-		 * Shape that must be passed in to the static tree producer. The
-		 * `Record` type enforces the invariant that {@link Lang.Char}s are
-		 * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}.
-		 */
-		export type WeightedForwardMap = Record<
-			Lang.Char,
-			Readonly<{seq: Lang.Seq, weight: number,}>
-		>/* | Readonly<Record<Lang.Seq, number>> */;
-	}
+
+	/**
+	 * A map from written characters to their corresponding typeable
+	 * keyboard sequence and relative spawn weight.
+	 *
+	 * Shape that must be passed in to the static tree producer. The
+	 * `Record` type enforces the invariant that {@link Lang.Char}s are
+	 * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}.
+	 */
+	export type WeightedForwardMap = Record<
+		Lang.Char,
+		Readonly<{seq: Lang.Seq, weight: number,}>
+	>/* | Readonly<Record<Lang.Seq, number>> */;
 
 	/**
 	 * A value used to scale the variance in weights. Passing zero will

@@ -11,10 +11,8 @@ import { PlayerStatus } from "./PlayerStatus";
  * Made to abstract all operations that change the `hostTile`
  * field. Enforces / exposes the `moveTo` method as
  * the interface to any such operations.
- *
- * @extends Player to intake its namespace exports.
  */
-export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> {
+export abstract class PlayerSkeleton<S extends Coord.System> extends _Player {
 
 	public readonly playerId: Player.Id;
 
@@ -42,7 +40,7 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 	}
 
 	/** @virtual */
-	public _afterAllPlayersConstruction(): void { }
+	public onTeamsBootstrapped(): void { }
 
 	/**
 	 * Must be called _after_ the grid has been reset.
@@ -65,6 +63,6 @@ export abstract class PlayerSkeleton<S extends Coord.System> extends _Player<S> 
 		this.#coord = dest;
 	}
 }
-JsUtils.protoNoEnum(PlayerSkeleton, "_afterAllPlayersConstruction");
+JsUtils.protoNoEnum(PlayerSkeleton, "onTeamsBootstrapped");
 Object.freeze(PlayerSkeleton);
 Object.freeze(PlayerSkeleton.prototype);

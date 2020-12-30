@@ -273,11 +273,8 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 		super.commitTileMods(coord, changes, doCheckOperatorSeqBuffer);
 	}
 
-
-	public abstract setTimeout(callback: Function, millis: number, ...args: any[])
-	: number | NodeJS.Timeout;
-
-	public abstract cancelTimeout(handle: number | NodeJS.Timeout): void;
+	public abstract setTimeout(callback: Function, millis: number, ...args: any[]): number;
+	public abstract cancelTimeout(handle: number): void;
 }
 export namespace GameManager {
 	/**

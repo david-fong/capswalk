@@ -1,16 +1,15 @@
 import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
-import type * as io from "socket.io";
 
-import type { Coord, Tile }     from "floor/Tile";
-import type { Player as _Player } from "defs/TypeDefs";
+import type { Coord, Tile }      from "floor/Tile";
 import type { ArtificialPlayer } from "./ArtificialPlayer";
-import type { GameMirror }    from "base/game/gameparts/GameMirror";
-import type { Team }            from "./Team";
+import type { GameMirror }       from "game/gameparts/GameMirror";
+import type { Team }             from "./Team";
+import type { StateChange }      from "game/StateChange";
 
+import { Player as _Player } from "defs/TypeDefs";
 import { PlayerSkeleton } from "./PlayerSkeleton"; export { PlayerSkeleton };
-import { PlayerStatus }   from "./PlayerStatus";import type { StateChange } from "base/game/StateChange";
- export { PlayerStatus };
+import { PlayerStatus }   from "./PlayerStatus"; export { PlayerStatus };
 
 /**
  */
@@ -44,13 +43,13 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	}
 
 	/** @virtual Overrides must call super. */
-	public _notifyGameNowPlaying(): void { }
+	public onGamePlaying(): void { }
 
 	/** @virtual The default implementation does nothing. */
-	public _notifyGameNowPaused(): void { }
+	public onGamePaused(): void { }
 
 	/** @virtual The default implementation does nothing. */
-	public _notifyGameNowOver(): void { }
+	public onGameOver(): void { }
 
 	/**
 	 * Called automatically by {@link OperatorPlayer#seqBufferAcceptKey}
@@ -63,7 +62,8 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 	protected makeMovementRequest(dest: Coord, type: Player.MoveType): void {
 		if (DEF.DevAssert) {
 			if (this.game.status !== Game.Status.PLAYING) {
-				throw new Error("This is not a necessary precondition, but we're doing it anyway.");
+				// This is not a necessary precondition, but we're doing it anyway.
+				throw new Error("never");
 			}
 		}
 		if (this.reqBuffer.isFull) return; //⚡
@@ -87,24 +87,28 @@ export class Player<S extends Coord.System> extends PlayerSkeleton<S> implements
 export namespace Player {
 
 	export type Family = _Player.Family;
-	export type FamilyArtificial = Exclude<Player.Family, typeof Player.Family.HUMAN>;
+	export type FamilyArtificial = TU.Xcld<Player.Family, "HUMAN">;
 
 	export type Id = _Player.Id;
-
-	export type SocketId = string;
 
 	/**
 	 * Health be picked up from the floor where it is randomly spawned
 	 * by the game manager. It can be used to attack enemy players, or
 	 * to heal teammates.
 	 */
-	export type Health = _Player.Health;
-
+	export type Health   = _Player.Health;
 	export type Username = _Player.Username;
 	export type Avatar   = _Player.Avatar;
 	export type UserInfo = _Player.UserInfo;
 
-	export type MoveType = _Player.MoveType;
+	/** @enum */
+	export type MoveType = keyof typeof MoveType;
+	export const MoveType = Object.freeze(<const>{
+		NORMAL: "NORMAL",
+		BOOST:  "BOOST",
+	});
+	MoveType as { [ key in MoveType ]: key };
+
 	export type Changes = {
 		readonly coord?: Coord,
 		readonly health: Player.Health,
@@ -231,8 +235,9 @@ export namespace Player {
 	Object.freeze(RequestBuffer);
 	Object.freeze(RequestBuffer.prototype);
 }
+Object.assign(Player, _Player);
 JsUtils.protoNoEnum(Player,
-	"_notifyGameNowPaused", "_notifyGameNowPlaying", "_notifyGameNowOver",
+	"onGamePlaying", "onGamePaused", "onGameOver",
 );
 Object.freeze(Player);
 Object.freeze(Player.prototype);

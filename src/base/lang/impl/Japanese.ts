@@ -24,7 +24,7 @@ export namespace Japanese {
 		 * https://gawron.sdsu.edu/crypto/japanese_models/hir_freq.html
 		 * (https://gawron.sdsu.edu/crypto/lectures/hiragana.html)
 		 */
-		public static INITIALIZER = Object.freeze(<Lang.CharSeqPair.WeightedForwardMap>JSON.parse(
+		public static INITIALIZER = Object.freeze(<Lang.WeightedForwardMap>JSON.parse(
 		//#region JSON
 		`{
 			"の": { "seq": "no", "weight": 1918313 },
@@ -111,7 +111,7 @@ export namespace Japanese {
 		public constructor(weightScaling: number) {
 			super("japn-hir", weightScaling);
 		}
-		public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+		public static BUILD(): Lang.WeightedForwardMap {
 			return Hiragana.INITIALIZER;
 		}
 	}
@@ -129,7 +129,7 @@ export namespace Japanese {
 		 * Values obtained from page 19 of the below pdf (p.500 of text)
 		 * https://link.springer.com/content/pdf/10.3758/BF03200819.pdf
 		 */
-		public static INITIALIZER = Object.freeze(<Lang.CharSeqPair.WeightedForwardMap>JSON.parse(
+		public static INITIALIZER = Object.freeze(<Lang.WeightedForwardMap>JSON.parse(
 		// #region JSON
 		`{
 			"ン": { "seq": "nn", "weight": 290948 },
@@ -220,7 +220,7 @@ export namespace Japanese {
 		public constructor(weightScaling: number) {
 			super("japn-kat", weightScaling);
 		}
-		public static BUILD(): Lang.CharSeqPair.WeightedForwardMap {
+		public static BUILD(): Lang.WeightedForwardMap {
 			return Katakana.INITIALIZER;
 		}
 	}

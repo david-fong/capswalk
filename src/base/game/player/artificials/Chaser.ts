@@ -29,8 +29,8 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 		this.grid = this.game.grid;
 	}
 
-	public _afterAllPlayersConstruction(): void {
-		super._afterAllPlayersConstruction();
+	public onTeamsBootstrapped(): void {
+		super.onTeamsBootstrapped();
 		// We need to cast off read-only-ness below.
 		// @ts-expect-error : RO=
 		this.threatProximity = this.game.teams
@@ -114,7 +114,6 @@ export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
 }
 export namespace Chaser {
 	/**
-	 *
 	 */
 	export type Behaviour = Partial<{
 		/**
@@ -157,6 +156,6 @@ export namespace Chaser {
 		});
 	}
 }
-JsUtils.protoNoEnum(Chaser, "_afterAllPlayersConstruction");
+JsUtils.protoNoEnum(Chaser, "onTeamsBootstrapped");
 Object.freeze(Chaser);
 Object.freeze(Chaser.prototype);

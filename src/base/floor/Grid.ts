@@ -1,11 +1,10 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "./Tile";
-import { TileGetter } from "./TileGetter";
-export type { TileGetter } from "./TileGetter";
+import { TileGetter } from "./TileGetter"; export type { TileGetter };
+import { Player } from "defs/TypeDefs";
 
 import type { WrappedEuclid2 } from "./impl/Euclid2/System";
 import type { Beehive } from "./impl/Beehive/System";
-import { Player } from "base/defs/TypeDefs";
 
 
 /**

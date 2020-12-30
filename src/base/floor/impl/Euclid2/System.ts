@@ -1,7 +1,7 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord as BaseCoord, Coord, Tile } from "floor/Tile";
 import { Grid as AbstractGrid } from "floor/Grid";
-import { Player } from "base/defs/TypeDefs";
+import { Player } from "defs/TypeDefs";
 type S = BaseCoord.System.W_EUCLID2;
 
 export type _Dimensions = {

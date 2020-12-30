@@ -54,7 +54,7 @@ export namespace LangSeqTree {
 		 * @returns The root node of a new tree map.
 		 */
 		public static CREATE_TREE_MAP(
-			forwardDict: Lang.CharSeqPair.WeightedForwardMap,
+			forwardDict: Lang.WeightedForwardMap,
 			weightScaling: Lang.WeightExaggeration,
 		): LangSeqTree.ParentNode {
 			const scaleWeight = LangSeqTree.GET_SCALE_WEIGHT_FUNC(weightScaling, forwardDict);
@@ -200,7 +200,7 @@ export namespace LangSeqTree {
 	 */
 	export function GET_SCALE_WEIGHT_FUNC(
 		weightScaling: Lang.WeightExaggeration,
-		forwardDict: Lang.CharSeqPair.WeightedForwardMap,
+		forwardDict: Lang.WeightedForwardMap,
 	): (ogWeight: number) => number {
 		if (weightScaling === 0) return (ogWgt: number) => 1;
 		if (weightScaling === 1) return (ogWgt: number) => ogWgt;

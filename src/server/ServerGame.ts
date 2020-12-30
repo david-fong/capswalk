@@ -222,13 +222,13 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
 
 	/** @override */
-	public setTimeout(callback: () => void, millis: number, ...args: any[]): NodeJS.Timeout {
-		return setTimeout(callback, millis, args).unref();
+	public setTimeout(callback: () => void, millis: number, ...args: any[]): number {
+		return setTimeout(callback, millis, args).unref() as unknown as number;
 	}
 
 	/** @override */
-	public cancelTimeout(handle: NodeJS.Timeout): void {
-		clearTimeout(handle);
+	public cancelTimeout(handle: number): void {
+		clearTimeout(handle as unknown as NodeJS.Timer);
 	}
 
 	/** @override */

@@ -11,7 +11,7 @@ SCROLL_INTO_CENTER as ScrollIntoViewOptions;
 
 /**
  */
-export abstract class Player<S> { }
+export abstract class Player { }
 export namespace Player {
 
 	/**
@@ -24,7 +24,9 @@ export namespace Player {
 		HUMAN:  "HUMAN",
 		CHASER: "CHASER",
 	});
-	Family as { [ key in Family ]: key };
+	Family as {
+		[ key in Family ]: key;
+	};
 
 	/**
 	 * See the main documentation in game/player/Player.
@@ -36,17 +38,6 @@ export namespace Player {
 
 	export type Username = string;
 	export namespace Username {
-		// /**
-		//  * The choice of this is somewhat arbitrary. This should be enforced
-		//  * externally since player descriptors are passed to the constructor.
-		//  *
-		//  * Requirements:
-		//  * - Starts with a letter.
-		//  * - No whitespace except for non-consecutive space characters.
-		//  * - Must contain at least five non-space characters that are
-		//  *      either letters, numbers, or the dash character.
-		//  */
-		//export const REGEXP = /[a-zA-Z](?:[ ]?[a-zA-Z0-9:-]+?){4,}/;
 		export const REGEXP = /[ a-zA-Z0-9:-]+/;
 		export const MAX_LENGTH = 15; // rather arbitrary choice.
 	}
@@ -73,17 +64,8 @@ export namespace Player {
 	 * See the main documentation in game/player/Player.
 	 */
 	export type Health = number;
-
-	/** @enum */
-	export type MoveType = keyof typeof MoveType;
-	export const MoveType = Object.freeze(<const>{
-		NORMAL: "NORMAL",
-		BOOST:  "BOOST",
-	});
-	MoveType as { [ key in MoveType ]: key };
 }
 Object.freeze(Player);
-Object.freeze(Player.prototype);
 
 
 /**

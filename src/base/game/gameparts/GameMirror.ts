@@ -79,7 +79,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 			"gameType", "grid", "langFrontend",
 			"players", "operators", "teams",
 		);
-		this.players.forEach((player) => player._afterAllPlayersConstruction());
+		this.players.forEach((player) => player.onTeamsBootstrapped());
 		this.setCurrentOperator(0);
 	}
 
@@ -199,7 +199,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 			throw new Error("Can only resume a game that is currently paused.");
 		}
 		this.players.forEach((player) => {
-			player._notifyGameNowPlaying();
+			player.onGamePlaying();
 		});
 		this.#status = Game.Status.PLAYING;
 	}
@@ -219,7 +219,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 			return;
 		}
 		this.players.forEach((player) => {
-			player._notifyGameNowPaused();
+			player.onGamePaused();
 		});
 		this.#status = Game.Status.PAUSED;
 	}
@@ -236,7 +236,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 	public statusBecomeOver(): void {
 		if (this.status === Game.Status.OVER) return;
 		this.players.forEach((player) => {
-			player._notifyGameNowOver();
+			player.onGameOver();
 		});
 		this.#status = Game.Status.OVER;
 		this.#onGameBecomeOver();
