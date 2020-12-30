@@ -36,7 +36,6 @@
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
     - Set the maxAge option for express to at least a year.
 1. Make a json file or something defining all the webpack chunk names I have defined.
-1. Add git lfs support to heroku.
 
 ### Things that I feel less like doing
 
@@ -54,7 +53,7 @@
     - Also show scores (very small size) on top of player faces.
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
-1. Try out EJS include directive.
+1. Add git lfs support to heroku.
 1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
 1. Extract hot, anonymous sorting functions to non-exported globals so the runtime engine can cache parameter shapes.
 
