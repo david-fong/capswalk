@@ -138,7 +138,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 		});
 	}
 	protected abstract _createOperatorPlayer(desc: Player._CtorArgs["HUMAN"]): OperatorPlayer<S>;
-	protected abstract _createArtifPlayer(desc: Player._CtorArgs[Player.FamilyArtificial]): Player<S>;
+	protected abstract _createArtifPlayer(desc: Player._CtorArgs[Player.RobotFamily]): Player<S>;
 
 	/** @final */
 	public serializeResetState(): Game.ResetSer {

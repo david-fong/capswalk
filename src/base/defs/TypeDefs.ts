@@ -16,7 +16,7 @@ export namespace Player {
 
 	/**
 	 * @enum
-	 * Each implementation of the {@link ArtificialPlayer} class must
+	 * Each implementation of the {@link RobotPlayer} class must
 	 * have an entry here.
 	 */
 	export type Family = keyof typeof Family;

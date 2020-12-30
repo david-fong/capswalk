@@ -1,8 +1,8 @@
 import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
 
-import type { Coord, Tile }      from "floor/Tile";
-import type { ArtificialPlayer } from "./ArtificialPlayer";
+import type { Coord }            from "floor/Tile";
+import type { RobotPlayer } from "./RobotPlayer";
 import type { GameMirror }       from "game/gameparts/GameMirror";
 import type { Team }             from "./Team";
 import type { StateChange }      from "game/StateChange";
@@ -82,7 +82,7 @@ export class Player<S extends Coord.System> extends _Player implements _Player.U
 	/**
 	 * Called automatically by {@link OperatorPlayer#seqBufferAcceptKey}
 	 * for {@link OperatorPlayer}s, and by a periodic callback for
-	 * {@link ArtificialPlayer}s. Handles behaviour common between all
+	 * {@link RobotPlayer}s. Handles behaviour common between all
 	 * implementations.
 	 *
 	 * @final
@@ -117,7 +117,7 @@ export class Player<S extends Coord.System> extends _Player implements _Player.U
 export namespace Player {
 
 	export type Family = _Player.Family;
-	export type FamilyArtificial = TU.Xcld<Player.Family, "HUMAN">;
+	export type RobotFamily = TU.Xcld<Player.Family, "HUMAN">;
 
 	export type Id = _Player.Id;
 
@@ -174,7 +174,7 @@ export namespace Player {
 
 		export type PreIdAssignment = _PreIdAssignmentDict[Player.Family];
 
-		export interface FamilySpecificPart extends ArtificialPlayer.FamilySpecificPart {
+		export interface FamilySpecificPart extends RobotPlayer.FamilySpecificPart {
 			[Player.Family.HUMAN]: {};
 		}
 
@@ -266,7 +266,6 @@ export namespace Player {
 	Object.freeze(RequestBuffer);
 	Object.freeze(RequestBuffer.prototype);
 }
-Object.assign(Player, _Player);
 JsUtils.protoNoEnum(Player,
 	"onGamePlaying", "onGamePaused", "onGameOver",
 	"onTeamsBootstrapped",

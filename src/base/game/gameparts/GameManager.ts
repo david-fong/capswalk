@@ -4,7 +4,7 @@ import { Game } from "../Game";
 
 import type { Coord, Tile } from "floor/Tile";
 import { Player } from "../player/Player";
-import { ArtificialPlayer } from "../player/ArtificialPlayer";
+import { RobotPlayer } from "../player/RobotPlayer";
 import { HealthInfo } from "./HealthInfo";
 import { ScoreInfo } from "./ScoreInfo";
 import { Grid } from "floor/Grid";
@@ -99,8 +99,8 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 	}
 
 	/** @override */
-	protected _createArtifPlayer(desc: Player._CtorArgs[Player.FamilyArtificial]): ArtificialPlayer<S> {
-		return ArtificialPlayer.of(this, desc);
+	protected _createArtifPlayer(desc: Player._CtorArgs[Player.RobotFamily]): RobotPlayer<S> {
+		return RobotPlayer.of(this, desc);
 	}
 
 

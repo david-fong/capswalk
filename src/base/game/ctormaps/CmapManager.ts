@@ -2,8 +2,8 @@ import { Grid } from "floor/Grid";
 import { WrappedEuclid2 } from "floor/impl/Euclid2/System";
 import { Beehive } from "floor/impl/Beehive/System";
 
-import { ArtificialPlayer } from "../player/ArtificialPlayer";
-import { Chaser } from "../player/artificials/Chaser";
+import { RobotPlayer } from "game/player/RobotPlayer";
+import { Chaser } from "base/game/player/robots/Chaser";
 
 export default (): void => {{
 	// Non-Visible Grid Implementation Registry:
@@ -13,9 +13,9 @@ export default (): void => {{
 	}));
 	Object.freeze(Grid);
 }{
-	const AP = ArtificialPlayer;
-	Object.freeze(Object.assign(AP._Constructors, <typeof AP._Constructors>{
+	const Robot = RobotPlayer;
+	Object.freeze(Object.assign(Robot._Constructors, <typeof Robot._Constructors>{
 		["CHASER"]: Chaser,
 	}));
-	Object.freeze(AP);
+	Object.freeze(Robot);
 }};

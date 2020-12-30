@@ -4,13 +4,13 @@ import {
 	Coord, Tile,
 	Player,
 	GameManager,
-	ArtificialPlayer,
-} from "../ArtificialPlayer";
+	RobotPlayer,
+} from "../RobotPlayer";
 
 
 /**
  */
-export class Chaser<S extends Coord.System> extends ArtificialPlayer<S> {
+export class Chaser<S extends Coord.System> extends RobotPlayer<S> {
 
 	private readonly threatProximity: Array<Player<S>>;
 	private readonly targetProximity: Array<Player<S>>;

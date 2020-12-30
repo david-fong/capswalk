@@ -8,7 +8,7 @@ export type { Coord, Tile };
 export type { GameManager };
 
 // Implementations:
-import type { Chaser } from "./artificials/Chaser";
+import type { Chaser } from "./robots/Chaser";
 
 import { Player } from "./Player";
 export { Player };
@@ -21,7 +21,7 @@ export { Player };
  *
  * Can be paused and un-paused by the Game Manager.
  */
-export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S> {
+export abstract class RobotPlayer<S extends Coord.System> extends Player<S> {
 
 	declare public readonly game: GameManager<any,S>;
 
@@ -30,7 +30,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 	private _scheduledMovementCallbackId: number;
 
 	/**
-	 * @see ArtificialPlayer.of for the public, non-abstract interface.
+	 * @see RobotPlayer.of for the public, non-abstract interface.
 	 */
 	protected constructor(game: GameManager<any,S>, desc: Player.CtorArgs) {
 		super(game, desc);
@@ -42,7 +42,7 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 	/**
 	 * Returns a {@link Pos} representing an absolute coordinate (ie.
 	 * one that is relative to the {@link Game}'s origin position')
-	 * that this `ArtificialPlayer` intends to move toward in its next
+	 * that this `RobotPlayer` intends to move toward in its next
 	 * movement request. Pos may contain non-integer coordinate values,
 	 * and it does not have to be inside the bounds of the {@link Grid}.
 	 */
@@ -104,14 +104,14 @@ export abstract class ArtificialPlayer<S extends Coord.System> extends Player<S>
 		return;
 	}
 }
-export namespace ArtificialPlayer {
+export namespace RobotPlayer {
 
 	export const _Constructors: {
-		readonly [ F in Player.FamilyArtificial ]: {
+		readonly [ F in Player.RobotFamily ]: {
 			new<S extends Coord.System>(
 				game: GameManager<Game.Type.Manager,S>,
 				desc: Player._CtorArgs[F]
-			): ArtificialPlayer<S>;
+			): RobotPlayer<S>;
 		};
 	} = {
 		// These are initialized later to avoid bootstrapping issues.
@@ -124,13 +124,13 @@ export namespace ArtificialPlayer {
 
 	export const of = <S extends Coord.System>(
 		game: GameManager<Game.Type.Manager,S>,
-		playerDesc: Player._CtorArgs[Player.FamilyArtificial],
-	): ArtificialPlayer<S> => {
-		const familyId = playerDesc.familyId as Player.FamilyArtificial;
+		playerDesc: Player._CtorArgs[Player.RobotFamily],
+	): RobotPlayer<S> => {
+		const familyId = playerDesc.familyId as Player.RobotFamily;
 		if (DEF.DevAssert) {
 			// Enforced By: Caller adherence to contract.
 			if (!Object.keys(_Constructors).includes(familyId)) {
-				throw new RangeError(familyId + " is not a valid artificial player family id.");
+				throw new RangeError(familyId + " is not a valid robot player family id.");
 			}
 		}
 		return new (_Constructors[familyId])(game, playerDesc);
@@ -140,13 +140,13 @@ export namespace ArtificialPlayer {
 	 * Provides slightly higher level abstractions for computing the
 	 * desired destination for the next movement.
 	 */
-	// export class PrioritizedBehaviours<S extends Coord.System> extends ArtificialPlayer<S> {
+	// export class PrioritizedBehaviours<S extends Coord.System> extends RobotPlayer<S> {
 	// 	public computeDesiredDest(): Coord {
 	// 		;
 	// 	}
 	// }
 }
-JsUtils.protoNoEnum(ArtificialPlayer, "_movementContinue");
-// ArtificialPlayer is frozen in PostInit after _Constructors get initialized.
-Object.seal(ArtificialPlayer);
-Object.freeze(ArtificialPlayer.prototype);
+JsUtils.protoNoEnum(RobotPlayer, "_movementContinue");
+// RobotPlayer is frozen in PostInit after _Constructors get initialized.
+Object.seal(RobotPlayer);
+Object.freeze(RobotPlayer.prototype);
