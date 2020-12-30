@@ -14,7 +14,7 @@ export class PlayerStatus {
 	#health: Player.Health;
 
 	public constructor(
-		protected readonly player: Readonly<Player<any>>, // Circular field reference.
+		protected readonly player: Readonly<Player>, // Circular field reference.
 		protected readonly game: GameMirror<any,any>, // Circular field reference.
 	) {
 		JsUtils.instNoEnum(this as PlayerStatus, "player", "game");

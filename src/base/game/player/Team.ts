@@ -23,7 +23,7 @@ export class Team {
 
 	public constructor(
 		public readonly id: Team.Id,
-		public readonly members: TU.RoArr<Player<any>>,
+		public readonly members: TU.RoArr<Player>,
 	) {
 		if (members.length === 0) {
 			throw new Error("Teams must have at least one member.");

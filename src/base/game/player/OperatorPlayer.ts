@@ -12,10 +12,10 @@ import { Player } from "./Player";
  * There is at least one in online-clientside and offline games.
  * There are none for online-serverside games.
  */
-export class OperatorPlayer<S extends Coord.System> extends Player<S> {
+export class OperatorPlayer extends Player {
 
 	/** @override */
-	declare public readonly game: GameMirror<(Game.Type.Browser),S>;
+	declare public readonly game: GameMirror<(Game.Type.Browser),any>;
 
 	/**
 	 * Invariant: always matches the prefix of the {@link LangSeq} of
@@ -26,7 +26,7 @@ export class OperatorPlayer<S extends Coord.System> extends Player<S> {
 	readonly #langRemappingFunc: {(input: string): string};
 
 
-	public constructor(game: GameMirror<Game.Type,S>, desc: Player._CtorArgs["HUMAN"]) {
+	public constructor(game: GameMirror<Game.Type,any>, desc: Player._CtorArgs["HUMAN"]) {
 		super(game, desc);
 		this.#langRemappingFunc = this.game.langFrontend.remapFunc;
 	}

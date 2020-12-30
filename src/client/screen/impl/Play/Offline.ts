@@ -28,7 +28,6 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
 
 	/** @override */
 	protected async _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<OfflineGame<Coord.System>> {
-		// TODO.impl use game-setup args passed in from _abstractOnBeforeEnter
 		return new (await import(
 			/* webpackChunkName: "game/offline" */
 			"../../../game/OfflineGame"

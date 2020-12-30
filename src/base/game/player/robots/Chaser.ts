@@ -10,16 +10,16 @@ import {
 
 /**
  */
-export class Chaser<S extends Coord.System> extends RobotPlayer<S> {
+export class Chaser extends RobotPlayer {
 
-	private readonly threatProximity: Array<Player<S>>;
-	private readonly targetProximity: Array<Player<S>>;
+	private readonly threatProximity: Array<Player>;
+	private readonly targetProximity: Array<Player>;
 
 	private readonly behaviour: Required<Readonly<Chaser.Behaviour>>;
 
-	private readonly grid: Chaser<S>["game"]["grid"];
+	private readonly grid: Chaser["game"]["grid"];
 
-	public constructor(game: GameManager<any,S>, desc: Player._CtorArgs["CHASER"]) {
+	public constructor(game: GameManager<any,any>, desc: Player._CtorArgs["CHASER"]) {
 		super(game, desc);
 		this.behaviour = Object.freeze(Object.assign(
 			{},
@@ -40,7 +40,7 @@ export class Chaser<S extends Coord.System> extends RobotPlayer<S> {
 		// @ts-expect-error : RO=
 		this.targetProximity = [...this.threatProximity];
 
-		JsUtils.propNoWrite(this as Chaser<S>,
+		JsUtils.propNoWrite(this as Chaser,
 			"threatProximity", "targetProximity",
 			"behaviour", "grid",
 		);

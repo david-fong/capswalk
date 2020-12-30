@@ -16,7 +16,7 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 
 	declare public readonly grid: VisibleGrid<S>;
 
-	declare public readonly currentOperator: OperatorPlayer<S>;
+	declare public readonly currentOperator: OperatorPlayer;
 
 	public readonly htmlElements: BrowserGameMixin.HtmlElements;
 
@@ -39,8 +39,8 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 	}
 
 	/** @override */
-	protected _createOperatorPlayer(desc: Player._CtorArgs["HUMAN"]): OperatorPlayer<S> {
-		return new OperatorPlayer<S>(this, desc);
+	protected _createOperatorPlayer(desc: Player._CtorArgs["HUMAN"]): OperatorPlayer {
+		return new OperatorPlayer(this, desc);
 	}
 }
 export interface BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> extends GameMirror<G,S> {};

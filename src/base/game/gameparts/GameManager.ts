@@ -99,7 +99,7 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 	}
 
 	/** @override */
-	protected _createArtifPlayer(desc: Player._CtorArgs[Player.RobotFamily]): RobotPlayer<S> {
+	protected _createArtifPlayer(desc: Player._CtorArgs[Player.RobotFamily]): RobotPlayer {
 		return RobotPlayer.of(this, desc);
 	}
 
@@ -251,7 +251,7 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 	 *
 	 * @param sourceP
 	 */
-	private _processPlayerContact(sourceP: Player<S>): StateChange.Res["initiator"] {
+	private _processPlayerContact(sourceP: Player): StateChange.Res["initiator"] {
 		return undefined!;
 	}
 

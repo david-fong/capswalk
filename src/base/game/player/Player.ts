@@ -12,7 +12,7 @@ import { PlayerStatus }   from "./PlayerStatus"; export { PlayerStatus };
 
 /**
  */
-export class Player<S extends Coord.System> extends _Player implements _Player.UserInfo {
+export class Player extends _Player implements _Player.UserInfo {
 
 	public readonly playerId: Player.Id;
 	public readonly familyId: Player.Family;
@@ -30,26 +30,26 @@ export class Player<S extends Coord.System> extends _Player implements _Player.U
 	public get coord(): Coord { return this.#coord; }
 	public get team(): Team { return this.game.teams[this.teamId]!; }
 
-	public isTeamedWith(other: Player<S>): boolean {
+	public isTeamedWith(other: Player): boolean {
 		return this.team.members.includes(other);
 	}
 
 	/**
 	 */
-	public constructor(game: GameMirror<Game.Type,S>, desc: Player.CtorArgs) {
+	public constructor(game: GameMirror<Game.Type,any>, desc: Player.CtorArgs) {
 		super();
 		this.playerId = desc.playerId;
 		this.game = game;
 		this.status = new PlayerStatus(this, this.game);
-		JsUtils.instNoEnum(this as Player<S>, "game");
-		JsUtils.propNoWrite(this as Player<S>, "playerId", "game", "status");
+		JsUtils.instNoEnum(this as Player, "game");
+		JsUtils.propNoWrite(this as Player, "playerId", "game", "status");
 
 		this.familyId = desc.familyId;
 		this.teamId   = desc.teamId;
 		this.username = desc.username;
 		this.avatar   = desc.avatar ?? Player.Avatar.GET_RANDOM();
 		this.reqBuffer = new Player.RequestBuffer();
-		JsUtils.propNoWrite(this as Player<S>,
+		JsUtils.propNoWrite(this as Player,
 			"familyId", "teamId", "username", "avatar", "reqBuffer",
 		);
 	}

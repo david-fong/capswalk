@@ -21,9 +21,10 @@ export { Player };
  *
  * Can be paused and un-paused by the Game Manager.
  */
-export abstract class RobotPlayer<S extends Coord.System> extends Player<S> {
+export abstract class RobotPlayer extends Player {
 
-	declare public readonly game: GameManager<any,S>;
+	/** @override */
+	declare public readonly game: GameManager<any,any>;
 
 	private _nextMovementTimerMultiplier: number;
 
@@ -32,7 +33,7 @@ export abstract class RobotPlayer<S extends Coord.System> extends Player<S> {
 	/**
 	 * @see RobotPlayer.of for the public, non-abstract interface.
 	 */
-	protected constructor(game: GameManager<any,S>, desc: Player.CtorArgs) {
+	protected constructor(game: GameManager<any,any>, desc: Player.CtorArgs) {
 		super(game, desc);
 		if (DEF.DevAssert && game.gameType === Game.Type.ONLINE) {
 			throw new TypeError("OnlineGames should be using regular Players instead.");
@@ -111,7 +112,7 @@ export namespace RobotPlayer {
 			new<S extends Coord.System>(
 				game: GameManager<Game.Type.Manager,S>,
 				desc: Player._CtorArgs[F]
-			): RobotPlayer<S>;
+			): RobotPlayer;
 		};
 	} = {
 		// These are initialized later to avoid bootstrapping issues.
@@ -125,7 +126,7 @@ export namespace RobotPlayer {
 	export const of = <S extends Coord.System>(
 		game: GameManager<Game.Type.Manager,S>,
 		playerDesc: Player._CtorArgs[Player.RobotFamily],
-	): RobotPlayer<S> => {
+	): RobotPlayer => {
 		const familyId = playerDesc.familyId as Player.RobotFamily;
 		if (DEF.DevAssert) {
 			// Enforced By: Caller adherence to contract.

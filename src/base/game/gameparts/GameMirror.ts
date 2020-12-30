@@ -24,10 +24,10 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 
 	public readonly langFrontend: Lang.FrontendDesc;
 
-	public readonly players: TU.RoArr<Player<S>>;
+	public readonly players: TU.RoArr<Player>;
 
-	public readonly operators: TU.RoArr<OperatorPlayer<S>>;
-	#currentOperator: OperatorPlayer<S> | undefined;
+	public readonly operators: TU.RoArr<OperatorPlayer>;
+	#currentOperator: OperatorPlayer | undefined;
 
 	/**
 	 * Indexable by team ID's.
@@ -64,7 +64,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 		Object.freeze(desc);
 
 		{
-			const teams: Array<Array<Player<S>>> = [];
+			const teams: Array<Array<Player>> = [];
 			this.players.forEach((player) => {
 				if (!teams[player.teamId]) {
 					teams[player.teamId] = [];
@@ -106,8 +106,8 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 	 * Helper for the constructor.
 	 */
 	private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): {
-		players: TU.RoArr<Player<S>>,
-		operators: TU.RoArr<OperatorPlayer<S>>,
+		players: TU.RoArr<Player>,
+		operators: TU.RoArr<OperatorPlayer>,
 	} {
 		const playerDescs
 			// @ts-expect-error : RO=
@@ -123,13 +123,13 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 					? this._createOperatorPlayer(playerDesc)
 					: new Player(this, playerDesc);
 			} else {
-				return this._createArtifPlayer(playerDesc) as Player<S>;
+				return this._createArtifPlayer(playerDesc) as Player;
 			}
 		}));
-		const operators: OperatorPlayer<S>[] = [];
+		const operators: OperatorPlayer[] = [];
 		playerDescs.forEach((desc,i) => {
 			if (desc.familyId === Player.Family.HUMAN && desc.isALocalOperator) {
-				operators.push(players[i] as OperatorPlayer<S>);
+				operators.push(players[i] as OperatorPlayer);
 			}
 		})
 		return Object.freeze({
@@ -137,8 +137,8 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 			operators,
 		});
 	}
-	protected abstract _createOperatorPlayer(desc: Player._CtorArgs["HUMAN"]): OperatorPlayer<S>;
-	protected abstract _createArtifPlayer(desc: Player._CtorArgs[Player.RobotFamily]): Player<S>;
+	protected abstract _createOperatorPlayer(desc: Player._CtorArgs["HUMAN"]): OperatorPlayer;
+	protected abstract _createArtifPlayer(desc: Player._CtorArgs[Player.RobotFamily]): Player;
 
 	/** @final */
 	public serializeResetState(): Game.ResetSer {
@@ -165,7 +165,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 		});
 	}
 
-	public get currentOperator(): OperatorPlayer<S> | undefined {
+	public get currentOperator(): OperatorPlayer | undefined {
 		return this.#currentOperator;
 	}
 	public setCurrentOperator(nextOperatorIndex: number): void {

@@ -67,7 +67,7 @@ extends GameMirror<G,S> implements BrowserGameMixin<G,S> {
 	declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
 
 	/** @override */
-	protected _createArtifPlayer(desc: Player.CtorArgs): Player<S> {
+	protected _createArtifPlayer(desc: Player.CtorArgs): Player {
 		return new Player(this, desc);
 	}
 
