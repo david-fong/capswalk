@@ -141,11 +141,68 @@ export namespace RobotPlayer {
 	 * Provides slightly higher level abstractions for computing the
 	 * desired destination for the next movement.
 	 */
-	// export class PrioritizedBehaviours<S extends Coord.System> extends RobotPlayer<S> {
-	// 	public computeDesiredDest(): Coord {
-	// 		;
-	// 	}
-	// }
+	export abstract class Decisive<S extends Coord.System> extends RobotPlayer {
+
+		/**
+		 * Entries may return undefined to indicate that the condition
+		 * for using that behaviour was not met, and the next behaviour
+		 * should be tried.
+		 *
+		 * @requires
+		 * The last behaviour must never return `undefined`.
+		 */
+		protected abstract behaviours: TU.RoArr<Decisive.Behaviour>;
+
+		readonly #cache = {
+			which:  0,
+			reuses: 0,
+			target: undefined as number | undefined,
+		};
+
+		public reset(): void {
+			this.#cache.which  = 0;
+			this.#cache.reuses = 0;
+			this.#cache.target = undefined;
+		}
+
+		/** @final */
+		public computeDesiredDest(): Coord {
+			const c = this.#cache;
+			if (c.target !== undefined && c.reuses <= Game.K.ROBOT_PRIORITY_MAX_REUSES) {
+				const next = this.behaviours[c.which]!(c.target);
+				if (next !== undefined) {
+					c.reuses++;
+					return next.dest; //⚡
+				}
+			}
+			c.reuses = 0;
+			for (let i = 0; i < this.behaviours.length; i++) {
+				const next = this.behaviours[i]!();
+				if (next !== undefined) {
+					c.which = i;
+					c.target = next.target;
+					return next.dest;
+				}
+			}
+			throw new Error("never");
+		}
+	}
+	export namespace Decisive {
+		export type Next = {
+			dest: Coord;
+			/**
+			 * This could be anything a behaviour wants. Ex. A player
+			 * ID, a coord, etc.
+			 *
+			 * It is assumed to be unchanged when successfully reusing
+			 * a behaviour.
+			 * */
+			target: number;
+		};
+		export type Behaviour = (target?: number) => Next | undefined;
+	}
+	Object.freeze(Decisive);
+	Object.freeze(Decisive.prototype);
 }
 JsUtils.protoNoEnum(RobotPlayer, "_movementContinue");
 // RobotPlayer is frozen in PostInit after _Constructors get initialized.

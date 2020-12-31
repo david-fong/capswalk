@@ -13,8 +13,8 @@ import {
  */
 export class Chaser extends RobotPlayer {
 
-	private readonly threatProximity: Array<Player>;
-	private readonly targetProximity: Array<Player>;
+	private readonly pred: Array<Player>;
+	private readonly prey: Array<Player>;
 
 	private readonly behaviour: Required<Readonly<Chaser.Behaviour>>;
 
@@ -35,26 +35,26 @@ export class Chaser extends RobotPlayer {
 		super.onTeamsBootstrapped();
 		// We need to cast off read-only-ness below.
 		// @ts-expect-error : RO=
-		this.threatProximity = this.game.teams
+		this.pred = Object.seal(this.game.teams
 			.filter((team) => team.id !== this.teamId)
-			.flatMap((team) => team.members);
+			.flatMap((team) => team.members));
 
 		// @ts-expect-error : RO=
-		this.targetProximity = [...this.threatProximity];
+		this.prey = Object.seal([...this.pred]);
 
 		JsUtils.propNoWrite(this as Chaser,
-			"threatProximity", "targetProximity",
+			"pred", "prey",
 			"behaviour", "grid",
 		);
 	}
 
 	protected computeDesiredDest(): Coord {
 		// Check if there is anyone to run away from:
-		this.threatProximity.sort((pa,pb) => {
+		this.pred.sort((pa,pb) => {
 			return this.grid.dist(pa.coord, this.coord)
 				-  this.grid.dist(pb.coord, this.coord);
 		});
-		for (const threatP of this.threatProximity) {
+		for (const threatP of this.pred) {
 			if (this.grid.dist(threatP.coord, this.coord)
 				> this.behaviour.fearDistance) break;
 			if (threatP.status.isDowned) continue;
@@ -65,12 +65,12 @@ export class Chaser extends RobotPlayer {
 		}
 		// If there is nobody to run away from,
 		// Check if there is anyone we want to attack:
-		this.targetProximity.sort((pa,pb) => {
+		this.prey.sort((pa,pb) => {
 			return this.grid.dist(this.coord, pa.coord)
 				-  this.grid.dist(this.coord, pb.coord);
 		});
 		if (this.status.isDowned) {
-			for (const targetP of this.targetProximity) {
+			for (const targetP of this.prey) {
 				if (this.grid.dist(this.coord, targetP.coord)
 					> this.behaviour.bloodThirstDistance) break;
 				if (targetP.status.health < this.status.health - this.behaviour.healthReserve) {

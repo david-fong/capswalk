@@ -40,7 +40,7 @@ export namespace LangSeqTree {
 		public getLeaves(): Array<ChildNode> {
 			const leafNodes: Array<ChildNode> = [];
 			this._rGetLeaves(leafNodes);
-			return leafNodes;
+			return Object.seal(leafNodes);
 		}
 		protected _rGetLeaves(leafNodes: Array<ChildNode>): void {
 			if (this.children.length) {
@@ -79,7 +79,9 @@ export namespace LangSeqTree {
 			const rootNode = new ParentNode();
 			Object.seal(rootNode);
 			let cursor: ChildNode | ParentNode = rootNode;
-			for (const [seq, chars] of Array.from(reverseDict).sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1)) {
+			Object.freeze(Object.seal(Array.from(reverseDict))
+			.sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1))
+			.forEach(([seq,chars]) => {
 				while (!seq.startsWith(cursor.seq)) {
 					cursor = (cursor as ChildNode).parent ?? rootNode;
 				}
@@ -89,7 +91,7 @@ export namespace LangSeqTree {
 				);
 				((cursor as ParentNode).children as ChildNode[]).push(newChild);
 				cursor = newChild;
-			}
+			});
 			rootNode._finalize();
 			return rootNode;
 		}

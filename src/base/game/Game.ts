@@ -198,6 +198,13 @@ export namespace Game {
 		 * of requests which a clientside player can buffer.
 		 */
 		REQUEST_BUFFER_LENGTH: 5,
+
+		/**
+		 * How many times a Decisive RobotPlayer can reuse its cached
+		 * target before it will do another cold analysis of its
+		 * surroundings.
+		 */
+		ROBOT_PRIORITY_MAX_REUSES: 4,
 	});
 }
 Object.freeze(Game);

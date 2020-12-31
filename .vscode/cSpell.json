@@ -31,12 +31,14 @@
         "gamepart", "gameparts",
         "OMHC", // Object-Model Hook :: Classes
         "OMHD", // Object-Model Hook :: Dataset Keys
+        "pred", // as in "predator"
         "sesh",
         "sysname",
         "typeable",
         "unts",
         "engl", "japn", "kore", "jamo", "ngram", "ngrams",
         "smoothstone",
+        "xcld", // short for "exclude"
 
         // Programming terminology:
         // (Functions and Variables)
