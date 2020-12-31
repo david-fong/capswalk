@@ -11,19 +11,26 @@ import {
 /**
  * @final
  */
-export class Chaser extends RobotPlayer {
+export class Chaser extends RobotPlayer.Decisive {
 
 	private readonly pred: Array<Player>;
 	private readonly prey: Array<Player>;
 
-	private readonly behaviour: Required<Readonly<Chaser.Behaviour>>;
+	private readonly params: Readonly<Chaser.Behaviour>;
+
+	/** @override */
+	protected readonly _behaviours = [
+		this._bhvrEvadePred.bind(this),
+		this._bhvrChasePrey.bind(this),
+		this._bhvrGotoHealthElseWander.bind(this),
+	];
 
 	private readonly grid: Chaser["game"]["grid"];
 
 	public constructor(game: GameManager<any,any>, desc: Player._CtorArgs["CHASER"]) {
 		super(game, desc);
 		Object.seal(this);
-		this.behaviour = Object.freeze(Object.assign(
+		this.params = Object.freeze(Object.assign(
 			{},
 			Chaser.Behaviour.DEFAULT,
 			desc.familyArgs,
@@ -44,54 +51,74 @@ export class Chaser extends RobotPlayer {
 
 		JsUtils.propNoWrite(this as Chaser,
 			"pred", "prey",
-			"behaviour", "grid",
+			"params", "_behaviours", "grid",
 		);
 	}
 
-	protected computeDesiredDest(): Coord {
+	private _bhvrEvadePred(cachedPred?: Player.Id): RobotPlayer.Decisive.Next {
+		if (cachedPred !== undefined) { return {
+			dest: this.grid.getUntAwayFrom(this.game.players[cachedPred]!.coord, this.coord).coord,
+		};}
 		// Check if there is anyone to run away from:
 		this.pred.sort((pa,pb) => {
 			return this.grid.dist(pa.coord, this.coord)
 				-  this.grid.dist(pb.coord, this.coord);
 		});
-		for (const threatP of this.pred) {
-			if (this.grid.dist(threatP.coord, this.coord)
-				> this.behaviour.fearDistance) break;
-			if (threatP.status.isDowned) continue;
-			if (threatP.status.health > this.status.health) {
+		for (const pred of this.pred) {
+			if (this.grid.dist(pred.coord, this.coord)
+				> this.params.fearDistance) break;
+			if (pred.status.isDowned) continue;
+			if (pred.status.health > this.status.health) {
 				// TODO.design Something that avoids getting cornered.
-				return this.grid.getUntAwayFrom(threatP.coord, this.coord).coord;
+				return {
+					dest: this.grid.getUntAwayFrom(pred.coord, this.coord).coord,
+					target: pred.playerId,
+				};
 			}
 		}
+		return undefined;
+	}
+	private _bhvrChasePrey(cachedPrey?: Player.Id): RobotPlayer.Decisive.Next {
+		if (cachedPrey !== undefined) { return {
+			dest: this.game.players[cachedPrey]!.coord,
+		};}
 		// If there is nobody to run away from,
 		// Check if there is anyone we want to attack:
 		this.prey.sort((pa,pb) => {
 			return this.grid.dist(this.coord, pa.coord)
 				-  this.grid.dist(this.coord, pb.coord);
 		});
-		if (this.status.isDowned) {
-			for (const targetP of this.prey) {
-				if (this.grid.dist(this.coord, targetP.coord)
-					> this.behaviour.bloodThirstDistance) break;
-				if (targetP.status.health < this.status.health - this.behaviour.healthReserve) {
-					return targetP.coord;
+		if (this.status.isDowned) { // TODO.design <-- what's this? I think I meant to check that the prey is not downed.
+			for (const prey of this.prey) {
+				if (this.grid.dist(this.coord, prey.coord)
+					> this.params.bloodThirstDistance) break;
+				if (prey.status.health < this.status.health - this.params.healthReserve) {
+					return {
+						dest: prey.coord,
+						target: prey.playerId,
+					};
 				}
 			}
+		}
+		return undefined;
+	}
+	private _bhvrGotoHealthElseWander(cachedHealthCoord?: Coord): RobotPlayer.Decisive.Next {
+		if (cachedHealthCoord !== undefined && this.game.health.tiles.has(cachedHealthCoord)) {
+			return { dest: cachedHealthCoord };
 		}
 		// If there is nobody we want to chase after to attack,
 		// Head toward the nearest free health if it exists.
 		if (this.game.health.tiles.size === 0) {
 			// No tiles close by. Wander around:
-			if (Math.random() < this.behaviour.wanderingAimlessness) {
+			if (Math.random() < this.params.wanderingAimlessness) {
 				// Big direction change:
-				return this.grid.getRandomCoordAround(this.coord, 3);
+				return { dest: this.grid.getRandomCoordAround(this.coord, 3) };
 			} else {
 				// Continue wandering with a subtle, random direction:
 				const awayFunc = this.grid.getUntAwayFrom.bind(this.grid, this.prevCoord);
-				return this.grid.getRandomCoordAround(
-					awayFunc(awayFunc(this.coord).coord).coord,
-					1,
-				);
+				return { dest: this.grid.getRandomCoordAround(
+					awayFunc(awayFunc(this.coord).coord).coord, 1,
+				)};
 			}
 		}
 		let closestFht: Tile = undefined!;
@@ -103,7 +130,7 @@ export class Chaser extends RobotPlayer {
 				closestFhtDistance = distance;
 			}
 		}
-		return closestFht.coord;
+		return { dest: closestFht.coord, target: closestFht.coord, };
 	}
 
 	protected getNextMoveType(): Player.MoveType {
@@ -111,13 +138,13 @@ export class Chaser extends RobotPlayer {
 	}
 
 	protected computeNextMovementTimer(): number {
-		return 1000 / this.behaviour.keyPressesPerSecond;
+		return 1000 / this.params.keyPressesPerSecond;
 	}
 }
 export namespace Chaser {
 	/**
 	 */
-	export type Behaviour = Partial<{
+	export type Behaviour = {
 		/**
 		 * If the number of moves it would take for an opponent with
 		 * more health than this player to reach this player is less
@@ -147,9 +174,9 @@ export namespace Chaser {
 		 * make a drastic random change in direction when wandering.
 		 */
 		wanderingAimlessness: number;
-	}>;
+	};
 	export namespace Behaviour {
-		export const DEFAULT: Required<Readonly<Behaviour>> = Object.freeze({
+		export const DEFAULT: Readonly<Behaviour> = Object.freeze({
 			fearDistance: 5,
 			bloodThirstDistance: 7,
 			healthReserve: 3.0,

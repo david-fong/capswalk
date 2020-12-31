@@ -59,7 +59,7 @@ export abstract class RobotPlayer extends Player {
 	/** @override */
 	public onGamePlaying(): void {
 		super.onGamePlaying();
-		this._delayedMovementContinue();
+		/*@__INLINE__*/this._delayedMovementContinue();
 	}
 	/** @override */
 	public onGamePaused(): void {
@@ -89,7 +89,7 @@ export abstract class RobotPlayer extends Player {
 			this.getNextMoveType(),
 		);
 		// Schedule a task to do this again:
-		this._delayedMovementContinue();
+		/*@__INLINE__*/this._delayedMovementContinue();
 	}
 
 	/**
@@ -120,7 +120,7 @@ export namespace RobotPlayer {
 	};
 
 	export interface FamilySpecificPart {
-		[Player.Family.CHASER]: Chaser.Behaviour;
+		[Player.Family.CHASER]: Partial<Chaser.Behaviour>;
 	}
 
 	export const of = <S extends Coord.System>(
@@ -141,7 +141,7 @@ export namespace RobotPlayer {
 	 * Provides slightly higher level abstractions for computing the
 	 * desired destination for the next movement.
 	 */
-	export abstract class Decisive<S extends Coord.System> extends RobotPlayer {
+	export abstract class Decisive extends RobotPlayer {
 
 		/**
 		 * Entries may return undefined to indicate that the condition
@@ -151,7 +151,7 @@ export namespace RobotPlayer {
 		 * @requires
 		 * The last behaviour must never return `undefined`.
 		 */
-		protected abstract behaviours: TU.RoArr<Decisive.Behaviour>;
+		protected readonly abstract _behaviours: TU.RoArr<Decisive.Behaviour>;
 
 		readonly #cache = {
 			which:  0,
@@ -159,25 +159,27 @@ export namespace RobotPlayer {
 			target: undefined as number | undefined,
 		};
 
-		public reset(): void {
+		/** @override */
+		public reset(coord: Coord): void {
+			super.reset(coord);
 			this.#cache.which  = 0;
 			this.#cache.reuses = 0;
 			this.#cache.target = undefined;
 		}
 
 		/** @final */
-		public computeDesiredDest(): Coord {
+		protected computeDesiredDest(): Coord {
 			const c = this.#cache;
 			if (c.target !== undefined && c.reuses <= Game.K.ROBOT_PRIORITY_MAX_REUSES) {
-				const next = this.behaviours[c.which]!(c.target);
+				const next = this._behaviours[c.which]!(c.target);
 				if (next !== undefined) {
 					c.reuses++;
 					return next.dest; //⚡
 				}
 			}
 			c.reuses = 0;
-			for (let i = 0; i < this.behaviours.length; i++) {
-				const next = this.behaviours[i]!();
+			for (let i = 0; i < this._behaviours.length; i++) {
+				const next = this._behaviours[i]!();
 				if (next !== undefined) {
 					c.which = i;
 					c.target = next.target;
@@ -188,7 +190,7 @@ export namespace RobotPlayer {
 		}
 	}
 	export namespace Decisive {
-		export type Next = {
+		export type Next = undefined | {
 			dest: Coord;
 			/**
 			 * This could be anything a behaviour wants. Ex. A player
@@ -197,9 +199,9 @@ export namespace RobotPlayer {
 			 * It is assumed to be unchanged when successfully reusing
 			 * a behaviour.
 			 * */
-			target: number;
+			target?: number;
 		};
-		export type Behaviour = (target?: number) => Next | undefined;
+		export type Behaviour = (target?: number) => Next;
 	}
 	Object.freeze(Decisive);
 	Object.freeze(Decisive.prototype);
