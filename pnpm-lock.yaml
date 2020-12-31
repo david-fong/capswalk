@@ -7,11 +7,11 @@ devDependencies:
   '@types/express': 4.17.9
   '@types/html-webpack-plugin': 3.2.4
   '@types/mini-css-extract-plugin': 1.2.2
-  '@types/node': 14.14.16
+  '@types/node': 14.14.17
   '@typescript-eslint/eslint-plugin': 4.11.1_9c022763c2e3d67a193e8dc202e075a9
   '@typescript-eslint/parser': 4.11.1_eslint@7.16.0+typescript@4.1.3
   compression-webpack-plugin: 7.1.1_webpack@5.11.1
-  csp-html-webpack-plugin: 5.0.1_42cc03e2386b5b24cecbe6fd256f659b
+  csp-html-webpack-plugin: 5.0.0_42cc03e2386b5b24cecbe6fd256f659b
   css-loader: 5.0.1_webpack@5.11.1
   css-minimizer-webpack-plugin: 1.1.5_webpack@5.11.1
   css-modules-typescript-loader: 4.0.1
@@ -20,7 +20,7 @@ devDependencies:
   html-webpack-plugin: 4.5.0_webpack@5.11.1
   mini-css-extract-plugin: 1.3.3_webpack@5.11.1
   socket.io-client: 3.0.4
-  ts-loader: 8.0.12_typescript@4.1.3+webpack@5.11.1
+  ts-loader: 8.0.13_typescript@4.1.3+webpack@5.11.1
   typescript: 4.1.3
   webpack: 5.11.1
   webpack-node-externals: 2.5.2
@@ -100,13 +100,13 @@ packages:
   /@types/body-parser/1.19.0:
     dependencies:
       '@types/connect': 3.4.34
-      '@types/node': 14.14.16
+      '@types/node': 14.14.17
     dev: true
     resolution:
       integrity: sha512-W98JrE0j2K78swW4ukqMleo8R7h/pFETjM2DQ90MF6XK2i4LO4W3gQ71Lt4w3bfm2EvVSyWHplECvB5sK22yFQ==
   /@types/clean-css/4.2.3:
     dependencies:
-      '@types/node': 14.14.16
+      '@types/node': 14.14.17
       source-map: 0.6.1
     dev: true
     resolution:
@@ -116,7 +116,7 @@ packages:
       integrity: sha512-bsjleuRKWmGqajMerkzox19aGbscQX5rmmvvXl3wlIp5gMG1HgkiwPxsN5p070fBDKTNSPgojVbuY1+HWMbFhg==
   /@types/connect/3.4.34:
     dependencies:
-      '@types/node': 14.14.16
+      '@types/node': 14.14.17
     dev: true
     resolution:
       integrity: sha512-ePPA/JuI+X0vb+gSWlPKOY0NdNAie/rPUqX2GUPpbZwiKTkSPhjXWuee47E4MtE54QVzGCQMQkAL6JhV2E1+cQ==
@@ -148,7 +148,7 @@ packages:
       integrity: sha512-jnqIUKDUqJbDIUxm0Uj7bnlMnRm1T/eZ9N+AVMqhPgzrba2GhGG5o/jCTwmdPK709nEZsGoMzXEDUjcXHa3W0g==
   /@types/express-serve-static-core/4.17.17:
     dependencies:
-      '@types/node': 14.14.16
+      '@types/node': 14.14.17
       '@types/qs': 6.9.5
       '@types/range-parser': 1.2.3
     dev: true
@@ -197,9 +197,9 @@ packages:
     dev: true
     resolution:
       integrity: sha512-EoHBJ4rcrd5j7weAFE4yU1gxedx53EFCWKso03G7DW0h2YvtwjKYz/NnuFHudcQDI1HpTLqoQFTwEgfJxygYCw==
-  /@types/node/14.14.16:
+  /@types/node/14.14.17:
     resolution:
-      integrity: sha512-naXYePhweTi+BMv11TgioE2/FXU4fSl29HAH1ffxVciNsH3rYXjNP2yM8wqmSm7jS20gM8TIklKiTen+1iVncw==
+      integrity: sha512-G0lD1/7qD60TJ/mZmhog76k7NcpLWkPVGgzkRy3CTlnFu4LUQh5v2Wa661z6vnXmD8EQrnALUyf0VRtrACYztw==
   /@types/q/1.5.4:
     dev: true
     resolution:
@@ -219,7 +219,7 @@ packages:
   /@types/serve-static/1.13.8:
     dependencies:
       '@types/mime': 2.0.3
-      '@types/node': 14.14.16
+      '@types/node': 14.14.17
     dev: true
     resolution:
       integrity: sha512-MoJhSQreaVoL+/hurAZzIm8wafFR6ajiTM1m4A0kv6AGeVBl4r4pOV8bGFrjjq1sGxDTnCoF8i22o0/aE5XCyA==
@@ -239,7 +239,7 @@ packages:
       integrity: sha512-7npvPKV+jINLu1SpSYVWG8KvyJBhBa8tmzMMdDoVc2pWUYHN8KIXlPJhjJ4LT97c4dXJA2SHL/q6ADbDriZN+Q==
   /@types/webpack-sources/2.1.0:
     dependencies:
-      '@types/node': 14.14.16
+      '@types/node': 14.14.17
       '@types/source-list-map': 0.1.2
       source-map: 0.7.3
     dev: true
@@ -248,7 +248,7 @@ packages:
   /@types/webpack/4.41.25:
     dependencies:
       '@types/anymatch': 1.3.1
-      '@types/node': 14.14.16
+      '@types/node': 14.14.17
       '@types/tapable': 1.0.6
       '@types/uglify-js': 3.11.1
       '@types/webpack-sources': 2.1.0
@@ -1003,18 +1003,19 @@ packages:
       node: '>= 8'
     resolution:
       integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
-  /csp-html-webpack-plugin/5.0.1_42cc03e2386b5b24cecbe6fd256f659b:
+  /csp-html-webpack-plugin/5.0.0_42cc03e2386b5b24cecbe6fd256f659b:
     dependencies:
       cheerio: 1.0.0-rc.5
       html-webpack-plugin: 4.5.0_webpack@5.11.1
       lodash: 4.17.20
+      memory-fs: 0.5.0
       webpack: 5.11.1
     dev: true
     peerDependencies:
       html-webpack-plugin: ^4 || ^5
       webpack: ^4 || ^5
     resolution:
-      integrity: sha512-oEmhF2lc20WLQd3F+5s+zLtR1ZNVxcOeMFLacD428/9DEV4DaVXSpUXdKuG1if/UqweIRwCxK4JkMyVVV3dNrw==
+      integrity: sha512-Qz1T12JeaIP11JP+LdN3gfBgLpN/GdZrsOYZX8wzeutIIDVNDBABNAxQPM2rtstUKFoujc9c1M4NooedWrNPUw==
   /css-color-names/0.0.4:
     dev: true
     resolution:
@@ -2263,7 +2264,7 @@ packages:
       integrity: sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
   /jest-worker/26.6.2:
     dependencies:
-      '@types/node': 14.14.16
+      '@types/node': 14.14.17
       merge-stream: 2.0.0
       supports-color: 7.2.0
     dev: true
@@ -3524,7 +3525,7 @@ packages:
     dependencies:
       '@types/cookie': 0.4.0
       '@types/cors': 2.8.9
-      '@types/node': 14.14.16
+      '@types/node': 14.14.17
       accepts: 1.3.7
       base64id: 2.0.0
       debug: 4.1.1
@@ -3790,7 +3791,7 @@ packages:
       node: '>=0.6'
     resolution:
       integrity: sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw==
-  /ts-loader/8.0.12_typescript@4.1.3+webpack@5.11.1:
+  /ts-loader/8.0.13_typescript@4.1.3+webpack@5.11.1:
     dependencies:
       chalk: 2.4.2
       enhanced-resolve: 4.3.0
@@ -3806,7 +3807,7 @@ packages:
       typescript: '*'
       webpack: '*'
     resolution:
-      integrity: sha512-UIivVfGVJDdwwjgSrbtcL9Nf10c1BWnL1mxAQUVcnhNIn/P9W3nP5v60Z0aBMtc7ZrE11lMmU6+5jSgAXmGaYw==
+      integrity: sha512-1o1nO6aqouA23d2nlcMSEyPMAWRhnYUU0EQUJSc60E0TUyBNX792RHFYUN1ZM29vhMUNayrsbj2UVdZwKhXCDA==
   /tslib/1.14.1:
     dev: true
     resolution:
@@ -4072,11 +4073,11 @@ specifiers:
   '@types/express': ^4.17.9
   '@types/html-webpack-plugin': ^3.2.4
   '@types/mini-css-extract-plugin': ^1.2.2
-  '@types/node': ^14.14.16
+  '@types/node': ^14.14.17
   '@typescript-eslint/eslint-plugin': ^4.11.1
   '@typescript-eslint/parser': ^4.11.1
   compression-webpack-plugin: ^7.1.1
-  csp-html-webpack-plugin: ^5.0.1
+  csp-html-webpack-plugin: 5.0.0
   css-loader: ^5.0.1
   css-minimizer-webpack-plugin: ^1.1.5
   css-modules-typescript-loader: ^4.0.1
@@ -4088,7 +4089,7 @@ specifiers:
   mini-css-extract-plugin: ^1.3.3
   socket.io: ^3.0.4
   socket.io-client: ^3.0.4
-  ts-loader: ^8.0.12
+  ts-loader: ^8.0.13
   tslib: ^2.0.3
   typescript: ^4.1.3
   webpack: ^5.11.1
