@@ -58,7 +58,7 @@ export abstract class VisibleGridMixin {
 		tiles.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
 
 		// @ts-expect-error : RO=
-		const base = this.baseElem = JsUtils.mkEl("div", [style["impl-body"]]);
+		const base = this.baseElem = JsUtils.mkEl("div", []);
 		const root = base.attachShadow({ mode: "closed" });
 		tiles.classList.add(style["impl-body"]);
 		root.appendChild(tiles);

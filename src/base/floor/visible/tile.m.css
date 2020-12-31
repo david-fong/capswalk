@@ -3,6 +3,9 @@
 	contain: strict;
 	overflow: hidden hidden;
 	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 
 	border: 0.14em solid transparent;
 	border-radius: 0.35em;

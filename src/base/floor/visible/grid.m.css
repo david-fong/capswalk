@@ -1,8 +1,6 @@
 
 .impl-body {
-	z-index:    0;
 	contain:    content;
-	position:   static;
 	color:      var(--colour-tileFg);
 	height:     fit-content;
 	width:      fit-content;
