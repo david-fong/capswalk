@@ -19,11 +19,11 @@ export class Chaser extends RobotPlayer.Decisive {
 	private readonly params: Readonly<Chaser.Behaviour>;
 
 	/** @override */
-	protected readonly _behaviours = [
+	protected readonly _behaviours = Object.freeze([
 		this._bhvrEvadePred.bind(this),
 		this._bhvrChasePrey.bind(this),
 		this._bhvrGotoHealthElseWander.bind(this),
-	];
+	]);
 
 	private readonly grid: Chaser["game"]["grid"];
 
@@ -67,8 +67,8 @@ export class Chaser extends RobotPlayer.Decisive {
 		for (const pred of this.pred) {
 			if (this.grid.dist(pred.coord, this.coord)
 				> this.params.fearDistance) break;
-			if (pred.status.isDowned) continue;
-			if (pred.status.health > this.status.health) {
+			if (pred.isDowned) continue;
+			if (pred.health > this.health) {
 				// TODO.design Something that avoids getting cornered.
 				return {
 					dest: this.grid.getUntAwayFrom(pred.coord, this.coord).coord,
@@ -88,11 +88,11 @@ export class Chaser extends RobotPlayer.Decisive {
 			return this.grid.dist(this.coord, pa.coord)
 				-  this.grid.dist(this.coord, pb.coord);
 		});
-		if (this.status.isDowned) { // TODO.design <-- what's this? I think I meant to check that the prey is not downed.
+		if (this.isDowned) { // TODO.design <-- what's this? I think I meant to check that the prey is not downed.
 			for (const prey of this.prey) {
 				if (this.grid.dist(this.coord, prey.coord)
 					> this.params.bloodThirstDistance) break;
-				if (prey.status.health < this.status.health - this.params.healthReserve) {
+				if (prey.health < this.health - this.params.healthReserve) {
 					return {
 						dest: prey.coord,
 						target: prey.playerId,

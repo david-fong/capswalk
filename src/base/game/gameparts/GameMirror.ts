@@ -286,13 +286,13 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 		Object.entries(desc.players).forEach(([pid, changes]) => {
 			const player = this.players[parseInt(pid)]!;
 			player.reqBuffer.acceptOldest();
-			player.status.health = changes.health;
+			player.health = changes.health;
 
 			if (changes.coord !== undefined) {
 				this.grid.write(player.coord,  {occId: Player.Id.NULL});
 				this.grid.write(changes.coord, {occId: player.playerId});
 				// === order matters ===
-				player.moveTo(changes.coord);
+				player.setCoord(changes.coord);
 			}
 		});
 	}

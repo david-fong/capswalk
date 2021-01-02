@@ -1,14 +1,13 @@
 import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
 
-import type { Coord }            from "floor/Tile";
+import type { Coord }       from "floor/Tile";
+import type { StateChange } from "game/StateChange";
 import type { RobotPlayer } from "./RobotPlayer";
-import type { GameMirror }       from "game/gameparts/GameMirror";
-import type { Team }             from "./Team";
-import type { StateChange }      from "game/StateChange";
+import type { GameMirror }  from "game/gameparts/GameMirror";
 
 import { Player as _Player } from "defs/TypeDefs";
-import { PlayerStatus }   from "./PlayerStatus"; export { PlayerStatus };
+import { Team } from "./Team";
 
 /**
  */
@@ -20,15 +19,17 @@ export class Player extends _Player implements _Player.UserInfo {
 	public readonly username: Player.Username;
 	public readonly avatar:   Player.Avatar;
 
-	public readonly reqBuffer: Player.RequestBuffer;
-	public readonly status: PlayerStatus;
 	protected readonly game: GameMirror<any,any>;
-
+	public readonly reqBuffer: Player.RequestBuffer;
 	#coord: Coord;
+	#health: Player.Health = 0.0;
+
 	public prevCoord: Coord;
 
-	public get coord(): Coord { return this.#coord; }
-	public get team(): Team { return this.game.teams[this.teamId]!; }
+	public get team()     { return this.game.teams[this.teamId]!; }
+	public get coord()    { return this.#coord; }
+	public get health()   { return this.#health; }
+	public get isDowned() { return this.health < 0.0; }
 
 	public isTeamedWith(other: Player): boolean {
 		return this.team.members.includes(other);
@@ -38,19 +39,20 @@ export class Player extends _Player implements _Player.UserInfo {
 	 */
 	public constructor(game: GameMirror<Game.Type,any>, desc: Player.CtorArgs) {
 		super();
-		this.playerId = desc.playerId;
-		this.game = game;
-		this.status = new PlayerStatus(this, this.game);
-		JsUtils.instNoEnum(this as Player, "game");
-		JsUtils.propNoWrite(this as Player, "playerId", "game", "status");
 
+		this.playerId = desc.playerId;
 		this.familyId = desc.familyId;
 		this.teamId   = desc.teamId;
 		this.username = desc.username;
 		this.avatar   = desc.avatar ?? Player.Avatar.GET_RANDOM();
+
+		this.game = game;
 		this.reqBuffer = new Player.RequestBuffer();
-		JsUtils.propNoWrite(this as Player,
-			"familyId", "teamId", "username", "avatar", "reqBuffer",
+
+		JsUtils.instNoEnum(this as Player, "game");
+		JsUtils.propNoWrite(this as Player, "game",
+			"playerId", "familyId", "teamId",
+			"username", "avatar", "reqBuffer",
 		);
 		if (new.target === Player) {
 			Object.seal(this);
@@ -69,7 +71,7 @@ export class Player extends _Player implements _Player.UserInfo {
 		this.game.grid.write(coord, {
 			occId: this.playerId,
 		});
-		this.status.reset();
+		this.#health = 0.0;
 		this.reqBuffer.reset(coord);
 	}
 
@@ -82,14 +84,7 @@ export class Player extends _Player implements _Player.UserInfo {
 	/** @virtual The default implementation does nothing. */
 	public onGameOver(): void { }
 
-	/**
-	 * Called automatically by {@link OperatorPlayer#seqBufferAcceptKey}
-	 * for {@link OperatorPlayer}s, and by a periodic callback for
-	 * {@link RobotPlayer}s. Handles behaviour common between all
-	 * implementations.
-	 *
-	 * @final
-	 */
+	/** @final */
 	protected makeMovementRequest(dest: Coord, type: Player.MoveType): void {
 		if (DEF.DevAssert) {
 			if (this.game.status !== Game.Status.PLAYING) {
@@ -112,9 +107,39 @@ export class Player extends _Player implements _Player.UserInfo {
 	 *
 	 * Causes this Player to update its internal state.
 	 */
-	public moveTo(dest: Coord): void {
+	public setCoord(dest: Coord): void {
 		this.prevCoord = this.coord;
 		this.#coord = dest;
+	}
+
+	public set health(newHealth: Player.Health) {
+		const oldIsDowned = this.isDowned;
+		this.#health = newHealth;
+
+		if (oldIsDowned || !this.isDowned) return;
+		const team  = this.team;
+		const teams = this.game.teams;
+		if (team.elimOrder !== Team.ElimOrder.STANDING) {
+			return;
+		}
+		// Right before this downing event, the team has not been
+		// soft-eliminated yet, but it might be now. Check it:
+		if (team.members.every((player) => player.isDowned)) {
+			// All players are downed! The team is now eliminated:
+			const numNonStandingTeams
+				= 1 + teams.filter((team) => {
+				return team.elimOrder !== Team.ElimOrder.STANDING;
+			}).length;
+
+			team.elimOrder = 1 + teams.filter((team) => {
+				return team.elimOrder !== Team.ElimOrder.STANDING;
+			}).length;
+			// Now that a team is newly-eliminated, check if the
+			// game should end:
+			if (numNonStandingTeams === teams.length) {
+				this.game.statusBecomeOver();
+			}
+		}
 	}
 }
 export namespace Player {

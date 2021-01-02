@@ -197,8 +197,8 @@ export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.S
 		}
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
 		const newPlayerHealthValue
-			= initiator.status.health
-			+ (reqDest.health * (initiator.status.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
+			= initiator.health
+			+ (reqDest.health * (initiator.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
 			- (moveIsBoost ? this.health.K.costOfBoost : 0);
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make

@@ -11,10 +11,9 @@
 
 ### Things I feel like doing
 
+1. Make `CtorArgs.PreIdAssignment["avatarId"]` non-nullable.
 1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
     - It is only being used for serializing the reset state.
-1. Utilities for `ArtificialPlayer.computeDesiredDest`:
-    - Split each behaviour into private methods.
 1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
 1. Investigate whether it works to use `Namespace.on` to cover all `socket.on`.
 1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.

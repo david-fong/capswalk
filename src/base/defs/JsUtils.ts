@@ -3,15 +3,10 @@ const NO_ENUM  = Object.freeze(<const>{ enumerable: false });
 const NO_WRITE = Object.freeze(<const>{ writable: false });
 
 export namespace JsUtils {
-	/**
-	 * Copied from TypeScript official docs.
-	 *
-	 * @param derivedCtor -
-	 * @param baseCtors -
-	 */
-	export function applyMixins(derivedCtor: any, baseCtors: any[]): void {
+	/** Copied from TypeScript official docs. */
+	export function applyMixins(derivedCtor: any, mixins: any[]): void {
 		const inheritanceProps = Object.freeze(["constructor", "__proto__"]);
-		baseCtors.forEach((baseCtor) => {
+		mixins.forEach((baseCtor) => {
 			Object.getOwnPropertyNames(baseCtor.prototype)
 			.filter((name) => !(inheritanceProps.includes(name)))
 			.forEach((name) => {
@@ -22,10 +17,7 @@ export namespace JsUtils {
 		});
 	}
 
-	/**
-	 * @param obj
-	 * An object with no cycles (circular references).
-	 */
+	/** @requires obj must not contain cycles (circular references). */
 	export function deepFreeze<T>(obj: T): TU.DeepRo<T> {
 		_deepFreeze(obj);
 		return obj as TU.DeepRo<T>;
@@ -42,40 +34,6 @@ export namespace JsUtils {
 
 	/**
 	 */
-	export namespace Decor {
-		/**
-		 * Aliases to decorators that make a property non-enumerable.
-		 * They do the same thing but are used for different reasons.
-		 */
-		export namespace NonEnumerable {
-			/**
-			 * Disable enumeration to make something that is less visible
-			 * at compile time also less visible at runtime. Prevents clutter
-			 * when tab-completing in a developer interpreter console.
-			 */
-			export function access(
-				target: any,
-				propertyKey: string,
-				descriptor: PropertyDescriptor
-			): void {
-				descriptor.enumerable = false;
-			};
-			/**
-			 * Disable enumeration for cyclic fields of an object that is
-			 * most often accessed through a containing collection.
-			 */
-			export function cyclic(
-				target: any,
-				propertyKey: string,
-				descriptor: PropertyDescriptor
-			): void {
-				descriptor.enumerable = false;
-			};
-		}
-	}
-
-	/**
-	 */
 	export function hasProp<T, K extends keyof T>(obj: T, key: K): boolean {
 		return Object.prototype.hasOwnProperty.call(obj, key);
 	}
@@ -85,9 +43,6 @@ export namespace JsUtils {
 	export function protoNoEnum<T>(
 		ctor: {new(...args: any[]): T} | Function, // <- allow abstract classes
 		...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
-		// ^This weird looking typing allows for autocomplete for
-		// public prototype properties, and inclusion of non-public
-		// prototype properties (without static checking existence).
 	): void {
 		const hasProps = Object.freeze(Object.getOwnPropertyNames(ctor.prototype));
 		propNames.forEach((propName) => {
@@ -104,16 +59,14 @@ export namespace JsUtils {
 	/**
 	 */
 	export function instNoEnum<T>(
-		inst: T,
-		...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
+		inst: T, ...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
 	): void {
 		_configProp(inst, propNames, NO_ENUM);
 	}
 	/**
 	 */
 	export function propNoWrite<T>(
-		inst: T,
-		...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
+		inst: T, ...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
 	): void {
 		_configProp(inst, propNames, NO_WRITE);
 	}
@@ -134,9 +87,7 @@ export namespace JsUtils {
 		});
 	}
 
-	/**
-	 * A non-user-facing markup utility.
-	 */
+	/** A non-user-facing markup utility. */
 	export function prependComment(node: HTMLElement, commentStr: string): void {
 		node.parentNode!.insertBefore(document.createComment(" " + commentStr + " "), node);
 	}
