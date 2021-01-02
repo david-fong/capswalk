@@ -3,9 +3,9 @@ import { Game } from "../Game";
 import { Lang } from "defs/TypeDefs";
 
 import type { Coord, Tile } from "floor/Tile";
+import type { StateChange } from "../StateChange";
 import type { Grid } from "floor/Grid";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
-import type { StateChange } from "../StateChange";
 
 import { Player } from "../player/Player";
 import { Team } from "../player/Team";
@@ -29,9 +29,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 	public readonly operators: TU.RoArr<OperatorPlayer>;
 	#currentOperator: OperatorPlayer | undefined;
 
-	/**
-	 * Indexable by team ID's.
-	 */
+	/** Indexable by team ID's. */
 	public readonly teams: TU.RoArr<Team>;
 
 	#status: Game.Status;
@@ -64,7 +62,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 		Object.freeze(desc);
 
 		{
-			const teams: Array<Array<Player>> = [];
+			const teams: Player[][] = [];
 			this.players.forEach((player) => {
 				if (!teams[player.teamId]) {
 					teams[player.teamId] = [];

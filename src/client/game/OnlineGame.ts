@@ -1,12 +1,12 @@
 import type { Socket } from "socket.io-client";
 import { GameEv } from "defs/OnlineDefs";
+import type {  } from "game/StateChange";
 import {
-	JsUtils, Game, Coord, VisibleGrid,
-	BrowserGameMixin,
+	JsUtils, Game, Coord, StateChange,
+	VisibleGrid, BrowserGameMixin,
 	Player, OperatorPlayer,
 } from "./BrowserGame";
 
-import type { StateChange } from "game/StateChange";
 import { GameMirror } from "base/game/gameparts/GameMirror";
 
 

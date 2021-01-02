@@ -1,11 +1,11 @@
 import {
-	JsUtils, Game, Coord, VisibleGrid,
-	BrowserGameMixin,
+	JsUtils, Game, Coord, StateChange,
+	VisibleGrid, BrowserGameMixin,
 	OperatorPlayer,
 } from "./BrowserGame";
 
 import { GameManager } from "base/game/gameparts/GameManager";
-import type { StateChange } from "base/game/StateChange";
+import type {  } from "base/game/StateChange";
 
 
 type G = Game.Type.OFFLINE;

@@ -3,6 +3,7 @@ import { Lang } from "lang/Lang";
 import { Game } from "../Game";
 
 import type { Coord, Tile } from "floor/Tile";
+import type { StateChange } from "../StateChange";
 import { Player } from "../player/Player";
 import { RobotPlayer } from "../player/RobotPlayer";
 import { HealthInfo } from "./HealthInfo";
@@ -12,13 +13,15 @@ import { Grid } from "floor/Grid";
 import { GameMirror } from "./GameMirror";
 
 import InitGameManagerCtorMaps from "../ctormaps/CmapManager";
-import type { StateChange } from "../StateChange";
 InitGameManagerCtorMaps();
 
 
 /**
  */
-export abstract class GameManager<G extends Game.Type.Manager, S extends Coord.System> extends GameMirror<G,S> {
+export abstract class GameManager<
+	G extends Game.Type.Manager,
+	S extends Coord.System,
+> extends GameMirror<G,S> {
 
 	public readonly health: HealthInfo;
 

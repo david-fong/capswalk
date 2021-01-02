@@ -4,13 +4,11 @@ import { JsUtils } from "defs/JsUtils";
 import { GameEv, GroupEv, SkServer } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
+import type { StateChange } from "game/StateChange";
 import { Grid } from "floor/Grid";
 import { Player } from "game/player/Player";
 
-import type { StateChange } from "game/StateChange";
-
-import { GameManager } from "base/game/gameparts/GameManager";
-
+import { GameManager } from "game/gameparts/GameManager";
 type G = Game.Type.SERVER;
 
 /**
