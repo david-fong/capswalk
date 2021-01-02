@@ -34,7 +34,6 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 			teamId:     0,
 			clientId:   undefined,
 			username:   "hello1",
-			avatar:     undefined,
 			familyArgs: { },
 		}, {
 			isALocalOperator: true,
@@ -42,7 +41,6 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 			teamId:     1,
 			clientId:   undefined,
 			username:   "hello2",
-			avatar:     undefined,
 			familyArgs: { },
 		});
 		return args;

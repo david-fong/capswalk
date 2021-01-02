@@ -44,7 +44,7 @@ export class Player extends _Player implements _Player.UserInfo {
 		this.familyId = desc.familyId;
 		this.teamId   = desc.teamId;
 		this.username = desc.username;
-		this.avatar   = desc.avatar ?? Player.Avatar.GET_RANDOM();
+		this.avatar   = desc.avatar;
 
 		this.game = game;
 		this.reqBuffer = new Player.RequestBuffer();
@@ -179,6 +179,7 @@ export namespace Player {
 	export type _CtorArgs = {
 		[F in Player.Family]: _PreIdAssignmentDict[F] & Readonly<{
 			playerId: Player.Id;
+			avatar: Avatar;
 		}>;
 	};;
 
@@ -194,7 +195,7 @@ export namespace Player {
 		familyId: F;
 		teamId:   Team.Id;
 		username: Username;
-		avatar:   Avatar | undefined;
+		avatar?:  Avatar;
 		familyArgs: CtorArgs.FamilySpecificPart[F];
 	}>;
 
@@ -226,6 +227,7 @@ export namespace Player {
 			.map<CtorArgs>((playerDesc, index) => Object.assign({}, playerDesc, {
 				playerId: index,
 				teamId:   teamIdCleaner[playerDesc.teamId]!,
+				avatar:   playerDesc.avatar ?? Player.Avatar.GET_RANDOM(),
 			})));
 		};
 	}

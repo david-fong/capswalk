@@ -11,7 +11,6 @@
 
 ### Things I feel like doing
 
-1. Make `CtorArgs.PreIdAssignment["avatarId"]` non-nullable.
 1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
     - It is only being used for serializing the reset state.
 1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.

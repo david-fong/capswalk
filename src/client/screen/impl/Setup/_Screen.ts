@@ -114,13 +114,11 @@ export namespace _SetupScreen {
 			familyId:   "CHASER",
 			teamId:     1,
 			username:   "chaser1",
-			avatar:     undefined,
 			familyArgs: {/* Uses all defaults. */},
 		}, {
 			familyId:   "CHASER",
 			teamId:     1,
 			username:   "chaser2",
-			avatar:     undefined,
 			familyArgs: {
 				fearDistance: 6,
 				bloodThirstDistance: 5,
