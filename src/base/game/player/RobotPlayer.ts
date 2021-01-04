@@ -151,7 +151,7 @@ export namespace RobotPlayer {
 		 * @requires
 		 * The last behaviour must never return `undefined`.
 		 */
-		protected readonly abstract _behaviours: TU.RoArr<Decisive.Behaviour>;
+		protected abstract get _behaviours(): TU.RoArr<Decisive.Behaviour>;
 
 		readonly #cache = {
 			which:  0,
@@ -171,7 +171,7 @@ export namespace RobotPlayer {
 		protected computeDesiredDest(): Coord {
 			const c = this.#cache;
 			if (c.target !== undefined && c.reuses <= Game.K.ROBOT_PRIORITY_MAX_REUSES) {
-				const next = this._behaviours[c.which]!(c.target);
+				const next = this._behaviours[c.which]!.call(this, c.target);
 				if (next !== undefined) {
 					c.reuses++;
 					return next.dest; //⚡
@@ -179,7 +179,7 @@ export namespace RobotPlayer {
 			}
 			c.reuses = 0;
 			for (let i = 0; i < this._behaviours.length; i++) {
-				const next = this._behaviours[i]!();
+				const next = this._behaviours[i]!.call(this);
 				if (next !== undefined) {
 					c.which = i;
 					c.target = next.target;

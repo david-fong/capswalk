@@ -13,6 +13,7 @@ tsconfig.json
 !/scripts/webpack/pack.ts
 
 
+*.txt
 *.md
 *.html
 *.css

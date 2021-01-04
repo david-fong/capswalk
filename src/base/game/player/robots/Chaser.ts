@@ -17,13 +17,7 @@ export class Chaser extends RobotPlayer.Decisive {
 	private readonly prey: Array<Player>;
 
 	private readonly params: Readonly<Chaser.Behaviour>;
-
-	/** @override */
-	protected readonly _behaviours = Object.freeze([
-		this._bhvrEvadePred.bind(this),
-		this._bhvrChasePrey.bind(this),
-		this._bhvrGotoHealthElseWander.bind(this),
-	]);
+	declare protected readonly _behaviours: TU.RoArr<RobotPlayer.Decisive.Behaviour>;
 
 	private readonly grid: Chaser["game"]["grid"];
 
@@ -36,6 +30,9 @@ export class Chaser extends RobotPlayer.Decisive {
 			desc.familyArgs,
 		));
 		this.grid = this.game.grid;
+		JsUtils.propNoWrite(this as Chaser,
+			"params", "grid",
+		);
 	}
 
 	public onTeamsBootstrapped(): void {
@@ -51,7 +48,6 @@ export class Chaser extends RobotPlayer.Decisive {
 
 		JsUtils.propNoWrite(this as Chaser,
 			"pred", "prey",
-			"params", "_behaviours", "grid",
 		);
 	}
 
@@ -130,7 +126,7 @@ export class Chaser extends RobotPlayer.Decisive {
 				closestFhtDistance = distance;
 			}
 		}
-		return { dest: closestFht.coord, target: closestFht.coord, };
+		return { dest: closestFht.coord, target: closestFht.coord };
 	}
 
 	protected getNextMoveType(): Player.MoveType {
@@ -185,6 +181,13 @@ export namespace Chaser {
 		});
 	}
 }
+// @ts-expect-error : RO=
+Chaser.prototype._behaviours
+= Object.freeze([
+	Chaser.prototype["_bhvrEvadePred"],
+	Chaser.prototype["_bhvrChasePrey"],
+	Chaser.prototype["_bhvrGotoHealthElseWander"],
+]);
 JsUtils.protoNoEnum(Chaser, "onTeamsBootstrapped");
 Object.freeze(Chaser);
 Object.freeze(Chaser.prototype);

@@ -2,7 +2,6 @@ import { JsUtils } from "defs/JsUtils";
 import { Game } from "../Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid } from "floor/Grid";
-import { Player as _Player } from "defs/TypeDefs";
 
 /**
  * @final
@@ -13,7 +12,7 @@ export class HealthInfo {
 	#currentAmount: number = 0.0;
 	public readonly tiles = new Map<Coord, Tile>();
 
-	public get currentAmount() { return this.#currentAmount; }
+	public get currentAmount(): number { return this.#currentAmount; }
 
 	public constructor(
 		desc: Game.CtorArgs<any,any>,

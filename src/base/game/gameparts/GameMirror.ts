@@ -58,7 +58,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 		// Construct players:
 		const players  = this.createPlayers(desc);
 		this.players   = players.players;
-		this.operators = players.operators
+		this.operators = players.operators;
 		Object.freeze(desc);
 
 		{
@@ -129,7 +129,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 			if (desc.familyId === Player.Family.HUMAN && desc.isALocalOperator) {
 				operators.push(players[i] as OperatorPlayer);
 			}
-		})
+		});
 		return Object.freeze({
 			players,
 			operators,

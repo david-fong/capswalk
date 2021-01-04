@@ -25,6 +25,7 @@
     },
     "files.associations": {
         //"**/dist/{client,server}/**/*.js": "json", // Loads bundled js much faster.
+        ".eslintignore": "ignore",
     },
     "json.schemas": [
         {

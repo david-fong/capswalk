@@ -286,13 +286,13 @@ export namespace WrappedEuclid2 {
 				const begin = (y * W) + l;
 				dests.push(...this._grid.slice(begin, begin+sliceLength));
 			}
-			if (wrapX && !wrapY) { dests.length -= r }
+			if (wrapX && !wrapY) { dests.length -= r; }
 			if (wrapY) {
 				for (let y = 0; y < b; y++) {
 					const begin = (y * W) + l;
 					dests.push(...this._grid.slice(begin, begin+sliceLength));
 				}
-				if (wrapX) { dests.length -= r }
+				if (wrapX) { dests.length -= r; }
 			}
 			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
 			return Object.freeze(dests);

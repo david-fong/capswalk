@@ -13,6 +13,7 @@ InitBrowserGameCtorMaps();
 /**
  *
  */
+export interface BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> extends GameMirror<G,S> {};
 export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> {
 
 	declare public readonly grid: VisibleGrid<S>;
@@ -44,7 +45,6 @@ export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.Syste
 		return new OperatorPlayer(this, desc);
 	}
 }
-export interface BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> extends GameMirror<G,S> {};
 export namespace BrowserGameMixin {
 	export type HtmlElements = Readonly<{
 		grid:   HTMLElement;

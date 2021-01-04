@@ -181,7 +181,7 @@ export namespace Player {
 			playerId: Player.Id;
 			avatar: Avatar;
 		}>;
-	};;
+	};
 
 	type _PreIdAssignmentDict = {
 		[F in Player.Family]: F extends typeof Player.Family.HUMAN
@@ -190,7 +190,7 @@ export namespace Player {
 			readonly clientId: string | undefined;
 		}
 		: _PreIdAssignmentConditional<F>;
-	}
+	};
 	type _PreIdAssignmentConditional<F extends Player.Family> = Readonly<{
 		familyId: F;
 		teamId:   Team.Id;

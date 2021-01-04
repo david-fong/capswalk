@@ -48,7 +48,7 @@
         "no-throw-literal": ["error"],
 
         "yoda": ["error", "never", { "exceptRange": true }],
-        "no-mixed-spaces-and-tabs": "error",
+        "no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
         "no-trailing-spaces": ["error", { "ignoreComments": true }],
         "semi-style": ["error", "last"],
         "semi-spacing": ["error", { "before": false, "after": true }],
