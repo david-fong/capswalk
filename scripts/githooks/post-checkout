@@ -12,4 +12,4 @@ check_run() {
 
 # Example usage
 # In this example it's used to run `npm install` if package.json changed and `bower install` if `bower.json` changed.
-check_run package.json "pnpm install" # TODO.build make this use npm for pre-pnpm commits.
+check_run package.json "pnpm install --frozen-lockfile" # TODO.build make this use npm for pre-pnpm commits.

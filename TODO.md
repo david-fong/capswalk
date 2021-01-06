@@ -11,6 +11,7 @@
 
 ### Things I feel like doing
 
+1. Prefix LocalStorage keys at least during development, since everything in the file:// scheme shares the same LocalStorage.
 1. Make Socket interfaces for each namespace with overrides of `on` and `emit`.
 1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
     - It is only being used for serializing the reset state.
