@@ -39,9 +39,9 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 
 	readonly #parentElem: HTMLElement;
 
-	protected readonly baseElem: HTMLElement;
+	protected readonly baseElem: HTMLElement = JsUtils.mkEl("div", [OMHC.BASE]);
 
-	#hasLazyLoaded: boolean;
+	#hasLazyLoaded: boolean = false;
 
 	protected readonly nav: Readonly<{
 		/**
@@ -71,8 +71,6 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 		this.top                = toplevel;
 		this.#parentElem        = parentElem;
 		this.requestGoToScreen  = requestGoToScreen;
-		this.baseElem           = JsUtils.mkEl("div", [OMHC.BASE]);
-		this.#hasLazyLoaded     = false;
 		this.nav = Object.freeze({
 			prev: JsUtils.mkEl("button", []),
 			next: JsUtils.mkEl("button", []),
@@ -97,9 +95,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 		};
 	}
 
-	/**
-	 * **Do not override.**
-	 */
+	/** @final **Do not override.** */
 	public async _enter(
 		navDir: SkScreen.NavDir,
 		args: SkScreen.EntranceArgs[SID],
@@ -129,8 +125,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 	}
 
 	/**
-	 * **Do not override.**
-	 *
+	 * @final **Do not override.**
 	 * @returns false if the leave was cancelled.
 	 */
 	public _leave(navDir: SkScreen.NavDir): boolean {
@@ -140,24 +135,18 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 		return false;
 	}
 
-	/**
-	 * **Do not override.**
-	 */
+	/** @final **Do not override.** */
 	public _onAfterEnter(): void {
 		this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
 		this.baseElem.setAttribute("aria-hidden", "false");
 	}
-
-	/**
-	 * **Do not override.**
-	 */
+	/** @final **Do not override.** */
 	public _onAfterLeave(): void {
 		delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT]; // non-existant.
 		this.baseElem.setAttribute("aria-hidden", "true");
 	}
 
-	/**
-	 */
+	/** @virtual */
 	public getRecommendedFocusElem(): HTMLElement | undefined {
 		return undefined;
 	}

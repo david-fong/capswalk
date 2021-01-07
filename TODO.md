@@ -11,25 +11,22 @@
 
 ### Things I feel like doing
 
-1. Prefix LocalStorage keys at least during development, since everything in the file:// scheme shares the same LocalStorage.
-1. Make Socket interfaces for each namespace with overrides of `on` and `emit`.
-1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
-    - It is only being used for serializing the reset state.
-1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
-1. Investigate whether it works to use `Namespace.on` to cover all `socket.on`.
-1. Add a `.gitattributes` file for the dist/ and dist/client/ folders to remove the `diff` behaviour where appropriate. May need to make this into a template to copy upon production builds.
+1. Bring in some react for the screen implementations.
+    - Change the next/prev buttons interface slightly: The buttons are not exposed; instead, methods called `screenNavNext` and `screenNavPrev` can be overridden.
+
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
-1. Represent lang trees as arrays, where child-parent relationships are just indices.
+    - Alternative: Add an optional argument to `tileDestsFrom` and `tileSourcesTo`, or make a public wrapper and make those into protected abstract methods.
+1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.
+    - See how this affects performance.
 1. Mashup some CSS resets and normalizers for this repo.
 1. Make the colours screen dynamically import its stylesheets.
 1. Display the operator's current sequence buffer.
-1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
-    - Set the maxAge option for express to at least a year.
-1. Make a json file or something defining all the webpack chunk names I have defined.
 
 ### Things that I feel less like doing
 
+1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
+    - Set the maxAge option for express to at least a year.
 1. On clientside, if joiner socket gets disconnected by server, go back to the joiner screen.
 1. Game-Host Servers:
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
@@ -39,6 +36,11 @@
 
 ### Things that are low priority
 
+1. Make a json file or something defining all the webpack chunk names I have defined.
+1. Make Socket interfaces for each namespace with overrides of `on` and `emit`.
+1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
+    - It is only being used for serializing the reset state.
+1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
 1. Spectator mode for online games? O\_o
 1. Implement the scores/player-listing sidebar in `__PlayScreen`.
     - Also show scores (very small size) on top of player faces.
@@ -51,7 +53,8 @@
 ### Routine Checkups
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
-- `git gc`, `git prune`, `npm audit`, `npm outdated`, `npm dedupe`.
+- Individual developer: `git gc`, `git prune`.
+- Dependencies: `pnpm audit`, `pnpm outdated`.
 - Convert any usages of `.innerHtml` or `.innerText` to use `.textContent` unless intentional (In which case, write a comment on why it is intentional).
 - Make sure nobody uses `document.createElement` instead of `JsUtil.mkEl` unless they document why it's necessary.
 

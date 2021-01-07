@@ -29,19 +29,19 @@
     },
     "json.schemas": [
         {
-            "fileMatch": [ "/**/*tsconfig.json", ],
+            "fileMatch": [ "**/*tsconfig.json", ],
             "url": "http://json.schemastore.org/tsconfig",
         }, {
-            "fileMatch": [ "/**/*cSpell.json", ],
-            "url": "https://raw.githubusercontent.com/streetsidesoftware/cspell/master/cspell.schema.json",
+            "fileMatch": [ "**/*cSpell.json", ],
+            "url": "https://raw.githubusercontent.com/streetsidesoftware/cspell/cspell4/cspell.schema.json",
         }, {
-            "fileMatch": [ "/**/*.webmanifest", ],
+            "fileMatch": [ "**/*.webmanifest", ],
             "url": "http://json.schemastore.org/web-manifest"
         }, {
-            "fileMatch": [ "/scripts/webpack/.dist-package.json", ],
+            "fileMatch": [ "**/*package.json", ],
             "url": "https://json.schemastore.org/package",
         }, {
-            "fileMatch": [ "/**/.eslintrc.json", ],
+            "fileMatch": [ "**/.eslintrc.json", ],
             "url": "https://json.schemastore.org/eslintrc",
         },
     ],
@@ -72,4 +72,7 @@
     "[html]": {
         "editor.insertSpaces": false,
     },
+    "cSpell.enableFiletypes": [
+        "shellscript"
+    ],
 }
