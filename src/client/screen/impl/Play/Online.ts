@@ -3,7 +3,7 @@ import type { OnlineGame } from "client/game/OnlineGame";
 
 import { GameEv } from "defs/OnlineDefs";
 import { JsUtils, OmHooks } from "../../SkScreen";
-import type { Coord, SkScreen } from "../../SkScreen";
+import type { SkScreen } from "../../SkScreen";
 import { Game, _PlayScreen } from "./_Screen";
 type SID = SkScreen.Id.PLAY_ONLINE;
 type G = Game.Type.ONLINE;
@@ -17,7 +17,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
 
 	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.
-	declare protected readonly currentGame: OnlineGame<Coord.System>;
+	declare protected readonly currentGame: OnlineGame<any>;
 
 	/** @override */
 	protected readonly wantsAutoPlayPause = false;
@@ -57,7 +57,7 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
 	}
 
 	/** @override */
-	protected async _createNewGame<S extends Coord.System>(ctorArgs: Game.CtorArgs<G,S>): Promise<OnlineGame<S>> {
+	protected async _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<OnlineGame<any>> {
 		const game = new (await import(
 			/* webpackChunkName: "game/online" */
 			"../../../game/OnlineGame"
@@ -84,13 +84,6 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
 		});
 		return Promise.resolve(game);
 	}
-
-	/** @override */
-	protected _onGameBecomeOver(): void {
-		super._onGameBecomeOver();
-	}
-}
-export namespace PlayOnlineScreen {
 }
 Object.freeze(PlayOnlineScreen);
 Object.freeze(PlayOnlineScreen.prototype);

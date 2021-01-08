@@ -102,7 +102,7 @@ export abstract class GameManager<
 	}
 
 	/** @override */
-	protected _createArtifPlayer(desc: Player._CtorArgs[Player.RobotFamily]): RobotPlayer {
+	protected _createRobotPlayer(desc: Player._CtorArgs[Player.RobotFamily]): RobotPlayer {
 		return RobotPlayer.of(this, desc);
 	}
 

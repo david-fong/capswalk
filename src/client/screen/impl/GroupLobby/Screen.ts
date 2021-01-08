@@ -3,7 +3,7 @@ import { Player } from "defs/TypeDefs";
 import { Group, GroupEv, GameEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 
-import { JsUtils, OmHooks, Coord, SkScreen, StorageHooks } from "../../SkScreen";
+import { JsUtils, OmHooks, SkScreen, StorageHooks } from "../../SkScreen";
 type SID = SkScreen.Id.GROUP_LOBBY;
 import style from "./style.m.css";
 
@@ -139,7 +139,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 					login.name!,
 					{ passphrase: login.passphrase! },
 				);
-				sock.once(GameEv.CREATE_GAME, (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,Coord.System>) => {
+				sock.once(GameEv.CREATE_GAME, (gameCtorArgs: Game.CtorArgs<Game.Type.ONLINE,any>) => {
 					this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, gameCtorArgs);
 				});
 				// function ensureConnected(): void {

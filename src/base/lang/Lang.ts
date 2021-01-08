@@ -57,7 +57,7 @@ export abstract class Lang extends _Lang {
 		);
 		this.leafNodes = this.treeMap.getLeaves();
 		JsUtils.propNoWrite(this as Lang, "frontendDesc", "treeMap", "leafNodes");
-		Object.seal(this);
+		Object.seal(this); //🧊
 
 		if (DEF.DevAssert && this.leafNodes.length !== this.frontendDesc.numLeaves) {
 			throw new Error(`maintenance required: the frontend constant`

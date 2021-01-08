@@ -19,7 +19,7 @@ export class Player extends _Player implements _Player.UserInfo {
 	public readonly username: Player.Username;
 	public readonly avatar:   Player.Avatar;
 
-	protected readonly game: GameMirror<any,any>;
+	protected readonly game: GameMirror<any>;
 	public readonly reqBuffer: Player.RequestBuffer;
 	#coord: Coord;
 	#health: Player.Health = 0.0;
@@ -55,7 +55,7 @@ export class Player extends _Player implements _Player.UserInfo {
 			"username", "avatar", "reqBuffer",
 		);
 		if (new.target === Player) {
-			Object.seal(this);
+			Object.seal(this); //🧊
 		}
 	}
 

@@ -1,28 +1,25 @@
 
-# My Developer Guidelines
+# Developer Guidelines
 
-## Cloning and Building
+## Cloning and Building 📥
 
-1. Clone from the git repo. The default branch is `dev`.
-1. `pnpm install`. Note on a sneaky gotcha: Make sure your shell doesn't have `NODE_ENV=production`.
+1. Clone from the git repo.
+1. `pnpm install`. Make sure your shell doesn't have `NODE_ENV=production`.
 1. `pnpm run devinit`.
 1. `pnpm run build`.
     - Note that tsc may err on the first build after adding a css module class since css-modules-typescript-loader hasn't generated the .d.ts changes for the new class yet.
 1. To test off the local filesystem (no online-game capabilities), open `file://<path-to-project-root>/dist/client/index.html`.
 1. To test off a local server, do `pnpm start`.
-    - Instead of the file protocol, load the site at localhost.
-1. Notes on repairing git worktrees used for deployment:
-    - Avoid commands that would delete either of the file `dist/.git` or `dist/client/.git`.
-    - If you accidentally delete them, just rerun `pnpm run devinit`, which recreates them with the contents `gitdir: ../.git/worktrees/dist` and `gitdir: ../../.git/worktrees/client` respectively.
+    - Instead of the file protocol, load the site at `localhost`.
 
-## Release Procedure
+## Release Procedure 🚢
 
 ```sh
 rm -r dist/{client,server}/*
 # bump package version in package.json.
 ```
 
-### GitHub Pages Deployment
+### GitHub Pages Deployment 🐱‍👤
 
 ```sh
 export NODE_ENV='production'
@@ -39,7 +36,7 @@ git push --tags
 # Update the GitHub repo with details of the release.
 ```
 
-Now let's go back to development:
+Restore development environment:
 
 ```sh
 cd ../..
@@ -47,13 +44,15 @@ export NODE_ENV='development'
 ./scripts/pack.sh
 ```
 
-### Server Deployment (Heroku)
+### Server Deployment (Heroku) 🎈
 
 TODO.doc
 
-## Coding Style
+---
 
-This is to cover more abstract practices than rules that are covered by linting.
+## Coding Style 🎨
+
+Things that are not covered by linting.
 
 ### Markdown
 
@@ -67,12 +66,6 @@ Use single-underscore enclosures to italicize. Use double-asterisk enclosures to
 
 - On the serverside, bind events to functions declared on a prototype (when possible) to avoid creating unnecessary function objects. This is not important for the client since only one connection for namespace is made.
 
-### ES6 #private Fields
-
-Methodology: Use #private fields for fields that back accessors- Ie. Fields that need to be internally reassigned, but should never be directly reassigned externally. If such a field does not have a get-accessor (because it doesn't need one, leave it- do not switch it to use hard privacy.
-
-### Field / Method Naming
-
 ### Logging
 
 To make it easier to find console log messages added temporarily, added log messages, use `console.log` for those temporarily added log messages, and `console.info` for more permanent ones.
@@ -85,10 +78,12 @@ Do not throw strings. Use `Throw new *Error("*")`.
 
 ### Prefixing with Underscore
 
-TLDR: use such naming if a member / variable must be public, but is only meant to be called in a very specific place.
+If access modifiers cannot be used to protect exposure to something that should only be used in a specific place, prefix it with an underscore.
 
-Full Explanation: Do this if:
+### Flagging With Emoji
 
-- The _method_ has a good reason to exist and must grant public access, but is able to put an entity into a bad state. Such methods should be called very intentionally in very specific places. The reason is usually that it behaves as a setter (abstracts away management of internal representation), or that it is a hook for extension classes to perform implementation-specific duties. Those two scenarios are actually not all that different. See `Tile._setOccupant`, `GameBase._abstractStatusBecome*`, `Player._abstractNotifyThatGameStatusBecame*` for examples of this.
-  - The _method_ is used to abstract the construction of an object of some abstract type. See `GameBase._playerStatusCtor`, `GameBase._getGridImplementation`, `GameBase._createOperatorPlayer` for examples of this. This is a weak-rationale strain of the above classification. The main benefit being sought here is that in autocompletion, its naming will communicate that it was created to be used in a very specific place (typically in constructors).
-- The _object_ is a dictionary / registry for enumerated constructor functions for instances sharing a common interface. See `base/game/IndexTasks.ts` for examples of this. These typically ask to be accessed indirectly through a more type-friendly function (one that handles any type-casting when TypeScript has a hard time tracking what's going on).
+This project uses emojis to visually flag highly significant lines.
+
+In large methods with short-circuit conditions, flag the return line with `return _; //⚡`.
+
+In constructors that seal or freeze the constructed instance, flag the line with `Object.seal(this); //🧊`.

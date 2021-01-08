@@ -1,8 +1,7 @@
-import type { Coord } from "floor/Tile";
 import type { Player } from "game/player/Player";
 import type { Game } from "game/Game";
 
-import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
+import { JsUtils, OmHooks, Coord, SkScreen } from "../../SkScreen";
 import { _SetupScreen } from "./_Screen";
 
 
@@ -23,7 +22,7 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 	}
 
 	/** @override */
-	protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
+	protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE> {
 		type PArgs = Array<Player.CtorArgs.PreIdAssignment>;
 		const args = super.parseArgsFromGui();
 		// TODO.impl get rid of this placeholder once this screen has inputs for

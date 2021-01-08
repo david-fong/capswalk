@@ -14,6 +14,8 @@ type G = Game.Type.SERVER;
 /**
  * Handles game-related events and attaches listeners to each client
  * socket.
+ *
+ * @final
  */
 export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
@@ -129,7 +131,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 	private _greetGameSockets(gameDesc: Game.CtorArgs<G,S>): void {
 		// The below cast is safe because GamepartBase reassigns
 		// `gameDesc.playerDescs` the result of `Player.finalize`.
-		const humanPlayerDescs = (gameDesc.playerDescs as Player.CtorArgs[])
+		const humanPlayerDescs = (gameDesc.playerDescs as Player._CtorArgs["HUMAN"][])
 			.filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN);
 		{
 			const _clientToGameSocketMap = new Map(
@@ -148,6 +150,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 				return build;
 			}, new Map());
 			JsUtils.propNoWrite(this as ServerGame<S>, "playerSockets");
+			Object.seal(this); //🧊
 		}
 
 		Promise.all(Array.from(this.namespace.sockets.values(), (socket) => {

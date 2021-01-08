@@ -11,9 +11,9 @@ import type {  } from "base/game/StateChange";
 type G = Game.Type.OFFLINE;
 
 /**
+ * @final
  */
-export class OfflineGame<S extends Coord.System>
-extends GameManager<G,S> implements BrowserGameMixin<G,S> {
+export class OfflineGame<S extends Coord.System> extends GameManager<G,S> implements BrowserGameMixin<G,S> {
 
 	/**
 	 */
@@ -27,6 +27,7 @@ extends GameManager<G,S> implements BrowserGameMixin<G,S> {
 			}, gameDesc,
 		);
 		this._ctorBrowserGame();
+		Object.seal(this); //🧊
 	}
 
 	// NOTE: Uncomment this block to simulate network delay for testing.
@@ -40,7 +41,7 @@ extends GameManager<G,S> implements BrowserGameMixin<G,S> {
 	declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
 
 	/** @override */
-	declare public readonly _createArtifPlayer: GameManager<G,S>["_createArtifPlayer"];
+	declare public readonly _createRobotPlayer: GameManager<G,S>["_createRobotPlayer"];
 
 	/** @override */
 	declare protected _createOperatorPlayer: BrowserGameMixin<G,S>["_createOperatorPlayer"];

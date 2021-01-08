@@ -89,9 +89,9 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 	 * Must return a completely new object each time.
 	 * (think deep copy. no shared references.)
 	 */
-	protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> {
+	protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE> {
 		// TODO.impl
-		const args: TU.NoRo<Game.CtorArgs<Game.Type.OFFLINE,Coord.System>>
+		const args: TU.NoRo<Game.CtorArgs<Game.Type.OFFLINE>>
 			= Object.assign({}, _SetupScreen.DEFAULT_PRESET());
 			// ^temporary default until _loadLastUsedPreset is implemented.
 		args.langId = this.langSel.confirmedOpt.desc.id;
@@ -101,7 +101,7 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 }
 export namespace _SetupScreen {
 
-	export const DEFAULT_PRESET = (): Game.CtorArgs<Game.Type.OFFLINE,Coord.System> => { return {
+	export const DEFAULT_PRESET = (): Game.CtorArgs<Game.Type.OFFLINE> => { return {
 		coordSys: "W_EUCLID2" as Coord.System.W_EUCLID2,
 		gridDimensions: {
 			height: 10,
@@ -146,8 +146,7 @@ export namespace _SetupScreen {
 		}
 	}
 	export namespace LangPickOne {
-		/**
-		 */
+		/** */
 		export class Option extends SkPickOne._Option {
 
 			public readonly desc: Lang.FrontendDesc;
@@ -161,6 +160,8 @@ export namespace _SetupScreen {
 		Object.freeze(Option);
 		Object.freeze(Option.prototype);
 	}
+	Object.freeze(LangPickOne);
+	Object.freeze(LangPickOne.prototype);
 }
 Object.freeze(_SetupScreen);
 Object.freeze(_SetupScreen.prototype);

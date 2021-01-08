@@ -9,6 +9,7 @@ import style from "./style.m.css";
 type S = Coord.System.W_EUCLID2;
 
 /**
+ * @final
  */
 export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGrid<S> {
 	#tiles: TU.RoArr<VisibleTile>;
@@ -27,7 +28,7 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 		this.#tiles = tiles;
 
 		this._superVisibleGrid(gridElem);
-		Object.seal(this);
+		Object.seal(this); //🧊
 	}
 	/** @override */
 	public write(coord: Coord, changes: Tile.Changes): void {

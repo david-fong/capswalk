@@ -13,7 +13,7 @@ import { SkSockets }    from "./SkSockets";
 
 
 /**
- *
+ * @final
  */
 export class TopLevel {
 
@@ -74,6 +74,7 @@ export class TopLevel {
 		JsUtils.propNoWrite(this as TopLevel,
 			/* "bgMusic", "sfx", */ // TODO.build uncomment when music classes implemented.
 		);
+		Object.seal(this); //🧊
 	}
 
 	public toast(message: string): void {

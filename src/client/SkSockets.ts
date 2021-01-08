@@ -7,6 +7,7 @@ type SockName = "joiner" | "group" | "game";
 
 
 /**
+ * @final
  */
 export class SkSockets {
 
@@ -18,6 +19,7 @@ export class SkSockets {
 			group:  undefined,
 			game:   undefined,
 		};
+		Object.seal(this); //🧊
 	}
 
 	public get joinerSocket(): Socket | undefined { return this.#sock.joiner; }

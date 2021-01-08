@@ -27,7 +27,7 @@ export class Team {
 		public readonly members: TU.RoArr<Player>,
 	) {
 		JsUtils.propNoWrite(this as Team, "id", "members");
-		Object.seal(this);
+		Object.seal(this); //🧊
 		if (members.length === 0) {
 			throw new Error("Teams must have at least one member.");
 		}

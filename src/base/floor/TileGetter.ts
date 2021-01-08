@@ -62,7 +62,7 @@ Object.freeze(TileGetter.prototype);
 class Query {
 
 	public constructor(protected contents: TU.RoArr<Tile>) {
-		Object.seal(this);
+		Object.seal(this); //🧊
 	}
 
 	public get occupied(): Omit<Query, "unoccupied"> {

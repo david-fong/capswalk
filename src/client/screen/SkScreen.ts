@@ -171,6 +171,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 	};
 
 	/**
+	 * @virtual
 	 * Return false if the leave should be cancelled. This functionality
 	 * allows an implementation to provide a prompt to the user such as
 	 * a confirmation modal warning that unsaved changes would be lost.
@@ -182,6 +183,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 	 * page, so actions such as writes to persisted storage should not
 	 * be placed here as an optimization.
 	 *
+	 * @requires
 	 * Must not call `this.requestGoToScreen`.
 	 */
 	protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {

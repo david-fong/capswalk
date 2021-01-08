@@ -18,6 +18,7 @@ type S = Coord.System.BEEHIVE;
  * ```
  *
  * [(bees)](https://giphy.com/gifs/oprah-bees-VhFps32TlNgsg)
+ * [(Hexagons)](https://www.youtube.com/watch?v=thOifuHs6eY)
  */
 export namespace Beehive {
 
@@ -35,7 +36,7 @@ export namespace Beehive {
 		public constructor(desc: IAC.Bare) {
 			this.dash = desc.dash;
 			this.bash = desc.bash;
-			Object.freeze(this);
+			Object.freeze(this); //🧊
 		}
 		public toCoord(): Coord {
 			// TODO.impl
@@ -122,7 +123,7 @@ export namespace Beehive {
 			const grid = undefined!;
 			this.grid = Object.freeze(grid);
 			if (new.target === Grid) {
-				Object.seal(this);
+				Object.seal(this); //🧊
 			}
 		}
 

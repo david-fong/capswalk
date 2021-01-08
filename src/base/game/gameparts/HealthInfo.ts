@@ -27,7 +27,7 @@ export class HealthInfo {
 			),
 		});
 		JsUtils.propNoWrite(this as HealthInfo, "K");
-		Object.seal(this);
+		Object.seal(this); //🧊
 	}
 
 	public reset(): void {

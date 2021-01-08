@@ -6,13 +6,14 @@ import { VisibleGrid, VisibleGridMixin } from "floor/visible/VisibleGrid";
 type S = BaseCoord.System.BEEHIVE;
 
 /**
+ * @final
  */
 export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
 	public constructor(desc: AbstractGrid.CtorArgs<S>) {
 		super(desc);
 		const domGrid: HTMLElement = undefined!;
 		this._superVisibleGrid(domGrid);
-		Object.seal(this);
+		Object.seal(this); //🧊
 	}
 }
 export interface BeehiveVisibleGrid extends VisibleGridMixin { };

@@ -14,7 +14,7 @@ import { Team } from "../player/Team";
 /**
  * Foundational parts of a Game that are not related to event handling.
  */
-export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
+export abstract class GameMirror<G extends Game.Type, S extends Coord.System = Coord.System> {
 
 	public readonly gameType: G;
 
@@ -121,7 +121,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 					? this._createOperatorPlayer(playerDesc)
 					: new Player(this, playerDesc);
 			} else {
-				return this._createArtifPlayer(playerDesc) as Player;
+				return this._createRobotPlayer(playerDesc) as Player;
 			}
 		}));
 		const operators: OperatorPlayer[] = [];
@@ -136,7 +136,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System> {
 		});
 	}
 	protected abstract _createOperatorPlayer(desc: Player._CtorArgs["HUMAN"]): OperatorPlayer;
-	protected abstract _createArtifPlayer(desc: Player._CtorArgs[Player.RobotFamily]): Player;
+	protected abstract _createRobotPlayer(desc: Player._CtorArgs[Player.RobotFamily]): Player;
 
 	/** @final */
 	public serializeResetState(): Game.ResetSer {

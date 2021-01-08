@@ -40,7 +40,7 @@ export namespace LangSeqTree {
 		public getLeaves(): Array<ChildNode> {
 			const leafNodes: Array<ChildNode> = [];
 			this._rGetLeaves(leafNodes);
-			return Object.seal(leafNodes);
+			return Object.seal(leafNodes); //🧊
 		}
 		protected _rGetLeaves(leafNodes: Array<ChildNode>): void {
 			if (this.children.length) {
@@ -77,7 +77,7 @@ export namespace LangSeqTree {
 			// Add mappings in ascending order of sequence length:
 			// (this is so that no merging of branches needs to be done)
 			const rootNode = new ParentNode();
-			Object.seal(rootNode);
+			Object.seal(rootNode); //🧊
 			let cursor: ChildNode | ParentNode = rootNode;
 			Object.freeze(Object.seal(Array.from(reverseDict))
 			.sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1))
@@ -136,7 +136,7 @@ export namespace LangSeqTree {
 			this.#characters = Object.freeze(characters);
 			this.parent = parent;
 			JsUtils.propNoWrite(this as ChildNode, "seq", "parent");
-			Object.seal(this);
+			Object.seal(this); //🧊
 		}
 
 		/** @override */
@@ -252,7 +252,7 @@ class WeightedLangChar {
 		// The above choice of a numerator is not behaviourally significant.
 		// All that is required is that all single-mappings in a `Lang` use
 		// a consistent value.
-		Object.seal(this);
+		Object.seal(this); //🧊
 	}
 
 	public reset(): void {

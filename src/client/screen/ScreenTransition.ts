@@ -3,6 +3,7 @@ import { OmHooks } from "defs/OmHooks";
 
 
 /**
+ * @final
  */
 export class ScreenTransition {
 
@@ -19,6 +20,7 @@ export class ScreenTransition {
 		this.baseElem = document.getElementById(OmHooks.Screen.Id.SCREEN_TINT)!;
 		this.#currentRequest = undefined;
 		JsUtils.propNoWrite(this as ScreenTransition, "baseElem");
+		Object.seal(this); //🧊
 	}
 
 	/**

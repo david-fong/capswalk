@@ -28,7 +28,7 @@ export class OperatorPlayer extends Player {
 
 	public constructor(game: GameMirror<Game.Type,any>, desc: Player._CtorArgs["HUMAN"]) {
 		super(game, desc);
-		Object.seal(this);
+		Object.seal(this); //🧊
 		this.#langRemappingFunc = this.game.langFrontend.remapFunc;
 	}
 

@@ -60,7 +60,7 @@ export namespace Game {
 	 */
 	export type CtorArgs<
 		G extends Game.Type,
-		S extends Coord.System,
+		S extends Coord.System = Coord.System,
 	> = Readonly<{
 		coordSys: S;
 		gridDimensions: Grid.Dimensions[S];
@@ -75,8 +75,7 @@ export namespace Game {
 		;
 	}>;
 	export namespace CtorArgs {
-		/**
-		 */
+		/** */
 		export type FailureReasons = {
 			missingFields: Array<keyof CtorArgs<Game.Type, Coord.System>>;
 		};

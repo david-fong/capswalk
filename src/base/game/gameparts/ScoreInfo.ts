@@ -24,7 +24,7 @@ export class ScoreInfo {
 		}
 		this.entries = entries;
 		JsUtils.propNoWrite(this as ScoreInfo, "entries");
-		Object.seal(this);
+		Object.seal(this); //🧊
 	}
 
 	public reset(): void {

@@ -14,7 +14,7 @@ InitBrowserGameCtorMaps();
  *
  */
 export interface BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> extends GameMirror<G,S> {};
-export class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> {
+export abstract class BrowserGameMixin<G extends Game.Type.Browser, S extends Coord.System> {
 
 	declare public readonly grid: VisibleGrid<S>;
 

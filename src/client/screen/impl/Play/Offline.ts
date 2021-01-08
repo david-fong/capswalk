@@ -1,7 +1,7 @@
 import type { OfflineGame } from "client/game/OfflineGame";
 
 import { JsUtils, OmHooks } from "../../SkScreen";
-import type { Coord, SkScreen } from "../../SkScreen";
+import type { SkScreen } from "../../SkScreen";
 import { Game, _PlayScreen } from "./_Screen";
 type G = Game.Type.OFFLINE;
 
@@ -11,7 +11,7 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
 
 	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.
-	declare protected readonly currentGame: OfflineGame<Coord.System>;
+	declare protected readonly currentGame: OfflineGame<any>;
 
 	/** @override */
 	protected readonly wantsAutoPlayPause = true;
@@ -27,7 +27,7 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
 	}
 
 	/** @override */
-	protected async _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<OfflineGame<Coord.System>> {
+	protected async _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<OfflineGame<any>> {
 		return new (await import(
 			/* webpackChunkName: "game/offline" */
 			"../../../game/OfflineGame"

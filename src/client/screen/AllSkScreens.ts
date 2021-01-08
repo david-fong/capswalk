@@ -17,7 +17,7 @@ import {   PlayOnlineScreen } from "./impl/Play/Online";
 
 
 /**
- *
+ * @final
  */
 export class AllSkScreens {
 
@@ -52,6 +52,7 @@ export class AllSkScreens {
 			[ Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(Id.PLAY_ONLINE  ,t,p,g),
 		});
 		JsUtils.propNoWrite(this as AllSkScreens, "dict");
+		Object.seal(this); //🧊
 
 		// note: "isr" as in "Initial Screen Request".
 		const isr = SkScreen.NavTree[window.location.hash.slice(1) as SkScreen.Id];

@@ -1,10 +1,8 @@
 import { Game } from "game/Game"; export { Game };
 import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
-// import type { OfflineGame } from "../../game/OfflineGame";
-// import type { OnlineGame }  from "../../game/OnlineGame";
 import type { BrowserGameMixin } from "../../../game/BrowserGame";
 
-import { JsUtils, OmHooks, Coord, SkScreen } from "../../SkScreen";
+import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
 import style from "./style.m.css";
 import GRID_style from "./grid.m.css";
 
@@ -19,7 +17,7 @@ import GRID_style from "./grid.m.css";
 export abstract class _PlayScreen<
 	SID extends SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE,
 	G extends Game.Type.Browser,
-	Game extends BrowserGameMixin<G,Coord.System> = BrowserGameMixin<G,Coord.System>,
+	Game extends BrowserGameMixin<G,any> = BrowserGameMixin<G,any>,
 > extends SkScreen<SID> {
 
 	/**
@@ -157,7 +155,7 @@ export abstract class _PlayScreen<
 		this._statusBecomePaused(); // <-- Leverage some state initialization.
 
 		const game = this.#currentGame = await this._createNewGame(
-			args as Game.CtorArgs<G,Coord.System>,
+			args as Game.CtorArgs<G,any>,
 		);
 		await game.reset();
 		// ^Wait until resetting has finished before attaching the
@@ -219,7 +217,7 @@ export abstract class _PlayScreen<
 		return this.#currentGame;
 	}
 
-	protected abstract _createNewGame(ctorArgs: Game.CtorArgs<G,Coord.System>): Promise<Game>;
+	protected abstract _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<Game>;
 
 
 	/**

@@ -11,9 +11,10 @@
 
 ### Things I feel like doing
 
-1. Bring in some react for the screen implementations.
-    - Change the next/prev buttons interface slightly: The buttons are not exposed; instead, methods called `screenNavNext` and `screenNavPrev` can be overridden.
-
+1. Implement, use, and test array extensions freeze and seal.
+1. Extract Game CtorArgs operator player indicator arguments to dedicated field or a _separate_ ctor parameter.
+1. Change Euclid Visual Grid to use SVG.
+1. Implement Euclid Visual Grid wrapping visualization.
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
     - Alternative: Add an optional argument to `tileDestsFrom` and `tileSourcesTo`, or make a public wrapper and make those into protected abstract methods.
@@ -22,6 +23,9 @@
 1. Mashup some CSS resets and normalizers for this repo.
 1. Make the colours screen dynamically import its stylesheets.
 1. Display the operator's current sequence buffer.
+
+1. Bring in some react for the screen implementations.
+    - Change the next/prev buttons interface slightly: The buttons are not exposed; instead, methods called `screenNavNext` and `screenNavPrev` can be overridden.
 
 ### Things that I feel less like doing
 

@@ -13,9 +13,9 @@ import { GameMirror } from "base/game/gameparts/GameMirror";
 type G = Game.Type.ONLINE;
 
 /**
+ * @final
  */
-export class OnlineGame<S extends Coord.System>
-extends GameMirror<G,S> implements BrowserGameMixin<G,S> {
+export class OnlineGame<S extends Coord.System> extends GameMirror<G,S> implements BrowserGameMixin<G,S> {
 
 	public readonly socket: Socket;
 
@@ -37,6 +37,7 @@ extends GameMirror<G,S> implements BrowserGameMixin<G,S> {
 		);
 		this.socket = gameSocket;
 		this._ctorBrowserGame();
+		Object.seal(this); //🧊
 
 		if (DEF.DevAssert) {
 			// Enforcer: SkSockets calls `offAny` upon socket disconnect.
@@ -67,7 +68,7 @@ extends GameMirror<G,S> implements BrowserGameMixin<G,S> {
 	declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
 
 	/** @override */
-	protected _createArtifPlayer(desc: Player.CtorArgs): Player {
+	protected _createRobotPlayer(desc: Player.CtorArgs): Player {
 		return new Player(this, desc);
 	}
 

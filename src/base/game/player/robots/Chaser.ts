@@ -23,7 +23,7 @@ export class Chaser extends RobotPlayer.Decisive {
 
 	public constructor(game: GameManager<any,any>, desc: Player._CtorArgs["CHASER"]) {
 		super(game, desc);
-		Object.seal(this);
+		Object.seal(this); //🧊
 		this.params = Object.freeze(Object.assign(
 			{},
 			Chaser.Behaviour.DEFAULT,
