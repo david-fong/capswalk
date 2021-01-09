@@ -1,6 +1,6 @@
 import {
 	JsUtils, Game, Coord,
-	VisibleGrid,
+	VisibleGrid, Player,
 } from "./BrowserGame";
 
 import { GameManager }    from "game/gameparts/GameManager";
@@ -23,7 +23,7 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
 	 */
 	public constructor(
 		onGameBecomeOver: () => void,
-		gameDesc: Game.CtorArgs<G,S>,
+		gameDesc: Game.CtorArgs.PreIdAssignment<S>,
 	) {
 		super(
 			Game.Type.OFFLINE, {
@@ -31,7 +31,11 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
 				OperatorPlayer: OperatorPlayer,
 				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<G>, desc),
 				onGameBecomeOver,
-			}, gameDesc,
+			},
+			(() => {
+				Player.CtorArgs.finalize(gameDesc);
+				return gameDesc;
+			})(),
 		);
 		Object.seal(this); //🧊
 	}

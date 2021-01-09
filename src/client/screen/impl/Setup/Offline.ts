@@ -17,25 +17,23 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 
 		this.nav.next.onclick = (ev) => {
 			const args = this.parseArgsFromGui();
-			this.requestGoToScreen(SkScreen.Id.PLAY_OFFLINE, args);
+			this.requestGoToScreen(SkScreen.Id.PLAY_OFFLINE, [args]);
 		};
 	}
 
 	/** @override */
-	protected parseArgsFromGui(): Game.CtorArgs<Game.Type.OFFLINE> {
+	protected parseArgsFromGui(): Game.CtorArgs.PreIdAssignment {
 		type PArgs = Array<Player.CtorArgs.PreIdAssignment>;
 		const args = super.parseArgsFromGui();
 		// TODO.impl get rid of this placeholder once this screen has inputs for
 		// the client to configure their own players.
-		(args.playerDescs as PArgs).splice(args.playerDescs.length, 0, {
-			isALocalOperator: true,
+		(args.players as PArgs).splice(args.players.length, 0, {
 			familyId:   "HUMAN",
 			teamId:     0,
 			clientId:   undefined,
 			username:   "hello1",
 			familyArgs: { },
 		}, {
-			isALocalOperator: true,
 			familyId:   "HUMAN",
 			teamId:     1,
 			clientId:   undefined,

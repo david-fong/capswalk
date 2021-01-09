@@ -5,8 +5,8 @@ import { GameEv, GroupEv, SkServer } from "defs/OnlineDefs";
 import { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
 import type { StateChange } from "game/StateChange";
-import { Grid } from "floor/Grid";
 import { Player } from "game/player/Player";
+import { Grid } from "floor/Grid";
 
 import { GameManager } from "game/gameparts/GameManager";
 import { RobotPlayer } from "base/game/player/RobotPlayer";
@@ -48,7 +48,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 		groupNsps: io.Namespace,
 		groupHostClient: io.Socket["client"],
 		deleteExternalRefs: () => void,
-		gameDesc: Game.CtorArgs<G,S>,
+		gameDesc: Game.CtorArgs.PreIdAssignment<S>,
 	}>) {
 		super(
 			Game.Type.SERVER, {
@@ -56,7 +56,11 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 				OperatorPlayer: undefined,
 				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<G>, desc),
 				onGameBecomeOver: () => {},
-			}, args.gameDesc,
+			},
+			(() => {
+				Player.CtorArgs.finalize(args.gameDesc);
+				return args.gameDesc;
+			})(),
 		);
 		this._groupHostClient = args.groupHostClient;
 		this._deleteExternalRefs = args.deleteExternalRefs;
@@ -84,7 +88,10 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 		JsUtils.instNoEnum (this as ServerGame<S>, "gameEvSocketListeners");
 		JsUtils.propNoWrite(this as ServerGame<S>, "gameEvSocketListeners");
 
-		this._awaitGameSockets(args);
+		this._awaitGameSockets(Object.freeze({
+			groupNsps: args.groupNsps,
+			gameDesc: args.gameDesc,
+		}));
 	}
 
 	/**
@@ -93,7 +100,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 	 */
 	private _awaitGameSockets(args: Readonly<{
 		groupNsps: io.Namespace,
-		gameDesc: Game.CtorArgs<G,S>,
+		gameDesc: Game.CtorArgs<S>,
 	}>): void {
 		// Prepare for all group members to join the game namespace:
 		const resolvers = new Map<io.Socket["client"]["id"], () => void>();
@@ -105,7 +112,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 		Promise.all(promises)
 		.then(() => {
 			this.namespace.removeAllListeners("connect");
-			this._greetGameSockets(args.gameDesc);
+			this._greetGameSockets(args.gameDesc); //👂
 		})
 		.catch((reason) => { setImmediate(() => { throw reason; }); });
 
@@ -118,45 +125,41 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 			resolvers.get(gameSocket.client["id"])!();
 		});
 		// Tell all group members in the lobby to join the game namespace:
-		args.groupNsps.emit(GroupEv.CREATE_GAME);
+		args.groupNsps.emit(GroupEv.CREATE_GAME); //📢
 	}
 
 	/**
 	 */
-	private _greetGameSockets(gameDesc: Game.CtorArgs<G,S>): void {
+	private _greetGameSockets(gameDesc: Game.CtorArgs<S>): void {
 		// The below cast is safe because GamepartBase reassigns
 		// `gameDesc.playerDescs` the result of `Player.finalize`.
-		const humanPlayerDescs = (gameDesc.playerDescs as Player._CtorArgs["HUMAN"][])
-			.filter((playerDesc) => playerDesc.familyId === Player.Family.HUMAN);
-		{
-			const _clientToGameSocketMap = new Map(
-				Array.from(this.namespace.sockets.values(), (s) => [s.client["id"], s]),
-			);
-			// @ts-expect-error : RO=
-			this.playerSockets
-			= humanPlayerDescs.reduce<Map<Player.Id, io.Socket>>((build, playerDesc) => {
-				const clientId = (playerDesc as Player._CtorArgs["HUMAN"]).clientId;
-				if (clientId === undefined) {
-					throw new Error("missing socket client for player with ID " + playerDesc.playerId);
-				}
-				const gameSocket = _clientToGameSocketMap.get(clientId);
-				if (gameSocket === undefined) throw new Error("never");
-				build.set(playerDesc.playerId, gameSocket);
-				return build;
-			}, new Map());
-			JsUtils.propNoWrite(this as ServerGame<S>, "playerSockets");
-			Object.seal(this); //🧊
-		}
+		const humans = Object.freeze(
+			(gameDesc.players).filter((player) => player.familyId === "HUMAN") as Player._CtorArgs["HUMAN"][]
+		);
+		const _client2GameSocket = new Map<string, io.Socket>(
+			Array.from(this.namespace.sockets.values(), (sock) => [sock.client["id"], sock]),
+		);
+		// @ts-expect-error : RO=
+		this.playerSockets
+		= humans.reduce<Map<Player.Id, io.Socket>>((build, player) => {
+			if (player.clientId === undefined) throw new Error("never");
+			const gameSocket = _client2GameSocket.get(player.clientId!);
+			if (gameSocket === undefined) throw new Error("never");
+			build.set(player.playerId, gameSocket);
+			return build;
+		}, new Map());
+		JsUtils.propNoWrite(this as ServerGame<S>, "playerSockets");
+		Object.seal(this); //🧊
 
-		Promise.all(Array.from(this.namespace.sockets.values(), (socket) => {
-			return new Promise<void>((resolve) => {
+		Promise.all(Array.from(this.namespace.sockets.values(), (socket) =>
+			new Promise<void>((resolve) => {
 				socket.once(GameEv.RESET, () => {
 					resolve();
 				});
-			});
-		})).then(() => {
-			this.reset();
-		});
+			})
+		)).then(() =>
+			this.reset() //👂 "reset time!"
+		);
 
 		// Register socket listeners for game events:
 		for (const socket of this.namespace.sockets.values()) {
@@ -176,41 +179,32 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 
 		// Pass on Game constructor arguments to each client:
 		for (const socket of this.namespace.sockets.values()) {
-			// Set `isALocalOperator` flags to match what this socket should see:
-			humanPlayerDescs.forEach((desc) => {
-				// @ts-expect-error : RO=
-				desc.isALocalOperator = (desc.clientId === socket.client.id);
-			});
-			socket.emit(GameEv.CREATE_GAME, gameDesc);
+			const operatorIds = Object.freeze(humans
+				.filter((desc) => desc.clientId === socket.client["id"])
+				.map((desc) => desc.playerId));
+			socket.emit(GameEv.CREATE_GAME, gameDesc, operatorIds); //📢 "get ready for reset"
 		}
 	}
 
 	/** @override */
 	public async reset(): Promise<void> {
 		// Be ready for clients to indicate readiness to unpause.
-		Promise.all(Array.from(this.namespace.sockets.values(), (socket) => {
-			return new Promise<void>((resolve) => {
+		Promise.all(Array.from(this.namespace.sockets.values(), (socket) =>
+			new Promise<void>((resolve) => {
 				socket.once(GameEv.UNPAUSE, () => {
 					resolve();
 				});
-			});
-		})).then(() => {
-			this.statusBecomePlaying();
+			})
+		)).then(() => {
+			this.statusBecomePlaying(); //👂 "play time!"
 		});
 
 		await super.reset();
 
-		this.namespace.emit(
-			GameEv.RESET,
-			this.serializeResetState(),
-		);
+		this.namespace.emit(GameEv.RESET, this.serializeResetState()); //📢 "get ready for playing!"
 		return;
 	}
 
-	/** @override */
-	protected _createOperatorPlayer(desc: Player.CtorArgs): never {
-		throw new TypeError("This should never be called for a ServerGame.");
-	}
 	/** @override */
 	public setCurrentOperator(nextOperatorIndex: number): void {
 		// no-op

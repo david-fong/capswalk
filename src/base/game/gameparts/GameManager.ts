@@ -5,7 +5,6 @@ import { Game } from "../Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { StateChange } from "../StateChange";
 import { Player } from "../player/Player";
-import { RobotPlayer } from "../player/RobotPlayer";
 import { HealthInfo } from "./HealthInfo";
 import { ScoreInfo } from "./ScoreInfo";
 import { Grid } from "floor/Grid";
@@ -35,9 +34,12 @@ export abstract class GameManager<
 	public constructor(
 		gameType: G,
 		impl: Game.ImplArgs,
-		desc: Game.CtorArgs<G,S>,
+		desc: Game.CtorArgs<S>,
 	) {
-		super(gameType, impl, desc);
+		super(gameType, impl, desc, (() => {
+			return gameType === Game.Type.SERVER ? []
+			: desc.players.filter(p => p.familyId === "HUMAN").map(p => p.playerId);
+		})());
 
 		this.health = new HealthInfo(desc, this.grid.static as Grid.ClassIf<any>);
 		this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
@@ -280,16 +282,16 @@ export namespace GameManager {
 	 * do so. If not, it will indicate invalidities in its return value.
 	 */
 	export function CHECK_VALID_CTOR_ARGS(
-		args: TU.NoRo<Game.CtorArgs<Game.Type.SERVER,Coord.System>>,
+		args: TU.NoRo<Game.CtorArgs.PreIdAssignment>,
 	): string[] {
 		//#region
 		const bad: string[] = [];
-		type Keys = keyof Game.CtorArgs<Game.Type,Coord.System>;
+		type Keys = keyof Game.CtorArgs.PreIdAssignment;
 		const requiredFields: {[K in Keys]: any} = Object.freeze({
 			coordSys: 0, gridDimensions: 0, averageHealthPerTile: 0,
-			langId: 0, langWeightExaggeration: 0, playerDescs: 0,
+			langId: 0, langWeightExaggeration: 0, players: 0,
 		});
-		const missingFields: string[] = [];
+		const missingFields: Keys[] = [];
 		for (const fieldName in requiredFields) {
 			const field = args[fieldName as Keys];
 			if (field === undefined || field === null) {

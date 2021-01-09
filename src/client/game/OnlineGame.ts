@@ -29,9 +29,10 @@ export class OnlineGame<S extends Coord.System> extends GameMirror<G,S> {
 	 * @param gameDesc - This should come from a Server event by the name {@link GameEv.CREATE}.
 	 */
 	public constructor(
-		onGameBecomeOver: () => void,
 		gameSocket: Socket,
-		gameDesc: Game.CtorArgs<G,S>,
+		onGameBecomeOver: () => void,
+		gameDesc: Game.CtorArgs<S>,
+		operatorIds: TU.RoArr<Player.Id>,
 	) {
 		super(
 			Game.Type.ONLINE, {
@@ -39,7 +40,9 @@ export class OnlineGame<S extends Coord.System> extends GameMirror<G,S> {
 				OperatorPlayer: OperatorPlayer,
 				RobotPlayer: (game, desc) => new Player(game, desc),
 				onGameBecomeOver,
-			}, gameDesc,
+			},
+			gameDesc,
+			operatorIds,
 		);
 		this.socket = gameSocket;
 		Object.seal(this); //🧊

@@ -27,11 +27,13 @@ export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE, G> 
 	}
 
 	/** @override */
-	protected async _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<OfflineGame<any>> {
+	protected async _createNewGame(args: [
+		ctorArgs: Game.CtorArgs,
+	]): Promise<OfflineGame<any>> {
 		return new (await import(
 			/* webpackChunkName: "game/offline" */
 			"../../../game/OfflineGame"
-		)).OfflineGame(this._onGameBecomeOver.bind(this), ctorArgs);
+		)).OfflineGame(this._onGameBecomeOver.bind(this), args[0]);
 	}
 }
 Object.freeze(PlayOfflineScreen);

@@ -57,14 +57,19 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
 	}
 
 	/** @override */
-	protected async _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<OnlineGame<any>> {
+	protected async _createNewGame(args: [
+		ctorArgs: Game.CtorArgs,
+		operatorIds: readonly number[],
+	]): Promise<OnlineGame<any>> {
+		const [ctorArgs, operatorIds] = args;
 		const game = new (await import(
 			/* webpackChunkName: "game/online" */
 			"../../../game/OnlineGame"
 		)).OnlineGame(
-			this._onGameBecomeOver.bind(this),
 			this.top.sockets.gameSocket!,
+			this._onGameBecomeOver.bind(this),
 			ctorArgs,
+			operatorIds,
 		);
 		this.socket
 		.on(GameEv.UNPAUSE, () => {

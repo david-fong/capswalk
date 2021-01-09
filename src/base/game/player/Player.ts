@@ -186,7 +186,6 @@ export namespace Player {
 	type _PreIdAssignmentDict = {
 		[F in Player.Family]: F extends typeof Player.Family.HUMAN
 		? _PreIdAssignmentConditional<F> & {
-			readonly isALocalOperator: boolean;
 			readonly clientId: string | undefined;
 		}
 		: _PreIdAssignmentConditional<F>;
@@ -211,7 +210,8 @@ export namespace Player {
 		 * @returns
 		 * Squashes teamId fields to be suitable for array indices.
 		 */
-		export function finalize(playerDescs: TU.RoArr<CtorArgs.PreIdAssignment>): TU.RoArr<CtorArgs> {
+		export function finalize<S extends Coord.System>(gameDesc: Game.CtorArgs.PreIdAssignment<S>): asserts gameDesc is Game.CtorArgs<S> {
+			const playerDescs: TU.RoArr<CtorArgs.PreIdAssignment> = gameDesc.players;
 			// Map team ID's to consecutive numbers
 			// (to play nice with array representations):
 			const teamIdCleaner: TU.RoArr<Team.Id>
@@ -222,13 +222,15 @@ export namespace Player {
 					return prev;
 				}, [] as Array<Team.Id>);
 
-			return Object.freeze(Object.freeze(playerDescs.slice()
-			.sort((pda, pdb) => teamIdCleaner[pda.teamId]! - teamIdCleaner[pdb.teamId]!))
-			.map<CtorArgs>((playerDesc, index) => Object.assign({}, playerDesc, {
-				playerId: index,
-				teamId:   teamIdCleaner[playerDesc.teamId]!,
-				avatar:   playerDesc.avatar ?? Player.Avatar.GET_RANDOM(),
-			})));
+			// @ts-expect-error : RO=
+			gameDesc.players
+				= Object.freeze(Object.freeze(playerDescs.slice()
+				.sort((pda, pdb) => teamIdCleaner[pda.teamId]! - teamIdCleaner[pdb.teamId]!))
+				.map<CtorArgs>((playerDesc, index) => Object.assign({}, playerDesc, {
+					playerId: index,
+					teamId:   teamIdCleaner[playerDesc.teamId]!,
+					avatar:   playerDesc.avatar ?? Player.Avatar.GET_RANDOM(),
+				})));
 		};
 	}
 	Object.freeze(CtorArgs);

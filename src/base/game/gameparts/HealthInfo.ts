@@ -15,7 +15,7 @@ export class HealthInfo {
 	public get currentAmount(): number { return this.#currentAmount; }
 
 	public constructor(
-		desc: Game.CtorArgs<any,any>,
+		desc: Game.CtorArgs,
 		gridStatic: Grid.ClassIf<Coord.System>,
 	) {
 		this.K = Object.freeze({

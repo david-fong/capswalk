@@ -4,9 +4,10 @@ import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
 import style from "./style.m.css";
 import GRID_style from "./grid.m.css";
+import type { Coord } from "floor/Tile";
 import type { OfflineGame } from "client/game/OfflineGame";
 import type { OnlineGame } from "client/game/OnlineGame";
-type BrowserGame = OfflineGame<any> | OnlineGame<any>;
+type BrowserGame = OfflineGame<Coord.System> | OnlineGame<Coord.System>;
 
 /**
  * If and only if this screen is the current screen, then its
@@ -155,9 +156,7 @@ export abstract class _PlayScreen<
 		this.btn.pause.disabled = true;
 		this._statusBecomePaused(); // <-- Leverage some state initialization.
 
-		const game = this.#currentGame = await this._createNewGame(
-			args as Game.CtorArgs<G,any>,
-		);
+		const game = this.#currentGame = await this._createNewGame(args);
 		await game.reset();
 		// ^Wait until resetting has finished before attaching the
 		// grid element to the screen so that the DOM changes made
@@ -218,7 +217,9 @@ export abstract class _PlayScreen<
 		return this.#currentGame;
 	}
 
-	protected abstract _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<BrowserGame>;
+	protected abstract _createNewGame(
+		[gameCtorArgs, operatorIds]: SkScreen.EntranceArgs[SID],
+	): Promise<BrowserGame>;
 
 
 	/**

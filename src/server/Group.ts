@@ -165,7 +165,7 @@ export class Group extends _Group {
 		});
 	}
 	private _socketOnHostCreateGame(
-		ctorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System>
+		ctorArgs: Game.CtorArgs.PreIdAssignment<Coord.System>
 	): void {
 		const failureReasons = this._createGameInstance(ctorArgs);
 		if (failureReasons.length) {
@@ -237,7 +237,7 @@ export class Group extends _Group {
 	 * `false` if the passed arguments were incomplete or invalid.
 	 */
 	private _createGameInstance(
-		ctorArgs: Game.CtorArgs<Game.Type.SERVER,Coord.System>,
+		ctorArgs: Game.CtorArgs.PreIdAssignment<Coord.System>,
 	): readonly string[] {
 		const failureReasons = [];
 		if (this.isCurrentlyPlayingAGame) {
@@ -251,11 +251,10 @@ export class Group extends _Group {
 
 		// Everything needed to create a game exists. Let's do it!
 		// @ts-expect-error : RO=
-		ctorArgs.playerDescs = [
-			...ctorArgs.playerDescs,
+		ctorArgs.players = [
+			...ctorArgs.players,
 			...Array.from(this.sockets.values(), (socket) => {
 				return Object.freeze(<Player._CtorArgs["HUMAN"]>{
-					isALocalOperator: false,
 					familyId: "HUMAN",
 					teamId:   socket.userInfo.teamId,
 					clientId: socket.client["id"],

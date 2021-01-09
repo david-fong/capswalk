@@ -236,12 +236,12 @@ export namespace SkScreen {
 		[ Id.COLOUR_CTRL   ]: {};
 		//==================
 		[ Id.SETUP_OFFLINE ]: {};
-		[ Id.PLAY_OFFLINE  ]: Game.CtorArgs<Game.Type.OFFLINE,Coord.System>;
+		[ Id.PLAY_OFFLINE  ]: [Game.CtorArgs.PreIdAssignment];
 		//==================
 		[ Id.GROUP_JOINER  ]: {};
 		[ Id.GROUP_LOBBY   ]: {};
 		[ Id.SETUP_ONLINE  ]: {};
-		[ Id.PLAY_ONLINE   ]: Game.CtorArgs<Game.Type.ONLINE,Coord.System>;
+		[ Id.PLAY_ONLINE   ]: [Game.CtorArgs, readonly number[]];
 	}
 	/**
 	 * Note that forward navigation has no obligation to comply with

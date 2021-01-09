@@ -40,8 +40,11 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 	public constructor(
 		gameType: G,
 		impl: Game.ImplArgs,
-		desc: Game.CtorArgs<G,S>,
+		desc: Game.CtorArgs<S>,
+		operatorIds: TU.RoArr<Player.Id>,
 	) {
+		Object.freeze(desc);
+		Object.freeze(operatorIds);
 		this.gameType = gameType;
 
 		const gridClass = impl.gridClassLookup(desc.coordSys);
@@ -56,10 +59,9 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId)!;
 
 		// Construct players:
-		const players  = this.createPlayers(desc, impl);
+		const players  = this.createPlayers(desc, impl, operatorIds);
 		this.players   = players.players;
 		this.operators = players.operators;
-		Object.freeze(desc);
 
 		{
 			const teams: Player[][] = [];
@@ -101,39 +103,29 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 	/**
 	 * Helper for the constructor.
 	 */
-	private createPlayers(gameDesc: Game.CtorArgs<G,S>, implArgs: Game.ImplArgs): {
+	private createPlayers(
+		gameDesc: Game.CtorArgs<S>,
+		implArgs: Game.ImplArgs,
+		operatorIds: TU.RoArr<Player.Id>,
+	): {
 		players: TU.RoArr<Player>,
 		operators: TU.RoArr<OperatorPlayer>,
 	} {
-		const playerDescs
-			// @ts-expect-error : RO=
-			= gameDesc.playerDescs
-			= (this.gameType === Game.Type.ONLINE)
-				// The client receives these descriptors already finalized / cleaned by the server.
-				? (gameDesc.playerDescs as TU.RoArr<Player.CtorArgs>)
-				: Player.CtorArgs.finalize(gameDesc.playerDescs);
-
-		const players = Object.freeze(playerDescs.map((playerDesc) => {
-			if (playerDesc.familyId === Player.Family.HUMAN) {
-				return (playerDesc.isALocalOperator)
-					? new implArgs.OperatorPlayer!(this, playerDesc)
-					: new Player(this, playerDesc);
+		const players = Object.freeze(gameDesc.players.map((pDesc) => {
+			if (pDesc.familyId === Player.Family.HUMAN) {
+				return (operatorIds.includes(pDesc.playerId))
+					? new implArgs.OperatorPlayer!(this, pDesc)
+					: new Player(this, pDesc);
 			} else {
 				return implArgs.RobotPlayer(
 					this as GameMirror<any,any>,
-					playerDesc as Player._CtorArgs[Player.RobotFamily],
+					pDesc,
 				);
 			}
 		}));
-		const operators: OperatorPlayer[] = [];
-		playerDescs.forEach((desc,i) => {
-			if (desc.familyId === Player.Family.HUMAN && desc.isALocalOperator) {
-				operators.push(players[i] as OperatorPlayer);
-			}
-		});
 		return Object.freeze({
 			players,
-			operators,
+			operators: Object.freeze(operatorIds.map((playerId) => players[playerId] as OperatorPlayer)),
 		});
 	}
 

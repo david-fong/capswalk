@@ -48,9 +48,17 @@ export namespace Game {
 	export type ImplArgs = {
 		gridClassLookup<S extends Coord.System>(coordSys: S): Grid.ClassIf<S>;
 		OperatorPlayer: typeof OperatorPlayer | undefined;
-		RobotPlayer: (_this: GameMirror<any>, desc: Player._CtorArgs[Player.RobotFamily]) => Player;
+		RobotPlayer: (_this: GameMirror<Game.Type>, desc: Player._CtorArgs[Player.RobotFamily]) => Player;
 		onGameBecomeOver: () => void;
 	};
+
+	interface _CtorArgsBase<S extends Coord.System> {
+		readonly coordSys: S;
+		readonly gridDimensions: Grid.Dimensions[S];
+		readonly averageHealthPerTile: Player.Health;
+		readonly langId: Lang.FrontendDesc["id"];
+		readonly langWeightExaggeration: Lang.WeightExaggeration;
+	}
 
 	/**
 	 * ## Game Constructor Arguments
@@ -63,26 +71,16 @@ export namespace Game {
 	 * The coordinate system to use. The literal value must also be
 	 * passed as the field `coordSys`.
 	 */
-	export type CtorArgs<
-		G extends Game.Type,
-		S extends Coord.System = Coord.System,
-	> = {
-		readonly coordSys: S;
-		readonly gridDimensions: Grid.Dimensions[S];
-		readonly averageHealthPerTile: Player.Health;
-
-		readonly langId: Lang.FrontendDesc["id"];
-		readonly langWeightExaggeration: Lang.WeightExaggeration;
-
-		readonly playerDescs: G extends Game.Type.Manager
-			? TU.RoArr<Player.CtorArgs.PreIdAssignment>
-			: TU.RoArr<Player.CtorArgs>
-		;
+	export interface CtorArgs<S extends Coord.System = Coord.System> extends _CtorArgsBase<S> {
+		readonly players: TU.RoArr<Player.CtorArgs>;
 	};
 	export namespace CtorArgs {
+		export interface PreIdAssignment<S extends Coord.System = Coord.System> extends _CtorArgsBase<S> {
+			readonly players: TU.RoArr<Player.CtorArgs.PreIdAssignment>;
+		}
 		/** */
 		export type FailureReasons = {
-			missingFields: Array<keyof CtorArgs<Game.Type, Coord.System>>;
+			missingFields: Array<keyof CtorArgs<Coord.System>>;
 		};
 	}
 
