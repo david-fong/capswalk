@@ -5,16 +5,17 @@ import { JsUtils } from "defs/JsUtils";
 import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 
+interface _VisibleExtensions {
+	readonly baseElem: HTMLElement;
+	readonly spotlightElems: TU.RoArr<HTMLElement>;
+}
+
 /**
- * All implementations must call `Grid._superVisibleGrid` at the end
- * of their constructors.
- *
  * NOTE: Use separate files from the base implementation for tree
  * shaking.
  */
-export interface VisibleGrid<S extends Coord.System>
-extends Grid<S>, VisibleGridMixin { }
-
+export interface VisibleGrid<S extends Coord.System> extends Grid<S>, _VisibleExtensions {
+}
 export namespace VisibleGrid {
 
 	export interface ClassIf<S extends Coord.System> extends Grid.ClassIf<S> {
@@ -30,35 +31,17 @@ export namespace VisibleGrid {
 		["W_EUCLID2"]: undefined!,
 		["BEEHIVE"]: undefined!,
 	};
-
 	export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
 		const ctor = _Constructors[coordSys];
 		return ctor as unknown as ClassIf<S>;
 	};
-}
-Object.seal(VisibleGrid);
 
-
-/**
- */
-export abstract class VisibleGridMixin {
-	/**
-	 * Contains the implementation-dependant HTML representation of
-	 * the grid.
-	 */
-	declare public readonly baseElem: HTMLElement;
-	declare public readonly spotlightElems: TU.RoArr<HTMLElement>;
-
-	/**
-	 * Implementations must call this within their constructors.
-	 */
-	public _superVisibleGrid(tiles: HTMLElement): void {
+	export function _mkExtensionProps(tiles: HTMLElement): _VisibleExtensions {
 		tiles.setAttribute("role", "presentation");
 		tiles.translate  = false; // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/translate
 		tiles.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
 
-		// @ts-expect-error : RO=
-		const base = this.baseElem = JsUtils.mkEl("div", []);
+		const base = JsUtils.mkEl("div", []);
 		const root = base.attachShadow({ mode: "closed" });
 		tiles.classList.add(style["impl-body"]);
 		root.appendChild(tiles);
@@ -68,10 +51,12 @@ export abstract class VisibleGridMixin {
 		// Initialize spotlight elements:
 		const shortSpotlight = JsUtils.mkEl("div", [player_style["spotlight-short"]]);
 		const longSpotlight  = JsUtils.mkEl("div", [player_style["spotlight-long"]]);
-		// @ts-expect-error : RO=
-		this.spotlightElems = Object.freeze([ shortSpotlight, longSpotlight ]);
+		const spotlightElems = Object.freeze([ shortSpotlight, longSpotlight ]);
+
+		return Object.freeze({
+			baseElem: base,
+			spotlightElems,
+		});
 	}
 }
-export interface VisibleGridMixin {};
-Object.freeze(VisibleGridMixin);
-Object.freeze(VisibleGridMixin.prototype);
+Object.freeze(VisibleGrid);

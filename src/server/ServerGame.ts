@@ -9,6 +9,7 @@ import { Grid } from "floor/Grid";
 import { Player } from "game/player/Player";
 
 import { GameManager } from "game/gameparts/GameManager";
+import { RobotPlayer } from "base/game/player/RobotPlayer";
 type G = Game.Type.SERVER;
 
 /**
@@ -18,10 +19,6 @@ type G = Game.Type.SERVER;
  * @final
  */
 export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
-
-	/** @override */
-	// @ts-expect-error : Redeclaring accessor as property.
-	declare public currentOperator: undefined;
 
 	public readonly namespace: io.Namespace;
 	private readonly _groupHostClient: io.Socket["client"];
@@ -41,11 +38,6 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 	 */
 	protected readonly playerSockets: ReadonlyMap<Player.Id, io.Socket>;
 
-	/** @override */
-	protected _getGridImplementation(coordSys: S): Grid.ClassIf<S> {
-		return Grid.getImplementation(coordSys)!;
-	}
-
 
 	/**
 	 * Attach listeners for requests to each socket.
@@ -60,7 +52,10 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 	}>) {
 		super(
 			Game.Type.SERVER, {
-			onGameBecomeOver: () => {},
+				gridClassLookup: Grid.getImplementation,
+				OperatorPlayer: undefined,
+				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<G>, desc),
+				onGameBecomeOver: () => {},
 			}, args.gameDesc,
 		);
 		this._groupHostClient = args.groupHostClient;
@@ -275,7 +270,6 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 }
 JsUtils.protoNoEnum(ServerGame,
 	"_awaitGameSockets", "_greetGameSockets",
-	"_getGridImplementation",
 	"_createOperatorPlayer", "setCurrentOperator",
 	"_terminate",
 );

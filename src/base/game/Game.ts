@@ -3,6 +3,8 @@ import type { Lang } from "defs/TypeDefs";
 import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { Player } from "./player/Player";
+import type { OperatorPlayer } from "./player/OperatorPlayer";
+import type { GameMirror } from "base/game/gameparts/GameMirror";
 
 
 /**
@@ -44,7 +46,10 @@ export namespace Game {
 	 * components.
 	 */
 	export type ImplArgs = {
-		onGameBecomeOver: () => void,
+		gridClassLookup<S extends Coord.System>(coordSys: S): Grid.ClassIf<S>;
+		OperatorPlayer: typeof OperatorPlayer | undefined;
+		RobotPlayer: (_this: GameMirror<any>, desc: Player._CtorArgs[Player.RobotFamily]) => Player;
+		onGameBecomeOver: () => void;
 	};
 
 	/**
@@ -61,19 +66,19 @@ export namespace Game {
 	export type CtorArgs<
 		G extends Game.Type,
 		S extends Coord.System = Coord.System,
-	> = Readonly<{
-		coordSys: S;
-		gridDimensions: Grid.Dimensions[S];
-		averageHealthPerTile: Player.Health;
+	> = {
+		readonly coordSys: S;
+		readonly gridDimensions: Grid.Dimensions[S];
+		readonly averageHealthPerTile: Player.Health;
 
-		langId: Lang.FrontendDesc["id"];
-		langWeightExaggeration: Lang.WeightExaggeration;
+		readonly langId: Lang.FrontendDesc["id"];
+		readonly langWeightExaggeration: Lang.WeightExaggeration;
 
-		playerDescs: G extends Game.Type.Manager
+		readonly playerDescs: G extends Game.Type.Manager
 			? TU.RoArr<Player.CtorArgs.PreIdAssignment>
 			: TU.RoArr<Player.CtorArgs>
 		;
-	}>;
+	};
 	export namespace CtorArgs {
 		/** */
 		export type FailureReasons = {

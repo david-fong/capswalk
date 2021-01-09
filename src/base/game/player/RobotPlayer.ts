@@ -123,14 +123,14 @@ export namespace RobotPlayer {
 		[Player.Family.CHASER]: Partial<Chaser.Behaviour>;
 	}
 
-	export const of = <S extends Coord.System>(
-		game: GameManager<Game.Type.Manager,S>,
+	export const of = (
+		game: GameManager<Game.Type.Manager,any>,
 		playerDesc: Player._CtorArgs[Player.RobotFamily],
 	): RobotPlayer => {
 		const familyId = playerDesc.familyId as Player.RobotFamily;
 		if (DEF.DevAssert) {
 			// Enforced By: Caller adherence to contract.
-			if (!Object.keys(_Constructors).includes(familyId)) {
+			if (!Object.getOwnPropertyNames(_Constructors).includes(familyId)) {
 				throw new RangeError(familyId + " is not a valid robot player family id.");
 			}
 		}

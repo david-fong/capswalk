@@ -1,21 +1,24 @@
 import type { Socket } from "socket.io-client";
 import { GameEv } from "defs/OnlineDefs";
-import type {  } from "game/StateChange";
 import {
 	JsUtils, Game, Coord, StateChange,
-	VisibleGrid, BrowserGameMixin,
-	Player, OperatorPlayer,
+	VisibleGrid, Player,
 } from "./BrowserGame";
 
-import { GameMirror } from "base/game/gameparts/GameMirror";
+import { GameMirror } from "game/gameparts/GameMirror";
+import { OperatorPlayer } from "game/player/OperatorPlayer";
 
-
+import InitBrowserGameCtorMaps from "game/ctormaps/CmapBrowser";
+InitBrowserGameCtorMaps();
 type G = Game.Type.ONLINE;
 
 /**
  * @final
  */
-export class OnlineGame<S extends Coord.System> extends GameMirror<G,S> implements BrowserGameMixin<G,S> {
+export class OnlineGame<S extends Coord.System> extends GameMirror<G,S> {
+
+	/** @override */
+	declare readonly grid: VisibleGrid<S>;
 
 	public readonly socket: Socket;
 
@@ -32,11 +35,13 @@ export class OnlineGame<S extends Coord.System> extends GameMirror<G,S> implemen
 	) {
 		super(
 			Game.Type.ONLINE, {
-			onGameBecomeOver,
+				gridClassLookup: VisibleGrid.getImplementation,
+				OperatorPlayer: OperatorPlayer,
+				RobotPlayer: (game, desc) => new Player(game, desc),
+				onGameBecomeOver,
 			}, gameDesc,
 		);
 		this.socket = gameSocket;
-		this._ctorBrowserGame();
 		Object.seal(this); //🧊
 
 		if (DEF.DevAssert) {
@@ -64,22 +69,10 @@ export class OnlineGame<S extends Coord.System> extends GameMirror<G,S> implemen
 		this.socket.emit(GameEv.RESET);
 	}
 
-	/** @override */
-	declare protected readonly _getGridImplementation: BrowserGameMixin<G,S>["_getGridImplementation"];
-
-	/** @override */
-	protected _createRobotPlayer(desc: Player.CtorArgs): Player {
-		return new Player(this, desc);
-	}
-
-	/** @override */
-	declare protected _createOperatorPlayer: BrowserGameMixin<G,S>["_createOperatorPlayer"];
-
 
 	/**
-	 * Normally immediately executes the changes. However, here,
-	 * that should be done as a callback to an event created by the
-	 * server.
+	 * Normally, this immediately executes the changes. Here, that
+	 * should be done as a callback to an event created by the server.
 	 *
 	 * > 💢 I would like to speak to your manager. I'll wait.
 	 *
@@ -89,18 +82,5 @@ export class OnlineGame<S extends Coord.System> extends GameMirror<G,S> implemen
 		this.socket.emit(GameEv.IN_GAME, desc);
 	}
 }
-export interface OnlineGame<S extends Coord.System> extends BrowserGameMixin<G,S> {
-
-	/** @override */
-	readonly htmlElements: BrowserGameMixin.HtmlElements;
-
-	/** @override */
-	readonly grid: VisibleGrid<S>;
-
-	/** @override */
-	// @ts-expect-error : Redeclaring accessor as property.
-	readonly currentOperator: OperatorPlayer<S>;
-};
-JsUtils.applyMixins(OnlineGame, [BrowserGameMixin]);
 Object.freeze(OnlineGame);
 Object.freeze(OnlineGame.prototype);

@@ -9,7 +9,7 @@ import type { OperatorPlayer } from "../player/OperatorPlayer";
 
 import { Player } from "../player/Player";
 import { Team } from "../player/Team";
-
+type Operator<G extends Game.Type> = G extends Game.Type.SERVER ? undefined : OperatorPlayer;
 
 /**
  * Foundational parts of a Game that are not related to event handling.
@@ -27,7 +27,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 	public readonly players: TU.RoArr<Player>;
 
 	public readonly operators: TU.RoArr<OperatorPlayer>;
-	#currentOperator: OperatorPlayer | undefined;
+	#currentOperator: Operator<G>;
 
 	/** Indexable by team ID's. */
 	public readonly teams: TU.RoArr<Team>;
@@ -44,7 +44,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 	) {
 		this.gameType = gameType;
 
-		const gridClass = this._getGridImplementation(desc.coordSys);
+		const gridClass = impl.gridClassLookup(desc.coordSys);
 		this.grid = new (gridClass)({
 			Grid: gridClass,
 			system: desc.coordSys,
@@ -56,7 +56,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId)!;
 
 		// Construct players:
-		const players  = this.createPlayers(desc);
+		const players  = this.createPlayers(desc, impl);
 		this.players   = players.players;
 		this.operators = players.operators;
 		Object.freeze(desc);
@@ -97,13 +97,11 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		// ctorAsync getter, we don't need to use `await`.
 	}
 
-	protected abstract _getGridImplementation(coordSys: S): Grid.ClassIf<S>;
-
 
 	/**
 	 * Helper for the constructor.
 	 */
-	private createPlayers(gameDesc: Readonly<Game.CtorArgs<G,S>>): {
+	private createPlayers(gameDesc: Game.CtorArgs<G,S>, implArgs: Game.ImplArgs): {
 		players: TU.RoArr<Player>,
 		operators: TU.RoArr<OperatorPlayer>,
 	} {
@@ -118,10 +116,13 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		const players = Object.freeze(playerDescs.map((playerDesc) => {
 			if (playerDesc.familyId === Player.Family.HUMAN) {
 				return (playerDesc.isALocalOperator)
-					? this._createOperatorPlayer(playerDesc)
+					? new implArgs.OperatorPlayer!(this, playerDesc)
 					: new Player(this, playerDesc);
 			} else {
-				return this._createRobotPlayer(playerDesc) as Player;
+				return implArgs.RobotPlayer(
+					this as GameMirror<any,any>,
+					playerDesc as Player._CtorArgs[Player.RobotFamily],
+				);
 			}
 		}));
 		const operators: OperatorPlayer[] = [];
@@ -135,8 +136,6 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 			operators,
 		});
 	}
-	protected abstract _createOperatorPlayer(desc: Player._CtorArgs["HUMAN"]): OperatorPlayer;
-	protected abstract _createRobotPlayer(desc: Player._CtorArgs[Player.RobotFamily]): Player;
 
 	/** @final */
 	public serializeResetState(): Game.ResetSer {
@@ -163,7 +162,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		});
 	}
 
-	public get currentOperator(): OperatorPlayer | undefined {
+	public get currentOperator(): G extends Game.Type.SERVER ? undefined : OperatorPlayer {
 		return this.#currentOperator;
 	}
 	public setCurrentOperator(nextOperatorIndex: number): void {
@@ -171,7 +170,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		if (!DEF.DevAssert && nextOperator === undefined) throw new Error("never");
 		if (this.currentOperator !== nextOperator)
 		{
-			this.#currentOperator = nextOperator;
+			this.#currentOperator = nextOperator as Operator<G>;
 			// IMPORTANT: The order of the above lines matters
 			// (hence the method name "notifyWillBecomeCurrent").
 		}

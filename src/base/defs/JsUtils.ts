@@ -3,19 +3,6 @@ const NO_ENUM  = Object.freeze(<const>{ enumerable: false });
 const NO_WRITE = Object.freeze(<const>{ writable: false });
 
 export namespace JsUtils {
-	/** Copied from TypeScript official docs. */
-	export function applyMixins(derivedCtor: any, mixins: any[]): void {
-		const inheritanceProps = Object.freeze(["constructor", "__proto__"]);
-		mixins.forEach((baseCtor) => {
-			Object.getOwnPropertyNames(baseCtor.prototype)
-			.filter((name) => !(inheritanceProps.includes(name)))
-			.forEach((name) => {
-				Object.defineProperty(derivedCtor.prototype, name,
-					Object.getOwnPropertyDescriptor(baseCtor.prototype, name)!
-				);
-			});
-		});
-	}
 
 	/** @requires obj must not contain cycles (circular references). */
 	export function deepFreeze<T>(obj: T): TU.DeepRo<T> {

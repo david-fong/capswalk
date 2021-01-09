@@ -1,22 +1,29 @@
 import { JsUtils } from "defs/JsUtils";
-import type { Coord as BaseCoord } from "floor/Tile";
-import type { Grid as AbstractGrid } from "floor/Grid";
+import type { Coord, Tile } from "floor/Tile";
+import type { Grid } from "floor/Grid";
 import { Beehive } from "./System";
-import { VisibleGrid, VisibleGridMixin } from "floor/visible/VisibleGrid";
-type S = BaseCoord.System.BEEHIVE;
+import { VisibleGrid } from "floor/visible/VisibleGrid";
+type S = Coord.System.BEEHIVE;
 
 /**
  * @final
  */
 export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
-	public constructor(desc: AbstractGrid.CtorArgs<S>) {
+
+	readonly baseElem: HTMLElement;
+	readonly spotlightElems: TU.RoArr<HTMLElement>;
+
+	public constructor(desc: Grid.CtorArgs<S>) {
 		super(desc);
 		const domGrid: HTMLElement = undefined!;
-		this._superVisibleGrid(domGrid);
+		Object.assign(this, VisibleGrid._mkExtensionProps(domGrid));
 		Object.seal(this); //🧊
 	}
+
+	/** @override */
+	public write(coord: Coord, changes: Tile.Changes): void {
+		// TODO.impl
+	}
 }
-export interface BeehiveVisibleGrid extends VisibleGridMixin { };
-JsUtils.applyMixins(BeehiveVisibleGrid, [VisibleGridMixin]);
 Object.freeze(BeehiveVisibleGrid);
 Object.freeze(BeehiveVisibleGrid.prototype);

@@ -260,7 +260,7 @@ export namespace Grid {
 	 * @returns
 	 * A Grid class for the specified coordinate system.
 	 */
-	export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> | undefined => {
+	export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
 		// Note: At the time of writing this, separating this into
 		// two lines is necessary (otherwise Typescript will feel
 		// overwhelmed)
@@ -281,5 +281,5 @@ export namespace Grid {
 	}>;
 }
 // Grid gets frozen in PostInit after _Constructors get initialized.
-Object.seal(Grid);
+Object.freeze(Grid);
 Object.freeze(Grid.prototype);

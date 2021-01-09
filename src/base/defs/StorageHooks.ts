@@ -76,7 +76,7 @@ export namespace StorageHooks {
 				},
 			});
 		});
-		Object.freeze(smart);
+		// Sealing the object causes an error. Not sure why.
 		return smart;
 	}
 }

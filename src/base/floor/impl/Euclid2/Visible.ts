@@ -2,7 +2,7 @@ import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid as AbstractGrid } from "floor/Grid";
 import { VisibleTile } from "floor/visible/VisibleTile";
-import { VisibleGrid, VisibleGridMixin } from "floor/visible/VisibleGrid";
+import { VisibleGrid } from "floor/visible/VisibleGrid";
 
 import { WrappedEuclid2 } from "./System";
 import style from "./style.m.css";
@@ -12,7 +12,11 @@ type S = Coord.System.W_EUCLID2;
  * @final
  */
 export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGrid<S> {
+
+	readonly baseElem: HTMLElement;
+	readonly spotlightElems: TU.RoArr<HTMLElement>;
 	#tiles: TU.RoArr<VisibleTile>;
+
 	public constructor(desc: AbstractGrid.CtorArgs<S>) {
 		super(desc);
 
@@ -27,9 +31,10 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 		});
 		this.#tiles = tiles;
 
-		this._superVisibleGrid(gridElem);
+		Object.assign(this, VisibleGrid._mkExtensionProps(gridElem));
 		Object.seal(this); //🧊
 	}
+
 	/** @override */
 	public write(coord: Coord, changes: Tile.Changes): void {
 		super.write(coord, changes);
@@ -45,7 +50,5 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 		}
 	}
 }
-export interface Euclid2VisibleGrid extends VisibleGridMixin { };
-JsUtils.applyMixins(Euclid2VisibleGrid, [VisibleGridMixin]);
 Object.freeze(Euclid2VisibleGrid);
 Object.freeze(Euclid2VisibleGrid.prototype);

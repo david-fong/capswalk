@@ -20,7 +20,7 @@ InitGameManagerCtorMaps();
  */
 export abstract class GameManager<
 	G extends Game.Type.Manager,
-	S extends Coord.System,
+	S extends Coord.System = Coord.System,
 > extends GameMirror<G,S> {
 
 	public readonly health: HealthInfo;
@@ -99,11 +99,6 @@ export abstract class GameManager<
 		this.scoreInfo.reset();
 
 		return Promise.resolve();
-	}
-
-	/** @override */
-	protected _createRobotPlayer(desc: Player._CtorArgs[Player.RobotFamily]): RobotPlayer {
-		return RobotPlayer.of(this, desc);
 	}
 
 
@@ -306,7 +301,7 @@ export namespace GameManager {
 		}
 
 		const langDesc = Lang.GET_FRONTEND_DESC_BY_ID(args.langId);
-		const gridClass = Grid.getImplementation(args.coordSys);
+		const gridClass = Grid._Constructors[args.coordSys];
 		if (langDesc === undefined) {
 			bad.push(`No language with the ID \`${args.langId}\` exists.`);
 		} else if (gridClass === undefined) {

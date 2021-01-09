@@ -1,7 +1,7 @@
 import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 import { StorageHooks } from "defs/StorageHooks";
-import type { BrowserGameMixin, Game } from "./game/BrowserGame";
+import type { Game } from "./game/BrowserGame";
 import type { _PlayScreen } from "./screen/impl/Play/_Screen";
 import type { Coord, SkScreen } from "../client/screen/SkScreen";
 
@@ -92,7 +92,7 @@ export class TopLevel {
 	 *
 	 * Not actually deprecated :P
 	 */
-	public get game(): BrowserGameMixin<Game.Type.Browser,Coord.System> | undefined {
+	public get game() {
 		return (this.#allScreens.dict.playOffline).probeCurrentGame
 			?? (this.#allScreens.dict.playOnline ).probeCurrentGame;
 	}

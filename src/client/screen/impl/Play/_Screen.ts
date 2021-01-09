@@ -1,10 +1,12 @@
 import { Game } from "game/Game"; export { Game };
 import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
-import type { BrowserGameMixin } from "../../../game/BrowserGame";
 
 import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
 import style from "./style.m.css";
 import GRID_style from "./grid.m.css";
+import type { OfflineGame } from "client/game/OfflineGame";
+import type { OnlineGame } from "client/game/OnlineGame";
+type BrowserGame = OfflineGame<any> | OnlineGame<any>;
 
 /**
  * If and only if this screen is the current screen, then its
@@ -17,7 +19,6 @@ import GRID_style from "./grid.m.css";
 export abstract class _PlayScreen<
 	SID extends SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE,
 	G extends Game.Type.Browser,
-	Game extends BrowserGameMixin<G,any> = BrowserGameMixin<G,any>,
 > extends SkScreen<SID> {
 
 	/**
@@ -54,7 +55,7 @@ export abstract class _PlayScreen<
 	 * so there's no question that it can, under certain conditions be
 	 * undefined.
 	 */
-	#currentGame: undefined | Game;
+	#currentGame: undefined | BrowserGame;
 
 	protected abstract readonly wantsAutoPlayPause: boolean;
 
@@ -161,8 +162,8 @@ export abstract class _PlayScreen<
 		// ^Wait until resetting has finished before attaching the
 		// grid element to the screen so that the DOM changes made
 		// by populating tiles with CSP's will be batched.
-		this.grid.implHost.appendChild(game.htmlElements.grid);
-		this.playersBar.appendChild(game.htmlElements.playersBar);
+		this.grid.implHost.appendChild(game.grid.baseElem);
+		// this.playersBar.appendChild(game); // TODO.design
 		// ^The order of insertion does not matter (it used to).
 
 		this.btn.pause.onclick = this._reqStatusPlaying.bind(this);
@@ -193,7 +194,7 @@ export abstract class _PlayScreen<
 		// Release the game:
 		// See docs in Game.ts : Pausing is done to cancel scheduled callbacks.
 		this.currentGame.statusBecomeOver();
-		for (const elem of Object.values(this.currentGame.htmlElements)) {
+		for (const elem of [this.currentGame.grid.baseElem]) {
 			// IMPORTANT NOTE: For some reason, clearing children from the
 			// grid-impl element is necessary to allow for garbage collection
 			// of DOM nodes (at least on Chrome).
@@ -206,18 +207,18 @@ export abstract class _PlayScreen<
 	}
 
 
-	protected get currentGame(): Game {
+	protected get currentGame(): BrowserGame {
 		return this.#currentGame!;
 	}
 	/**
 	 * This class can use a protected alias that advertises the result
 	 * as always being defined.
 	 */
-	public get probeCurrentGame(): Game | undefined {
+	public get probeCurrentGame(): BrowserGame | undefined {
 		return this.#currentGame;
 	}
 
-	protected abstract _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<Game>;
+	protected abstract _createNewGame(ctorArgs: Game.CtorArgs<G,any>): Promise<BrowserGame>;
 
 
 	/**
