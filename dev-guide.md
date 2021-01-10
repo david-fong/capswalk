@@ -87,3 +87,9 @@ This project uses emojis to visually flag highly significant lines.
 In large methods with short-circuit conditions, flag the return line with `return _; //⚡`.
 
 In constructors that seal or freeze the constructed instance, flag the line with `Object.seal(this); //🧊`.
+
+In complex socket communication chains, use 📢 for server emissions and 👂 for server "semaphore" awakenings.
+
+### Enum Implementation
+
+Use TypeScript enums when being able to search for references is desirable. If an enum doesn't need to be reference-searched, and avoiding a non-type import is desired, use a mocked const enum.

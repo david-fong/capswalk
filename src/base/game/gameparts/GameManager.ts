@@ -37,7 +37,7 @@ export abstract class GameManager<
 		desc: Game.CtorArgs<S>,
 	) {
 		super(gameType, impl, desc, (() => {
-			return gameType === Game.Type.SERVER ? []
+			return gameType === "SERVER" ? []
 			: desc.players.filter(p => p.familyId === "HUMAN").map(p => p.playerId);
 		})());
 
@@ -282,11 +282,11 @@ export namespace GameManager {
 	 * do so. If not, it will indicate invalidities in its return value.
 	 */
 	export function CHECK_VALID_CTOR_ARGS(
-		args: TU.NoRo<Game.CtorArgs.PreIdAssignment>,
+		args: TU.NoRo<Game.CtorArgs.UnFin>,
 	): string[] {
 		//#region
 		const bad: string[] = [];
-		type Keys = keyof Game.CtorArgs.PreIdAssignment;
+		type Keys = keyof Game.CtorArgs.UnFin;
 		const requiredFields: {[K in Keys]: any} = Object.freeze({
 			coordSys: 0, gridDimensions: 0, averageHealthPerTile: 0,
 			langId: 0, langWeightExaggeration: 0, players: 0,

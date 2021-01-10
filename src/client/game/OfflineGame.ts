@@ -9,12 +9,11 @@ import { OperatorPlayer } from "game/player/OperatorPlayer";
 
 import InitBrowserGameCtorMaps from "game/ctormaps/CmapBrowser";
 InitBrowserGameCtorMaps();
-type G = Game.Type.OFFLINE;
 
 /**
  * @final
  */
-export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
+export class OfflineGame<S extends Coord.System = Coord.System> extends GameManager<"OFFLINE",S> {
 
 	/** @override */
 	declare readonly grid: VisibleGrid<S>;
@@ -23,13 +22,13 @@ export class OfflineGame<S extends Coord.System> extends GameManager<G,S> {
 	 */
 	public constructor(
 		onGameBecomeOver: () => void,
-		gameDesc: Game.CtorArgs.PreIdAssignment<S>,
+		gameDesc: Game.CtorArgs.UnFin<S>,
 	) {
 		super(
-			Game.Type.OFFLINE, {
+			"OFFLINE", {
 				gridClassLookup: VisibleGrid.getImplementation,
 				OperatorPlayer: OperatorPlayer,
-				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<G>, desc),
+				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<"OFFLINE">, desc),
 				onGameBecomeOver,
 			},
 			(() => {

@@ -49,7 +49,7 @@ export class Player extends _Player implements _Player.UserInfo {
 		this.game = game;
 		this.reqBuffer = new Player.RequestBuffer();
 
-		JsUtils.instNoEnum(this as Player, "game");
+		JsUtils.instNoEnum (this as Player, "game");
 		JsUtils.propNoWrite(this as Player, "game",
 			"playerId", "familyId", "teamId",
 			"username", "avatar", "reqBuffer",
@@ -200,7 +200,7 @@ export namespace Player {
 
 	export namespace CtorArgs {
 
-		export type PreIdAssignment = _PreIdAssignmentDict[Player.Family];
+		export type UnFin = _PreIdAssignmentDict[Player.Family];
 
 		export interface FamilySpecificPart extends RobotPlayer.FamilySpecificPart {
 			[Player.Family.HUMAN]: {};
@@ -210,8 +210,11 @@ export namespace Player {
 		 * @returns
 		 * Squashes teamId fields to be suitable for array indices.
 		 */
-		export function finalize<S extends Coord.System>(gameDesc: Game.CtorArgs.PreIdAssignment<S>): asserts gameDesc is Game.CtorArgs<S> {
-			const playerDescs: TU.RoArr<CtorArgs.PreIdAssignment> = gameDesc.players;
+		export function finalize<S extends Coord.System>(
+			gameDesc: Game.CtorArgs.UnFin<S>,
+		): asserts gameDesc is Game.CtorArgs<S>
+		{
+			const playerDescs: TU.RoArr<CtorArgs.UnFin> = gameDesc.players;
 			// Map team ID's to consecutive numbers
 			// (to play nice with array representations):
 			const teamIdCleaner: TU.RoArr<Team.Id>

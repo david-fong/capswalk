@@ -24,7 +24,7 @@ export { Player };
 export abstract class RobotPlayer extends Player {
 
 	/** @override */
-	declare public readonly game: GameManager<any,any>;
+	declare public readonly game: GameManager<any>;
 
 	private _nextMovementTimerMultiplier: number;
 
@@ -33,7 +33,7 @@ export abstract class RobotPlayer extends Player {
 	/**
 	 * @see RobotPlayer.of for the public, non-abstract interface.
 	 */
-	protected constructor(game: GameManager<any,any>, desc: Player.CtorArgs) {
+	protected constructor(game: GameManager<any>, desc: Player.CtorArgs) {
 		super(game, desc);
 		if (DEF.DevAssert && game.gameType === Game.Type.ONLINE) {
 			throw new TypeError("OnlineGames should be using regular Players instead.");
@@ -109,8 +109,8 @@ export namespace RobotPlayer {
 
 	export const _Constructors: {
 		readonly [ F in Player.RobotFamily ]: {
-			new<S extends Coord.System>(
-				game: GameManager<Game.Type.Manager,S>,
+			new(
+				game: GameManager<Game.Type.Manager>,
 				desc: Player._CtorArgs[F]
 			): RobotPlayer;
 		};
@@ -124,7 +124,7 @@ export namespace RobotPlayer {
 	}
 
 	export const of = (
-		game: GameManager<Game.Type.Manager,any>,
+		game: GameManager<Game.Type.Manager>,
 		playerDesc: Player._CtorArgs[Player.RobotFamily],
 	): RobotPlayer => {
 		const familyId = playerDesc.familyId as Player.RobotFamily;

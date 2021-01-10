@@ -9,7 +9,7 @@ import type { OperatorPlayer } from "../player/OperatorPlayer";
 
 import { Player } from "../player/Player";
 import { Team } from "../player/Team";
-type Operator<G extends Game.Type> = G extends Game.Type.SERVER ? undefined : OperatorPlayer;
+type Operator<G extends Game.Type> = G extends typeof Game.Type.SERVER ? undefined : OperatorPlayer;
 
 /**
  * Foundational parts of a Game that are not related to event handling.
@@ -17,33 +17,26 @@ type Operator<G extends Game.Type> = G extends Game.Type.SERVER ? undefined : Op
 export abstract class GameMirror<G extends Game.Type, S extends Coord.System = Coord.System> {
 
 	public readonly gameType: G;
-
 	public readonly grid: Grid<S>;
-
 	readonly #onGameBecomeOver: () => void;
-
 	public readonly langFrontend: Lang.FrontendDesc;
 
 	public readonly players: TU.RoArr<Player>;
-
 	public readonly operators: TU.RoArr<OperatorPlayer>;
 	#currentOperator: Operator<G>;
-
 	/** Indexable by team ID's. */
 	public readonly teams: TU.RoArr<Team>;
 
 	#status: Game.Status;
 
-
-	/**
-	 */
+	/** */
 	public constructor(
 		gameType: G,
 		impl: Game.ImplArgs,
 		desc: Game.CtorArgs<S>,
 		operatorIds: TU.RoArr<Player.Id>,
 	) {
-		Object.freeze(desc);
+		JsUtils.deepFreeze(desc);
 		Object.freeze(operatorIds);
 		this.gameType = gameType;
 
@@ -55,14 +48,12 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		}) as GameMirror<G,S>["grid"];
 
 		this.#onGameBecomeOver = impl.onGameBecomeOver;
-
 		this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId)!;
 
 		// Construct players:
-		const players  = this.createPlayers(desc, impl, operatorIds);
+		const players  = this._createPlayers(desc, impl, operatorIds);
 		this.players   = players.players;
 		this.operators = players.operators;
-
 		{
 			const teams: Player[][] = [];
 			this.players.forEach((player) => {
@@ -83,27 +74,18 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		this.setCurrentOperator(0);
 	}
 
-	/**
-	 * Reset the grid.
-	 *
-	 * Overrides should not use the return value. They should return
-	 * the result of calling `ctorAsync`.
-	 */
+	/** */
 	public async reset(): Promise<void> {
 		this.grid.reset();
 		// We must reset status to PAUSED to pass a state-transition
 		// assertion when changing status later to PLAYING.
 		this.#status = Game.Status.PAUSED;
-
-		// Important: Since there is nothing to do in this game-part's
-		// ctorAsync getter, we don't need to use `await`.
+		return;
 	}
 
 
-	/**
-	 * Helper for the constructor.
-	 */
-	private createPlayers(
+	/** Helper for the constructor. */
+	private _createPlayers(
 		gameDesc: Game.CtorArgs<S>,
 		implArgs: Game.ImplArgs,
 		operatorIds: TU.RoArr<Player.Id>,
@@ -154,7 +136,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		});
 	}
 
-	public get currentOperator(): G extends Game.Type.SERVER ? undefined : OperatorPlayer {
+	public get currentOperator(): Operator<G> {
 		return this.#currentOperator;
 	}
 	public setCurrentOperator(nextOperatorIndex: number): void {
@@ -286,5 +268,6 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		});
 	}
 }
+JsUtils.protoNoEnum(GameMirror, "_createPlayers");
 Object.freeze(GameMirror);
 Object.freeze(GameMirror.prototype);

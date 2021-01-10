@@ -1,17 +1,14 @@
 import type * as io from "socket.io";
+import { JsUtils } from "defs/JsUtils";
+import { GroupEv } from "defs/OnlineDefs";
 
+import type { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
 import type { Player } from "game/player/Player";
-import { JsUtils } from "defs/JsUtils";
-import { GameEv, GroupEv } from "defs/OnlineDefs";
-import type { Game } from "game/Game";
+import { GameManager } from "game/gameparts/GameManager";
 import { ServerGame } from "./ServerGame";
 
 import { Group as _Group, SkServer } from "defs/OnlineDefs";
-import { GameManager } from "base/game/gameparts/GameManager";
-
-export { ServerGame };
-
 
 /**
  * Manages communication between the server, and clients who play in
@@ -22,7 +19,7 @@ export class Group extends _Group {
 	public readonly namespace: io.Namespace;
 	public readonly name: Group.Name;
 	public readonly passphrase: Group.Passphrase;
-	#currentGame: ServerGame<Coord.System> | undefined;
+	#currentGame: ServerGame<any> | undefined;
 	private _sessionHost: Group.Socket;
 
 	private readonly socketListeners: Readonly<{
@@ -32,19 +29,7 @@ export class Group extends _Group {
 	private readonly _initialTtlTimeout: NodeJS.Timeout;
 	private readonly _deleteExternalRefs: () => void;
 
-	/**
-	 *
-	 * @param namespace -
-	 *
-	 * @param deleteExternalRefs
-	 * A function that- when called- deletes all external references
-	 * to this newly constructed object such that it can be garbage
-	 * collected.
-	 *
-	 * @param initialTtl
-	 * If no sockets connect to this `GameSession` in this many seconds,
-	 * it will close and clean itself up.
-	 */
+	/** */
 	public constructor(desc: Readonly<{
 		namespace: io.Namespace,
 		name: Group.Name,
@@ -118,10 +103,7 @@ export class Group extends _Group {
 		}).on("connection", this.onConnection.bind(this));
 	}
 
-	/**
-	 *
-	 * @param socket -
-	 */
+	/** */
 	protected onConnection(socket: Group.Socket): void {
 		console.info(`socket connect (group):  ${socket.id}`);
 		if (this.#currentGame) {
@@ -164,8 +146,8 @@ export class Group extends _Group {
 			socket.on(evName, callback.bind(this, socket));
 		});
 	}
-	private _socketOnHostCreateGame(
-		ctorArgs: Game.CtorArgs.PreIdAssignment<Coord.System>
+	private _socketOnHostCreateGame<S extends Coord.System>(
+		ctorArgs: Game.CtorArgs.UnFin<S>
 	): void {
 		const failureReasons = this._createGameInstance(ctorArgs);
 		if (failureReasons.length) {
@@ -236,8 +218,8 @@ export class Group extends _Group {
 	 * @returns
 	 * `false` if the passed arguments were incomplete or invalid.
 	 */
-	private _createGameInstance(
-		ctorArgs: Game.CtorArgs.PreIdAssignment<Coord.System>,
+	private _createGameInstance<S extends Coord.System>(
+		ctorArgs: Game.CtorArgs.UnFin<S>,
 	): readonly string[] {
 		const failureReasons = [];
 		if (this.isCurrentlyPlayingAGame) {

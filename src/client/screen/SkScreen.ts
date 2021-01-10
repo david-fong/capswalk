@@ -236,7 +236,7 @@ export namespace SkScreen {
 		[ Id.COLOUR_CTRL   ]: {};
 		//==================
 		[ Id.SETUP_OFFLINE ]: {};
-		[ Id.PLAY_OFFLINE  ]: [Game.CtorArgs.PreIdAssignment];
+		[ Id.PLAY_OFFLINE  ]: [Game.CtorArgs.UnFin];
 		//==================
 		[ Id.GROUP_JOINER  ]: {};
 		[ Id.GROUP_LOBBY   ]: {};

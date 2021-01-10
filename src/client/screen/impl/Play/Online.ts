@@ -1,23 +1,21 @@
 import type { Socket } from "socket.io-client";
-import type { OnlineGame } from "client/game/OnlineGame";
+import { JsUtils, OmHooks } from "../../SkScreen";
 
 import { GameEv } from "defs/OnlineDefs";
-import { JsUtils, OmHooks } from "../../SkScreen";
+import type { Coord } from "floor/Tile";
 import type { SkScreen } from "../../SkScreen";
+import type { OnlineGame } from "client/game/OnlineGame";
 import { Game, _PlayScreen } from "./_Screen";
-type SID = SkScreen.Id.PLAY_ONLINE;
-type G = Game.Type.ONLINE;
-
 
 /**
  */
-export class PlayOnlineScreen extends _PlayScreen<SID, G> {
+export class PlayOnlineScreen extends _PlayScreen<SkScreen.Id.PLAY_ONLINE,"ONLINE"> {
 	/** @override */
 	protected readonly askConfirmBeforeLeave = false;
 
 	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.
-	declare protected readonly currentGame: OnlineGame<any>;
+	declare protected readonly currentGame: OnlineGame;
 
 	/** @override */
 	protected readonly wantsAutoPlayPause = false;
@@ -57,10 +55,10 @@ export class PlayOnlineScreen extends _PlayScreen<SID, G> {
 	}
 
 	/** @override */
-	protected async _createNewGame(args: [
-		ctorArgs: Game.CtorArgs,
+	protected async _createNewGame<S extends Coord.System>(args: [
+		ctorArgs: Game.CtorArgs<S>,
 		operatorIds: readonly number[],
-	]): Promise<OnlineGame<any>> {
+	]): Promise<OnlineGame<S>> {
 		const [ctorArgs, operatorIds] = args;
 		const game = new (await import(
 			/* webpackChunkName: "game/online" */

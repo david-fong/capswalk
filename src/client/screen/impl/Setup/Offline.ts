@@ -22,8 +22,8 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 	}
 
 	/** @override */
-	protected parseArgsFromGui(): Game.CtorArgs.PreIdAssignment {
-		type PArgs = Array<Player.CtorArgs.PreIdAssignment>;
+	protected parseArgsFromGui(): Game.CtorArgs.UnFin {
+		type PArgs = Array<Player.CtorArgs.UnFin>;
 		const args = super.parseArgsFromGui();
 		// TODO.impl get rid of this placeholder once this screen has inputs for
 		// the client to configure their own players.

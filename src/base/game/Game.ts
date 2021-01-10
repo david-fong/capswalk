@@ -28,16 +28,18 @@ import type { GameMirror } from "base/game/gameparts/GameMirror";
  */
 export namespace Game {
 
-	export enum Type {
-		SERVER  = "SERVER",
-		ONLINE  = "ONLINE",
-		OFFLINE = "OFFLINE",
-	}
+	/** @enum */
+	export type Type = typeof Type[keyof typeof Type];
+	export const Type = Object.freeze(<const>{
+		SERVER:  "SERVER",
+		ONLINE:  "ONLINE",
+		OFFLINE: "OFFLINE",
+	});
+	Type as {[K in Type]: K};
 	export namespace Type {
-		export type Manager = Type.OFFLINE | Type.SERVER;
-		export type Browser = Type.OFFLINE | Type.ONLINE;
+		export type Manager = typeof Type.OFFLINE | typeof Type.SERVER;
+		export type Browser = typeof Type.OFFLINE | typeof Type.ONLINE;
 	}
-	Object.freeze(Type);
 
 	/**
 	 * Unlike CtorArgs, these are not passed as no-prototype objects
@@ -75,8 +77,8 @@ export namespace Game {
 		readonly players: TU.RoArr<Player.CtorArgs>;
 	};
 	export namespace CtorArgs {
-		export interface PreIdAssignment<S extends Coord.System = Coord.System> extends _CtorArgsBase<S> {
-			readonly players: TU.RoArr<Player.CtorArgs.PreIdAssignment>;
+		export interface UnFin<S extends Coord.System = Coord.System> extends _CtorArgsBase<S> {
+			readonly players: TU.RoArr<Player.CtorArgs.UnFin>;
 		}
 		/** */
 		export type FailureReasons = {

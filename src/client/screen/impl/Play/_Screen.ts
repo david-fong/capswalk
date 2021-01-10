@@ -7,7 +7,7 @@ import GRID_style from "./grid.m.css";
 import type { Coord } from "floor/Tile";
 import type { OfflineGame } from "client/game/OfflineGame";
 import type { OnlineGame } from "client/game/OnlineGame";
-type BrowserGame = OfflineGame<Coord.System> | OnlineGame<Coord.System>;
+type BrowserGame = OfflineGame | OnlineGame;
 
 /**
  * If and only if this screen is the current screen, then its

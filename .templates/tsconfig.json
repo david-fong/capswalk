@@ -28,6 +28,7 @@
 		"strict": true,
 		"strictPropertyInitialization": false,
 		"noImplicitReturns": true,
+		"noImplicitAny": true,
 		"noUncheckedIndexedAccess": true,
 
 		// Linting:

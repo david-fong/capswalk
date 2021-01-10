@@ -89,9 +89,9 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 	 * Must return a completely new object each time.
 	 * (think deep copy. no shared references.)
 	 */
-	protected parseArgsFromGui(): Game.CtorArgs.PreIdAssignment {
+	protected parseArgsFromGui(): Game.CtorArgs.UnFin {
 		// TODO.impl
-		const args: TU.NoRo<Game.CtorArgs.PreIdAssignment>
+		const args: TU.NoRo<Game.CtorArgs.UnFin>
 			= Object.assign({}, _SetupScreen.DEFAULT_PRESET());
 			// ^temporary default until _loadLastUsedPreset is implemented.
 		args.langId = this.langSel.confirmedOpt.desc.id;
@@ -101,7 +101,7 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 }
 export namespace _SetupScreen {
 
-	export const DEFAULT_PRESET = (): Game.CtorArgs.PreIdAssignment => { return {
+	export const DEFAULT_PRESET = (): Game.CtorArgs.UnFin => { return {
 		coordSys: "W_EUCLID2" as Coord.System.W_EUCLID2,
 		gridDimensions: {
 			height: 10,
@@ -110,7 +110,7 @@ export namespace _SetupScreen {
 		averageHealthPerTile: 1.0 / 45.0,
 		langWeightExaggeration: 1.0,
 		langId: "engl-low",
-		players: ((): TU.RoArr<_Player.CtorArgs.PreIdAssignment> => [{
+		players: ((): TU.RoArr<_Player.CtorArgs.UnFin> => [{
 			familyId:   "CHASER",
 			teamId:     1,
 			username:   "chaser1",

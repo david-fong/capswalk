@@ -21,7 +21,7 @@ export class Chaser extends RobotPlayer.Decisive {
 
 	private readonly grid: Chaser["game"]["grid"];
 
-	public constructor(game: GameManager<any,any>, desc: Player._CtorArgs["CHASER"]) {
+	public constructor(game: GameManager<any>, desc: Player._CtorArgs["CHASER"]) {
 		super(game, desc);
 		Object.seal(this); //🧊
 		this.params = Object.freeze(Object.assign(

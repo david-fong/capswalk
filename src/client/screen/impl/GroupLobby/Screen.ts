@@ -139,7 +139,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 					login.name!,
 					{ passphrase: login.passphrase! },
 				);
-				sock.once(GameEv.CREATE_GAME, (args: [Game.CtorArgs, readonly number[]]) => {
+				sock.once(GameEv.CREATE_GAME, (...args: [Game.CtorArgs, readonly number[]]) => {
 					this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, args); //🚀
 				});
 				// function ensureConnected(): void {

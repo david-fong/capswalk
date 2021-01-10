@@ -10,12 +10,11 @@ import { OperatorPlayer } from "game/player/OperatorPlayer";
 
 import InitBrowserGameCtorMaps from "game/ctormaps/CmapBrowser";
 InitBrowserGameCtorMaps();
-type G = Game.Type.ONLINE;
 
 /**
  * @final
  */
-export class OnlineGame<S extends Coord.System> extends GameMirror<G,S> {
+export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirror<"ONLINE",S> {
 
 	/** @override */
 	declare readonly grid: VisibleGrid<S>;
@@ -35,7 +34,7 @@ export class OnlineGame<S extends Coord.System> extends GameMirror<G,S> {
 		operatorIds: TU.RoArr<Player.Id>,
 	) {
 		super(
-			Game.Type.ONLINE, {
+			"ONLINE", {
 				gridClassLookup: VisibleGrid.getImplementation,
 				OperatorPlayer: OperatorPlayer,
 				RobotPlayer: (game, desc) => new Player(game, desc),

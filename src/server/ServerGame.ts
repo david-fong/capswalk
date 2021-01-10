@@ -10,7 +10,6 @@ import { Grid } from "floor/Grid";
 
 import { GameManager } from "game/gameparts/GameManager";
 import { RobotPlayer } from "base/game/player/RobotPlayer";
-type G = Game.Type.SERVER;
 
 /**
  * Handles game-related events and attaches listeners to each client
@@ -18,7 +17,7 @@ type G = Game.Type.SERVER;
  *
  * @final
  */
-export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
+export class ServerGame<S extends Coord.System = Coord.System> extends GameManager<"SERVER",S> {
 
 	public readonly namespace: io.Namespace;
 	private readonly _groupHostClient: io.Socket["client"];
@@ -48,13 +47,13 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 		groupNsps: io.Namespace,
 		groupHostClient: io.Socket["client"],
 		deleteExternalRefs: () => void,
-		gameDesc: Game.CtorArgs.PreIdAssignment<S>,
+		gameDesc: Game.CtorArgs.UnFin<S>,
 	}>) {
 		super(
 			Game.Type.SERVER, {
 				gridClassLookup: Grid.getImplementation,
 				OperatorPlayer: undefined,
-				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<G>, desc),
+				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<"SERVER">, desc),
 				onGameBecomeOver: () => {},
 			},
 			(() => {
@@ -112,7 +111,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 		Promise.all(promises)
 		.then(() => {
 			this.namespace.removeAllListeners("connect");
-			this._greetGameSockets(args.gameDesc); //👂
+			this._greetGameSockets(args.gameDesc); //👂 "ok! get ready for game ctor args!"
 		})
 		.catch((reason) => { setImmediate(() => { throw reason; }); });
 
@@ -125,7 +124,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 			resolvers.get(gameSocket.client["id"])!();
 		});
 		// Tell all group members in the lobby to join the game namespace:
-		args.groupNsps.emit(GroupEv.CREATE_GAME); //📢
+		args.groupNsps.emit(GroupEv.CREATE_GAME); //📢 "join game namespace please!"
 	}
 
 	/**
@@ -142,10 +141,10 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 		// @ts-expect-error : RO=
 		this.playerSockets
 		= humans.reduce<Map<Player.Id, io.Socket>>((build, player) => {
-			if (player.clientId === undefined) throw new Error("never");
+			if (DEF.DevAssert && player.clientId === undefined) throw new Error("never");
 			const gameSocket = _client2GameSocket.get(player.clientId!);
-			if (gameSocket === undefined) throw new Error("never");
-			build.set(player.playerId, gameSocket);
+			if (DEF.DevAssert && gameSocket === undefined) throw new Error("never");
+			build.set(player.playerId, gameSocket!);
 			return build;
 		}, new Map());
 		JsUtils.propNoWrite(this as ServerGame<S>, "playerSockets");
@@ -264,8 +263,7 @@ export class ServerGame<S extends Coord.System> extends GameManager<G,S> {
 }
 JsUtils.protoNoEnum(ServerGame,
 	"_awaitGameSockets", "_greetGameSockets",
-	"_createOperatorPlayer", "setCurrentOperator",
-	"_terminate",
+	"setCurrentOperator", "_terminate",
 );
 Object.freeze(ServerGame);
 Object.freeze(ServerGame.prototype);
