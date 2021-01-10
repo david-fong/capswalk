@@ -8,7 +8,6 @@ type SID = SkScreen.Id.GROUP_LOBBY;
 import style from "./style.m.css";
 
 /**
- *
  */
 export class GroupLobbyScreen extends SkScreen<SID> {
 
@@ -109,9 +108,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 		});
 	};
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected async _abstractOnBeforeEnter(
 		navDir: SkScreen.NavDir,
 		args: SkScreen.EntranceArgs[SID],
@@ -154,9 +151,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 		);
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	public getRecommendedFocusElem(): HTMLElement {
 		let elemToFocus: HTMLElement | undefined
 			= (!this.in.username.validity.valid) ? this.in.username
@@ -168,9 +163,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 		return elemToFocus;
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
 		// Make sure we stop listening for the game to start
 		// in case it hasn't started yet:

@@ -11,9 +11,6 @@
 
 ### Things I feel like doing
 
-1. Extract Game CtorArgs operator player indicator arguments to dedicated field or a _separate_ ctor parameter.
-    - Make sure everything is deep-frozen as soon as possible.
-1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Implement, use, and test array extensions freeze and seal.
 1. Move `Player.RequestBuffer` to dedicated file and make an extension for `OperatorPlayer`s that actually does stuff. The base version will pretty much do nothing.
 1. Change Euclid Visual Grid to use SVG.
@@ -42,6 +39,7 @@
 
 ### Things that are low priority
 
+1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Make a json file or something defining all the webpack chunk names I have defined.
 1. Make Socket interfaces for each namespace with overrides of `on` and `emit`.
 1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
