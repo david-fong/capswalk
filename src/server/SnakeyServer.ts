@@ -55,7 +55,7 @@ export class SnakeyServer extends _SnakeyServer {
 		const CLIENT_ROOT = path.resolve(__dirname, "../client");
 		this.app.disable("x-powered-by");
 		this.app.use("/", expressStaticGzip(CLIENT_ROOT, {
-			enableBrotli: true,
+			enableBrotli: DEF.PRODUCTION, //🚩 This must match the value in the webpack config.
 			serveStatic: {
 				setHeaders: (res, path, stat): void => {
 					res.setHeader("X-Content-Type-Options", "nosniff");
