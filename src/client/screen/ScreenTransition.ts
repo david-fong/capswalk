@@ -1,24 +1,21 @@
 import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
 
-
 /**
  * @final
  */
 export class ScreenTransition {
 
-	/**
-	 * Usage of this element is partially aesthetic, but mostly
-	 * to ease work done by the rendering engine. This is the only
-	 * element styled to smoothly transition colour changes.
-	 */
-	public readonly baseElem: HTMLElement;
+	/** */
+	public readonly baseElem: HTMLElement = document.getElementById(OmHooks.Screen.Id.SCREEN_TINT)!;
 
-	#currentRequest: Promise<void> | undefined;
+	#currentRequest: Promise<void> = Promise.resolve();
 
 	public constructor() {
-		this.baseElem = document.getElementById(OmHooks.Screen.Id.SCREEN_TINT)!;
-		this.#currentRequest = undefined;
+		this.baseElem.tabIndex = -1;
+		this.baseElem.addEventListener("keydown", (ev) => {
+			ev.preventDefault();
+		})
 		JsUtils.propNoWrite(this as ScreenTransition, "baseElem");
 		Object.seal(this); //🧊
 	}
@@ -28,20 +25,15 @@ export class ScreenTransition {
 	 * @param request -
 	 */
 	public do(request: ScreenTransition.Request): Promise<void> {
-		this.#currentRequest = (this.#currentRequest ?? Promise.resolve()).then(() => {
+		this.#currentRequest = (this.#currentRequest).then(() => {
 			return this._atomicDo(request);
 		});
 		return this.#currentRequest;
 	}
 
-	/**
-	 */
-	// TODO will it be safer to prevent keyboard events during the transition?
-	// If so, make this.baseElem programmatically focusable, and toggle it to
-	// be the focused element during the transition. When blurring it, the
-	// browser should automatically recall the element that was focused before it.
-	// (but please verify).
+	/** */
 	private async _atomicDo(request: ScreenTransition.Request): Promise<void> {
+		this.baseElem.focus();
 		const gdStyle = this.baseElem.style;
 		await this._triggerCssTransition(() => {
 			gdStyle.pointerEvents = "all";
@@ -60,11 +52,11 @@ export class ScreenTransition {
 			gdStyle.pointerEvents = "none";
 			gdStyle.opacity = "0.0";
 		});
+		this.baseElem.blur();
 		return;
 	}
 
-	/**
-	 */
+	/** */
 	private _triggerCssTransition(transitionTriggerFunc: () => void): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			this.baseElem.addEventListener("transitionend", () => resolve(), { once: true });
@@ -73,13 +65,13 @@ export class ScreenTransition {
 	}
 }
 export namespace ScreenTransition {
-	/**
-	 */
+	/** */
 	export type Request = Readonly<{
 		/**
 		 * This will be awaited before calling `beforeUnblur`.
 		 */
 		beforeUnblurAwait?: Promise<any>,
+		/** */
 		intermediateTransitionTrigger?: () => void,
 		/**
 		 * This is done after `intermediateTransitionTrigger` finishes.
