@@ -41,7 +41,7 @@ export namespace VisibleGrid {
 		tiles.translate  = false; // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/translate
 		tiles.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
 
-		const base = JsUtils.mkEl("div", []);
+		const base = JsUtils.html("div");
 		const root = base.attachShadow({ mode: "closed" });
 		tiles.classList.add(style["impl-body"]);
 		root.appendChild(tiles);
@@ -49,8 +49,8 @@ export namespace VisibleGrid {
 		JsUtils.adoptStyleSheet(root, "chunk/game-css.css");
 
 		// Initialize spotlight elements:
-		const shortSpotlight = JsUtils.mkEl("div", [player_style["spotlight-short"]]);
-		const longSpotlight  = JsUtils.mkEl("div", [player_style["spotlight-long"]]);
+		const shortSpotlight = JsUtils.html("div", [player_style["spotlight-short"]]);
+		const longSpotlight  = JsUtils.html("div", [player_style["spotlight-long"]]);
 		const spotlightElems = Object.freeze([ shortSpotlight, longSpotlight ]);
 
 		return Object.freeze({

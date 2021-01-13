@@ -39,7 +39,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 
 	readonly #parentElem: HTMLElement;
 
-	protected readonly baseElem: HTMLElement = JsUtils.mkEl("div", [OMHC.BASE]);
+	protected readonly baseElem: HTMLElement = JsUtils.html("div", [OMHC.BASE]);
 
 	#hasLazyLoaded: boolean = false;
 
@@ -72,8 +72,8 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 		this.#parentElem        = parentElem;
 		this.requestGoToScreen  = requestGoToScreen;
 		this.nav = Object.freeze({
-			prev: JsUtils.mkEl("button", []),
-			next: JsUtils.mkEl("button", []),
+			prev: JsUtils.html("button"),
+			next: JsUtils.html("button"),
 		});
 		JsUtils.propNoWrite(this as SkScreen<SID>,
 			"screenId", "top", "baseElem", "nav", "requestGoToScreen",

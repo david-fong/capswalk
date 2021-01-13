@@ -19,14 +19,12 @@ export namespace JsUtils {
 		Object.freeze(obj);
 	}
 
-	/**
-	 */
+	/** */
 	export function hasProp<T, K extends keyof T>(obj: T, key: K): boolean {
 		return Object.prototype.hasOwnProperty.call(obj, key);
 	}
 
-	/**
-	 */
+	/** */
 	export function protoNoEnum<T>(
 		ctor: {new(...args: any[]): T} | Function, // <- allow abstract classes
 		...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
@@ -43,15 +41,13 @@ export namespace JsUtils {
 		});
 	}
 
-	/**
-	 */
+	/** */
 	export function instNoEnum<T>(
 		inst: T, ...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
 	): void {
 		_configProp(inst, propNames, NO_ENUM);
 	}
-	/**
-	 */
+	/** */
 	export function propNoWrite<T>(
 		inst: T, ...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
 	): void {
@@ -105,22 +101,15 @@ export namespace JsUtils {
 	 * - Calls `Object.seal` immediately on the created HTMLElement.
 	 * - If making a button, defaults the `type` to `button` instead of `submit`.
 	 * - If making an anchor, defaults the rel to `noopener`.
-	 *
-	 * @param tagName -
-	 * @param classNames -
-	 * @param domProperties -
 	 */
-	export function mkEl<
-		K extends keyof HTMLElementTagNameMap,
-		V extends HTMLElementTagNameMap[K],
-	>(
+	export function html<K extends keyof HTMLElementTagNameMap>(
 		tagName: K,
-		classNames: Array<string>,
-		domProperties: Readonly<Partial<V>> | undefined = undefined,
+		classNames?: string[],
+		domProps?: Readonly<Partial<HTMLElementTagNameMap[K]>>,
 	): HTMLElementTagNameMap[K] {
 		const el = document.createElement(tagName);
 		try { Object.seal(el); } catch (e) {};
-		if (classNames.length) {
+		if (classNames?.length) {
 			el.classList.add(...classNames);
 		}
 
@@ -133,14 +122,30 @@ export namespace JsUtils {
 			// anyway. We're going stricter too.
 		}
 
-		if (domProperties !== undefined) {
-			Object.assign(el, domProperties);
+		if (domProps !== undefined) {
+			Object.assign(el, domProps);
 		}
 		return el;
 	}
 
-	/**
-	 */
+	/** */
+	export function svg<K extends keyof SVGElementTagNameMap>(
+		tagName: K,
+		classNames?: string[],
+		domProps?: Readonly<Partial<SVGElementTagNameMap[K]>>,
+	): SVGElementTagNameMap[K] {
+		const el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
+		Object.seal(el);
+		if (classNames?.length) {
+			el.classList.add(...classNames);
+		}
+		if (domProps !== undefined) {
+			Object.assign(el, domProps);
+		}
+		return el;
+	}
+
+	/** */
 	export function adoptStyleSheet(root: Document | ShadowRoot, href: string): void {
 		// if ("adoptedStyleSheets" in root) {
 		// 	const sheet = Array.from(document.styleSheets).find((sheet) => sheet.href?.endsWith(href));
@@ -152,7 +157,7 @@ export namespace JsUtils {
 		// 	}
 		// }
 		// The client's browser does not support adoptedStyleSheets :(
-		root.appendChild(JsUtils.mkEl("link", [], {
+		root.appendChild(JsUtils.html("link", [], {
 			rel: "stylesheet",
 			href: href,
 		}));

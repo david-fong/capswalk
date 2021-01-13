@@ -11,10 +11,10 @@
 
 ### Things I feel like doing
 
-1. Implement, use, and test array extensions freeze and seal.
-1. Move `Player.RequestBuffer` to dedicated file and make an extension for `OperatorPlayer`s that actually does stuff. The base version will pretty much do nothing.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
+1. Implement, use, and test array extensions freeze and seal.
+1. Move `Player.RequestBuffer` to dedicated file and make an extension for `OperatorPlayer`s that actually does stuff. The base version will pretty much do nothing.
 1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
     - Alternative: Add an optional argument to `tileDestsFrom` and `tileSourcesTo`, or make a public wrapper and make those into protected abstract methods.
 1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.

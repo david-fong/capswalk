@@ -39,7 +39,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 		this.nav.prev.textContent = "Return To Joiner";
 
 		/* @ts-expect-error : RO= */
-		this.teamsElem = JsUtils.mkEl("div", [style["teams-section"]]);
+		this.teamsElem = JsUtils.html("div", [style["teams-section"]]);
 		this.baseElem.appendChild(this.teamsElem);
 
 		// @ts-expect-error : RO=
@@ -60,12 +60,12 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 	/**
 	 */
 	private _createInputs(): void {
-		const base = JsUtils.mkEl("div", [
+		const base = JsUtils.html("div", [
 			OmHooks.General.Class.INPUT_GROUP,
 			style["client-info-section"],
 		]);
 
-		const uname = JsUtils.mkEl("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
+		const uname = JsUtils.html("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
 			type      : "text",
 			minLength : 1,
 			maxLength : Player.Username.MAX_LENGTH,
@@ -76,7 +76,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 		});
 		base.appendChild(uname);
 
-		const teamId = JsUtils.mkEl("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
+		const teamId = JsUtils.html("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
 			type: "number", inputMode: "numeric",
 			min: "0", max: "0", step: "1", value: "0",
 			onchange: this._submitInputs.bind(this),
@@ -84,7 +84,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 		teamId.classList.add();
 		base.appendChild(teamId);
 
-		const avatar = JsUtils.mkEl("select", []);
+		const avatar = JsUtils.html("select");
 		// TODO.impl avatar selection element
 
 		// @ts-expect-error : RO=
@@ -189,7 +189,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 
 			// If player is joining a team that has no HTML element yet:
 			if (desc && !this.teamElems.has(desc.teamId)) {
-				const teamElem = JsUtils.mkEl("div", [style["team"]]);
+				const teamElem = JsUtils.html("div", [style["team"]]);
 				this.teamElems.set(desc.teamId, teamElem);
 				teamElem.onclick = (ev) => {
 					this.in.teamId.value = desc.teamId.toString();
@@ -230,9 +230,9 @@ export namespace GroupLobbyScreen {
 		}>;
 
 		public constructor(desc: Player.UserInfo) {
-			this.base = JsUtils.mkEl("div", [style["player"]]);
+			this.base = JsUtils.html("div", [style["player"]]);
 			const mkDiv = (): HTMLDivElement => {
-				const div = JsUtils.mkEl("div", []);
+				const div = JsUtils.html("div");
 				this.base.appendChild(div);
 				return div;
 			};

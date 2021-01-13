@@ -46,7 +46,7 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 		const lwe
 			// @ts-expect-error : RO=
 			= this.langWeightExaggeration
-			= JsUtils.mkEl("input", [style["lang-weight-exagg"]], {
+			= JsUtils.html("input", [style["lang-weight-exagg"]], {
 				type: "range",
 				min: "0",
 				max: Lang.WeightExaggeration.MAX.toString(),
@@ -54,10 +54,10 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 				value: "1",
 			});
 		{
-			const list = JsUtils.mkEl("datalist", []);
+			const list = JsUtils.html("datalist");
 			list.id = OmHooks.Screen.Impl.Setup.Id.LANG_WEIGHT_EXAGGERATION_LIST;
 			[{val:0,label:"0"}, {val:1,label:"1"}].forEach((tickDesc) => {
-				list.appendChild(JsUtils.mkEl("option", [], {
+				list.appendChild(JsUtils.html("option", [], {
 					value: tickDesc.val.toString(),
 					label: tickDesc.label,
 				}));

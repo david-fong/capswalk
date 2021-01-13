@@ -109,18 +109,18 @@ export namespace ColourCtrlScreen {
 				base.classList.add(style["opt"]);
 				base.dataset[OmHooks.General.Dataset.COLOUR_SCHEME] = desc.id;
 
-				const label = JsUtils.mkEl("span", [style["opt-label"]]); {
-					label.appendChild(JsUtils.mkEl("div", [style["opt-label--title"]], {
+				const label = JsUtils.html("span", [style["opt-label"]]); {
+					label.appendChild(JsUtils.html("div", [style["opt-label--title"]], {
 						textContent: desc.displayName,
 					}));
 				}
-				label.appendChild(JsUtils.mkEl("div", [style["opt-label--author"]], {
+				label.appendChild(JsUtils.html("div", [style["opt-label--author"]], {
 					textContent: "by " + desc.author,
 				}));
 				base.appendChild(label);
 
 				for (let i = 0; i < Option.NUM_PREVIEW_SLOTS - 1; i++) {
-					base.appendChild(JsUtils.mkEl("span", []));
+					base.appendChild(JsUtils.html("span"));
 				}
 				// At below: We need to append it to something to use getComputedStyle :/
 				// We attach it in the proper place once we get that.

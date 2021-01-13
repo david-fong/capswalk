@@ -7,7 +7,16 @@ import { VisibleGrid } from "floor/visible/VisibleGrid";
 import { WrappedEuclid2 } from "./System";
 import style from "./style.m.css";
 type S = Coord.System.W_EUCLID2;
-
+/*
+class VisibleTile {
+	public body = JsUtils.svg
+	constructor() {
+		;
+	}
+}
+Object.freeze(VisibleTile);
+Object.freeze(VisibleTile.prototype);
+ */
 /**
  * @final
  */
@@ -20,7 +29,7 @@ export class Euclid2VisibleGrid extends WrappedEuclid2.Grid implements VisibleGr
 	public constructor(desc: AbstractGrid.CtorArgs<S>) {
 		super(desc);
 
-		const gridElem = JsUtils.mkEl("div", [style["grid"]]);
+		const gridElem = JsUtils.html("div", [style["grid"]]);
 		gridElem.style.setProperty("--euclid2-grid-width", this.dimensions.width.toString());
 
 		const tiles: Array<VisibleTile> = [];

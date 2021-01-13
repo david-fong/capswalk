@@ -22,7 +22,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
 	#isValid: boolean;
 
 	public constructor() {
-		const base = JsUtils.mkEl("div", [style["this"]], {
+		const base = JsUtils.html("div", [style["this"]], {
 			tabIndex: 0,
 		});
 		base.setAttribute("role", "listbox");
@@ -142,7 +142,7 @@ export namespace SkPickOne {
 		#disabled: boolean;
 		#notifyParentOfDisabledChange: (me: _Option) => void;
 		public constructor() {
-			const base = this.baseElem = JsUtils.mkEl("div", [style["opt"]]);
+			const base = this.baseElem = JsUtils.html("div", [style["opt"]]);
 			base.setAttribute("role", "option");
 			this.#disabled = false;
 		}

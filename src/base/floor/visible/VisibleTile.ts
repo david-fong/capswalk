@@ -10,10 +10,8 @@ import style from "./tile.m.css";
  */
 export class VisibleTile implements TU.Pikk<Tile,"occId"|"health"|"char"> {
 
-	public readonly baseElem = JsUtils.mkEl("div", [
-		style["this"],
-	]);
-	private readonly charElem = JsUtils.mkEl("div", []);
+	public readonly baseElem = JsUtils.html("div", [style["this"]]);
+	private readonly charElem = JsUtils.html("div", []);
 
 	public constructor() {
 		const base = this.baseElem;

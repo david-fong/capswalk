@@ -21,7 +21,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 		const nav
 			// @ts-expect-error : RO=
 			= this.navElem
-			= JsUtils.mkEl("div", [
+			= JsUtils.html("div", [
 				OmHooks.General.Class.TEXT_SELECT_DISABLED,
 				OmHooks.General.Class.INPUT_GROUP,
 				style["nav"],
@@ -78,7 +78,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 			screenId: SkScreen.Id | ((ev: MouseEvent) => void);
 		}>>((desc) => Object.freeze(desc))
 		.forEach((desc) => {
-			const button = JsUtils.mkEl("button", []);
+			const button = JsUtils.html("button");
 			button.onclick = (desc.screenId instanceof Function) ? desc.screenId : () => {
 				// TODO.impl play a health-up sound.
 				// this.top.sfx.;
@@ -102,7 +102,7 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 			href: URL;
 		}>>((desc) => Object.freeze(desc))
 		.forEach((desc) => {
-			const a = JsUtils.mkEl("a", [], {
+			const a = JsUtils.html("a", [], {
 				href: (desc.href).toString(),
 				//referrerPolicy: "strict-origin-when-cross-origin",
 				target: "_blank",

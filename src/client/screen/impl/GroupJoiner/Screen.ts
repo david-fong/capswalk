@@ -190,7 +190,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 		const makeOption = (groupName: Group.Name): HTMLOptionElement => {
 			// If we didn't know about this group yet, create a new
 			// option for it (Insert into list in alphabetical order):
-			const newOpt = JsUtils.mkEl("option", [], { value: groupName });
+			const newOpt = JsUtils.html("option", [], { value: groupName });
 			for (const otherOpt of dataListArr) {
 				if (newOpt.value.localeCompare(otherOpt.value) < 0) {
 					dataList.insertBefore(newOpt, otherOpt);
@@ -335,7 +335,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 	private _initializeFormContents(): HTMLElement {
 		// @ts-expect-error : RO=
 		this.in = {};
-		const contentWrapper = JsUtils.mkEl("div"/*"form"*/, [
+		const contentWrapper = JsUtils.html("div"/*"form"*/, [
 			OmHooks.General.Class.INPUT_GROUP,
 			style["content-wrapper"],
 		], {
@@ -346,13 +346,13 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 		contentWrapper.appendChild(this.nav.prev);
 
 		function createGenericTextInput(labelText: string, classStr: string): HTMLInputElement {
-			const input = JsUtils.mkEl("input", [OmHooks.General.Class.INPUT_GROUP_ITEM, classStr], {
+			const input = JsUtils.html("input", [OmHooks.General.Class.INPUT_GROUP_ITEM, classStr], {
 				type: "text",
 				autocomplete: "off",
 				spellcheck: false,
 			});
 			// Label:
-			const label = JsUtils.mkEl("label", [], { textContent: labelText });
+			const label = JsUtils.html("label", [], { textContent: labelText });
 			label.appendChild(input);
 			contentWrapper.appendChild(label);
 			return input;
@@ -368,7 +368,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 			hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
 			const suggestedHostDesc = GroupJoinerScreen.SUGGEST_HOST(this.top.webpageHostType);
 			if (suggestedHostDesc) {
-				const suggestOpt = JsUtils.mkEl("option", [], {
+				const suggestOpt = JsUtils.html("option", [], {
 					value: suggestedHostDesc.value,
 					textContent: suggestedHostDesc.description,
 				});
@@ -390,7 +390,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 			const nspsList
 				// @ts-expect-error : RO=
 				= this.groupNameDataList
-				= JsUtils.mkEl("datalist", [], { id: OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS});
+				= JsUtils.html("datalist", [], { id: OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS});
 			this.baseElem.appendChild(nspsList);
 			nspsName.setAttribute("list", nspsList.id);
 		}{

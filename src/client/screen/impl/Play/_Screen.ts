@@ -318,7 +318,7 @@ export abstract class _PlayScreen<
 	 *
 	 */
 	private _initializeControlsBar(): void {
-		const controlsBar = JsUtils.mkEl("div", [
+		const controlsBar = JsUtils.html("div", [
 			OmHooks.General.Class.CENTER_CONTENTS,
 			OmHooks.General.Class.INPUT_GROUP,
 			style["controls-bar"],
@@ -329,7 +329,7 @@ export abstract class _PlayScreen<
 			buttonText: string,
 			button?: TU.Omit<HTMLButtonElement, "onclick">,
 		): HTMLButtonElement {
-			button = button ?? JsUtils.mkEl("button", []);
+			button = button ?? JsUtils.html("button");
 			// Note that these below are set outside of mkEl, since they
 			// must apply if a button is provided as an argument.
 			button.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
@@ -362,7 +362,7 @@ export abstract class _PlayScreen<
 		const playersBar
 			// @ts-expect-error : RO=
 			= this.playersBar
-			= JsUtils.mkEl("div", [style["players-bar"]]);
+			= JsUtils.html("div", [style["players-bar"]]);
 		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, "playersBar");
 		this.baseElem.appendChild(playersBar);
 	}
@@ -378,10 +378,10 @@ export namespace _PlayScreen {
 		pauseOl: HTMLElement,
 	}> {
 		const CSS_FX = OmHooks.General.Class;
-		const base = JsUtils.mkEl("div", [style["grid-wrapper"]]);
+		const base = JsUtils.html("div", [style["grid-wrapper"]]);
 		base.setAttribute("role", "presentation");
 
-		const grid = JsUtils.mkEl("div", [
+		const grid = JsUtils.html("div", [
 			//CSS_FX.CENTER_CONTENTS,
 			//CSS_FX.STACK_CONTENTS,
 			CSS_FX.TEXT_SELECT_DISABLED,
@@ -391,18 +391,18 @@ export namespace _PlayScreen {
 		grid.setAttribute("aria-label", "Game Grid");
 
 		// Grid Scroll Wrapper:
-		const scrollOuter = JsUtils.mkEl("div", [
+		const scrollOuter = JsUtils.html("div", [
 			//CSS_FX.FILL_PARENT,
 			GRID_style["scroll-outer"],
 		]);
 		scrollOuter.setAttribute("role", "presentation");
 
-		const pauseOl = JsUtils.mkEl("div", [
+		const pauseOl = JsUtils.html("div", [
 			CSS_FX.FILL_PARENT,
 			CSS_FX.CENTER_CONTENTS,
 			GRID_style["pause-overlay"],
 		], {});
-		pauseOl.appendChild(JsUtils.mkEl("div", [], {
+		pauseOl.appendChild(JsUtils.html("div", [], {
 			textContent: "(Click to Unpause)"
 		}));
 		scrollOuter.appendChild(pauseOl);
