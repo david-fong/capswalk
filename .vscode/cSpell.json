@@ -38,7 +38,7 @@
 		"unts",
 		"engl", "japn", "kore", "jamo", "ngram", "ngrams",
 		"smoothstone",
-		"xcld", // short for "exclude"
+		"pikk", "xcld", // short for "exclude"
 
 		// Programming terminology:
 		// (Functions and Variables)

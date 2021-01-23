@@ -59,8 +59,6 @@ export class SnakeyServer extends _SnakeyServer {
 			serveStatic: {
 				setHeaders: (res, path, stat): void => {
 					res.setHeader("X-Content-Type-Options", "nosniff");
-					// @ts-expect-error
-					// TODO.build this is an error with DefinitelyTyped. send is still using mime@^1.
 					const mime = express.static.mime.lookup(path);
 					if (mime === "text/html" /* xhtml? */) {
 						res.setHeader("Cache-Control", "public, max-age=0");

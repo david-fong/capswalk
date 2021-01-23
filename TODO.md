@@ -11,8 +11,10 @@
 
 ### Things I feel like doing
 
+1. Remove dom from `:/.templates/tsconfig.json`.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
+    - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid instead of smarter tiles).
 1. Implement, use, and test array extensions freeze and seal.
 1. Move `Player.RequestBuffer` to dedicated file and make an extension for `OperatorPlayer`s that actually does stuff. The base version will pretty much do nothing.
 1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
@@ -60,7 +62,7 @@
 - Individual developer: `git gc`, `git prune`.
 - Dependencies: `pnpm audit`, `pnpm outdated`.
 - Convert any usages of `.innerHtml` or `.innerText` to use `.textContent` unless intentional (In which case, write a comment on why it is intentional).
-- Make sure nobody uses `document.createElement` instead of `JsUtil.mkEl` unless they document why it's necessary.
+- Make sure nobody uses `document.createElement` instead of `JsUtil.html` unless they document why it's necessary.
 
 ### Ideas
 
@@ -102,6 +104,7 @@
 
 ### Dependency Management
 
+- When CSS' content-visibility hidden is better supported, use it for screens instead of display none. I already checked that on chrome, tab navigation within a hidden element is disabled.
 - Try turning on `webpack.experiments.module`.
 - ~Use es6 #private syntax for getter-backing fields~
   - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`

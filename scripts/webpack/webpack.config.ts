@@ -56,8 +56,6 @@ const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 	use: [{
 		loader: MiniCssExtractPlugin.loader, options: {}
 	},{
-		loader: "css-modules-typescript-loader",
-	},{
 		loader: "css-loader", options: {
 			modules: {
 				auto: /\.m\.css$/,
