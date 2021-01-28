@@ -2,6 +2,7 @@ import { JsUtils } from "defs/JsUtils";
 import { Group, SkServer } from "defs/OnlineDefs";
 import type { Player } from "defs/TypeDefs";
 import type * as SocketIo from "socket.io-client";
+
 type Socket = SocketIo.Socket;
 type SockName = "joiner" | "group" | "game";
 

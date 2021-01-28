@@ -11,6 +11,7 @@
 
 ### Things I feel like doing
 
+1. Change `src/tsconfig` to have rootdir of `src/`. Similar for `src/base`.
 1. Remove dom from `:/.templates/tsconfig.json`.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.

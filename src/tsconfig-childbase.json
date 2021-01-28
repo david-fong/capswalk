@@ -2,11 +2,11 @@
 // "includes" field, all the files in the folder containing the concrete
 // config will be part of its reference group.
 {
-	"extends": "../../.templates/tsconfig.json",
+	"extends": "../tsconfig-template.json",
 	"compilerOptions": {
-		"baseUrl": "..",
-		"rootDir": "..",
-		"outDir":  "../../dist/.ts/src",
+		"baseUrl": ".",
+		"rootDir": ".",
+		"outDir":  "../dist/.ts/src",
 		"paths": {
 			"*": ["*", "base/*"],
 		},

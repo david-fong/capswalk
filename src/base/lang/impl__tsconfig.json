@@ -1,5 +1,5 @@
 {
-	"extends": "../.templates/tsconfig.json",
+	"extends": "../tsconfig-childbase.json",
 	"compilerOptions": {
 		"disableSolutionSearching": true
 	},

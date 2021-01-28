@@ -1,12 +1,9 @@
-// Copied from /src/.templates/tsconfig.json.
 {
 	"extends": "../tsconfig-template.json",
 	"compilerOptions": {
+		"baseUrl": "../src",
 		"rootDir": "..",
 		"outDir": "../dist/.ts",
+		"disableSolutionSearching": true,
 	},
-	"files": [],
-	"references": [
-		{ "path": "lang", },
-	],
 }

@@ -1,5 +1,5 @@
 {
-    "extends": "../.templates/tsconfig.json",
+    "extends": "../tsconfig-childbase.json",
     "compilerOptions": {
         "rootDir": "../..",
         "outDir": "../../dist/.ts"

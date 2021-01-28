@@ -1,10 +1,9 @@
 {
 	"extends": "../tsconfig-childbase.json",
 	"compilerOptions": {
+		"baseUrl": "..",
+		"rootDir": "..",
+		"outDir":  "../../dist/.ts/src",
 		"types": ["my-type-utils"],
 	},
-	"references": [
-		{ "path": "../base/defs" },
-		{ "path": "../base/game" },
-	],
 }

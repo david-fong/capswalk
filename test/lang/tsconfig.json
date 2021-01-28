@@ -1,5 +1,5 @@
 {
-	"extends": "../.templates/tsconfig.json",
+	"extends": "../tsconfig-childbase.json",
 	"references": [
 		{ "path": "../../src/base/lang" },
 		{ "path": "../../src/base/lang/impl__tsconfig.json", },
