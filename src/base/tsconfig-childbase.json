@@ -1,9 +1,10 @@
 {
 	"extends": "../tsconfig-childbase.json",
 	"compilerOptions": {
-		"baseUrl": "..",
-		"rootDir": "..",
-		"outDir":  "../../dist/.ts/src",
+		"baseUrl": ".",
+		"rootDir": ".",
+		"outDir":  "../../dist/.ts/src/base",
 		"types": ["my-type-utils"],
+		"paths": { },
 	},
 }

@@ -3,7 +3,7 @@ import { WrappedEuclid2 } from "floor/impl/Euclid2/System";
 import { Beehive } from "floor/impl/Beehive/System";
 
 import { RobotPlayer } from "game/player/RobotPlayer";
-import { Chaser } from "base/game/player/robots/Chaser";
+import { Chaser } from "game/player/robots/Chaser";
 
 export default (): void => {{
 	// Non-Visible Grid Implementation Registry:

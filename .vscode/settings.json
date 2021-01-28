@@ -8,10 +8,10 @@
         "**/tsconfig.tsbuildinfo": true,
 
         // things that I might like to toggle:
-        "node_modules/": true,
-        "**/*tsconfig*.json": true,
+        "**/*tsconfig*.json": false,
         "{**/.eslintrc.*,.eslintignore}": true,
         "scripts/webpack/*.js": true,
+        "node_modules/": true,
     },
     "search.exclude": {
         "node_modules/": true,
