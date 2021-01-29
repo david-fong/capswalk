@@ -61,16 +61,14 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 	/**
 	 */
 	public constructor(
+		ctx: SkScreen.CtorArgs,
 		screenId: SID,
-		toplevel: TopLevel,
-		parentElem: HTMLElement,
-		requestGoToScreen: AllSkScreens["goToScreen"],
 	) {
 		this.screenId           = screenId;
 		this.screenNames        = JsUtils.camelCaseTransforms(screenId);
-		this.top                = toplevel;
-		this.#parentElem        = parentElem;
-		this.requestGoToScreen  = requestGoToScreen;
+		this.top                = ctx.toplevel;
+		this.#parentElem        = ctx.parentElem;
+		this.requestGoToScreen  = ctx.goToScreen;
 		this.nav = Object.freeze({
 			prev: JsUtils.html("button"),
 			next: JsUtils.html("button"),
@@ -304,6 +302,12 @@ export namespace SkScreen {
 		// }
 		// If do-while completes, then dest must be in the forward direction:
 		return SkScreen.NavDir.FORWARD;
+	}
+
+	export interface CtorArgs {
+		readonly toplevel: TopLevel,
+		readonly parentElem: HTMLElement,
+		readonly goToScreen: AllSkScreens["goToScreen"],
 	}
 }
 Object.freeze(SkScreen);

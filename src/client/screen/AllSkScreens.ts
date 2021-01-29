@@ -34,22 +34,24 @@ export class AllSkScreens {
 		// Setting aria-hidden="true" is similar to setting "visibility: hidden"
 
 		const Id = SkScreen.Id;
-		const t = top;
-		const p = baseElem;
-		const g = Object.freeze(this.goToScreen.bind(this));
+		const ctx = Object.freeze<SkScreen.CtorArgs>({
+			toplevel: top,
+			parentElem: baseElem,
+			goToScreen: Object.freeze(this.goToScreen.bind(this)),
+		});
 		this.dict = Object.freeze({
 			// TODO.impl turn this into a class that dynamically imports js and css
 			// for all online-play-related modules together only once needed.
-			[ Id.HOME          ]: new         HomeScreen(Id.HOME         ,t,p,g),
-			[ Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(Id.HOW_TO_PLAY  ,t,p,g),
-			[ Id.HOW_TO_HOST   ]: new    HowToHostScreen(Id.HOW_TO_HOST  ,t,p,g),
-			[ Id.COLOUR_CTRL   ]: new   ColourCtrlScreen(Id.COLOUR_CTRL  ,t,p,g),
-			[ Id.SETUP_OFFLINE ]: new SetupOfflineScreen(Id.SETUP_OFFLINE,t,p,g),
-			[ Id.PLAY_OFFLINE  ]: new  PlayOfflineScreen(Id.PLAY_OFFLINE ,t,p,g),
-			[ Id.GROUP_JOINER  ]: new  GroupJoinerScreen(Id.GROUP_JOINER ,t,p,g),
-			[ Id.SETUP_ONLINE  ]: new  SetupOnlineScreen(Id.SETUP_ONLINE ,t,p,g),
-			[ Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(Id.GROUP_LOBBY  ,t,p,g),
-			[ Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(Id.PLAY_ONLINE  ,t,p,g),
+			[ Id.HOME          ]: new         HomeScreen(ctx, Id.HOME),
+			[ Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(ctx, Id.HOW_TO_PLAY),
+			[ Id.HOW_TO_HOST   ]: new    HowToHostScreen(ctx, Id.HOW_TO_HOST),
+			[ Id.COLOUR_CTRL   ]: new   ColourCtrlScreen(ctx, Id.COLOUR_CTRL),
+			[ Id.SETUP_OFFLINE ]: new SetupOfflineScreen(ctx, Id.SETUP_OFFLINE),
+			[ Id.PLAY_OFFLINE  ]: new  PlayOfflineScreen(ctx, Id.PLAY_OFFLINE),
+			[ Id.GROUP_JOINER  ]: new  GroupJoinerScreen(ctx, Id.GROUP_JOINER),
+			[ Id.SETUP_ONLINE  ]: new  SetupOnlineScreen(ctx, Id.SETUP_ONLINE),
+			[ Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(ctx, Id.GROUP_LOBBY),
+			[ Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(ctx, Id.PLAY_ONLINE),
 		});
 		JsUtils.propNoWrite(this as AllSkScreens, "dict");
 		Object.seal(this); //🧊

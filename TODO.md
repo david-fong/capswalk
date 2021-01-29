@@ -60,6 +60,7 @@
 ### Routine Checkups
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
+- Make sure no usages of `Function.bind` bind functions providing without providing all arguments and then pass the bound function to something that can pass default arguments in a more subtle way (such as DOM on\_ functions).
 - Individual developer: `git gc`, `git prune`.
 - Dependencies: `pnpm audit`, `pnpm outdated`.
 - Convert any usages of `.innerHtml` or `.innerText` to use `.textContent` unless intentional (In which case, write a comment on why it is intentional).
