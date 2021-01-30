@@ -18,6 +18,8 @@ if [[ -z "$(git worktree list | command grep -o '\[gh-pages]')" ]]; then
   # If you already checked out `gh-pages`, then you can just do `git worktree add dist/client/ gh-pages`.
 fi
 
+(cd "${root}/scripts/webpack" && pnpm install --frozen-lockfile)
+
 # Transpile the webpack config:
 echo "transpiling webpack build-scripts..."
 pnpx tsc --project "${root}/scripts/webpack/tsconfig.json"

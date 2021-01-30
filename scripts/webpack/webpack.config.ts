@@ -110,6 +110,9 @@ const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 		], // match tsconfig.baseUrl
 		alias: { /* Left to each branch config */ },
 	},
+	resolveLoader: {
+		modules: [path.resolve(PROJECT_ROOT, "scripts/webpack/node_modules")],
+	},
 	module: { rules: MODULE_RULES(), },
 	// https://webpack.js.org/plugins/source-map-dev-tool-plugin/
 	devtool: (PACK_MODE === "production")
