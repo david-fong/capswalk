@@ -1,6 +1,7 @@
 {
 	"extends": "../tsconfig-childbase.json",
 	"compilerOptions": {
+		"lib": ["es2020", "dom"],
 		"types": ["my-type-utils"],
 	},
 	"references": [

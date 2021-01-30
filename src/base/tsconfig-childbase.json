@@ -4,6 +4,7 @@
 		"baseUrl": ".",
 		"rootDir": ".",
 		"outDir":  "../../dist/.ts/src/base",
+        "lib": ["es2020", "dom"],
 		"types": ["my-type-utils"],
 		"paths": { },
 	},
