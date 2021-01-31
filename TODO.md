@@ -11,8 +11,6 @@
 
 ### Things I feel like doing
 
-1. Investigate making a package.json in `scripts/webpack` with just the webpack dependencies.
-    - Look into pnpm workspaces and see if that is useful for this.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
     - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid instead of smarter tiles).

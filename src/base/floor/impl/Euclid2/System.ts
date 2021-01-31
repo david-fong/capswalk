@@ -188,7 +188,8 @@ export namespace WrappedEuclid2 {
 		}
 
 		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {
-			const options = this.tile.destsFrom(sourceCoord).unoccupied.get
+			const options = this.tileDestsFrom(sourceCoord)
+			.filter((tile) => tile.occId === Player.Id.NULL)
 			.map((tile) => {
 				const tileIac = this.iacCache[tile.coord]!;
 				const destIac = this.iacCache[intendedDest]!;

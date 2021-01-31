@@ -1,6 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "./Tile";
-import { TileGetter } from "./TileGetter"; export type { TileGetter };
 import { Player } from "defs/TypeDefs";
 
 import type { WrappedEuclid2 } from "./impl/Euclid2/System";
@@ -10,7 +9,7 @@ import type { Beehive } from "./impl/Beehive/System";
 /**
  * A Collection of Tiles.
  */
-export abstract class Grid<S extends Coord.System> implements TileGetter.Source {
+export abstract class Grid<S extends Coord.System> {
 
 	// A type-annotated alias to this.constructor.
 	public readonly static: Grid.ClassIf<S>;
@@ -18,8 +17,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 	public readonly dimensions: Grid.Dimensions[S];
 
 	public readonly area: number;
-
-	public readonly tile: TileGetter<[Coord]>;
 
 
 	/**
@@ -31,7 +28,6 @@ export abstract class Grid<S extends Coord.System> implements TileGetter.Source 
 		this.static = desc.Grid;
 		this.dimensions = desc.dimensions;
 		this.area = desc.Grid.getArea(desc.dimensions);
-		this.tile = new TileGetter(this);
 		JsUtils.propNoWrite(this as Grid<S>, "static", "dimensions", "tile");
 	}
 
