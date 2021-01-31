@@ -199,7 +199,7 @@ export abstract class GameManager<
 		const newPlayerHealthValue
 			= initiator.health
 			+ (reqDest.health * (initiator.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
-			- (moveIsBoost ? this.health.K.costOfBoost : 0);
+			- (moveIsBoost ? this.health.K.costOfBoost(reqDest) : 0);
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make
 			// the player become downed (or if they are already downed):

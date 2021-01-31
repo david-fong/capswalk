@@ -18,13 +18,14 @@ export class HealthInfo {
 		desc: Game.CtorArgs,
 		gridStatic: Grid.ClassIf<Coord.System>,
 	) {
+		const baseCostOfBoost = Game.K.HEALTH_COST_OF_BOOST(
+			desc.averageHealthPerTile,
+			gridStatic.getLatticePatchDiameter,
+		);
 		this.K = Object.freeze({
 			avg: desc.averageHealthPerTile * gridStatic.getArea(desc.gridDimensions),
 			avgPerTile: desc.averageHealthPerTile,
-			costOfBoost: Game.K.HEALTH_COST_OF_BOOST(
-				desc.averageHealthPerTile,
-				gridStatic.getLatticePatchDiameter,
-			),
+			costOfBoost: (dest: Tile) => baseCostOfBoost / dest.seq.length,
 		});
 		JsUtils.propNoWrite(this as HealthInfo, "K");
 		Object.seal(this); //🧊
@@ -43,7 +44,7 @@ export namespace HealthInfo {
 	export interface K {
 		readonly avg: number;
 		readonly avgPerTile: number;
-		readonly costOfBoost: number;
+		readonly costOfBoost: (dest: Tile) => number;
 	}
 }
 Object.freeze(HealthInfo);

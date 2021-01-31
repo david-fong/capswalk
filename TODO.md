@@ -16,8 +16,6 @@
     - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid instead of smarter tiles).
 1. Implement, use, and test array extensions freeze and seal.
 1. Move `Player.RequestBuffer` to dedicated file and make an extension for `OperatorPlayer`s that actually does stuff. The base version will pretty much do nothing.
-1. Refactor TileGetter Query to remove all fluency. Just turn the get accessor into a function taking all the query arguments.
-    - Alternative: Add an optional argument to `tileDestsFrom` and `tileSourcesTo`, or make a public wrapper and make those into protected abstract methods.
 1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.
     - See how this affects performance.
 1. Mashup some CSS resets and normalizers for this repo.
@@ -35,7 +33,6 @@
 1. Game-Host Servers:
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
 1. Server authentication is not working. Please debug and fix.
-1. Make the cost of boosting proportional to the length of the lang-sequence of the boost-destination tile.
 1. Fill in implementation of bubble event handler.
 
 ### Things that are low priority
