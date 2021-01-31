@@ -1,6 +1,6 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "./Tile";
-import { Player } from "defs/TypeDefs";
+import { Lang, Player } from "defs/TypeDefs";
 
 import type { WrappedEuclid2 } from "./impl/Euclid2/System";
 import type { Beehive } from "./impl/Beehive/System";
@@ -28,7 +28,7 @@ export abstract class Grid<S extends Coord.System> {
 		this.static = desc.Grid;
 		this.dimensions = desc.dimensions;
 		this.area = desc.Grid.getArea(desc.dimensions);
-		JsUtils.propNoWrite(this as Grid<S>, "static", "dimensions", "tile");
+		JsUtils.propNoWrite(this as Grid<S>, "static", "dimensions");
 	}
 
 	/**

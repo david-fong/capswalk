@@ -61,18 +61,16 @@ export namespace StorageHooks {
 	function _makeSmartStorage<T extends {[key : string]: string | number}>(storage: Storage, example: T): Partial<T> {
 		const smart: T = {} as T;
 		(Object.keys(example)).forEach((key) => {
-			if (!DEF.PRODUCTION) {
-				key = "snakey3." + key;
-			}
+			const internalKey = (DEF.PRODUCTION ? "" : "snakey3.") + key;
 			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
 			Object.defineProperty(smart, key, {
 				enumerable: true,
 				get: () => {
-					const val = storage.getItem(key);
+					const val = storage.getItem(internalKey);
 					return (val === null) ? undefined : JSON.parse(val);
 				},
 				set: (val: boolean): void => {
-					storage.setItem(key, JSON.stringify(val));
+					storage.setItem(internalKey, JSON.stringify(val));
 				},
 			});
 		});

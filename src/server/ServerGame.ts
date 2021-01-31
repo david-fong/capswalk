@@ -186,7 +186,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	}
 
 	/** @override */
-	public async reset(): Promise<void> {
+	public async reset(): Promise<Game.ResetSer> {
 		// Be ready for clients to indicate readiness to unpause.
 		Promise.all(Array.from(this.namespace.sockets.values(), (socket) =>
 			new Promise<void>((resolve) => {
@@ -198,10 +198,10 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			this.statusBecomePlaying(); //👂 "play time!"
 		});
 
-		await super.reset();
+		const resetSer = await super.reset();
 
-		this.namespace.emit(GameEv.RESET, this.serializeResetState()); //📢 "get ready for playing!"
-		return;
+		this.namespace.emit(GameEv.RESET, resetSer); //📢 "get ready for playing!"
+		return resetSer;
 	}
 
 	/** @override */

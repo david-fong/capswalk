@@ -70,9 +70,13 @@ export abstract class GameManager<
 
 	/**
 	 */
-	public async reset(): Promise<void> {
+	public async reset(): Promise<Game.ResetSer> {
 		// Reset the grid and event record:
-		await super.reset();
+		super.reset();
+		const resetSer = Object.freeze({
+			playerCoords: [] as Coord[],
+			csps: [] as Lang.CharSeqPair[],
+		});
 
 		this.health.reset();
 
@@ -81,9 +85,11 @@ export abstract class GameManager<
 		// history of shuffle-ins has no effects on the new pairs.
 		await this.#langImportPromise;
 		this.lang.reset();
-		this.grid.forEachShuffled((tile) => {
+		this.grid.forEachShuffled((tile, index) => {
 			const c = tile.coord;
-			this.grid.write(c, this.dryRunShuffleLangCspAt(c, true));
+			const csp = this.dryRunShuffleLangCspAt(c, true);
+			this.grid.write(c, csp);
+			resetSer.csps[index] = csp;
 		});
 
 		// Reset and spawn players:
@@ -96,11 +102,12 @@ export abstract class GameManager<
 			team.members.forEach((member, memberIndex) => {
 				const coord = spawnPoints[teamIndex]![memberIndex]!;
 				member.reset(coord);
+				resetSer.playerCoords[member.playerId] = coord;
 			});
 		});
 		this.scoreInfo.reset();
 
-		return Promise.resolve();
+		return resetSer;
 	}
 
 

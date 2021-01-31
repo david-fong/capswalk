@@ -10,7 +10,7 @@ type S = Coord.System.W_EUCLID2;
 const WIDTH = 1.67;
 
 /** */
-class VisibleTile implements TU.Pikk<Tile,"occId"|"health"|"char"> {
+class VisibleTile implements TU.Pikk<Tile,"occId"|"health"> {
 
 	public readonly back = JsUtils.svg("rect");
 	readonly #char = JsUtils.svg("text");

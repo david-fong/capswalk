@@ -92,7 +92,7 @@ export class SkSockets {
 	private _registerSocket(socket: Socket, name: SockName): void {
 		this.#sock[name] = socket;
 		const byeBye = (): void => {
-			socket.offAny();
+			socket.off();
 			this.#sock[name] = undefined;
 		};
 		socket

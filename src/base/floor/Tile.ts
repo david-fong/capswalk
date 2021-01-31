@@ -10,7 +10,7 @@ import type { Coord } from "./Coord"; export { Coord };
  *
  * @see Tile.ImplementationNotes
  */
-export interface Tile extends Required<Tile.Changes> {
+export interface Tile extends Required<TU.Omit<Tile.Changes,"char">> {
 	readonly coord: Coord;
 }
 export namespace Tile {

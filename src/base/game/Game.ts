@@ -74,11 +74,11 @@ export namespace Game {
 	 * passed as the field `coordSys`.
 	 */
 	export interface CtorArgs<S extends Coord.System = Coord.System> extends _CtorArgsBase<S> {
-		readonly players: TU.RoArr<Player.CtorArgs>;
+		readonly players: readonly Player.CtorArgs[];
 	};
 	export namespace CtorArgs {
 		export interface UnFin<S extends Coord.System = Coord.System> extends _CtorArgsBase<S> {
-			readonly players: TU.RoArr<Player.CtorArgs.UnFin>;
+			readonly players: readonly Player.CtorArgs.UnFin[];
 		}
 		/** */
 		export type FailureReasons = {
@@ -92,10 +92,17 @@ export namespace Game {
 	 * Only contains state information that would not be known by a
 	 * non-Game Manager.
 	 */
-	export type ResetSer = Readonly<{
-		csps: TU.RoArr<Lang.CharSeqPair>;
-		playerCoords: TU.RoArr<Coord>;
-	}>;
+	export interface ResetSer {
+		/**
+		 * Indexed by index according to `Grid.forEach` - not by the
+		 * `Tile.coord`s of `Grid.forEach` (they may differ).
+		 */
+		readonly csps: readonly Lang.CharSeqPair[];
+		/**
+		 * A map from player ID's to their starting coordinates.
+		 */
+		readonly playerCoords: readonly Coord[];
+	};
 
 	/**
 	 * - **`PLAYING`** can go to:

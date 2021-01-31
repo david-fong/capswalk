@@ -145,7 +145,7 @@ export namespace WrappedEuclid2 {
 					const tile: Tile = {
 						coord: (y * this.dimensions.width) + x,
 						occId: Player.Id.NULL,
-						health: 0, char: "", seq: "",
+						health: 0, seq: "",
 					};
 					grid.push(tile);
 				}

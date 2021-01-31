@@ -75,12 +75,12 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 	}
 
 	/** */
-	public async reset(): Promise<void> {
+	public reset(): void {
 		this.grid.reset();
+
 		// We must reset status to PAUSED to pass a state-transition
 		// assertion when changing status later to PLAYING.
 		this.#status = Game.Status.PAUSED;
-		return;
 	}
 
 
@@ -112,27 +112,14 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 	}
 
 	/** @final */
-	public serializeResetState(): Game.ResetSer {
-		const csps: Array<Lang.CharSeqPair> = [];
-		const playerCoords = this.players.map((player) => player.coord);
-		this.grid.forEach((tile, index) => {
-			csps[index] = {
-				char: tile.char,
-				seq:  tile.seq,
-			};
-		});
-		return JsUtils.deepFreeze({ csps, playerCoords });
-	}
-
-	/** @final */
 	public deserializeResetState(ser: Game.ResetSer): void {
 		JsUtils.deepFreeze(ser);
 
 		this.grid.forEach((tile, index) => {
 			this.grid.write(tile.coord, ser.csps[index]!);
 		});
-		ser.playerCoords.forEach((coord, index) => {
-			this.players[index]!.reset(coord);
+		ser.playerCoords.forEach((coord, playerId) => {
+			this.players[playerId]!.reset(coord);
 		});
 	}
 

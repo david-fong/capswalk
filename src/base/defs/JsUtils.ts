@@ -12,8 +12,8 @@ export namespace JsUtils {
 	function _deepFreeze(obj: any): void {
 		for (const key of Object.getOwnPropertyNames(obj)) {
 			const val = obj[key];
-			if (typeof val === "object") {
-				deepFreeze(val);
+			if (val !== null && typeof val === "object") {
+				_deepFreeze(val);
 			}
 		}
 		Object.freeze(obj);

@@ -3,7 +3,7 @@ import { Player } from "defs/TypeDefs";
 import { Group, GroupEv, GameEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 
-import { JsUtils, OmHooks, SkScreen, StorageHooks } from "../../SkScreen";
+import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
 type SID = SkScreen.Id.GROUP_LOBBY;
 import style from "./style.m.css";
 

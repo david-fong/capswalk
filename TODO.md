@@ -13,7 +13,7 @@
 
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
-    - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid instead of smarter tiles).
+    - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid derived classes instead of smarter tile derived classes).
 1. Implement, use, and test array extensions freeze and seal.
 1. Move `Player.RequestBuffer` to dedicated file and make an extension for `OperatorPlayer`s that actually does stuff. The base version will pretty much do nothing.
 1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.

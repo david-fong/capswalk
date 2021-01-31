@@ -8,7 +8,7 @@ import style from "./tile.m.css";
 /**
  * Implicitly handles visuals with help from CSS.
  */
-export class VisibleTile implements TU.Pikk<Tile,"occId"|"health"|"char"> {
+export class VisibleTile implements TU.Pikk<Tile,"occId"|"health"> {
 
 	public readonly baseElem = JsUtils.html("div", [style["this"]]);
 	private readonly charElem = JsUtils.html("div", []);
