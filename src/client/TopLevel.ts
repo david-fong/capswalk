@@ -6,7 +6,7 @@ import type { _PlayScreen } from "./screen/impl/Play/_Screen";
 import type { Coord, BaseScreen } from "./screen/BaseScreen";
 
 import { AllScreens } from "./screen/AllScreens";
-import { ScreenTransition }   from "./screen/ScreenTransition";
+import { ScreenTransition } from "./screen/ScreenTransition";
 //import { BgMusic }      from "./audio/BgMusic";
 //import { SoundEffects } from "./audio/SoundEffects";
 import { SkSockets }    from "./SkSockets";
@@ -53,7 +53,7 @@ export class TopLevel {
 			} else if (window.location.protocol.startsWith("file")) {
 				return TopLevel.WebpageHostType.FILESYSTEM;
 			} else {
-				return TopLevel.WebpageHostType.SNAKEY_SERVER;
+				return TopLevel.WebpageHostType.GAME_SERVER;
 			}
 		})();
 		JsUtils.propNoWrite(this as TopLevel, "defaultDocTitle", "webpageHostType");
@@ -107,9 +107,9 @@ export class TopLevel {
 }
 export namespace TopLevel {
 	export const enum WebpageHostType {
-		GITHUB        = "github",
-		FILESYSTEM    = "filesystem",
-		SNAKEY_SERVER = "sk-server",
+		GITHUB      = "github",
+		FILESYSTEM  = "filesystem",
+		GAME_SERVER = "game-server",
 	}
 }
 Object.freeze(TopLevel);

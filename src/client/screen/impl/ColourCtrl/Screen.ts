@@ -1,5 +1,4 @@
 // Tell WebPack about the css we want:
-import "./schemes/_barrel.css";
 import style from "./style.m.css";
 
 import { SkPickOne } from "client/utils/SkPickOne";
@@ -15,6 +14,15 @@ export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
 	 * @override
 	 */
 	protected _lazyLoad(): void {
+		try {
+			import(
+				/* webpackChunkName: "colour-schemes" */
+				/* webpackMode: "lazy-once" */
+				`./schemes/${void 0}.css`
+			);
+		} catch {
+			// Ignore error for importing "undefined.css"
+		}
 		this.baseElem.classList.add(style["this"]);
 		this.baseElem.appendChild(this.nav.prev);
 

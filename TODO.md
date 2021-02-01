@@ -11,8 +11,6 @@
 
 ### Things I feel like doing
 
-1. Optimize order of fields in `Tile.Changes` objects.
-1. Scope shared state exports from TopLevel into a dedicated object.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
     - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid derived classes instead of smarter tile derived classes).
@@ -21,7 +19,6 @@
 1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.
     - See how this affects performance.
 1. Mashup some CSS resets and normalizers for this repo.
-1. Make the colours screen dynamically import its stylesheets.
 1. Display the operator's current sequence buffer.
 
 1. Bring in some react for the screen implementations.

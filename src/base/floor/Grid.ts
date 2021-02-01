@@ -38,7 +38,7 @@ export abstract class Grid<S extends Coord.System> {
 		this.forEach((tile) => {
 			this.write(tile.coord, {
 				occId: Player.Id.NULL,
-				health: 0, char: "", seq: "",
+				char: "", seq: "", health: 0,
 			});
 		});
 	}
