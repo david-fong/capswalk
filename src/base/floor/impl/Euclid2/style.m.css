@@ -8,3 +8,19 @@
 	margin: 5%;
 	scroll-snap-align: center;
 }
+
+.tile {
+	height: 1.67em;
+	width: 1.67em;
+	rx: 0.4em;
+	stroke-width: 0.18em;
+	fill: var(--colour-tileBg);
+	stroke: var(--colour-tileBg);
+}
+
+.char {
+	pointer-events: none;
+	alignment-baseline: central;
+	text-anchor: middle;
+	fill: var(--colour-tileFg);
+}

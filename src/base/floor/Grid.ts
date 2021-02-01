@@ -32,6 +32,7 @@ export abstract class Grid<S extends Coord.System> {
 	}
 
 	/**
+	 * @virtual
 	 */
 	public reset(): void {
 		this.forEach((tile) => {
@@ -173,6 +174,7 @@ export namespace Grid {
 		Grid: Grid.ClassIf<S>;
 		system: S;
 		dimensions: Dimensions[S];
+		players: any; // TODO.design
 	}>;
 
 	/**
@@ -223,9 +225,6 @@ export namespace Grid {
 		 * @returns
 		 * A coordinate with random, integer-valued fields within the
 		 * specified upper limits
-		 *
-		 * @param boundX An exclusive bound on x-coordinate.
-		 * @param boundY An exclusive bound on y-coordinate. Optional. Defaults to `boundX`.
 		 */
 		getRandomCoord(bounds: Dimensions[S]): Coord;
 
@@ -233,8 +232,6 @@ export namespace Grid {
 		 * Return values do not need to be the same for repeated calls
 		 * with identical arguments. None of the returned coordinates
 		 * should be the same.
-		 *
-		 * @param teamSizes -
 		 */
 		getSpawnCoords(
 			teamSizes: TU.RoArr<number>,
@@ -270,10 +267,10 @@ export namespace Grid {
 	 * Upper and lower bounds must be strictly positive integer values.
 	 */
 	export type DimensionBounds<S extends Coord.System> = Readonly<{
-		[ P in keyof Dimensions[S] ]: Readonly<{
-			min: number;
-			max: number;
-		}>;
+		[P in keyof Dimensions[S]]: {
+			readonly min: number;
+			readonly max: number;
+		};
 	}>;
 }
 // Grid gets frozen in PostInit after _Constructors get initialized.

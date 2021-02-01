@@ -11,6 +11,8 @@
 
 ### Things I feel like doing
 
+1. Optimize order of fields in `Tile.Changes` objects.
+1. Scope shared state exports from TopLevel into a dedicated object.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
     - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid derived classes instead of smarter tile derived classes).
@@ -40,8 +42,6 @@
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Make a json file or something defining all the webpack chunk names I have defined.
 1. Make Socket interfaces for each namespace with overrides of `on` and `emit`.
-1. Investigate: does `Tile` need to have the `char` field from `Tile.Changes`?
-    - It is only being used for serializing the reset state.
 1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
 1. Spectator mode for online games? O\_o
 1. Implement the scores/player-listing sidebar in `__PlayScreen`.

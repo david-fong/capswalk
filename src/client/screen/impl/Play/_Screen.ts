@@ -4,7 +4,6 @@ import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
 import style from "./style.m.css";
 import GRID_style from "./grid.m.css";
-import type { Coord } from "floor/Tile";
 import type { OfflineGame } from "client/game/OfflineGame";
 import type { OnlineGame } from "client/game/OnlineGame";
 type BrowserGame = OfflineGame | OnlineGame;
@@ -98,7 +97,7 @@ export abstract class _PlayScreen<
 		this.grid.implHost.appendChild(document.createComment("grid impl"));
 
 		this.baseElem.appendChild(_gridHtml.top);
-		_gridHtml.pauseOl.addEventListener("focus", (ev) => {
+		_gridHtml.pauseOl.addEventListener("click", (ev) => {
 			const game = this.currentGame;
 			if (game !== undefined && game.status === Game.Status.PAUSED) {
 				this.grid.base.focus();

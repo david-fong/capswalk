@@ -43,7 +43,6 @@
 }
 
 .pause-overlay {
-	pointer-events: none;
 	contain:        strict;
 	cursor:         pointer;
 	position:       fixed;

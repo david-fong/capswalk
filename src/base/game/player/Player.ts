@@ -96,8 +96,8 @@ export class Player extends _Player implements _Player.UserInfo {
 		this.game.processMoveRequest(this.reqBuffer.signRequest({
 			initiator: this.playerId,
 			lastRejectId: this.reqBuffer.lastRejectId,
-			moveDest: dest,
 			moveType: type,
+			moveDest: dest,
 		}));
 	}
 
@@ -105,6 +105,7 @@ export class Player extends _Player implements _Player.UserInfo {
 	 * Notify this Player.
 	 *
 	 * Causes this Player to update its internal state.
+	 * @virtual
 	 */
 	public setCoord(dest: Coord): void {
 		this.prevCoord = this.coord;
@@ -189,13 +190,13 @@ export namespace Player {
 		}
 		: _PreIdAssignmentConditional<F>;
 	};
-	type _PreIdAssignmentConditional<F extends Player.Family> = Readonly<{
-		familyId: F;
-		teamId:   Team.Id;
-		username: Username;
-		avatar?:  Avatar;
-		familyArgs: CtorArgs.FamilySpecificPart[F];
-	}>;
+	interface _PreIdAssignmentConditional<F extends Player.Family> {
+		readonly familyId: F;
+		readonly teamId:   Team.Id;
+		readonly username: Username;
+		readonly avatar?:  Avatar;
+		readonly familyArgs: CtorArgs.FamilySpecificPart[F];
+	};
 
 	export namespace CtorArgs {
 

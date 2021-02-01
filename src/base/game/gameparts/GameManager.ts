@@ -218,9 +218,9 @@ export abstract class GameManager<
 		}
 
 		// Update stats records:
-		const playerScoreInfo = this.scoreInfo.entries[initiator.playerId]!;
-		playerScoreInfo.totalHealthPickedUp += reqDest.health;
-		playerScoreInfo.moveCounts[req.moveType] += 1;
+		const scoreInfo = this.scoreInfo.entries[initiator.playerId]!;
+		scoreInfo.totalHealthPickedUp += reqDest.health;
+		scoreInfo.moveCounts[req.moveType] += 1;
 
 		// Set response fields according to spec in `PlayerMovementEvent`:
 		this.commitStateChange(<StateChange.Res.Accepted>{
@@ -267,7 +267,7 @@ export abstract class GameManager<
 		coord: Coord, changes: Tile.Changes,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
-		JsUtils.deepFreeze(changes);
+		// JsUtils.deepFreeze(changes); // <- already done by caller.
 		const tile = this.grid.tileAt(coord);
 		if (changes.health !== undefined) {
 			this.health.add(changes.health - tile.health);

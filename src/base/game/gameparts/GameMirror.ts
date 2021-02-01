@@ -45,6 +45,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 			Grid: gridClass,
 			system: desc.coordSys,
 			dimensions: desc.gridDimensions,
+			players: desc.players,
 		}) as GameMirror<G,S>["grid"];
 
 		this.#onGameBecomeOver = impl.onGameBecomeOver;
@@ -210,7 +211,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		changes: Tile.Changes,
 		doCheckOperatorSeqBuffer: boolean = true,
 	): void {
-		JsUtils.deepFreeze(changes);
+		// JsUtils.deepFreeze(changes); // <- already done by caller.
 		const tile = this.grid.tileAt(coord);
 
 		if (changes.seq !== undefined) {
