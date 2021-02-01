@@ -194,7 +194,7 @@ export namespace Player {
 		readonly familyId: F;
 		readonly teamId:   Team.Id;
 		readonly username: Username;
-		readonly avatar?:  Avatar;
+		readonly avatar:   Avatar;
 		readonly familyArgs: CtorArgs.FamilySpecificPart[F];
 	};
 

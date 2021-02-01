@@ -1,11 +1,11 @@
-import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
+import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 import style from "./style.m.css";
 
 
 /**
  *
  */
-export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
+export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 
 	private readonly navElem: HTMLElement;
 
@@ -54,35 +54,35 @@ export class HomeScreen extends SkScreen<SkScreen.Id.HOME> {
 		(<const>[{
 			text:    "Offline Single-player",
 			cssClass: style["nav--play-offline"],
-			screenId: SkScreen.Id.SETUP_OFFLINE,
+			screenId: BaseScreen.Id.SETUP_OFFLINE,
 		},{
 			text:    "Online Multi-player",
 			cssClass: style["nav--play-online"],
-			screenId: SkScreen.Id.GROUP_JOINER,
+			screenId: BaseScreen.Id.GROUP_JOINER,
 		},{
 			text:    "How To Play",
 			cssClass: style["nav--how-to-play"],
-			screenId: SkScreen.Id.HOW_TO_PLAY,
+			screenId: BaseScreen.Id.HOW_TO_PLAY,
 		},{
 			text:    "How To Host",
 			cssClass: style["nav--how-to-host"],
-			screenId: SkScreen.Id.HOW_TO_HOST,
+			screenId: BaseScreen.Id.HOW_TO_HOST,
 		},{
 			text:    "Colour Schemes",
 			cssClass: style["nav--colour-scheme"],
-			screenId: SkScreen.Id.COLOUR_CTRL,
+			screenId: BaseScreen.Id.COLOUR_CTRL,
 		}])
 		.map<Readonly<{
 			text: string;
 			cssClass: typeof style[keyof typeof style];
-			screenId: SkScreen.Id | ((ev: MouseEvent) => void);
+			screenId: BaseScreen.Id | ((ev: MouseEvent) => void);
 		}>>((desc) => Object.freeze(desc))
 		.forEach((desc) => {
 			const button = JsUtils.html("button");
 			button.onclick = (desc.screenId instanceof Function) ? desc.screenId : () => {
 				// TODO.impl play a health-up sound.
 				// this.top.sfx.;
-				this.requestGoToScreen(desc.screenId as SkScreen.Id, {});
+				this.requestGoToScreen(desc.screenId as BaseScreen.Id, {});
 			};
 			addToNav(button, desc);
 		});

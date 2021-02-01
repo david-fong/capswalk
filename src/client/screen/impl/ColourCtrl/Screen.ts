@@ -3,11 +3,11 @@ import "./schemes/_barrel.css";
 import style from "./style.m.css";
 
 import { SkPickOne } from "client/utils/SkPickOne";
-import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
+import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 
 /**
  */
-export class ColourCtrlScreen extends SkScreen<SkScreen.Id.COLOUR_CTRL> {
+export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
 
 	public readonly sel: ColourCtrlScreen.PickOne;
 
@@ -44,12 +44,12 @@ export namespace ColourCtrlScreen {
 	export class PickOne extends SkPickOne<O> {
 
 		#firstTime: boolean;
-		readonly #storage: SkScreen<any>["top"]["storage"]["Local"];
-		readonly #transition: SkScreen<any>["top"]["transition"];
+		readonly #storage: BaseScreen<any>["top"]["storage"]["Local"];
+		readonly #transition: BaseScreen<any>["top"]["transition"];
 
 		public constructor(
-			storage: SkScreen<any>["top"]["storage"]["Local"],
-			transition: SkScreen<any>["top"]["transition"],
+			storage: BaseScreen<any>["top"]["storage"]["Local"],
+			transition: BaseScreen<any>["top"]["transition"],
 		) {
 			super();
 			this.#firstTime = true;

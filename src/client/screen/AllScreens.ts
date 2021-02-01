@@ -1,5 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
-import { SkScreen } from "./SkScreen";
+import { BaseScreen } from "./BaseScreen";
 import type { TopLevel } from "../TopLevel";
 
 import {         HomeScreen } from "./impl/Home/Screen";
@@ -19,11 +19,11 @@ import {   PlayOnlineScreen } from "./impl/Play/Online";
 /**
  * @final
  */
-export class AllSkScreens {
+export class AllScreens {
 
-	public readonly dict: SkScreen.AllSkScreensDict;
+	public readonly dict: BaseScreen.AllSkScreensDict;
 
-	#currentScreen: SkScreen<SkScreen.Id>;
+	#currentScreen: BaseScreen<BaseScreen.Id>;
 
 	readonly #screenTransition: TopLevel["transition"];
 
@@ -33,8 +33,8 @@ export class AllSkScreens {
 		// Setting role="presentation" is similar to setting "display: content"
 		// Setting aria-hidden="true" is similar to setting "visibility: hidden"
 
-		const Id = SkScreen.Id;
-		const ctx = Object.freeze<SkScreen.CtorArgs>({
+		const Id = BaseScreen.Id;
+		const ctx = Object.freeze<BaseScreen.CtorArgs>({
 			toplevel: top,
 			parentElem: baseElem,
 			goToScreen: Object.freeze(this.goToScreen.bind(this)),
@@ -53,13 +53,13 @@ export class AllSkScreens {
 			[ Id.GROUP_LOBBY   ]: new   GroupLobbyScreen(ctx, Id.GROUP_LOBBY),
 			[ Id.PLAY_ONLINE   ]: new   PlayOnlineScreen(ctx, Id.PLAY_ONLINE),
 		});
-		JsUtils.propNoWrite(this as AllSkScreens, "dict");
+		JsUtils.propNoWrite(this as AllScreens, "dict");
 		Object.seal(this); //🧊
 
 		// note: "isr" as in "Initial Screen Request".
-		const isr = SkScreen.NavTree[window.location.hash.slice(1) as SkScreen.Id];
+		const isr = BaseScreen.NavTree[window.location.hash.slice(1) as BaseScreen.Id];
 		window.setTimeout(() => {
-			this.goToScreen(isr?.href ?? SkScreen.Id.HOME, {});
+			this.goToScreen(isr?.href ?? BaseScreen.Id.HOME, {});
 		}, 75);
 		// TODO.learn For some reason, a small delay is required here to prevent
 		// a bug which happens 70% of the time when starting up with files served
@@ -79,10 +79,10 @@ export class AllSkScreens {
 	 * @param destId -
 	 * @param ctorArgs -
 	 */
-	public async goToScreen<SID extends SkScreen.Id>(
+	public async goToScreen<SID extends BaseScreen.Id>(
 		// NOTE: using a tuple wrapper to expand bundled type.
 		destId: SID,
-		ctorArgs: SkScreen.EntranceArgs[SID],
+		ctorArgs: BaseScreen.EntranceArgs[SID],
 	): Promise<boolean> {
 		const currScreen = this.currentScreen;
 		const destScreen = this.dict[destId];
@@ -91,7 +91,7 @@ export class AllSkScreens {
 		// }
 		this.#currentScreen = destScreen;
 
-		const navDir = SkScreen.GET_NAV_DIR({
+		const navDir = BaseScreen.GET_NAV_DIR({
 			curr: currScreen?.screenId,
 			dest: destId,
 		});
@@ -99,7 +99,7 @@ export class AllSkScreens {
 			// Note on above "nullish coalesce": Special case entered
 			// during construction when there is no currentScreen yet.
 			// Any confirm-leave prompts made to the user were OK-ed.
-			type EnterFunc = (navDir: SkScreen.NavDir, args: typeof ctorArgs) => Promise<void>;
+			type EnterFunc = (navDir: BaseScreen.NavDir, args: typeof ctorArgs) => Promise<void>;
 			await this.#screenTransition.do({
 				beforeUnblurAwait: (destScreen._enter as EnterFunc)(navDir, ctorArgs),
 				beforeUnblur: () => {
@@ -113,9 +113,9 @@ export class AllSkScreens {
 		return false;
 	}
 
-	public get currentScreen(): SkScreen<SkScreen.Id> {
+	public get currentScreen(): BaseScreen<BaseScreen.Id> {
 		return this.#currentScreen;
 	}
 }
-Object.freeze(AllSkScreens);
-Object.freeze(AllSkScreens.prototype);
+Object.freeze(AllScreens);
+Object.freeze(AllScreens.prototype);

@@ -1,3 +1,4 @@
+import { JsUtils } from "defs/JsUtils";
 import { Player } from "defs/TypeDefs";
 
 /**
@@ -7,7 +8,7 @@ import { Player } from "defs/TypeDefs";
 export namespace StorageHooks {
 	// Let's just take a moment to appreciate that TypeScript
 	// actually recognizes references to the example object.
-	export const Local = _makeSmartStorage(localStorage, {
+	export const Local = JsUtils.Web._makeSmartStorage("snakey3", localStorage, {
 		musicVolume: 1,
 		sfxVolume: 1,
 		/**
@@ -37,45 +38,20 @@ export namespace StorageHooks {
 		});
 	}
 
-	/**
-	 */
-	export const Session = _makeSmartStorage(localStorage, Object.freeze({
+	/** */
+	export const Session = JsUtils.Web._makeSmartStorage("snakey3", localStorage, Object.freeze({
 	}));
 
 	export namespace IDB {
-		/**
-		 */
-		export const DB_NAME = "snakeyDB";
+		/** */
+		export const DB_NAME = "snakey3_db";
 
-		/**
-		 */
+		/** */
 		export namespace UserGamePresetStore {
 			export const STORE_NAME = "userGamePresets";
 		}
 		Object.freeze(UserGamePresetStore);
 	}
 	Object.freeze(IDB);
-
-	/**
-	 */
-	function _makeSmartStorage<T extends {[key : string]: string | number}>(storage: Storage, example: T): Partial<T> {
-		const smart: T = {} as T;
-		(Object.keys(example)).forEach((key) => {
-			const internalKey = (DEF.PRODUCTION ? "" : "snakey3.") + key;
-			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
-			Object.defineProperty(smart, key, {
-				enumerable: true,
-				get: () => {
-					const val = storage.getItem(internalKey);
-					return (val === null) ? undefined : JSON.parse(val);
-				},
-				set: (val: boolean): void => {
-					storage.setItem(internalKey, JSON.stringify(val));
-				},
-			});
-		});
-		// Sealing the object causes an error. Not sure why.
-		return smart;
-	}
 }
 Object.freeze(StorageHooks);

@@ -3,15 +3,15 @@ import type { TopLevel } from "client/TopLevel";
 import { Group } from "defs/OnlineDefs";
 import { SkServer } from "defs/OnlineDefs";
 
-import { JsUtils, OmHooks, SkScreen, StorageHooks } from "../../SkScreen";
-type SID = SkScreen.Id.GROUP_JOINER;
+import { JsUtils, OmHooks, BaseScreen, StorageHooks } from "../../BaseScreen";
+type SID = BaseScreen.Id.GROUP_JOINER;
 import style from "./style.m.css";
 
 
 /**
  * This screen is like a form for joining a session on a remote host.
  */
-export class GroupJoinerScreen extends SkScreen<SID> {
+export class GroupJoinerScreen extends BaseScreen<SID> {
 
 	#state: GroupJoinerScreen.State;
 
@@ -61,7 +61,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 		const contentWrapperSubmit = (): void => {
 			// ev.preventDefault(); // Don't perform any form action
 			// No validation needed. The next button is only enabled if inputs are valid.
-			this.requestGoToScreen(SkScreen.Id.GROUP_LOBBY, {});
+			this.requestGoToScreen(BaseScreen.Id.GROUP_LOBBY, {});
 		};
 		this._setFormState(State.CHOOSING_HOST);
 		this.baseElem.appendChild(contentWrapper);
@@ -314,7 +314,7 @@ export class GroupJoinerScreen extends SkScreen<SID> {
 			if (reason === "io server disconnect") {
 				top.toast("The server disconnected you from your group.");
 				if (this.top.currentScreen !== this) {
-					this.requestGoToScreen(SkScreen.Id.GROUP_JOINER, {});
+					this.requestGoToScreen(BaseScreen.Id.GROUP_JOINER, {});
 				} else {
 					this.in.passphrase.focus();
 				}

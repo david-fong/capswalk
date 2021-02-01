@@ -45,8 +45,8 @@ export namespace VisibleGrid {
 		const root = base.attachShadow({ mode: "closed" });
 		tiles.classList.add(style["impl-body"]);
 		root.appendChild(tiles);
-		JsUtils.adoptStyleSheet(root, "css-common.css");
-		JsUtils.adoptStyleSheet(root, "chunk/game-css.css");
+		JsUtils.Web.adoptStyleSheet(root, "css-common.css");
+		JsUtils.Web.adoptStyleSheet(root, "chunk/game-css.css");
 
 		// Initialize spotlight elements:
 		const shortSpotlight = JsUtils.html("div", [player_style["spotlight-short"]]);

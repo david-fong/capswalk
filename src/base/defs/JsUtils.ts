@@ -70,11 +70,6 @@ export namespace JsUtils {
 		});
 	}
 
-	/** A non-user-facing markup utility. */
-	export function prependComment(node: HTMLElement, commentStr: string): void {
-		node.parentNode!.insertBefore(document.createComment(" " + commentStr + " "), node);
-	}
-
 	export type CamelCaseNameTransforms = Readonly<{
 		spaceyLowercase: string;
 		spaceyUppercase: string;
@@ -92,6 +87,65 @@ export namespace JsUtils {
 				word.charAt(0).toUpperCase() + word.substring(1)
 			).join(' '),
 		});
+	}
+
+	export namespace Web {
+
+		/** A non-user-facing markup utility. */
+		export function prependComment(node: HTMLElement, commentStr: string): void {
+			node.parentNode!.insertBefore(document.createComment(" " + commentStr + " "), node);
+		}
+
+		/**
+		 * This is dependant on the HtmlWebpackPlugin config.
+		 */
+		export function adoptStyleSheet(root: Document | ShadowRoot, href: string): void {
+			// if ("adoptedStyleSheets" in root) {
+			// 	const sheet = Array.from(document.styleSheets).find((sheet) => sheet.href?.endsWith(href));
+			// 	if (sheet !== undefined) {
+			// 		// TODO.build remove this any-casting when adoptedStyleSheets
+			// 		// stops being experimental and makes it into the DOM spec.
+			// 		(root as any).adoptedStyleSheets = [sheet];
+			// 		return;
+			// 	}
+			// }
+			// The client's browser does not support adoptedStyleSheets :(
+			root.appendChild(JsUtils.html("link", [], {
+				rel: "stylesheet",
+				href: href,
+			}));
+		}
+
+		/**
+		 * @param localPrefix
+		 * Prefixes the storage keys on non-production builds. This is
+		 * to prevent key collisions on null origins such as `file://`.
+		 */
+		export function _makeSmartStorage<
+			T extends {[key : string]: string | number},
+		>(
+			localPrefix: string,
+			storage: Storage,
+			example: T,
+		): Partial<T> {
+			const smart: T = {} as T;
+			(Object.keys(example)).forEach((key) => {
+				const internalKey = (DEF.PRODUCTION ? "" : localPrefix + ".") + key;
+				// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
+				Object.defineProperty(smart, key, {
+					enumerable: true,
+					get: () => {
+						const val = storage.getItem(internalKey);
+						return (val === null) ? undefined : JSON.parse(val);
+					},
+					set: (val: boolean): void => {
+						storage.setItem(internalKey, JSON.stringify(val));
+					},
+				});
+			});
+			// Sealing the object causes an error. Not sure why.
+			return smart;
+		}
 	}
 
 	/**
@@ -143,24 +197,6 @@ export namespace JsUtils {
 			Object.assign(el, domProps);
 		}
 		return el;
-	}
-
-	/** */
-	export function adoptStyleSheet(root: Document | ShadowRoot, href: string): void {
-		// if ("adoptedStyleSheets" in root) {
-		// 	const sheet = Array.from(document.styleSheets).find((sheet) => sheet.href?.endsWith(href));
-		// 	if (sheet !== undefined) {
-		// 		// TODO.build remove this any-casting when adoptedStyleSheets
-		// 		// stops being experimental and makes it into the DOM spec.
-		// 		(root as any).adoptedStyleSheets = [sheet];
-		// 		return;
-		// 	}
-		// }
-		// The client's browser does not support adoptedStyleSheets :(
-		root.appendChild(JsUtils.html("link", [], {
-			rel: "stylesheet",
-			href: href,
-		}));
 	}
 }
 Object.freeze(JsUtils);

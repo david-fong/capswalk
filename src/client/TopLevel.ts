@@ -1,11 +1,11 @@
 import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
-import { StorageHooks } from "defs/StorageHooks";
+import { StorageHooks } from "./StorageHooks";
 import type { Game } from "./game/BrowserGame";
 import type { _PlayScreen } from "./screen/impl/Play/_Screen";
-import type { Coord, SkScreen } from "../client/screen/SkScreen";
+import type { Coord, BaseScreen } from "./screen/BaseScreen";
 
-import { AllSkScreens } from "./screen/AllSkScreens";
+import { AllScreens } from "./screen/AllScreens";
 import { ScreenTransition }   from "./screen/ScreenTransition";
 //import { BgMusic }      from "./audio/BgMusic";
 //import { SoundEffects } from "./audio/SoundEffects";
@@ -28,7 +28,7 @@ export class TopLevel {
 	 * Purposely made private. Screens are intended to navigate
 	 * between each other without reference to this field.
 	 */
-	readonly #allScreens: AllSkScreens;
+	readonly #allScreens: AllScreens;
 
 	//public readonly bgMusic: BgMusic;
 	//public readonly sfx: SoundEffects;
@@ -65,8 +65,8 @@ export class TopLevel {
 
 		const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
 		if (!allScreensElem) { throw new Error("never"); }
-		JsUtils.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
-		this.#allScreens = new AllSkScreens(this, allScreensElem);
+		JsUtils.Web.prependComment(allScreensElem, "ALL SCREENS CONTAINER");
+		this.#allScreens = new AllScreens(this, allScreensElem);
 
 		//
 		// this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
@@ -101,7 +101,7 @@ export class TopLevel {
 	 * @deprecated
 	 * For debugging purposes- especially in the browser console.
 	 */
-	public get currentScreen(): SkScreen<SkScreen.Id> {
+	public get currentScreen(): BaseScreen<BaseScreen.Id> {
 		return this.#allScreens.currentScreen;
 	}
 }

@@ -1,14 +1,12 @@
-import type { Player } from "game/player/Player";
+import { Player } from "game/player/Player";
 import type { Game } from "game/Game";
 
-import { JsUtils, OmHooks, Coord, SkScreen } from "../../SkScreen";
+import { JsUtils, OmHooks, Coord, BaseScreen } from "../../BaseScreen";
 import { _SetupScreen } from "./_Screen";
 
-
-type SID = SkScreen.Id.SETUP_OFFLINE;
+type SID = BaseScreen.Id.SETUP_OFFLINE;
 
 /**
- *
  */
 export class SetupOfflineScreen extends _SetupScreen<SID> {
 
@@ -17,7 +15,7 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 
 		this.nav.next.onclick = (ev) => {
 			const args = this.parseArgsFromGui();
-			this.requestGoToScreen(SkScreen.Id.PLAY_OFFLINE, [args]);
+			this.requestGoToScreen(BaseScreen.Id.PLAY_OFFLINE, [args]);
 		};
 	}
 
@@ -32,18 +30,18 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 			teamId:     0,
 			clientId:   undefined,
 			username:   "hello1",
+			avatar:     Player.Avatar.LOREM_IPSUM,
 			familyArgs: { },
 		}, {
 			familyId:   "HUMAN",
 			teamId:     1,
 			clientId:   undefined,
 			username:   "hello2",
+			avatar:     Player.Avatar.LOREM_IPSUM,
 			familyArgs: { },
 		});
 		return args;
 	}
-}
-export namespace SetupOfflineScreen {
 }
 Object.freeze(SetupOfflineScreen);
 Object.freeze(SetupOfflineScreen.prototype);

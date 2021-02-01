@@ -1,7 +1,7 @@
 import { Game } from "game/Game"; export { Game };
 import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
 
-import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
+import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 import style from "./style.m.css";
 import GRID_style from "./grid.m.css";
 import type { OfflineGame } from "client/game/OfflineGame";
@@ -17,9 +17,9 @@ type BrowserGame = OfflineGame | OnlineGame;
  */
 // TODO.impl Allow users to change the spotlight radius and grid zoom via slider.
 export abstract class _PlayScreen<
-	SID extends SkScreen.Id.PLAY_OFFLINE | SkScreen.Id.PLAY_ONLINE,
+	SID extends BaseScreen.Id.PLAY_OFFLINE | BaseScreen.Id.PLAY_ONLINE,
 	G extends Game.Type.Browser,
-> extends SkScreen<SID> {
+> extends BaseScreen<SID> {
 
 	/**
 	 * Hosts the scroll-wrapper and game-status overlays.
@@ -93,7 +93,7 @@ export abstract class _PlayScreen<
 			pauseOl: _gridHtml.pauseOl,
 		});
 		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, "grid");
-		JsUtils.prependComment(this.grid.implHost, "grid impl host");
+		JsUtils.Web.prependComment(this.grid.implHost, "grid impl host");
 		this.grid.implHost.appendChild(document.createComment("grid impl"));
 
 		this.baseElem.appendChild(_gridHtml.top);
@@ -148,8 +148,8 @@ export abstract class _PlayScreen<
 	 * @override
 	 */
 	protected async _abstractOnBeforeEnter(
-		navDir: SkScreen.NavDir,
-		args: SkScreen.EntranceArgs[SID],
+		navDir: BaseScreen.NavDir,
+		args: BaseScreen.EntranceArgs[SID],
 	): Promise<void> {
 		document.addEventListener("visibilitychange", this.#onVisibilityChange);
 		this.btn.pause.disabled = true;
@@ -182,7 +182,7 @@ export abstract class _PlayScreen<
 	/**
 	 * @override
 	 */
-	protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
+	protected _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
 		if (this.askConfirmBeforeLeave && !this.top.confirm("Are you sure you would like to leave?")) {
 			return false;
 		}
@@ -217,7 +217,7 @@ export abstract class _PlayScreen<
 	}
 
 	protected abstract _createNewGame(
-		[gameCtorArgs, operatorIds]: SkScreen.EntranceArgs[SID],
+		[gameCtorArgs, operatorIds]: BaseScreen.EntranceArgs[SID],
 	): Promise<BrowserGame>;
 
 

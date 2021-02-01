@@ -1,10 +1,10 @@
-import { JsUtils, SkScreen } from "../SkScreen";
+import { JsUtils, BaseScreen } from "../BaseScreen";
 
 
 /**
  *
  */
-export class HowToHostScreen extends SkScreen<SkScreen.Id.HOW_TO_HOST> {
+export class HowToHostScreen extends BaseScreen<BaseScreen.Id.HOW_TO_HOST> {
 
 	/**
 	 * @override

@@ -1,9 +1,9 @@
 import { JsUtils } from "defs/JsUtils";
 import { OmHooks } from "defs/OmHooks";
-import { StorageHooks } from "defs/StorageHooks";
+import { StorageHooks } from "../StorageHooks";
 import type { Coord } from "floor/Coord";
 import type { Game } from "game/Game";
-import type { AllSkScreens } from "./AllSkScreens";
+import type { AllScreens } from "./AllScreens";
 import type { TopLevel } from "../TopLevel";
 
 import type {         HomeScreen } from "./impl/Home/Screen";
@@ -30,7 +30,7 @@ const OMHC = OmHooks.Screen.Class;
  * Ie. Do not give it circular / upward references to anything that
  * references it.
  */
-export abstract class SkScreen<SID extends SkScreen.Id> {
+export abstract class BaseScreen<SID extends BaseScreen.Id> {
 
 	public readonly screenId: SID;
 	public readonly screenNames: JsUtils.CamelCaseNameTransforms;
@@ -55,13 +55,13 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 	 * Implementations can use this as part of navigation button
 	 * handlers. Refers directly to AllSkScreens.goToScreen.
 	 */
-	protected readonly requestGoToScreen: AllSkScreens["goToScreen"];
+	protected readonly requestGoToScreen: AllScreens["goToScreen"];
 
 
 	/**
 	 */
 	public constructor(
-		ctx: SkScreen.CtorArgs,
+		ctx: BaseScreen.CtorArgs,
 		screenId: SID,
 	) {
 		this.screenId           = screenId;
@@ -73,7 +73,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 			prev: JsUtils.html("button"),
 			next: JsUtils.html("button"),
 		});
-		JsUtils.propNoWrite(this as SkScreen<SID>,
+		JsUtils.propNoWrite(this as BaseScreen<SID>,
 			"screenId", "top", "baseElem", "nav", "requestGoToScreen",
 		);
 		this.nav.prev.classList.add(OMHC.NAV_PREV);
@@ -83,10 +83,10 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 
 		// @ts-expect-error : RO=
 		this.nav.prev.onclick = (ev) => {
-			const tree = SkScreen.NavTree;
+			const tree = BaseScreen.NavTree;
 			const thisNav = tree[this.screenId];
 			if (tree[thisNav.prev].href === thisNav.href) {
-				this.requestGoToScreen(SkScreen.NavTree[screenId].prev, {});
+				this.requestGoToScreen(BaseScreen.NavTree[screenId].prev, {});
 			} else {
 				window.history.back();
 			}
@@ -95,16 +95,16 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 
 	/** @final **Do not override.** */
 	public async _enter(
-		navDir: SkScreen.NavDir,
-		args: SkScreen.EntranceArgs[SID],
+		navDir: BaseScreen.NavDir,
+		args: BaseScreen.EntranceArgs[SID],
 	): Promise<void> {
 		document.title = `${this.screenNames.spaceyCapitalized} | ${this.top.defaultDocTitle}`;
-		if (navDir === SkScreen.NavDir.FORWARD) {
+		if (navDir === BaseScreen.NavDir.FORWARD) {
 			const location = new window.URL(window.location.href);
-			const newHistoryRoot = location.hash = SkScreen.NavTree[this.screenId].href;
+			const newHistoryRoot = location.hash = BaseScreen.NavTree[this.screenId].href;
 			const args: Parameters<typeof window.history.pushState> = [{ screenId: this.screenId }, "", location.href];
 			if (window.history.state?.screenId !== newHistoryRoot) {
-				if (SkScreen.NavTree[this.screenId].prev === this.screenId) {
+				if (BaseScreen.NavTree[this.screenId].prev === this.screenId) {
 					// If entering the root screen for the first time:
 					history.replaceState(...args);
 				} else {
@@ -115,7 +115,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 		if (!this.#hasLazyLoaded) {
 			this._lazyLoad();
 			this.#parentElem.appendChild(this.baseElem);
-			JsUtils.prependComment(this.baseElem, `${this.screenNames.spaceyUppercase} SCREEN`);
+			JsUtils.Web.prependComment(this.baseElem, `${this.screenNames.spaceyUppercase} SCREEN`);
 			this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
 			this.#hasLazyLoaded = true;
 		}
@@ -126,7 +126,7 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 	 * @final **Do not override.**
 	 * @returns false if the leave was cancelled.
 	 */
-	public _leave(navDir: SkScreen.NavDir): boolean {
+	public _leave(navDir: BaseScreen.NavDir): boolean {
 		if (this._abstractOnBeforeLeave(navDir)) {
 			return true;
 		}
@@ -163,8 +163,8 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 	 * Must not call `this.requestGoToScreen`.
 	 */
 	protected async _abstractOnBeforeEnter(
-		navDir: SkScreen.NavDir,
-		args: SkScreen.EntranceArgs[SID],
+		navDir: BaseScreen.NavDir,
+		args: BaseScreen.EntranceArgs[SID],
 	): Promise<void> {
 	};
 
@@ -184,12 +184,12 @@ export abstract class SkScreen<SID extends SkScreen.Id> {
 	 * @requires
 	 * Must not call `this.requestGoToScreen`.
 	 */
-	protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
+	protected _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
 		return true;
 	}
 
 }
-export namespace SkScreen {
+export namespace BaseScreen {
 
 	export enum Id {
 		// General:     ===================
@@ -289,11 +289,11 @@ export namespace SkScreen {
 	};
 	export function GET_NAV_DIR(_args: { curr: Id | undefined, dest: Id, }): NavDir {
 		const { curr, dest } = _args;
-		if (curr === undefined) return SkScreen.NavDir.FORWARD;
+		if (curr === undefined) return BaseScreen.NavDir.FORWARD;
 		let prev = curr;
-		while (prev !== SkScreen.NavTree[prev].prev) {
-			prev      = SkScreen.NavTree[prev].prev;
-			if (prev === dest) return SkScreen.NavDir.BACKWARD;
+		while (prev !== BaseScreen.NavTree[prev].prev) {
+			prev      = BaseScreen.NavTree[prev].prev;
+			if (prev === dest) return BaseScreen.NavDir.BACKWARD;
 		}
 		// This below check is too strong of a spec. I have kept
 		// it just in case it could somehow be useful in the future.
@@ -301,14 +301,14 @@ export namespace SkScreen {
 		//     throw new Error(`${dest} is not reachable from ${curr}.`);
 		// }
 		// If do-while completes, then dest must be in the forward direction:
-		return SkScreen.NavDir.FORWARD;
+		return BaseScreen.NavDir.FORWARD;
 	}
 
 	export interface CtorArgs {
 		readonly toplevel: TopLevel,
 		readonly parentElem: HTMLElement,
-		readonly goToScreen: AllSkScreens["goToScreen"],
+		readonly goToScreen: AllScreens["goToScreen"],
 	}
 }
-Object.freeze(SkScreen);
-Object.freeze(SkScreen.prototype);
+Object.freeze(BaseScreen);
+Object.freeze(BaseScreen.prototype);

@@ -1,15 +1,15 @@
 import type { Socket } from "socket.io-client";
-import { JsUtils, OmHooks } from "../../SkScreen";
+import { JsUtils, OmHooks } from "../../BaseScreen";
 
 import { GameEv } from "defs/OnlineDefs";
 import type { Coord } from "floor/Tile";
-import type { SkScreen } from "../../SkScreen";
+import type { BaseScreen } from "../../BaseScreen";
 import type { OnlineGame } from "client/game/OnlineGame";
 import { Game, _PlayScreen } from "./_Screen";
 
 /**
  */
-export class PlayOnlineScreen extends _PlayScreen<SkScreen.Id.PLAY_ONLINE,"ONLINE"> {
+export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE,"ONLINE"> {
 	/** @override */
 	protected readonly askConfirmBeforeLeave = false;
 
@@ -31,7 +31,7 @@ export class PlayOnlineScreen extends _PlayScreen<SkScreen.Id.PLAY_ONLINE,"ONLIN
 	}
 
 	/** @override */
-	protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
+	protected _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
 		const leaveConfirmed = super._abstractOnBeforeLeave(navDir);
 		if (leaveConfirmed) {
 			if (this.socket !== undefined) {

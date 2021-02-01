@@ -4,7 +4,7 @@ import type { Player as _Player } from "game/player/Player";
 import type { Game } from "game/Game";
 import { SkPickOne } from "client/utils/SkPickOne";
 
-import { JsUtils, OmHooks, StorageHooks, SkScreen } from "../../SkScreen";
+import { JsUtils, OmHooks, StorageHooks, BaseScreen } from "../../BaseScreen";
 import style from "./style.m.css";
 
 // TODO.impl enforce lang and coord-sys compatibility (num leaves)
@@ -17,7 +17,7 @@ import style from "./style.m.css";
  * behaviour of the `_nextBtn` and `_prevBtn` buttons.
  */
 // TODO.learn how to use the IndexDB web API.
-export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScreen.Id.SETUP_ONLINE> extends SkScreen<SID> {
+export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | BaseScreen.Id.SETUP_ONLINE> extends BaseScreen<SID> {
 
 	protected readonly langSel: _SetupScreen.LangPickOne;
 	protected readonly langWeightExaggeration: HTMLInputElement;
@@ -81,6 +81,7 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 	private _loadLastUsedPreset(): void {
 		// TODO.impl
 		const lastUsedPresetId = this.top.storage.Local.gamePresetId;
+		const args = this.top.storage.IDB.UserGamePresetStore;
 	}
 
 	/**
@@ -88,6 +89,7 @@ export abstract class _SetupScreen<SID extends SkScreen.Id.SETUP_OFFLINE | SkScr
 	 *
 	 * Must return a completely new object each time.
 	 * (think deep copy. no shared references.)
+	 * @virtual
 	 */
 	protected parseArgsFromGui(): Game.CtorArgs.UnFin {
 		// TODO.impl
@@ -114,11 +116,13 @@ export namespace _SetupScreen {
 			familyId:   "CHASER",
 			teamId:     1,
 			username:   "chaser1",
+			avatar:     Player.Avatar.GET_RANDOM(),
 			familyArgs: {/* Uses all defaults. */},
 		}, {
 			familyId:   "CHASER",
 			teamId:     1,
 			username:   "chaser2",
+			avatar:     Player.Avatar.GET_RANDOM(),
 			familyArgs: {
 				fearDistance: 6,
 				bloodThirstDistance: 5,

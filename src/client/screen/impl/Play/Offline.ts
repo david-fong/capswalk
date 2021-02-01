@@ -1,12 +1,12 @@
-import { JsUtils, OmHooks } from "../../SkScreen";
+import { JsUtils, OmHooks } from "../../BaseScreen";
 import type { Coord } from "floor/Tile";
-import type { SkScreen } from "../../SkScreen";
+import type { BaseScreen } from "../../BaseScreen";
 import type { OfflineGame } from "client/game/OfflineGame";
 import { Game, _PlayScreen } from "./_Screen";
 
 /**
  */
-export class PlayOfflineScreen extends _PlayScreen<SkScreen.Id.PLAY_OFFLINE,"OFFLINE"> {
+export class PlayOfflineScreen extends _PlayScreen<BaseScreen.Id.PLAY_OFFLINE,"OFFLINE"> {
 
 	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.

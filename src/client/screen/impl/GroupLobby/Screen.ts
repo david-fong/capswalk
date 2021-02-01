@@ -3,13 +3,13 @@ import { Player } from "defs/TypeDefs";
 import { Group, GroupEv, GameEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 
-import { JsUtils, OmHooks, SkScreen } from "../../SkScreen";
-type SID = SkScreen.Id.GROUP_LOBBY;
+import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
+type SID = BaseScreen.Id.GROUP_LOBBY;
 import style from "./style.m.css";
 
 /**
  */
-export class GroupLobbyScreen extends SkScreen<SID> {
+export class GroupLobbyScreen extends BaseScreen<SID> {
 
 	/**
 	 * A map from socket ID's to descriptors of players' info.
@@ -52,7 +52,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 		{const goSetup = this.nav.next;
 		goSetup.textContent = "Setup Game";
 		goSetup.onclick = () => {
-			this.requestGoToScreen(SkScreen.Id.SETUP_ONLINE, {});
+			this.requestGoToScreen(BaseScreen.Id.SETUP_ONLINE, {});
 		};
 		this.baseElem.appendChild(goSetup);}
 	}
@@ -110,8 +110,8 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 
 	/** @override */
 	protected async _abstractOnBeforeEnter(
-		navDir: SkScreen.NavDir,
-		args: SkScreen.EntranceArgs[SID],
+		navDir: BaseScreen.NavDir,
+		args: BaseScreen.EntranceArgs[SID],
 	): Promise<void> {
 		if (navDir === "forward") {
 			this.nav.next.disabled = !this.top.clientIsGroupHost;
@@ -137,7 +137,7 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 					{ passphrase: login.passphrase! },
 				);
 				sock.once(GameEv.CREATE_GAME, (...args: [Game.CtorArgs, readonly number[]]) => {
-					this.requestGoToScreen(SkScreen.Id.PLAY_ONLINE, args); //🚀
+					this.requestGoToScreen(BaseScreen.Id.PLAY_ONLINE, args); //🚀
 				});
 				// function ensureConnected(): void {
 				//     if (!(sock.connected)) {
@@ -164,10 +164,10 @@ export class GroupLobbyScreen extends SkScreen<SID> {
 	}
 
 	/** @override */
-	protected _abstractOnBeforeLeave(navDir: SkScreen.NavDir): boolean {
+	protected _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
 		// Make sure we stop listening for the game to start
 		// in case it hasn't started yet:
-		if (navDir === SkScreen.NavDir.BACKWARD) {
+		if (navDir === BaseScreen.NavDir.BACKWARD) {
 			this.socket.off(GroupEv.CREATE_GAME);
 		}
 		return true;
