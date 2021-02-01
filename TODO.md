@@ -144,8 +144,6 @@ Presentation API:
 
 ### Audio
 
-[AudioContextOptions](https://devdocs.io/dom/audiocontextoptions): I should make two separate contexts: one for the layered music optimized for playback and lower power consumption, and one for sound effects optimized for low latency.
-
 When playing and pausing music, I can [fade it in and out](https://devdocs.io/dom/audioparam/exponentialramptovalueattime) and then pause and resume the audio context to save device power. Either that, or I can [apply a muffling effect](https://devdocs.io/dom/biquadfilternode) when paused.
 
 I should keep my audio loops as short as possible. Ie. Every audio file 4 measures long except the melody file which is maybe 12 measures long.
@@ -158,19 +156,6 @@ https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
 https://www.html5rocks.com/en/tutorials/webaudio/positional_audio/
 https://github.com/GoogleChromeLabs/web-audio-samples/
 https://github.com/bbc/r-audio
-```
-
-### JsDoc
-
-```text
-https://devdocs.io/jsdoc/howto-es2015-classes
-```
-
-### Handling Network Latency
-
-```text
-https://martinfowler.com/eaaDev/EventSourcing.html
-https://stackoverflow.com/a/9283222/11107541
 ```
 
 ## Things I have Tried that Haven't Worked (and that's okay)
