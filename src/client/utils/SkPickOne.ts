@@ -11,6 +11,9 @@ import style from "./skpickone.m.css";
  * https://www.w3.org/TR/wai-aria-1.1/#listbox
  */
 // TODO.learn https://www.w3.org/TR/wai-aria-1.1/#managingfocus
+// TODO.design consider refactoring options into an internal map from a new
+// template param-typed descriptors object to the DOM wrapper. This could
+// be used to expose an interface for sorting.
 export abstract class SkPickOne<O extends SkPickOne._Option> {
 
 	public readonly baseElem: HTMLElement;

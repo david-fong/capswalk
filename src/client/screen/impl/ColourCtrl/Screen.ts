@@ -1,5 +1,6 @@
 // Tell WebPack about the css we want:
 import style from "./style.m.css";
+import * as SchemesJsonImport from "./schemes.json";
 
 import { SkPickOne } from "client/utils/SkPickOne";
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
@@ -14,15 +15,11 @@ export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
 	 * @override
 	 */
 	protected _lazyLoad(): void {
-		try {
-			import(
-				/* webpackChunkName: "colour-schemes" */
-				/* webpackMode: "lazy-once" */
-				`./schemes/${void 0}.css`
-			);
-		} catch {
-			// Ignore error for importing "undefined.css"
-		}
+		import(
+			/* webpackChunkName: "colour-schemes" */
+			/* webpackMode: "lazy-once" */
+			`./schemes/${SchemesJsonImport[1]!.id}.css`
+		);
 		this.baseElem.classList.add(style["this"]);
 		this.baseElem.appendChild(this.nav.prev);
 
@@ -159,7 +156,6 @@ Object.freeze(ColourCtrlScreen.prototype);
 
 
 /**
- *
  */
 export namespace Colour {
 	export const Swatch = Object.freeze(<const>[
@@ -170,20 +166,7 @@ export namespace Colour {
 		"pFaceTeammate", "pFaceImtlTeammate",
 		"pFaceOpponent", "pFaceImtlOpponent",
 	]);
-	export const Schemes = Object.freeze<Array<Scheme>>(([{
-		id: "snakey",
-		displayName: "Snakey",
-		author: "N.W.",
-	}, {
-		id: "smooth-stone",
-		displayName: "Smooth Stone",
-		author: "Dav",
-	}, {
-		id: "murky-dive",
-		displayName: "Murky Dive",
-		author: "Stressed Dav", // I Was just working on game-grid scroll-wrap padding :')
-	},
-	]).map((scheme) => Object.freeze(scheme)));
+	export const Schemes = JsUtils.deepFreeze<Scheme[]>(Array.from(SchemesJsonImport));
 	export type Scheme = Readonly<{
 		/**
 		 * Must be matched in the CSS as an attribute value.

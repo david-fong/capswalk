@@ -295,11 +295,7 @@ export namespace BaseScreen {
 			prev      = BaseScreen.NavTree[prev].prev;
 			if (prev === dest) return BaseScreen.NavDir.BACKWARD;
 		}
-		// This below check is too strong of a spec. I have kept
-		// it just in case it could somehow be useful in the future.
-		// if (NavTree[dest].prev !== curr) {
-		//     throw new Error(`${dest} is not reachable from ${curr}.`);
-		// }
+		// TODO.impl instead of the below, check that dest's prev chain contains curr.
 		// If do-while completes, then dest must be in the forward direction:
 		return BaseScreen.NavDir.FORWARD;
 	}

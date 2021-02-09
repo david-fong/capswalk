@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === "production") {
 		srcPkgKeys).forEach((key) => { pkg[key] = srcPkg[key]; });
 	pkg["repository"] += "/tree/dist"; // Point to the dist branch.
 	for (let [name,at] of Object.entries<string>(pkg.dependencies)) {
-		if (at[0] === "^") { at = "=" + at.slice(1); }
+		if (/^[\^~]$/.test(at[0]!)) { at = "=" + at.slice(1); }
 		pkg.dependencies[name] = at;
 	}
 

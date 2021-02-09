@@ -40,6 +40,7 @@ export const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 			transpileOnly: true,
 			experimentalWatchApi: true,
 			experimentalFileCaching: true,
+			onlyCompileBundledFiles: true,
 		},
 	},
 }, ];};

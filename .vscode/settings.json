@@ -27,19 +27,19 @@
     },
     "json.schemas": [
         {
-            "fileMatch": [ "**/*tsconfig*.json", ],
+            "fileMatch": [ "*tsconfig*.json" ],
             "url": "http://json.schemastore.org/tsconfig",
-        }, {
-            "fileMatch": [ "**/*cSpell.json", ],
+        },{
+            "fileMatch": [ "*cSpell.json" ],
             "url": "https://raw.githubusercontent.com/streetsidesoftware/cspell/cspell4/cspell.schema.json",
-        }, {
-            "fileMatch": [ "**/*.webmanifest", ],
-            "url": "http://json.schemastore.org/web-manifest"
-        }, {
-            "fileMatch": [ "**/*package.json", ],
+        },{
+            "fileMatch": [ "*.webmanifest" ],
+            "url": "http://json.schemastore.org/web-manifest",
+        },{
+            "fileMatch": [ "*package.json" ],
             "url": "https://json.schemastore.org/package",
-        }, {
-            "fileMatch": [ "**/.eslintrc.json", ],
+        },{
+            "fileMatch": [ ".eslintrc.json" ],
             "url": "https://json.schemastore.org/eslintrc",
         },
     ],
@@ -61,7 +61,13 @@
         "composes",
     ],
 
+    "[javascript]": {
+        "editor.insertSpaces": false,
+    },
     "[typescript]": {
+        "editor.insertSpaces": false,
+    },
+    "[typescriptreact]": {
         "editor.insertSpaces": false,
     },
     "[css]": {
@@ -70,7 +76,4 @@
     "[html]": {
         "editor.insertSpaces": false,
     },
-    "cSpell.enableFiletypes": [
-        "shellscript"
-    ],
 }

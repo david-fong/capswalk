@@ -8,4 +8,5 @@
 		{ "path": "../base/defs" },
 		{ "path": "../base/game" },
 	],
+	"include": ["**/*.ts", "**/*.json"]
 }
