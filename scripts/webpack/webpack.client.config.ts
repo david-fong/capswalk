@@ -77,7 +77,10 @@ export const CLIENT_CONFIG = __BaseConfig("client"); {
 			(PACK_MODE === "development") ? "" : ".min"
 		}.js`),
 	});
-	Object.assign((config.optimization?.splitChunks as any).cacheGroups, <SplitChunksOpts>{
+	config.optimization!.minimizer = ["...", new CssMinimizerPlugin({
+		minimizerOptions: { preset: ["default", { discardComments: {}, }] }
+	})];
+	Object.assign((config.optimization!.splitChunks as any).cacheGroups, <SplitChunksOpts>{
 		"game-css": {
 			test: /src[/\\]base[/\\].*\.css$/,
 			name: "game-css", chunks: "all", priority: 10,
@@ -87,7 +90,6 @@ export const CLIENT_CONFIG = __BaseConfig("client"); {
 	const htmlPluginOptions: HtmlPlugin.Options = {
 		template: path.resolve(PROJECT_ROOT, "src/client/index.ejs"),
 		favicon: "./assets/favicon.png",
-		scriptLoading: "defer",
 		inject: false, // (I'll do it myself).
 		templateParameters: (compilation, assets, assetTags, options) => { return {
 			compilation, webpackConfig: compilation.options,
