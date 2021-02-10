@@ -1,0 +1,11 @@
+{
+	"extends": "../../tsconfig-childbase.json",
+	"compilerOptions": {
+		"disableSolutionSearching": true
+	},
+	"references": [
+		{ "path": "../../defs" },
+		{ "path": "../tsconfig.json" }
+	],
+	"include": ["./**/*", "./defs/*.json"]
+}

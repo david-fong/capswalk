@@ -12,7 +12,7 @@
             // basecode:
             "./src/base/defs/tsconfig.json",
             "./src/base/lang/tsconfig.json",
-            "./src/base/lang/impl__tsconfig.json",
+            "./src/base/lang/impl/tsconfig.json",
             "./src/base/floor/tsconfig.json",
             "./src/base/game/tsconfig.json",
             // concrete implementations:

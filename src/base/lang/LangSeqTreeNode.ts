@@ -61,7 +61,7 @@ export namespace LangSeqTree {
 
 			// Reverse the map:
 			const reverseDict: Map<Lang.Seq, Array<WeightedLangChar>> = new Map();
-			Object.entries(forwardDict).forEach(([char, {seq,weight}]) => {
+			Object.freeze(Object.entries(forwardDict)).forEach(([char, {seq,weight}]) => {
 				const weightedChar = new WeightedLangChar(
 					char, scaleWeight(weight),
 				);

@@ -3,7 +3,6 @@ import { Lang as _Lang } from "defs/TypeDefs";
 
 import { LangSeqTree } from "./LangSeqTreeNode";
 
-
 /**
  * A language is a map from a collection of unique characters to
  * corresponding key-sequences. the key-sequences may be non-unique.

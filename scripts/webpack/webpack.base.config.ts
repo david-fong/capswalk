@@ -9,7 +9,7 @@ type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
 
 export const PACK_MODE = (process.env.NODE_ENV) as ("development" | "production") || "development";
-export const PROJECT_ROOT = path.resolve(__dirname, "../..");
+export const PROJECT_ROOT = (...relative: string[]) => path.resolve(__dirname, "../..", ...relative);
 export const GAME_SERVERS = require("../../servers.json");
 
 export const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> => { return [
@@ -43,6 +43,10 @@ export const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 			onlyCompileBundledFiles: true,
 		},
 	},
+}, {
+	test: /\.json5$/,
+	type: "json",
+	parser: { parse: require("json5").parse },
 }, ];};
 
 /**
@@ -61,20 +65,20 @@ export const __BaseConfig = (distSubFolder: string): Require<webpack.Configurati
 		colors: true,
 	},
 
-	context: PROJECT_ROOT, // https://webpack.js.org/configuration/entry-context/#context
+	context: PROJECT_ROOT(), // https://webpack.js.org/configuration/entry-context/#context
 	entry: { /* Left to each branch config */ },
 	plugins: [ ...BASE_PLUGINS(), ],
 	resolve: {
 		extensions: [".ts", ".js"],
 		modules: [
-			path.resolve(PROJECT_ROOT, "src"),
-			path.resolve(PROJECT_ROOT, "src/base"),
-			path.resolve(PROJECT_ROOT, "node_modules"),
+			PROJECT_ROOT("src"),
+			PROJECT_ROOT("src/base"),
+			PROJECT_ROOT("node_modules"),
 		], // match tsconfig.baseUrl
 		alias: { /* Left to each branch config */ },
 	},
 	resolveLoader: {
-		modules: [path.resolve(PROJECT_ROOT, "scripts/webpack/node_modules")],
+		modules: [PROJECT_ROOT("scripts/webpack/node_modules")],
 	},
 	module: { rules: MODULE_RULES(), },
 	// https://webpack.js.org/plugins/source-map-dev-tool-plugin/
@@ -82,7 +86,7 @@ export const __BaseConfig = (distSubFolder: string): Require<webpack.Configurati
 		? "nosources-source-map"
 		: "cheap-source-map",
 	output: {
-		path: path.resolve(PROJECT_ROOT, "dist", distSubFolder),
+		path: PROJECT_ROOT("dist", distSubFolder),
 		publicPath: `./`, // need trailing "/".
 		filename: "[name].js",
 		chunkFilename: "chunk/[name].js",

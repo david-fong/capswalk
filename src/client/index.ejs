@@ -8,7 +8,6 @@
 		<!-- <link rel="manifest" href="manifest.webmanifest"/> -->
 
 		<%= htmlWebpackPlugin.tags.headTags.join("\n\t\t") %>
-		<%= htmlWebpackPlugin.files.js.map((href) => `<link rel="preload" as="script" href="${href}"/>`).join("\n\t\t") %>
 		<meta name="og:title"       content="snakey3"/>
 		<meta name="author"         content="David Fong"/>
 		<meta name="description"    content="A multiplayer typing game for learning written languages."/>
@@ -19,13 +18,15 @@
 
 	<body class="fill-parent">
 		<datalist id="public-game-hosts-list">
-			<%- wellKnownGameServers.map((host) => `<option value=\"https://${host}"\></option>`).join() %>
+			<% wellKnownGameServers.forEach(host => { %>
+				<option value="https://<%-(host)%>"></option>
+			<% }) %>
 		</datalist>
 		<script>
 		{ // Load up last used colour scheme (or default):
-			const cssl = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
+			const css = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
 			const root = document.documentElement;
-			if (cssl) { cssl.split(";").forEach((rule) => {
+			if (css) { css.split(";").forEach((rule) => {
 				const [name,val] = rule.split(":");
 				root.style.setProperty(name,val);
 			}); }

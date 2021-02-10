@@ -41,7 +41,7 @@ const WEB_MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 		return {
 		loader: "file-loader",
 		options: {
-			context: path.resolve(PROJECT_ROOT, "assets"),
+			context: PROJECT_ROOT("assets"),
 			//name: "[name].[ext]",
 			outputPath: pathFunc,
 			publicPath: pathFunc,
@@ -69,10 +69,10 @@ export const CLIENT_CONFIG = __BaseConfig("client"); {
 			importType: "root",
 		})],
 	});
-	config.resolve.modules!.push(path.resolve(PROJECT_ROOT)); // for requiring assets.
+	config.resolve.modules!.push(PROJECT_ROOT()); // for requiring assets.
 	config.module!.rules!.push(...WEB_MODULE_RULES());
 	Object.assign(config.resolve.alias, {
-		"socket.io-client": path.resolve(PROJECT_ROOT,
+		"socket.io-client": PROJECT_ROOT(
 		`node_modules/socket.io-client/dist/socket.io${
 			(PACK_MODE === "development") ? "" : ".min"
 		}.js`),
@@ -88,14 +88,14 @@ export const CLIENT_CONFIG = __BaseConfig("client"); {
 		},
 	});
 	const htmlPluginOptions: HtmlPlugin.Options = {
-		template: path.resolve(PROJECT_ROOT, "src/client/index.ejs"),
+		template: PROJECT_ROOT("src/client/index.ejs"),
 		favicon: "./assets/favicon.png",
 		inject: false, // (I'll do it myself).
 		templateParameters: (compilation, assets, assetTags, options) => { return {
 			compilation, webpackConfig: compilation.options,
 			htmlWebpackPlugin: { tags: assetTags, files: assets, options, },
 			// Custom HTML templates for index.ejs:
-			wellKnownGameServers: require(path.resolve(PROJECT_ROOT, "servers.json")),
+			wellKnownGameServers: require(PROJECT_ROOT("servers.json")),
 		}; },
 		//hash: true,
 	};

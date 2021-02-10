@@ -18,7 +18,7 @@ const SERVER_CONFIG = __BaseConfig("server"); {
 /** */
 const TEST_CONFIG = __BaseConfig("test"); {
 	const config = TEST_CONFIG;
-	config.resolve.modules!.push(path.resolve(PROJECT_ROOT, "src"));
+	config.resolve.modules!.push(PROJECT_ROOT("src"));
 	__applyCommonNodeConfigSettings(config);
 	(<const>[ "lang", ]).forEach((name) => {
 		config.entry[name] = `./test/${name}/index.ts`;

@@ -1,13 +1,11 @@
 import { Lang } from "../Lang";
 
-
 /**
- *
  */
 export namespace English {
 
 	/**
-	 * # Lowercase (QWERTY)
+	 * Lowercase (QWERTY)
 	 *
 	 * https://wikipedia.org/wiki/Keyboard_layout#QWERTY
 	 */
@@ -27,7 +25,7 @@ export namespace English {
 
 
 	/**
-	 * # Mixed-Case (QWERTY)
+	 * Mixed-Case (QWERTY)
 	 *
 	 * https://wikipedia.org/wiki/Keyboard_layout#QWERTY
 	 */
