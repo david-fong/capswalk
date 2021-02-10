@@ -8,7 +8,7 @@
         "**/tsconfig.tsbuildinfo": true,
 
         // things that I might like to toggle:
-        //"**/*tsconfig*.json": true,
+        "**/*tsconfig*.json": true,
         "{**/.eslintrc.*,.eslintignore}": true,
         "scripts/webpack/*.js": true,
         "dist/**/*.map": true,

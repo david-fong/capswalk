@@ -9,7 +9,7 @@ import type * as DistPkg from "./templates/package.json";
 if (process.env.NODE_ENV === "production") {
 	// Generate dist/package.json:
 	const srcPkgKeys = Object.freeze(<const>[
-		"name", "author",
+		"name", "license", "author",
 		"description", "keywords",
 		"version", "dependencies", "repository",
 	]);
