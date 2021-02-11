@@ -204,7 +204,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		};
 		const dataList = this.groupNameDataList;
 		const dataListArr = Array.from(dataList.children) as HTMLOptionElement[];
-		Object.entries(response).forEach(([groupName, status]) => {
+		Object.freeze(Object.entries(response)).forEach(([groupName, status]) => {
 			const optElem
 				= dataListArr.find((opt: HTMLOptionElement) => opt.value === groupName)
 				|| makeOption(groupName);

@@ -171,7 +171,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 					socket.broadcast.emit(GameEv.RETURN_TO_LOBBY, socket.id);
 				}
 			});
-			Object.entries(this.gameEvSocketListeners).forEach(([evName, callback]) => {
+			Object.freeze(Object.entries(this.gameEvSocketListeners)).forEach(([evName, callback]) => {
 				socket.on(evName, callback);
 			});
 		}

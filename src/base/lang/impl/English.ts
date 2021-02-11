@@ -36,7 +36,7 @@ export namespace English {
 		public static BUILD(): Lang.WeightedForwardMap {
 			let initializer: Lang.WeightedForwardMap = {};
 			const addMappings = (charSeqTransform: (cs: string) => string): void => {
-				initializer = Object.entries(LETTER_FREQUENCY).reduce(
+				initializer = Object.freeze(Object.entries(LETTER_FREQUENCY)).reduce(
 					(accumulator, [_char,weight]) => {
 						const char: Lang.Char = charSeqTransform(_char);
 						accumulator[char] = { seq: char, weight };
@@ -64,7 +64,7 @@ export namespace English {
 				super("engl-cell-enc", weightScaling);
 			}
 			public static BUILD(): Lang.WeightedForwardMap {
-				return Object.entries(LETTER_FREQUENCY).reduce<Lang.WeightedForwardMap>(
+				return Object.freeze(Object.entries(LETTER_FREQUENCY)).reduce<Lang.WeightedForwardMap>(
 					(accumulator, [char,weight], index) => {
 						accumulator[char] = { seq: NUMPAD[index]!, weight };
 						return accumulator;
@@ -137,7 +137,7 @@ export namespace English {
 			}
 			public static BUILD(): Lang.WeightedForwardMap {
 				const dict: Lang.WeightedForwardMap = {};
-				for (const [plain,cipher] of Object.entries(Dict)) {
+				for (const [plain,cipher] of Object.freeze(Object.entries(Dict))) {
 					dict[plain] = { seq: cipher, weight: English.LETTER_FREQUENCY_EXT[plain]! };
 				}
 				return dict;
@@ -157,7 +157,7 @@ export namespace English {
 			}
 			public static BUILD(): Lang.WeightedForwardMap {
 				const dict: Lang.WeightedForwardMap = {};
-				for (const [plain,cipher] of Object.entries(Dict)) {
+				for (const [plain,cipher] of Object.freeze(Object.entries(Dict))) {
 					const morse = cipher.replace(/\./g,"•").replace(/\-/g,"−");
 					dict[morse] = { seq: plain, weight: English.LETTER_FREQUENCY_EXT[plain]! };
 				}

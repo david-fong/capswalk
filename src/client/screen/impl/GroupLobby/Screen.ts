@@ -176,7 +176,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	/**
 	 */
 	private _onUserInfoChange(res: Group.Socket.UserInfoChange.Res): void {
-		Object.entries(res).forEach(([socketId, desc]) => {
+		Object.freeze(Object.entries(res)).forEach(([socketId, desc]) => {
 			const userInfo = this._players.get(socketId);
 
 			// If player is in a team on their own and they are leaving it:

@@ -239,10 +239,10 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 			return; //⚡
 		}
 
-		Object.entries(desc.tiles).forEach(([coord, changes]) => {
+		Object.freeze(Object.entries(desc.tiles)).forEach(([coord, changes]) => {
 			this.commitTileMods(parseInt(coord), changes);
 		});
-		Object.entries(desc.players).forEach(([pid, changes]) => {
+		Object.freeze(Object.entries(desc.players)).forEach(([pid, changes]) => {
 			const player = this.players[parseInt(pid)]!;
 			player.reqBuffer.acceptOldest();
 			player.health = changes.health;
