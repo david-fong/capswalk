@@ -14,7 +14,7 @@ InitBrowserGameCtorMaps();
 /**
  * @final
  */
-export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirror<"ONLINE",S> {
+export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirror<S> {
 
 	/** @override */
 	declare readonly grid: VisibleGrid<S>;

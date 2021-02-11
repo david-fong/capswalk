@@ -17,7 +17,7 @@ import { RobotPlayer } from "base/game/player/RobotPlayer";
  *
  * @final
  */
-export class ServerGame<S extends Coord.System = Coord.System> extends GameManager<"SERVER",S> {
+export class ServerGame<S extends Coord.System = Coord.System> extends GameManager<S> {
 
 	public readonly namespace: io.Namespace;
 	private readonly _groupHostClient: io.Socket["client"];
@@ -37,6 +37,10 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	 */
 	protected readonly playerSockets: ReadonlyMap<Player.Id, io.Socket>;
 
+	public get currentOperator(): never {
+		throw new Error("never");
+	}
+
 
 	/**
 	 * Attach listeners for requests to each socket.
@@ -53,7 +57,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			impl: {
 				gridClassLookup: Grid.getImplementation,
 				OperatorPlayer: undefined,
-				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<"SERVER">, desc),
+				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<any>, desc),
 				onGameBecomeOver: () => {},
 			},
 			desc: (() => {

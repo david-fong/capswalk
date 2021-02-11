@@ -13,7 +13,7 @@ InitBrowserGameCtorMaps();
 /**
  * @final
  */
-export class OfflineGame<S extends Coord.System = Coord.System> extends GameManager<"OFFLINE",S> {
+export class OfflineGame<S extends Coord.System = Coord.System> extends GameManager<S> {
 
 	/** @override */
 	declare readonly grid: VisibleGrid<S>;
@@ -28,7 +28,7 @@ export class OfflineGame<S extends Coord.System = Coord.System> extends GameMana
 			impl: {
 				gridClassLookup: VisibleGrid.getImplementation,
 				OperatorPlayer: OperatorPlayer,
-				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<"OFFLINE">, desc),
+				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager, desc),
 				onGameBecomeOver,
 			},
 			desc: (() => {

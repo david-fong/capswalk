@@ -50,7 +50,7 @@ export namespace Game {
 	export type ImplArgs = {
 		gridClassLookup<S extends Coord.System>(coordSys: S): Grid.ClassIf<S>;
 		OperatorPlayer: typeof OperatorPlayer | undefined;
-		RobotPlayer: (_this: GameMirror<Game.Type>, desc: Player._CtorArgs[Player.RobotFamily]) => Player;
+		RobotPlayer: (_this: GameMirror, desc: Player._CtorArgs[Player.RobotFamily]) => Player;
 		onGameBecomeOver: () => void;
 	};
 

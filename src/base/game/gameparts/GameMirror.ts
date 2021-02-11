@@ -9,12 +9,11 @@ import type { OperatorPlayer } from "../player/OperatorPlayer";
 
 import { Player } from "../player/Player";
 import { Team } from "../player/Team";
-type Operator<G extends Game.Type> = G extends typeof Game.Type.SERVER ? undefined : OperatorPlayer;
 
 /**
  * Foundational parts of a Game that are not related to event handling.
  */
-export abstract class GameMirror<G extends Game.Type, S extends Coord.System = Coord.System> {
+export abstract class GameMirror<S extends Coord.System = Coord.System> {
 
 	public readonly grid: Grid<S>;
 	readonly #onGameBecomeOver: () => void;
@@ -22,7 +21,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 
 	public readonly players: TU.RoArr<Player>;
 	public readonly operators: TU.RoArr<OperatorPlayer>;
-	#currentOperator: Operator<G>;
+	#currentOperator: OperatorPlayer;
 	/** Indexable by team ID's. */
 	public readonly teams: TU.RoArr<Team>;
 
@@ -44,7 +43,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 			system: desc.coordSys,
 			dimensions: desc.gridDimensions,
 			players: desc.players,
-		}) as GameMirror<G,S>["grid"];
+		}) as GameMirror<S>["grid"];
 
 		this.#onGameBecomeOver = impl.onGameBecomeOver;
 		this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId)!;
@@ -65,8 +64,8 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 				return new Team(teamId, teammateArray);
 			});
 		}
-		JsUtils.propNoWrite(this as GameMirror<G,S>,
-			"gameType", "grid", "langFrontend",
+		JsUtils.propNoWrite(this as GameMirror<S>,
+			"grid", "langFrontend",
 			"players", "operators", "teams",
 		);
 		this.players.forEach((player) => player.onTeamsBootstrapped());
@@ -99,7 +98,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 					: new Player(this, pDesc);
 			} else {
 				return implArgs.RobotPlayer(
-					this as GameMirror<any,any>,
+					this as GameMirror<any>,
 					pDesc,
 				);
 			}
@@ -122,7 +121,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		});
 	}
 
-	public get currentOperator(): Operator<G> {
+	public get currentOperator(): OperatorPlayer {
 		return this.#currentOperator;
 	}
 	public setCurrentOperator(nextOperatorIndex: number): void {
@@ -130,9 +129,7 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 		if (!DEF.DevAssert && nextOperator === undefined) throw new Error("never");
 		if (this.currentOperator !== nextOperator)
 		{
-			this.#currentOperator = nextOperator as Operator<G>;
-			// IMPORTANT: The order of the above lines matters
-			// (hence the method name "notifyWillBecomeCurrent").
+			this.#currentOperator = nextOperator;
 		}
 	}
 

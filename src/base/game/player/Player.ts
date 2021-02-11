@@ -36,7 +36,7 @@ export class Player extends _Player implements _Player.UserInfo {
 	}
 
 	/** */
-	public constructor(game: GameMirror<Game.Type,any>, desc: Player.CtorArgs) {
+	public constructor(game: GameMirror<any>, desc: Player.CtorArgs) {
 		super();
 
 		this.playerId = desc.playerId;

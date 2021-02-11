@@ -15,7 +15,7 @@ import { Player } from "./Player";
 export class OperatorPlayer extends Player {
 
 	/** @override */
-	declare public readonly game: GameMirror<(Game.Type.Browser),any>;
+	declare public readonly game: GameMirror<any>;
 
 	/**
 	 * Invariant: always matches the prefix of the {@link LangSeq} of
@@ -26,7 +26,7 @@ export class OperatorPlayer extends Player {
 	readonly #langRemappingFunc: {(input: string): string};
 
 
-	public constructor(game: GameMirror<Game.Type,any>, desc: Player._CtorArgs["HUMAN"]) {
+	public constructor(game: GameMirror<any>, desc: Player._CtorArgs["HUMAN"]) {
 		super(game, desc);
 		Object.seal(this); //🧊
 		this.#langRemappingFunc = this.game.langFrontend.remapFunc;

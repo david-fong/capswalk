@@ -14,13 +14,11 @@ import { GameMirror } from "./GameMirror";
 import InitGameManagerCtorMaps from "../ctormaps/CmapManager";
 InitGameManagerCtorMaps();
 
-
 /**
  */
 export abstract class GameManager<
-	G extends Game.Type.Manager,
 	S extends Coord.System = Coord.System,
-> extends GameMirror<G,S> {
+> extends GameMirror<S> {
 
 	public readonly health: HealthInfo;
 
@@ -40,7 +38,7 @@ export abstract class GameManager<
 
 		this.health = new HealthInfo(args.desc, this.grid.static as Grid.ClassIf<any>);
 		this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
-		JsUtils.propNoWrite(this as GameManager<G,S>,
+		JsUtils.propNoWrite(this as GameManager<S>,
 			"health", "scoreInfo",
 		);
 
@@ -54,8 +52,8 @@ export abstract class GameManager<
 				langModule[this.langFrontend.module],
 			) as Lang.ClassIf;
 			// @ts-expect-error : RO=
-			this.lang = new LangConstructor(desc.langWeightExaggeration);
-			JsUtils.propNoWrite(this as GameManager<G,S>, "lang");
+			this.lang = new LangConstructor(args.desc.langWeightExaggeration);
+			JsUtils.propNoWrite(this as GameManager<S>, "lang");
 
 			if (DEF.DevAssert && (this.lang.numLeaves < this.grid.static.getAmbiguityThreshold())) {
 				// Enforced By: clientside UI and `CHECK_VALID_CTOR_ARGS`.

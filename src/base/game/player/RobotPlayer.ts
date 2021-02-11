@@ -107,7 +107,7 @@ export namespace RobotPlayer {
 	export const _Constructors: {
 		readonly [ F in Player.RobotFamily ]: {
 			new(
-				game: GameManager<Game.Type.Manager>,
+				game: GameManager,
 				desc: Player._CtorArgs[F]
 			): RobotPlayer;
 		};
@@ -121,7 +121,7 @@ export namespace RobotPlayer {
 	}
 
 	export const of = (
-		game: GameManager<Game.Type.Manager>,
+		game: GameManager,
 		playerDesc: Player._CtorArgs[Player.RobotFamily],
 	): RobotPlayer => {
 		const familyId = playerDesc.familyId as Player.RobotFamily;
