@@ -2,7 +2,7 @@ import type * as io from "socket.io";
 
 import { JsUtils } from "defs/JsUtils";
 import { GameEv, GroupEv, SkServer } from "defs/OnlineDefs";
-import { Game } from "game/Game";
+import type { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
 import type { StateChange } from "game/StateChange";
 import { Player } from "game/player/Player";
@@ -49,18 +49,19 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		deleteExternalRefs: () => void,
 		gameDesc: Game.CtorArgs.UnFin<S>,
 	}>) {
-		super(
-			Game.Type.SERVER, {
+		super({
+			impl: {
 				gridClassLookup: Grid.getImplementation,
 				OperatorPlayer: undefined,
 				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<"SERVER">, desc),
 				onGameBecomeOver: () => {},
 			},
-			(() => {
+			desc: (() => {
 				Player.CtorArgs.finalize(args.gameDesc);
 				return args.gameDesc;
 			})(),
-		);
+			operatorIds: [],
+		});
 		this._groupHostClient = args.groupHostClient;
 		this._deleteExternalRefs = args.deleteExternalRefs;
 		JsUtils.instNoEnum (this as ServerGame<S>, "operators", "_deleteExternalRefs");

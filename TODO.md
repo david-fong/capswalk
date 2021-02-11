@@ -12,6 +12,7 @@
 ### Things I feel like doing
 
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
+1. Get rid of the in-game socket.io namespace? It made it easy to remove all in-game related event listeners, but it adds so much connection complexity.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
     - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid derived classes instead of smarter tile derived classes).

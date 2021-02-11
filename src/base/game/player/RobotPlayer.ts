@@ -35,9 +35,6 @@ export abstract class RobotPlayer extends Player {
 	 */
 	protected constructor(game: GameManager<any>, desc: Player.CtorArgs) {
 		super(game, desc);
-		if (DEF.DevAssert && game.gameType === Game.Type.ONLINE) {
-			throw new TypeError("OnlineGames should be using regular Players instead.");
-		}
 	}
 
 	/**

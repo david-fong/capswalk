@@ -33,16 +33,16 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 		gameDesc: Game.CtorArgs<S>,
 		operatorIds: TU.RoArr<Player.Id>,
 	) {
-		super(
-			"ONLINE", {
+		super({
+			impl: {
 				gridClassLookup: VisibleGrid.getImplementation,
 				OperatorPlayer: OperatorPlayer,
 				RobotPlayer: (game, desc) => new Player(game, desc),
 				onGameBecomeOver,
 			},
-			gameDesc,
+			desc: gameDesc,
 			operatorIds,
-		);
+		});
 		this.socket = gameSocket;
 		Object.seal(this); //🧊
 

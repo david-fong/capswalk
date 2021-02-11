@@ -24,18 +24,19 @@ export class OfflineGame<S extends Coord.System = Coord.System> extends GameMana
 		onGameBecomeOver: () => void,
 		gameDesc: Game.CtorArgs.UnFin<S>,
 	) {
-		super(
-			"OFFLINE", {
+		super({
+			impl: {
 				gridClassLookup: VisibleGrid.getImplementation,
 				OperatorPlayer: OperatorPlayer,
 				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<"OFFLINE">, desc),
 				onGameBecomeOver,
 			},
-			(() => {
+			desc: (() => {
 				Player.CtorArgs.finalize(gameDesc);
 				return gameDesc;
 			})(),
-		);
+			operatorIds: gameDesc.players.filter(p => p.familyId === "HUMAN").map(p => p.playerId),
+		});
 		Object.seal(this); //🧊
 	}
 

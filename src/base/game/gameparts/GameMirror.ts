@@ -16,7 +16,6 @@ type Operator<G extends Game.Type> = G extends typeof Game.Type.SERVER ? undefin
  */
 export abstract class GameMirror<G extends Game.Type, S extends Coord.System = Coord.System> {
 
-	public readonly gameType: G;
 	public readonly grid: Grid<S>;
 	readonly #onGameBecomeOver: () => void;
 	public readonly langFrontend: Lang.FrontendDesc;
@@ -30,15 +29,14 @@ export abstract class GameMirror<G extends Game.Type, S extends Coord.System = C
 	#status: Game.Status;
 
 	/** */
-	public constructor(
-		gameType: G,
-		impl: Game.ImplArgs,
-		desc: Game.CtorArgs<S>,
-		operatorIds: TU.RoArr<Player.Id>,
-	) {
+	public constructor(args: {
+		readonly impl: Game.ImplArgs,
+		readonly desc: Game.CtorArgs<S>,
+		readonly operatorIds: TU.RoArr<Player.Id>,
+	}) {
+		const { impl, desc, operatorIds } = args;
 		JsUtils.deepFreeze(desc);
 		Object.freeze(operatorIds);
-		this.gameType = gameType;
 
 		const gridClass = impl.gridClassLookup(desc.coordSys);
 		this.grid = new (gridClass)({

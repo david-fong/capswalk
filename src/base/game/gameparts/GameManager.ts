@@ -31,17 +31,14 @@ export abstract class GameManager<
 
 	/**
 	 */
-	public constructor(
-		gameType: G,
-		impl: Game.ImplArgs,
-		desc: Game.CtorArgs<S>,
-	) {
-		super(gameType, impl, desc, (() => {
-			return gameType === "SERVER" ? []
-			: desc.players.filter(p => p.familyId === "HUMAN").map(p => p.playerId);
-		})());
+	public constructor(args: {
+		readonly impl: Game.ImplArgs,
+		readonly desc: Game.CtorArgs<S>,
+		readonly operatorIds: TU.RoArr<Player.Id>,
+	}) {
+		super(args);
 
-		this.health = new HealthInfo(desc, this.grid.static as Grid.ClassIf<any>);
+		this.health = new HealthInfo(args.desc, this.grid.static as Grid.ClassIf<any>);
 		this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
 		JsUtils.propNoWrite(this as GameManager<G,S>,
 			"health", "scoreInfo",
