@@ -27,8 +27,7 @@ export abstract class GameManager<
 
 	private readonly scoreInfo: ScoreInfo;
 
-	/**
-	 */
+	/** */
 	public constructor(args: {
 		readonly impl: Game.ImplArgs,
 		readonly desc: Game.CtorArgs<S>,

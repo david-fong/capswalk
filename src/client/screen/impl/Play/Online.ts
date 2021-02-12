@@ -9,7 +9,7 @@ import { Game, _PlayScreen } from "./_Screen";
 
 /**
  */
-export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE,"ONLINE"> {
+export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 	/** @override */
 	protected readonly askConfirmBeforeLeave = false;
 

@@ -18,7 +18,6 @@ type BrowserGame = OfflineGame | OnlineGame;
 // TODO.impl Allow users to change the spotlight radius and grid zoom via slider.
 export abstract class _PlayScreen<
 	SID extends BaseScreen.Id.PLAY_OFFLINE | BaseScreen.Id.PLAY_ONLINE,
-	G extends Game.Type.Browser,
 > extends BaseScreen<SID> {
 
 	/**
@@ -92,7 +91,7 @@ export abstract class _PlayScreen<
 			implHost: _gridHtml.implHost,
 			pauseOl: _gridHtml.pauseOl,
 		});
-		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, "grid");
+		JsUtils.propNoWrite(this as _PlayScreen<SID>, "grid");
 		JsUtils.Web.prependComment(this.grid.implHost, "grid impl host");
 		this.grid.implHost.appendChild(document.createComment("grid impl"));
 
@@ -351,7 +350,7 @@ export abstract class _PlayScreen<
 			pause: createControlButton(""),
 			reset: createControlButton("Reset"),
 		});
-		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, "btn");
+		JsUtils.propNoWrite(this as _PlayScreen<SID>, "btn");
 		this.btn.reset.onclick = this._resetGame.bind(this);
 
 		this.baseElem.appendChild(controlsBar);
@@ -362,7 +361,7 @@ export abstract class _PlayScreen<
 			// @ts-expect-error : RO=
 			= this.playersBar
 			= JsUtils.html("div", [style["players-bar"]]);
-		JsUtils.propNoWrite(this as _PlayScreen<SID,G>, "playersBar");
+		JsUtils.propNoWrite(this as _PlayScreen<SID>, "playersBar");
 		this.baseElem.appendChild(playersBar);
 	}
 }

@@ -27,20 +27,17 @@ export abstract class Lang extends _Lang {
 
 	public readonly frontendDesc: Lang.FrontendDesc;
 
-	/**
-	 * A "reverse" map from `LangSeq`s to `LangChar`s.
-	 */
-	private readonly treeMap: LangSeqTree.ParentNode;
+	/** A "reverse" map from `LangSeq`s to `LangChar`s. */
+	private readonly treeRoots: readonly LangSeqTree.Node[];
 
 	/**
-	 * A list of leaf nodes in `treeMap` sorted in ascending order by
+	 * A list of leaf nodes in `treeRoots` sorted in ascending order by
 	 * hit-count. Entries should never be removed or added. They will
-	 * always be sorted in ascending order of `tricklingHitCount`.
+	 * always be sorted in ascending order of `carryHits`.
 	 */
-	private readonly leafNodes: Array<LangSeqTree.ChildNode>;
+	private readonly leafNodes: LangSeqTree.Node[];
 
 	public get numLeaves(): number { return this.leafNodes.length; }
-
 
 	/**
 	 */
@@ -50,26 +47,27 @@ export abstract class Lang extends _Lang {
 	) {
 		super();
 		this.frontendDesc = Lang.GET_FRONTEND_DESC_BY_ID(frontendDescId)!;
-		this.treeMap = LangSeqTree.ParentNode.CREATE_TREE_MAP(
+		this.treeRoots = LangSeqTree.Node.CREATE_TREE_MAP(
 			(Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD(),
 			weightExaggeration,
 		);
-		this.leafNodes = this.treeMap.getLeaves();
-		JsUtils.propNoWrite(this as Lang, "frontendDesc", "treeMap", "leafNodes");
+		this.leafNodes = this.treeRoots.flatMap((root) => root.getLeaves());
+		JsUtils.propNoWrite(this as Lang, "frontendDesc", "treeRoots", "leafNodes");
 		Object.seal(this); //🧊
 
 		if (DEF.DevAssert && this.leafNodes.length !== this.frontendDesc.numLeaves) {
 			throw new Error(`maintenance required: the frontend constant`
-			+` for the language \"${this.frontendDesc.id}\" needs to`
+			+` for the language "${this.frontendDesc.id}" needs to`
 			+` be updated to the correct, computed value, which is`
 			+` \`${this.leafNodes.length}\`.`);
 		}
 	}
 
-	/**
-	 */
+	/** */
 	public reset(): void {
-		this.treeMap.reset();
+		for (const root of this.treeRoots) {
+			root.reset();
+		}
 	}
 
 
@@ -106,13 +104,13 @@ export abstract class Lang extends _Lang {
 		// `avoid` are also in `avoid`.
 
 		// Start by sorting according to the desired balancing scheme:
-		this.leafNodes.sort(LangSeqTree.ParentNode.LEAF_CMP);
+		this.leafNodes.sort(LangSeqTree.Node.LEAF_CMP);
 
 		search_branch:
 		for (const leaf of this.leafNodes) {
 			let hitNode = leaf;
 			for (
-				let node: LangSeqTree.ChildNode | undefined = leaf;
+				let node: LangSeqTree.Node | undefined = leaf;
 				node !== undefined;
 				node = node.parent
 			) {
@@ -135,8 +133,7 @@ export abstract class Lang extends _Lang {
 			return hitNode.chooseOnePair();
 		}
 		// Enforced by UI and server:
-		throw new Error(`never. Invariants guaranteeing that a LangSeq`
-		+` can always be shuffled-in were not met.`);
+		throw new Error("never");
 	}
 }
 export namespace Lang {

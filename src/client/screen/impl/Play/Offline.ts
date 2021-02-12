@@ -6,7 +6,7 @@ import { Game, _PlayScreen } from "./_Screen";
 
 /**
  */
-export class PlayOfflineScreen extends _PlayScreen<BaseScreen.Id.PLAY_OFFLINE,"OFFLINE"> {
+export class PlayOfflineScreen extends _PlayScreen<BaseScreen.Id.PLAY_OFFLINE> {
 
 	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.

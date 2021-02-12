@@ -1,153 +1,62 @@
 import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
 import type { Lang } from "./Lang";
-
-
 type LangSorter<T> = (a: T, b: T) => number;
 
-/**
- */
+/** */
 export namespace LangSeqTree {
 
-	/**
-	 */
-	export class ParentNode {
+	/** */
+	export class Node {
 
-		public readonly seq = "" as Lang.Seq;
-		protected readonly children: TU.RoArr<ChildNode> = [];
+		declare public readonly parent: Node | undefined;
+		declare public readonly seq: Lang.Seq;
+		declare protected readonly children: TU.RoArr<Node>;
+		readonly #characters: TU.RoArr<WeightedLangChar> = [];
 		/**
 		 * Equals this node's own weighted hit count plus all its ancestors'
 		 * weighted hit counts.
 		 */
 		protected carryHits: number = 0.0;
-
-		public constructor() {
-			JsUtils.propNoWrite(this as ParentNode, "children");
+		public get ownHits(): number {
+			return this.carryHits - (this.parent?.carryHits ?? 0);
 		}
 
-		public reset(): void {
-			for (const child of this.children) child.reset();
-			this.carryHits = 0.0;
-		}
-
-		protected _finalize(): void {
-			Object.freeze(this.children);
-			for (const child of this.children) (child as ParentNode)._finalize();
-			// The above cast to ParentNode tells to the TypeScript
-			// compiler that the override has protected access to us.
-		}
-
-		public getLeaves(): Array<ChildNode> {
-			const leafNodes: Array<ChildNode> = [];
-			this._rGetLeaves(leafNodes);
-			return Object.seal(leafNodes); //🧊
-		}
-		protected _rGetLeaves(leafNodes: Array<ChildNode>): void {
-			if (this.children.length) {
-				for (const child of this.children) child._rGetLeaves(leafNodes);
-			} else {
-				leafNodes.push(this as ParentNode as ChildNode);
-			}
-		}
-
-		/**
-		 * @returns The root node of a new tree map.
-		 */
-		public static CREATE_TREE_MAP(
-			forwardDict: Lang.WeightedForwardMap,
-			weightScaling: Lang.WeightExaggeration,
-		): LangSeqTree.ParentNode {
-			const scaleWeight = LangSeqTree.GET_SCALE_WEIGHT_FUNC(weightScaling, forwardDict);
-
-			// Reverse the map:
-			const reverseDict: Map<Lang.Seq, Array<WeightedLangChar>> = new Map();
-			Object.freeze(Object.entries(forwardDict)).forEach(([char, {seq,weight}]) => {
-				const weightedChar = new WeightedLangChar(
-					char, scaleWeight(weight),
-				);
-				const chars = reverseDict.get(seq);
-				if (chars !== undefined) {
-					// The entry was already made:
-					chars.push(weightedChar);
-				} else {
-					reverseDict.set(seq, [weightedChar]);
-				}
-			});
-
-			// Add mappings in ascending order of sequence length:
-			// (this is so that no merging of branches needs to be done)
-			const rootNode = new ParentNode();
-			Object.seal(rootNode); //🧊
-			let cursor: ChildNode | ParentNode = rootNode;
-			Object.freeze(Object.seal(Array.from(reverseDict))
-			.sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1))
-			.forEach(([seq,chars]) => {
-				while (!seq.startsWith(cursor.seq)) {
-					cursor = (cursor as ChildNode).parent ?? rootNode;
-				}
-				const newChild: ChildNode = new ChildNode(
-					cursor === rootNode ? undefined : cursor as ChildNode,
-					seq, chars,
-				);
-				((cursor as ParentNode).children as ChildNode[]).push(newChild);
-				cursor = newChild;
-			});
-			rootNode._finalize();
-			return rootNode;
-		}
-
-		public static readonly LEAF_CMP: LangSorter<ChildNode> = (a, b) => {
-			return a.carryHits - b.carryHits;
-		};
-	}
-	JsUtils.protoNoEnum(ParentNode, "_finalize", "_rGetLeaves");
-	Object.freeze(ParentNode);
-	Object.freeze(ParentNode.prototype);
-
-
-	/**
-	 * No `LangSeqTreeNode`s mapped in the `children` field have an empty
-	 * `characters` collection (with the exception of the root node). The
-	 * root node should have a falsy parent, and the `empty string` as its
-	 * `sequence` field, with a correspondingly empty `characters` collection.
-	 *
-	 * All non-root nodes have a `sequence` that is prefixed by their parent's
-	 * `sequence`, and a non-empty `characters` collection.
-	 *
-	 * The enclosing {@link Lang} object has no concept of `LangChar` weights.
-	 * All it has is the interfaces provided by the hit-count getter methods.
-	 */
-	export class ChildNode extends ParentNode {
-
-		/**
-		 * Is `undefined` if this is a child of the root node.
-		 */
-		public readonly parent: ChildNode | undefined;
-		public readonly seq: Lang.Seq;
-		readonly #characters: TU.RoArr<WeightedLangChar>;
-
-		public constructor(
-			parent:     ChildNode | undefined,
-			sequence:   Lang.Seq,
+		/** */
+		protected constructor(
+			parent: Node | undefined,
+			seq: Lang.Seq = "",
 			characters: TU.RoArr<WeightedLangChar>,
 		) {
-			super();
-			this.seq = sequence;
+			Object.defineProperty(this, "parent",   { enumerable: true, value: parent, });
+			Object.defineProperty(this, "seq",      { enumerable: true, value: seq, });
+			Object.defineProperty(this, "children", { enumerable: true, value: [], });
 			this.#characters = Object.freeze(characters);
-			this.parent = parent;
-			JsUtils.propNoWrite(this as ChildNode, "seq", "parent");
 			Object.seal(this); //🧊
 		}
 
-		/** @override */
 		public reset(): void {
-			super.reset();
-			// Order matters! The below work must be done after `super.reset`
-			// so that `inheritingWeightedHitCount` does not get erroneously
-			// reset to zero after starting to inherit seeding hits.
+			// Reset hit-counters on the way down.
+			this.carryHits = 0.0;
+			for (const child of this.children) child.reset();
+
+			// On the way up, seed hit-counters (which get inherited downwards).
 			for (const char of this.#characters) {
 				char.reset();
 				this.incrHits(char, Math.random() * _Lang.CHAR_HIT_COUNT_SEED_CEILING);
+			}
+		}
+
+		public getLeaves(): Array<Node> {
+			const leafNodes: Array<Node> = [];
+			this._rGetLeaves(leafNodes);
+			return Object.seal(leafNodes); //🧊
+		}
+		protected _rGetLeaves(leafNodes: Array<Node>): void {
+			if (this.children.length) {
+				for (const child of this.children) child._rGetLeaves(leafNodes);
+			} else {
+				leafNodes.push(this as Node);
 			}
 		}
 
@@ -186,25 +95,65 @@ export namespace LangSeqTree {
 			for (const child of this.children) child._rIncrHits(weightInv);
 		}
 
-		public get ownHits(): number {
-			return this.carryHits - (this.parent?.carryHits ?? 0);
+		/**
+		 * @returns The root node of a new tree map.
+		 */
+		public static CREATE_TREE_MAP(
+			forwardDict: Lang.WeightedForwardMap,
+			weightScaling: Lang.WeightExaggeration,
+		): readonly Node[] {
+			const scaleWeight = LangSeqTree.GET_SCALE_WEIGHT_FUNC(weightScaling, forwardDict);
+
+			// Reverse the map:
+			const reverseDict = new Map<Lang.Seq, WeightedLangChar[]>();
+			Object.freeze(Object.entries(forwardDict)).forEach(([char, {seq, weight}]) => {
+				const weightedChar = new WeightedLangChar(
+					char, scaleWeight(weight),
+				);
+				const chars = reverseDict.get(seq);
+				if (chars !== undefined) {
+					// The entry was already made:
+					chars.push(weightedChar);
+				} else {
+					reverseDict.set(seq, [weightedChar]);
+				}
+			});
+
+			const roots: Node[] = [];
+			let parent: Node | undefined = undefined; // a DFS cursor.
+			for (const [seq, chars] of Object.freeze(
+				// Sorting alphabetically enables DFS-ordered tree construction.
+				Object.seal(Array.from(reverseDict)).sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1)
+			)) /* no breaks */ {
+				while (parent !== undefined && !seq.startsWith(parent.seq)) {
+					parent = parent.parent;
+				}
+				const newNode: Node = new Node(parent, seq, chars);
+				if (parent !== undefined) {
+					(parent.children as Node[]).push(newNode);
+				} else {
+					roots.push(newNode);
+				}
+				parent = newNode;
+			}
+			return Object.freeze(roots);
 		}
 
-		public static readonly PATH_CMP: LangSorter<ChildNode> = (a, b) => {
-			return a.ownHits - b.ownHits;
+		public static readonly LEAF_CMP: LangSorter<Node> = (a, b) => {
+			return a.carryHits - b.carryHits;
 		};
 	}
-	JsUtils.protoNoEnum(ChildNode, "_rIncrHits");
-	Object.freeze(ChildNode);
-	Object.freeze(ChildNode.prototype);
+	JsUtils.protoNoEnum(Node, "_rGetLeaves", "_rIncrHits");
+	Object.freeze(Node);
+	Object.freeze(Node.prototype);
 
-	/**
-	 */
+
+	/** */
 	export function GET_SCALE_WEIGHT_FUNC(
 		weightScaling: Lang.WeightExaggeration,
 		forwardDict: Lang.WeightedForwardMap,
 	): (ogWeight: number) => number {
-		if (weightScaling === 0) return (ogWgt: number) => 1;
+		if (weightScaling === 0) return () => 1;
 		if (weightScaling === 1) return (ogWgt: number) => ogWgt;
 		const values = Object.values(forwardDict);
 		const averageWeight = values.reduce((sum, next) => sum += next.weight, 0) / values.length;
@@ -213,7 +162,6 @@ export namespace LangSeqTree {
 	Object.freeze(GET_SCALE_WEIGHT_FUNC);
 }
 Object.freeze(LangSeqTree);
-
 
 
 /**
@@ -226,8 +174,6 @@ Object.freeze(LangSeqTree);
  */
 class WeightedLangChar {
 
-	public readonly char: Lang.Char;
-
 	/**
 	 * A weight is relative to weights of other unique characters in
 	 * the contextual language. Characters with relatively higher
@@ -237,35 +183,28 @@ class WeightedLangChar {
 	 * other character B will, on average, be returned N times more
 	 * often by the `chooseOnePair` method than B.
 	 */
-	public readonly weightInv: number = 1.0;
-	/**
-	 * This value is weighted according to `weightInv`.
-	 */
+	declare public readonly weightInv: number;
+
+	/** This value is weighted according to `weightInv`. */
 	public hits: number = 0.0;
 
 	public constructor(
-		char: Lang.Char,
+		public readonly char: Lang.Char,
 		weight: number,
 	) {
 		this.char = char;
-		this.weightInv = 1.0 / weight;
+		Object.defineProperty(this, "weightInv", { enumerable: true, value: 1.0 / weight });
 		// The above choice of a numerator is not behaviourally significant.
 		// All that is required is that all single-mappings in a `Lang` use
 		// a consistent value.
 		Object.seal(this); //🧊
 	}
-
 	public reset(): void {
 		this.hits = 0.0;
 	}
-
 	public _incrementNumHits(): void {
 		this.hits += this.weightInv;
 	}
-
-	public static readonly CMP: LangSorter<WeightedLangChar> = (a, b) => {
-		return a.hits - b.hits;
-	};
 };
 Object.freeze(WeightedLangChar);
 Object.freeze(WeightedLangChar.prototype);

@@ -41,24 +41,16 @@ export namespace JsUtils {
 		});
 	}
 
-	/** */
-	export function instNoEnum<T>(
-		inst: T, ...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
-	): void {
-		_configProp(inst, propNames, NO_ENUM);
-	}
-	/** */
-	export function propNoWrite<T>(
-		inst: T, ...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
-	): void {
-		_configProp(inst, propNames, NO_WRITE);
-	}
+	export const instNoEnum  = _configProp.bind(null, NO_ENUM) as _configProp;
+	export const propNoWrite = _configProp.bind(null, NO_WRITE) as _configProp;
 
+	type _configProp = <T>(inst: T, ...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>) => void;
 	function _configProp<T>(
-		inst: T, propNames: TU.RoArr<string>, descriptor: PropertyDescriptor,
+		descriptor: PropertyDescriptor,
+		inst: T, ...propNames: TU.RoArr<string>
 	): void {
 		const hasProps = Object.freeze(Object.getOwnPropertyNames(inst));
-		propNames.forEach((propName) => {
+		for (const propName of propNames) {
 			if (DEF.DevAssert) {
 				if (!hasProps.includes(propName as string)) {
 					const msg = `\`${(inst as any).__proto__.constructor.name}\``
@@ -67,7 +59,7 @@ export namespace JsUtils {
 				}
 			}
 			Object.defineProperty(inst, propName, descriptor);
-		});
+		}
 	}
 
 	export type CamelCaseNameTransforms = Readonly<{
