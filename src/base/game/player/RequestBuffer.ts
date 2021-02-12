@@ -25,7 +25,7 @@ export class RequestBuffer {
 	}
 
 	public get isFull(): boolean {
-		return this.length === Game.K.REQUEST_BUFFER_LENGTH;
+		return this.length === Game.K._REQUEST_BUFFER_LENGTH;
 	}
 
 	/** @requires `!this.isFull` */

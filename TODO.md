@@ -11,6 +11,8 @@
 
 ### Things I feel like doing
 
+1. Implement lang requirement on grid: Grid must guarantee the existence of one tile that has less than or equal to `N` destinations, where `N` is the number of children of the language's root node.
+1. Switch from socket.io to ws. I want to manage my own pubsub.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Get rid of the in-game socket.io namespace? It made it easy to remove all in-game related event listeners, but it adds so much connection complexity.
 1. Change Euclid Visual Grid to use SVG.
@@ -62,12 +64,6 @@
 
 ### Ideas
 
-- Make a decorator to prevent overrides of a method.
-  - Make JsUtils have a non-exported `WeakSet<Functions>`.
-  - Make a JsUtil function that checks if a class declares any functions with the same name as anything higher in the prototype chain (see `Object.getPrototypeOf()`). Make it only apply during development.
-- Start a skeleton for a "Chess Knight" Grid implementation. That would be pretty mind boggling both to play and to develop...
-- Investigate whether we can create fewer functions for socket event listeners by making custom subclasses of Socket.
-- When TypeScript 4.1 comes out, use the improved `@see` JSdoc annotations.
 - Implement translations of clientside strings.
   - Create a sitemap file to point to translated versions
     - [Google Sitemap indicate translations](https://support.google.com/webmasters/answer/189077?hl=en)
@@ -102,12 +98,7 @@
 
 - When CSS' content-visibility hidden is better supported, use it for screens instead of display none. I already checked that on chrome, tab navigation within a hidden element is disabled.
 - Try turning on `webpack.experiments.module`.
-- ~Use es6 #private syntax for getter-backing fields~
-  - Waiting for eslint parser plugin: `https://github.com/typescript-eslint/typescript-eslint/pull/1465#issuecomment-591562659`
-  - Turn eslint back on (the vscode extension) when the typescript parser for eslint is ready.
 - In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
-- Take a look at [eslint-plugin-css-modules](https://www.npmjs.com/package/eslint-plugin-css-modules).
-- May be able to remove dependency on `express-static-gzip` after [this](https://github.com/expressjs/compression/issues/71) is resolved. But actually probably not :P. I think that thread is about dynamic compression.
 - Turn on TypeScript experimental decorators?
   - After reading [the TC39 proposal docs](https://github.com/tc39/proposal-decorators#option-b-init-method-decorators) and seeing how much they differ from TypeScript's current spec, I don't want to commit to something that will likely change drastically in the future.
 
@@ -134,7 +125,6 @@ https://developer.mozilla.org/en-US/docs/Web/API
 https://web.dev/add-manifest/
 https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
 Navigator.{keyboard,online,connection,language,languages,battery}
-https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
 https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API
 ```
 
@@ -159,11 +149,3 @@ https://www.html5rocks.com/en/tutorials/webaudio/positional_audio/
 https://github.com/GoogleChromeLabs/web-audio-samples/
 https://github.com/bbc/r-audio
 ```
-
-## Things I have Tried that Haven't Worked (and that's okay)
-
-- Tile Benching
-- Being on multiple teams
-- Nicety system instead of teams
-- Using TypeScript's project-references feature to speed up compile time
-- Turtle conduits: They actually aren't foolproof. You can just make a really big turtle wall so there's space between you and who you're trying to protect and then the conduit is broken.

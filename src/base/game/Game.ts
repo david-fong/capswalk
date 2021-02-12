@@ -1,11 +1,9 @@
 import type { Lang } from "defs/TypeDefs";
-
 import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { Player } from "./player/Player";
 import type { OperatorPlayer } from "./player/OperatorPlayer";
-import type { GameMirror } from "game/gameparts/GameMirror";
-
+import type { GameMirror } from "./gameparts/GameMirror";
 
 /**
  * **Important** To be properly disposed of, a game must first have
@@ -27,19 +25,6 @@ import type { GameMirror } from "game/gameparts/GameMirror";
  * - Client  and Server games use network operations to communicate.
  */
 export namespace Game {
-
-	/** @enum */
-	export type Type = typeof Type[keyof typeof Type];
-	export const Type = Object.freeze(<const>{
-		SERVER:  "SERVER",
-		ONLINE:  "ONLINE",
-		OFFLINE: "OFFLINE",
-	});
-	Type as {[K in Type]: K};
-	export namespace Type {
-		export type Manager = typeof Type.OFFLINE | typeof Type.SERVER;
-		export type Browser = typeof Type.OFFLINE | typeof Type.ONLINE;
-	}
 
 	/**
 	 * Unlike CtorArgs, these are not passed as no-prototype objects
@@ -63,11 +48,11 @@ export namespace Game {
 	}
 
 	/**
-	 * ## Game Constructor Arguments
+	 * Game Constructor Arguments
 	 *
-	 * **IMPORTANT**: Upon modification, make appropriate changes to
-	 * GameManager's function for verifying validity of client input
-	 * on the server side.
+	 * Important internal note: Upon modification, make appropriate
+	 * changes to GameManager's function for verifying validity of
+	 * client input on the server side.
 	 *
 	 * @template S
 	 * The coordinate system to use. The literal value must also be
@@ -122,6 +107,9 @@ export namespace Game {
 
 	/**
 	 * Global, Game-Setup-Agnostic constants for tuning game behaviour.
+	 *
+	 * Keys beginning with an underscore are probably of no interest to
+	 * people playing the game.
 	 */
 	export const K = Object.freeze(<const>{
 		/**
@@ -131,7 +119,7 @@ export namespace Game {
 		 * `dryRunSpawnFreeHealth` before a unit of health will be
 		 * re-spawned after being consumed.
 		 */
-		HEALTH_UPDATE_CHANCE: 0.1,
+		_HEALTH_UPDATE_CHANCE: 0.1,
 
 		/**
 		 * Affects the distribution of health across the grid: "How
@@ -139,7 +127,7 @@ export namespace Game {
 		 * the grid will be". Higher values cause concentration; lower
 		 * values result in dilution.
 		 */
-		AVERAGE_HEALTH_TO_SPAWN_ON_TILE: 1.0,
+		"AVERAGE_HEALTH_TO_SPAWN_ON_TILE": 1.0,
 
 		/**
 		 * A value in `(0,1]`. If `1`, then players can (on average),
@@ -151,7 +139,7 @@ export namespace Game {
 		 * and randomly. Adjustments for more rational assumptions are
 		 * not to be made _here_.
 		 */
-		PORTION_OF_MOVES_THAT_ARE_BOOST: 0.4,
+		"PORTION_OF_MOVES_THAT_ARE_BOOST": 0.4,
 
 		/**
 		 * Takes into consideration all contributing factors to determine
@@ -163,7 +151,7 @@ export namespace Game {
 		 * such that they can only only boost for a determined percentage
 		 * of all their movement actions?
 		 */
-		HEALTH_COST_OF_BOOST(
+		_HEALTH_COST_OF_BOOST(
 			averageHealthPerTile: Player.Health,
 			gridGetDiameter: (area: number) => number,
 		): Player.Health {
@@ -202,20 +190,20 @@ export namespace Game {
 		 * "reasonable" amount of effort to eliminate an entire team-
 		 * not too much, not too little.
 		 */
-		HEALTH_EFFECT_FOR_DOWNED_PLAYER: 0.6,
+		"HEALTH_EFFECT_FOR_DOWNED_PLAYER": 0.6,
 
 		/**
 		 * A strictly-positive integer. Indicates the maximum number
 		 * of requests which a clientside player can buffer.
 		 */
-		REQUEST_BUFFER_LENGTH: 5,
+		_REQUEST_BUFFER_LENGTH: 5,
 
 		/**
 		 * How many times a Decisive RobotPlayer can reuse its cached
 		 * target before it will do another cold analysis of its
 		 * surroundings.
 		 */
-		ROBOT_PRIORITY_MAX_REUSES: 4,
+		_ROBOT_PRIORITY_MAX_REUSES: 4,
 	});
 }
 Object.freeze(Game);

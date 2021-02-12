@@ -18,7 +18,7 @@ export class HealthInfo {
 		desc: Game.CtorArgs,
 		gridStatic: Grid.ClassIf<Coord.System>,
 	) {
-		const baseCostOfBoost = Game.K.HEALTH_COST_OF_BOOST(
+		const baseCostOfBoost = Game.K._HEALTH_COST_OF_BOOST(
 			desc.averageHealthPerTile,
 			gridStatic.getLatticePatchDiameter,
 		);

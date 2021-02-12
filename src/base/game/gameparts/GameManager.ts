@@ -164,7 +164,7 @@ export abstract class GameManager<
 				// `this.averageFreeHealthPerTile`.
 			);
 			const healthToAdd = Game.K.AVERAGE_HEALTH_TO_SPAWN_ON_TILE;
-			if ((Math.random() < Game.K.HEALTH_UPDATE_CHANCE)) {
+			if ((Math.random() < Game.K._HEALTH_UPDATE_CHANCE)) {
 				let otherDesc = changes[tile.coord];
 				if (otherDesc !== undefined) {
 					// @ts-expect-error : RO=

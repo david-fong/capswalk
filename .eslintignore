@@ -5,11 +5,11 @@
 /assets/
 /dist/
 .templates/
-tsconfig.json
+*tsconfig*.json
 
 # used ".../**/*" since "!" overrides don't work for ".../"
 /scripts/**/*
-!/scripts/webpack/webpack.config.ts
+!/scripts/webpack/webpack*.config.ts
 !/scripts/webpack/pack.ts
 
 

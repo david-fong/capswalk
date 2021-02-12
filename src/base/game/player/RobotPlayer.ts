@@ -167,7 +167,7 @@ export namespace RobotPlayer {
 		/** @final */
 		protected computeDesiredDest(): Coord {
 			const c = this.#cache;
-			if (c.target !== undefined && c.reuses <= Game.K.ROBOT_PRIORITY_MAX_REUSES) {
+			if (c.target !== undefined && c.reuses <= Game.K._ROBOT_PRIORITY_MAX_REUSES) {
 				const next = this._behaviours[c.which]!.call(this, c.target);
 				if (next !== undefined) {
 					c.reuses++;
