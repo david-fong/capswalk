@@ -1,4 +1,3 @@
-import type { Socket } from "socket.io-client";
 import type { TopLevel } from "client/TopLevel";
 import { Group } from "defs/OnlineDefs";
 import { SkServer } from "defs/OnlineDefs";
@@ -322,11 +321,11 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		});
 	}
 
-	private get joinerSocket(): Socket | undefined {
-		return this.top.sockets.joinerSocket;
+	private get joinerSocket(): WebSocket | undefined {
+		return this.top.socket;
 	}
-	private get groupSocket(): Socket | undefined {
-		return this.top.sockets.groupSocket;
+	private get groupSocket(): WebSocket | undefined {
+		return this.top.socket;
 	}
 
 	/**

@@ -1,4 +1,3 @@
-import type { Socket } from "socket.io-client";
 import { GameEv } from "defs/OnlineDefs";
 import {
 	JsUtils, Game, Coord, StateChange,
@@ -19,7 +18,7 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 	/** @override */
 	declare readonly grid: VisibleGrid<S>;
 
-	public readonly socket: Socket;
+	public readonly socket: WebSocket;
 
 	/**
 	 * Note that this class does not extend `GameManager`.
@@ -28,7 +27,7 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 	 * @param gameDesc - This should come from a Server event by the name {@link GameEv.CREATE}.
 	 */
 	public constructor(
-		gameSocket: Socket,
+		gameSocket: WebSocket,
 		onGameBecomeOver: () => void,
 		gameDesc: Game.CtorArgs<S>,
 		operatorIds: TU.RoArr<Player.Id>,

@@ -1,4 +1,4 @@
-import type * as io from "socket.io";
+import type * as WebSocket from "ws";
 import { JsUtils } from "defs/JsUtils";
 import { GroupEv } from "defs/OnlineDefs";
 
@@ -16,41 +16,46 @@ import { Group as _Group, SkServer } from "defs/OnlineDefs";
  */
 export class Group extends _Group {
 
-	public readonly namespace: io.Namespace;
+	// TODO.design just change this to a callback for broadcasting?
+	readonly #wss: WebSocket.Server;
 	public readonly name: Group.Name;
 	public readonly passphrase: Group.Passphrase;
-	#currentGame: ServerGame<any> | undefined;
-	private _sessionHost: Group.Socket;
 
-	private readonly socketListeners: Readonly<{
-		[evName : string]: (socket: Group.Socket, ...args: any[]) => void,
-	}>;
+	public readonly sockets: WebSocket[] = [];
+	public readonly userInfo: WeakMap<WebSocket, Player.UserInfo>;
+	private _sessionHost: WebSocket;
+
+	#currentGame: ServerGame<any> | undefined;
+
+	declare private readonly _socketListeners: {
+		readonly [evName : string]: (socket: WebSocket, ...args: any[]) => void,
+	};
 
 	private readonly _initialTtlTimeout: NodeJS.Timeout;
 	private readonly _deleteExternalRefs: () => void;
 
 	/** */
 	public constructor(desc: Readonly<{
-		namespace: io.Namespace,
+		wss: WebSocket.Server,
 		name: Group.Name,
 		passphrase: Group.Passphrase,
 		deleteExternalRefs: () => void,
 	}>) {
 		super();
-		this.namespace    = desc.namespace;
-		this.name         = desc.name;
-		this.passphrase   = desc.passphrase;
+		this.#wss = desc.wss;
+		this.name = desc.name;
+		this.passphrase = desc.passphrase;
 		this.#currentGame = undefined;
 
 		this._deleteExternalRefs = desc.deleteExternalRefs;
 		this._initialTtlTimeout = setTimeout(() => {
-			if (this.namespace.sockets.size === 0) {
+			if (this.sockets.length === 0) {
 				this.terminate();
 			}
 		}, (Group.DEFAULT_TTL * 1000)).unref();
 
-		this.socketListeners = Object.freeze({
-			["disconnect"]: (socket: io.Socket, reason): void => {
+		Object.defineProperty(this, "_socketListeners", { value: Object.freeze({
+			["disconnect"]: (socket: WebSocket): void => {
 				if (socket === this._sessionHost) {
 					// If the host disconnects, end the session.
 					// TODO.impl this seems like a bad decision. What about just broadcasting
@@ -59,16 +64,16 @@ export class Group extends _Group {
 					this.terminate();
 					return;
 				}
-				if (this.namespace.sockets.size === 1) {
+				if (this.sockets.length === 1) {
 					this.terminate();
 					return;
 				}
 				const res = <_Group.Socket.UserInfoChange.Res>{
-					[socket.id]: undefined,
+					[this.userInfo.get(socket).guid]: undefined,
 				};
-				socket.nsp.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
+				this.sockets.forEach((s) => s.send(Group.Socket.UserInfoChange.EVENT_NAME, res));
 			},
-			[Group.Socket.UserInfoChange.EVENT_NAME]: (socket: Group.Socket, req: _Group.Socket.UserInfoChange.Req) => {
+			[Group.Socket.UserInfoChange.EVENT_NAME]: (socket: WebSocket, req: _Group.Socket.UserInfoChange.Req) => {
 				if (typeof req.username !== "string"
 				 || typeof req.teamId   !== "number"
 				 || typeof req.avatar   !== "string") {
@@ -77,42 +82,25 @@ export class Group extends _Group {
 					+ `, teamId: \`${req.teamId}\`, avatar: \`${req.avatar}\`.`);
 					return;
 				}
-				socket.userInfo = req;
+				this.userInfo.set(socket, req);
 				const res = <_Group.Socket.UserInfoChange.Res>{
 					[socket.id]: req,
 				};
-				socket.nsp.emit(Group.Socket.UserInfoChange.EVENT_NAME, res);
-				//console.log("change ", res);
+				this.sockets.forEach((s) => s.send(Group.Socket.UserInfoChange.EVENT_NAME, res));
 			},
-		});
-		JsUtils.instNoEnum( this as Group, "socketListeners");
-		JsUtils.propNoWrite(this as Group, "socketListeners");
-
-		// Call the connection-event handler:
-		this.namespace.use((socket, next) => {
-			const handshake = socket.handshake;
-			if ((handshake.auth as any).passphrase !== this.passphrase) {
-				next(new Error("Incorrect passphrase"));
-			}
-			const userInfo = (socket.handshake.auth as any).userInfo as Player.UserInfo;
-			if (userInfo === undefined || userInfo.teamId !== 0) {
-				next(new Error(`a socket attempted to connect to group`
-				+ ` \`${this.name}\` without providing userInfo.`));
-			}
-			return next();
-		}).on("connection", this.onConnection.bind(this));
+		})});
 	}
 
-	/** */
-	protected onConnection(socket: Group.Socket): void {
+	/** Let someone into this group */
+	public admitSocket(socket: WebSocket): void {
 		console.info(`socket connect (group):  ${socket.id}`);
 		if (this.#currentGame) {
 			// TODO.design is there a good reason to do the below?
 			// Prevent new players from joining while the group is playing
 			// a game:
-			socket.disconnect();
+			socket.close();
 		}
-		socket.userInfo = (socket.handshake.auth as any).userInfo;
+		this.userInfo.set(socket, (socket.handshake.auth as any).userInfo);
 		{
 			type Res = _Group.Socket.UserInfoChange.Res;
 			const EVENT_NAME = Group.Socket.UserInfoChange.EVENT_NAME;
@@ -121,9 +109,9 @@ export class Group extends _Group {
 			socket.nsp.emit(EVENT_NAME, <Res>{[socket.id]: socket.userInfo});
 			// Notify the new player of all other players:
 			const res: {[socketId: string]: Player.UserInfo} = {};
-			for (const [otherSocketId, otherSocket] of this.sockets.entries()) {
+			this.sockets.forEach((otherSocket) => {
 				res[otherSocketId] = otherSocket.userInfo;
-			}
+			});
 			socket.emit(EVENT_NAME, res);
 		}
 
@@ -131,20 +119,21 @@ export class Group extends _Group {
 		 * Nobody has connected yet.
 		 * The first socket becomes the session host.
 		 */
-		if (socket.nsp.sockets.size === 1) {
+		if (this.sockets.length === 0) {
 			clearTimeout(this._initialTtlTimeout);
 			// @ts-expect-error : RO=
 			this._initialTtlTimeout = undefined!;
 			this._sessionHost = socket;
-			this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
+			this.#wss.clients.forEach((s) => s.send(Group.Exist.EVENT_NAME, {
 				[this.name]: Group.Exist.Status.IN_LOBBY,
-			});
+			}));
 			socket.on(GroupEv.CREATE_GAME, this._socketOnHostCreateGame.bind(this));
 		}
 
-		Object.entries(this.socketListeners).forEach(([evName, callback]) => {
+		Object.entries(this._socketListeners).forEach(([evName, callback]) => {
 			socket.on(evName, callback.bind(this, socket));
 		});
+		this.sockets.push(socket);
 	}
 	private _socketOnHostCreateGame<S extends Coord.System>(
 		ctorArgs: Game.CtorArgs.UnFin<S>
@@ -155,9 +144,9 @@ export class Group extends _Group {
 			console.info(failureReasons);
 		} else {
 			// Broadcast to the joiner namespace of this group's change in state:
-			this.namespace.server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
+			this.#wss.clients.forEach((s) => s.send(Group.Exist.EVENT_NAME, {
 				[this.name]: Group.Exist.Status.IN_GAME,
-			});
+			}));
 			console.info(`group ${this.name} new game`);
 		}
 	}
@@ -174,32 +163,17 @@ export class Group extends _Group {
 	 * - Deletes the only external reference so this can be garbage collected.
 	 */
 	protected terminate(): void {
-		function killNamespace(nsps: io.Namespace): void {
-			nsps.removeAllListeners("connect");
-			nsps.removeAllListeners("connection");
-			for (const socket of nsps.sockets.values()) {
-				socket.disconnect(false /* Do not close underlying engine */);
-				socket.removeAllListeners();
-			}
-			nsps.removeAllListeners();
-			nsps.server._nsps.delete(nsps.name);
+		for (const socket of this.sockets) {
+			socket.removeAllListeners();
 		}
 		if (this.#currentGame !== undefined) {
-			// Since `ServerGame` handles its own termination when all
-			// its sockets have disconnected, this code path is unlikely.
-			killNamespace(this.#currentGame.namespace);
 			this.#currentGame = undefined;
 		}
-
-		const server = this.namespace.server;
-		killNamespace(this.namespace);
-		// @ts-expect-error : RO=
-		this.namespace = undefined!;
 		(this._deleteExternalRefs)();
 
-		server.of(SkServer.Nsps.GROUP_JOINER).emit(Group.Exist.EVENT_NAME, {
+		this.#wss.clients.forEach((s) => s.send(Group.Exist.EVENT_NAME, {
 			[this.name]: Group.Exist.Status.DELETE,
-		});
+		}));
 		console.info(`terminated group: \`${this.name}\``);
 	}
 
@@ -235,37 +209,40 @@ export class Group extends _Group {
 		// @ts-expect-error : RO=
 		ctorArgs.players = [
 			...ctorArgs.players,
-			...Array.from(this.sockets.values(), (socket) => {
+			...this.sockets.map((socket) => {
+				const userInfo = this.userInfo.get(socket)!;
 				return Object.freeze(<Player._CtorArgs["HUMAN"]>{
+					socket:   socket,
 					familyId: "HUMAN",
-					teamId:   socket.userInfo.teamId,
-					clientId: socket.client["id"],
-					username: socket.userInfo.username,
-					avatar:   socket.userInfo.avatar,
+					username: userInfo.username,
+					teamId:   userInfo.teamId,
+					avatar:   userInfo.avatar,
 					familyArgs: {},
 				});
 			}),
 		];
 		this.#currentGame = new ServerGame({
-			groupNsps: this.namespace,
-			groupHostClient: this._sessionHost.client,
+			sockets: this.sockets,
+			groupHostSocket: this._sessionHost,
 			deleteExternalRefs: () => { this.#currentGame = undefined; },
 			gameDesc: ctorArgs,
 		});
 		return [];
 	}
-
-	public get sockets(): Map<string, Group.Socket> {
-		return this.namespace.sockets as Map<io.Socket["id"], Group.Socket>;
-	}
 }
 export namespace Group {
-	export type Socket      = _Group.Socket;
-	export type Name        = _Group.Name;
-	export type Passphrase  = _Group.Passphrase;
+	export type Name = _Group.Name;
+	export type Passphrase = _Group.Passphrase;
 	export namespace Query {
-		export type RequestCreate   = _Group.Exist.RequestCreate;
-		export type NotifyStatus    = _Group.Exist.NotifyStatus;
+		export type RequestCreate = _Group.Exist.RequestCreate;
+		export type NotifyStatus  = _Group.Exist.NotifyStatus;
+	}
+	export function isCreateRequestValid(desc: Query.RequestCreate): boolean {
+		return (desc.groupName !== undefined)
+		&& desc.groupName.length <= Group.Name.MaxLength
+		&& Group.Name.REGEXP.test(desc.groupName)
+		&& desc.passphrase.length <= Group.Passphrase.MaxLength
+		&& Group.Passphrase.REGEXP.test(desc.passphrase);
 	}
 }
 JsUtils.protoNoEnum(Group, "_socketOnHostCreateGame");

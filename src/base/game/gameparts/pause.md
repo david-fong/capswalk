@@ -33,7 +33,7 @@ Behaviours dependent on game-state: A game should _not_ be automatically un-paus
 
 ### Server
 
-- Request vectors (listen for): socket.io event.
+- Request vectors (listen for): websocket event.
 - Note: it is not necessary to respond to a request that I reject.
 - Enact changes.
 - Send new pause state over network to clients.

@@ -8,7 +8,6 @@ import { AllScreens } from "./screen/AllScreens";
 import { ScreenTransition } from "./screen/ScreenTransition";
 //import { BgMusic }      from "./audio/BgMusic";
 //import { SoundEffects } from "./audio/SoundEffects";
-import { SkSockets }    from "./SkSockets";
 
 
 /**
@@ -32,7 +31,7 @@ export class TopLevel {
 	//public readonly bgMusic: BgMusic;
 	//public readonly sfx: SoundEffects;
 
-	public readonly sockets: SkSockets;
+	public readonly socket?: WebSocket;
 
 	/**
 	 */
@@ -58,7 +57,7 @@ export class TopLevel {
 		JsUtils.propNoWrite(this as TopLevel, "defaultDocTitle", "webpageHostType");
 
 		this.storage = StorageHooks;
-		this.sockets = new SkSockets();
+		this.socket = undefined;
 		this.transition = new ScreenTransition();
 		JsUtils.propNoWrite(this as TopLevel, "storage", "sockets", "transition");
 

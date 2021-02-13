@@ -65,17 +65,13 @@ export const CLIENT_CONFIG = __BaseConfig("client"); {
 			},
 		},
 		externals: [nodeExternals({
-			allowlist: ["tslib", "socket.io-client"],
+			allowlist: ["tslib"],
 			importType: "root",
 		})],
 	});
 	config.resolve.modules!.push(PROJECT_ROOT()); // for requiring assets.
 	config.module!.rules!.push(...WEB_MODULE_RULES());
 	Object.assign(config.resolve.alias, {
-		"socket.io-client": PROJECT_ROOT(
-		`node_modules/socket.io-client/dist/socket.io${
-			(PACK_MODE === "development") ? "" : ".min"
-		}.js`),
 	});
 	config.optimization!.minimizer = ["...", new CssMinimizerPlugin({
 		minimizerOptions: { preset: ["default", { discardComments: {}, }] }
@@ -109,7 +105,7 @@ export const CLIENT_CONFIG = __BaseConfig("client"); {
 			"default-src": ["'self'"],
 			"script-src": "'self'", "style-src": "'self'",
 			"child-src": "'none'", "object-src": "'none'", "base-uri": "'none'",
-			"connect-src": ["'self'", ...GAME_SERVERS.map((origin: string) => `wss://${origin}/socket.io/`)],
+			"connect-src": ["'self'", ...GAME_SERVERS.map((origin: string) => `wss://${origin}/ws/`)],
 			"form-action": "'none'",
 		},{
 			hashingMethod: "sha256",

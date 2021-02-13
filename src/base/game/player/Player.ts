@@ -1,3 +1,4 @@
+import type * as WebSocket from "ws";
 import { JsUtils } from "defs/JsUtils";
 import { Game } from "game/Game";
 
@@ -186,15 +187,12 @@ export namespace Player {
 	type _PreIdAssignmentDict = {
 		[F in Player.Family]: F extends typeof Player.Family.HUMAN
 		? _PreIdAssignmentConditional<F> & {
-			readonly clientId: string | undefined;
+			readonly socket: WebSocket | undefined;
 		}
 		: _PreIdAssignmentConditional<F>;
 	};
-	interface _PreIdAssignmentConditional<F extends Player.Family> {
+	interface _PreIdAssignmentConditional<F extends Player.Family> extends UserInfo {
 		readonly familyId: F;
-		readonly teamId:   Team.Id;
-		readonly username: Username;
-		readonly avatar:   Avatar;
 		readonly familyArgs: CtorArgs.FamilySpecificPart[F];
 	};
 

@@ -1,4 +1,3 @@
-import type { Socket } from "socket.io-client";
 import { Player } from "defs/TypeDefs";
 import { Group, GroupEv, GameEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
@@ -24,7 +23,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		avatar:   HTMLSelectElement;
 	}>;
 
-	private get socket(): Socket {
+	private get socket(): WebSocket {
 		return this.top.sockets.groupSocket!;
 	}
 
@@ -101,7 +100,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		}
 		this.top.storage.Local.username = this.in.username.value;
 		this.top.storage.Local.avatar   = this.in.avatar.value;
-		this.socket.emit(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
+		this.socket.send(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
 			username: this.in.username.value,
 			teamId: parseInt(this.in.teamId.value),
 			avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
@@ -176,8 +175,8 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	/**
 	 */
 	private _onUserInfoChange(res: Group.Socket.UserInfoChange.Res): void {
-		Object.freeze(Object.entries(res)).forEach(([socketId, desc]) => {
-			const userInfo = this._players.get(socketId);
+		Object.freeze(Object.entries(res)).forEach(([uid, desc]) => {
+			const userInfo = this._players.get(uid);
 
 			// If player is in a team on their own and they are leaving it:
 			if (userInfo
@@ -200,11 +199,11 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 			if (desc === undefined) {
 				// Player has left the group:
 				userInfo!.base.remove();
-				this._players.delete(socketId);
+				this._players.delete(uid);
 			} else if (userInfo === undefined) {
 				// New player has joined the group:
 				const userInfo = new GroupLobbyScreen.UserInfo(desc);
-				this._players.set(socketId, userInfo);
+				this._players.set(uid, userInfo);
 				this.teamElems.get(desc.teamId)!.appendChild(userInfo.base);
 			} else {
 				// Player changed their user information:

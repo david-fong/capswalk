@@ -11,7 +11,7 @@
 
 ### Things I feel like doing
 
-1. Implement lang requirement on grid: Grid must guarantee the existence of one tile that has less than or equal to `N` destinations, where `N` is the number of children of the language's root node.
+1. Change `Game.players` to a map?
 1. Switch from socket.io to ws. I want to manage my own pubsub.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Get rid of the in-game socket.io namespace? It made it easy to remove all in-game related event listeners, but it adds so much connection complexity.
@@ -40,9 +40,12 @@
 
 ### Things that are low priority
 
+1. Change `LangSeqTreeNode.Node` to split into `NodeProto` and `Node`, where `Node` adds hit-count information. `NodeProto` shall have a method to create a `Node` instance using `Object.create`.
+    - Then make the `NodeProto` tree a lazily initialized internal singleton.
+    - This will save memory when multiple of the same type of language are is use at the same time.
+    - This is save time when creating another instance of the same type of language.
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Make a json file or something defining all the webpack chunk names I have defined.
-1. Make Socket interfaces for each namespace with overrides of `on` and `emit`.
 1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
 1. Spectator mode for online games? O\_o
 1. Implement the scores/player-listing sidebar in `__PlayScreen`.
@@ -57,8 +60,6 @@
 
 - Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
 - Make sure no usages of `Function.bind` bind functions providing without providing all arguments and then pass the bound function to something that can pass default arguments in a more subtle way (such as DOM on\_ functions).
-- Individual developer: `git gc`, `git prune`.
-- Dependencies: `pnpm audit`, `pnpm outdated`.
 - Convert any usages of `.innerHtml` or `.innerText` to use `.textContent` unless intentional (In which case, write a comment on why it is intentional).
 - Make sure nobody uses `document.createElement` instead of `JsUtil.html` unless they document why it's necessary.
 
@@ -74,12 +75,8 @@
   - Note: The Intersection Observer API will not work here- it doesn't trigger on re-parenting the target node.
 - Test performance when using `cloneNode` to create Tile elements versus all those calls to `document.createElement`.
   - [](https://developers.google.com/web/fundamentals/web-components)
-- Take a look at HTML WebPack Plugins:
-  - html-webpack-tags-plugin
-  - resource-hints-webpack-plugin
 - Improve onboarding experience for new contributors:
   - git hook for push: if branch is `dist`, check that `dist/package.json` has changed.
-- If we start using SASS, make classes that always have .center-contents or .stack-contents use an extension mechanism so we don't have to manually specify those utility classes in the javascript. That makes it easier to see whats happening from looking just at the stylesheets.
 - [Create a mask-safe icon that is large enough (min 144px)](https://web.dev/maskable-icon/)
 - Read about these topics and see how they might be useful
   - [](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Concepts_Behind_IndexedDB)

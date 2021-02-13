@@ -1,4 +1,5 @@
 import type { Player } from "defs/TypeDefs";
+import type * as NodeWebSocket from "ws";
 
 /**
  */
@@ -25,13 +26,7 @@ Object.freeze(SkServer.prototype);
 export abstract class Group { }
 export namespace Group {
 
-	/**
-	 * An extension of {@link io.Socket}. It is very convenient to tack
-	 * these fields directly onto the socket objects.
-	 */
-	export type Socket = import("socket.io").Socket & {
-		userInfo: Player.UserInfo;
-	};
+	/** */
 	export namespace Socket {
 
 		export namespace UserInfoChange {
@@ -42,7 +37,7 @@ export namespace Group {
 			export const EVENT_NAME = "group-lobby-user-info-change";
 
 			export type Req = Player.UserInfo;
-			export type Res = Record<Socket["id"], Player.UserInfo | undefined>;
+			export type Res = Record<string, Player.UserInfo | undefined>;
 		}
 	}
 
@@ -61,7 +56,7 @@ export namespace Group {
 	export const DEFAULT_TTL = 20; // seconds
 
 	export namespace Exist {
-		export const EVENT_NAME = "group-exist";
+		export const EVENT_NAME = "joiner-group-exist";
 
 		/**
 		 * Sent by the client to request the creation of a new group.
@@ -90,9 +85,9 @@ export namespace Group {
 			[groupNspsName : string]: Status;
 		};
 		export const enum Status {
-			IN_LOBBY    = "in-lobby",
-			IN_GAME     = "in-game",
-			DELETE      = "delete",
+			IN_LOBBY = "in-lobby",
+			IN_GAME  = "in-game",
+			DELETE   = "delete",
 		};
 	}
 }
