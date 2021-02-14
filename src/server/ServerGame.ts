@@ -19,11 +19,11 @@ import { RobotPlayer } from "base/game/player/RobotPlayer";
  */
 export class ServerGame<S extends Coord.System = Coord.System> extends GameManager<S> {
 
-	public readonly sockets: readonly WebSocket[] = [];
+	public readonly sockets: Set<WebSocket>;
 	private readonly _groupHostSocket: WebSocket;
-	declare private readonly gameEvSocketListeners: Readonly<{[evName : string]: (...args: any[]) => void}>;
 
-	private readonly _deleteExternalRefs: () => void;
+	declare private readonly gameEvSocketListeners: Readonly<{[evName : string]: (...args: any[]) => void}>;
+	declare private readonly _deleteExternalRefs: () => void;
 
 	/**
 	 * Entries indexed at ID's belonging to human-operated players
@@ -35,20 +35,16 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	 * group is already in a game, which is currently the intended
 	 * behaviour: players cannot join the game mid-game.
 	 */
-	protected readonly playerSockets: ReadonlyMap<Player.Id, WebSocket>;
+	protected readonly playerSockets: readonly WebSocket[];
 
 	public get currentOperator(): never {
 		throw new Error("never");
 	}
 
 
-	/**
-	 * Attach listeners for requests to each socket.
-	 *
-	 * Broadcasts constructor arguments to all clients.
-	 */
+	/** */
 	public constructor(args: Readonly<{
-		sockets: WebSocket[],
+		sockets: Set<WebSocket>,
 		groupHostSocket: WebSocket,
 		deleteExternalRefs: () => void,
 		gameDesc: Game.CtorArgs.UnFin<S>,
@@ -67,11 +63,11 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			operatorIds: [],
 		});
 		this._groupHostSocket = args.groupHostSocket;
-		this._deleteExternalRefs = args.deleteExternalRefs;
-		JsUtils.instNoEnum (this as ServerGame<S>, "operators", "_deleteExternalRefs");
-		JsUtils.propNoWrite(this as ServerGame<S>, "_groupHostSocket", "_deleteExternalRefs");
+		Object.defineProperty(this, "_deleteExternalRefs", { value: args.deleteExternalRefs });
+		JsUtils.instNoEnum (this as ServerGame<S>, "operators");
+		JsUtils.propNoWrite(this as ServerGame<S>, "_groupHostSocket");
 
-		this.sockets = Object.freeze(args.sockets);
+		this.sockets = new Set(args.sockets); // shallow copy
 		JsUtils.propNoWrite(this as ServerGame<S>, "sockets");
 
 		Object.defineProperty(this, "gameEvSocketListeners", { value: Object.freeze({
@@ -81,32 +77,25 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		}), });
 
 		this.sockets.forEach((s) => s.on("disconnect", () => {
-			if (this.sockets.length === 1) {
+			if (this.sockets.size === 1) {
 				this._terminate();
 			}
 		}));
-		this._greetGameSockets(args.gameDesc);
-	}
-
-	/**
-	 */
-	private _greetGameSockets(gameDesc: Game.CtorArgs<S>): void {
 		// The below cast is safe because GamepartBase reassigns
 		// `gameDesc.playerDescs` the result of `Player.finalize`.
 		const humans = Object.freeze(
-			(gameDesc.players).filter((player) => player.familyId === "HUMAN") as Player._CtorArgs["HUMAN"][]
+			(args.gameDesc.players).filter((player) => player.familyId === "HUMAN") as Player._CtorArgs["HUMAN"][]
 		);
-		// @ts-expect-error : RO=
-		this.playerSockets
-		= humans.reduce<Map<Player.Id, WebSocket>>((build, playerDesc) => {
-			if (playerDesc.socket === undefined) throw new Error("never");
-			build.set(playerDesc.playerId, playerDesc.socket);
-			return build;
-		}, new Map());
+		this.playerSockets = humans.map((playerDesc) => playerDesc.socket!);
 		JsUtils.propNoWrite(this as ServerGame<S>, "playerSockets");
 		Object.seal(this); //🧊
 
-		Promise.all(this.sockets.map((socket) =>
+		this._greetGameSockets(args.gameDesc, humans);
+	}
+
+	/** */
+	private _greetGameSockets(gameDesc: Game.CtorArgs<S>, humans: readonly Player._CtorArgs["HUMAN"][]): void {
+		Promise.all(Array.from(this.sockets, (socket) =>
 			new Promise<void>((resolve) => {
 				socket.once(GameEv.RESET, () => {
 					resolve();
@@ -118,7 +107,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 
 		// Register socket listeners for game events:
 		this.sockets.forEach((socket) => {
-			socket.on(GameEv.RETURN_TO_LOBBY, () => {
+			socket.addEventListener("message", GameEv.RETURN_TO_LOBBY, () => {
 				if (socket === this._groupHostSocket) {
 					this.statusBecomeOver();
 					socket.broadcast.emit(GameEv.RETURN_TO_LOBBY);
@@ -128,7 +117,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 				}
 			});
 			Object.freeze(Object.entries(this.gameEvSocketListeners)).forEach(([evName, callback]) => {
-				socket.on(evName, callback);
+				socket.addEventListener("message", evName, callback);
 			});
 		});
 
@@ -137,14 +126,12 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			const operatorIds = Object.freeze(humans
 				.filter((desc) => desc.socket === socket)
 				.map((desc) => desc.playerId));
-			socket.emit(GameEv.CREATE_GAME, gameDesc, operatorIds); //📢 "get ready for reset"
+			socket.emit(GroupEv.CREATE_GAME, gameDesc, operatorIds); //📢 "get ready for reset"
 		});
 	}
 
 	/** @override */
 	public async reset(): Promise<Game.ResetSer> {
-		const resetSer = await super.reset();
-
 		// Be ready for clients to indicate readiness to unpause.
 		Promise.all(Array.from(this.sockets, (socket) =>
 			new Promise<void>((resolve) => {
@@ -155,6 +142,8 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		)).then(() => {
 			this.statusBecomePlaying(); //👂 "play time!"
 		});
+
+		const resetSer = await super.reset();
 		this.sockets.forEach((s) => s.emit(GameEv.RESET, resetSer)); //📢 "get ready for playing!"
 		return resetSer;
 	}
@@ -178,13 +167,13 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	/** @override */
 	public statusBecomePlaying(): void {
 		super.statusBecomePlaying();
-		this.sockets.forEach((sock) => sock.send(GameEv.UNPAUSE));
+		this.sockets.forEach((s) => s.send(GameEv.UNPAUSE));
 	}
 
 	/** @override */
 	public statusBecomePaused(): void {
 		super.statusBecomePaused();
-		this.sockets.forEach((sock) => sock.send(GameEv.PAUSE));
+		this.sockets.forEach((s) => s.send(GameEv.PAUSE));
 	}
 
 	/** @override */
@@ -193,14 +182,12 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 
 		if (desc.rejectId) {
 			// The request was rejected- Notify the requester.
-			this.playerSockets.get(desc.initiator)!.emit(
+			this.playerSockets[desc.initiator]!.emit(
 				GameEv.IN_GAME,
 				desc,
 			);
 		} else {
-			// Request was accepted.
-			// Pass change descriptor to all clients:
-			this.sockets.forEach((sock) => sock.send(GameEv.IN_GAME, desc));
+			this.sockets.forEach((s) => s.send(JSON.stringify([GameEv.IN_GAME, desc])));
 		}
 	}
 

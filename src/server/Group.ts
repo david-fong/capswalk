@@ -21,7 +21,7 @@ export class Group extends _Group {
 	public readonly name: Group.Name;
 	public readonly passphrase: Group.Passphrase;
 
-	public readonly sockets: WebSocket[] = [];
+	public readonly sockets = new Set<WebSocket>();
 	public readonly userInfo: WeakMap<WebSocket, Player.UserInfo>;
 	private _sessionHost: WebSocket;
 
@@ -49,7 +49,7 @@ export class Group extends _Group {
 
 		this._deleteExternalRefs = desc.deleteExternalRefs;
 		this._initialTtlTimeout = setTimeout(() => {
-			if (this.sockets.length === 0) {
+			if (this.sockets.size === 0) {
 				this.terminate();
 			}
 		}, (Group.DEFAULT_TTL * 1000)).unref();
@@ -64,16 +64,16 @@ export class Group extends _Group {
 					this.terminate();
 					return;
 				}
-				if (this.sockets.length === 1) {
+				if (this.sockets.size === 1) {
 					this.terminate();
 					return;
 				}
-				const res = <_Group.Socket.UserInfoChange.Res>{
+				const res = <_Group.UserInfoChange.Res>{
 					[this.userInfo.get(socket).guid]: undefined,
 				};
-				this.sockets.forEach((s) => s.send(Group.Socket.UserInfoChange.EVENT_NAME, res));
+				this.sockets.forEach((s) => s.send(Group.UserInfoChange.EVENT_NAME, res));
 			},
-			[Group.Socket.UserInfoChange.EVENT_NAME]: (socket: WebSocket, req: _Group.Socket.UserInfoChange.Req) => {
+			[Group.UserInfoChange.EVENT_NAME]: (socket: WebSocket, req: _Group.UserInfoChange.Req) => {
 				if (typeof req.username !== "string"
 				 || typeof req.teamId   !== "number"
 				 || typeof req.avatar   !== "string") {
@@ -83,10 +83,10 @@ export class Group extends _Group {
 					return;
 				}
 				this.userInfo.set(socket, req);
-				const res = <_Group.Socket.UserInfoChange.Res>{
+				const res = <_Group.UserInfoChange.Res>{
 					[socket.id]: req,
 				};
-				this.sockets.forEach((s) => s.send(Group.Socket.UserInfoChange.EVENT_NAME, res));
+				this.sockets.forEach((s) => s.send(Group.UserInfoChange.EVENT_NAME, res));
 			},
 		})});
 	}
@@ -102,24 +102,22 @@ export class Group extends _Group {
 		}
 		this.userInfo.set(socket, (socket.handshake.auth as any).userInfo);
 		{
-			type Res = _Group.Socket.UserInfoChange.Res;
-			const EVENT_NAME = Group.Socket.UserInfoChange.EVENT_NAME;
+			type Res = _Group.UserInfoChange.Res;
+			const EVENT_NAME = Group.UserInfoChange.EVENT_NAME;
 			// Notify all other clients in this group of the new player:
 			// NOTE: broadcast modifier not used since socket is not yet in this.sockets.
-			socket.nsp.emit(EVENT_NAME, <Res>{[socket.id]: socket.userInfo});
+			this.sockets.forEach((s) => s.send(EVENT_NAME, <Res>{[socket.id]: socket.userInfo}));
+
 			// Notify the new player of all other players:
 			const res: {[socketId: string]: Player.UserInfo} = {};
-			this.sockets.forEach((otherSocket) => {
-				res[otherSocketId] = otherSocket.userInfo;
+			this.sockets.forEach((s) => {
+				res[otherSocketId] = this.userInfo.get(s);
 			});
-			socket.emit(EVENT_NAME, res);
+			socket.send(EVENT_NAME, res);
 		}
 
-		/**
-		 * Nobody has connected yet.
-		 * The first socket becomes the session host.
-		 */
-		if (this.sockets.length === 0) {
+		/** The first socket becomes the session host. */
+		if (this.sockets.size === 0) {
 			clearTimeout(this._initialTtlTimeout);
 			// @ts-expect-error : RO=
 			this._initialTtlTimeout = undefined!;
@@ -133,8 +131,9 @@ export class Group extends _Group {
 		Object.entries(this._socketListeners).forEach(([evName, callback]) => {
 			socket.on(evName, callback.bind(this, socket));
 		});
-		this.sockets.push(socket);
+		this.sockets.add(socket);
 	}
+	/** */
 	private _socketOnHostCreateGame<S extends Coord.System>(
 		ctorArgs: Game.CtorArgs.UnFin<S>
 	): void {
@@ -167,6 +166,7 @@ export class Group extends _Group {
 			socket.removeAllListeners();
 		}
 		if (this.#currentGame !== undefined) {
+			// TODO.design need to terminate game?
 			this.#currentGame = undefined;
 		}
 		(this._deleteExternalRefs)();
@@ -180,17 +180,12 @@ export class Group extends _Group {
 
 
 	/**
-	 * Captures the properties of each client player stored with each
-	 * {@link GroupSession.Socket} and repackages them for passing to
-	 * the Game constructor, which will in turn pass this information
-	 * to each client.
-	 *
 	 * @param ctorArgs
 	 * The `playerDescs` field only contains descriptors for artificial
 	 * players. Those for operated players are included by this method.
 	 *
 	 * @returns
-	 * `false` if the passed arguments were incomplete or invalid.
+	 * An array of any failure reasons. Empty if none.
 	 */
 	private _createGameInstance<S extends Coord.System>(
 		ctorArgs: Game.CtorArgs.UnFin<S>,
@@ -209,7 +204,7 @@ export class Group extends _Group {
 		// @ts-expect-error : RO=
 		ctorArgs.players = [
 			...ctorArgs.players,
-			...this.sockets.map((socket) => {
+			...Array.from(this.sockets, (socket) => {
 				const userInfo = this.userInfo.get(socket)!;
 				return Object.freeze(<Player._CtorArgs["HUMAN"]>{
 					socket:   socket,

@@ -10,8 +10,7 @@ import { RequestBuffer } from "./RequestBuffer";
 import { Player as _Player } from "defs/TypeDefs";
 import { Team } from "./Team";
 
-/**
- */
+/** */
 export class Player extends _Player implements _Player.UserInfo {
 
 	public readonly playerId: Player.Id;
@@ -62,9 +61,7 @@ export class Player extends _Player implements _Player.UserInfo {
 	/** @virtual */
 	public onTeamsBootstrapped(): void { }
 
-	/**
-	 * Must be called _after_ the grid has been reset.
-	 */
+	/** Must be called _after_ the grid has been reset. */
 	public reset(coord: Coord): void {
 		this.#coord = coord;
 		this.prevCoord = coord;

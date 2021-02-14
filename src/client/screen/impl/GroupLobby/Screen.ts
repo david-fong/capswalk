@@ -1,21 +1,18 @@
 import { Player } from "defs/TypeDefs";
-import { Group, GroupEv, GameEv } from "defs/OnlineDefs";
+import { Group, GroupEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 type SID = BaseScreen.Id.GROUP_LOBBY;
 import style from "./style.m.css";
 
-/**
- */
+/** */
 export class GroupLobbyScreen extends BaseScreen<SID> {
 
-	/**
-	 * A map from socket ID's to descriptors of players' info.
-	 */
-	private readonly _players:  Map<string, GroupLobbyScreen.UserInfo>;
-	private readonly teamsElem: HTMLElement;
-	private readonly teamElems: Map<number, HTMLElement>;
+	/** A map from uid to descriptors of players' info. */
+	private readonly players = new Map<string, GroupLobbyScreen.UserInfo>();
+	private readonly teamsElem = JsUtils.html("div", [style["teams-section"]]);
+	private readonly teamElems = new Map<number, HTMLElement>();
 
 	private readonly in: Readonly<{
 		username: HTMLInputElement;
@@ -24,25 +21,16 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	}>;
 
 	private get socket(): WebSocket {
-		return this.top.sockets.groupSocket!;
+		return this.top.socket!;
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _lazyLoad(): void {
 		this.baseElem.classList.add(style["this"]);
-		// @ts-expect-error : RO=
-		this._players = new Map();
 		this._createInputs();
 		this.nav.prev.textContent = "Return To Joiner";
 
-		/* @ts-expect-error : RO= */
-		this.teamsElem = JsUtils.html("div", [style["teams-section"]]);
 		this.baseElem.appendChild(this.teamsElem);
-
-		// @ts-expect-error : RO=
-		this.teamElems = new Map();
 
 		JsUtils.propNoWrite(this as GroupLobbyScreen,
 			"_players", "teamsElem", "teamElems", "in",
@@ -56,8 +44,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		this.baseElem.appendChild(goSetup);}
 	}
 
-	/**
-	 */
+	/** */
 	private _createInputs(): void {
 		const base = JsUtils.html("div", [
 			OmHooks.General.Class.INPUT_GROUP,
@@ -98,13 +85,16 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		if (!this.in.username.validity.valid || !this.in.teamId.validity.valid) {
 			return;
 		}
-		this.top.storage.Local.username = this.in.username.value;
-		this.top.storage.Local.avatar   = this.in.avatar.value;
-		this.socket.send(Group.Socket.UserInfoChange.EVENT_NAME, <Group.Socket.UserInfoChange.Req>{
+		const storage = this.top.storage.Local;
+		storage.username = this.in.username.value;
+		storage.avatar   = this.in.avatar.value;
+
+		const data: Group.UserInfoChange.Req = {
 			username: this.in.username.value,
 			teamId: parseInt(this.in.teamId.value),
 			avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
-		});
+		};
+		this.socket.send(JSON.stringify([Group.UserInfoChange.EVENT_NAME, data]));
 	};
 
 	/** @override */
@@ -114,38 +104,23 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	): Promise<void> {
 		if (navDir === "forward") {
 			this.nav.next.disabled = !this.top.clientIsGroupHost;
-			this._players.clear();
+			this.players.clear();
 			this.teamElems.clear();
 			this.teamsElem.textContent = "";
 			this._submitInputs();
 
-			this.socket
-			.off(Group.Socket.UserInfoChange.EVENT_NAME)
-			.on (Group.Socket.UserInfoChange.EVENT_NAME,
+			this.socket.off(Group.UserInfoChange.EVENT_NAME);
+			this.socket.on (Group.UserInfoChange.EVENT_NAME,
 				this._onUserInfoChange.bind(this),
 			);
 		}
 		// Listen for when the server sends the game constructor arguments:
-		this.socket.once(
-			GroupEv.CREATE_GAME,
-			() => {
-				const login = this.top.groupLoginInfo;
-				console.log("group create game socket. now waiting for ctor args. ");
-				const sock = this.top.sockets.gameSocketConnect(
-					login.name!,
-					{ passphrase: login.passphrase! },
-				);
-				sock.once(GameEv.CREATE_GAME, (...args: [Game.CtorArgs, readonly number[]]) => {
+		this.socket.addEventListener("message",
+			(ev: MessageEvent<any>) => {
+				if (ev.data.name === GroupEv.CREATE_GAME) {
+					const args: [Game.CtorArgs, readonly number[]] = undefined!;
 					this.requestGoToScreen(BaseScreen.Id.PLAY_ONLINE, args); //🚀
-				});
-				// function ensureConnected(): void {
-				//     if (!(sock.connected)) {
-				//         console.log("ensure connected.");
-				//         sock.connect();
-				//         setTimeout(() => { ensureConnected(); }, 300);
-				//     }
-				// }
-				// ensureConnected();
+				}
 			},
 		);
 	}
@@ -172,11 +147,10 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		return true;
 	}
 
-	/**
-	 */
-	private _onUserInfoChange(res: Group.Socket.UserInfoChange.Res): void {
+	/** */
+	private _onUserInfoChange(res: Group.UserInfoChange.Res): void {
 		Object.freeze(Object.entries(res)).forEach(([uid, desc]) => {
-			const userInfo = this._players.get(uid);
+			const userInfo = this.players.get(uid);
 
 			// If player is in a team on their own and they are leaving it:
 			if (userInfo
@@ -199,23 +173,22 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 			if (desc === undefined) {
 				// Player has left the group:
 				userInfo!.base.remove();
-				this._players.delete(uid);
+				this.players.delete(uid);
 			} else if (userInfo === undefined) {
 				// New player has joined the group:
 				const userInfo = new GroupLobbyScreen.UserInfo(desc);
-				this._players.set(uid, userInfo);
+				this.players.set(uid, userInfo);
 				this.teamElems.get(desc.teamId)!.appendChild(userInfo.base);
 			} else {
 				// Player changed their user information:
 				userInfo.update(desc);
 			}
 		});
-		this.in.teamId.max = Object.keys(this._players).length.toString();
+		this.in.teamId.max = Object.keys(this.players).length.toString();
 	}
 }
 export namespace GroupLobbyScreen {
-	/**
-	 */
+	/** */
 	export class UserInfo implements Player.UserInfo {
 		#username: Player.Username;
 		#teamId:   number;

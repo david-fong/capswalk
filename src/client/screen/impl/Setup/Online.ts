@@ -1,19 +1,14 @@
 import { GroupEv } from "defs/OnlineDefs";
-import { Game } from "game/Game";
 
-import { JsUtils, OmHooks } from "../../BaseScreen";
 import type { BaseScreen } from "../../BaseScreen";
 import { _SetupScreen } from "./_Screen";
 
 type SID = BaseScreen.Id.SETUP_ONLINE;
 
-/**
- */
+/** */
 export class SetupOnlineScreen extends _SetupScreen<SID> {
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _lazyLoad(): void {
 		super._lazyLoad();
 
@@ -21,7 +16,7 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
 		this.nav.next.onclick = (ev) => {
 			const args = this.parseArgsFromGui();
 			if (this.top.clientIsGroupHost) {
-				this.top.sockets.groupSocket!.emit(GroupEv.CREATE_GAME, args);
+				this.top.socket!.send(JSON.stringify([GroupEv.CREATE_GAME, args]));
 			}
 		};
 	}

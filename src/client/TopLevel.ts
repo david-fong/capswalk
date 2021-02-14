@@ -36,7 +36,7 @@ export class TopLevel {
 	/**
 	 */
 	public get clientIsGroupHost(): boolean {
-		return this.#allScreens.dict.groupJoiner.clientIsGroupHost;
+		return this.#allScreens.dict.groupJoiner.isHost;
 	}
 	public get groupLoginInfo(): Readonly<{ name?: string, passphrase?: string }> {
 		return this.#allScreens.dict.groupJoiner.loginInfo;
@@ -109,6 +109,17 @@ export namespace TopLevel {
 		FILESYSTEM  = "filesystem",
 		GAME_SERVER = "game-server",
 	}
+	export const WebpageHostTypeSuggestedHost = Object.freeze({
+		"github":  undefined,
+		"filesystem": {
+			value: "localhost",
+			description: "dev shortcut :)",
+		},
+		"game-server": {
+			value: window.location.origin,
+			description: "this page's server",
+		},
+	});
 }
 Object.freeze(TopLevel);
 Object.freeze(TopLevel.prototype);

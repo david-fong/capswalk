@@ -1,9 +1,6 @@
-import type { Socket } from "socket.io-client";
-import { JsUtils, OmHooks } from "../../BaseScreen";
-
 import { GameEv } from "defs/OnlineDefs";
 import type { Coord } from "floor/Tile";
-import type { BaseScreen } from "../../BaseScreen";
+import type { JsUtils, BaseScreen } from "../../BaseScreen";
 import type { OnlineGame } from "client/game/OnlineGame";
 import { Game, _PlayScreen } from "./_Screen";
 
@@ -20,8 +17,8 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 	/** @override */
 	protected readonly wantsAutoPlayPause = false;
 
-	private get socket(): Socket {
-		return this.top.sockets.gameSocket!;
+	private get socket(): WebSocket {
+		return this.top.socket!;
 	}
 
 	/** @override */
@@ -64,7 +61,6 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 			/* webpackChunkName: "game/online" */
 			"../../../game/OnlineGame"
 		)).OnlineGame(
-			this.top.sockets.gameSocket!,
 			this._onGameBecomeOver.bind(this),
 			ctorArgs,
 			operatorIds,

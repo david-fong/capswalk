@@ -13,6 +13,8 @@
 
 1. Change `Game.players` to a map?
 1. Switch from socket.io to ws. I want to manage my own pubsub.
+1. Split screen classes into an init class and behaviour class?
+    - The distinction could be fuzzy. It would help me read the code, though.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Get rid of the in-game socket.io namespace? It made it easy to remove all in-game related event listeners, but it adds so much connection complexity.
 1. Change Euclid Visual Grid to use SVG.

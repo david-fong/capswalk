@@ -27,7 +27,6 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 	 * @param gameDesc - This should come from a Server event by the name {@link GameEv.CREATE}.
 	 */
 	public constructor(
-		gameSocket: WebSocket,
 		onGameBecomeOver: () => void,
 		gameDesc: Game.CtorArgs<S>,
 		operatorIds: TU.RoArr<Player.Id>,
@@ -45,14 +44,6 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 		this.socket = gameSocket;
 		Object.seal(this); //🧊
 
-		if (DEF.DevAssert) {
-			// Enforcer: SkSockets calls `offAny` upon socket disconnect.
-			if (this.socket.hasListeners(GameEv.IN_GAME)
-			 || this.socket.hasListeners(GameEv.RESET)
-			) {
-				throw new Error("never");
-			}
-		}
 		this.socket.on(
 			GameEv.IN_GAME,
 			this.commitStateChange.bind(this),
@@ -64,10 +55,10 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 				this.deserializeResetState(ser);
 				// See the PlayOnline screen for the registration of
 				// listeners for the server confirmation.
-				this.socket.emit(GameEv.UNPAUSE);
+				this.socket.send(GameEv.UNPAUSE);
 			},
 		);
-		this.socket.emit(GameEv.RESET);
+		this.socket.send(GameEv.RESET);
 	}
 
 
@@ -80,7 +71,7 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 	 * @override
 	 */
 	public processMoveRequest(desc: StateChange.Req): void {
-		this.socket.emit(GameEv.IN_GAME, desc);
+		this.socket.send(JSON.stringify([GameEv.IN_GAME, desc]));
 	}
 }
 Object.freeze(OnlineGame);

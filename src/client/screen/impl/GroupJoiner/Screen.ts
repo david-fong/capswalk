@@ -1,46 +1,38 @@
-import type { TopLevel } from "client/TopLevel";
-import { Group } from "defs/OnlineDefs";
+import { TopLevel } from "client/TopLevel";
+import { Group, GroupEv } from "defs/OnlineDefs";
 import { SkServer } from "defs/OnlineDefs";
 
 import { JsUtils, OmHooks, BaseScreen, StorageHooks } from "../../BaseScreen";
 type SID = BaseScreen.Id.GROUP_JOINER;
 import style from "./style.m.css";
 
-
-/**
- * This screen is like a form for joining a session on a remote host.
- */
+/** */
 export class GroupJoinerScreen extends BaseScreen<SID> {
 
 	#state: GroupJoinerScreen.State;
-
 	private readonly in: Readonly<{
 		hostUrl:    HTMLInputElement;
 		groupName:  HTMLInputElement;
 		passphrase: HTMLInputElement;
 	}>;
-	private readonly groupNameDataList: HTMLDataListElement;
+	private readonly groupNameDataList= JsUtils.html("datalist", [], { id: OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS});
 
-	#clientIsGroupHost: boolean = false;
-	public get clientIsGroupHost(): boolean {
-		return this.#clientIsGroupHost;
+	#isHost: boolean = false;
+	public get isHost(): boolean {
+		return this.#isHost;
 	}
-	/**
-	 * Throws an error if called before this screen is lazy-loaded.
-	 */
+	/** Throws an error if called before this screen is lazy-loaded. */
 	public get loginInfo(): Readonly<{ name?: Group.Name, passphrase?: Group.Passphrase }> {
-		if (this.in === undefined) {
-			throw new Error("never"); // Should never be called before entrance.
-		}
 		return Object.freeze({
 			name: this.in.groupName.value,
 			passphrase: this.in.passphrase.value,
 		});
 	}
+	private get socket(): WebSocket {
+		return this.top.socket!;
+	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _lazyLoad(): void {
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,
@@ -66,22 +58,15 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		this.baseElem.appendChild(contentWrapper);
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	public getRecommendedFocusElem(): HTMLElement {
-		return (this.groupSocket !== undefined) ? this.in.groupName : this.in.hostUrl;
+		return (this.socket === undefined) ? this.in.hostUrl : this.in.groupName;
 	}
 
 	public get state(): State {
 		return this.#state;
 	}
-	/**
-	 * _Does nothing if the `newState` argument is the same as the
-	 * current state._ Doesn't touch sockets.
-	 *
-	 * @param newState -
-	 */
+	/** Doesn't touch sockets. */
 	private _setFormState(newState: State): void {
 		if (this.state === newState) return;
 
@@ -98,31 +83,29 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			this.in.passphrase.value = "";
 
 			if (newState === State.CHOOSING_HOST) {
-				this.in.groupName.disabled    = true;
-				this.in.groupName.value       = "";
+				this.in.groupName.disabled  = true;
+				this.in.groupName.value     = "";
 				// Fun fact on an alternative for clearing children: https://stackoverflow.com/a/22966637/11107541
 				this.groupNameDataList.textContent = "";
-				this.in.passphrase.disabled   = true;
+				this.in.passphrase.disabled = true;
 				this.in.hostUrl.focus();
-				;
+
 			} else if (newState === State.CHOOSING_GROUP) {
-				this.in.groupName.disabled    = false;
-				this.in.passphrase.disabled   = false;
-				this.#clientIsGroupHost       = false;
+				this.in.groupName.disabled  = false;
+				this.in.passphrase.disabled = false;
+				this.#isHost     = false;
 				this.in.groupName.focus();
 			}
 		}
 		this.#state = newState;
 	}
 
-	/**
-	 */
-	private _initializeHostUrlHandlers(): () => Promise<void> {
+	/** */
+	private _initializeHostUrlHandlers(): VoidFunction{
 		const top = this.top;
 		const input = this.in.hostUrl;
-		const submitInput = async (): Promise<void> => {
-			// Short-circuit on invalid input:
-			if (!input.value || !input.validity.valid) return;
+		const submitInput = (): void => {
+			if (!input.value || !input.validity.valid) return; //⚡
 
 			// Minor cleaning: default the protocol and only use the origin:
 			// if (!input.value.startsWith(SkServer.PROTOCOL)) {
@@ -131,7 +114,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 
 			// Short-circuit when no change has occurred:
 			const gameServerUrl = new window.URL(input.value);
-			if (this.groupSocket?.io!["opts"].hostname === gameServerUrl.hostname) {
+			if (this.socket.url.hostname === gameServerUrl.hostname) {
 				if (this.groupSocket!.connected) {
 					this._setFormState(State.CHOOSING_GROUP);
 				} else {
@@ -139,10 +122,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				}
 				return;
 			}
-			this.joinerSocket?.disconnect();
-			const sock = await this.top.sockets.joinerSocketConnect({
-				serverUrl: gameServerUrl,
-			}); sock
+			socket
 			.on("connect", () => {
 				this._setFormState(State.CHOOSING_GROUP);
 				// Listen for group creation / deletion events.
@@ -172,8 +152,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		};
 		return submitInput;
 	}
-	/**
-	 */
+	/** */
 	private _onNotifyGroupExist(response: Group.Exist.NotifyStatus): void {
 		if (response === Group.Exist.RequestCreate.Response.NOPE) {
 			this.top.toast(`The server rejected your request to`
@@ -221,9 +200,8 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		});
 	}
 
-	/**
-	 */
-	private _initializeGroupNameHandlers(hostUrlInputSubmit: () => Promise<void>): void {
+	/** */
+	private _initializeGroupNameHandlers(hostUrlInputSubmit: VoidFunction): void {
 		const input = this.in.groupName;
 		const submitInput = (): void => {
 			if (!input.value || !input.validity.valid) return;
@@ -236,11 +214,11 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		this.in.groupName.oninput = async (ev) => {
 			if (!ev.isTrusted) return;
 			if (this.state === State.IN_GROUP) {
-				await hostUrlInputSubmit();
+				hostUrlInputSubmit();
 				// ^This will take us back to the state `CHOOSING_GROUP`.
 			}
 			this.in.passphrase.value = "";
-			this.#clientIsGroupHost = false;
+			this.#isHost = false;
 		};
 		input.onkeydown = (ev) => {
 			if (ev.isTrusted && ev.key === "Enter") submitInput();
@@ -250,8 +228,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		};
 	}
 
-	/**
-	 */
+	/** */
 	private _initializePassphraseHandlers(): void {
 		const submitInput = async (): Promise<void> => {
 			if (!this.in.passphrase.validity.valid) return;
@@ -271,10 +248,10 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			const groupExists = (Array.from(this.groupNameDataList.children) as HTMLOptionElement[])
 				.some((opt) => opt.value === this.in.groupName.value);
 			if (groupExists) {
-				this.#clientIsGroupHost = false;
+				this.#isHost = false;
 				this._attemptToJoinExistingGroup();
 			} else {
-				this.#clientIsGroupHost = true;
+				this.#isHost = true;
 				this.joinerSocket!.emit(Group.Exist.EVENT_NAME,
 					new Group.Exist.RequestCreate(
 						this.in.groupName.value,
@@ -292,15 +269,13 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 	 * Automatically disconnects from the current group (if it exists).
 	 */
 	private _attemptToJoinExistingGroup(): void {
-		this.groupSocket?.disconnect();
 		const top = this.top;
 		const userInfo = StorageHooks.getLastUserInfo();
-		const sock = this.top.sockets.groupSocketConnect(
-			this.in.groupName.value, {
-				passphrase: this.in.passphrase.value,
-				userInfo,
-			},
-		); sock
+		const sock = this.top.socket!.send(JSON.stringify([GroupEv.TRY_JOIN, {
+			groupName: this.in.groupName.value,
+			passphrase: this.in.passphrase.value,
+			userInfo,
+		}])); sock
 		.on("connect", () => {
 			this._setFormState(State.IN_GROUP);
 		})
@@ -319,13 +294,6 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				}
 			}
 		});
-	}
-
-	private get joinerSocket(): WebSocket | undefined {
-		return this.top.socket;
-	}
-	private get groupSocket(): WebSocket | undefined {
-		return this.top.socket;
 	}
 
 	/**
@@ -365,7 +333,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				required: true,
 			});
 			hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
-			const suggestedHostDesc = GroupJoinerScreen.SUGGEST_HOST(this.top.webpageHostType);
+			const suggestedHostDesc = TopLevel.WebpageHostTypeSuggestedHost[this.top.webpageHostType];
 			if (suggestedHostDesc) {
 				const suggestOpt = JsUtils.html("option", [], {
 					value: suggestedHostDesc.value,
@@ -386,10 +354,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				autocomplete: "on",
 				required: true,
 			});
-			const nspsList
-				// @ts-expect-error : RO=
-				= this.groupNameDataList
-				= JsUtils.html("datalist", [], { id: OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS});
+			const nspsList = this.groupNameDataList;
 			this.baseElem.appendChild(nspsList);
 			nspsName.setAttribute("list", nspsList.id);
 		}{
@@ -414,41 +379,6 @@ export namespace GroupJoinerScreen {
 		CHOOSING_GROUP  = "choosing-group",
 		IN_GROUP        = "in-group",
 	};
-	/**
-	 *
-	 */
-	export function SUGGEST_HOST(webpageHostType: TopLevel.WebpageHostType): ({
-		readonly value: string;
-		readonly description: string;
-	} | undefined) {
-		switch (webpageHostType) {
-			case "github":
-				// Use case: production. Load page resources from GitHub
-				// Pages to reduce load on the game server, which is on
-				// on the LAN. Only use the server for game management.
-				return undefined;
-			case "filesystem":
-				// Use case: development. Load page resources directly from
-				// the local filesystem. Server only used as a game manager.
-				// In this case, suggest connecting to `localhost`.
-				return {
-					value: "localhost:" + SkServer.DEFAULT_PORT,
-					description: "dev shortcut :)",
-				};
-			case "game-server":
-				// Use case: production. Page resources are probably being
-				// served by the LAN server already. Suggest connecting
-				// Socket.IO to that same host. Just give origin (exclude
-				// the URI's path, since Socket.IO interprets the path as
-				// a namespace specifier).
-				return {
-					value: window.location.origin,
-					description: "this page's server",
-				};
-			default:
-				return undefined;
-		}
-	}
 }
 const State = GroupJoinerScreen.State;
 type  State = GroupJoinerScreen.State;
