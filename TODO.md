@@ -3,6 +3,10 @@
 
 ## High-level
 
+1. Finalize what I want to game actually be :(
+1. Harden server against malicious client inputs.
+    - handle malformed websocket data from client. Just ignore it?
+    - change exceptions on malformed data to short circuits?
 1. Add player sprites.
 1. Record music + find out how to play tracks together.
 1. Make the website accessible by ARIA standards.
@@ -11,6 +15,7 @@
 
 ### Things I feel like doing
 
+1. Rename `getDestsFromSourcesTo` to `getAllAltDestsThan`.
 1. Change `Game.players` to a map?
 1. Switch from socket.io to ws. I want to manage my own pubsub.
 1. Split screen classes into an init class and behaviour class?

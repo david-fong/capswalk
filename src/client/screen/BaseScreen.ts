@@ -23,9 +23,7 @@ export { JsUtils, OmHooks, Coord, StorageHooks };
 
 const OMHC = OmHooks.Screen.Class;
 
-
 /**
- *
  * NOTE: Design decision: Isolate from the rest of the architecture.
  * Ie. Do not give it circular / upward references to anything that
  * references it.
@@ -57,9 +55,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	 */
 	protected readonly requestGoToScreen: AllScreens["goToScreen"];
 
-
-	/**
-	 */
+	/** */
 	public constructor(
 		ctx: BaseScreen.CtorArgs,
 		screenId: SID,

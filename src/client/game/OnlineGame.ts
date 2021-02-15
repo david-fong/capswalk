@@ -11,6 +11,7 @@ import InitBrowserGameCtorMaps from "game/ctormaps/CmapBrowser";
 InitBrowserGameCtorMaps();
 
 /**
+ * Note that this class does not extend `GameManager`.
  * @final
  */
 export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirror<S> {
@@ -19,14 +20,11 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 	declare readonly grid: VisibleGrid<S>;
 
 	public readonly socket: WebSocket;
+	declare private readonly socketMessageCb: (ev: MessageEvent<string>) => void;
 
-	/**
-	 * Note that this class does not extend `GameManager`.
-	 *
-	 * @param gameSocket - Used to make a Game socket.
-	 * @param gameDesc - This should come from a Server event by the name {@link GameEv.CREATE}.
-	 */
+	/** */
 	public constructor(
+		socket: WebSocket,
 		onGameBecomeOver: () => void,
 		gameDesc: Game.CtorArgs<S>,
 		operatorIds: TU.RoArr<Player.Id>,
@@ -41,33 +39,31 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 			desc: gameDesc,
 			operatorIds,
 		});
-		this.socket = gameSocket;
+		this.socket = socket;
+
+		Object.defineProperty(this, "socketMessageCb", { value: (ev: MessageEvent<string>) => {
+			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
+			switch (evName) {
+				case GameEv.IN_GAME: this.commitStateChange(body[0]); break;
+				case GameEv.RESET:
+					this.reset();
+					this.deserializeResetState(body[0]);
+					// See the PlayOnline screen for the registration of
+					// listeners for the server confirmation.
+					this.socket.send(GameEv.UNPAUSE);
+					break;
+				default: break;
+			}
+		}, });
 		Object.seal(this); //🧊
 
-		this.socket.on(
-			GameEv.IN_GAME,
-			this.commitStateChange.bind(this),
-		);
-		this.socket.on(
-			GameEv.RESET,
-			async (ser: Game.ResetSer) => {
-				await this.reset();
-				this.deserializeResetState(ser);
-				// See the PlayOnline screen for the registration of
-				// listeners for the server confirmation.
-				this.socket.send(GameEv.UNPAUSE);
-			},
-		);
 		this.socket.send(GameEv.RESET);
 	}
-
 
 	/**
 	 * Normally, this immediately executes the changes. Here, that
 	 * should be done as a callback to an event created by the server.
-	 *
 	 * > 💢 I would like to speak to your manager. I'll wait.
-	 *
 	 * @override
 	 */
 	public processMoveRequest(desc: StateChange.Req): void {

@@ -1,7 +1,7 @@
 import type * as WebSocket from "ws";
 
 import { JsUtils } from "defs/JsUtils";
-import { GameEv, GroupEv, SkServer } from "defs/OnlineDefs";
+import { GameEv, GroupEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
 import type { StateChange } from "game/StateChange";
@@ -14,33 +14,21 @@ import { RobotPlayer } from "base/game/player/RobotPlayer";
 /**
  * Handles game-related events and attaches listeners to each client
  * socket.
- *
  * @final
  */
 export class ServerGame<S extends Coord.System = Coord.System> extends GameManager<S> {
 
+	readonly #deleteExternalRefs: () => void;
+	declare private readonly socketMessageCb: (ev: { data: string, target: WebSocket }) => void;
+
 	public readonly sockets: Set<WebSocket>;
-	private readonly _groupHostSocket: WebSocket;
-
-	declare private readonly gameEvSocketListeners: Readonly<{[evName : string]: (...args: any[]) => void}>;
-	declare private readonly _deleteExternalRefs: () => void;
-
-	/**
-	 * Entries indexed at ID's belonging to human-operated players
-	 * contain an `io.Socket` object. I could have made this a field
-	 * of the `Player` class, but it is only used for players of the
-	 * `HUMAN` family, which is designated by field and not by class.
-	 *
-	 * This does not update for players that join the group while the
-	 * group is already in a game, which is currently the intended
-	 * behaviour: players cannot join the game mid-game.
-	 */
+	protected readonly groupHostSocket: WebSocket;
 	protected readonly playerSockets: readonly WebSocket[];
 
+	/** @override */
 	public get currentOperator(): never {
 		throw new Error("never");
 	}
-
 
 	/** */
 	public constructor(args: Readonly<{
@@ -62,39 +50,57 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			})(),
 			operatorIds: [],
 		});
-		this._groupHostSocket = args.groupHostSocket;
-		Object.defineProperty(this, "_deleteExternalRefs", { value: args.deleteExternalRefs });
-		JsUtils.instNoEnum (this as ServerGame<S>, "operators");
-		JsUtils.propNoWrite(this as ServerGame<S>, "_groupHostSocket");
-
 		this.sockets = new Set(args.sockets); // shallow copy
-		JsUtils.propNoWrite(this as ServerGame<S>, "sockets");
+		this.groupHostSocket = args.groupHostSocket;
+		this.#deleteExternalRefs = args.deleteExternalRefs
+		JsUtils.instNoEnum (this as ServerGame<S>, "operators");
+		JsUtils.propNoWrite(this as ServerGame<S>, "groupHostSocket", "sockets");
 
-		Object.defineProperty(this, "gameEvSocketListeners", { value: Object.freeze({
-			[GameEv.IN_GAME]: this.processMoveRequest.bind(this),
-			[GameEv.PAUSE]:   this.statusBecomePaused.bind(this),
-			[GameEv.UNPAUSE]: this.statusBecomePlaying.bind(this),
-		}), });
-
-		this.sockets.forEach((s) => s.on("disconnect", () => {
-			if (this.sockets.size === 1) {
-				this._terminate();
-			}
-		}));
 		// The below cast is safe because GamepartBase reassigns
 		// `gameDesc.playerDescs` the result of `Player.finalize`.
 		const humans = Object.freeze(
 			(args.gameDesc.players).filter((player) => player.familyId === "HUMAN") as Player._CtorArgs["HUMAN"][]
 		);
-		this.playerSockets = humans.map((playerDesc) => playerDesc.socket!);
+		this.playerSockets = humans.map((desc) => desc.socket!);
 		JsUtils.propNoWrite(this as ServerGame<S>, "playerSockets");
+
+		Object.defineProperty(this, "socketOnMessage", { value: (ev: { data: string, target: WebSocket }): void => {
+			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
+			const socket = ev.target;
+			switch (evName) {
+				case GameEv.IN_GAME: this.processMoveRequest(body[0]); break;
+				case GameEv.PAUSE:   this.statusBecomePaused(); break;
+				case GameEv.UNPAUSE: this.statusBecomePlaying(); break;
+				case GameEv.RETURN_TO_LOBBY:
+					if (socket === this.groupHostSocket) {
+						this.statusBecomeOver();
+						const data = JSON.stringify([GameEv.RETURN_TO_LOBBY]);
+						this.sockets.forEach((s) => { if (s !== socket) s.send(data); });
+						this._terminate();
+					} else {
+						const data = JSON.stringify([GameEv.RETURN_TO_LOBBY, socket.id]);
+						this.sockets.forEach((s) => { if (s !== socket) s.send(data); });
+					}
+					break;
+				default: break;
+			}
+		}});
 		Object.seal(this); //🧊
+
+		this.sockets.forEach((s) => s.addEventListener("message", this.socketMessageCb));
+		this.sockets.forEach((s) => s.addEventListener("close", () => {
+			if (this.sockets.size === 1) {
+				this._terminate();
+			}
+		}));
 
 		this._greetGameSockets(args.gameDesc, humans);
 	}
 
-	/** */
+	/** Helper for the constructor */
 	private _greetGameSockets(gameDesc: Game.CtorArgs<S>, humans: readonly Player._CtorArgs["HUMAN"][]): void {
+
+		// Pass on Game constructor arguments to each client:
 		Promise.all(Array.from(this.sockets, (socket) =>
 			new Promise<void>((resolve) => {
 				socket.once(GameEv.RESET, () => {
@@ -104,29 +110,12 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		)).then(() =>
 			this.reset() //👂 "reset time!"
 		);
-
-		// Register socket listeners for game events:
-		this.sockets.forEach((socket) => {
-			socket.addEventListener("message", GameEv.RETURN_TO_LOBBY, () => {
-				if (socket === this._groupHostSocket) {
-					this.statusBecomeOver();
-					socket.broadcast.emit(GameEv.RETURN_TO_LOBBY);
-					this._terminate();
-				} else {
-					socket.broadcast.emit(GameEv.RETURN_TO_LOBBY, socket.id);
-				}
-			});
-			Object.freeze(Object.entries(this.gameEvSocketListeners)).forEach(([evName, callback]) => {
-				socket.addEventListener("message", evName, callback);
-			});
-		});
-
-		// Pass on Game constructor arguments to each client:
 		this.sockets.forEach((socket) => {
 			const operatorIds = Object.freeze(humans
 				.filter((desc) => desc.socket === socket)
 				.map((desc) => desc.playerId));
-			socket.emit(GroupEv.CREATE_GAME, gameDesc, operatorIds); //📢 "get ready for reset"
+			const data = JSON.stringify([GroupEv.CREATE_GAME, gameDesc, operatorIds]);
+			socket.send(data); //📢 "get ready for reset"
 		});
 	}
 
@@ -144,7 +133,8 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		});
 
 		const resetSer = await super.reset();
-		this.sockets.forEach((s) => s.emit(GameEv.RESET, resetSer)); //📢 "get ready for playing!"
+		const data = JSON.stringify([GameEv.RESET, resetSer]);
+		this.sockets.forEach((s) => s.send(data)); //📢 "get ready for playing!"
 		return resetSer;
 	}
 
@@ -167,13 +157,15 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	/** @override */
 	public statusBecomePlaying(): void {
 		super.statusBecomePlaying();
-		this.sockets.forEach((s) => s.send(GameEv.UNPAUSE));
+		const data = JSON.stringify([GameEv.UNPAUSE]);
+		this.sockets.forEach((s) => s.send(data));
 	}
 
 	/** @override */
 	public statusBecomePaused(): void {
 		super.statusBecomePaused();
-		this.sockets.forEach((s) => s.send(GameEv.PAUSE));
+		const data = JSON.stringify([GameEv.PAUSE]);
+		this.sockets.forEach((s) => s.send(data));
 	}
 
 	/** @override */
@@ -182,20 +174,19 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 
 		if (desc.rejectId) {
 			// The request was rejected- Notify the requester.
-			this.playerSockets[desc.initiator]!.emit(
-				GameEv.IN_GAME,
-				desc,
-			);
+			const data = JSON.stringify([GameEv.IN_GAME, desc]);
+			this.playerSockets[desc.initiator]!.send(data);
 		} else {
-			this.sockets.forEach((s) => s.send(JSON.stringify([GameEv.IN_GAME, desc])));
+			const data = JSON.stringify([GameEv.IN_GAME, desc]);
+			this.sockets.forEach((s) => s.send(data));
 		}
 	}
 
-	private _terminate(): void {
+	protected _terminate(): void {
 		this.sockets.forEach((s) => {
-			// TODO.impl remove listeners
+			s.removeEventListener("message", this.socketMessageCb);
 		});
-		this._deleteExternalRefs();
+		this.#deleteExternalRefs();
 	}
 }
 JsUtils.protoNoEnum(ServerGame,

@@ -21,6 +21,7 @@ export class PlayOfflineScreen extends _PlayScreen<BaseScreen.Id.PLAY_OFFLINE> {
 	/** @override */
 	protected _lazyLoad(): void {
 		super._lazyLoad();
+		Object.freeze(this); //🧊
 		this.nav.prev.innerHTML = "Return To&nbsp;Setup";
 		// ^Prevent jank due to pointer hover animation.
 	}

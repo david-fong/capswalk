@@ -14,8 +14,7 @@ import { GameMirror } from "./GameMirror";
 import InitGameManagerCtorMaps from "../ctormaps/CmapManager";
 InitGameManagerCtorMaps();
 
-/**
- */
+/** */
 export abstract class GameManager<
 	S extends Coord.System = Coord.System,
 > extends GameMirror<S> {
@@ -62,8 +61,7 @@ export abstract class GameManager<
 		});
 	}
 
-	/**
-	 */
+	/** */
 	public async reset(): Promise<Game.ResetSer> {
 		// Reset the grid and event record:
 		super.reset();
@@ -80,9 +78,8 @@ export abstract class GameManager<
 		await this.#langImportPromise;
 		this.lang.reset();
 		this.grid.forEachShuffled((tile, index) => {
-			const c = tile.coord;
-			const csp = this.dryRunShuffleLangCspAt(c, true);
-			this.grid.write(c, csp);
+			const csp = this.dryRunShuffleLangCspAt(tile.coord, true);
+			this.grid.write(tile.coord, csp);
 			resetSer.csps[index] = csp;
 		});
 
@@ -129,8 +126,7 @@ export abstract class GameManager<
 			.getDestsFromSourcesTo(coord))
 			.map((tile) => tile.seq);
 		// ^ Note: An array of CharSeq from unique Tiles. It is okay
-		// for those tiles to include `coord`, and it is okay for
-		// those
+		// for those tiles to include `coord`
 		if (doCheckEmptyTiles) {
 			const nullSeq = Lang.CharSeqPair.NULL.seq;
 			avoid = Object.freeze(avoid.filter((seq) => seq !== nullSeq));

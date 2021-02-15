@@ -11,6 +11,7 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
 	/** @override */
 	protected _lazyLoad(): void {
 		super._lazyLoad();
+		Object.freeze(this); //🧊
 
 		this.nav.next.textContent = "Start Game";
 		this.nav.next.onclick = (ev) => {

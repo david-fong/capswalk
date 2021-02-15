@@ -1,17 +1,17 @@
 import { Player } from "game/player/Player";
 import type { Game } from "game/Game";
 
-import { JsUtils, OmHooks, Coord, BaseScreen } from "../../BaseScreen";
+import { BaseScreen } from "../../BaseScreen";
 import { _SetupScreen } from "./_Screen";
 
 type SID = BaseScreen.Id.SETUP_OFFLINE;
 
-/**
- */
+/** */
 export class SetupOfflineScreen extends _SetupScreen<SID> {
 
 	protected _lazyLoad(): void {
 		super._lazyLoad();
+		Object.freeze(this); //🧊
 
 		this.nav.next.onclick = (ev) => {
 			const args = this.parseArgsFromGui();
@@ -28,14 +28,14 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 		(args.players as PArgs).splice(args.players.length, 0, {
 			familyId:   "HUMAN",
 			teamId:     0,
-			clientId:   undefined,
+			socket:     undefined,
 			username:   "hello1",
 			avatar:     Player.Avatar.LOREM_IPSUM,
 			familyArgs: { },
 		}, {
 			familyId:   "HUMAN",
 			teamId:     1,
-			clientId:   undefined,
+			socket:     undefined,
 			username:   "hello2",
 			avatar:     Player.Avatar.LOREM_IPSUM,
 			familyArgs: { },

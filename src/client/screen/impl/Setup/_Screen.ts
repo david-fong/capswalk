@@ -19,19 +19,15 @@ import style from "./style.m.css";
 // TODO.learn how to use the IndexDB web API.
 export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | BaseScreen.Id.SETUP_ONLINE> extends BaseScreen<SID> {
 
-	protected readonly langSel: _SetupScreen.LangPickOne;
+	protected readonly langSel = new _SetupScreen.LangPickOne();
 	protected readonly langWeightExaggeration: HTMLInputElement;
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _lazyLoad(): void {
 		this.baseElem.classList.add(style["this"]);
 		this.baseElem.appendChild(this.nav.prev);
 
 		// Language selection component:
-		// @ts-expect-error : RO=
-		this.langSel = new _SetupScreen.LangPickOne();
 		this.baseElem.appendChild(this.langSel.baseElem);
 
 		this._createLangWeightExaggerationInput();
@@ -68,9 +64,7 @@ export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | Bas
 		this.baseElem.appendChild(lwe);
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	public getRecommendedFocusElem(): HTMLElement {
 		return this.nav.next;
 	}

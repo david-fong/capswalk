@@ -28,6 +28,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	protected _lazyLoad(): void {
 		this.baseElem.classList.add(style["this"]);
 		this._createInputs();
+		Object.freeze(this); //🧊
 		this.nav.prev.textContent = "Return To Joiner";
 
 		this.baseElem.appendChild(this.teamsElem);

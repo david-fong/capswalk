@@ -75,9 +75,7 @@ export abstract class _PlayScreen<
 	#pauseReason: "page-hide" | "other" | undefined;
 
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _lazyLoad(): void {
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,
@@ -109,18 +107,18 @@ export abstract class _PlayScreen<
 		// https://blog.arnellebalane.com/the-intersection-observer-api-d441be0b088d
 		// Unfortunately, it seems like intersection observer is not able to do what
 		// I want. It will no trigger when the target's position changes.
-		// // @ts-expect-error Assignment to readonly property: `_gridIsecObserver`:
-		// this.grid.isecObserver = new IntersectionObserver((entries, observer) => {
-		//     entries.forEach((value) => {
-		//         console.log(value.intersectionRatio);
-		//         if (!value.isIntersecting) {
-		//             value.target.scrollIntoView(SCROLL_INTO_CENTER);
-		//         }
-		//     });
-		// }, {
-		//     root: _gridHtml.intersectionRoot,
-		//     rootMargin: "-20%",
-		// });
+		/* // @ts-expect-error Assignment to readonly property: `_gridIsecObserver`:
+		this.grid.isecObserver = new IntersectionObserver((entries, observer) => {
+		    entries.forEach((value) => {
+		        console.log(value.intersectionRatio);
+		        if (!value.isIntersecting) {
+		            value.target.scrollIntoView(SCROLL_INTO_CENTER);
+		        }
+		    });
+		}, {
+		    root: _gridHtml.intersectionRoot,
+		    rootMargin: "-20%",
+		}); */
 
 		this._initializeControlsBar();
 		this._initializePlayersBar();
@@ -143,9 +141,7 @@ export abstract class _PlayScreen<
 		this.#gridOnKeyDown = this._gridKeyDownCallback.bind(this);
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected async _abstractOnBeforeEnter(
 		navDir: BaseScreen.NavDir,
 		args: BaseScreen.EntranceArgs[SID],
@@ -178,9 +174,7 @@ export abstract class _PlayScreen<
 		});
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
 		if (this.askConfirmBeforeLeave && !this.top.confirm("Are you sure you would like to leave?")) {
 			return false;
@@ -222,14 +216,6 @@ export abstract class _PlayScreen<
 
 	/**
 	 * Do not use this directly. See `this.#gridOnKeyDown`.
-	 *
-	 * Note the uses of typescript `!` assertion instead of the nullish
-	 * coalescing operator for `this.currentGame`. This is safe because
-	 * this callback is managed by the screen-enter and leave hooks to
-	 * only be registered when the current game is defined, since it
-	 * doesn't make sense to be called when the game is not defined.
-	 *
-	 * @param ev -
 	 */
 	private _gridKeyDownCallback(ev: KeyboardEvent): boolean {
 		ev.stopPropagation();
@@ -260,14 +246,17 @@ export abstract class _PlayScreen<
 		return true;
 	}
 
+	/** @virtual */
 	protected _reqStatusPlaying(): void {
 		this._statusBecomePlaying();
 	}
 
+	/** @virtual */
 	protected _reqStatusPaused(): void {
 		this._statusBecomePaused();
 	}
 
+	/** @final */
 	protected _statusBecomePlaying(): void {
 		this.currentGame.statusBecomePlaying();
 		this.btn.pause.textContent = "Pause";
@@ -280,6 +269,7 @@ export abstract class _PlayScreen<
 		this.grid.base.focus();
 	}
 
+	/** @final */
 	protected _statusBecomePaused(): void {
 		this.currentGame?.statusBecomePaused(); // intentional `?` for when initializing UI.
 		this.btn.pause.textContent = "Unpause";
@@ -312,9 +302,7 @@ export abstract class _PlayScreen<
 	}
 
 
-	/**
-	 *
-	 */
+	/** */
 	private _initializeControlsBar(): void {
 		const controlsBar = JsUtils.html("div", [
 			OmHooks.General.Class.CENTER_CONTENTS,

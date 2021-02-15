@@ -1,16 +1,11 @@
 import { JsUtils, BaseScreen } from "../BaseScreen";
 
-
-/**
- *
- */
+/** */
 export class HowToHostScreen extends BaseScreen<BaseScreen.Id.HOW_TO_HOST> {
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _lazyLoad(): void {
-		;
+		Object.freeze(this); //🧊
 	}
 }
 export namespace HowToHostScreen {

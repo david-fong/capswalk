@@ -39,11 +39,11 @@ app
 wss.on("connection", function onWsConnect(socket): void {
 	console.info(`socket connect (server): ${socket.url}`);
 	// Upon connection, immediately send a list of existing groups:
-	socket.emit(
+	const data = JSON.stringify([
 		Group.Exist.EVENT_NAME,
 		(() => {
 			// TODO.design current implementation may suffer when there are many many groups.
-			const build: Group.Query.NotifyStatus = {};
+			const build: Group.Exist.NotifyStatus = {};
 			for (const [groupName, group] of groups) {
 				build[groupName] = (group.isCurrentlyPlayingAGame)
 				? Group.Exist.Status.IN_GAME
@@ -51,7 +51,8 @@ wss.on("connection", function onWsConnect(socket): void {
 			}
 			return build;
 		})(),
-	);
+	]);
+	socket.send(data);
 	Object.freeze(Object.entries(_joinerSocketListeners)).forEach(([evName, callback]) => {
 		socket.on(evName, callback.bind(null, socket));
 	});
@@ -71,38 +72,46 @@ server.listen(<net.ListenOptions>{}, function httpListener(): void {
 });
 
 
-
+function wssBroadcast(evName: string, _data: any): void {
+	const data = JSON.stringify(_data);
+	wss.clients.forEach((s) => s.send(data));
+}
 const _joinerSocketListeners: Readonly<{
 	[evName : string]: (socket: WebSocket, ...args: any[]) => void;
 }> = Object.freeze({
-	[Group.Exist.EVENT_NAME]: (socket, desc: Group.Query.RequestCreate): void => {
+	[Group.Exist.EVENT_NAME]: (socket, desc: Group.Exist.RequestCreate): void => {
 		if (Group.isCreateRequestValid(desc) && !groups.has(desc.groupName)) {
-			socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.NOPE);
-			return;
+			const data = JSON.stringify([Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.NOPE]);
+			socket.send(data);
+			return; //⚡
 		}
 		groups.set(
 			desc.groupName,
 			new Group(Object.freeze({
-				wss: wss,
+				wssBroadcast: wssBroadcast,
 				name: desc.groupName,
 				passphrase: desc.passphrase,
 				deleteExternalRefs: () => groups.delete(desc.groupName),
 			})),
 		);
-		socket.emit(Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY);
+		const data = JSON.stringify([Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY]);
+		socket.send(data);
 	},
-	[Group.TryJoin.EVENT_NAME]: (socket, desc: Group.TryJoin.Request) => {
+	[Group.TryJoin.EVENT_NAME]: (socket, req: Group.TryJoin.Request) => {
 		// Call the connection-event handler:
-		const group = groups.get(desc.groupName);
-		if (desc.auth.passphrase !== this.passphrase) {
-			next(new Error("Incorrect passphrase"));
+		const group = groups.get(req.groupName);
+		if (
+			group === undefined
+			|| req.passphrase !== group.passphrase
+		) {
+			return //⚡
 		}
-		const userInfo = desc.userInfo;
+		const userInfo = req.userInfo;
 		if (userInfo === undefined || userInfo.teamId !== 0) {
 			next(new Error(`a socket attempted to connect to group`
 			+ ` \`${this.name}\` without providing userInfo.`));
 		}
-		group.admitSocket(socket);
+		group.admitSocket(socket, userInfo);
 	}
 });
 
@@ -110,9 +119,9 @@ const _joinerSocketListeners: Readonly<{
  * @returns An array of non-internal IP addresses from any of the
  * local host's network interfaces.
  *
- * TODO: change to return a map from each of "public" and "private" to a list of addresses
  * https://en.wikipedia.org/wiki/Private_network
  */
+// TODO: change to return a map from each of "public" and "private" to a list of addresses
 export const chooseIPAddress = (): Array<string> => {
 	return (Object.values(os.networkInterfaces()).flat() as os.NetworkInterfaceInfo[])
 	.filter((info) => {

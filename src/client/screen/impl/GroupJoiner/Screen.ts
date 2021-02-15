@@ -42,15 +42,10 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		const huiSubmit = this._initializeHostUrlHandlers();
 		this._initializeGroupNameHandlers(huiSubmit);
 		this._initializePassphraseHandlers();
+		Object.freeze(this); //🧊
 
 		// Note: externalized from `_initializeFormContents` for visibility.
 		this.nav.next.onclick = (ev) => {
-			// Using a plain button instead of <input type="submit"> is
-			// better here since we don't want any magical form behaviour.
-			contentWrapperSubmit();
-		};
-		const contentWrapperSubmit = (): void => {
-			// ev.preventDefault(); // Don't perform any form action
 			// No validation needed. The next button is only enabled if inputs are valid.
 			this.requestGoToScreen(BaseScreen.Id.GROUP_LOBBY, {});
 		};
@@ -101,7 +96,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 	}
 
 	/** */
-	private _initializeHostUrlHandlers(): VoidFunction{
+	private _initializeHostUrlHandlers(): VoidFunction {
 		const top = this.top;
 		const input = this.in.hostUrl;
 		const submitInput = (): void => {
@@ -126,7 +121,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			.on("connect", () => {
 				this._setFormState(State.CHOOSING_GROUP);
 				// Listen for group creation / deletion events.
-				sock.on(Group.Exist.EVENT_NAME, this._onNotifyGroupExist.bind(this));
+				socket.addEventListener("message", Group.Exist.EVENT_NAME, this._onNotifyGroupExist.bind(this));
 			})
 			.on("connect_error", (error: object) => {
 				this.top.toast("Unable to connected to the specified server.");
@@ -252,12 +247,13 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				this._attemptToJoinExistingGroup();
 			} else {
 				this.#isHost = true;
-				this.joinerSocket!.emit(Group.Exist.EVENT_NAME,
+				this.socket.send(JSON.stringify([
+					Group.Exist.EVENT_NAME,
 					new Group.Exist.RequestCreate(
 						this.in.groupName.value,
 						this.in.passphrase.value,
 					),
-				);
+				]));
 			}
 		};
 		this.in.passphrase.onkeydown = (ev) => { if (ev.isTrusted && ev.key === "Enter") {
@@ -296,23 +292,9 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		});
 	}
 
-	/**
-	 * A helper for `_lazyLoad`. Does not hook up event processors.
-	 */
+	/** A helper for `_lazyLoad`. Does not hook up event processors. */
 	private _initializeFormContents(): HTMLElement {
-		// @ts-expect-error : RO=
-		this.in = {};
-		const contentWrapper = JsUtils.html("div"/*"form"*/, [
-			OmHooks.General.Class.INPUT_GROUP,
-			style["content-wrapper"],
-		], {
-			// contentWrapper.method = "POST"; // Not actually used, since the default onsubmit behaviour is prevented.
-		});
-
-		this.nav.prev.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-		contentWrapper.appendChild(this.nav.prev);
-
-		function createGenericTextInput(labelText: string, classStr: string): HTMLInputElement {
+		function _mkInput(labelText: string, classStr: string): HTMLInputElement {
 			const input = JsUtils.html("input", [OmHooks.General.Class.INPUT_GROUP_ITEM, classStr], {
 				type: "text",
 				autocomplete: "off",
@@ -323,15 +305,39 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			label.appendChild(input);
 			contentWrapper.appendChild(label);
 			return input;
-		}{
-			// @ts-expect-error : RO=
-			const hostUrl = this.in.hostUrl
-			= Object.assign(createGenericTextInput("Host URL", style["host-url"]), <Partial<HTMLInputElement>>{
+		}
+		// @ts-expect-error : RO=
+		this.in = Object.freeze({
+			"hostUrl": Object.assign(_mkInput("Host URL", style["host-url"]), <Partial<HTMLInputElement>>{
 				type: "url",
 				maxLength: 128,
 				autocomplete: "on",
 				required: true,
-			});
+			}),
+			"groupName": Object.assign(_mkInput("Group Name", style["group-name"]), <Partial<HTMLInputElement>>{
+				pattern: Group.Name.REGEXP.source,
+				minLength: 1,
+				maxLength: Group.Name.MaxLength,
+				autocomplete: "on",
+				required: true,
+				list: this.groupNameDataList,
+			}),
+			"passphrase": Object.assign(_mkInput("Group Passphrase", style["passphrase"]), <Partial<HTMLInputElement>>{
+				pattern: Group.Passphrase.REGEXP.source,
+				maxLength: Group.Passphrase.MaxLength,
+			}),
+		});
+		const contentWrapper = JsUtils.html("div"/*"form"*/, [
+			OmHooks.General.Class.INPUT_GROUP,
+			style["content-wrapper"],
+		], {
+			// contentWrapper.method = "POST"; // Not actually used, since the default onsubmit behaviour is prevented.
+		});
+
+		this.nav.prev.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+		contentWrapper.appendChild(this.nav.prev);
+		{
+			const hostUrl = this.in.hostUrl;
 			hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
 			const suggestedHostDesc = TopLevel.WebpageHostTypeSuggestedHost[this.top.webpageHostType];
 			if (suggestedHostDesc) {
@@ -344,32 +350,12 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				hostUrl.value = suggestOpt.value;
 			}
 		}{
-			// @ts-expect-error : RO=
-			const nspsName = this.in.groupName
-			= Object.assign(createGenericTextInput("Group Name", style["group-name"]),
-			<Partial<HTMLInputElement>>{
-				pattern: Group.Name.REGEXP.source,
-				minLength: 1,
-				maxLength: Group.Name.MaxLength,
-				autocomplete: "on",
-				required: true,
-			});
-			const nspsList = this.groupNameDataList;
-			this.baseElem.appendChild(nspsList);
-			nspsName.setAttribute("list", nspsList.id);
-		}{
-			const pass
-				// @ts-expect-error : RO=
-				= this.in.passphrase
-				= createGenericTextInput("Group Passphrase", style["passphrase"]);
-			pass.pattern   = Group.Passphrase.REGEXP.source;
-			pass.maxLength = Group.Passphrase.MaxLength;
+			this.baseElem.appendChild(this.groupNameDataList);
 		}{
 			this.nav.next.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
 			contentWrapper.appendChild(this.nav.next);
 		}
 		JsUtils.propNoWrite(this as GroupJoinerScreen, "in", "groupNameDataList");
-		Object.freeze(this.in);
 		return contentWrapper;
 	}
 }

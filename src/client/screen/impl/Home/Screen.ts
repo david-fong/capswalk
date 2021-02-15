@@ -7,21 +7,15 @@ import style from "./style.m.css";
  */
 export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 
-	private readonly navElem: HTMLElement;
-
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _lazyLoad(): void {
+		Object.freeze(this); //🧊
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,
 			style["this"],
 		);
 
-		const nav
-			// @ts-expect-error : RO=
-			= this.navElem
-			= JsUtils.html("div", [
+		const nav = JsUtils.html("div", [
 				OmHooks.General.Class.TEXT_SELECT_DISABLED,
 				OmHooks.General.Class.INPUT_GROUP,
 				style["nav"],
