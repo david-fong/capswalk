@@ -15,9 +15,9 @@
 
 ### Things I feel like doing
 
-1. Rename `getDestsFromSourcesTo` to `getAllAltDestsThan`.
-1. Change `Game.players` to a map?
 1. Switch from socket.io to ws. I want to manage my own pubsub.
+1. Rename `getDestsFromSourcesTo` to `getAllAltDestsThan`.
+1. Change BgMusic to an async function.
 1. Split screen classes into an init class and behaviour class?
     - The distinction could be fuzzy. It would help me read the code, though.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.

@@ -30,7 +30,7 @@ export abstract class _PlayScreen<
 		//isecObserver: IntersectionObserver;
 	}>;
 
-	private readonly playersBar: HTMLElement;
+	private readonly playersBar = JsUtils.html("div", [style["players-bar"]]);
 
 	private readonly btn: Readonly<{
 		/**
@@ -89,7 +89,7 @@ export abstract class _PlayScreen<
 			implHost: _gridHtml.implHost,
 			pauseOl: _gridHtml.pauseOl,
 		});
-		JsUtils.propNoWrite(this as _PlayScreen<SID>, "grid");
+		JsUtils.propNoWrite(this as _PlayScreen<SID>, "grid", "playersBar");
 		JsUtils.Web.prependComment(this.grid.implHost, "grid impl host");
 		this.grid.implHost.appendChild(document.createComment("grid impl"));
 
@@ -329,9 +329,7 @@ export abstract class _PlayScreen<
 		controlsBar.addEventListener("pointerleave", (ev) => {
 			this.grid.base.focus();
 		});
-
-		{ const bth = createControlButton("<Back Button Text>", this.nav.prev);
-		}
+		createControlButton("<Back Button Text>", this.nav.prev);
 
 		// @ts-expect-error : RO=
 		this.btn = Object.freeze({
@@ -345,12 +343,8 @@ export abstract class _PlayScreen<
 	}
 
 	private _initializePlayersBar(): void {
-		const playersBar
-			// @ts-expect-error : RO=
-			= this.playersBar
-			= JsUtils.html("div", [style["players-bar"]]);
-		JsUtils.propNoWrite(this as _PlayScreen<SID>, "playersBar");
-		this.baseElem.appendChild(playersBar);
+		JsUtils.propNoWrite(this as _PlayScreen<SID>);
+		this.baseElem.appendChild(this.playersBar);
 	}
 }
 export namespace _PlayScreen {

@@ -35,34 +35,24 @@ export namespace Group {
 	export const GameServerReconnectionAttempts = 2;
 	export const DEFAULT_TTL = 20; // seconds
 
+	/** */
 	export namespace Exist {
 		export const EVENT_NAME = "joiner/group-exist";
 
-		/**
-		 * Sent by the client to request the creation of a new group.
-		 *
-		 * Do not use this to request joining a group - That is done
-		 * by opening a socket to that group's namespace and putting
-		 * the passphrase in the request's query.
-		 */
-		export class RequestCreate {
-			public constructor(
-				public readonly groupName: Name,
-				public readonly passphrase: string,
-			) {}
-		};
-		export namespace RequestCreate {
-			export const enum Response {
+		/** */
+		export namespace Create {
+			export interface Req {
+				readonly groupName: Name,
+				readonly passphrase: Passphrase,
+			}
+			export const enum Res {
 				OKAY = "okay",
 				NOPE = "nope",
 			};
 		}
-		/**
-		 * Initiated by the server to notify clients of the status of
-		 * existing groups.
-		 */
-		export type NotifyStatus = RequestCreate.Response | {
-			[groupNspsName : string]: Status;
+		/** Downstream only. */
+		export type NotifyStatus = Create.Res | {
+			[groupName : string]: Status;
 		};
 		export const enum Status {
 			IN_LOBBY = "in-lobby",
@@ -71,9 +61,13 @@ export namespace Group {
 		};
 	}
 
+	/** */
 	export namespace TryJoin {
 		export const EVENT_NAME = "joiner/group-try-join";
 		export interface Req {
+			readonly groupName: Group.Name;
+			readonly passphrase: Group.Passphrase;
+			readonly userInfo: Player.UserInfo;
 		}
 	}
 }

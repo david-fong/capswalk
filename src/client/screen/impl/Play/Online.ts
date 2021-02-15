@@ -18,10 +18,10 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 	/** @override */
 	protected readonly wantsAutoPlayPause = false;
 
+	readonly #socketMessageCb: (ev: MessageEvent<string>) => void;
 	private get socket(): WebSocket {
 		return this.top.socket!;
 	}
-	declare private readonly socketMessageCb: (ev: MessageEvent<string>) => void;
 
 	/** @override */
 	protected _lazyLoad(): void {
@@ -29,7 +29,8 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 		Object.freeze(this); //🧊
 		this.nav.prev.innerHTML = "Return To&nbsp;Lobby";
 
-		Object.defineProperty(this, "socketMessageCb", { value: (ev: MessageEvent<string>) => {
+		// @ts-expect-error : RO=
+		this.#socketMessageCb = (ev: MessageEvent<string>) => {
 			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
 			switch (evName) {
 				case GameEv.UNPAUSE: this._statusBecomePlaying(); break;
@@ -43,9 +44,9 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 						// Handle a player leaving:
 					}
 					break;
-				default: break;
+				default: this.currentGame.socketMessageCb(ev);
 			}
-		}, });
+		};
 		Object.seal(this); //🧊
 	}
 
@@ -56,7 +57,7 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 			if (this.socket !== undefined) {
 				// This may not be entered if the server went down unexpectedly.
 				this.socket.send(JSON.stringify([GameEv.RETURN_TO_LOBBY]));
-				this.socket.removeEventListener("message", this.socketMessageCb);
+				this.socket.removeEventListener("message", this.#socketMessageCb);
 			}
 		}
 		return leaveConfirmed;
@@ -87,7 +88,7 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 			ctorArgs,
 			operatorIds,
 		);
-		this.socket.addEventListener("message", this.socketMessageCb);
+		this.socket.addEventListener("message", this.#socketMessageCb);
 		return Promise.resolve(game);
 	}
 }

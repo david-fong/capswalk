@@ -53,9 +53,7 @@ wss.on("connection", function onWsConnect(socket): void {
 		})(),
 	]);
 	socket.send(data);
-	Object.freeze(Object.entries(_joinerSocketListeners)).forEach(([evName, callback]) => {
-		socket.on(evName, callback.bind(null, socket));
-	});
+	socket.addEventListener("message", socketMessageCb);
 });
 
 server.listen(<net.ListenOptions>{}, function httpListener(): void {
@@ -76,14 +74,15 @@ function wssBroadcast(evName: string, _data: any): void {
 	const data = JSON.stringify(_data);
 	wss.clients.forEach((s) => s.send(data));
 }
-const _joinerSocketListeners: Readonly<{
-	[evName : string]: (socket: WebSocket, ...args: any[]) => void;
-}> = Object.freeze({
-	[Group.Exist.EVENT_NAME]: (socket, desc: Group.Exist.RequestCreate): void => {
+function socketMessageCb(ev: WebSocket.MessageEvent): void {
+	const [evName, ...body] = JSON.parse(ev.data as string) as [string, ...any[]];
+	switch (evName) {
+	case Group.Exist.EVENT_NAME: {
+		const desc = body[0] as Group.Exist.Create.Req;
 		if (Group.isCreateRequestValid(desc) && !groups.has(desc.groupName)) {
-			const data = JSON.stringify([Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.NOPE]);
-			socket.send(data);
-			return; //⚡
+			const data = JSON.stringify([Group.Exist.EVENT_NAME, Group.Exist.Create.Res.NOPE]);
+			ev.target.send(data);
+			return; //⚡ joined group
 		}
 		groups.set(
 			desc.groupName,
@@ -94,11 +93,12 @@ const _joinerSocketListeners: Readonly<{
 				deleteExternalRefs: () => groups.delete(desc.groupName),
 			})),
 		);
-		const data = JSON.stringify([Group.Exist.EVENT_NAME, Group.Exist.RequestCreate.Response.OKAY]);
-		socket.send(data);
-	},
-	[Group.TryJoin.EVENT_NAME]: (socket, req: Group.TryJoin.Request) => {
-		// Call the connection-event handler:
+		const data = JSON.stringify([Group.Exist.EVENT_NAME, Group.Exist.Create.Res.OKAY]);
+		ev.target.send(data);
+		break;
+	}
+	case Group.TryJoin.EVENT_NAME: {
+		const req = body[0] as Group.TryJoin.Req;
 		const group = groups.get(req.groupName);
 		if (
 			group === undefined
@@ -108,12 +108,15 @@ const _joinerSocketListeners: Readonly<{
 		}
 		const userInfo = req.userInfo;
 		if (userInfo === undefined || userInfo.teamId !== 0) {
-			next(new Error(`a socket attempted to connect to group`
-			+ ` \`${this.name}\` without providing userInfo.`));
+			throw new Error(`a socket attempted to connect to group`
+			+` \`${group.name}\` without providing userInfo.`);
 		}
-		group.admitSocket(socket, userInfo);
+		group.admitSocket(ev.target, userInfo);
+		break;
 	}
-});
+	default: break;
+	}
+}
 
 /**
  * @returns An array of non-internal IP addresses from any of the

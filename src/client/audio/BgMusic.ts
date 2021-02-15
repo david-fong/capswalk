@@ -1,9 +1,6 @@
 import { JsUtils } from "defs/JsUtils";
 
-
-/**
- *
- */
+/** */
 export class BgMusic {
 
 	public readonly desc: BgMusic.TrackDesc;
@@ -111,9 +108,7 @@ export class BgMusic {
 }
 export namespace BgMusic {
 	export type TrackDesc = Readonly<{
-		/**
-		 * Must be the same as the folder path.
-		 */
+		/** Must be the same as the folder path. */
 		id: string;
 		displayName:    string;
 		sampleRate:     number;
@@ -127,7 +122,7 @@ export namespace BgMusic {
 		displayName:    "Default",
 		sampleRate:     undefined!,
 		bufferLength:   undefined!,
-		trackDescs: [],
+		trackDescs:     [],
 	}]);
 }
 Object.freeze(BgMusic);

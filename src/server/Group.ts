@@ -16,9 +16,8 @@ import { Group as _Group } from "defs/OnlineDefs";
  */
 export class Group extends _Group {
 
-	// TODO.design just change this to a callback for broadcasting?
-	public readonly name: Group.Name;
-	public readonly passphrase: Group.Passphrase;
+	public readonly name: _Group.Name;
+	public readonly passphrase: _Group.Passphrase;
 
 	declare protected readonly wssBroadcast: (evName: string, ...data: any[]) => void;
 	protected readonly sockets = new Set<WebSocket>();
@@ -26,66 +25,62 @@ export class Group extends _Group {
 	protected readonly userInfo: WeakMap<WebSocket, Player.UserInfo>;
 
 	#currentGame: ServerGame<any> | undefined;
+	public get isCurrentlyPlayingAGame(): boolean {
+		return this.#currentGame !== undefined;
+	}
 
-	private readonly _initialTtlTimeout: NodeJS.Timeout;
+	readonly #initialTtlTimeout: NodeJS.Timeout;
 	readonly #deleteExternalRefs: () => void;
-	declare private readonly socketMessageCb: (ev: { data: string, target: WebSocket }) => void;
+	readonly #socketMessageCb: (ev: WebSocket.MessageEvent) => void;
+	readonly #socketCloseCb: (ev: WebSocket.CloseEvent) => void;
 
 	/** */
-	public constructor(desc: Readonly<{
+	public constructor(args: Readonly<{
 		wssBroadcast: (evName: string, ...data: any[]) => void,
-		name: Group.Name,
-		passphrase: Group.Passphrase,
+		name: _Group.Name,
+		passphrase: _Group.Passphrase,
 		deleteExternalRefs: () => void,
 	}>) {
 		super();
-		Object.defineProperty(this, "wssBroadcast", { value: desc.wssBroadcast });
-		this.name = desc.name;
-		this.passphrase = desc.passphrase;
+		Object.defineProperty(this, "wssBroadcast", { value: args.wssBroadcast });
+		this.name = args.name;
+		this.passphrase = args.passphrase;
 		this.#currentGame = undefined;
 
-		this.#deleteExternalRefs = desc.deleteExternalRefs;
-		this._initialTtlTimeout = setTimeout(() => {
+		this.#deleteExternalRefs = args.deleteExternalRefs;
+		this.#initialTtlTimeout = setTimeout(() => {
 			if (this.sockets.size === 0) {
 				this.terminate();
 			}
 		}, (Group.DEFAULT_TTL * 1000)).unref();
 
-		Object.defineProperty(this, "socketMessageCb", { value: Object.freeze({
-			["disconnect"]: (socket: WebSocket): void => {
-				if (socket === this.groupHostSocket) {
-					// If the host disconnects, end the session.
-					// TODO.impl this seems like a bad decision. What about just broadcasting
-					// that the host player has died, and choose another player to become
-					// the host?
-					this.terminate();
-					return;
-				}
-				if (this.sockets.size === 1) {
-					this.terminate();
-					return;
-				}
-				const res = <_Group.UserInfoChange.Res>{
-					[this.userInfo.get(socket).guid]: undefined,
-				};
-				this.sockets.forEach((s) => s.send(Group.UserInfoChange.EVENT_NAME, res));
-			},
-			[Group.UserInfoChange.EVENT_NAME]: (socket: WebSocket, req: _Group.UserInfoChange.Req) => {
-				if (typeof req.username !== "string"
-				 || typeof req.teamId   !== "number"
-				 || typeof req.avatar   !== "string") {
-					// User arguments did not match expected format.
-					console.log(`bad format: username: \`${req.username}\``
-					+ `, teamId: \`${req.teamId}\`, avatar: \`${req.avatar}\`.`);
-					return;
-				}
-				this.userInfo.set(socket, req);
-				const res = <_Group.UserInfoChange.Res>{
-					[socket.id]: req,
-				};
-				this.sockets.forEach((s) => s.send(Group.UserInfoChange.EVENT_NAME, res));
-			},
-		})});
+		this.#socketMessageCb = (ev: WebSocket.MessageEvent): void => {
+			const [evName, ...body] = JSON.parse(ev.data as string) as [string, ...any[]];
+			switch (evName) {
+				case Group.UserInfoChange.EVENT_NAME: this._socketOnUserInfoChange(ev.target, body[0]); break;
+				case GroupEv.CREATE_GAME: if (ev.target === this.groupHostSocket) this._socketOnHostCreateGame(body[0]); break;
+				default: break;
+			}
+		};
+		this.#socketCloseCb = (ev: WebSocket.CloseEvent): void => {
+			if (ev.target === this.groupHostSocket) {
+				// If the host disconnects, end the session.
+				// TODO.impl this seems like a bad decision. What about just broadcasting
+				// that the host player has died, and choose another player to become
+				// the host?
+				this.terminate();
+				return;
+			}
+			this.sockets.delete(ev.target);
+			if (this.sockets.size === 0) {
+				this.terminate();
+				return;
+			}
+			const data = JSON.stringify([Group.UserInfoChange.EVENT_NAME, <_Group.UserInfoChange.Res>{
+				[this.userInfo.get(ev.target)!.guid]: undefined,
+			}]);
+			this.sockets.forEach((s) => s.send(data));
+		};
 	}
 
 	/** Let someone into this group */
@@ -101,10 +96,12 @@ export class Group extends _Group {
 		{
 			type Res = _Group.UserInfoChange.Res;
 			const EVENT_NAME = Group.UserInfoChange.EVENT_NAME;
-			// Notify all other clients in this group of the new player:
-			// NOTE: broadcast modifier not used since socket is not yet in this.sockets.
-			this.sockets.forEach((s) => s.send(EVENT_NAME, <Res>{[socket.id]: userInfo}));
-
+			{
+				// Notify all other clients in this group of the new player:
+				// NOTE: broadcast modifier not used since socket is not yet in this.sockets.
+				const data = JSON.stringify([EVENT_NAME, <Res>{[socket.id]: userInfo}]);
+				this.sockets.forEach((s) => s.send(data));
+			}
 			// Notify the new player of all other players:
 			const res: {[socketId: string]: Player.UserInfo} = {};
 			this.sockets.forEach((s) => {
@@ -115,21 +112,36 @@ export class Group extends _Group {
 
 		/** The first socket becomes the session host. */
 		if (this.sockets.size === 0) {
-			clearTimeout(this._initialTtlTimeout);
+			clearTimeout(this.#initialTtlTimeout);
 			// @ts-expect-error : RO=
-			this._initialTtlTimeout = undefined!;
+			this.#initialTtlTimeout = undefined!;
 			this.groupHostSocket = socket;
 			this.wssBroadcast(Group.Exist.EVENT_NAME, {
 				[this.name]: Group.Exist.Status.IN_LOBBY,
 			});
-			socket.on(GroupEv.CREATE_GAME, this._socketOnHostCreateGame.bind(this));
 		}
-
-		Object.entries(this._socketListeners).forEach(([evName, callback]) => {
-			socket.on(evName, callback.bind(this, socket));
-		});
+		socket.addEventListener("close", this.#socketCloseCb);
+		socket.addEventListener("message", this.#socketMessageCb);
 		this.sockets.add(socket);
 	}
+
+	/** */
+	private _socketOnUserInfoChange(socket: WebSocket, req: _Group.UserInfoChange.Req): void {
+		if (typeof req.username !== "string"
+		 || typeof req.teamId   !== "number"
+		 || typeof req.avatar   !== "string") {
+			// User arguments did not match expected format.
+			console.log(`bad format: username: \`${req.username}\``
+			+ `, teamId: \`${req.teamId}\`, avatar: \`${req.avatar}\`.`);
+			return;
+		}
+		this.userInfo.set(socket, req);
+		const data = JSON.stringify([Group.UserInfoChange.EVENT_NAME, <_Group.UserInfoChange.Res>{
+			[socket.id]: req,
+		}]);
+		this.sockets.forEach((s) => s.send(data));
+	}
+
 	/** */
 	private _socketOnHostCreateGame<S extends Coord.System>(
 		ctorArgs: Game.CtorArgs.UnFin<S>
@@ -146,36 +158,6 @@ export class Group extends _Group {
 			console.info(`group ${this.name} new game`);
 		}
 	}
-
-	public get isCurrentlyPlayingAGame(): boolean {
-		return this.#currentGame !== undefined;
-	}
-
-	/**
-	 * - Deletes its own reference to its game (if it exists).
-	 * - Disconnects each client.
-	 * - Removes all listeners from this namespace.
-	 * - Deletes the enclosed Socket.IO namespace from the Server.
-	 * - Deletes the only external reference so this can be garbage collected.
-	 */
-	protected terminate(): void {
-		for (const socket of this.sockets) {
-			socket.removeAllListeners();
-		}
-		if (this.#currentGame !== undefined) {
-			// TODO.design need to terminate game?
-			this.#currentGame = undefined;
-		}
-		this.#deleteExternalRefs();
-
-		this.wssBroadcast(Group.Exist.EVENT_NAME, {
-			[this.name]: Group.Exist.Status.DELETE,
-		});
-		console.info(`terminated group: \`${this.name}\``);
-	}
-
-
-
 	/**
 	 * @param ctorArgs
 	 * The `playerDescs` field only contains descriptors for artificial
@@ -196,7 +178,6 @@ export class Group extends _Group {
 		if (failureReasons.length) {
 			return failureReasons;
 		}
-
 		// Everything needed to create a game exists. Let's do it!
 		// @ts-expect-error : RO=
 		ctorArgs.players = [
@@ -221,15 +202,43 @@ export class Group extends _Group {
 		});
 		return [];
 	}
+
+	/**
+	 * - Deletes its own reference to its game (if it exists).
+	 * - Disconnects each client.
+	 * - Removes all listeners from this namespace.
+	 * - Deletes the enclosed Socket.IO namespace from the Server.
+	 * - Deletes the only external reference so this can be garbage collected.
+	 */
+	protected terminate(): void {
+		for (const socket of this.sockets) {
+			socket.removeEventListener("close", this.#socketCloseCb);
+			socket.removeEventListener("message", this.#socketMessageCb);
+		}
+		if (this.#currentGame !== undefined) {
+			// TODO.design need to terminate game?
+			this.#currentGame = undefined;
+		}
+		this.#deleteExternalRefs();
+
+		this.wssBroadcast(Group.Exist.EVENT_NAME, {
+			[this.name]: Group.Exist.Status.DELETE,
+		});
+		console.info(`terminated group: \`${this.name}\``);
+	}
 }
 export namespace Group {
-	export type Name = _Group.Name;
-	export type Passphrase = _Group.Passphrase;
-	export namespace Exist {
-		export type RequestCreate = _Group.Exist.RequestCreate;
-		export type NotifyStatus  = _Group.Exist.NotifyStatus;
+	export declare namespace Exist {
+		export namespace Create {
+			export type Req = _Group.Exist.Create.Req;
+			export type Res = _Group.Exist.Create.Res;
+		}
+		export type NotifyStatus = _Group.Exist.NotifyStatus;
 	}
-	export function isCreateRequestValid(desc: Exist.RequestCreate): boolean {
+	export namespace TryJoin {
+		export type Req = _Group.TryJoin.Req;
+	}
+	export function isCreateRequestValid(desc: Exist.Create.Req): boolean {
 		return (desc.groupName !== undefined)
 		&& desc.groupName.length <= Group.Name.MaxLength
 		&& Group.Name.REGEXP.test(desc.groupName)
@@ -237,6 +246,6 @@ export namespace Group {
 		&& Group.Passphrase.REGEXP.test(desc.passphrase);
 	}
 }
-JsUtils.protoNoEnum(Group, "_socketOnHostCreateGame");
+JsUtils.protoNoEnum(Group, "_socketOnUserInfoChange", "_socketOnHostCreateGame");
 Object.freeze(Group);
 Object.freeze(Group.prototype);

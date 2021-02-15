@@ -31,10 +31,16 @@ export class TopLevel {
 	//public readonly bgMusic: BgMusic;
 	//public readonly sfx: SoundEffects;
 
-	public readonly socket?: WebSocket;
+	#socket?: WebSocket;
+	public get socket(): WebSocket | undefined { return this.#socket; }
+	public setSocket(newSocket: WebSocket | undefined): void {
+		if (this.socket !== undefined) {
+			this.socket.close();
+		}
+		this.#socket = newSocket;
+	}
 
-	/**
-	 */
+	/** */
 	public get clientIsGroupHost(): boolean {
 		return this.#allScreens.dict.groupJoiner.isHost;
 	}
@@ -87,7 +93,6 @@ export class TopLevel {
 	/**
 	 * @deprecated
 	 * For debugging purposes- especially in the browser console.
-	 *
 	 * Not actually deprecated :P
 	 */
 	public get game() {

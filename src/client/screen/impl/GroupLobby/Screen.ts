@@ -20,6 +20,8 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		avatar:   HTMLSelectElement;
 	}>;
 
+	readonly #socketMessageCb: (ev: MessageEvent<string>) => void;
+	#socketOnceGameCreateCb: ((ev: MessageEvent<string>) => void) | undefined = undefined;
 	private get socket(): WebSocket {
 		return this.top.socket!;
 	}
@@ -28,21 +30,30 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	protected _lazyLoad(): void {
 		this.baseElem.classList.add(style["this"]);
 		this._createInputs();
+		// @ts-expect-error : RO=
+		this.#socketMessageCb = (ev: MessageEvent<string>) => {
+			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
+			switch (evName) {
+				case Group.UserInfoChange.EVENT_NAME: this._onUserInfoChange(body[0]); break;
+				default: break;
+			}
+		};
 		Object.freeze(this); //🧊
 		this.nav.prev.textContent = "Return To Joiner";
 
 		this.baseElem.appendChild(this.teamsElem);
 
+		JsUtils.instNoEnum(this as GroupLobbyScreen, "socketOnceGameCreateCb");
 		JsUtils.propNoWrite(this as GroupLobbyScreen,
 			"_players", "teamsElem", "teamElems", "in",
 		);
-
 		{const goSetup = this.nav.next;
-		goSetup.textContent = "Setup Game";
-		goSetup.onclick = () => {
-			this.requestGoToScreen(BaseScreen.Id.SETUP_ONLINE, {});
-		};
-		this.baseElem.appendChild(goSetup);}
+			goSetup.textContent = "Setup Game";
+			goSetup.onclick = () => {
+				this.requestGoToScreen(BaseScreen.Id.SETUP_ONLINE, {});
+			};
+			this.baseElem.appendChild(goSetup);
+		}
 	}
 
 	/** */
@@ -110,19 +121,18 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 			this.teamsElem.textContent = "";
 			this._submitInputs();
 
-			this.socket.off(Group.UserInfoChange.EVENT_NAME);
-			this.socket.on (Group.UserInfoChange.EVENT_NAME,
-				this._onUserInfoChange.bind(this),
-			);
+			this.socket.addEventListener("message", this.#socketMessageCb);
 		}
 		// Listen for when the server sends the game constructor arguments:
+		this.#socketOnceGameCreateCb = (ev: MessageEvent<string>) => {
+			const [evName, gameCtorArgs, myPlayerIds] = JSON.parse(ev.data) as [string, Game.CtorArgs, number[]];
+			if (evName === GroupEv.CREATE_GAME) {
+				this.requestGoToScreen(BaseScreen.Id.PLAY_ONLINE, [gameCtorArgs, myPlayerIds]); //🚀
+			}
+		};
 		this.socket.addEventListener("message",
-			(ev: MessageEvent<any>) => {
-				if (ev.data.name === GroupEv.CREATE_GAME) {
-					const args: [Game.CtorArgs, readonly number[]] = undefined!;
-					this.requestGoToScreen(BaseScreen.Id.PLAY_ONLINE, args); //🚀
-				}
-			},
+			this.#socketOnceGameCreateCb,
+			{ once: true },
 		);
 	}
 
@@ -143,7 +153,9 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		// Make sure we stop listening for the game to start
 		// in case it hasn't started yet:
 		if (navDir === BaseScreen.NavDir.BACKWARD) {
-			this.socket.off(GroupEv.CREATE_GAME);
+			this.socket.removeEventListener("message", this.#socketMessageCb);
+			this.socket.removeEventListener("message", this.#socketOnceGameCreateCb!);
+			this.#socketOnceGameCreateCb = undefined;
 		}
 		return true;
 	}

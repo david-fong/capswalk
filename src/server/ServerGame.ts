@@ -19,7 +19,7 @@ import { RobotPlayer } from "base/game/player/RobotPlayer";
 export class ServerGame<S extends Coord.System = Coord.System> extends GameManager<S> {
 
 	readonly #deleteExternalRefs: () => void;
-	declare private readonly socketMessageCb: (ev: { data: string, target: WebSocket }) => void;
+	readonly #socketMessageCb: (ev: WebSocket.MessageEvent) => void;
 
 	public readonly sockets: Set<WebSocket>;
 	protected readonly groupHostSocket: WebSocket;
@@ -63,9 +63,10 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		);
 		this.playerSockets = humans.map((desc) => desc.socket!);
 		JsUtils.propNoWrite(this as ServerGame<S>, "playerSockets");
+		Object.seal(this); //🧊
 
-		Object.defineProperty(this, "socketOnMessage", { value: (ev: { data: string, target: WebSocket }): void => {
-			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
+		this.#socketMessageCb = (ev: WebSocket.MessageEvent): void => {
+			const [evName, ...body] = JSON.parse(ev.data as string) as [string, ...any[]];
 			const socket = ev.target;
 			switch (evName) {
 				case GameEv.IN_GAME: this.processMoveRequest(body[0]); break;
@@ -84,10 +85,8 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 					break;
 				default: break;
 			}
-		}});
-		Object.seal(this); //🧊
-
-		this.sockets.forEach((s) => s.addEventListener("message", this.socketMessageCb));
+		};
+		this.sockets.forEach((s) => s.addEventListener("message", this.#socketMessageCb));
 		this.sockets.forEach((s) => s.addEventListener("close", () => {
 			if (this.sockets.size === 1) {
 				this._terminate();
@@ -184,7 +183,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 
 	protected _terminate(): void {
 		this.sockets.forEach((s) => {
-			s.removeEventListener("message", this.socketMessageCb);
+			s.removeEventListener("message", this.#socketMessageCb);
 		});
 		this.#deleteExternalRefs();
 	}
