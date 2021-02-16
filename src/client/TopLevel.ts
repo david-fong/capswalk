@@ -31,7 +31,7 @@ export class TopLevel {
 	//public readonly bgMusic: BgMusic;
 	//public readonly sfx: SoundEffects;
 
-	#socket?: WebSocket;
+	#socket: WebSocket | undefined;
 	public get socket(): WebSocket | undefined { return this.#socket; }
 	public setSocket(newSocket: WebSocket | undefined): void {
 		if (this.socket !== undefined) {
@@ -63,7 +63,7 @@ export class TopLevel {
 		JsUtils.propNoWrite(this as TopLevel, "defaultDocTitle", "webpageHostType");
 
 		this.storage = StorageHooks;
-		this.socket = undefined;
+		this.#socket = undefined;
 		this.transition = new ScreenTransition();
 		JsUtils.propNoWrite(this as TopLevel, "storage", "sockets", "transition");
 
