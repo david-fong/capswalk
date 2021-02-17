@@ -1,7 +1,7 @@
 import type * as WebSocket from "ws";
 
 import { JsUtils } from "defs/JsUtils";
-import { GameEv, GroupEv } from "defs/OnlineDefs";
+import { SOCKET_ID, GameEv, GroupEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
 import type { StateChange } from "game/StateChange";
@@ -69,7 +69,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			const [evName, ...body] = JSON.parse(ev.data as string) as [string, ...any[]];
 			const socket = ev.target;
 			switch (evName) {
-				case GameEv.IN_GAME: this.processMoveRequest(body[0]); break;
+				case GameEv.IN_GAME: this.processMoveRequest(body[0], socket); break;
 				case GameEv.PAUSE:   this.statusBecomePaused(); break;
 				case GameEv.UNPAUSE: this.statusBecomePlaying(); break;
 				case GameEv.RETURN_TO_LOBBY:
@@ -79,19 +79,21 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 						this.sockets.forEach((s) => { if (s !== socket) s.send(data); });
 						this._terminate();
 					} else {
-						const data = JSON.stringify([GameEv.RETURN_TO_LOBBY, socket.id]);
+						const data = JSON.stringify([GameEv.RETURN_TO_LOBBY, SOCKET_ID(socket)]);
 						this.sockets.forEach((s) => { if (s !== socket) s.send(data); });
 					}
 					break;
 				default: break;
 			}
 		};
-		this.sockets.forEach((s) => s.addEventListener("message", this.#socketMessageCb));
-		this.sockets.forEach((s) => s.addEventListener("close", () => {
-			if (this.sockets.size === 1) {
-				this._terminate();
-			}
-		}));
+		this.sockets.forEach((s) => {
+			s.addEventListener("message", this.#socketMessageCb);
+			s.addEventListener("close", () => {
+				if (this.sockets.size === 1) {
+					this._terminate();
+				}
+			})
+		});
 
 		this._greetGameSockets(args.gameDesc, humans);
 	}
@@ -168,13 +170,13 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	}
 
 	/** @override */
-	public commitStateChange(desc: StateChange.Res): void {
+	public commitStateChange(desc: StateChange.Res, socket?: any): void {
 		super.commitStateChange(desc);
 
 		if (desc.rejectId) {
 			// The request was rejected- Notify the requester.
 			const data = JSON.stringify([GameEv.IN_GAME, desc]);
-			this.playerSockets[desc.initiator]!.send(data);
+			socket?.send(data);
 		} else {
 			const data = JSON.stringify([GameEv.IN_GAME, desc]);
 			this.sockets.forEach((s) => s.send(data));

@@ -8,8 +8,7 @@
     - handle malformed websocket data from client. Just ignore it?
     - change exceptions on malformed data to short circuits?
 1. Add player sprites.
-1. Record music + find out how to play tracks together.
-1. Make the website accessible by ARIA standards.
+1. Record music.
 
 ## Concrete TODOs
 
@@ -17,19 +16,22 @@
 
 1. Switch from socket.io to ws. I want to manage my own pubsub.
 1. Rename `getDestsFromSourcesTo` to `getAllAltDestsThan`.
+1. Change Lang ClassIf getters to be properties where possible.
+1. Set important `window` properties to be non-writeable and non-configurable.
 1. Change BgMusic to an async function.
+1. Implement lang/coordsys compatibility check that coord system guarantees that there exists a tile `T` with `numDests(T) <= N` where `N` is the number of root nodes in the language. Otherwise, the roots will never see the light of day, and spawning them will make it impossible to finish the reset.
 1. Split screen classes into an init class and behaviour class?
     - The distinction could be fuzzy. It would help me read the code, though.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
-1. Get rid of the in-game socket.io namespace? It made it easy to remove all in-game related event listeners, but it adds so much connection complexity.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
     - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid derived classes instead of smarter tile derived classes).
+1. Implement Grid management of player-rendering.
 1. Implement, use, and test array extensions freeze and seal.
 1. Move `Player.RequestBuffer` to dedicated file and make an extension for `OperatorPlayer`s that actually does stuff. The base version will pretty much do nothing.
 1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.
     - See how this affects performance.
-1. Mashup some CSS resets and normalizers for this repo.
+1. Mashup some CSS resets and normalizers for this repo? Or maybe we don't need any.
 1. Display the operator's current sequence buffer.
 
 1. Bring in some react for the screen implementations.
@@ -107,12 +109,6 @@
   - After reading [the TC39 proposal docs](https://github.com/tc39/proposal-decorators#option-b-init-method-decorators) and seeing how much they differ from TypeScript's current spec, I don't want to commit to something that will likely change drastically in the future.
 
 ---
-
-## Misc Ideas
-
-- Make sound settings stubs for playing music and sound effects.
-  - make BGM have a track that varies with lang and different selectable style variations such as jazz cafe/elevator music, fast 13/8.
-  - Make movement sound effects able to depend on translated key input like morse sounds.
 
 ## Research / Learning Links
 

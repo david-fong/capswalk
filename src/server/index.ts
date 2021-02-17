@@ -6,6 +6,7 @@ import * as expressStaticGzip from "express-static-gzip";
 import * as WebSocket from "ws";
 import type * as net from "net";
 import { Group } from "./Group";
+import { SET_SOCKET_ID } from "defs/OnlineDefs";
 
 const app = express();
 const server = http.createServer({}, app);
@@ -52,6 +53,7 @@ wss.on("connection", function onWsConnect(socket): void {
 			return build;
 		})(),
 	]);
+	SET_SOCKET_ID(socket, `${Date.now().toString()}_${(Math.random() * 100) % 100}`);
 	socket.send(data);
 	socket.addEventListener("message", socketMessageCb);
 });

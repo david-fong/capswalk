@@ -1,20 +1,10 @@
 
 # general
 .DS_Store
+*.orig
 
 # npm
 /node_modules/
 
 # build
 /dist/
-
-# vim
-*.swp
-*.swo
-*.orig
-Session.vim
-
-# security
-*.pem
-*.pfx
-*.p12

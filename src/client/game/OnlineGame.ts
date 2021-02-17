@@ -65,7 +65,7 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 	 * > 💢 I would like to speak to your manager. I'll wait.
 	 * @override
 	 */
-	public processMoveRequest(desc: StateChange.Req): void {
+	public processMoveRequest(desc: StateChange.Req, socket?: any): void {
 		this.socket.send(JSON.stringify([GameEv.IN_GAME, desc]));
 	}
 }

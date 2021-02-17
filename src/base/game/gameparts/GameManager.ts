@@ -177,7 +177,7 @@ export abstract class GameManager<
 
 
 	/** @override */
-	public processMoveRequest(req: StateChange.Req): void {
+	public processMoveRequest(req: StateChange.Req, socket?: any): void {
 		const initiator = this.players[req.initiator]!;
 		if (req.lastRejectId !== initiator.reqBuffer.lastRejectId) {
 			return; //⚡
@@ -189,7 +189,7 @@ export abstract class GameManager<
 			this.commitStateChange({
 				rejectId: initiator.reqBuffer.getNextRejectId(),
 				initiator: req.initiator,
-			});
+			}, socket);
 			return; //⚡
 		}
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
@@ -203,7 +203,7 @@ export abstract class GameManager<
 			this.commitStateChange({
 				rejectId: initiator.reqBuffer.getNextRejectId(),
 				initiator: req.initiator,
-			});
+			}, socket);
 			return; //⚡
 		}
 
@@ -228,7 +228,7 @@ export abstract class GameManager<
 					...this.dryRunShuffleLangCspAt(reqDest.coord),
 				},
 			}),
-		});
+		}, socket);
 	}
 
 	/**

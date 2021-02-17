@@ -1,6 +1,6 @@
 import type * as WebSocket from "ws";
 import { JsUtils } from "defs/JsUtils";
-import { GroupEv } from "defs/OnlineDefs";
+import { SOCKET_ID, GroupEv } from "defs/OnlineDefs";
 
 import type { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
@@ -77,7 +77,7 @@ export class Group extends _Group {
 				return;
 			}
 			const data = JSON.stringify([Group.UserInfoChange.EVENT_NAME, <_Group.UserInfoChange.Res>{
-				[this.userInfo.get(ev.target)!.guid]: undefined,
+				[SOCKET_ID(ev.target)]: undefined,
 			}]);
 			this.sockets.forEach((s) => s.send(data));
 		};
@@ -85,7 +85,7 @@ export class Group extends _Group {
 
 	/** Let someone into this group */
 	public admitSocket(socket: WebSocket, userInfo: Player.UserInfo): void {
-		console.info(`socket connect (group):  ${socket.id}`);
+		console.info(`socket connect (group):  ${SOCKET_ID(socket)}`);
 		if (this.#currentGame) {
 			// TODO.design is there a good reason to do the below?
 			// Prevent new players from joining while the group is playing
@@ -99,13 +99,13 @@ export class Group extends _Group {
 			{
 				// Notify all other clients in this group of the new player:
 				// NOTE: broadcast modifier not used since socket is not yet in this.sockets.
-				const data = JSON.stringify([EVENT_NAME, <Res>{[socket.id]: userInfo}]);
+				const data = JSON.stringify([EVENT_NAME, <Res>{[SOCKET_ID(socket)]: userInfo}]);
 				this.sockets.forEach((s) => s.send(data));
 			}
 			// Notify the new player of all other players:
 			const res: {[socketId: string]: Player.UserInfo} = {};
 			this.sockets.forEach((s) => {
-				res[otherSocketId] = this.userInfo.get(s);
+				res[SOCKET_ID(s)] = this.userInfo.get(s)!;
 			});
 			socket.send(JSON.stringify([EVENT_NAME, res]));
 		}
@@ -137,7 +137,7 @@ export class Group extends _Group {
 		}
 		this.userInfo.set(socket, req);
 		const data = JSON.stringify([Group.UserInfoChange.EVENT_NAME, <_Group.UserInfoChange.Res>{
-			[socket.id]: req,
+			[SOCKET_ID(socket)]: req,
 		}]);
 		this.sockets.forEach((s) => s.send(data));
 	}

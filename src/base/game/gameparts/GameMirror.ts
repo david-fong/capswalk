@@ -10,9 +10,7 @@ import type { OperatorPlayer } from "../player/OperatorPlayer";
 import { Player } from "../player/Player";
 import { Team } from "../player/Team";
 
-/**
- * Foundational parts of a Game that are not related to event handling.
- */
+/** */
 export abstract class GameMirror<S extends Coord.System = Coord.System> {
 
 	public readonly grid: Grid<S>;
@@ -197,10 +195,9 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		console.info("game is over!");
 	}
 
-	public abstract processMoveRequest(desc: StateChange.Req): void;
+	public abstract processMoveRequest(desc: StateChange.Req, socket?: any): void;
 
-	/**
-	 */
+	/** @virtual */
 	protected commitTileMods(
 		coord: Coord,
 		changes: Tile.Changes,
@@ -223,9 +220,8 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		this.grid.write(coord, changes);
 	}
 
-	/**
-	 */
-	protected commitStateChange(desc: StateChange.Res): void {
+	/** @virtual */
+	protected commitStateChange(desc: StateChange.Res, socket?: any): void {
 		JsUtils.deepFreeze(desc);
 		const player = this.players[desc.initiator]!;
 

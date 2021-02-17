@@ -1,13 +1,20 @@
 import type { Player } from "defs/TypeDefs";
+import type * as NodeWebSocket from "ws";
 
-/** */
-export abstract class SkServer { }
-export namespace SkServer {
-	export const PROTOCOL = "http://";
-	export const DEFAULT_PORT = 80;
+/** Serverside-only. */
+export function SOCKET_ID(socket: NodeWebSocket): string | never {
+	// What has it got it its socketses?
+	// STRING!? or NOTHING!
+	if (_socketIds.has(socket)) {
+		return _socketIds.get(socket)!;
+	} else {
+		throw new Error("never");
+	}
 }
-Object.freeze(SkServer);
-Object.freeze(SkServer.prototype);
+export function SET_SOCKET_ID(socket: NodeWebSocket, id: string): void {
+	_socketIds.set(socket, id);
+}
+const _socketIds = new WeakMap<NodeWebSocket, string>();
 
 
 /** */

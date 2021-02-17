@@ -39,8 +39,7 @@ export abstract class Lang extends _Lang {
 
 	public get numLeaves(): number { return this.leafNodes.length; }
 
-	/**
-	 */
+	/** */
 	protected constructor(
 		frontendDescId: Lang.FrontendDesc["id"],
 		weightExaggeration: Lang.WeightExaggeration,

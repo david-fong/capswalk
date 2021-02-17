@@ -1,10 +1,9 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "./Tile";
-import { Lang, Player } from "defs/TypeDefs";
+import { Player } from "defs/TypeDefs";
 
 import type { WrappedEuclid2 } from "./impl/Euclid2/System";
 import type { Beehive } from "./impl/Beehive/System";
-
 
 /**
  * A Collection of Tiles.
@@ -18,7 +17,6 @@ export abstract class Grid<S extends Coord.System> {
 
 	public readonly area: number;
 
-
 	/**
 	 * Protected. See `Grid.getImplementation` for how to access class
 	 * literals for construction.
@@ -31,9 +29,7 @@ export abstract class Grid<S extends Coord.System> {
 		JsUtils.propNoWrite(this as Grid<S>, "static", "dimensions");
 	}
 
-	/**
-	 * @virtual
-	 */
+	/** @virtual */
 	public reset(): void {
 		this.forEach((tile) => {
 			this.write(tile.coord, {
@@ -43,8 +39,7 @@ export abstract class Grid<S extends Coord.System> {
 		});
 	}
 
-	/**
-	 */
+	/** */
 	public abstract write(coord: Coord, changes: Readonly<Tile.Changes>): void;
 
 	/**
@@ -158,8 +153,7 @@ export abstract class Grid<S extends Coord.System> {
 }
 export namespace Grid {
 
-	/**
-	 */
+	/** */
 	export interface Dimensions {
 		[Coord.System.W_EUCLID2]: WrappedEuclid2.Grid.Dimensions;
 		[Coord.System.BEEHIVE]: Beehive.Grid.Dimensions;
@@ -182,22 +176,18 @@ export namespace Grid {
 	 */
 	export interface ClassIf<S extends Coord.System> {
 
-		/**
-		 * Constructor
-		 */
+		/** Constructor */
 		new(desc: CtorArgs<S>): Grid<S>;
 
 		/**
 		 * @returns
-		 * From the caller's point of view, the ambiguity floor is the
-		 * minimum number of leaf nodes a language must have to be
+		 * The minimum number of leaf nodes a language must have to be
 		 * playable with this coordinate system's grid.
 		 *
-		 * From the specification's point of view, it is the promised
-		 * maximum size- for any tile in the grid- of the set of all
-		 * destinations from sources to itself, excluding itself.
+		 * Definition: The maximum possible number- for any tile in the
+		 * grid- of all destinations from sources to itself, excluding
+		 * itself.
 		 */
-		// TODO.test write a test that checks that this holds for each implementation?
 		getAmbiguityThreshold(): number;
 
 		/**
