@@ -19,7 +19,7 @@
     "preinstall": "npx only-allow pnpm",
     "devinit": "bash scripts/devinit.sh",
     "build": "bash scripts/pack.sh",
-    "start": "bash scripts/server.sh"
+    "start": "node --enable-source-maps --disable-proto=delete ./dist/server/index.js"
   },
   "dependencies": {
     "express": "^4.17.1",

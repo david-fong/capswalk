@@ -9,7 +9,7 @@
     "server/"
   ],
   "scripts": {
-    "start": "node server/index.js"
+    "start": "node --disable-proto=delete server/index.js"
   },
   "engines": {
     "node": "12.x"

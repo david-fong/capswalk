@@ -3,17 +3,22 @@ import "style/common.css";
 import "style/_barrel.css";
 
 // None shall touch Object.prototype >:(
-[
-	Object, Array, Map, Set, WeakMap, WeakSet,
-	String, Number, RegExp,
-	HTMLElement, HTMLDivElement, HTMLSpanElement, HTMLPreElement,
-	HTMLButtonElement, HTMLInputElement, HTMLSelectElement, HTMLOptionElement,
-	HTMLScriptElement, HTMLStyleElement, HTMLLinkElement, HTMLAnchorElement,
-	HTMLDocument, HTMLIFrameElement, HTMLCanvasElement,
-]
-.forEach((intrinsic) => {
-	Object.freeze(intrinsic);
-	Object.freeze(intrinsic?.prototype);
+([
+	"Object", "Array", "Map", "Set", "WeakMap", "WeakSet",
+	"String", "Number", "RegExp",
+	"HTMLElement", "HTMLDivElement", "HTMLSpanElement", "HTMLPreElement",
+	"HTMLButtonElement", "HTMLInputElement", "HTMLSelectElement", "HTMLOptionElement",
+	"HTMLScriptElement", "HTMLStyleElement", "HTMLLinkElement", "HTMLAnchorElement",
+	"HTMLDocument", "HTMLIFrameElement", "HTMLCanvasElement",
+] as (keyof typeof globalThis)[])
+.forEach((key) => {
+	Object.defineProperty(window, key, {
+		enumerable: true,
+		writable: false,
+		configurable: false,
+	});
+	Object.freeze(window[key as any]);
+	Object.freeze((window[key as any] as any).prototype);
 });
 
 import { TopLevel } from "./TopLevel";

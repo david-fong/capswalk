@@ -17,7 +17,6 @@
 1. Switch from socket.io to ws. I want to manage my own pubsub.
 1. Rename `getDestsFromSourcesTo` to `getAllAltDestsThan`.
 1. Change Lang ClassIf getters to be properties where possible.
-1. Set important `window` properties to be non-writeable and non-configurable.
 1. Change BgMusic to an async function.
 1. Implement lang/coordsys compatibility check that coord system guarantees that there exists a tile `T` with `numDests(T) <= N` where `N` is the number of root nodes in the language. Otherwise, the roots will never see the light of day, and spawning them will make it impossible to finish the reset.
 1. Split screen classes into an init class and behaviour class?
@@ -39,6 +38,7 @@
 
 ### Things that I feel less like doing
 
+1. Look into using [`esbuild-loader`](https://github.com/privatenumber/esbuild-loader).
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
     - Set the maxAge option for express to at least a year.
 1. On clientside, if joiner socket gets disconnected by server, go back to the joiner screen.

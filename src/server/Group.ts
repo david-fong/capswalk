@@ -55,10 +55,10 @@ export class Group extends _Group {
 		}, (Group.DEFAULT_TTL * 1000)).unref();
 
 		this.#socketMessageCb = (ev: WebSocket.MessageEvent): void => {
-			const [evName, ...body] = JSON.parse(ev.data as string) as [string, ...any[]];
+			const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
 			switch (evName) {
-				case Group.UserInfoChange.EVENT_NAME: this._socketOnUserInfoChange(ev.target, body[0]); break;
-				case GroupEv.CREATE_GAME: if (ev.target === this.groupHostSocket) this._socketOnHostCreateGame(body[0]); break;
+				case Group.UserInfoChange.EVENT_NAME: this._socketOnUserInfoChange(ev.target, args[0]); break;
+				case GroupEv.CREATE_GAME: if (ev.target === this.groupHostSocket) this._socketOnHostCreateGame(args[0]); break;
 				default: break;
 			}
 		};

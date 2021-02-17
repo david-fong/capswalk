@@ -65,7 +65,7 @@ export class TopLevel {
 		this.storage = StorageHooks;
 		this.#socket = undefined;
 		this.transition = new ScreenTransition();
-		JsUtils.propNoWrite(this as TopLevel, "storage", "sockets", "transition");
+		JsUtils.propNoWrite(this as TopLevel, "storage", "transition");
 
 		const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
 		if (!allScreensElem) { throw new Error("never"); }

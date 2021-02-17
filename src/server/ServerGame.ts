@@ -11,6 +11,29 @@ import { Grid } from "floor/Grid";
 import { GameManager } from "game/gameparts/GameManager";
 import { RobotPlayer } from "base/game/player/RobotPlayer";
 
+/** */
+function gameOnSocketMessage<S extends Coord.System>(this: ServerGame<S>, ev: WebSocket.MessageEvent): void {
+	const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
+	const socket = ev.target;
+	switch (evName) {
+		case GameEv.IN_GAME: this.processMoveRequest(args[0], socket); break;
+		case GameEv.PAUSE:   this.statusBecomePaused(); break;
+		case GameEv.UNPAUSE: this.statusBecomePlaying(); break;
+		case GameEv.RETURN_TO_LOBBY:
+			if (socket === this.groupHostSocket) {
+				this.statusBecomeOver();
+				const data = JSON.stringify([GameEv.RETURN_TO_LOBBY]);
+				this.sockets.forEach((s) => { if (s !== socket) s.send(data); });
+				this._terminate();
+			} else {
+				const data = JSON.stringify([GameEv.RETURN_TO_LOBBY, SOCKET_ID(socket)]);
+				this.sockets.forEach((s) => { if (s !== socket) s.send(data); });
+			}
+			break;
+		default: break;
+	}
+};
+
 /**
  * Handles game-related events and attaches listeners to each client
  * socket.
@@ -23,7 +46,6 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 
 	public readonly sockets: Set<WebSocket>;
 	protected readonly groupHostSocket: WebSocket;
-	protected readonly playerSockets: readonly WebSocket[];
 
 	/** @override */
 	public get currentOperator(): never {
@@ -55,37 +77,9 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		this.#deleteExternalRefs = args.deleteExternalRefs
 		JsUtils.instNoEnum (this as ServerGame<S>, "operators");
 		JsUtils.propNoWrite(this as ServerGame<S>, "groupHostSocket", "sockets");
-
-		// The below cast is safe because GamepartBase reassigns
-		// `gameDesc.playerDescs` the result of `Player.finalize`.
-		const humans = Object.freeze(
-			(args.gameDesc.players).filter((player) => player.familyId === "HUMAN") as Player._CtorArgs["HUMAN"][]
-		);
-		this.playerSockets = humans.map((desc) => desc.socket!);
-		JsUtils.propNoWrite(this as ServerGame<S>, "playerSockets");
+		this.#socketMessageCb = gameOnSocketMessage.bind(this as ServerGame<any>);
 		Object.seal(this); //🧊
 
-		this.#socketMessageCb = (ev: WebSocket.MessageEvent): void => {
-			const [evName, ...body] = JSON.parse(ev.data as string) as [string, ...any[]];
-			const socket = ev.target;
-			switch (evName) {
-				case GameEv.IN_GAME: this.processMoveRequest(body[0], socket); break;
-				case GameEv.PAUSE:   this.statusBecomePaused(); break;
-				case GameEv.UNPAUSE: this.statusBecomePlaying(); break;
-				case GameEv.RETURN_TO_LOBBY:
-					if (socket === this.groupHostSocket) {
-						this.statusBecomeOver();
-						const data = JSON.stringify([GameEv.RETURN_TO_LOBBY]);
-						this.sockets.forEach((s) => { if (s !== socket) s.send(data); });
-						this._terminate();
-					} else {
-						const data = JSON.stringify([GameEv.RETURN_TO_LOBBY, SOCKET_ID(socket)]);
-						this.sockets.forEach((s) => { if (s !== socket) s.send(data); });
-					}
-					break;
-				default: break;
-			}
-		};
 		this.sockets.forEach((s) => {
 			s.addEventListener("message", this.#socketMessageCb);
 			s.addEventListener("close", () => {
@@ -94,13 +88,16 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 				}
 			})
 		});
-
-		this._greetGameSockets(args.gameDesc, humans);
+		this._greetGameSockets(args.gameDesc);
 	}
 
 	/** Helper for the constructor */
-	private _greetGameSockets(gameDesc: Game.CtorArgs<S>, humans: readonly Player._CtorArgs["HUMAN"][]): void {
-
+	private _greetGameSockets(gameDesc: Game.CtorArgs<S>): void {
+		// The below cast is safe because GamepartBase reassigns
+		// `gameDesc.playerDescs` the result of `Player.finalize`.
+		const humans = Object.freeze(
+			(gameDesc.players).filter((player) => player.familyId === "HUMAN") as Player._CtorArgs["HUMAN"][]
+		);
 		// Pass on Game constructor arguments to each client:
 		Promise.all(Array.from(this.sockets, (socket) =>
 			new Promise<void>((resolve) => {
@@ -191,7 +188,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	}
 }
 JsUtils.protoNoEnum(ServerGame,
-	"_awaitGameSockets", "_greetGameSockets",
+	"_greetGameSockets",
 	"setCurrentOperator", "_terminate",
 );
 Object.freeze(ServerGame);

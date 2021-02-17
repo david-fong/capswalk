@@ -38,6 +38,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			style["this"],
 		);
 		const contentWrapper = this._initFormContents();
+		this.baseElem.appendChild(this.groupNameDataList);
 
 		// @ts-expect-error : RO=
 		this.#socketMessageCb = (ev: MessageEvent<string>) => {
@@ -173,17 +174,16 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			const newOpt = JsUtils.html("option", [], { value: groupName });
 			for (const otherOpt of dataListArr) {
 				if (newOpt.value.localeCompare(otherOpt.value) < 0) {
-					dataList.insertBefore(newOpt, otherOpt);
+					this.groupNameDataList.insertBefore(newOpt, otherOpt);
 					break;
 				}
 			}
 			if (!newOpt.parentElement) {
-				dataList.appendChild(newOpt);
+				this.groupNameDataList.appendChild(newOpt);
 			}
 			return newOpt;
 		};
-		const dataList = this.groupNameDataList;
-		const dataListArr = Array.from(dataList.children) as OptEl[];
+		const dataListArr = Array.from(this.groupNameDataList.children) as OptEl[];
 		Object.freeze(Object.entries(res)).forEach(([groupName, status]) => {
 			const opt = dataListArr.find((opt: OptEl) => opt.value === groupName) ?? mkOpt(groupName);
 			switch (status) {
@@ -266,6 +266,10 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 
 	/** A helper for `_lazyLoad`. Does not hook up event processors. */
 	private _initFormContents(): HTMLElement {
+		const contentWrapper = JsUtils.html("div"/*"form"*/, [
+			OmHooks.General.Class.INPUT_GROUP,
+			style["content-wrapper"],
+		], {});
 		function _mkInput(labelText: string, classStr: string): HTMLInputElement {
 			const input = JsUtils.html("input", [OmHooks.General.Class.INPUT_GROUP_ITEM, classStr], {
 				type: "text",
@@ -292,25 +296,18 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				maxLength: Group.Name.MaxLength,
 				autocomplete: "on",
 				required: true,
-				list: this.groupNameDataList,
 			}),
 			"passphrase": Object.assign(_mkInput("Group Passphrase", style["passphrase"]), <Partial<HTMLInputElement>>{
 				pattern: Group.Passphrase.REGEXP.source,
 				maxLength: Group.Passphrase.MaxLength,
 			}),
 		});
-		const contentWrapper = JsUtils.html("div"/*"form"*/, [
-			OmHooks.General.Class.INPUT_GROUP,
-			style["content-wrapper"],
-		], {
-			// contentWrapper.method = "POST"; // Not actually used, since the default onsubmit behaviour is prevented.
-		});
+		this.in.groupName.setAttribute("list", OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS);
 
 		this.nav.prev.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
 		contentWrapper.appendChild(this.nav.prev);
 		{
-			const hostUrl = this.in.hostUrl;
-			hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
+			this.in.hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
 			const suggestedHostDesc = TopLevel.WebpageHostTypeSuggestedHost[this.top.webpageHostType];
 			if (suggestedHostDesc) {
 				const suggestOpt = JsUtils.html("option", [], {
@@ -319,14 +316,12 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				});
 				const datalist = document.getElementById(OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS)!;
 				datalist.insertAdjacentElement("afterbegin", suggestOpt);
-				hostUrl.value = suggestOpt.value;
+				this.in.hostUrl.value = suggestOpt.value;
 			}
-		}{
-			this.baseElem.appendChild(this.groupNameDataList);
-		}{
-			this.nav.next.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-			contentWrapper.appendChild(this.nav.next);
 		}
+		this.nav.next.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+		contentWrapper.appendChild(this.nav.next);
+
 		JsUtils.propNoWrite(this as GroupJoinerScreen, "in", "groupNameDataList");
 		return contentWrapper;
 	}

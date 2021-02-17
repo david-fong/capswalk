@@ -17,6 +17,7 @@ const wss = new WebSocket.Server({
 const groups = new Map<string, Group>();
 
 
+/** EXPRESS ROOT */
 // At runtime, __dirname resolves to ":/dist/server/"
 const CLIENT_ROOT = path.resolve(__dirname, "../client");
 app
@@ -37,8 +38,9 @@ app
 	},
 }));
 
+/** WSS ON_CONNECTION */
 wss.on("connection", function onWsConnect(socket): void {
-	console.info(`socket connect (server): ${socket.url}`);
+	console.info(`socket connect (server): ${socket}`);
 	// Upon connection, immediately send a list of existing groups:
 	const data = JSON.stringify([
 		Group.Exist.EVENT_NAME,
@@ -58,10 +60,14 @@ wss.on("connection", function onWsConnect(socket): void {
 	socket.addEventListener("message", socketMessageCb);
 });
 
-server.listen(<net.ListenOptions>{}, function httpListener(): void {
+/** HTTP LISTEN */
+server.listen(<net.ListenOptions>{
+	port: DEF.PRODUCTION ? 443 : 8080, // TODO.impl there must be a smarter way to do this.
+	host: "0.0.0.0",
+}, function onServerListening(): void {
 	const info = <net.AddressInfo>server.address();
 	console.info(
-		`\n\nServer mounted to: \`${info.address}${info.port}\` using ${info.family}.\n`
+		`\n\nServer mounted to: \`${info.address}:${info.port}\` using ${info.family}.\n`
 		+"This host can be reached at any of the following addresses:\n"
 	);
 	chooseIPAddress().sort().forEach((address) => {
@@ -73,14 +79,14 @@ server.listen(<net.ListenOptions>{}, function httpListener(): void {
 
 
 function wssBroadcast(evName: string, _data: any): void {
-	const data = JSON.stringify(_data);
+	const data = JSON.stringify([evName, _data]);
 	wss.clients.forEach((s) => s.send(data));
 }
 function socketMessageCb(ev: WebSocket.MessageEvent): void {
-	const [evName, ...body] = JSON.parse(ev.data as string) as [string, ...any[]];
+	const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
 	switch (evName) {
 	case Group.Exist.EVENT_NAME: {
-		const desc = body[0] as Group.Exist.Create.Req;
+		const desc = args[0] as Group.Exist.Create.Req;
 		if (Group.isCreateRequestValid(desc) && !groups.has(desc.groupName)) {
 			const data = JSON.stringify([Group.Exist.EVENT_NAME, Group.Exist.Create.Res.NOPE]);
 			ev.target.send(data);
@@ -100,7 +106,7 @@ function socketMessageCb(ev: WebSocket.MessageEvent): void {
 		break;
 	}
 	case Group.TryJoin.EVENT_NAME: {
-		const req = body[0] as Group.TryJoin.Req;
+		const req = args[0] as Group.TryJoin.Req;
 		const group = groups.get(req.groupName);
 		if (
 			group === undefined
