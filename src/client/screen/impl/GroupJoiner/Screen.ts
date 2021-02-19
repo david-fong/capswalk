@@ -1,5 +1,5 @@
 import { TopLevel } from "client/TopLevel";
-import { Group, GroupEv } from "defs/OnlineDefs";
+import { Group, JoinerEv, GameEv } from "defs/OnlineDefs";
 
 import { JsUtils, OmHooks, BaseScreen, StorageHooks } from "../../BaseScreen";
 type SID = BaseScreen.Id.GROUP_JOINER;
@@ -26,9 +26,9 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			passphrase: this.in.passphrase.value,
 		});
 	}
-	readonly #socketMessageCb: (ev: MessageEvent<string>) => void;
-	private get socket(): WebSocket {
-		return this.top.socket!;
+	readonly #wsMessageCb: (ev: MessageEvent<string>) => void;
+	private get ws(): WebSocket {
+		return this.top.webSocket!;
 	}
 
 	/** @override */
@@ -41,11 +41,11 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		this.baseElem.appendChild(this.groupNameDataList);
 
 		// @ts-expect-error : RO=
-		this.#socketMessageCb = (ev: MessageEvent<string>) => {
+		this.#wsMessageCb = (ev: MessageEvent<string>) => {
 			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
 			switch (evName) {
-				case   Group.Exist.EVENT_NAME: this._onNotifyGroupExist(body[0]); break;
-				case Group.TryJoin.EVENT_NAME: this._setFormState(State.IN_GROUP); break;
+				case   JoinerEv.Exist.NAME: this._onNotifyGroupExist(body[0]); break;
+				case JoinerEv.TryJoin.NAME: this._setFormState(State.IN_GROUP); break;
 				default: break;
 			}
 		};
@@ -64,7 +64,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 
 	/** @override */
 	public getRecommendedFocusElem(): HTMLElement {
-		if (this.socket === undefined) {
+		if (this.ws === undefined) {
 			return this.in.hostUrl;
 		} else {
 			return this.in.groupName;
@@ -100,7 +100,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			} else if (newState === State.CHOOSING_GROUP) {
 				this.in.groupName.disabled  = false;
 				this.in.passphrase.disabled = false;
-				this.#isHost     = false;
+				this.#isHost = false;
 				this.in.groupName.focus();
 			}
 		}
@@ -121,7 +121,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 
 			// Short-circuit when no change has occurred:
 			const gameServerUrl = new window.URL(input.value);
-			if (this.socket !== undefined && new URL(this.socket.url).hostname === gameServerUrl.hostname) {
+			if (this.ws !== undefined && new URL(this.ws.url).hostname === gameServerUrl.hostname) {
 				if (this.#isInGroup) {
 					this._setFormState(State.CHOOSING_GROUP);
 				} else {
@@ -129,11 +129,14 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				}
 				return;
 			}
-			this.top.setSocket(new WebSocket(this.in.hostUrl.value));
-			this.socket.addEventListener("message", this.#socketMessageCb);
-			this.socket.addEventListener("close", (ev) => {
-				this.top.setSocket(undefined);
+			this.top.setWebSocket(new WebSocket(input.value));
+			this.ws.addEventListener("open", (ev) => {
 				this._setFormState(State.CHOOSING_GROUP);
+			});
+			this.ws.addEventListener("message", this.#wsMessageCb);
+			this.ws.addEventListener("close", (ev) => {
+				this.top.setWebSocket(undefined);
+				this._setFormState(State.CHOOSING_HOST);
 				top.toast("You disconnected you from the server.");
 				if (this.top.currentScreen !== this) {
 					// TODO.impl ^ a more specific condition.
@@ -155,13 +158,13 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		return submitInput;
 	}
 	/** */
-	private _onNotifyGroupExist(res: Group.Exist.NotifyStatus): void {
-		if (res === Group.Exist.Create.Res.NOPE) {
+	private _onNotifyGroupExist(res: JoinerEv.Exist.NotifyStatus): void {
+		if (res === false) {
 			this.top.toast(`The server rejected your request to`
 			+ ` create a new group \"${this.in.groupName.value}\".`);
 			return;
 		}
-		if (res === Group.Exist.Create.Res.OKAY) {
+		if (res === true) {
 			this.top.toast(`server accepted request to create new group \"${this.in.groupName.value}\".`);
 			this.top.toast("connecting to new group...");
 			this._attemptToJoinExistingGroup();
@@ -187,9 +190,9 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		Object.freeze(Object.entries(res)).forEach(([groupName, status]) => {
 			const opt = dataListArr.find((opt: OptEl) => opt.value === groupName) ?? mkOpt(groupName);
 			switch (status) {
-				case Group.Exist.Status.IN_LOBBY: opt.textContent = "In Lobby"; break;
-				case Group.Exist.Status.IN_GAME:  opt.textContent = "In Game"; break;
-				case Group.Exist.Status.DELETE:   opt.remove(); break;
+				case JoinerEv.Exist.Status.IN_LOBBY: opt.textContent = "In Lobby"; break;
+				case JoinerEv.Exist.Status.IN_GAME:  opt.textContent = "In Game"; break;
+				case JoinerEv.Exist.Status.DELETE:   opt.remove(); break;
 			}
 		});
 	}
@@ -238,9 +241,9 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				this._attemptToJoinExistingGroup();
 			} else {
 				this.#isHost = true;
-				this.socket.send(JSON.stringify([
-					Group.Exist.EVENT_NAME,
-					<Group.Exist.Create.Req>{
+				this.ws.send(JSON.stringify([
+					JoinerEv.Exist.NAME,
+					<JoinerEv.Create.Req>{
 						groupName: this.in.groupName.value,
 						passphrase: this.in.passphrase.value,
 					},
@@ -257,7 +260,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 	 */
 	private _attemptToJoinExistingGroup(): void {
 		const userInfo = StorageHooks.getLastUserInfo();
-		this.socket.send(JSON.stringify([Group.TryJoin.EVENT_NAME, {
+		this.ws.send(JSON.stringify([JoinerEv.TryJoin.NAME, {
 			groupName: this.in.groupName.value,
 			passphrase: this.in.passphrase.value,
 			userInfo,

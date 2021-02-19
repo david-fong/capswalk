@@ -19,7 +19,7 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 	/** @override */
 	declare readonly grid: VisibleGrid<S>;
 
-	public readonly socket: WebSocket;
+	public readonly ws: WebSocket;
 
 	/** */
 	public constructor(
@@ -38,13 +38,13 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 			desc: gameDesc,
 			operatorIds,
 		});
-		this.socket = socket;
+		this.ws = socket;
 		Object.seal(this); //🧊
-		this.socket.send(JSON.stringify([GameEv.RESET]));
+		this.ws.send(JSON.stringify([GameEv.RESET]));
 	}
 
 	/** */
-	public socketMessageCb(ev: MessageEvent<string>): void {
+	public wsMessageCb(ev: MessageEvent<string>): void {
 		const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
 		switch (evName) {
 			case GameEv.IN_GAME: this.commitStateChange(body[0]); break;
@@ -53,7 +53,7 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 				this.deserializeResetState(body[0]);
 				// See the PlayOnline screen for the registration of
 				// listeners for the server confirmation.
-				this.socket.send(JSON.stringify([GameEv.UNPAUSE]));
+				this.ws.send(JSON.stringify([GameEv.UNPAUSE]));
 				break;
 			default: break;
 		}
@@ -66,7 +66,7 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 	 * @override
 	 */
 	public processMoveRequest(desc: StateChange.Req, socket?: any): void {
-		this.socket.send(JSON.stringify([GameEv.IN_GAME, desc]));
+		this.ws.send(JSON.stringify([GameEv.IN_GAME, desc]));
 	}
 }
 Object.freeze(OnlineGame);

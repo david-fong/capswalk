@@ -1,5 +1,5 @@
 import { Player } from "defs/TypeDefs";
-import { Group, GroupEv } from "defs/OnlineDefs";
+import { Group, GameEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
@@ -20,10 +20,10 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		avatar:   HTMLSelectElement;
 	}>;
 
-	readonly #socketMessageCb: (ev: MessageEvent<string>) => void;
-	#socketOnceGameCreateCb: ((ev: MessageEvent<string>) => void) | undefined = undefined;
-	private get socket(): WebSocket {
-		return this.top.socket!;
+	readonly #wsMessageCb: (ev: MessageEvent<string>) => void;
+	#wsOnceGameCreateCb: ((ev: MessageEvent<string>) => void) | undefined = undefined;
+	private get ws(): WebSocket {
+		return this.top.webSocket!;
 	}
 
 	/** @override */
@@ -31,7 +31,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		this.baseElem.classList.add(style["this"]);
 		this._createInputs();
 		// @ts-expect-error : RO=
-		this.#socketMessageCb = (ev: MessageEvent<string>) => {
+		this.#wsMessageCb = (ev: MessageEvent<string>) => {
 			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
 			switch (evName) {
 				case Group.UserInfoChange.EVENT_NAME: this._onUserInfoChange(body[0]); break;
@@ -106,7 +106,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 			teamId: parseInt(this.in.teamId.value),
 			avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
 		};
-		this.socket.send(JSON.stringify([Group.UserInfoChange.EVENT_NAME, data]));
+		this.ws.send(JSON.stringify([Group.UserInfoChange.EVENT_NAME, data]));
 	};
 
 	/** @override */
@@ -121,17 +121,17 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 			this.teamsElem.textContent = "";
 			this._submitInputs();
 
-			this.socket.addEventListener("message", this.#socketMessageCb);
+			this.ws.addEventListener("message", this.#wsMessageCb);
 		}
 		// Listen for when the server sends the game constructor arguments:
-		this.#socketOnceGameCreateCb = (ev: MessageEvent<string>) => {
+		this.#wsOnceGameCreateCb = (ev: MessageEvent<string>) => {
 			const [evName, gameCtorArgs, myPlayerIds] = JSON.parse(ev.data) as [string, Game.CtorArgs, number[]];
-			if (evName === GroupEv.CREATE_GAME) {
+			if (evName === GameEv.CREATE_GAME) {
 				this.requestGoToScreen(BaseScreen.Id.PLAY_ONLINE, [gameCtorArgs, myPlayerIds]); //🚀
 			}
 		};
-		this.socket.addEventListener("message",
-			this.#socketOnceGameCreateCb,
+		this.ws.addEventListener("message",
+			this.#wsOnceGameCreateCb,
 			{ once: true },
 		);
 	}
@@ -153,9 +153,9 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		// Make sure we stop listening for the game to start
 		// in case it hasn't started yet:
 		if (navDir === BaseScreen.NavDir.BACKWARD) {
-			this.socket.removeEventListener("message", this.#socketMessageCb);
-			this.socket.removeEventListener("message", this.#socketOnceGameCreateCb!);
-			this.#socketOnceGameCreateCb = undefined;
+			this.ws.removeEventListener("message", this.#wsMessageCb);
+			this.ws.removeEventListener("message", this.#wsOnceGameCreateCb!);
+			this.#wsOnceGameCreateCb = undefined;
 		}
 		return true;
 	}

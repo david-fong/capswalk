@@ -20,14 +20,12 @@ const _socketIds = new WeakMap<NodeWebSocket, string>();
 /** */
 export abstract class Group { }
 export namespace Group {
-
 	/** */
 	export namespace UserInfoChange {
 		export const EVENT_NAME = "group/user-info-change";
 		export type Req = Player.UserInfo;
 		export type Res = Record<string, Player.UserInfo | undefined>;
 	}
-
 	export type Name = string;
 	export namespace Name {
 		export const REGEXP = /(?:[a-zA-Z0-9:-]+)/;
@@ -38,27 +36,21 @@ export namespace Group {
 		export const REGEXP = /(?:[a-zA-Z0-9:-]*)/;
 		export const MaxLength = 30;
 	}
-
 	export const GameServerReconnectionAttempts = 2;
 	export const DEFAULT_TTL = 20; // seconds
+}
+Object.freeze(Group);
+Object.freeze(Group.prototype);
 
+
+/** */
+export namespace JoinerEv {
 	/** */
 	export namespace Exist {
-		export const EVENT_NAME = "joiner/group-exist";
+		export const NAME = "joiner/group-exist";
 
-		/** */
-		export namespace Create {
-			export interface Req {
-				readonly groupName: Name,
-				readonly passphrase: Passphrase,
-			}
-			export const enum Res {
-				OKAY = "okay",
-				NOPE = "nope",
-			};
-		}
 		/** Downstream only. */
-		export type NotifyStatus = Create.Res | {
+		export type NotifyStatus = {
 			[groupName : string]: Status;
 		};
 		export const enum Status {
@@ -67,28 +59,33 @@ export namespace Group {
 			DELETE   = "delete",
 		};
 	}
-
+	/** */
+	export namespace Create {
+		export const NAME = "joiner/group-create";
+		export interface Req {
+			readonly groupName: Group.Name,
+			readonly passphrase: Group.Passphrase,
+		}
+		export type Res = boolean;
+	}
 	/** */
 	export namespace TryJoin {
-		export const EVENT_NAME = "joiner/group-try-join";
+		export const NAME = "joiner/group-try-join";
 		export interface Req {
 			readonly groupName: Group.Name;
 			readonly passphrase: Group.Passphrase;
 			readonly userInfo: Player.UserInfo;
 		}
+		export type Res = boolean;
 	}
 }
-Object.freeze(Group);
-Object.freeze(Group.prototype);
 
-
-/** */
-export const enum GroupEv {
-	CREATE_GAME = "group/create-game",
-}
 
 /** */
 export const enum GameEv {
+	/** A broadcast originating from the group host. */
+	CREATE_GAME = "group/create-game",
+
 	/**
 	 * Upon constructing a _new_ game, the server waits for all clients
 	 * to send this event to indicate that they have finished building

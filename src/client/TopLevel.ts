@@ -32,10 +32,10 @@ export class TopLevel {
 	//public readonly sfx: SoundEffects;
 
 	#socket: WebSocket | undefined;
-	public get socket(): WebSocket | undefined { return this.#socket; }
-	public setSocket(newSocket: WebSocket | undefined): void {
-		if (this.socket !== undefined) {
-			this.socket.close();
+	public get webSocket(): WebSocket | undefined { return this.#socket; }
+	public setWebSocket(newSocket: WebSocket | undefined): void {
+		if (this.webSocket !== undefined) {
+			this.webSocket.close();
 		}
 		this.#socket = newSocket;
 	}

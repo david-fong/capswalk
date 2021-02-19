@@ -1,7 +1,7 @@
 import type * as WebSocket from "ws";
 
 import { JsUtils } from "defs/JsUtils";
-import { SOCKET_ID, GameEv, GroupEv } from "defs/OnlineDefs";
+import { SOCKET_ID, GameEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
 import type { StateChange } from "game/StateChange";
@@ -42,7 +42,7 @@ function gameOnSocketMessage<S extends Coord.System>(this: ServerGame<S>, ev: We
 export class ServerGame<S extends Coord.System = Coord.System> extends GameManager<S> {
 
 	readonly #deleteExternalRefs: () => void;
-	readonly #socketMessageCb: (ev: WebSocket.MessageEvent) => void;
+	readonly #wsMessageCb: (ev: WebSocket.MessageEvent) => void;
 
 	public readonly sockets: Set<WebSocket>;
 	protected readonly groupHostSocket: WebSocket;
@@ -77,16 +77,16 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		this.#deleteExternalRefs = args.deleteExternalRefs
 		JsUtils.instNoEnum (this as ServerGame<S>, "operators");
 		JsUtils.propNoWrite(this as ServerGame<S>, "groupHostSocket", "sockets");
-		this.#socketMessageCb = gameOnSocketMessage.bind(this as ServerGame<any>);
+		this.#wsMessageCb = gameOnSocketMessage.bind(this as ServerGame<any>);
 		Object.seal(this); //🧊
 
 		this.sockets.forEach((s) => {
-			s.addEventListener("message", this.#socketMessageCb);
+			s.addEventListener("message", this.#wsMessageCb);
 			s.addEventListener("close", () => {
 				if (this.sockets.size === 1) {
 					this._terminate();
 				}
-			})
+			}, { once: true })
 		});
 		this._greetGameSockets(args.gameDesc);
 	}
@@ -99,32 +99,36 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			(gameDesc.players).filter((player) => player.familyId === "HUMAN") as Player._CtorArgs["HUMAN"][]
 		);
 		// Pass on Game constructor arguments to each client:
-		Promise.all(Array.from(this.sockets, (socket) =>
+		Promise.all(Array.from(this.sockets, (s) =>
 			new Promise<void>((resolve) => {
-				socket.once(GameEv.RESET, () => {
-					resolve();
-				});
+				s.addEventListener("message", (ev) => {
+					if (JSON.parse(ev.data)[0] === GameEv.RESET) {
+						resolve();
+					}
+				}, { once: true });
 			})
 		)).then(() =>
 			this.reset() //👂 "reset time!"
 		);
-		this.sockets.forEach((socket) => {
+		this.sockets.forEach((s) => {
 			const operatorIds = Object.freeze(humans
-				.filter((desc) => desc.socket === socket)
+				.filter((desc) => desc.socket === s)
 				.map((desc) => desc.playerId));
-			const data = JSON.stringify([GroupEv.CREATE_GAME, gameDesc, operatorIds]);
-			socket.send(data); //📢 "get ready for reset"
+			const data = JSON.stringify([GameEv.CREATE_GAME, gameDesc, operatorIds]);
+			s.send(data); //📢 "get ready for reset"
 		});
 	}
 
 	/** @override */
 	public async reset(): Promise<Game.ResetSer> {
 		// Be ready for clients to indicate readiness to unpause.
-		Promise.all(Array.from(this.sockets, (socket) =>
+		Promise.all(Array.from(this.sockets, (s) =>
 			new Promise<void>((resolve) => {
-				socket.once(GameEv.UNPAUSE, () => { // <- clients send this upon receiving resetSer
-					resolve();
-				});
+				s.addEventListener("message", (ev) => {
+					if (JSON.parse(ev.data)[0] === GameEv.UNPAUSE) { // <- clients send this upon receiving resetSer
+						resolve();
+					}
+				}, { once: true });
 			})
 		)).then(() => {
 			this.statusBecomePlaying(); //👂 "play time!"
@@ -182,7 +186,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 
 	protected _terminate(): void {
 		this.sockets.forEach((s) => {
-			s.removeEventListener("message", this.#socketMessageCb);
+			s.removeEventListener("message", this.#wsMessageCb);
 		});
 		this.#deleteExternalRefs();
 	}

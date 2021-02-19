@@ -1,6 +1,6 @@
 import type * as WebSocket from "ws";
 import { JsUtils } from "defs/JsUtils";
-import { SOCKET_ID, GroupEv } from "defs/OnlineDefs";
+import { SOCKET_ID, JoinerEv, GameEv } from "defs/OnlineDefs";
 
 import type { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
@@ -31,8 +31,8 @@ export class Group extends _Group {
 
 	readonly #initialTtlTimeout: NodeJS.Timeout;
 	readonly #deleteExternalRefs: () => void;
-	readonly #socketMessageCb: (ev: WebSocket.MessageEvent) => void;
-	readonly #socketCloseCb: (ev: WebSocket.CloseEvent) => void;
+	readonly #wsMessageCb: (ev: WebSocket.MessageEvent) => void;
+	readonly #wsCloseCb: (ev: WebSocket.CloseEvent) => void;
 
 	/** */
 	public constructor(args: Readonly<{
@@ -54,15 +54,15 @@ export class Group extends _Group {
 			}
 		}, (Group.DEFAULT_TTL * 1000)).unref();
 
-		this.#socketMessageCb = (ev: WebSocket.MessageEvent): void => {
+		this.#wsMessageCb = (ev: WebSocket.MessageEvent): void => {
 			const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
 			switch (evName) {
-				case Group.UserInfoChange.EVENT_NAME: this._socketOnUserInfoChange(ev.target, args[0]); break;
-				case GroupEv.CREATE_GAME: if (ev.target === this.groupHostSocket) this._socketOnHostCreateGame(args[0]); break;
+				case Group.UserInfoChange.EVENT_NAME: this._wsOnUserInfoChange(ev.target, args[0]); break;
+				case GameEv.CREATE_GAME: if (ev.target === this.groupHostSocket) this._wsOnHostCreateGame(args[0]); break;
 				default: break;
 			}
 		};
-		this.#socketCloseCb = (ev: WebSocket.CloseEvent): void => {
+		this.#wsCloseCb = (ev: WebSocket.CloseEvent): void => {
 			if (ev.target === this.groupHostSocket) {
 				// If the host disconnects, end the session.
 				// TODO.impl this seems like a bad decision. What about just broadcasting
@@ -84,22 +84,22 @@ export class Group extends _Group {
 	}
 
 	/** Let someone into this group */
-	public admitSocket(socket: WebSocket, userInfo: Player.UserInfo): void {
-		console.info(`socket connect (group):  ${SOCKET_ID(socket)}`);
+	public admitSocket(ws: WebSocket, userInfo: Player.UserInfo): void {
+		console.info(`socket connect (group):  ${SOCKET_ID(ws)}`);
 		if (this.#currentGame) {
 			// TODO.design is there a good reason to do the below?
 			// Prevent new players from joining while the group is playing
 			// a game:
-			socket.close();
+			ws.close();
 		}
-		this.userInfo.set(socket, userInfo);
+		this.userInfo.set(ws, userInfo);
 		{
 			type Res = _Group.UserInfoChange.Res;
 			const EVENT_NAME = Group.UserInfoChange.EVENT_NAME;
 			{
 				// Notify all other clients in this group of the new player:
 				// NOTE: broadcast modifier not used since socket is not yet in this.sockets.
-				const data = JSON.stringify([EVENT_NAME, <Res>{[SOCKET_ID(socket)]: userInfo}]);
+				const data = JSON.stringify([EVENT_NAME, <Res>{[SOCKET_ID(ws)]: userInfo}]);
 				this.sockets.forEach((s) => s.send(data));
 			}
 			// Notify the new player of all other players:
@@ -107,7 +107,7 @@ export class Group extends _Group {
 			this.sockets.forEach((s) => {
 				res[SOCKET_ID(s)] = this.userInfo.get(s)!;
 			});
-			socket.send(JSON.stringify([EVENT_NAME, res]));
+			ws.send(JSON.stringify([EVENT_NAME, res]));
 		}
 
 		/** The first socket becomes the session host. */
@@ -115,18 +115,18 @@ export class Group extends _Group {
 			clearTimeout(this.#initialTtlTimeout);
 			// @ts-expect-error : RO=
 			this.#initialTtlTimeout = undefined!;
-			this.groupHostSocket = socket;
-			this.wssBroadcast(Group.Exist.EVENT_NAME, {
-				[this.name]: Group.Exist.Status.IN_LOBBY,
+			this.groupHostSocket = ws;
+			this.wssBroadcast(JoinerEv.Exist.NAME, {
+				[this.name]: JoinerEv.Exist.Status.IN_LOBBY,
 			});
 		}
-		socket.addEventListener("close", this.#socketCloseCb);
-		socket.addEventListener("message", this.#socketMessageCb);
-		this.sockets.add(socket);
+		ws.addEventListener("close", this.#wsCloseCb);
+		ws.addEventListener("message", this.#wsMessageCb);
+		this.sockets.add(ws);
 	}
 
 	/** */
-	private _socketOnUserInfoChange(socket: WebSocket, req: _Group.UserInfoChange.Req): void {
+	private _wsOnUserInfoChange(ws: WebSocket, req: _Group.UserInfoChange.Req): void {
 		if (typeof req.username !== "string"
 		 || typeof req.teamId   !== "number"
 		 || typeof req.avatar   !== "string") {
@@ -135,15 +135,15 @@ export class Group extends _Group {
 			+ `, teamId: \`${req.teamId}\`, avatar: \`${req.avatar}\`.`);
 			return;
 		}
-		this.userInfo.set(socket, req);
+		this.userInfo.set(ws, req);
 		const data = JSON.stringify([Group.UserInfoChange.EVENT_NAME, <_Group.UserInfoChange.Res>{
-			[SOCKET_ID(socket)]: req,
+			[SOCKET_ID(ws)]: req,
 		}]);
 		this.sockets.forEach((s) => s.send(data));
 	}
 
 	/** */
-	private _socketOnHostCreateGame<S extends Coord.System>(
+	private _wsOnHostCreateGame<S extends Coord.System>(
 		ctorArgs: Game.CtorArgs.UnFin<S>
 	): void {
 		const failureReasons = this._createGameInstance(ctorArgs);
@@ -152,8 +152,8 @@ export class Group extends _Group {
 			console.info(failureReasons);
 		} else {
 			// Broadcast to the joiner namespace of this group's change in state:
-			this.wssBroadcast(Group.Exist.EVENT_NAME, {
-				[this.name]: Group.Exist.Status.IN_GAME,
+			this.wssBroadcast(JoinerEv.Exist.NAME, {
+				[this.name]: JoinerEv.Exist.Status.IN_GAME,
 			});
 			console.info(`group ${this.name} new game`);
 		}
@@ -182,10 +182,10 @@ export class Group extends _Group {
 		// @ts-expect-error : RO=
 		ctorArgs.players = [
 			...ctorArgs.players,
-			...Array.from(this.sockets, (socket) => {
-				const userInfo = this.userInfo.get(socket)!;
+			...Array.from(this.sockets, (ws) => {
+				const userInfo = this.userInfo.get(ws)!;
 				return Object.freeze(<Player._CtorArgs["HUMAN"]>{
-					socket:   socket,
+					socket:   ws,
 					familyId: "HUMAN",
 					username: userInfo.username,
 					teamId:   userInfo.teamId,
@@ -211,9 +211,9 @@ export class Group extends _Group {
 	 * - Deletes the only external reference so this can be garbage collected.
 	 */
 	protected terminate(): void {
-		for (const socket of this.sockets) {
-			socket.removeEventListener("close", this.#socketCloseCb);
-			socket.removeEventListener("message", this.#socketMessageCb);
+		for (const ws of this.sockets) {
+			ws.removeEventListener("close", this.#wsCloseCb);
+			ws.removeEventListener("message", this.#wsMessageCb);
 		}
 		if (this.#currentGame !== undefined) {
 			// TODO.design need to terminate game?
@@ -221,24 +221,14 @@ export class Group extends _Group {
 		}
 		this.#deleteExternalRefs();
 
-		this.wssBroadcast(Group.Exist.EVENT_NAME, {
-			[this.name]: Group.Exist.Status.DELETE,
+		this.wssBroadcast(JoinerEv.Exist.NAME, {
+			[this.name]: JoinerEv.Exist.Status.DELETE,
 		});
 		console.info(`terminated group: \`${this.name}\``);
 	}
 }
 export namespace Group {
-	export declare namespace Exist {
-		export namespace Create {
-			export type Req = _Group.Exist.Create.Req;
-			export type Res = _Group.Exist.Create.Res;
-		}
-		export type NotifyStatus = _Group.Exist.NotifyStatus;
-	}
-	export namespace TryJoin {
-		export type Req = _Group.TryJoin.Req;
-	}
-	export function isCreateRequestValid(desc: Exist.Create.Req): boolean {
+	export function isCreateRequestValid(desc: JoinerEv.Create.Req): boolean {
 		return (desc.groupName !== undefined)
 		&& desc.groupName.length <= Group.Name.MaxLength
 		&& Group.Name.REGEXP.test(desc.groupName)
@@ -246,6 +236,6 @@ export namespace Group {
 		&& Group.Passphrase.REGEXP.test(desc.passphrase);
 	}
 }
-JsUtils.protoNoEnum(Group, "_socketOnUserInfoChange", "_socketOnHostCreateGame");
+JsUtils.protoNoEnum(Group, "_wsOnUserInfoChange", "_wsOnHostCreateGame");
 Object.freeze(Group);
 Object.freeze(Group.prototype);

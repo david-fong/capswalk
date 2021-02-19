@@ -18,9 +18,9 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 	/** @override */
 	protected readonly wantsAutoPlayPause = false;
 
-	readonly #socketMessageCb: (ev: MessageEvent<string>) => void;
-	private get socket(): WebSocket {
-		return this.top.socket!;
+	readonly #wsMessageCb: (ev: MessageEvent<string>) => void;
+	private get ws(): WebSocket {
+		return this.top.webSocket!;
 	}
 
 	/** @override */
@@ -30,7 +30,7 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 		this.nav.prev.innerHTML = "Return To&nbsp;Lobby";
 
 		// @ts-expect-error : RO=
-		this.#socketMessageCb = (ev: MessageEvent<string>) => {
+		this.#wsMessageCb = (ev: MessageEvent<string>) => {
 			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
 			switch (evName) {
 				case GameEv.UNPAUSE: this._statusBecomePlaying(); break;
@@ -44,7 +44,7 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 						// Handle a player leaving:
 					}
 					break;
-				default: this.currentGame.socketMessageCb(ev);
+				default: this.currentGame.wsMessageCb(ev);
 			}
 		};
 		Object.seal(this); //🧊
@@ -54,10 +54,10 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 	protected _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
 		const leaveConfirmed = super._abstractOnBeforeLeave(navDir);
 		if (leaveConfirmed) {
-			if (this.socket !== undefined) {
+			if (this.ws !== undefined) {
 				// This may not be entered if the server went down unexpectedly.
-				this.socket.send(JSON.stringify([GameEv.RETURN_TO_LOBBY]));
-				this.socket.removeEventListener("message", this.#socketMessageCb);
+				this.ws.send(JSON.stringify([GameEv.RETURN_TO_LOBBY]));
+				this.ws.removeEventListener("message", this.#wsMessageCb);
 			}
 		}
 		return leaveConfirmed;
@@ -65,12 +65,12 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 
 	/** @override */
 	protected _reqStatusPlaying(): void {
-		this.socket.send(JSON.stringify([GameEv.UNPAUSE]));
+		this.ws.send(JSON.stringify([GameEv.UNPAUSE]));
 	}
 
 	/** @override */
 	protected _reqStatusPaused(): void {
-		this.socket.send(JSON.stringify([GameEv.PAUSE]));
+		this.ws.send(JSON.stringify([GameEv.PAUSE]));
 	}
 
 	/** @override */
@@ -83,12 +83,12 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 			/* webpackChunkName: "game/online" */
 			"../../../game/OnlineGame"
 		)).OnlineGame(
-			this.top.socket!,
+			this.top.webSocket!,
 			this._onGameBecomeOver.bind(this),
 			ctorArgs,
 			operatorIds,
 		);
-		this.socket.addEventListener("message", this.#socketMessageCb);
+		this.ws.addEventListener("message", this.#wsMessageCb);
 		return Promise.resolve(game);
 	}
 }

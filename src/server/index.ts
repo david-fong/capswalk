@@ -6,7 +6,7 @@ import * as expressStaticGzip from "express-static-gzip";
 import * as WebSocket from "ws";
 import type * as net from "net";
 import { Group } from "./Group";
-import { SET_SOCKET_ID } from "defs/OnlineDefs";
+import { SET_SOCKET_ID, SOCKET_ID, JoinerEv } from "defs/OnlineDefs";
 
 const app = express();
 const server = http.createServer({}, app);
@@ -39,30 +39,30 @@ app
 }));
 
 /** WSS ON_CONNECTION */
-wss.on("connection", function onWsConnect(socket): void {
-	console.info(`socket connect (server): ${socket}`);
+wss.on("connection", function onWsConnect(ws): void {
 	// Upon connection, immediately send a list of existing groups:
 	const data = JSON.stringify([
-		Group.Exist.EVENT_NAME,
+		JoinerEv.Exist.NAME,
 		(() => {
 			// TODO.design current implementation may suffer when there are many many groups.
-			const build: Group.Exist.NotifyStatus = {};
+			const build: JoinerEv.Exist.NotifyStatus = {};
 			for (const [groupName, group] of groups) {
 				build[groupName] = (group.isCurrentlyPlayingAGame)
-				? Group.Exist.Status.IN_GAME
-				: Group.Exist.Status.IN_LOBBY;
+				? JoinerEv.Exist.Status.IN_GAME
+				: JoinerEv.Exist.Status.IN_LOBBY;
 			}
 			return build;
 		})(),
 	]);
-	SET_SOCKET_ID(socket, `${Date.now().toString()}_${(Math.random() * 100) % 100}`);
-	socket.send(data);
-	socket.addEventListener("message", socketMessageCb);
+	SET_SOCKET_ID(ws, `${Date.now().toString()}_${(Math.random() * 100) % 100}`);
+	console.info(`socket connect (server): ${SOCKET_ID(ws)}`);
+	ws.send(data);
+	ws.addEventListener("message", wsMessageCb);
 });
 
 /** HTTP LISTEN */
 server.listen(<net.ListenOptions>{
-	port: DEF.PRODUCTION ? 443 : 8080, // TODO.impl there must be a smarter way to do this.
+	port: DEF.PRODUCTION ? 443 : 80, // TODO.impl there must be a smarter way to do this.
 	host: "0.0.0.0",
 }, function onServerListening(): void {
 	const info = <net.AddressInfo>server.address();
@@ -82,13 +82,13 @@ function wssBroadcast(evName: string, _data: any): void {
 	const data = JSON.stringify([evName, _data]);
 	wss.clients.forEach((s) => s.send(data));
 }
-function socketMessageCb(ev: WebSocket.MessageEvent): void {
+function wsMessageCb(ev: WebSocket.MessageEvent): void {
 	const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
 	switch (evName) {
-	case Group.Exist.EVENT_NAME: {
-		const desc = args[0] as Group.Exist.Create.Req;
+	case JoinerEv.Create.NAME: {
+		const desc = args[0] as JoinerEv.Create.Req;
 		if (Group.isCreateRequestValid(desc) && !groups.has(desc.groupName)) {
-			const data = JSON.stringify([Group.Exist.EVENT_NAME, Group.Exist.Create.Res.NOPE]);
+			const data = JSON.stringify([JoinerEv.Create.NAME, JoinerEv.Create.Res.NOPE]);
 			ev.target.send(data);
 			return; //⚡ joined group
 		}
@@ -101,12 +101,12 @@ function socketMessageCb(ev: WebSocket.MessageEvent): void {
 				deleteExternalRefs: () => groups.delete(desc.groupName),
 			})),
 		);
-		const data = JSON.stringify([Group.Exist.EVENT_NAME, Group.Exist.Create.Res.OKAY]);
+		const data = JSON.stringify([JoinerEv.Create.NAME, JoinerEv.Create.Res.OKAY]);
 		ev.target.send(data);
 		break;
 	}
-	case Group.TryJoin.EVENT_NAME: {
-		const req = args[0] as Group.TryJoin.Req;
+	case JoinerEv.TryJoin.NAME: {
+		const req = args[0] as JoinerEv.TryJoin.Req;
 		const group = groups.get(req.groupName);
 		if (
 			group === undefined
