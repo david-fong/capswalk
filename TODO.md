@@ -15,6 +15,7 @@
 ### Things I feel like doing
 
 1. Switch from socket.io to ws. I want to manage my own pubsub.
+    - Clean up the old complicated comms now that there is only one client socket.
 1. Rename `getDestsFromSourcesTo` to `getAllAltDestsThan`.
 1. Change Lang ClassIf getters to be properties where possible.
 1. Change BgMusic to an async function.
@@ -28,13 +29,8 @@
 1. Implement Grid management of player-rendering.
 1. Implement, use, and test array extensions freeze and seal.
 1. Move `Player.RequestBuffer` to dedicated file and make an extension for `OperatorPlayer`s that actually does stuff. The base version will pretty much do nothing.
-1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.
     - See how this affects performance.
-1. Mashup some CSS resets and normalizers for this repo? Or maybe we don't need any.
 1. Display the operator's current sequence buffer.
-
-1. Bring in some react for the screen implementations.
-    - Change the next/prev buttons interface slightly: The buttons are not exposed; instead, methods called `screenNavNext` and `screenNavPrev` can be overridden.
 
 ### Things that I feel less like doing
 
@@ -64,6 +60,8 @@
 1. Add git lfs support to heroku.
 1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
 1. Extract hot, anonymous sorting functions to non-exported globals so the runtime engine can cache parameter shapes.
+1. Mashup some CSS resets and normalizers for this repo? Or maybe we don't need any.
+1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.
 
 ### Routine Checkups
 

@@ -42,9 +42,10 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 
 		// @ts-expect-error : RO=
 		this.#wsMessageCb = (ev: MessageEvent<string>) => {
-			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
+			const [evName, ...args] = JSON.parse(ev.data) as [string, ...any[]];
 			switch (evName) {
-				case   JoinerEv.Exist.NAME: this._onNotifyGroupExist(body[0]); break;
+				case  JoinerEv.Create.NAME: this._onCreateResponse(args[0]); break;
+				case   JoinerEv.Exist.NAME: this._onNotifyGroupExist(args[0]); break;
 				case JoinerEv.TryJoin.NAME: this._setFormState(State.IN_GROUP); break;
 				default: break;
 			}
@@ -158,18 +159,20 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		return submitInput;
 	}
 	/** */
-	private _onNotifyGroupExist(res: JoinerEv.Exist.NotifyStatus): void {
-		if (res === false) {
-			this.top.toast(`The server rejected your request to`
-			+ ` create a new group \"${this.in.groupName.value}\".`);
-			return;
-		}
-		if (res === true) {
+	private _onCreateResponse(accepted: JoinerEv.Create.Res): void {
+		if (accepted) {
 			this.top.toast(`server accepted request to create new group \"${this.in.groupName.value}\".`);
 			this.top.toast("connecting to new group...");
 			this._attemptToJoinExistingGroup();
 			return;
+		} else {
+			this.top.toast(`The server rejected your request to`
+			+ ` create a new group \"${this.in.groupName.value}\".`);
+			return;
 		}
+	}
+	/** */
+	private _onNotifyGroupExist(res: JoinerEv.Exist.Sse): void {
 		type OptEl = HTMLOptionElement;
 		const mkOpt = (groupName: Group.Name): OptEl => {
 			// If we didn't know about this group yet, create a new
@@ -242,7 +245,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			} else {
 				this.#isHost = true;
 				this.ws.send(JSON.stringify([
-					JoinerEv.Exist.NAME,
+					JoinerEv.Create.NAME,
 					<JoinerEv.Create.Req>{
 						groupName: this.in.groupName.value,
 						passphrase: this.in.passphrase.value,
@@ -255,9 +258,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		}};
 	}
 
-	/**
-	 * Automatically disconnects from the current group (if it exists).
-	 */
+	/** */
 	private _attemptToJoinExistingGroup(): void {
 		const userInfo = StorageHooks.getLastUserInfo();
 		this.ws.send(JSON.stringify([JoinerEv.TryJoin.NAME, {

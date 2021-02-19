@@ -5,16 +5,14 @@ import * as express from "express";
 import * as expressStaticGzip from "express-static-gzip";
 import * as WebSocket from "ws";
 import type * as net from "net";
-import { Group } from "./Group";
 import { SET_SOCKET_ID, SOCKET_ID, JoinerEv } from "defs/OnlineDefs";
 
 const app = express();
 const server = http.createServer({}, app);
-const wss = new WebSocket.Server({
+export const wss = new WebSocket.Server({
 	server: server,
 });
-
-const groups = new Map<string, Group>();
+import { groups, wsMessageCb } from "./joinerCb";
 
 
 /** EXPRESS ROOT */
@@ -45,7 +43,7 @@ wss.on("connection", function onWsConnect(ws): void {
 		JoinerEv.Exist.NAME,
 		(() => {
 			// TODO.design current implementation may suffer when there are many many groups.
-			const build: JoinerEv.Exist.NotifyStatus = {};
+			const build: TU.NoRo<JoinerEv.Exist.Sse> = {};
 			for (const [groupName, group] of groups) {
 				build[groupName] = (group.isCurrentlyPlayingAGame)
 				? JoinerEv.Exist.Status.IN_GAME
@@ -78,53 +76,6 @@ server.listen(<net.ListenOptions>{
 });
 
 
-function wssBroadcast(evName: string, _data: any): void {
-	const data = JSON.stringify([evName, _data]);
-	wss.clients.forEach((s) => s.send(data));
-}
-function wsMessageCb(ev: WebSocket.MessageEvent): void {
-	const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
-	switch (evName) {
-	case JoinerEv.Create.NAME: {
-		const desc = args[0] as JoinerEv.Create.Req;
-		if (Group.isCreateRequestValid(desc) && !groups.has(desc.groupName)) {
-			const data = JSON.stringify([JoinerEv.Create.NAME, JoinerEv.Create.Res.NOPE]);
-			ev.target.send(data);
-			return; //⚡ joined group
-		}
-		groups.set(
-			desc.groupName,
-			new Group(Object.freeze({
-				wssBroadcast: wssBroadcast,
-				name: desc.groupName,
-				passphrase: desc.passphrase,
-				deleteExternalRefs: () => groups.delete(desc.groupName),
-			})),
-		);
-		const data = JSON.stringify([JoinerEv.Create.NAME, JoinerEv.Create.Res.OKAY]);
-		ev.target.send(data);
-		break;
-	}
-	case JoinerEv.TryJoin.NAME: {
-		const req = args[0] as JoinerEv.TryJoin.Req;
-		const group = groups.get(req.groupName);
-		if (
-			group === undefined
-			|| req.passphrase !== group.passphrase
-		) {
-			return //⚡
-		}
-		const userInfo = req.userInfo;
-		if (userInfo === undefined || userInfo.teamId !== 0) {
-			throw new Error(`a socket attempted to connect to group`
-			+` \`${group.name}\` without providing userInfo.`);
-		}
-		group.admitSocket(ev.target, userInfo);
-		break;
-	}
-	default: break;
-	}
-}
 
 /**
  * @returns An array of non-internal IP addresses from any of the

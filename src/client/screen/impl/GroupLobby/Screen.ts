@@ -1,5 +1,5 @@
 import { Player } from "defs/TypeDefs";
-import { Group, GameEv } from "defs/OnlineDefs";
+import { Group, LobbyEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
@@ -34,7 +34,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		this.#wsMessageCb = (ev: MessageEvent<string>) => {
 			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
 			switch (evName) {
-				case Group.UserInfoChange.EVENT_NAME: this._onUserInfoChange(body[0]); break;
+				case LobbyEv.UserInfo.NAME: this._onUserInfoChange(body[0]); break;
 				default: break;
 			}
 		};
@@ -101,12 +101,12 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		storage.username = this.in.username.value;
 		storage.avatar   = this.in.avatar.value;
 
-		const data: Group.UserInfoChange.Req = {
+		const data: LobbyEv.UserInfo.Req = {
 			username: this.in.username.value,
 			teamId: parseInt(this.in.teamId.value),
 			avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
 		};
-		this.ws.send(JSON.stringify([Group.UserInfoChange.EVENT_NAME, data]));
+		this.ws.send(JSON.stringify([LobbyEv.UserInfo.NAME, data]));
 	};
 
 	/** @override */
@@ -126,7 +126,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		// Listen for when the server sends the game constructor arguments:
 		this.#wsOnceGameCreateCb = (ev: MessageEvent<string>) => {
 			const [evName, gameCtorArgs, myPlayerIds] = JSON.parse(ev.data) as [string, Game.CtorArgs, number[]];
-			if (evName === GameEv.CREATE_GAME) {
+			if (evName === LobbyEv.CREATE_GAME) {
 				this.requestGoToScreen(BaseScreen.Id.PLAY_ONLINE, [gameCtorArgs, myPlayerIds]); //🚀
 			}
 		};
@@ -161,14 +161,14 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	}
 
 	/** */
-	private _onUserInfoChange(res: Group.UserInfoChange.Res): void {
+	private _onUserInfoChange(res: LobbyEv.UserInfo.Res): void {
 		Object.freeze(Object.entries(res)).forEach(([uid, desc]) => {
 			const userInfo = this.players.get(uid);
 
 			// If player is in a team on their own and they are leaving it:
 			if (userInfo
 				&& this.teamElems.get(userInfo.teamId)!.childElementCount === 1
-				&& (desc === undefined || desc.teamId !== userInfo.teamId)) {
+				&& (desc === null || desc.teamId !== userInfo.teamId)) {
 				this.teamElems.get(userInfo.teamId)!.remove();
 				this.teamElems.delete(userInfo.teamId);
 			}
@@ -183,7 +183,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 				this.teamsElem.appendChild(teamElem);
 			}
 
-			if (desc === undefined) {
+			if (desc === null) {
 				// Player has left the group:
 				userInfo!.base.remove();
 				this.players.delete(uid);

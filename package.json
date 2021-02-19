@@ -13,7 +13,7 @@
   "type": "commonjs",
   "files": [],
   "sideEffects": [
-    "*.css"
+    "*.css", "index.ts"
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",

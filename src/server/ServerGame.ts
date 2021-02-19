@@ -1,7 +1,7 @@
 import type * as WebSocket from "ws";
 
 import { JsUtils } from "defs/JsUtils";
-import { SOCKET_ID, GameEv } from "defs/OnlineDefs";
+import { SOCKET_ID, LobbyEv, GameEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
 import type { StateChange } from "game/StateChange";
@@ -114,7 +114,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			const operatorIds = Object.freeze(humans
 				.filter((desc) => desc.socket === s)
 				.map((desc) => desc.playerId));
-			const data = JSON.stringify([GameEv.CREATE_GAME, gameDesc, operatorIds]);
+			const data = JSON.stringify([LobbyEv.CREATE_GAME, gameDesc, operatorIds]);
 			s.send(data); //📢 "get ready for reset"
 		});
 	}
