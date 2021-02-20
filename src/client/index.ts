@@ -50,7 +50,7 @@ console.info("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
  * https://developers.google.com/web/fundamentals/primers/service-workers
  */
 ((): void => {
-if (_top.webpageHostType === TopLevel.WebpageHostType.GITHUB && "serviceWorker" in navigator) {
+if (_top.siteServerType === TopLevel.SiteServerType.GITHUB && "serviceWorker" in navigator) {
 	window.addEventListener('load', function() {
 		// https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
 		navigator.serviceWorker.register("/ServiceWorker.js").then(

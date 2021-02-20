@@ -17,7 +17,7 @@ export class TopLevel {
 
 	public readonly defaultDocTitle: string;
 
-	public readonly webpageHostType: TopLevel.WebpageHostType;
+	public readonly siteServerType: TopLevel.SiteServerType;
 
 	public readonly storage: typeof StorageHooks;
 
@@ -51,16 +51,16 @@ export class TopLevel {
 
 	public constructor() {
 		this.defaultDocTitle = document.title;
-		this.webpageHostType = (() => {
+		this.siteServerType = (() => {
 			if (window.location.hostname.match(/github\.io/)) {
-				return TopLevel.WebpageHostType.GITHUB;
+				return TopLevel.SiteServerType.GITHUB;
 			} else if (window.location.protocol.startsWith("file")) {
-				return TopLevel.WebpageHostType.FILESYSTEM;
+				return TopLevel.SiteServerType.FILESYSTEM;
 			} else {
-				return TopLevel.WebpageHostType.GAME_SERVER;
+				return TopLevel.SiteServerType.DEDICATED;
 			}
 		})();
-		JsUtils.propNoWrite(this as TopLevel, "defaultDocTitle", "webpageHostType");
+		JsUtils.propNoWrite(this as TopLevel, "defaultDocTitle", "siteServerType");
 
 		this.storage = StorageHooks;
 		this.#socket = undefined;
@@ -109,18 +109,18 @@ export class TopLevel {
 	}
 }
 export namespace TopLevel {
-	export const enum WebpageHostType {
+	export const enum SiteServerType {
 		GITHUB      = "github",
 		FILESYSTEM  = "filesystem",
-		GAME_SERVER = "game-server",
+		DEDICATED   = "dedicated",
 	}
-	export const WebpageHostTypeSuggestedHost = Object.freeze({
-		"github":  undefined,
-		"filesystem": {
-			value: "localhost",
+	export const SiteServerTypeSuggestedGameServer = JsUtils.deepFreeze({
+		[SiteServerType.GITHUB]: undefined,
+		[SiteServerType.FILESYSTEM]: {
+			value: "ws://localhost",
 			description: "dev shortcut :)",
 		},
-		"game-server": {
+		[SiteServerType.DEDICATED]: {
 			value: window.location.origin,
 			description: "this page's server",
 		},

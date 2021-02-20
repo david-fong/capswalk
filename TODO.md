@@ -15,8 +15,8 @@
 ### Things I feel like doing
 
 1. Switch from socket.io to ws. I want to manage my own pubsub.
-    - Clean up the old complicated comms now that there is only one client socket.
 1. Rename `getDestsFromSourcesTo` to `getAllAltDestsThan`.
+1. Rename `SkPickOne` to just `PickOne`.
 1. Change Lang ClassIf getters to be properties where possible.
 1. Change BgMusic to an async function.
 1. Implement lang/coordsys compatibility check that coord system guarantees that there exists a tile `T` with `numDests(T) <= N` where `N` is the number of root nodes in the language. Otherwise, the roots will never see the light of day, and spawning them will make it impossible to finish the reset.

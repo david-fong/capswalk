@@ -6,7 +6,7 @@
 1. Clone from the git repo.
 1. `pnpm install`. Make sure your shell doesn't have `NODE_ENV=production`.
 1. `pnpm run devinit`.
-1. `pnpm run build`.
+1. `pnpm build`.
     - Note that tsc may err on the first build after adding a css module class since css-modules-typescript-loader hasn't generated the .d.ts changes for the new class yet.
 1. To test off the local filesystem (no online-game capabilities), open `file://<path-to-project-root>/dist/client/index.html`.
 1. To test off a local server, do `pnpm start`.

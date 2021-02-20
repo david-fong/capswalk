@@ -1,10 +1,7 @@
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 import style from "./style.m.css";
 
-
-/**
- *
- */
+/** */
 export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 
 	/** @override */

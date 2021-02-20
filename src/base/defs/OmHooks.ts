@@ -10,9 +10,9 @@ import { JsUtils } from "defs/JsUtils";
  */
 export namespace OmHooks {
 
-export const GLOBAL_IDS = <const>{
-	PUBLIC_GAME_HOST_URLS:  "public-game-hosts-list",
-	CURRENT_HOST_GROUPS:    "current-host-groups-list",
+export const ID = <const>{
+	PUBLIC_GAME_SERVER_URLS: "public-game-hosts-list",
+	CURRENT_HOST_GROUPS: "current-host-groups-list",
 };
 
 /**
@@ -43,16 +43,16 @@ export namespace Player {
 
 export namespace Screen {
 	export const Id = <const>{
-		ALL_SCREENS:    "all-screens-container",
-		SCREEN_TINT:    "screen-tint",
+		ALL_SCREENS: "all-screens-container",
+		SCREEN_TINT: "screen-tint",
 	};
 	export const Class = <const>{
-		BASE:           "sk-screen",
-		NAV_NEXT:       "screen--next-button",
-		NAV_PREV:       "screen--prev-button",
+		BASE:        "sk-screen",
+		NAV_NEXT:    "screen--next-button",
+		NAV_PREV:    "screen--prev-button",
 	};
 	export const Dataset = <const>{
-		CURRENT:        "current",
+		CURRENT:     "current",
 	};
 	export namespace Impl {
 		export namespace Setup {

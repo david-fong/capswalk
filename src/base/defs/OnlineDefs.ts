@@ -76,17 +76,18 @@ Object.freeze(JoinerEv);
 
 
 /** */
-export namespace LobbyEv {
+export namespace GroupEv {
 	/** */
 	export namespace UserInfo {
 		export const NAME = "group/user-info-change";
 		export type Req = Player.UserInfo;
 		export type Res = Record<string, Player.UserInfo | null>;
 	}
+
 	/** A broadcast originating from the group host. */
-	export const CREATE_GAME = "lobby/create-game";
+	export const CREATE_GAME = "group/create-game";
 }
-Object.freeze(LobbyEv);
+Object.freeze(GroupEv);
 
 
 /** */

@@ -1,4 +1,4 @@
-import { LobbyEv } from "defs/OnlineDefs";
+import { GroupEv } from "defs/OnlineDefs";
 
 import type { BaseScreen } from "../../BaseScreen";
 import { _SetupScreen } from "./_Screen";
@@ -17,7 +17,7 @@ export class SetupOnlineScreen extends _SetupScreen<SID> {
 		this.nav.next.onclick = (ev) => {
 			const args = this.parseArgsFromGui();
 			if (this.top.clientIsGroupHost) {
-				this.top.webSocket!.send(JSON.stringify([LobbyEv.CREATE_GAME, args]));
+				this.top.webSocket!.send(JSON.stringify([GroupEv.CREATE_GAME, args]));
 			}
 		};
 	}

@@ -1,6 +1,6 @@
 import type * as WebSocket from "ws";
 import { JsUtils } from "defs/JsUtils";
-import { SOCKET_ID, JoinerEv, LobbyEv } from "defs/OnlineDefs";
+import { SOCKET_ID, JoinerEv, GroupEv } from "defs/OnlineDefs";
 
 import type { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
@@ -20,7 +20,7 @@ export class Group extends _Group {
 	public readonly passphrase: _Group.Passphrase;
 
 	declare protected readonly wssBroadcast: (evName: string, ...data: any[]) => void;
-	protected readonly sockets = new Set<WebSocket>();
+	public readonly sockets = new Set<WebSocket>();
 	protected groupHostSocket: WebSocket;
 	protected readonly userInfo: WeakMap<WebSocket, Player.UserInfo>;
 
@@ -57,8 +57,8 @@ export class Group extends _Group {
 		this.#wsMessageCb = (ev: WebSocket.MessageEvent): void => {
 			const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
 			switch (evName) {
-				case LobbyEv.UserInfo.NAME: this._wsOnUserInfoChange(ev.target, args[0]); break;
-				case LobbyEv.CREATE_GAME: if (ev.target === this.groupHostSocket) this._wsOnHostCreateGame(args[0]); break;
+				case GroupEv.UserInfo.NAME: this._wsOnUserInfoChange(ev.target, args[0]); break;
+				case GroupEv.CREATE_GAME: if (ev.target === this.groupHostSocket) this._wsOnHostCreateGame(args[0]); break;
 				default: break;
 			}
 		};
@@ -73,7 +73,7 @@ export class Group extends _Group {
 				this.terminate();
 				return;
 			}
-			const data = JSON.stringify([LobbyEv.UserInfo.NAME, <LobbyEv.UserInfo.Res>{
+			const data = JSON.stringify([GroupEv.UserInfo.NAME, <GroupEv.UserInfo.Res>{
 				[SOCKET_ID(ev.target)]: null,
 			}]);
 			this.sockets.forEach((s) => s.send(data));
@@ -91,8 +91,8 @@ export class Group extends _Group {
 		}
 		this.userInfo.set(ws, userInfo);
 		{
-			type Res = LobbyEv.UserInfo.Res;
-			const EVENT_NAME = LobbyEv.UserInfo.NAME;
+			type Res = GroupEv.UserInfo.Res;
+			const EVENT_NAME = GroupEv.UserInfo.NAME;
 			{
 				// Notify all other clients in this group of the new player:
 				// NOTE: broadcast modifier not used since socket is not yet in this.sockets.
@@ -123,7 +123,7 @@ export class Group extends _Group {
 	}
 
 	/** */
-	private _wsOnUserInfoChange(ws: WebSocket, req: LobbyEv.UserInfo.Req): void {
+	private _wsOnUserInfoChange(ws: WebSocket, req: GroupEv.UserInfo.Req): void {
 		if (typeof req.username !== "string"
 		 || typeof req.teamId   !== "number"
 		 || typeof req.avatar   !== "string") {
@@ -133,7 +133,7 @@ export class Group extends _Group {
 			return;
 		}
 		this.userInfo.set(ws, req);
-		const data = JSON.stringify([LobbyEv.UserInfo.NAME, <LobbyEv.UserInfo.Res>{
+		const data = JSON.stringify([GroupEv.UserInfo.NAME, <GroupEv.UserInfo.Res>{
 			[SOCKET_ID(ws)]: req,
 		}]);
 		this.sockets.forEach((s) => s.send(data));
@@ -222,16 +222,6 @@ export class Group extends _Group {
 			[this.name]: JoinerEv.Exist.Status.DELETE,
 		});
 		console.info(`terminated group: \`${this.name}\``);
-	}
-}
-export namespace Group {
-	export function isCreateRequestValid(desc: JoinerEv.Create.Req): boolean {
-		return (desc.groupName !== undefined)
-			&& desc.groupName.length <= Group.Name.MaxLength
-			&& Group.Name.REGEXP.test(desc.groupName)
-			&& desc.passphrase.length <= Group.Passphrase.MaxLength
-			&& Group.Passphrase.REGEXP.test(desc.passphrase)
-			;
 	}
 }
 JsUtils.protoNoEnum(Group, "_wsOnUserInfoChange", "_wsOnHostCreateGame");

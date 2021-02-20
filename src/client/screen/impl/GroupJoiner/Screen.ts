@@ -10,20 +10,19 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 
 	#state: GroupJoinerScreen.State;
 	private readonly in: Readonly<{
-		hostUrl:    HTMLInputElement;
+		serverUrl:  HTMLInputElement;
 		groupName:  HTMLInputElement;
 		passphrase: HTMLInputElement;
 	}>;
-	private readonly groupNameDataList = JsUtils.html("datalist", [], { id: OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS });
-	#isInGroup: boolean = false; // TODO.impl set this upon joining group.
-
+	private readonly groupNameDataList = JsUtils.html("datalist", [], { id: OmHooks.ID.CURRENT_HOST_GROUPS });
+	#isInGroup: boolean = false;
 	#isHost: boolean = false; public get isHost(): boolean { return this.#isHost; }
 
 	/** Throws an error if called before this screen is lazy-loaded. */
 	public get loginInfo(): Readonly<{ name?: Group.Name, passphrase?: Group.Passphrase }> {
 		return Object.freeze({
 			name: this.in.groupName.value,
-			passphrase: this.in.passphrase.value,
+			pwd: this.in.passphrase.value,
 		});
 	}
 	readonly #wsMessageCb: (ev: MessageEvent<string>) => void;
@@ -40,6 +39,11 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		const contentWrapper = this._initFormContents();
 		this.baseElem.appendChild(this.groupNameDataList);
 
+		this.nav.prev.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+		this.nav.next.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
+		contentWrapper.appendChild(this.nav.prev);
+		contentWrapper.appendChild(this.nav.next);
+
 		// @ts-expect-error : RO=
 		this.#wsMessageCb = (ev: MessageEvent<string>) => {
 			const [evName, ...args] = JSON.parse(ev.data) as [string, ...any[]];
@@ -50,7 +54,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				default: break;
 			}
 		};
-		const huiSubmit = this._initHostUrlCbs();
+		const huiSubmit = this._initServerUrlCbs();
 		this._initGroupNameCbs(huiSubmit);
 		this._initPassphraseCbs();
 		Object.seal(this); //🧊
@@ -59,14 +63,14 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			// No validation needed. The next button is only enabled if inputs are valid.
 			this.requestGoToScreen(BaseScreen.Id.GROUP_LOBBY, {});
 		};
-		this._setFormState(State.CHOOSING_HOST);
+		this._setFormState(State.CHOOSING_SERVER);
 		this.baseElem.appendChild(contentWrapper);
 	}
 
 	/** @override */
 	public getRecommendedFocusElem(): HTMLElement {
 		if (this.ws === undefined) {
-			return this.in.hostUrl;
+			return this.in.serverUrl;
 		} else {
 			return this.in.groupName;
 		}
@@ -91,12 +95,12 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			this.nav.next.disabled = true;
 			this.in.passphrase.value = "";
 
-			if (newState === State.CHOOSING_HOST) {
+			if (newState === State.CHOOSING_SERVER) {
 				this.in.groupName.disabled  = true;
 				this.in.groupName.value     = "";
 				// Fun fact on an alternative for clearing children: https://stackoverflow.com/a/22966637/11107541
 				this.groupNameDataList.textContent = "";
-				this.in.hostUrl.focus();
+				this.in.serverUrl.focus();
 
 			} else if (newState === State.CHOOSING_GROUP) {
 				this.in.groupName.disabled  = false;
@@ -109,9 +113,9 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 	}
 
 	/** */
-	private _initHostUrlCbs(): VoidFunction {
+	private _initServerUrlCbs(): VoidFunction {
 		const top = this.top;
-		const input = this.in.hostUrl;
+		const input = this.in.serverUrl;
 		const submitInput = (): void => {
 			if (!input.value || !input.validity.valid) return; //⚡
 
@@ -137,7 +141,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			this.ws.addEventListener("message", this.#wsMessageCb);
 			this.ws.addEventListener("close", (ev) => {
 				this.top.setWebSocket(undefined);
-				this._setFormState(State.CHOOSING_HOST);
+				this._setFormState(State.CHOOSING_SERVER);
 				top.toast("You disconnected you from the server.");
 				if (this.top.currentScreen !== this) {
 					// TODO.impl ^ a more specific condition.
@@ -146,16 +150,16 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			}, { once: true });
 		};
 		// Link handler to events:
-		input.oninput = (ev) => this._setFormState(State.CHOOSING_HOST);
-		input.onkeydown = (ev) => { if (ev.isTrusted && ev.key === "Enter") {
+		input.addEventListener("input", (ev) => this._setFormState(State.CHOOSING_SERVER));
+		input.addEventListener("keydown", (ev) => { if (ev.isTrusted && ev.key === "Enter") {
 			submitInput();
-		}};
-		input.onpaste = (ev) => {
+		}});
+		input.addEventListener("paste", (ev) => {
 			if (ev.isTrusted) window.setTimeout(() => submitInput(), 0);
-		};
-		input.onchange = (ev) => {
+		});
+		input.addEventListener("change", (ev) => {
 			if (ev.isTrusted) submitInput();
-		};
+		});
 		return submitInput;
 	}
 	/** */
@@ -166,13 +170,14 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			this._attemptToJoinExistingGroup();
 			return;
 		} else {
+			this.#isInGroup = true;
 			this.top.toast(`The server rejected your request to`
 			+ ` create a new group \"${this.in.groupName.value}\".`);
 			return;
 		}
 	}
 	/** */
-	private _onNotifyGroupExist(res: JoinerEv.Exist.Sse): void {
+	private _onNotifyGroupExist(changes: JoinerEv.Exist.Sse): void {
 		type OptEl = HTMLOptionElement;
 		const mkOpt = (groupName: Group.Name): OptEl => {
 			// If we didn't know about this group yet, create a new
@@ -190,7 +195,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			return newOpt;
 		};
 		const dataListArr = Array.from(this.groupNameDataList.children) as OptEl[];
-		Object.freeze(Object.entries(res)).forEach(([groupName, status]) => {
+		Object.freeze(Object.entries(changes)).forEach(([groupName, status]) => {
 			const opt = dataListArr.find((opt: OptEl) => opt.value === groupName) ?? mkOpt(groupName);
 			switch (status) {
 				case JoinerEv.Exist.Status.IN_LOBBY: opt.textContent = "In Lobby"; break;
@@ -201,7 +206,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 	}
 
 	/** */
-	private _initGroupNameCbs(hostUrlInputSubmit: VoidFunction): void {
+	private _initGroupNameCbs(serverUrlInputSubmit: VoidFunction): void {
 		const input = this.in.groupName;
 		const submitInput = (): void => {
 			if (!input.value || !input.validity.valid) return;
@@ -211,21 +216,21 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				this.in.passphrase.focus();
 			}
 		};
-		this.in.groupName.oninput = async (ev) => {
+		this.in.groupName.addEventListener("input", async (ev) => {
 			if (!ev.isTrusted) return;
 			if (this.state === State.IN_GROUP) {
-				hostUrlInputSubmit();
+				serverUrlInputSubmit();
 				// ^This will take us back to the state `CHOOSING_GROUP`.
 			}
 			this.in.passphrase.value = "";
 			this.#isHost = false;
-		};
-		input.onkeydown = (ev) => {
-			if (ev.isTrusted && ev.key === "Enter") submitInput();
-		};
-		input.onchange = (ev) => {
-			if (ev.isTrusted) submitInput();
-		};
+		});
+		input.addEventListener("keydown", (ev) => {
+			if (ev.isTrusted && ev.key === "Enter") { submitInput(); }
+		});
+		input.addEventListener("change", (ev) => {
+			if (ev.isTrusted) { submitInput(); }
+		});
 	}
 
 	/** */
@@ -237,8 +242,9 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				this._setFormState(State.IN_GROUP);
 			}
 
+			const groupName = this.in.groupName.value;
 			const groupExists = (Array.from(this.groupNameDataList.children) as HTMLOptionElement[])
-				.some((opt) => opt.value === this.in.groupName.value);
+				.some((opt) => opt.value === groupName);
 			if (groupExists) {
 				this.#isHost = false;
 				this._attemptToJoinExistingGroup();
@@ -246,22 +252,19 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				this.#isHost = true;
 				this.ws.send(JSON.stringify([
 					JoinerEv.Create.NAME,
-					<JoinerEv.Create.Req>{
-						groupName: this.in.groupName.value,
-						passphrase: this.in.passphrase.value,
-					},
+					<JoinerEv.Create.Req>this.loginInfo,
 				]));
 			}
 		};
-		this.in.passphrase.onkeydown = (ev) => { if (ev.isTrusted && ev.key === "Enter") {
+		this.in.passphrase.addEventListener("keydown", (ev) => { if (ev.isTrusted && ev.key === "Enter") {
 			submitInput();
-		}};
+		}});
 	}
 
 	/** */
 	private _attemptToJoinExistingGroup(): void {
 		const userInfo = StorageHooks.getLastUserInfo();
-		this.ws.send(JSON.stringify([JoinerEv.TryJoin.NAME, {
+		this.ws.send(JSON.stringify([JoinerEv.TryJoin.NAME, <JoinerEv.TryJoin.Req>{
 			groupName: this.in.groupName.value,
 			passphrase: this.in.passphrase.value,
 			userInfo,
@@ -286,45 +289,42 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			contentWrapper.appendChild(label);
 			return input;
 		}
+		type InArgs = Partial<HTMLInputElement>;
 		// @ts-expect-error : RO=
 		this.in = Object.freeze({
-			"hostUrl": Object.assign(_mkInput("Host URL", style["host-url"]), <Partial<HTMLInputElement>>{
+			"serverUrl": Object.assign(_mkInput("Server URL", style["server-url"]), <InArgs>{
 				type: "url",
 				maxLength: 128,
 				autocomplete: "on",
 				required: true,
 			}),
-			"groupName": Object.assign(_mkInput("Group Name", style["group-name"]), <Partial<HTMLInputElement>>{
+			"groupName": Object.assign(_mkInput("Group Name", style["group-name"]), <InArgs>{
 				pattern: Group.Name.REGEXP.source,
 				minLength: 1,
 				maxLength: Group.Name.MaxLength,
 				autocomplete: "on",
 				required: true,
 			}),
-			"passphrase": Object.assign(_mkInput("Group Passphrase", style["passphrase"]), <Partial<HTMLInputElement>>{
+			"passphrase": Object.assign(_mkInput("Group Passphrase", style["passphrase"]), <InArgs>{
 				pattern: Group.Passphrase.REGEXP.source,
 				maxLength: Group.Passphrase.MaxLength,
 			}),
 		});
-		this.in.groupName.setAttribute("list", OmHooks.GLOBAL_IDS.CURRENT_HOST_GROUPS);
+		this.in.groupName.setAttribute("list", OmHooks.ID.CURRENT_HOST_GROUPS);
 
-		this.nav.prev.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-		contentWrapper.appendChild(this.nav.prev);
 		{
-			this.in.hostUrl.setAttribute("list", OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS);
-			const suggestedHostDesc = TopLevel.WebpageHostTypeSuggestedHost[this.top.webpageHostType];
-			if (suggestedHostDesc) {
+			this.in.serverUrl.setAttribute("list", OmHooks.ID.PUBLIC_GAME_SERVER_URLS);
+			const suggest = TopLevel.SiteServerTypeSuggestedGameServer[this.top.siteServerType];
+			if (suggest) {
 				const suggestOpt = JsUtils.html("option", [], {
-					value: suggestedHostDesc.value,
-					textContent: suggestedHostDesc.description,
+					value: suggest.value,
+					textContent: suggest.description,
 				});
-				const datalist = document.getElementById(OmHooks.GLOBAL_IDS.PUBLIC_GAME_HOST_URLS)!;
+				const datalist = document.getElementById(OmHooks.ID.PUBLIC_GAME_SERVER_URLS)!;
 				datalist.insertAdjacentElement("afterbegin", suggestOpt);
-				this.in.hostUrl.value = suggestOpt.value;
+				this.in.serverUrl.value = suggestOpt.value;
 			}
 		}
-		this.nav.next.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-		contentWrapper.appendChild(this.nav.next);
 
 		JsUtils.propNoWrite(this as GroupJoinerScreen, "in", "groupNameDataList");
 		return contentWrapper;
@@ -332,7 +332,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 }
 export namespace GroupJoinerScreen {
 	export enum State {
-		CHOOSING_HOST   = "choosing-host",
+		CHOOSING_SERVER = "choosing-server",
 		CHOOSING_GROUP  = "choosing-group",
 		IN_GROUP        = "in-group",
 	};

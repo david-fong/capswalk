@@ -1,5 +1,5 @@
 import { Player } from "defs/TypeDefs";
-import { Group, LobbyEv } from "defs/OnlineDefs";
+import { Group, GroupEv } from "defs/OnlineDefs";
 import type { Game } from "game/Game";
 
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
@@ -34,7 +34,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		this.#wsMessageCb = (ev: MessageEvent<string>) => {
 			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
 			switch (evName) {
-				case LobbyEv.UserInfo.NAME: this._onUserInfoChange(body[0]); break;
+				case GroupEv.UserInfo.NAME: this._onUserInfoChange(body[0]); break;
 				default: break;
 			}
 		};
@@ -43,9 +43,8 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 
 		this.baseElem.appendChild(this.teamsElem);
 
-		JsUtils.instNoEnum(this as GroupLobbyScreen, "socketOnceGameCreateCb");
 		JsUtils.propNoWrite(this as GroupLobbyScreen,
-			"_players", "teamsElem", "teamElems", "in",
+			"players", "teamsElem", "teamElems", "in",
 		);
 		{const goSetup = this.nav.next;
 			goSetup.textContent = "Setup Game";
@@ -101,12 +100,12 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		storage.username = this.in.username.value;
 		storage.avatar   = this.in.avatar.value;
 
-		const data: LobbyEv.UserInfo.Req = {
+		const data: GroupEv.UserInfo.Req = {
 			username: this.in.username.value,
 			teamId: parseInt(this.in.teamId.value),
 			avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
 		};
-		this.ws.send(JSON.stringify([LobbyEv.UserInfo.NAME, data]));
+		this.ws.send(JSON.stringify([GroupEv.UserInfo.NAME, data]));
 	};
 
 	/** @override */
@@ -126,7 +125,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		// Listen for when the server sends the game constructor arguments:
 		this.#wsOnceGameCreateCb = (ev: MessageEvent<string>) => {
 			const [evName, gameCtorArgs, myPlayerIds] = JSON.parse(ev.data) as [string, Game.CtorArgs, number[]];
-			if (evName === LobbyEv.CREATE_GAME) {
+			if (evName === GroupEv.CREATE_GAME) {
 				this.requestGoToScreen(BaseScreen.Id.PLAY_ONLINE, [gameCtorArgs, myPlayerIds]); //🚀
 			}
 		};
@@ -161,7 +160,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	}
 
 	/** */
-	private _onUserInfoChange(res: LobbyEv.UserInfo.Res): void {
+	private _onUserInfoChange(res: GroupEv.UserInfo.Res): void {
 		Object.freeze(Object.entries(res)).forEach(([uid, desc]) => {
 			const userInfo = this.players.get(uid);
 

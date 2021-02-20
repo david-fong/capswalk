@@ -6,7 +6,15 @@ import { wss } from "./index";
 /** */
 export const groups = new Map<string, Group>();
 
-
+/** */
+function _isReqValid(desc: JoinerEv.Create.Req): boolean {
+	return (desc.groupName !== undefined)
+	&& desc.groupName.length <= Group.Name.MaxLength
+	&& Group.Name.REGEXP.test(desc.groupName)
+	&& desc.passphrase.length <= Group.Passphrase.MaxLength
+	&& Group.Passphrase.REGEXP.test(desc.passphrase);
+}
+/** */
 function wssBroadcast(evName: string, _data: any): void {
 	const data = JSON.stringify([evName, _data]);
 	wss.clients.forEach((s) => s.send(data));
@@ -17,10 +25,9 @@ export function wsMessageCb(ev: WebSocket.MessageEvent): void {
 	switch (evName) {
 	case JoinerEv.Create.NAME: {
 		const desc = args[0] as JoinerEv.Create.Req;
-		if (Group.isCreateRequestValid(desc) && !groups.has(desc.groupName)) {
-			const data = JSON.stringify([JoinerEv.Create.NAME, false]);
-			ev.target.send(data);
-			return; //⚡ joined group
+		if (!_isReqValid(desc) || groups.has(desc.groupName)) {
+			ev.target.send(JSON.stringify([JoinerEv.Create.NAME, false]));
+			return; //⚡
 		}
 		groups.set(
 			desc.groupName,
@@ -28,11 +35,12 @@ export function wsMessageCb(ev: WebSocket.MessageEvent): void {
 				wssBroadcast: wssBroadcast,
 				name: desc.groupName,
 				passphrase: desc.passphrase,
-				deleteExternalRefs: () => groups.delete(desc.groupName),
+				deleteExternalRefs: function deleteExternalRefs() { groups.delete(desc.groupName); },
 			})),
 		);
-		const data = JSON.stringify([JoinerEv.Create.NAME, true]);
-		ev.target.send(data);
+		ev.target.send(JSON.stringify([JoinerEv.Create.NAME, true]));
+		// Note that existence of the new group is broadcasted only
+		// once the creator of thr group has joined it.
 		break;
 	}
 	case JoinerEv.TryJoin.NAME: {
@@ -49,6 +57,7 @@ export function wsMessageCb(ev: WebSocket.MessageEvent): void {
 			throw new Error(`a socket attempted to connect to group`
 			+` \`${group.name}\` without providing userInfo.`);
 		}
+		groups.forEach((group) => group.sockets.delete(ev.target));
 		group.admitSocket(ev.target, userInfo);
 		break;
 	}
