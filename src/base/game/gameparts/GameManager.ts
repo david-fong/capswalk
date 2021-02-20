@@ -53,7 +53,7 @@ export abstract class GameManager<
 			this.lang = new LangConstructor(args.desc.langWeightExaggeration);
 			JsUtils.propNoWrite(this as GameManager<S>, "lang");
 
-			if (DEF.DevAssert && (this.lang.numLeaves < this.grid.static.getAmbiguityThreshold())) {
+			if (DEF.DevAssert && (this.lang.numLeaves < this.grid.static.ambiguityThreshold)) {
 				// Enforced By: clientside UI and `CHECK_VALID_CTOR_ARGS`.
 				throw new Error("never");
 			}
@@ -123,7 +123,7 @@ export abstract class GameManager<
 		this.grid.write(coord, Lang.CharSeqPair.NULL);
 
 		let avoid: TU.RoArr<Lang.Seq> = Object.freeze(this.grid
-			.getDestsFromSourcesTo(coord))
+			.getAllAltDestsThan(coord))
 			.map((tile) => tile.seq);
 		// ^ Note: An array of CharSeq from unique Tiles. It is okay
 		// for those tiles to include `coord`
@@ -306,7 +306,7 @@ export namespace GameManager {
 		} else if (gridClass === undefined) {
 			bad.push(`No grid with the system ID \`${args.coordSys}\` exists.`);
 		} else {
-			if (langDesc.numLeaves < gridClass.getAmbiguityThreshold()) {
+			if (langDesc.numLeaves < gridClass.ambiguityThreshold) {
 				bad.push("The provided language does not have enough sequences"
 				+"to ensure that a shuffling operation will always succeed when"
 				+"paired with the provided grid system.");

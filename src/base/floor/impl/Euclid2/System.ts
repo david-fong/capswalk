@@ -122,15 +122,13 @@ export namespace WrappedEuclid2 {
 	 */
 	export class Grid extends AbstractGrid<S> {
 
-		public static getAmbiguityThreshold(): 24 {
-			return 24;
-		}
+		public static ambiguityThreshold = 24;
 
-		public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
 		private static readonly SIZE_LIMITS = JsUtils.deepFreeze(<const>{
 			height: <const>{ min: 10, max: 51 },
 			width:  <const>{ min: 10, max: 51 },
 		});
+		public static sizeLimits: AbstractGrid.DimensionBounds<S> = Grid.SIZE_LIMITS;
 
 		private readonly _grid: Array<Tile>;
 
@@ -242,7 +240,7 @@ export namespace WrappedEuclid2 {
 			return this._grid[dest.toCoord(this.dimensions)]!;
 		}
 
-		public getDestsFromSourcesTo(originCoord: Coord): TU.RoArr<Tile> {
+		public getAllAltDestsThan(originCoord: Coord): TU.RoArr<Tile> {
 			return this.tileDestsFrom(originCoord, 2);
 		}
 

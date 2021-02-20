@@ -4,6 +4,73 @@ import { Grid as AbstractGrid } from "floor/Grid";
 type S = Coord.System.BEEHIVE;
 
 /**
+ * Beehive Internal Augmented Coord
+ */
+export class IAC {
+
+	/** 🕒 3'o'clock direction */
+	public readonly dash: number;
+
+	/** 🕔 5'o'clock direction */
+	public readonly bash: number;
+
+	public constructor(desc: IAC.Bare) {
+		this.dash = desc.dash;
+		this.bash = desc.bash;
+		Object.freeze(this); //🧊
+	}
+	public toCoord(): Coord {
+		// TODO.impl
+		return undefined!;
+	}
+
+	public round(): IAC {
+		// I'm pretty proud of this despite the fact that I don't
+		// think there's anything very impressive about it.
+		const floorDash = Math.floor(this.dash);
+		const floorBash = Math.floor(this.bash);
+		const d = floorDash - this.dash;
+		const b = floorBash - this.bash;
+		if (d > 2 * b) {
+			return new IAC({ dash: floorDash+1, bash: floorBash   });
+		} else if (d < 0.5 * b) {
+			return new IAC({ dash: floorDash  , bash: floorBash+1 });
+		} else if (Math.min(d, b) > 0.5) {
+			return new IAC({ dash: floorDash+1, bash: floorBash+1 });
+		} else {
+			return new IAC({ dash: floorDash  , bash: floorBash   });
+		}
+	}
+	public add(other: IAC.Bare): IAC {
+		return new IAC({
+			dash: this.dash + other.dash,
+			bash: this.bash + other.bash,
+		});
+	}
+	public sub(other: IAC.Bare): IAC {
+		return new IAC({
+			dash: this.dash - other.dash,
+			bash: this.bash - other.bash,
+		});
+	}
+	public mul(scalar: number): IAC {
+		return new IAC({
+			dash: scalar * this.dash,
+			bash: scalar * this.bash,
+		});
+	}
+}
+export namespace IAC {
+	export type Bare = Readonly<{
+		dash: number;
+		bash: number;
+	}>;
+}
+Object.freeze(IAC);
+Object.freeze(IAC.prototype);
+
+
+/**
  * ### 🐝 BEES !
  *
  * ## 🐝 BEES !
@@ -21,93 +88,19 @@ type S = Coord.System.BEEHIVE;
  * [(Hexagons)](https://www.youtube.com/watch?v=thOifuHs6eY)
  */
 export namespace Beehive {
-
 	/**
-	 * Beehive Internal Augmented Coord
-	 */
-	export class IAC {
-
-		/** 🕒 3'o'clock direction */
-		public readonly dash: number;
-
-		/** 🕔 5'o'clock direction */
-		public readonly bash: number;
-
-		public constructor(desc: IAC.Bare) {
-			this.dash = desc.dash;
-			this.bash = desc.bash;
-			Object.freeze(this); //🧊
-		}
-		public toCoord(): Coord {
-			// TODO.impl
-			return undefined!;
-		}
-
-		public round(): IAC {
-			// I'm pretty proud of this despite the fact that I don't
-			// think there's anything very impressive about it.
-			const floorDash = Math.floor(this.dash);
-			const floorBash = Math.floor(this.bash);
-			const d = floorDash - this.dash;
-			const b = floorBash - this.bash;
-			if (d > 2 * b) {
-				return new IAC({ dash: floorDash+1, bash: floorBash   });
-			} else if (d < 0.5 * b) {
-				return new IAC({ dash: floorDash  , bash: floorBash+1 });
-			} else if (Math.min(d, b) > 0.5) {
-				return new IAC({ dash: floorDash+1, bash: floorBash+1 });
-			} else {
-				return new IAC({ dash: floorDash  , bash: floorBash   });
-			}
-		}
-		public add(other: IAC.Bare): IAC {
-			return new IAC({
-				dash: this.dash + other.dash,
-				bash: this.bash + other.bash,
-			});
-		}
-		public sub(other: IAC.Bare): IAC {
-			return new IAC({
-				dash: this.dash - other.dash,
-				bash: this.bash - other.bash,
-			});
-		}
-		public mul(scalar: number): IAC {
-			return new IAC({
-				dash: scalar * this.dash,
-				bash: scalar * this.bash,
-			});
-		}
-	}
-	export namespace IAC {
-		export type Bare = Readonly<{
-			dash: number;
-			bash: number;
-		}>;
-	}
-	Object.freeze(IAC);
-	Object.freeze(IAC.prototype);
-
-
-
-	/**
-	 * # Beehive Grid
+	 * Beehive Grid
 	 */
 	export class Grid extends AbstractGrid<S> {
 
-		public static getAmbiguityThreshold(): 18 {
-			return 18;
-		}
+		public static ambiguityThreshold = 18;
 
-		/**
-		 * @override
-		 */
-		public static getSizeLimits(): AbstractGrid.DimensionBounds<S> { return this.SIZE_LIMITS; }
 		private static readonly SIZE_LIMITS = Object.freeze({
 			dash:    Object.freeze({ min: 10, max: 50 }),
 			bslash:  Object.freeze({ min: 10, max: 50 }),
 			fslash:  Object.freeze({ min: 10, max: 50 }),
 		});
+		public static sizeLimits: AbstractGrid.DimensionBounds<S> = Grid.SIZE_LIMITS;
 
 		/**
 		 */
@@ -162,7 +155,7 @@ export namespace Beehive {
 			return undefined!;
 		}
 
-		public getDestsFromSourcesTo(originCoord: Coord): TU.RoArr<Tile> {
+		public getAllAltDestsThan(originCoord: Coord): TU.RoArr<Tile> {
 			return this.tileDestsFrom(originCoord, 2);
 		}
 

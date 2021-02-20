@@ -1,5 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
-import style from "./skpickone.m.css";
+import style from "./pickone.m.css";
 
 
 /**
@@ -14,7 +14,7 @@ import style from "./skpickone.m.css";
 // TODO.design consider refactoring options into an internal map from a new
 // template param-typed descriptors object to the DOM wrapper. This could
 // be used to expose an interface for sorting.
-export abstract class SkPickOne<O extends SkPickOne._Option> {
+export abstract class PickOne<O extends PickOne._Option> {
 
 	public readonly baseElem: HTMLElement;
 
@@ -135,7 +135,7 @@ export abstract class SkPickOne<O extends SkPickOne._Option> {
 		return true;
 	}
 }
-export namespace SkPickOne {
+export namespace PickOne {
 	/**
 	 *
 	 * https://www.w3.org/TR/wai-aria-1.1/#option
@@ -163,8 +163,8 @@ export namespace SkPickOne {
 			}
 		}
 	}
-	Object.freeze(SkPickOne);
-	Object.freeze(SkPickOne.prototype);
+	Object.freeze(PickOne);
+	Object.freeze(PickOne.prototype);
 }
-Object.freeze(SkPickOne);
-Object.freeze(SkPickOne.prototype);
+Object.freeze(PickOne);
+Object.freeze(PickOne.prototype);

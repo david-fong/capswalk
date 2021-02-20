@@ -2,7 +2,7 @@
 import style from "./style.m.css";
 import * as SchemesJsonImport from "./schemes.json";
 
-import { SkPickOne } from "client/utils/SkPickOne";
+import { PickOne as _PickOne } from "client/utils/PickOne";
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 
 /**
@@ -46,7 +46,7 @@ export namespace ColourCtrlScreen {
 	type O = PickOne.Option;
 	/**
 	 */
-	export class PickOne extends SkPickOne<O> {
+	export class PickOne extends _PickOne<O> {
 
 		#firstTime: boolean;
 		readonly #storage: BaseScreen<any>["top"]["storage"]["Local"];
@@ -99,9 +99,8 @@ export namespace ColourCtrlScreen {
 		}
 	}
 	export namespace PickOne {
-		/**
-		 */
-		export class Option extends SkPickOne._Option {
+		/** */
+		export class Option extends _PickOne._Option {
 
 			public readonly desc: Colour.Scheme;
 

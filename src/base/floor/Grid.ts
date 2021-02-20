@@ -91,7 +91,7 @@ export abstract class Grid<S extends Coord.System> {
 	 * Grid implementations are encouraged to override this if they
 	 * have a more efficient way to produce the same result.
 	 */
-	public getDestsFromSourcesTo(originCoord: Coord): TU.RoArr<Tile> {
+	public getAllAltDestsThan(originCoord: Coord): TU.RoArr<Tile> {
 		return Array.from(new Set(
 			this.tileSourcesTo(originCoord)
 				.flatMap((sourceToTarget) => this.tileDestsFrom(sourceToTarget.coord))
@@ -188,12 +188,12 @@ export namespace Grid {
 		 * grid- of all destinations from sources to itself, excluding
 		 * itself.
 		 */
-		getAmbiguityThreshold(): number;
+		ambiguityThreshold: number;
 
 		/**
 		 * @see Grid.DimensionBounds
 		 */
-		getSizeLimits(): Grid.DimensionBounds<S>;
+		sizeLimits: Grid.DimensionBounds<S>;
 
 		/**
 		 * @returns

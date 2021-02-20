@@ -2,7 +2,7 @@ import { Lang, Player } from "defs/TypeDefs";
 import type { Coord } from "floor/Coord";
 import type { Player as _Player } from "game/player/Player";
 import type { Game } from "game/Game";
-import { SkPickOne } from "client/utils/SkPickOne";
+import { PickOne } from "client/utils/PickOne";
 
 import { JsUtils, OmHooks, StorageHooks, BaseScreen } from "../../BaseScreen";
 import style from "./style.m.css";
@@ -127,7 +127,7 @@ export namespace _SetupScreen {
 	}; };
 	/**
 	 */
-	export class LangPickOne extends SkPickOne<LangPickOne.Option> {
+	export class LangPickOne extends PickOne<LangPickOne.Option> {
 		public constructor() {
 			super();
 			this.baseElem.classList.add(style["lang-sel"]);
@@ -145,7 +145,7 @@ export namespace _SetupScreen {
 	}
 	export namespace LangPickOne {
 		/** */
-		export class Option extends SkPickOne._Option {
+		export class Option extends PickOne._Option {
 
 			public readonly desc: Lang.FrontendDesc;
 
