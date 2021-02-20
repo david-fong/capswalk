@@ -68,10 +68,15 @@ export namespace ScreenTransition {
 	/** */
 	export type Request = Readonly<{
 		/**
-		 * This will be awaited before calling `beforeUnblur`.
+		 * This will be awaited before calling `beforeUnblur`. Its
+		 * purpose is to allow externally triggered long-running-tasks
+		 * which should finished before the next screen is visible to
+		 * run during the transition.
 		 */
 		beforeUnblurAwait?: Promise<any>,
-		/** */
+		/**
+		 * Triggers a style change that transitions between values.
+		 * */
 		intermediateTransitionTrigger?: () => void,
 		/**
 		 * This is done after `intermediateTransitionTrigger` finishes.

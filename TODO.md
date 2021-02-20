@@ -4,6 +4,7 @@
 ## High-level
 
 1. Finalize what I want to game actually be :(
+1. Implement a keyboard learning / language learning page.
 1. Harden server against malicious client inputs.
     - handle malformed websocket data from client. Just ignore it?
     - change exceptions on malformed data to short circuits?
@@ -16,8 +17,6 @@
 
 1. Switch from socket.io to ws. I want to manage my own pubsub.
 1. Implement lang/coordsys compatibility check that coord system guarantees that there exists a tile `T` with `numDests(T) <= N` where `N` is the number of root nodes in the language. Otherwise, the roots will never see the light of day, and spawning them will make it impossible to finish the reset.
-1. Split screen classes into an init class and behaviour class?
-    - The distinction could be fuzzy. It would help me read the code, though.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
@@ -37,7 +36,6 @@
 1. Game-Host Servers:
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
 1. Server authentication is not working. Please debug and fix.
-1. Fill in implementation of bubble event handler.
 
 ### Things that are low priority
 

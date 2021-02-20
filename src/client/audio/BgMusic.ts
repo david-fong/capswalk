@@ -5,6 +5,7 @@ export interface BgMusic {
 	readonly desc: BgMusic.TrackDesc;
 	play(): void;
 	pause(): void;
+	setLevel(level: number): void;
 }
 
 /** */
@@ -20,6 +21,7 @@ export async function MkBgMusic(trackId: BgMusic.TrackDesc["id"]): Promise<BgMus
 		sampleRate: desc.sampleRate,
 	});
 
+	/** audio buffers */
 	const _abs = await Promise.all(desc.trackDescs.map(async (trackDesc) => {
 		// Fetch each track's audio file:
 		return fetch(`assets/audio/bg/${desc.id}/${trackDesc.filename}`)
@@ -45,7 +47,7 @@ export async function MkBgMusic(trackId: BgMusic.TrackDesc["id"]): Promise<BgMus
 	const sourceDestination = split;
 
 	let _bigBufferChannelIndex = 0;
-	const layerFaders = _abs.map((ab, trackIndex) => { // TODO.impl use the layer faders. See BgMusic interface.
+	const layerFaders = _abs.map((ab, trackIndex) => {
 		if (ab.sampleRate !== desc.sampleRate) {
 			throw new Error("never");
 		}
@@ -84,7 +86,10 @@ export async function MkBgMusic(trackId: BgMusic.TrackDesc["id"]): Promise<BgMus
 		},
 		pause: function pause(): void {
 			source.stop();
-		}
+		},
+		setLevel: function setLevel(level: number): void {
+			layerFaders; // TODO.impl
+		},
 	});
 }
 export namespace BgMusic {

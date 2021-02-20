@@ -7,7 +7,6 @@
 1. `pnpm install`. Make sure your shell doesn't have `NODE_ENV=production`.
 1. `pnpm run devinit`.
 1. `pnpm build`.
-    - Note that tsc may err on the first build after adding a css module class since css-modules-typescript-loader hasn't generated the .d.ts changes for the new class yet.
 1. To test off the local filesystem (no online-game capabilities), open `file://<path-to-project-root>/dist/client/index.html`.
 1. To test off a local server, do `pnpm start`.
     - Instead of the file protocol, load the site at `localhost`.
@@ -58,14 +57,6 @@ Things that are not covered by linting.
 
 Use single-underscore enclosures to italicize. Use double-asterisk enclosures to embolden.
 
-### Socket.IO
-
-- Use `socket.connect` instead of `socket.open`.
-- Use `socket.disconnect` instead of `socket.close`.
-- Use `to` instead of `in`.
-
-- On the serverside, bind events to functions declared on a prototype (when possible) to avoid creating unnecessary function objects. This is not important for the client since only one connection for namespace is made.
-
 ### Logging
 
 To make it easier to find console log messages added temporarily, added log messages, use `console.log` for those temporarily added log messages, and `console.info` for more permanent ones.
@@ -92,4 +83,4 @@ In complex socket communication chains, use 📢 for server emissions and 👂 f
 
 ### Enum Implementation
 
-Use TypeScript enums when being able to search for references is desirable. If an enum doesn't need to be reference-searched, and avoiding a non-type import is desired, use a mocked const enum.
+Use TypeScript enums when being able to search for references is desirable. If an enum doesn't need to be reference-searched, and enabling type-only imports is desired, use a mocked const enum. By reference searching, I mean that the literal value can be inlined and recognized there as a member of an enum when searching for other references.
