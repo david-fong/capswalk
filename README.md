@@ -16,7 +16,8 @@ This project is currently in a weird state where the low-level foundations of th
 ### Suggested Contributions
 
 - Game ideas are welcome! Existing game ideas are in [game-ideas.md](./game-ideas.md). To suggest an idea, [start a new discussion](https://github.com/david-fong/snakey3/discussions/new) in the "ideas" category.
-- Color schemes: For the format and examples, see [src/client/screen/impl/ColourCtrl/].
+- Color schemes: For the format and examples, see [src/client/colours/](./src/client/colours).
+- Implementing the [BeeHive grid](./src/base/floor/impl/Beehive).
 - Improvements to the build process- especially for WebPack watch mode and hot-reload. See [scripts/webpack/](./scripts/webpack).
 
 ## Licence

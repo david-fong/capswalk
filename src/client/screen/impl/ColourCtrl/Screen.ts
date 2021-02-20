@@ -1,6 +1,6 @@
 // Tell WebPack about the css we want:
 import style from "./style.m.css";
-import * as SchemesJsonImport from "./schemes.json";
+import * as SchemesJsonImport from "client/colours/schemes.json";
 
 import { PickOne as _PickOne } from "client/utils/PickOne";
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
@@ -18,7 +18,7 @@ export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
 		import(
 			/* webpackChunkName: "colour-schemes" */
 			/* webpackMode: "lazy-once" */
-			`./schemes/${void 0}.css`
+			`client/colours/schemes/${void 0}.css`
 		);
 		this.baseElem.classList.add(style["this"]);
 		this.baseElem.appendChild(this.nav.prev);
