@@ -6,9 +6,8 @@ import type { BaseScreen } from "./screen/BaseScreen";
 
 import { AllScreens } from "./screen/AllScreens";
 import { ScreenTransition } from "./screen/ScreenTransition";
-//import { BgMusic }      from "./audio/BgMusic";
+//import { BgMusic, MkBgMusic } from "./audio/BgMusic";
 //import { SoundEffects } from "./audio/SoundEffects";
-
 
 /**
  * @final
@@ -73,7 +72,7 @@ export class TopLevel {
 		this.#allScreens = new AllScreens(this, allScreensElem);
 
 		//
-		// this.bgMusic = new BgMusic(BgMusic.TrackDescs[0].id);
+		// MkBgMusic(BgMusic.TrackDescs[0].id).then(it => this.bgMusic = it);
 		// this.sfx = new SoundEffects(SoundEffects.Descs[0].id);
 		JsUtils.propNoWrite(this as TopLevel,
 			/* "bgMusic", "sfx", */ // TODO.build uncomment when music classes implemented.

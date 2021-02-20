@@ -15,7 +15,6 @@
 ### Things I feel like doing
 
 1. Switch from socket.io to ws. I want to manage my own pubsub.
-1. Change BgMusic to an async function.
 1. Implement lang/coordsys compatibility check that coord system guarantees that there exists a tile `T` with `numDests(T) <= N` where `N` is the number of root nodes in the language. Otherwise, the roots will never see the light of day, and spawning them will make it impossible to finish the reset.
 1. Split screen classes into an init class and behaviour class?
     - The distinction could be fuzzy. It would help me read the code, though.
