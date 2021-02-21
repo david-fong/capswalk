@@ -50,7 +50,7 @@ export function wsMessageCb(ev: WebSocket.MessageEvent): void {
 			group === undefined
 			|| req.passphrase !== group.passphrase
 		) {
-			return //⚡
+			return; //⚡
 		}
 		const userInfo = req.userInfo;
 		if (userInfo === undefined || userInfo.teamId !== 0) {

@@ -1,11 +1,9 @@
 
 # Game Ideas
 
-Maybe I should just rename this repo to "typing-game"... :P
-
 ## Points of Consideration
 
-Simplicity is a high priority. See examples below.
+Simplicity of the idea is a high priority. See examples below.
 
 - What is the pacing/intensity like?
 - Is it singleplayer/multiplayer-only? An idea that works with both is encouraged.
@@ -20,13 +18,13 @@ Simplicity is a high priority. See examples below.
 
 ### Death Scroller
 
-This idea scores high on simplicity points.
+Simplicity score: 9/10.
 
 - The floor is rising lava. Keep moving up and see how long you survive.
 
 ### Weird Hangman Variant
 
-This idea is somewhat simple.
+Simplicity score: 6/10.
 
 - Everybody is running around except for one person.
 - That one person is in a separate space with regular WASD-type movement.
@@ -35,9 +33,14 @@ This idea is somewhat simple.
   - If successful, that space will be revealed to the rest of the players, thus making it easier for them to guess what letters they should suggest for the revealer.
 - The aim of the game is to reveal the phrase as fast as possible.
 
+#### Addon Ideas
+
+- Have multiple competing teams?
+- Make all the of the players also have to run away from some chasers?
+
 ### Soccer
 
-This idea is not very simple.
+Simplicity score: 3/10.
 
 - Can hold and shoot a ball.
 - For each step you take with the ball, you will stay frozen after losing it until the next people who pick it up have moved that many steps with the ball.

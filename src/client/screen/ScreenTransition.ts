@@ -15,7 +15,7 @@ export class ScreenTransition {
 		this.baseElem.tabIndex = -1;
 		this.baseElem.addEventListener("keydown", (ev) => {
 			ev.preventDefault();
-		})
+		});
 		JsUtils.propNoWrite(this as ScreenTransition, "baseElem");
 		Object.seal(this); //🧊
 	}

@@ -1,5 +1,5 @@
 
-# ⌨🐍 CapsWalk
+# ⌨ CapsWalk
 
 [**`Try it!` 👈**](https://david-fong.github.io/capswalk/)
 

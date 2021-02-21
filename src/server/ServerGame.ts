@@ -74,7 +74,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		});
 		this.sockets = new Set(args.sockets); // shallow copy
 		this.groupHostSocket = args.groupHostSocket;
-		this.#deleteExternalRefs = args.deleteExternalRefs
+		this.#deleteExternalRefs = args.deleteExternalRefs;
 		JsUtils.instNoEnum (this as ServerGame<S>, "operators");
 		JsUtils.propNoWrite(this as ServerGame<S>, "groupHostSocket", "sockets");
 		this.#wsMessageCb = gameOnSocketMessage.bind(this as ServerGame<any>);
@@ -86,7 +86,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 				if (this.sockets.size === 1) {
 					this._terminate();
 				}
-			}, { once: true })
+			}, { once: true });
 		});
 		this._greetGameSockets(args.gameDesc);
 	}

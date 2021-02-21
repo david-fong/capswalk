@@ -28,9 +28,9 @@ export namespace LangSeqTree {
 			seq: Lang.Seq = "",
 			characters: TU.RoArr<WeightedLangChar>,
 		) {
-			Object.defineProperty(this, "parent",   { enumerable: true, value: parent, });
-			Object.defineProperty(this, "seq",      { enumerable: true, value: seq, });
-			Object.defineProperty(this, "children", { enumerable: true, value: [], });
+			Object.defineProperty(this, "parent",   { enumerable: true, value: parent });
+			Object.defineProperty(this, "seq",      { enumerable: true, value: seq });
+			Object.defineProperty(this, "children", { enumerable: true, value: [] });
 			this.#characters = Object.freeze(characters);
 			Object.seal(this); //🧊
 		}

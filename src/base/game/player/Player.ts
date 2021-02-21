@@ -26,10 +26,10 @@ export class Player extends _Player implements _Player.UserInfo {
 
 	public prevCoord: Coord;
 
-	public get team()     { return this.game.teams[this.teamId]!; }
-	public get coord()    { return this.#coord; }
-	public get health()   { return this.#health; }
-	public get isDowned() { return this.health < 0.0; }
+	public get team(): Team        { return this.game.teams[this.teamId]!; }
+	public get coord(): Coord      { return this.#coord; }
+	public get health(): number    { return this.#health; }
+	public get isDowned(): boolean { return this.health < 0.0; }
 
 	public isTeamedWith(other: Player): boolean {
 		return this.team.members.includes(other);
