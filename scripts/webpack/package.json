@@ -9,14 +9,12 @@
     "csp-html-webpack-plugin": "5.0.0",
     "css-loader": "^5.0.2",
     "css-minimizer-webpack-plugin": "^1.2.0",
+    "esbuild-loader": "^2.9.2",
     "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.1.0",
+    "html-webpack-plugin": "^5.2.0",
     "json5": "^2.2.0",
-    "mini-css-extract-plugin": "^1.3.7",
-    "webpack": "^5.22.0",
+    "mini-css-extract-plugin": "^1.3.8",
+    "webpack": "^5.23.0",
     "webpack-node-externals": "^2.5.2"
-  },
-  "dependencies": {
-    "esbuild-loader": "^2.9.2"
   }
 }

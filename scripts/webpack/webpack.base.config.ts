@@ -1,13 +1,8 @@
-import path     = require("path");
-import webpack  = require("webpack");
+import path = require("path");
+import webpack = require("webpack");
 import { ESBuildPlugin } from "esbuild-loader";
-
-// https://github.com/TypeStrong/ts-loader#loader-options
-import type * as tsloader from "ts-loader/dist/interfaces";
-
 import nodeExternals = require("webpack-node-externals");
 type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
-
 
 export const PACK_MODE = (process.env.NODE_ENV) as ("development" | "production") || "development";
 export const PROJECT_ROOT = (...relative: string[]) => path.resolve(__dirname, "../..", ...relative);
@@ -23,9 +18,7 @@ export const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInst
 	new ESBuildPlugin(),
 ]};
 
-/**
- * https://webpack.js.org/loaders/
- */
+/** https://webpack.js.org/loaders/ */
 export const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 	test: /\.ts$/,
 	exclude: [/node_modules/, /\.d\.ts$/],
@@ -108,7 +101,7 @@ export const __BaseConfig = (distSubFolder: string): Require<webpack.Configurati
 /**
  */
 export const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>): void => {
-	config.target = "node12";
+	config.target = "node14";
 	config.externals = [ nodeExternals(), ], // <- Does not whitelist tslib.
 	// alternative to above: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))
 	config.node = {
