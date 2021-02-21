@@ -23,8 +23,6 @@
     - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid derived classes instead of smarter tile derived classes).
 1. Implement Grid management of player-rendering.
 1. Implement, use, and test array extensions freeze and seal.
-1. Move `Player.RequestBuffer` to dedicated file and make an extension for `OperatorPlayer`s that actually does stuff. The base version will pretty much do nothing.
-    - See how this affects performance.
 1. Display the operator's current sequence buffer.
 
 ### Things that I feel less like doing
@@ -32,10 +30,8 @@
 1. Look into using [`esbuild-loader`](https://github.com/privatenumber/esbuild-loader).
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
     - Set the maxAge option for express to at least a year.
-1. On clientside, if joiner socket gets disconnected by server, go back to the joiner screen.
 1. Game-Host Servers:
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
-1. Server authentication is not working. Please debug and fix.
 
 ### Things that are low priority
 
@@ -44,16 +40,13 @@
     - This will save memory when multiple of the same type of language are is use at the same time.
     - This is save time when creating another instance of the same type of language.
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
-1. Make a json file or something defining all the webpack chunk names I have defined.
 1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
 1. Spectator mode for online games? O\_o
 1. Implement the scores/player-listing sidebar in `__PlayScreen`.
     - Also show scores (very small size) on top of player faces.
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
-1. Add git lfs support to heroku.
 1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
-1. Extract hot, anonymous sorting functions to non-exported globals so the runtime engine can cache parameter shapes.
 1. Mashup some CSS resets and normalizers for this repo? Or maybe we don't need any.
 1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.
 
@@ -96,7 +89,6 @@
 
 - When CSS' content-visibility hidden is better supported, use it for screens instead of display none. I already checked that on chrome, tab navigation within a hidden element is disabled.
 - Try turning on `webpack.experiments.module`.
-- In package.json's scripts field, use node's `--enable-source-maps` flag when there is better support for it / we update node to a version with better support for it / I find out that there is good support and I was just using it wrong.
 - Turn on TypeScript experimental decorators?
   - After reading [the TC39 proposal docs](https://github.com/tc39/proposal-decorators#option-b-init-method-decorators) and seeing how much they differ from TypeScript's current spec, I don't want to commit to something that will likely change drastically in the future.
 
