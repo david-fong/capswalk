@@ -18,6 +18,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "devinit": "bash scripts/devinit.sh",
+    "lint": "eslint --color --cache --cache-location './node_modules/.cache/eslint-cache.json' './src/'",
     "build": "bash scripts/pack.sh",
     "start": "node --enable-source-maps --disable-proto=delete ./dist/server/index.js"
   },

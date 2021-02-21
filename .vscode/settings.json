@@ -17,7 +17,6 @@
     "search.exclude": {
         "node_modules/": true,
         "**/*.code-search": true,
-        "*cache.json": true,
 
         "**/*tsconfig*.json": false,
         "{**/.eslintrc.*,.eslintignore}": false,

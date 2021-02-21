@@ -1,7 +1,0 @@
-
-/webpack/node_modules/
-/webpack/*.js
-/webpack/*.tsbuildinfo
-
-/eslint-cache.json
-/Sandbox.js
