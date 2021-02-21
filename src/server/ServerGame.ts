@@ -1,4 +1,4 @@
-import type * as WebSocket from "ws";
+import type WebSocket from "ws";
 
 import { JsUtils } from "defs/JsUtils";
 import { SOCKET_ID, GroupEv, GameEv } from "defs/OnlineDefs";

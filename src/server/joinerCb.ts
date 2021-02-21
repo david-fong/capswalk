@@ -1,4 +1,4 @@
-import type * as WebSocket from "ws";
+import type WebSocket from "ws";
 import { JoinerEv } from "defs/OnlineDefs";
 import { Group } from "./Group";
 import { wss } from "./index";

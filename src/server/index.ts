@@ -1,10 +1,10 @@
-import * as os from "os";
-import * as path from "path";
-import * as http from "http";
-import * as express from "express";
-import * as expressStaticGzip from "express-static-gzip";
-import * as WebSocket from "ws";
-import type * as net from "net";
+import os from "os";
+import path from "path";
+import http from "http";
+import express from "express";
+import expressStaticGzip from "express-static-gzip";
+import WebSocket from "ws";
+import type net from "net";
 import { SET_SOCKET_ID, SOCKET_ID, JoinerEv } from "defs/OnlineDefs";
 
 const app = express();

@@ -1,5 +1,5 @@
 import type { Player } from "defs/TypeDefs";
-import type * as NodeWebSocket from "ws";
+import type NodeWebSocket from "ws";
 
 /** Serverside-only. */
 export function SOCKET_ID(socket: NodeWebSocket): string | never {

@@ -5,6 +5,7 @@
 
 		// Compiler Behaviour:
 		"moduleResolution": "node",
+		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"importHelpers": true,
 		"skipLibCheck": true, // time-saving measure.
