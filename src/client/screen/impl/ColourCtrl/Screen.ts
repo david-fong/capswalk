@@ -5,15 +5,12 @@ import * as SchemesJsonImport from "client/colours/schemes.json";
 import { PickOne as _PickOne } from "client/utils/PickOne";
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 
-/**
- */
+/** */
 export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
 
 	public readonly sel: ColourCtrlScreen.PickOne;
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	protected _lazyLoad(): void {
 		import(
 			/* webpackChunkName: "colour-schemes" */
@@ -44,8 +41,7 @@ export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
 }
 export namespace ColourCtrlScreen {
 	type O = PickOne.Option;
-	/**
-	 */
+	/** */
 	export class PickOne extends _PickOne<O> {
 
 		#firstTime: boolean;
@@ -154,8 +150,7 @@ Object.freeze(ColourCtrlScreen);
 Object.freeze(ColourCtrlScreen.prototype);
 
 
-/**
- */
+/** */
 export namespace Colour {
 	export const Swatch = Object.freeze(<const>[
 		"mainFg", "mainBg",
