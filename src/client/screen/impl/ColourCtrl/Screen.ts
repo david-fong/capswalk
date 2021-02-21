@@ -61,7 +61,7 @@ export namespace ColourCtrlScreen {
 				this.addOption(new PickOne.Option(schemeDesc));
 			});
 			this.selectOpt(this.getOptById(
-				this.#storage.colourSchemeId ?? "snakey",
+				this.#storage.colourSchemeId ?? "default",
 			)!, false);
 		}
 

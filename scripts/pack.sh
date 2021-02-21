@@ -20,7 +20,7 @@ fi
 
 # --verbose
 declare -r doneMsg="$(echo -e "\n\n\n=== BUILD DONE ===\n\n\n")"
-time node --title="webpack snakey3" "${scripts}/webpack/pack.js"
+time node --title="webpack build" "${scripts}/webpack/pack.js"
 
 if [[ "$NODE_ENV" = 'production' ]]
 then

@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "snakey3",
+  "name": "capswalk",
   "version": "0.9.0",
   "description": "A multiplayer typing game for learning written languages.",
   "keywords": [
@@ -9,7 +9,7 @@
   ],
   "license": "LicenseRef-LICENSE.md",
   "author": "David Fong (https://github.com/david-fong)",
-  "repository": "github:david-fong/snakey3",
+  "repository": "github:david-fong/capswalk",
   "type": "commonjs",
   "files": [],
   "sideEffects": [

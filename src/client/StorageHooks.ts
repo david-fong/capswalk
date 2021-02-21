@@ -8,7 +8,7 @@ import { Player } from "defs/TypeDefs";
 export namespace StorageHooks {
 	// Let's just take a moment to appreciate that TypeScript
 	// actually recognizes references to the example object.
-	export const Local = JsUtils.Web._makeSmartStorage("snakey3", localStorage, {
+	export const Local = JsUtils.Web._makeSmartStorage("capswalk", localStorage, {
 		musicVolume: 1,
 		sfxVolume: 1,
 		/**
@@ -39,12 +39,12 @@ export namespace StorageHooks {
 	}
 
 	/** */
-	export const Session = JsUtils.Web._makeSmartStorage("snakey3", localStorage, Object.freeze({
+	export const Session = JsUtils.Web._makeSmartStorage("capswalk", localStorage, Object.freeze({
 	}));
 
 	export namespace IDB {
 		/** */
-		export const DB_NAME = "snakey3_db";
+		export const DB_NAME = "capswalk_db";
 
 		/** */
 		export namespace UserGamePresetStore {

@@ -81,11 +81,11 @@ export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 		(<const>[{
 			text:    "Visit\nRepo",
 			cssClass: style["nav--goto-repo"],
-			href:     new window.URL("https://github.com/david-fong/snakey3"),
+			href:     new window.URL("https://github.com/david-fong/capswalk"),
 		},{
 			text:    "Report\nIssue",
 			cssClass: style["nav--report-issue"],
-			href:     new window.URL("https://github.com/david-fong/snakey3/issues"),
+			href:     new window.URL("https://github.com/david-fong/capswalk/issues"),
 		}])
 		.map<Readonly<{
 			text: string;

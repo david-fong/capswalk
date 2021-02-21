@@ -1,5 +1,5 @@
 {
-	"name": "snakey_root",
+	"name": "root",
 	"description": "",
 	"language": "en-GB",
 	"enabledLanguageIds": [
@@ -21,7 +21,7 @@
 	],
 	"words": [
 		// Project-specific Terms:
-		"snakey",
+		"capswalk",
 		"fong",
 		"artif",
 		"bubbler",

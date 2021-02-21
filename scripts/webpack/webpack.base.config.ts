@@ -90,7 +90,7 @@ export const __BaseConfig = (distSubFolder: string): Require<webpack.Configurati
 		publicPath: `./`, // need trailing "/".
 		filename: "[name].js",
 		chunkFilename: "chunk/[name].js",
-		library: "snakey3",
+		library: "capswalk",
 		pathinfo: false, // unneeded. minor performance gain.
 	},
 

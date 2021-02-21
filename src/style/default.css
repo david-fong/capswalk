@@ -13,7 +13,7 @@
 	--colour-pFaceOpponent: grey !important;
 	--colour-pFaceImtlOpponent: grey !important;
 }}
-[data-sk-colour-scheme="snakey"] {
+[data-sk-colour-scheme="default"] {
 	--colour-mainFg: #e9eef3;
 	--colour-mainBg: #3f5e77;
 	--colour-tileFg: #e9eef3;
