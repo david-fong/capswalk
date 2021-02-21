@@ -26,9 +26,9 @@ export abstract class RobotPlayer extends Player {
 	/** @override */
 	declare public readonly game: GameManager<any>;
 
-	private _nextMovementTimerMultiplier: number;
+	private _nextMovementTimerMultiplier: number = undefined!;
 
-	private _scheduledMovementCallbackId: number;
+	private _scheduledMovementCallbackId: number = undefined!;
 
 	/**
 	 * @see RobotPlayer.of for the public, non-abstract interface.

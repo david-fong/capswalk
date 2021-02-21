@@ -24,7 +24,7 @@ export class Player extends _Player implements _Player.UserInfo {
 	#coord: Coord;
 	#health: Player.Health = 0.0;
 
-	public prevCoord: Coord;
+	public prevCoord: Coord = undefined!;
 
 	public get team(): Team        { return this.game.teams[this.teamId]!; }
 	public get coord(): Coord      { return this.#coord; }

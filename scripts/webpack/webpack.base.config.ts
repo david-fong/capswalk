@@ -1,5 +1,6 @@
 import path     = require("path");
 import webpack  = require("webpack");
+import { ESBuildPlugin } from "esbuild-loader";
 
 // https://github.com/TypeStrong/ts-loader#loader-options
 import type * as tsloader from "ts-loader/dist/interfaces";
@@ -19,6 +20,7 @@ export const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInst
 		"DEF.NodeEnv":    JSON.stringify(PACK_MODE),
 		"DEF.DevAssert":  JSON.stringify(PACK_MODE === "development"),
 	}),
+	new ESBuildPlugin(),
 ]};
 
 /**
@@ -28,19 +30,9 @@ export const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 	test: /\.ts$/,
 	exclude: [/node_modules/, /\.d\.ts$/],
 	use: {
-		loader: "ts-loader",
-		options: <tsloader.LoaderOptions>{
-			projectReferences: true,
-			compilerOptions: {
-				removeComments: false, // needed for webpack-import magic-comments
-				assumeChangesOnlyAffectDirectDependencies: PACK_MODE === "development",
-				//noEmit: true,
-			},
-			// https://github.com/TypeStrong/ts-loader#faster-builds
-			transpileOnly: true,
-			experimentalWatchApi: true,
-			experimentalFileCaching: true,
-			onlyCompileBundledFiles: true,
+		loader: "esbuild-loader",
+		options: {
+			loader: "ts",
 		},
 	},
 }, {

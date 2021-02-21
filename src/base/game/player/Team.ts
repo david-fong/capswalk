@@ -20,7 +20,7 @@ export class Team {
 	 * eliminated at an earlier point in the game. **The value zero
 	 * denotes _not-having-been-eliminated-yet_**.
 	 */
-	public elimOrder: number;
+	public elimOrder: number = Team.ElimOrder.STANDING;
 
 	public constructor(
 		public readonly id: Team.Id,
@@ -31,7 +31,6 @@ export class Team {
 		if (members.length === 0) {
 			throw new Error("Teams must have at least one member.");
 		}
-		this.elimOrder = Team.ElimOrder.STANDING;
 
 	}
 

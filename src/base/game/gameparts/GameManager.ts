@@ -21,7 +21,7 @@ export abstract class GameManager<
 
 	public readonly health: HealthInfo;
 
-	public readonly lang: Lang;
+	public readonly lang: Lang = undefined!;
 	readonly #langImportPromise: Promise<Lang>;
 
 	private readonly scoreInfo: ScoreInfo;
@@ -308,8 +308,8 @@ export namespace GameManager {
 		} else {
 			if (langDesc.numLeaves < gridClass.ambiguityThreshold) {
 				bad.push("The provided language does not have enough sequences"
-				+"to ensure that a shuffling operation will always succeed when"
-				+"paired with the provided grid system.");
+				+"\nto ensure that a shuffling operation will always succeed when"
+				+"\npaired with the provided grid system.");
 			}
 		}
 

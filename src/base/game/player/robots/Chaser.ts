@@ -13,8 +13,8 @@ import {
  */
 export class Chaser extends RobotPlayer.Decisive {
 
-	private readonly pred: Array<Player>;
-	private readonly prey: Array<Player>;
+	private readonly pred: Array<Player> = [];
+	private readonly prey: Array<Player> = [];
 
 	private readonly params: Readonly<Chaser.Behaviour>;
 	declare protected readonly _behaviours: TU.RoArr<RobotPlayer.Decisive.Behaviour>;
@@ -23,13 +23,13 @@ export class Chaser extends RobotPlayer.Decisive {
 
 	public constructor(game: GameManager<any>, desc: Player._CtorArgs["CHASER"]) {
 		super(game, desc);
-		Object.seal(this); //🧊
 		this.params = Object.freeze(Object.assign(
 			{},
 			Chaser.Behaviour.DEFAULT,
 			desc.familyArgs,
 		));
 		this.grid = this.game.grid;
+		Object.seal(this); //🧊
 		JsUtils.propNoWrite(this as Chaser,
 			"params", "grid",
 		);
