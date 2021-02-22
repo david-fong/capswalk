@@ -1,12 +1,14 @@
+#!/usr/bin/env node
 "use strict";
 const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
 
-/** @type {readonly webpack.Configuration[]} */
 const configs = require("./webpack.config");
 
 const DO_WATCH = process.env.WEBPACK_WATCH !== undefined;
+function DIST(rel = "") { return path.resolve(__dirname, "../../dist/", rel); }
+function ROOT(rel = "") { return path.resolve(__dirname, "../../", rel); }
 
 if (process.env.NODE_ENV === "production") {
 	// Generate dist/package.json:
@@ -27,7 +29,7 @@ if (process.env.NODE_ENV === "production") {
 		pkg.dependencies[name] = at;
 	}
 	fs.writeFile(
-		path.resolve(__dirname, "../../dist/package.json"),
+		DIST("package.json"),
 		JSON.stringify(pkg, undefined, "  "),
 		null, (err) => console.error(err),
 	);
@@ -35,7 +37,7 @@ if (process.env.NODE_ENV === "production") {
 
 
 // https://webpack.js.org/api/node/
-configs.forEach((config) => {
+Object.values(configs).forEach((config) => {
 	const compiler = webpack(config);
 	if (DO_WATCH) {
 		compiler.watch(config.watchOptions, (stats) => {
@@ -50,13 +52,29 @@ configs.forEach((config) => {
 				if (err["details"]) { console.error(err["details"]); }
 				return;
 			}
-			const info = stats.toJson();
-			if (stats.hasErrors())   { console.error(info.errors); }
-			if (stats.hasWarnings()) { console.warn(info.warnings); }
-
-			//console.log(stats?.toString(config.stats));
-			//console.log();
+			////const info = stats.toJson();
+			////if (stats.hasErrors())   { console.error(info.errors); }
+			////if (stats.hasWarnings()) { console.warn(info.warnings); }
+			console.log(stats?.toString(config.stats));
+			console.log();
 		});
 		compiler.close((err, result) => { });
 	}
 });
+
+
+if (process.env.NODE_ENV === "production") {
+	/** @type {(err: NodeJS.ErrnoException | null) => void} */
+	function errCb(err) {
+		if (err) console.error(err);
+	}
+	fs.copyFile(path.resolve(__dirname, "templates/stage.sh"), DIST("stage.sh"), errCb);
+	fs.copyFile(ROOT(".gitattributes"), DIST(".gitattributes"), errCb);
+	fs.copyFile(ROOT(".gitattributes"), DIST("client/.gitattributes"), errCb);
+	fs.copyFile(ROOT("LICENSE.md"), DIST("LICENSE.md"), errCb);
+	fs.copyFile(ROOT("LICENSE.md"), DIST("client/LICENSE.md"), errCb);
+	fs.copyFile(ROOT(".gitignore"), DIST("client/LICENSE.md"), errCb);
+	fs.writeFile(DIST(".git"       ), "gitdir: ../.git/worktrees/dist",   {}, errCb); // for repair purposes.
+	fs.writeFile(DIST("client/.git"), "gitdir: ../.git/worktrees/client", {}, errCb); // for repair purposes.
+	fs.writeFile(DIST("client/.nojekyll"), "", {}, errCb);
+}

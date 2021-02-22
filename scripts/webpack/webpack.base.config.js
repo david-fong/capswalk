@@ -18,7 +18,7 @@ exports.GAME_SERVERS = require("../../servers.json");
 const DO_SOURCE_MAPS = process.argv.includes("-m");
 
 /** @type {() => ReadonlyArray<Readonly<webpack.WebpackPluginInstance>>} */
-const BASE_PLUGINS = () => { return [
+const BASE_PLUGINS = () => Object.freeze([
 	new webpack.DefinePlugin({
 		// See [](src/node_modules/@types/my-type-utils.dts).
 		"DEF.PRODUCTION": JSON.stringify(MODE.prod),
@@ -26,7 +26,7 @@ const BASE_PLUGINS = () => { return [
 		"DEF.DevAssert":  JSON.stringify(MODE.dev),
 	}),
 	new esbuildLoader.ESBuildPlugin(),
-];};
+]);
 exports.BASE_PLUGINS = BASE_PLUGINS;
 
 /**

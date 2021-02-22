@@ -1,8 +1,7 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-
 const BASE = require("./webpack.base.config");
 const CLIENT = require("./webpack.client.config");
+
 /** */
 const SERVER_CONFIG = BASE.__BaseConfig("server");
 {
@@ -20,7 +19,7 @@ const TEST_CONFIG = BASE.__BaseConfig("test");
 		config.entry[name] = `./test/${name}/index.ts`;
 	});
 }
-module.exports = [
-	CLIENT.CLIENT_CONFIG,
-	SERVER_CONFIG,
-];
+module.exports = Object.freeze({
+	client: CLIENT.CLIENT_CONFIG,
+	server: SERVER_CONFIG,
+});

@@ -18,38 +18,36 @@ const CompressionPlugin = require("compression-webpack-plugin");
 /** @typedef {Exclude<NonNullable<webpack.Configuration["optimization"]>["splitChunks"], undefined | false>["cacheGroups"]} SplitChunksOpts */
 
 /** @type {() => Array<webpack.RuleSetRule>} */
-const WEB_MODULE_RULES = () => { return [
-	{
-		test: /\.css$/,
-		issuer: { not: [/\.m\.css/] },
-		use: [{
-			loader: MiniCssExtractPlugin.loader, options: {}
-		}, {
-			loader: "css-loader", options: {
-				modules: { auto: /\.m\.css$/, },
+const WEB_MODULE_RULES = () => Object.freeze([{
+	test: /\.css$/,
+	issuer: { not: [/\.m\.css/] },
+	use: [{
+		loader: MiniCssExtractPlugin.loader, options: {}
+	}, {
+		loader: "css-loader", options: {
+			modules: { auto: /\.m\.css$/, },
+		},
+	}],
+},{
+	// https://webpack.js.org/loaders/file-loader/
+	test: /\.(png|svg|jpe?g|gif)$/,
+	issuer: /\.css$/,
+	use: [(() => {
+		/** @type {(url: string, resourcePath: string, context: string) => string} */
+		const pathFunc = (url, resourcePath, context) => {
+			return path.relative(context, resourcePath).replace(/\\/g, "/");
+		};
+		return {
+			loader: "file-loader",
+			options: {
+				context: PROJECT_ROOT("assets"),
+				//name: "[name].[ext]",
+				outputPath: pathFunc,
+				publicPath: pathFunc,
 			},
-		}],
-	},{
-		// https://webpack.js.org/loaders/file-loader/
-		test: /\.(png|svg|jpe?g|gif)$/,
-		issuer: /\.css$/,
-		use: [(() => {
-			/** @type {(url: string, resourcePath: string, context: string) => string} */
-			const pathFunc = (url, resourcePath, context) => {
-				return path.relative(context, resourcePath).replace(/\\/g, "/");
-			};
-			return {
-				loader: "file-loader",
-				options: {
-					context: PROJECT_ROOT("assets"),
-					//name: "[name].[ext]",
-					outputPath: pathFunc,
-					publicPath: pathFunc,
-				},
-			};
-		})()],
-	},
-];};
+		};
+	})()],
+},]);
 /**
  */
 exports.CLIENT_CONFIG = __BaseConfig("client");
@@ -69,7 +67,7 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 		externals: [nodeExternals({
 			importType: "root",
 		})],
-	}
+	};
 	const config = Object.assign(exports.CLIENT_CONFIG, _assign);
 	config.resolve.modules.push(PROJECT_ROOT()); // for requiring assets.
 	config.module.rules.push(...WEB_MODULE_RULES());
@@ -130,5 +128,5 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 			threshold: 10240,
 			minRatio: 0.8,
 		}),
-	);}
+	); }
 }
