@@ -19,7 +19,3 @@ if [[ -z "$(git worktree list | command grep -o '\[gh-pages]$')" ]]; then
 fi
 
 (cd "${root}/scripts/webpack" && pnpm install --frozen-lockfile)
-
-# Transpile the webpack config:
-echo "transpiling webpack build-scripts..."
-pnpx tsc --project "${root}/scripts/webpack/tsconfig.json"

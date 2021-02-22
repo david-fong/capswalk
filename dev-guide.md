@@ -22,7 +22,7 @@ rm -r dist/{client,server}/*
 
 ```sh
 export NODE_ENV='production'
-./scripts/pack.sh -t
+pnpm run build
 # Sanity check that everything is running properly for online and offline implementations.
 
 cd dist/client
@@ -40,7 +40,7 @@ Restore development environment:
 ```sh
 cd ../..
 export NODE_ENV='development'
-./scripts/pack.sh
+pnpm run build
 ```
 
 ### Server Deployment (Heroku) 🎈

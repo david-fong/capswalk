@@ -3,13 +3,7 @@
 		"target": "es2019",
 		"lib": ["es2020"],
 		"module": "CommonJS",
-		"rootDir": ".",
-		"outDir": ".",
-		"listEmittedFiles": true,
 		"resolveJsonModule": true,
-
-		"alwaysStrict": true,
-		"skipLibCheck": true, // time-saving measure.
 
 		// Grammar Checking:
 		"strict": true,
@@ -19,9 +13,9 @@
 		"noUncheckedIndexedAccess": true,
 	},
 	"files": [
-		"webpack.base.config.ts",
-		"webpack.client.config.ts",
-		"webpack.config.ts",
-		"pack.ts",
+		"webpack.base.config.js",
+		"webpack.client.config.js",
+		"webpack.config.js",
+		"pack.js",
 	],
 }
