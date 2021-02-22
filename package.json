@@ -26,7 +26,6 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-static-gzip": "^2.1.1",
-    "tslib": "^2.1.0",
     "ws": "^7.4.3"
   },
   "devDependencies": {
@@ -36,6 +35,7 @@
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
     "eslint": "^7.20.0",
+    "tslib": "^2.1.0",
     "typescript": "^4.1.5",
     "typescript-plugin-css-modules": "^3.2.0"
   }

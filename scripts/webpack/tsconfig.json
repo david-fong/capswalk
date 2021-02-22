@@ -1,15 +1,13 @@
 {
 	"compilerOptions": {
-		"target": "es6",
+		"target": "es2019",
 		"lib": ["es2020"],
 		"module": "CommonJS",
 		"rootDir": ".",
 		"outDir": ".",
 		"listEmittedFiles": true,
-		"incremental": true,
 		"resolveJsonModule": true,
 
-		"removeComments": true,
 		"alwaysStrict": true,
 		"skipLibCheck": true, // time-saving measure.
 

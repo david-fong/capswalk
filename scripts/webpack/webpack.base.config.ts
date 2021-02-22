@@ -4,16 +4,20 @@ import { ESBuildPlugin } from "esbuild-loader";
 import nodeExternals = require("webpack-node-externals");
 type Require<T, K extends keyof T> = T & Pick<Required<T>, K>;
 
-export const PACK_MODE = (process.env.NODE_ENV) as ("development" | "production") || "development";
+export const MODE = (() => {
+	const val = (process.env.NODE_ENV) as ("development" | "production") || "development";
+	return Object.freeze({ val, dev: (val === "development"), prod: (val === "production") });
+})();
 export const PROJECT_ROOT = (...relative: string[]) => path.resolve(__dirname, "../..", ...relative);
 export const GAME_SERVERS = require("../../servers.json");
+const DO_SOURCE_MAPS: boolean = process.argv.includes("-m");
 
 export const BASE_PLUGINS = (): ReadonlyArray<Readonly<webpack.WebpackPluginInstance>> => { return [
 	new webpack.DefinePlugin({
 		// See [](src/node_modules/@types/my-type-utils.dts).
-		"DEF.PRODUCTION": JSON.stringify(PACK_MODE === "production"),
-		"DEF.NodeEnv":    JSON.stringify(PACK_MODE),
-		"DEF.DevAssert":  JSON.stringify(PACK_MODE === "development"),
+		"DEF.PRODUCTION": JSON.stringify(MODE.prod),
+		"DEF.NodeEnv":    JSON.stringify(MODE.val),
+		"DEF.DevAssert":  JSON.stringify(MODE.dev),
 	}),
 	new ESBuildPlugin(),
 ]};
@@ -24,9 +28,7 @@ export const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
 	exclude: [/node_modules/, /\.d\.ts$/],
 	use: {
 		loader: "esbuild-loader",
-		options: {
-			loader: "ts",
-		},
+		options: { loader: "ts", target: "es2017" },
 	},
 }, {
 	test: /\.json5$/,
@@ -43,7 +45,7 @@ export const MODULE_RULES = (): Array<webpack.RuleSetRule> => { return [{
  */
 export const __BaseConfig = (distSubFolder: string): Require<webpack.Configuration,
 "entry" | "plugins" | "resolve" | "output"> => { return {
-	mode: PACK_MODE,
+	mode: MODE.val,
 	name: distSubFolder,
 	stats: { /* https://webpack.js.org/configuration/stats/ */
 		children: false,
@@ -67,9 +69,9 @@ export const __BaseConfig = (distSubFolder: string): Require<webpack.Configurati
 	},
 	module: { rules: MODULE_RULES(), },
 	// https://webpack.js.org/plugins/source-map-dev-tool-plugin/
-	devtool: (PACK_MODE === "production")
+	devtool: (MODE.prod)
 		? "nosources-source-map"
-		: "cheap-source-map",
+		: (DO_SOURCE_MAPS ? "source-map" : false),
 	output: {
 		path: PROJECT_ROOT("dist", distSubFolder),
 		publicPath: `./`, // need trailing "/".
@@ -81,14 +83,8 @@ export const __BaseConfig = (distSubFolder: string): Require<webpack.Configurati
 
 	optimization: {
 		splitChunks: { chunks: "all", cacheGroups: {} },
-		removeAvailableModules: (PACK_MODE === "production"),
+		removeAvailableModules: (MODE.prod),
 	},
-	/* cache: {
-		type: "filesystem",
-		buildDependencies: {
-			config: [__filename],
-		},
-	}, */
 	watchOptions: {
 		ignored: [ "node_modules", "**/*.d.ts", "**/*.js", ],
 	},
@@ -102,7 +98,7 @@ export const __BaseConfig = (distSubFolder: string): Require<webpack.Configurati
  */
 export const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __BaseConfig>): void => {
 	config.target = "node14";
-	config.externals = [ nodeExternals(), ], // <- Does not whitelist tslib.
+	config.externals = [ nodeExternals(), ],
 	// alternative to above: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))
 	config.node = {
 		__filename: false,
@@ -113,7 +109,7 @@ export const __applyCommonNodeConfigSettings = (config: ReturnType<typeof __Base
 	// https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_javascript-source-map-tips
 	// https://webpack.js.org/configuration/output/#outputdevtoolmodulefilenametemplate
 	config.output.devtoolModuleFilenameTemplate = "../[resource-path]?[loaders]";
-	config.devtool = (PACK_MODE === "production")
-		? "cheap-module-source-map"
-		: "cheap-module-source-map";
+	config.devtool = (MODE.prod)
+		? "source-map"
+		: (DO_SOURCE_MAPS ? "eval-cheap-module-source-map" : false); // vscode not quite working without eval
 };

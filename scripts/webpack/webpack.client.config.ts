@@ -2,7 +2,7 @@ import path     = require("path");
 import webpack  = require("webpack");
 
 import {
-	PACK_MODE,
+	MODE,
 	PROJECT_ROOT,
 	GAME_SERVERS,
 	__BaseConfig,
@@ -65,7 +65,6 @@ export const CLIENT_CONFIG = __BaseConfig("client"); {
 			},
 		},
 		externals: [nodeExternals({
-			allowlist: ["tslib"],
 			importType: "root",
 		})],
 	});
@@ -103,7 +102,7 @@ export const CLIENT_CONFIG = __BaseConfig("client"); {
 		// })),
 		new CspHtmlPlugin({
 			"default-src": ["'self'"],
-			"script-src": "'self'", "style-src": "'self'",
+			"script-src": ["'self'"], "style-src": ["'self'"],
 			"child-src": "'none'", "object-src": "'none'", "base-uri": "'none'",
 			"connect-src": ["'self'", ...GAME_SERVERS.map((origin: string) => `wss://${origin}/ws/`)],
 			"form-action": "'none'",
@@ -118,7 +117,7 @@ export const CLIENT_CONFIG = __BaseConfig("client"); {
 			attributes: { disable: "true" }, // TODO.design this is a little weird. Used for moving to shadow-root.
 		}) as unknown as webpack.WebpackPluginInstance,
 	);
-	if (PACK_MODE === "production") { config.plugins.push(
+	if (MODE.prod) { config.plugins.push(
 		new CompressionPlugin({
 			filename: "[path][base].br[query]",
 			algorithm: "brotliCompress",

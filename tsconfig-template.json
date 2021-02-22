@@ -6,11 +6,9 @@
 		// Compiler Behaviour:
 		"moduleResolution": "node",
 		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"importHelpers": true,
-		"skipLibCheck": true, // time-saving measure.
-		"importsNotUsedAsValues": "error",
 		"resolveJsonModule": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true, // time-saving measure.
 
 		// Language Settings:
 		"target": "es2017",
@@ -22,6 +20,7 @@
 		"sourceMap": true,
 		//"removeComments": true,
 		"alwaysStrict": true,
+		"importHelpers": true,
 		"useDefineForClassFields": true,
 
 		// Grammar Checking:
@@ -30,6 +29,7 @@
 		"noImplicitReturns": true,
 		"noImplicitAny": true,
 		"noUncheckedIndexedAccess": true,
+		"importsNotUsedAsValues": "error",
 
 		// Linting:
 		"noFallthroughCasesInSwitch": true,

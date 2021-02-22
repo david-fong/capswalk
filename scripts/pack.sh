@@ -18,9 +18,7 @@ else
     echo
 fi
 
-# --verbose
-declare -r doneMsg="$(echo -e "\n\n\n=== BUILD DONE ===\n\n\n")"
-time node --title="webpack build" "${scripts}/webpack/pack.js"
+node --title="webpack build" "${scripts}/webpack/pack.js"
 
 if [[ "$NODE_ENV" = 'production' ]]
 then

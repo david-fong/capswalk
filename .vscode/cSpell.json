@@ -76,6 +76,7 @@
 		"devtool",
 		"endregion", // for IDE folding
 		"entrypoint",
+		"esbuild",
 		"eslintrc's",
 		"heroku",
 		"javascript's",
