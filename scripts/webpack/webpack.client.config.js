@@ -1,11 +1,14 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-
 const path = require("path");
 const webpack = require("webpack");
-
-const { MODE, PROJECT_ROOT, GAME_SERVERS} = require("./webpack.base.config");
 const nodeExternals = require("webpack-node-externals");
+
+const {
+	MODE,
+	PROJECT_ROOT,
+	__BaseConfig,
+	GAME_SERVERS,
+} = require("./webpack.base.config");
 
 const HtmlPlugin = require("html-webpack-plugin");
 const CspHtmlPlugin = require("csp-html-webpack-plugin");
@@ -15,40 +18,38 @@ const CompressionPlugin = require("compression-webpack-plugin");
 /** @typedef {Exclude<NonNullable<webpack.Configuration["optimization"]>["splitChunks"], undefined | false>["cacheGroups"]} SplitChunksOpts */
 
 /** @type {() => Array<webpack.RuleSetRule>} */
-const WEB_MODULE_RULES = () => {
-	return [{
-			test: /\.css$/,
-			issuer: { not: [/\.m\.css/] },
-			use: [{
-					loader: MiniCssExtractPlugin.loader, options: {}
-				}, {
-					loader: "css-loader", options: {
-						modules: {
-							auto: /\.m\.css$/,
-						},
-					},
-				}],
+const WEB_MODULE_RULES = () => { return [
+	{
+		test: /\.css$/,
+		issuer: { not: [/\.m\.css/] },
+		use: [{
+			loader: MiniCssExtractPlugin.loader, options: {}
 		}, {
-			// https://webpack.js.org/loaders/file-loader/
-			test: /\.(png|svg|jpe?g|gif)$/,
-			issuer: /\.css$/,
-			use: [(() => {
-					/** @type {(url: string, resourcePath: string, context: string) => string} */
-					const pathFunc = (url, resourcePath, context) => {
-						return path.relative(context, resourcePath).replace(/\\/g, "/");
-					};
-					return {
-						loader: "file-loader",
-						options: {
-							context: PROJECT_ROOT("assets"),
-							//name: "[name].[ext]",
-							outputPath: pathFunc,
-							publicPath: pathFunc,
-						},
-					};
-				})()],
-		},];
-};
+			loader: "css-loader", options: {
+				modules: { auto: /\.m\.css$/, },
+			},
+		}],
+	},{
+		// https://webpack.js.org/loaders/file-loader/
+		test: /\.(png|svg|jpe?g|gif)$/,
+		issuer: /\.css$/,
+		use: [(() => {
+			/** @type {(url: string, resourcePath: string, context: string) => string} */
+			const pathFunc = (url, resourcePath, context) => {
+				return path.relative(context, resourcePath).replace(/\\/g, "/");
+			};
+			return {
+				loader: "file-loader",
+				options: {
+					context: PROJECT_ROOT("assets"),
+					//name: "[name].[ext]",
+					outputPath: pathFunc,
+					publicPath: pathFunc,
+				},
+			};
+		})()],
+	},
+];};
 /**
  */
 exports.CLIENT_CONFIG = __BaseConfig("client");
@@ -73,9 +74,10 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 	config.resolve.modules.push(PROJECT_ROOT()); // for requiring assets.
 	config.module.rules.push(...WEB_MODULE_RULES());
 	Object.assign(config.resolve.alias, {});
+
 	config.optimization.minimizer = ["...", new CssMinimizerPlugin({
-			minimizerOptions: { preset: ["default", { discardComments: {}, }] }
-		})];
+		minimizerOptions: { preset: ["default", { discardComments: {}, }] }
+	})];
 	Object.assign(config.optimization.splitChunks.cacheGroups, /** @type {SplitChunksOpts} */{
 		"game-css": {
 			test: /src[/\\]base[/\\].*\.css$/,

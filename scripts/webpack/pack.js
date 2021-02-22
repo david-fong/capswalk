@@ -1,8 +1,8 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
+
 /** @type {readonly webpack.Configuration[]} */
 const configs = require("./webpack.config");
 
@@ -39,22 +39,23 @@ configs.forEach((config) => {
 	const compiler = webpack(config);
 	if (DO_WATCH) {
 		compiler.watch(config.watchOptions, (stats) => {
-			if (stats)
-				console.log(stats);
+			if (stats) console.log(stats);
 		});
 	}
 	else {
 		compiler.run((err, stats) => {
-			console.log(`\n\n${"=".repeat(32)} ${config.name.toUpperCase()} ${"=".repeat(32)}\n`);
+			console.log(`\n${"=".repeat(32)} ${config.name.toUpperCase()} ${"=".repeat(32)}\n`);
 			if (err) {
 				console.error(err.stack || err);
-				if (err["details"]) {
-					console.error(err["details"]);
-				}
+				if (err["details"]) { console.error(err["details"]); }
 				return;
 			}
-			console.log(stats?.toString(config.stats));
-			console.log();
+			const info = stats.toJson();
+			if (stats.hasErrors())   { console.error(info.errors); }
+			if (stats.hasWarnings()) { console.warn(info.warnings); }
+
+			//console.log(stats?.toString(config.stats));
+			//console.log();
 		});
 		compiler.close((err, result) => { });
 	}
