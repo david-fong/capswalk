@@ -4,6 +4,7 @@ const webpack = require("webpack");
 const esbuildLoader = require("esbuild-loader");
 const nodeExternals = require("webpack-node-externals");
 /** @typedef {<T, K extends keyof T>() => T & Pick<Required<T>, K>} Require */
+/** @typedef {webpack.Configuration & Pick<Required<webpack.Configuration>, "entry" | "plugins" | "resolve" | "output">} BaseConfig */
 
 const MODE = (() => {
 	const val = (process.env.NODE_ENV) || "development";
@@ -15,7 +16,7 @@ const PROJECT_ROOT = (...relative) => path.resolve(__dirname, "../..", ...relati
 exports.PROJECT_ROOT = PROJECT_ROOT;
 
 exports.GAME_SERVERS = require("../../servers.json");
-const DO_SOURCE_MAPS = process.argv.includes("-m");
+const DO_SOURCE_MAPS = true; //process.argv.includes("-m");
 
 /** @type {() => ReadonlyArray<Readonly<webpack.WebpackPluginInstance>>} */
 const BASE_PLUGINS = () => Object.freeze([
@@ -54,7 +55,7 @@ exports.MODULE_RULES = () => {
  * - [ts-loader](https://github.com/TypeStrong/ts-loader#loader-options)
  *
  * @returns A standalone ("deep-copy") basic configuration.
- * @type {() => webpack.Configuration & Pick<Required<webpack.Configuration>, "entry" | "plugins" | "resolve" | "output">}
+ * @type {() => BaseConfig}
  */
 exports.__BaseConfig = (distSubFolder) => { return {
 	mode: MODE.val,
@@ -101,6 +102,7 @@ exports.__BaseConfig = (distSubFolder) => { return {
 };};
 
 /**
+ * @type {(config: BaseConfig) => void}
  */
 exports.__applyCommonNodeConfigSettings = (config) => {
 	config.target = "node14";

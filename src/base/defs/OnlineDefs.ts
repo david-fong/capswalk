@@ -22,12 +22,12 @@ export abstract class Group { }
 export namespace Group {
 	export type Name = string;
 	export namespace Name {
-		export const REGEXP = /(?:[a-zA-Z0-9:-]+)/;
+		export const REGEXP = /^(?:[a-zA-Z0-9:-]+)$/;
 		export const MaxLength = 30;
 	}
 	export type Passphrase = string;
 	export namespace Passphrase {
-		export const REGEXP = /(?:[a-zA-Z0-9:-]*)/;
+		export const REGEXP = /^(?:[a-zA-Z0-9:-]*)$/;
 		export const MaxLength = 30;
 	}
 	export const GameServerReconnectionAttempts = 2;

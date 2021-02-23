@@ -2,28 +2,28 @@
 import "style/common.css";
 import "style/_barrel.css";
 
-// None shall touch Object.prototype >:(
-([
+// In-House `--frozen-intrinsics`:
+(<(keyof typeof globalThis)[]>[
 	"Object", "Array", "Map", "Set", "WeakMap", "WeakSet",
 	"String", "Number", "RegExp",
+	// .-- web-specific --.
 	"HTMLElement", "HTMLDivElement", "HTMLSpanElement", "HTMLPreElement",
 	"HTMLButtonElement", "HTMLInputElement", "HTMLSelectElement", "HTMLOptionElement",
 	"HTMLScriptElement", "HTMLStyleElement", "HTMLLinkElement", "HTMLAnchorElement",
 	"HTMLDocument", "HTMLIFrameElement", "HTMLCanvasElement",
-] as (keyof typeof globalThis)[])
+])
 .forEach((key) => {
-	Object.defineProperty(window, key, {
+	Object.defineProperty(globalThis, key, {
 		enumerable: true,
 		writable: false,
 		configurable: false,
 	});
-	Object.freeze(window[key as any]);
-	Object.freeze((window[key as any] as any).prototype);
+	Object.freeze((globalThis as any)[key]);
+	Object.freeze((globalThis as any)[key].prototype);
 });
+// =========================================
 
 import { TopLevel } from "./TopLevel";
-
-export { OmHooks } from "defs/OmHooks";
 
 // window.onerror = (msg, url, lineNum) => {
 //     alert(`Error message: ${msg}\nURL: ${url}\nLine Number: ${lineNum}`);
@@ -49,7 +49,7 @@ console.info("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
 /**
  * https://developers.google.com/web/fundamentals/primers/service-workers
  */
-((): void => {
+/* ((): void => {
 if (_top.siteServerType === TopLevel.SiteServerType.GITHUB && "serviceWorker" in navigator) {
 	window.addEventListener('load', function() {
 		// https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
@@ -64,4 +64,4 @@ if (_top.siteServerType === TopLevel.SiteServerType.GITHUB && "serviceWorker" in
 		// https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
 	});
 }
-})();
+})(); */

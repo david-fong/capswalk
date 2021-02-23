@@ -18,13 +18,6 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 	#isInGroup: boolean = false;
 	#isHost: boolean = false; public get isHost(): boolean { return this.#isHost; }
 
-	/** Throws an error if called before this screen is lazy-loaded. */
-	public get loginInfo(): Readonly<{ name?: Group.Name, passphrase?: Group.Passphrase }> {
-		return Object.freeze({
-			name: this.in.groupName.value,
-			pwd: this.in.passphrase.value,
-		});
-	}
 	readonly #wsMessageCb: (ev: MessageEvent<string>) => void;
 	private get ws(): WebSocket {
 		return this.top.webSocket!;
@@ -252,7 +245,10 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				this.#isHost = true;
 				this.ws.send(JSON.stringify([
 					JoinerEv.Create.NAME,
-					<JoinerEv.Create.Req>this.loginInfo,
+					Object.freeze(<JoinerEv.Create.Req>{
+						groupName: this.in.groupName.value,
+						passphrase: this.in.passphrase.value,
+					}),
 				]));
 			}
 		};
@@ -263,11 +259,10 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 
 	/** */
 	private _attemptToJoinExistingGroup(): void {
-		const userInfo = StorageHooks.getLastUserInfo();
 		this.ws.send(JSON.stringify([JoinerEv.TryJoin.NAME, <JoinerEv.TryJoin.Req>{
 			groupName: this.in.groupName.value,
 			passphrase: this.in.passphrase.value,
-			userInfo,
+			userInfo: StorageHooks.getLastUserInfo(),
 		}]));
 	}
 

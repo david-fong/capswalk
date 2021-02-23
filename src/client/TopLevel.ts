@@ -43,11 +43,8 @@ export class TopLevel {
 	public get clientIsGroupHost(): boolean {
 		return this.#allScreens.dict.groupJoiner.isHost;
 	}
-	public get groupLoginInfo(): Readonly<{ name?: string, passphrase?: string }> {
-		return this.#allScreens.dict.groupJoiner.loginInfo;
-	}
 
-
+	/** */
 	public constructor() {
 		this.defaultDocTitle = document.title;
 		this.siteServerType = (() => {
@@ -120,7 +117,7 @@ export namespace TopLevel {
 			description: "dev shortcut :)",
 		},
 		[SiteServerType.DEDICATED]: {
-			value: window.location.origin,
+			value: (() => { const url = new URL(window.location.origin); url.protocol = "ws"; return url.toString(); })(),
 			description: "this page's server",
 		},
 	});
