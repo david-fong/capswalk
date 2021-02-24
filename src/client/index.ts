@@ -32,7 +32,7 @@ import { TopLevel } from "./TopLevel";
 
 const _top = new TopLevel();
 export const top = (() => {
-	return (DEF.NodeEnv === "development") ? _top : undefined;
+	return (DEF.PRODUCTION) ? undefined : _top;
 })();
 
 export function screen(): TopLevel["currentScreen"] {

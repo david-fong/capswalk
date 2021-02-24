@@ -20,7 +20,6 @@
 		"sourceMap": true,
 		//"removeComments": true,
 		"alwaysStrict": true,
-		"importHelpers": true,
 		"useDefineForClassFields": true,
 
 		// Grammar Checking:

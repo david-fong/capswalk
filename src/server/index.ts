@@ -1,4 +1,11 @@
 
+if (!globalThis.DEF?.PRODUCTION) {
+	globalThis.DEF = Object.freeze({
+		PRODUCTION: false,
+		DevAssert: true,
+	});
+}
+
 // In-House `--frozen-intrinsics`:
 (<(keyof typeof globalThis)[]>[
 	"Object", "Array", "Map", "Set", "WeakMap", "WeakSet",
@@ -51,7 +58,7 @@ import { groups, wsMessageCb } from "./joinerCb";
 
 /** EXPRESS ROOT */
 // At runtime, __dirname resolves to ":/dist/server/"
-const CLIENT_ROOT = path.resolve(__dirname, "../client");
+const CLIENT_ROOT = path.resolve(__dirname, DEF.PRODUCTION ? "../client" : "../../dist/client");
 app
 .disable("x-powered-by")
 .use("/", expressStaticGzip(CLIENT_ROOT, {

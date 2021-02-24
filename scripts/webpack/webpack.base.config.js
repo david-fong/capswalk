@@ -23,7 +23,6 @@ const BASE_PLUGINS = () => Object.freeze([
 	new webpack.DefinePlugin({
 		// See [](src/node_modules/@types/my-type-utils.dts).
 		"DEF.PRODUCTION": JSON.stringify(MODE.prod),
-		"DEF.NodeEnv":    JSON.stringify(MODE.val),
 		"DEF.DevAssert":  JSON.stringify(MODE.dev),
 	}),
 	new esbuildLoader.ESBuildPlugin(),
