@@ -20,9 +20,9 @@ export class Group extends _Group {
 	public readonly passphrase: _Group.Passphrase;
 
 	declare protected readonly wssBroadcast: (evName: string, ...data: any[]) => void;
-	public readonly sockets = new Set<WebSocket>();
+	protected readonly sockets = new Set<WebSocket>();
 	protected groupHostSocket: WebSocket;
-	protected readonly userInfo: WeakMap<WebSocket, Player.UserInfo>;
+	protected readonly userInfo = new WeakMap<WebSocket, Player.UserInfo>();
 
 	#currentGame: ServerGame<any> | undefined;
 	public get isCurrentlyPlayingAGame(): boolean {
@@ -45,6 +45,7 @@ export class Group extends _Group {
 		Object.defineProperty(this, "wssBroadcast", { value: args.wssBroadcast });
 		this.name = args.name;
 		this.passphrase = args.passphrase;
+		JsUtils.propNoWrite(this as Group, "name", "passphrase");
 		this.#currentGame = undefined;
 
 		this.#deleteExternalRefs = args.deleteExternalRefs;
@@ -82,12 +83,12 @@ export class Group extends _Group {
 
 	/** Let someone into this group */
 	public admitSocket(ws: WebSocket, userInfo: Player.UserInfo): void {
+		if (this.sockets.has(ws)) {
+			return; //⚡
+		}
 		console.info(`socket connect (group):  ${SOCKET_ID(ws)}`);
 		if (this.#currentGame) {
-			// TODO.design is there a good reason to do the below?
-			// Prevent new players from joining while the group is playing
-			// a game:
-			ws.close();
+			// no-op
 		}
 		this.userInfo.set(ws, userInfo);
 		{
@@ -100,7 +101,7 @@ export class Group extends _Group {
 				this.sockets.forEach((s) => s.send(data));
 			}
 			// Notify the new player of all other players:
-			const res: {[socketId: string]: Player.UserInfo} = {};
+			const res: Res = {};
 			this.sockets.forEach((s) => {
 				res[SOCKET_ID(s)] = this.userInfo.get(s)!;
 			});
@@ -120,6 +121,16 @@ export class Group extends _Group {
 		ws.addEventListener("close", this.#wsLeaveCb);
 		ws.addEventListener("message", this.#wsMessageCb);
 		this.sockets.add(ws);
+	}
+
+	/** Kick someone from this group. */
+	public kickSocket(ws: WebSocket): boolean {
+		if (this.sockets.delete(ws)) {
+			ws.removeEventListener("close", this.#wsLeaveCb);
+			ws.removeEventListener("message", this.#wsMessageCb);
+			return true;
+		}
+		return false;
 	}
 
 	/** */

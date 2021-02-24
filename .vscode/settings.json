@@ -21,7 +21,7 @@
         "{**/.eslintrc.*,.eslintignore}": false,
     },
     "files.associations": {
-        //"**/dist/{client,server}/**/*.js": "json", // Loads bundled js much faster.
+        //"**/dist/{client,server}/**/*.js": "text", // Loads bundled js much faster.
         ".eslintignore": "ignore",
     },
     "json.schemas": [
@@ -35,7 +35,7 @@
             "fileMatch": [ "*.webmanifest" ],
             "url": "http://json.schemastore.org/web-manifest",
         },{
-            "fileMatch": [ "*package.json" ],
+            "fileMatch": [ "*package*.json" ],
             "url": "https://json.schemastore.org/package",
         },{
             "fileMatch": [ ".eslintrc.json" ],

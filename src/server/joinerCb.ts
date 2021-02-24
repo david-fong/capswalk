@@ -57,7 +57,9 @@ export function wsMessageCb(ev: WebSocket.MessageEvent): void {
 			throw new Error(`a socket attempted to connect to group`
 			+` \`${group.name}\` without providing userInfo.`);
 		}
-		groups.forEach((group) => group.sockets.delete(ev.target));
+		for (const group of groups.values()) {
+			if (group.kickSocket(ev.target)) break;
+		}
 		group.admitSocket(ev.target, userInfo);
 		break;
 	}
