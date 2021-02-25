@@ -34,20 +34,18 @@ exports.BASE_PLUGINS = BASE_PLUGINS;
  * https://webpack.js.org/loaders/
  * @type {() => Array<webpack.RuleSetRule>}
  */
-exports.MODULE_RULES = () => {
-	return [{
-		test: /\.ts$/,
-		exclude: [/node_modules/, /\.d\.ts$/],
-		use: {
-			loader: "esbuild-loader",
-			options: { loader: "ts", target: "es2017" },
-		},
-	}, {
-		test: /\.json5$/,
-		type: "json",
-		parser: { parse: require("json5").parse },
-	},];
-};
+exports.MODULE_RULES = () => [{
+	test: /\.ts$/,
+	exclude: [/node_modules/, /\.d\.ts$/],
+	use: {
+		loader: "esbuild-loader",
+		options: { loader: "ts", target: "es2017" },
+	},
+},{
+	test: /\.json5$/,
+	type: "json",
+	parser: { parse: require("json5").parse },
+}];
 
 /**
  * - [typescript docs](https://www.typescriptlang.org/docs/handbook/react-&-webpack.html)
@@ -65,16 +63,16 @@ exports.__BaseConfig = (distSubFolder) => { return {
 		colors: true,
 	},
 	context: PROJECT_ROOT(),
-	entry: { /* Left to each branch config */},
+	entry: {/* Left to each branch config */},
 	plugins: [...BASE_PLUGINS(),],
 	resolve: {
 		extensions: [".ts", ".js"],
 		modules: [
 			PROJECT_ROOT("src"),
 			PROJECT_ROOT("src/base"),
-			PROJECT_ROOT("node_modules"),
+			//PROJECT_ROOT("node_modules"),
 		],
-		alias: { /* Left to each branch config */},
+		alias: {/* Left to each branch config */},
 	},
 	resolveLoader: {
 		modules: [PROJECT_ROOT("scripts/webpack/node_modules")],

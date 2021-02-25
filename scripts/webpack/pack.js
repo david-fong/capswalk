@@ -6,7 +6,7 @@ const webpack = require("webpack");
 
 const configs = require("./webpack.config");
 
-const DO_WATCH = process.env.WEBPACK_WATCH !== undefined;
+const DO_WATCH = process.argv.includes("--watch");
 function DIST(rel = "") { return path.resolve(__dirname, "../../dist/", rel); }
 function ROOT(rel = "") { return path.resolve(__dirname, "../../", rel); }
 
@@ -40,6 +40,7 @@ if (process.env.NODE_ENV === "production") {
 Object.values(configs).forEach((config) => {
 	const compiler = webpack(config);
 	if (DO_WATCH) {
+		console.info(`running webpack in watch mode (${config.name}) ...`);
 		compiler.watch(config.watchOptions, (stats) => {
 			if (stats) console.log(stats);
 		});
@@ -52,9 +53,6 @@ Object.values(configs).forEach((config) => {
 				if (err["details"]) { console.error(err["details"]); }
 				return;
 			}
-			////const info = stats.toJson();
-			////if (stats.hasErrors())   { console.error(info.errors); }
-			////if (stats.hasWarnings()) { console.warn(info.warnings); }
 			console.log(stats?.toString(config.stats));
 			console.log();
 		});

@@ -21,7 +21,7 @@
         "{**/.eslintrc.*,.eslintignore}": false,
     },
     "files.associations": {
-        //"**/dist/{client,server}/**/*.js": "text", // Loads bundled js much faster.
+        "**/dist/{client,server}/**/*.js": "text", // Loads bundled js much faster.
         ".eslintignore": "ignore",
     },
     "json.schemas": [
