@@ -46,6 +46,7 @@ Object.values(configs).forEach((config) => {
 		});
 	}
 	else {
+		console.info("(pass `--watch` for watch mode)");
 		compiler.run((err, stats) => {
 			console.log(`\n${"=".repeat(32)} ${config.name.toUpperCase()} ${"=".repeat(32)}\n`);
 			if (err) {

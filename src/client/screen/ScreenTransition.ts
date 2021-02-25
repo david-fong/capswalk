@@ -49,10 +49,9 @@ export class ScreenTransition {
 		}
 		await request.beforeUnblurAwait;
 
+		if (oldFocusEl instanceof HTMLElement) { oldFocusEl.focus(); }
 		if (request.beforeUnblur !== undefined) {
 			request.beforeUnblur();
-		} else {
-
 		}
 		await this._triggerCssTransition(() => {
 			gdStyle.pointerEvents = "none";
