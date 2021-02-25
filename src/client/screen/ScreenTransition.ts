@@ -33,20 +33,26 @@ export class ScreenTransition {
 
 	/** */
 	private async _atomicDo(request: ScreenTransition.Request): Promise<void> {
+		const oldFocusEl = document.activeElement;
 		this.baseElem.focus();
 		const gdStyle = this.baseElem.style;
+
 		await this._triggerCssTransition(() => {
 			gdStyle.pointerEvents = "all";
 			gdStyle.opacity = "1.0";
 		});
+
 		if (request.intermediateTransitionTrigger !== undefined) {
 			await this._triggerCssTransition(() => {
 				request.intermediateTransitionTrigger!();
 			});
 		}
 		await request.beforeUnblurAwait;
+
 		if (request.beforeUnblur !== undefined) {
 			request.beforeUnblur();
+		} else {
+
 		}
 		await this._triggerCssTransition(() => {
 			gdStyle.pointerEvents = "none";
@@ -73,7 +79,7 @@ export namespace ScreenTransition {
 		 * which should finished before the next screen is visible to
 		 * run during the transition.
 		 */
-		beforeUnblurAwait?: Promise<any>,
+		beforeUnblurAwait?: Promise<void>,
 		/**
 		 * Triggers a style change that transitions between values.
 		 * */

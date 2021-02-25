@@ -110,8 +110,6 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 		}
 		if (!this.#hasLazyLoaded) {
 			this._lazyLoad();
-			this.#parentElem.appendChild(this.baseElem);
-			JsUtils.Web.prependComment(this.baseElem, `${this.screenNames.spaceyUppercase} SCREEN`);
 			this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
 			this.#hasLazyLoaded = true;
 		}
@@ -132,12 +130,12 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	/** @final **Do not override.** */
 	public _onAfterEnter(): void {
 		this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
-		this.baseElem.setAttribute("aria-hidden", "false");
+		this.#parentElem.appendChild(this.baseElem);
 	}
 	/** @final **Do not override.** */
 	public _onAfterLeave(): void {
 		delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT]; // non-existant.
-		this.baseElem.setAttribute("aria-hidden", "true");
+		this.baseElem.remove();
 	}
 
 	/** @virtual */
@@ -190,17 +188,17 @@ export namespace BaseScreen {
 	export enum Id {
 		// General:     ===================
 		HOME            = "home",
-		HOW_TO_PLAY     = "howToPlay",
-		HOW_TO_HOST     = "howToHost",
-		COLOUR_CTRL     = "colourControl",
+		HOW_TO_PLAY     = "how-to-play",
+		HOW_TO_HOST     = "how-to-host",
+		COLOUR_CTRL     = "colour-control",
 		// Offline:     ===================
-		SETUP_OFFLINE   = "setupOffline",
-		PLAY_OFFLINE    = "playOffline",
+		SETUP_OFFLINE   = "setup-offline",
+		PLAY_OFFLINE    = "play-offline",
 		// Online:      ===================
-		GROUP_JOINER    = "groupJoiner",
-		SETUP_ONLINE    = "setupOnline",
-		GROUP_LOBBY     = "groupLobby",
-		PLAY_ONLINE     = "playOnline",
+		GROUP_JOINER    = "group-joiner",
+		SETUP_ONLINE    = "setup-online",
+		GROUP_LOBBY     = "group-lobby",
+		PLAY_ONLINE     = "play-online",
 		// =======      ===================
 	}
 	Object.freeze(Id);

@@ -41,7 +41,7 @@ export class TopLevel {
 
 	/** */
 	public get clientIsGroupHost(): boolean {
-		return this.#allScreens.dict.groupJoiner.isHost;
+		return this.#allScreens.dict["group-joiner"].isHost;
 	}
 
 	/** */
@@ -92,8 +92,8 @@ export class TopLevel {
 	 * Not actually deprecated :P
 	 */
 	public get game() {
-		return (this.#allScreens.dict.playOffline).probeCurrentGame
-			?? (this.#allScreens.dict.playOnline ).probeCurrentGame;
+		return (this.#allScreens.dict["play-offline"]).probeCurrentGame
+			?? (this.#allScreens.dict["play-online" ]).probeCurrentGame;
 	}
 
 	/**

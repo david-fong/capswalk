@@ -47,7 +47,7 @@ export namespace Screen {
 		SCREEN_TINT: "screen-tint",
 	};
 	export const Class = <const>{
-		BASE:        "sk-screen",
+		BASE:        "screen",
 		NAV_NEXT:    "screen--next-button",
 		NAV_PREV:    "screen--prev-button",
 	};
