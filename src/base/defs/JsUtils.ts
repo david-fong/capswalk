@@ -29,7 +29,7 @@ export namespace JsUtils {
 		ctor: {new(...args: any[]): T} | Function, // <- allow abstract classes
 		...propNames: TU.RoArr<keyof T & string> | TU.RoArr<string>
 	): void {
-		const hasProps = Object.freeze(Object.getOwnPropertyNames(ctor.prototype));
+		const hasProps = Object.getOwnPropertyNames(ctor.prototype).freeze();
 		propNames.forEach((propName) => {
 			if (DEF.DevAssert) {
 				if (!hasProps.includes(propName as string)) {
@@ -49,9 +49,9 @@ export namespace JsUtils {
 		descriptor: PropertyDescriptor,
 		inst: T, ...propNames: TU.RoArr<string>
 	): void {
-		const hasProps = Object.freeze(Object.getOwnPropertyNames(inst));
 		for (const propName of propNames) {
 			if (DEF.DevAssert) {
+				const hasProps = Object.getOwnPropertyNames(inst).freeze();
 				if (!hasProps.includes(propName as string)) {
 					const msg = `\`${(inst as any).__proto__.constructor.name}\``
 					+ ` instance has no property named \"${propName}\"`;

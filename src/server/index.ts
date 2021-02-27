@@ -1,18 +1,5 @@
 
-// In-House `--frozen-intrinsics`:
-(<(keyof typeof globalThis)[]>[
-	"Object", "String", "Number", "RegExp", "Date",
-	"Array", "Map", "Set", "WeakMap", "WeakSet",
-])
-.forEach((key) => {
-	Object.defineProperty(globalThis, key, {
-		enumerable: true,
-		writable: false,
-		configurable: false,
-	});
-	Object.freeze((globalThis as any)[key]);
-	Object.freeze((globalThis as any)[key].prototype);
-});
+import "./Customizations";
 
 // Override stack trace to shorten file paths:
 process.on("uncaughtException", function processOnUncaughtException(err) {

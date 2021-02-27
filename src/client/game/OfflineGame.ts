@@ -1,14 +1,12 @@
 import {
-	JsUtils, Game, Coord,
-	VisibleGrid, Player,
+	Game, Coord,
+	VisibleGrid, Player, OperatorPlayer,
+	InitBrowserGameCtorMaps,
 } from "./BrowserGame";
+InitBrowserGameCtorMaps();
 
 import { GameManager }    from "game/gameparts/GameManager";
 import { RobotPlayer }    from "game/player/RobotPlayer";
-import { OperatorPlayer } from "game/player/OperatorPlayer";
-
-import InitBrowserGameCtorMaps from "game/ctormaps/CmapBrowser";
-InitBrowserGameCtorMaps();
 
 /**
  * @final

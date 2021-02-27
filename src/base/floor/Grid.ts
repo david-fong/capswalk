@@ -136,7 +136,7 @@ export abstract class Grid<S extends Coord.System> {
 		dimensions: Grid.Dimensions[Coord.System],
 	): TU.RoArr<TU.RoArr<Coord>> {
 		const avoidSet = new Set<Coord>();
-		return Object.freeze(teamSizes.map((numMembers: number) => {
+		return teamSizes.map((numMembers: number) => {
 			const teamSpawnCoords: Array<Coord> = [];
 			while (numMembers > 0) {
 				let coord: Coord;
@@ -147,8 +147,8 @@ export abstract class Grid<S extends Coord.System> {
 				avoidSet.add(coord);
 				numMembers--;
 			}
-			return Object.freeze(teamSpawnCoords);
-		}));
+			return teamSpawnCoords.freeze();
+		}).freeze();
 	}
 }
 export namespace Grid {

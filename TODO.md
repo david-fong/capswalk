@@ -3,7 +3,7 @@
 
 ## High-level
 
-1. Finalize what I want to game actually be :(
+1. Finalize what I want to game to actually be :(
 1. Implement a keyboard learning / language learning page.
 1. Harden server against malicious/malformed client inputs.
     - handle malformed websocket data from client. Just ignore it?
@@ -15,11 +15,14 @@
 
 ### Things I feel like doing
 
+1. Change server sockets set into a map from sockets to groups.
+1. turn off tsconfig `importHelpers` and uninstall tslib.
 1. Switch from socket.io to ws. I want to manage my own pubsub.
     - Implement TryJoin response.
       - Make sure the client is able to receive userinfo for all existing users after the screen transition to enter the lobby screen in the forward direction.
     - Implement heartbeat to check for broken connections.
 1. Implement lang/coordsys compatibility check that coord system guarantees that there exists a tile `T` with `numDests(T) <= N` where `N` is the number of root nodes in the language. Otherwise, the roots will never see the light of day, and spawning them will make it impossible to finish the reset.
+    - Actually, that value of N is wrong. Consider morse. Instead, `N` should be the number of leaf nodes when excluding the leaf nodes of the root node with the most leaves... I think.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
@@ -44,8 +47,6 @@
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
 1. Spectator mode for online games? O\_o
-1. Implement the scores/player-listing sidebar in `__PlayScreen`.
-    - Also show scores (very small size) on top of player faces.
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
 1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
@@ -90,9 +91,8 @@
   - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
 - [custom mouse images!](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Basic_User_Interface/Using_URL_values_for_the_cursor_property)
 
-### Dependency Management
+### Bleeding Edge Experiments
 
-- When CSS' content-visibility hidden is better supported, use it for screens instead of display none. I already checked that on chrome, tab navigation within a hidden element is disabled.
 - Try turning on `webpack.experiments.module`.
 - Turn on TypeScript experimental decorators?
   - After reading [the TC39 proposal docs](https://github.com/tc39/proposal-decorators#option-b-init-method-decorators) and seeing how much they differ from TypeScript's current spec, I don't want to commit to something that will likely change drastically in the future.
@@ -101,20 +101,11 @@
 
 ## Research / Learning Links
 
-### Dynamic imports
-
-Links no longer needed. Good things to know: both TypeScript and WebPack implement handling for dynamic imports. TypeScript will provide type information about the exports from a module, and WebPack will intercept the dynamic import to create a deferred-loading split chunk (A WebPack-internal mechanism).
-
 ### Web API's
-
-I might use [this](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) for choosing which team you want to be part of.
 
 ```text
 https://developer.mozilla.org/en-US/docs/Web/API
-https://web.dev/add-manifest/
-https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
 Navigator.{keyboard,online,connection,language,languages,battery}
-https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API
 ```
 
 Presentation API:

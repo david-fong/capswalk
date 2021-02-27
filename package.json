@@ -14,7 +14,7 @@
   "files": [],
   "sideEffects": [
     "*.css",
-    "index.ts"
+    "src/server/Customizations.ts"
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",

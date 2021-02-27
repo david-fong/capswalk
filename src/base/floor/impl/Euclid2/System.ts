@@ -156,7 +156,7 @@ export namespace WrappedEuclid2 {
 					iacCache.push(new IAC(x,y));
 				}
 			}
-			this.iacCache = Object.freeze(iacCache);
+			this.iacCache = iacCache.freeze();
 			JsUtils.instNoEnum(this as Grid, "iacCache");
 			JsUtils.propNoWrite(this as Grid, "_grid", "iacCache");
 			if (new.target === Grid) {
@@ -178,8 +178,7 @@ export namespace WrappedEuclid2 {
 			for (let i = 0; i < this.area; i++) {
 				indices[i] = i;
 			}
-			indices.sort((a,b) => Math.random() - 0.5);
-			Object.freeze(indices);
+			indices.sort((a,b) => Math.random() - 0.5).freeze();
 			for (const index of indices) {
 				consumer(this._grid[index]!, index);
 			}

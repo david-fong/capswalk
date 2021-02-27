@@ -1,14 +1,12 @@
 import { GameEv } from "defs/OnlineDefs";
 import {
-	JsUtils, Game, Coord, StateChange,
-	VisibleGrid, Player,
+	Game, Coord, StateChange,
+	VisibleGrid, Player, OperatorPlayer,
+	InitBrowserGameCtorMaps,
 } from "./BrowserGame";
+InitBrowserGameCtorMaps();
 
 import { GameMirror } from "game/gameparts/GameMirror";
-import { OperatorPlayer } from "game/player/OperatorPlayer";
-
-import InitBrowserGameCtorMaps from "game/ctormaps/CmapBrowser";
-InitBrowserGameCtorMaps();
 
 /**
  * Note that this class does not extend `GameManager`.
