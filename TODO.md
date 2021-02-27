@@ -5,7 +5,7 @@
 
 1. Finalize what I want to game actually be :(
 1. Implement a keyboard learning / language learning page.
-1. Harden server against malicious client inputs.
+1. Harden server against malicious/malformed client inputs.
     - handle malformed websocket data from client. Just ignore it?
     - change exceptions on malformed data to short circuits?
 1. Add player sprites.
@@ -16,6 +16,9 @@
 ### Things I feel like doing
 
 1. Switch from socket.io to ws. I want to manage my own pubsub.
+    - Implement TryJoin response.
+      - Make sure the client is able to receive userinfo for all existing users after the screen transition to enter the lobby screen in the forward direction.
+    - Implement heartbeat to check for broken connections.
 1. Implement lang/coordsys compatibility check that coord system guarantees that there exists a tile `T` with `numDests(T) <= N` where `N` is the number of root nodes in the language. Otherwise, the roots will never see the light of day, and spawning them will make it impossible to finish the reset.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Change Euclid Visual Grid to use SVG.
@@ -27,7 +30,6 @@
 
 ### Things that I feel less like doing
 
-1. Look into using [`esbuild-loader`](https://github.com/privatenumber/esbuild-loader).
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
     - Set the maxAge option for express to at least a year.
 1. Game-Host Servers:
@@ -49,6 +51,9 @@
 1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
 1. Mashup some CSS resets and normalizers for this repo? Or maybe we don't need any.
 1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.
+1. Look into using AssemblyScript for the Lang tree
+    - https://www.erikonarheim.com/posts/webpack-assemblyscript-and-wasm-loader/
+    - This looks like it would be pretty complicated to do.
 
 ### Routine Checkups
 

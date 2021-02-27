@@ -7,15 +7,16 @@ import { OmHooks } from "defs/OmHooks";
 export class ScreenTransition {
 
 	/** */
-	public readonly baseElem: HTMLElement = document.getElementById(OmHooks.Screen.Id.SCREEN_TINT)!;
+	public readonly baseElem = document.getElementById(OmHooks.Screen.Id.SCREEN_TINT)!;
 
-	#currentRequest: Promise<void> = Promise.resolve();
+	#currentRequest = Promise.resolve();
 
 	public constructor() {
 		this.baseElem.tabIndex = -1;
 		this.baseElem.addEventListener("keydown", (ev) => {
 			ev.preventDefault();
-		});
+			// ev.stopPropagation(); // <- not needed
+		}, { capture: true });
 		JsUtils.propNoWrite(this as ScreenTransition, "baseElem");
 		Object.seal(this); //🧊
 	}
@@ -35,37 +36,37 @@ export class ScreenTransition {
 	private async _atomicDo(request: ScreenTransition.Request): Promise<void> {
 		const oldFocusEl = document.activeElement;
 		this.baseElem.focus();
-		const gdStyle = this.baseElem.style;
+		const style = this.baseElem.style;
 
-		await this._triggerCssTransition(() => {
-			gdStyle.pointerEvents = "all";
-			gdStyle.opacity = "1.0";
+		await this._cssTransition(function blur(): void {
+			style.pointerEvents = "all";
+			style.opacity = "1.0";
 		});
 
 		if (request.intermediateTransitionTrigger !== undefined) {
-			await this._triggerCssTransition(() => {
+			await this._cssTransition(() => {
 				request.intermediateTransitionTrigger!();
 			});
 		}
-		await request.beforeUnblurAwait;
+		await request.whileBeforeUnblur;
 
 		if (oldFocusEl instanceof HTMLElement) { oldFocusEl.focus(); }
 		if (request.beforeUnblur !== undefined) {
 			request.beforeUnblur();
 		}
-		await this._triggerCssTransition(() => {
-			gdStyle.pointerEvents = "none";
-			gdStyle.opacity = "0.0";
+		await this._cssTransition(function unblur(): void {
+			style.pointerEvents = "none";
+			style.opacity = "0.0";
 		});
 		this.baseElem.blur();
 		return;
 	}
 
 	/** */
-	private _triggerCssTransition(transitionTriggerFunc: () => void): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
+	private _cssTransition(trigger: () => void): Promise<void> {
+		return new Promise<void>((resolve) => {
 			this.baseElem.addEventListener("transitionend", () => resolve(), { once: true });
-			transitionTriggerFunc();
+			trigger();
 		});
 	}
 }
@@ -73,22 +74,19 @@ export namespace ScreenTransition {
 	/** */
 	export type Request = Readonly<{
 		/**
+		 * Triggers a style change that transitions between values.
+		 * */
+		intermediateTransitionTrigger?: () => void,
+		/**
 		 * This will be awaited before calling `beforeUnblur`. Its
 		 * purpose is to allow externally triggered long-running-tasks
 		 * which should finished before the next screen is visible to
 		 * run during the transition.
 		 */
-		beforeUnblurAwait?: Promise<void>,
-		/**
-		 * Triggers a style change that transitions between values.
-		 * */
-		intermediateTransitionTrigger?: () => void,
+		whileBeforeUnblur?: Promise<void>,
 		/**
 		 * This is done after `intermediateTransitionTrigger` finishes.
 		 */
-		// NOTE: The above order-of-operations decision was made arbitrarily,
-		// as no specific ordering for those two steps was required at the
-		// time of deciding it. It may be safely changed if needed.
 		beforeUnblur?: () => void,
 	}>;
 }

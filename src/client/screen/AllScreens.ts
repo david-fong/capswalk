@@ -15,13 +15,27 @@ import {  SetupOnlineScreen } from "./impl/Setup/Online";
 import {   GroupLobbyScreen } from "./impl/GroupLobby/Screen";
 import {   PlayOnlineScreen } from "./impl/Play/Online";
 
+export interface AllSkScreensDict {
+	[ BaseScreen.Id.HOME          ]: HomeScreen;
+	[ BaseScreen.Id.HOW_TO_PLAY   ]: HowToPlayScreen;
+	[ BaseScreen.Id.HOW_TO_HOST   ]: HowToHostScreen;
+	[ BaseScreen.Id.COLOUR_CTRL   ]: ColourCtrlScreen;
+	//=============================
+	[ BaseScreen.Id.SETUP_OFFLINE ]: SetupOfflineScreen;
+	[ BaseScreen.Id.PLAY_OFFLINE  ]: PlayOfflineScreen;
+	//=============================
+	[ BaseScreen.Id.GROUP_JOINER  ]: GroupJoinerScreen;
+	[ BaseScreen.Id.GROUP_LOBBY   ]: GroupLobbyScreen;
+	[ BaseScreen.Id.SETUP_ONLINE  ]: SetupOnlineScreen;
+	[ BaseScreen.Id.PLAY_ONLINE   ]: PlayOnlineScreen;
+}
 
 /**
  * @final
  */
 export class AllScreens {
 
-	public readonly dict: BaseScreen.AllSkScreensDict;
+	public readonly dict: AllSkScreensDict;
 
 	#currentScreen: BaseScreen<BaseScreen.Id>;
 
@@ -60,12 +74,7 @@ export class AllScreens {
 		const isr = BaseScreen.NavTree[window.location.hash.slice(1) as BaseScreen.Id];
 		window.setTimeout(() => {
 			this.goToScreen(isr?.href ?? BaseScreen.Id.HOME, {});
-		}, 75);
-		// TODO.learn For some reason, a small delay is required here to prevent
-		// a bug which happens 70% of the time when starting up with files served
-		// through the file:// protocol: The unblur part of ScreenTransition will
-		// not happen. Even now, there is still an unexpected event handler that
-		// gets left on the tint screen... spooky.
+		});
 
 		window.addEventListener("popstate", (ev: PopStateEvent) => {
 			// For corresponding calls to pushState and replaceState,
@@ -101,7 +110,7 @@ export class AllScreens {
 			// Any confirm-leave prompts made to the user were OK-ed.
 			type EnterFunc = (navDir: BaseScreen.NavDir, args: typeof ctorArgs) => Promise<void>;
 			await this.#screenTransition.do({
-				beforeUnblurAwait: (destScreen._enter as EnterFunc)(navDir, ctorArgs),
+				whileBeforeUnblur: (destScreen._enter as EnterFunc)(navDir, ctorArgs),
 				beforeUnblur: () => {
 					currScreen?._onAfterLeave();
 					destScreen._onAfterEnter();

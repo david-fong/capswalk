@@ -11,10 +11,17 @@ Simplicity of the idea is a high priority. See examples below.
     - Collaborative games are probably more beginner-friendly.
 - How long will the average game last?
 - Bonus points for using the typing mechanics in some special way.
+  - Fewer points if doesn't make sense for most of the current languages.
 - Would you be willing to spearhead the implementation?
 - Would the implementation likely require any significant changes to the _underlying_ mechanics?
 
 ## Endorsed Ideas
+
+### Team Dance-Floor
+
+Simplicity score: 9/10.
+
+- At increasingly short intervals, require everybody to arrive at safe tiles.
 
 ### Death Scroller
 

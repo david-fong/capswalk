@@ -6,19 +6,6 @@ import type { Game } from "game/Game";
 import type { AllScreens } from "./AllScreens";
 import type { TopLevel } from "../TopLevel";
 
-import type {         HomeScreen } from "./impl/Home/Screen";
-import type {    HowToPlayScreen } from "./impl/HowToPlay";
-import type {    HowToHostScreen } from "./impl/HowToHost";
-import type {   ColourCtrlScreen } from "./impl/ColourCtrl/Screen";
-// ======== :   ~~~ OFFLINE ~~~  :============================
-import type { SetupOfflineScreen } from "./impl/Setup/Offline";
-import type {  PlayOfflineScreen } from "./impl/Play/Offline";
-// ======== :   ~~~ ONLINE ~~~~  :============================
-import type {  GroupJoinerScreen } from "./impl/GroupJoiner/Screen";
-import type {  SetupOnlineScreen } from "./impl/Setup/Online";
-import type {   GroupLobbyScreen } from "./impl/GroupLobby/Screen";
-import type {   PlayOnlineScreen } from "./impl/Play/Online";
-
 export { JsUtils, OmHooks, Coord, StorageHooks };
 
 const OMHC = OmHooks.Screen.Class;
@@ -36,8 +23,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	protected readonly top: TopLevel;
 
 	readonly #parentElem: HTMLElement;
-
-	protected readonly baseElem: HTMLElement = JsUtils.html("div", [OMHC.BASE]);
+	protected readonly baseElem = JsUtils.html("div", [OMHC.BASE]);
 
 	#hasLazyLoaded: boolean = false;
 
@@ -89,6 +75,11 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 		};
 	}
 
+	/**
+	 * Implementations should set the CSS class for the base element.
+	 */
+	protected abstract _lazyLoad(): void;
+
 	/** @final **Do not override.** */
 	public async _enter(
 		navDir: BaseScreen.NavDir,
@@ -97,9 +88,9 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 		document.title = `${this.screenNames.spaceyCapitalized} | ${this.top.defaultDocTitle}`;
 		if (navDir === BaseScreen.NavDir.FORWARD) {
 			const location = new window.URL(window.location.href);
-			const newHistoryRoot = location.hash = BaseScreen.NavTree[this.screenId].href;
+			const nextHistRoot = location.hash = BaseScreen.NavTree[this.screenId].href;
 			const args: Parameters<typeof window.history.pushState> = [{ screenId: this.screenId }, "", location.href];
-			if (window.history.state?.screenId !== newHistoryRoot) {
+			if (window.history.state?.screenId !== nextHistRoot) {
 				if (BaseScreen.NavTree[this.screenId].prev === this.screenId) {
 					// If entering the root screen for the first time:
 					history.replaceState(...args);
@@ -142,11 +133,6 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	public getRecommendedFocusElem(): HTMLElement | undefined {
 		return undefined;
 	}
-
-	/**
-	 * Implementations should set the CSS class for the base element.
-	 */
-	protected abstract _lazyLoad(): void;
 
 	/**
 	 * This is a good place to start any `setInterval` schedules.
@@ -203,20 +189,6 @@ export namespace BaseScreen {
 	}
 	Object.freeze(Id);
 
-	export interface AllSkScreensDict {
-		[ Id.HOME          ]: HomeScreen;
-		[ Id.HOW_TO_PLAY   ]: HowToPlayScreen;
-		[ Id.HOW_TO_HOST   ]: HowToHostScreen;
-		[ Id.COLOUR_CTRL   ]: ColourCtrlScreen;
-		//==================
-		[ Id.SETUP_OFFLINE ]: SetupOfflineScreen;
-		[ Id.PLAY_OFFLINE  ]: PlayOfflineScreen;
-		//==================
-		[ Id.GROUP_JOINER  ]: GroupJoinerScreen;
-		[ Id.GROUP_LOBBY   ]: GroupLobbyScreen;
-		[ Id.SETUP_ONLINE  ]: SetupOnlineScreen;
-		[ Id.PLAY_ONLINE   ]: PlayOnlineScreen;
-	}
 	/**
 	 * If not a navigation leaf, must be `{}`. If history root is not
 	 * self, then can be a partial object for forward navigation.
@@ -243,7 +215,7 @@ export namespace BaseScreen {
 	 * for the group host is important, since the socket listener for
 	 * UserInfoChange events is only registered in the lobby screen.
 	 */
-	export const NavTree = Object.freeze(<const>{
+	export const NavTree = JsUtils.deepFreeze(<const>{
 		[ Id.HOME          ]: { prev: Id.HOME,          href: Id.HOME },
 		[ Id.HOW_TO_PLAY   ]: { prev: Id.HOME,          href: Id.HOW_TO_PLAY },
 		[ Id.HOW_TO_HOST   ]: { prev: Id.HOME,          href: Id.HOW_TO_HOST },
@@ -257,7 +229,7 @@ export namespace BaseScreen {
 		[ Id.SETUP_ONLINE  ]: { prev: Id.GROUP_LOBBY,   href: Id.GROUP_JOINER },
 		[ Id.PLAY_ONLINE   ]: { prev: Id.GROUP_LOBBY,   href: Id.GROUP_JOINER },
 	});
-	(function assertNavigationTreeIsValid(): void {
+	(function _assertNavigationTreeIsValid(): void {
 	if (DEF.DevAssert) Object.entries(NavTree).forEach(([id, desc]) => {
 		// Enforced By: Code author's adherence to spec.
 		let prev = id as Id;
