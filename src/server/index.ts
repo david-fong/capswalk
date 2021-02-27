@@ -1,8 +1,8 @@
 
 // In-House `--frozen-intrinsics`:
 (<(keyof typeof globalThis)[]>[
-	"Object", "Array", "Map", "Set", "WeakMap", "WeakSet",
-	"String", "Number", "RegExp",
+	"Object", "String", "Number", "RegExp", "Date",
+	"Array", "Map", "Set", "WeakMap", "WeakSet",
 ])
 .forEach((key) => {
 	Object.defineProperty(globalThis, key, {

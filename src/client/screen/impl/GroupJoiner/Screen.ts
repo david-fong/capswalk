@@ -1,20 +1,10 @@
-import { TopLevel } from "client/TopLevel";
 import { Group, JoinerEv, GameEv } from "defs/OnlineDefs";
 
-import { JsUtils, OmHooks, BaseScreen, StorageHooks } from "../../BaseScreen";
-type SID = BaseScreen.Id.GROUP_JOINER;
-import style from "./style.m.css";
+import { JsUtils, BaseScreen, StorageHooks } from "../../BaseScreen";
+import { _GroupJoinerScreenInitEl } from "./ScreenInitEl";
 
 /** */
-export class GroupJoinerScreen extends BaseScreen<SID> {
-
-	#state: GroupJoinerScreen.State;
-	private readonly in: Readonly<{
-		serverUrl:  HTMLInputElement;
-		groupName:  HTMLInputElement;
-		passphrase: HTMLInputElement;
-	}>;
-	private readonly groupNameDataList = JsUtils.html("datalist", [], { id: OmHooks.ID.CURRENT_HOST_GROUPS });
+export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 	#isInGroup: boolean = false;
 	#isHost: boolean = false; public get isHost(): boolean { return this.#isHost; }
 
@@ -25,17 +15,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 
 	/** @override */
 	protected _lazyLoad(): void {
-		this.baseElem.classList.add(
-			OmHooks.General.Class.CENTER_CONTENTS,
-			style["this"],
-		);
-		const contentWrapper = this._initFormContents();
-		this.baseElem.appendChild(this.groupNameDataList);
-
-		this.nav.prev.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-		this.nav.next.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
-		contentWrapper.appendChild(this.nav.prev);
-		contentWrapper.appendChild(this.nav.next);
+		super._lazyLoad();
 
 		// @ts-expect-error : RO=
 		this.#wsMessageCb = (ev: MessageEvent<string>) => {
@@ -51,13 +31,6 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		this._initGroupNameCbs(huiSubmit);
 		this._initPassphraseCbs();
 		Object.seal(this); //🧊
-
-		this.nav.next.onclick = (ev) => {
-			// No validation needed. The next button is only enabled if inputs are valid.
-			this.requestGoToScreen(BaseScreen.Id.GROUP_LOBBY, {});
-		};
-		this._setFormState(State.CHOOSING_SERVER);
-		this.baseElem.appendChild(contentWrapper);
 	}
 
 	/** @override */
@@ -69,61 +42,24 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 		}
 	}
 
-	public get state(): State {
-		return this.#state;
-	}
-	/** Doesn't touch sockets. */
-	private _setFormState(newState: State): void {
-		if (this.state === newState) return; //⚡ (No other short circuits here please)
-
-		this.in.passphrase.disabled = true;
-		if (newState === State.IN_GROUP) {
-			if (this.state !== State.CHOOSING_GROUP) {
-				throw new Error("never"); // Illegal state transition.
-			}
-			this.nav.next.disabled = false;
-			this.nav.next.focus();
-
-		} else {
-			this.nav.next.disabled = true;
-			this.in.passphrase.value = "";
-
-			if (newState === State.CHOOSING_SERVER) {
-				this.in.groupName.disabled  = true;
-				this.in.groupName.value     = "";
-				// Fun fact on an alternative for clearing children: https://stackoverflow.com/a/22966637/11107541
-				this.groupNameDataList.textContent = "";
-				this.in.serverUrl.focus();
-
-			} else if (newState === State.CHOOSING_GROUP) {
-				this.in.groupName.disabled  = false;
-				this.in.passphrase.disabled = false;
-				this.#isHost = false;
-				this.in.groupName.focus();
-			}
-		}
-		this.#state = newState;
-	}
 
 	/** */
 	private _initServerUrlCbs(): VoidFunction {
 		const top = this.top;
 		const input = this.in.serverUrl;
+		input.addEventListener("input", (ev) => {
+			this._setFormState(State.CHOOSING_SERVER);
+		});
+
 		const submitInput = (): void => {
 			if (!input.value || !input.validity.valid) return; //⚡
 
-			// Minor cleaning: default the protocol and only use the origin:
-			// if (!input.value.startsWith(SkServer.PROTOCOL)) {
-			//     input.value = new window.URL(SkServer.PROTOCOL + input.value).origin;
-			// }
-
-			// Short-circuit when no change has occurred:
-			const gameServerUrl = new window.URL(input.value);
-			if (this.ws !== undefined && new URL(this.ws.url).hostname === gameServerUrl.hostname) {
+			if (this.ws !== undefined
+				&& (new URL(this.ws.url)).hostname === (new URL(input.value)).hostname
+			) {
 				if (this.#isInGroup) {
+					// Short-circuit when no change has occurred:
 					this._setFormState(State.CHOOSING_GROUP);
-				} else {
-					// Impatient client is spamming.
 				}
 				return;
 			}
@@ -143,15 +79,14 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			}, { once: true });
 		};
 		// Link handler to events:
-		input.addEventListener("input", (ev) => this._setFormState(State.CHOOSING_SERVER));
-		input.addEventListener("keydown", (ev) => { if (ev.isTrusted && ev.key === "Enter") {
-			submitInput();
-		}});
+		input.addEventListener("keydown", (ev) => {
+			if (ev.isTrusted && ev.key === "Enter") { submitInput(); }
+		});
 		input.addEventListener("paste", (ev) => {
-			if (ev.isTrusted) window.setTimeout(() => submitInput(), 0);
+			if (ev.isTrusted) { window.setTimeout(() => submitInput(), 0); }
 		});
 		input.addEventListener("change", (ev) => {
-			if (ev.isTrusted) submitInput();
+			if (ev.isTrusted) { submitInput(); }
 		});
 		return submitInput;
 	}
@@ -201,15 +136,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 	/** */
 	private _initGroupNameCbs(serverUrlInputSubmit: VoidFunction): void {
 		const input = this.in.groupName;
-		const submitInput = (): void => {
-			if (!input.value || !input.validity.valid) return;
-			if (this.state === State.IN_GROUP) {
-				this.nav.next.focus();
-			} else {
-				this.in.passphrase.focus();
-			}
-		};
-		this.in.groupName.addEventListener("input", async (ev) => {
+		input.addEventListener("input", (ev): void => {
 			if (!ev.isTrusted) return;
 			if (this.state === State.IN_GROUP) {
 				serverUrlInputSubmit();
@@ -218,6 +145,15 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			this.in.passphrase.value = "";
 			this.#isHost = false;
 		});
+
+		const submitInput = (): void => {
+			if (!input.value || !input.validity.valid) return;
+			if (this.state === State.IN_GROUP) {
+				this.nav.next.focus();
+			} else {
+				this.in.passphrase.focus();
+			}
+		};
 		input.addEventListener("keydown", (ev) => {
 			if (ev.isTrusted && ev.key === "Enter") { submitInput(); }
 		});
@@ -228,7 +164,7 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 
 	/** */
 	private _initPassphraseCbs(): void {
-		const submitInput = async (): Promise<void> => {
+		const submitInput = (): void => {
 			if (!this.in.passphrase.validity.valid) return;
 			// Short-circuit when no change has occurred:
 			if (this.#isInGroup) {
@@ -252,9 +188,9 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 				]));
 			}
 		};
-		this.in.passphrase.addEventListener("keydown", (ev) => { if (ev.isTrusted && ev.key === "Enter") {
-			submitInput();
-		}});
+		this.in.passphrase.addEventListener("keydown", (ev) => {
+			if (ev.isTrusted && ev.key === "Enter") { submitInput(); }
+		});
 	}
 
 	/** */
@@ -265,74 +201,10 @@ export class GroupJoinerScreen extends BaseScreen<SID> {
 			userInfo: StorageHooks.getLastUserInfo(),
 		}]));
 	}
-
-	/** A helper for `_lazyLoad`. Does not hook up event processors. */
-	private _initFormContents(): HTMLElement {
-		const contentWrapper = JsUtils.html("div"/*"form"*/, [
-			OmHooks.General.Class.INPUT_GROUP,
-			style["content-wrapper"],
-		], {});
-		function _mkInput(labelText: string, classStr: string): HTMLInputElement {
-			const input = JsUtils.html("input", [OmHooks.General.Class.INPUT_GROUP_ITEM, classStr], {
-				type: "text",
-				autocomplete: "off",
-				spellcheck: false,
-			});
-			// Label:
-			const label = JsUtils.html("label", [], { textContent: labelText });
-			label.appendChild(input);
-			contentWrapper.appendChild(label);
-			return input;
-		}
-		type InArgs = Partial<HTMLInputElement>;
-		// @ts-expect-error : RO=
-		this.in = Object.freeze({
-			"serverUrl": Object.assign(_mkInput("Server URL", style["server-url"]), <InArgs>{
-				type: "url",
-				maxLength: 128,
-				autocomplete: "on",
-				required: true,
-			}),
-			"groupName": Object.assign(_mkInput("Group Name", style["group-name"]), <InArgs>{
-				pattern: Group.Name.REGEXP.source,
-				minLength: 1,
-				maxLength: Group.Name.MaxLength,
-				autocomplete: "on",
-				required: true,
-			}),
-			"passphrase": Object.assign(_mkInput("Group Passphrase", style["passphrase"]), <InArgs>{
-				pattern: Group.Passphrase.REGEXP.source,
-				maxLength: Group.Passphrase.MaxLength,
-			}),
-		});
-		this.in.groupName.setAttribute("list", OmHooks.ID.CURRENT_HOST_GROUPS);
-
-		{
-			this.in.serverUrl.setAttribute("list", OmHooks.ID.PUBLIC_GAME_SERVER_URLS);
-			const suggest = TopLevel.SiteServerTypeSuggestedGameServer[this.top.siteServerType];
-			if (suggest) {
-				const suggestOpt = JsUtils.html("option", [], {
-					value: suggest.value,
-					textContent: suggest.description,
-				});
-				const datalist = document.getElementById(OmHooks.ID.PUBLIC_GAME_SERVER_URLS)!;
-				datalist.insertAdjacentElement("afterbegin", suggestOpt);
-				this.in.serverUrl.value = suggestOpt.value;
-			}
-		}
-
-		JsUtils.propNoWrite(this as GroupJoinerScreen, "in", "groupNameDataList");
-		return contentWrapper;
-	}
 }
 export namespace GroupJoinerScreen {
-	export enum State {
-		CHOOSING_SERVER = "choosing-server",
-		CHOOSING_GROUP  = "choosing-group",
-		IN_GROUP        = "in-group",
-	};
 }
-const State = GroupJoinerScreen.State;
-type  State = GroupJoinerScreen.State;
+const State = _GroupJoinerScreenInitEl.State;
+type  State = _GroupJoinerScreenInitEl.State;
 Object.freeze(GroupJoinerScreen);
 Object.freeze(GroupJoinerScreen.prototype);

@@ -90,6 +90,6 @@ export namespace ScreenTransition {
 		beforeUnblur?: () => void,
 	}>;
 }
-JsUtils.protoNoEnum(ScreenTransition, "_atomicDo", "_triggerCssTransition");
+JsUtils.protoNoEnum(ScreenTransition, "_atomicDo", "_cssTransition");
 Object.freeze(ScreenTransition);
 Object.freeze(ScreenTransition.prototype);

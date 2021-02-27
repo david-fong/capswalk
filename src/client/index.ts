@@ -4,9 +4,10 @@ import "style/_barrel.css";
 
 // In-House `--frozen-intrinsics`:
 (<(keyof typeof globalThis)[]>[
-	"Object", "Array", "Map", "Set", "WeakMap", "WeakSet",
-	"String", "Number", "RegExp",
+	"Object", "String", "Number", "RegExp", "Date",
+	"Array", "Map", "Set", "WeakMap", "WeakSet",
 	// .-- web-specific --.
+	"URL",
 	"HTMLElement", "HTMLDivElement", "HTMLSpanElement", "HTMLPreElement",
 	"HTMLButtonElement", "HTMLInputElement", "HTMLSelectElement", "HTMLOptionElement",
 	"HTMLScriptElement", "HTMLStyleElement", "HTMLLinkElement", "HTMLAnchorElement",
