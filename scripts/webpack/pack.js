@@ -7,6 +7,7 @@ const webpack = require("webpack");
 const configs = require("./webpack.config");
 
 const DO_WATCH = process.argv.includes("--watch");
+if (!DO_WATCH) console.info("*note: pass `--watch` for watch mode");
 function DIST(rel = "") { return path.resolve(__dirname, "../../dist/", rel); }
 function ROOT(rel = "") { return path.resolve(__dirname, "../../", rel); }
 
@@ -46,7 +47,6 @@ Object.values(configs).forEach((config) => {
 		});
 	}
 	else {
-		console.info("(pass `--watch` for watch mode)");
 		compiler.run((err, stats) => {
 			console.log(`\n${"=".repeat(32)} ${config.name.toUpperCase()} ${"=".repeat(32)}\n`);
 			if (err) {

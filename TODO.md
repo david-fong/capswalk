@@ -16,7 +16,6 @@
 ### Things I feel like doing
 
 1. Change server sockets set into a map from sockets to groups.
-1. turn off tsconfig `importHelpers` and uninstall tslib.
 1. Switch from socket.io to ws. I want to manage my own pubsub.
     - Implement TryJoin response.
       - Make sure the client is able to receive userinfo for all existing users after the screen transition to enter the lobby screen in the forward direction.

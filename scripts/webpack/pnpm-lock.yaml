@@ -2,13 +2,13 @@ devDependencies:
   '@types/mini-css-extract-plugin': 1.2.2
   compression-webpack-plugin: 7.1.2_webpack@5.24.2
   csp-html-webpack-plugin: 5.0.0_3b73f9ed4818806c15c1515a0530655d
-  css-loader: 5.0.2_webpack@5.24.2
+  css-loader: 5.1.0_webpack@5.24.2
   css-minimizer-webpack-plugin: 1.2.0_webpack@5.24.2
   esbuild-loader: 2.9.2_webpack@5.24.2
   file-loader: 6.2.0_webpack@5.24.2
   html-webpack-plugin: 5.2.0_webpack@5.24.2
   json5: 2.2.0
-  mini-css-extract-plugin: 1.3.8_webpack@5.24.2
+  mini-css-extract-plugin: 1.3.9_webpack@5.24.2
   webpack: 5.24.2
   webpack-node-externals: 2.5.2
 lockfileVersion: 5.2
@@ -291,9 +291,9 @@ packages:
       integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==
   /browserslist/4.16.3:
     dependencies:
-      caniuse-lite: 1.0.30001191
-      colorette: 1.2.1
-      electron-to-chromium: 1.3.673
+      caniuse-lite: 1.0.30001192
+      colorette: 1.2.2
+      electron-to-chromium: 1.3.675
       escalade: 3.1.1
       node-releases: 1.1.71
     dev: true
@@ -375,16 +375,16 @@ packages:
   /caniuse-api/3.0.0:
     dependencies:
       browserslist: 4.16.3
-      caniuse-lite: 1.0.30001191
+      caniuse-lite: 1.0.30001192
       lodash.memoize: 4.1.2
       lodash.uniq: 4.5.0
     dev: true
     resolution:
       integrity: sha512-bsTwuIg/BZZK/vreVTYYbSWoe2F+71P7K5QGEX+pT250DZbfU1MQ5prOKpPR+LL6uWKK3KMwMCAS74QB3Um1uw==
-  /caniuse-lite/1.0.30001191:
+  /caniuse-lite/1.0.30001192:
     dev: true
     resolution:
-      integrity: sha512-xJJqzyd+7GCJXkcoBiQ1GuxEiOBCLQ0aVW9HMekifZsAVGdj5eJ4mFB9fEhSHipq9IOk/QXFJUiIr9lZT+EsGw==
+      integrity: sha512-63OrUnwJj5T1rUmoyqYTdRWBqFFxZFlyZnRRjDR8NSUQFB6A+j/uBORU/SyJ5WzDLg4SPiZH40hQCBNdZ/jmAw==
   /chalk/2.4.2:
     dependencies:
       ansi-styles: 3.2.1
@@ -486,10 +486,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-xgXAcTHa2HeFCGLE9Xs/R82hujGtu9Jd9x4NW3T34+OMs7VoPsjwzRczKHvTAHeJwWFwX5j15+MgAppE8ztObQ==
-  /colorette/1.2.1:
+  /colorette/1.2.2:
     dev: true
     resolution:
-      integrity: sha512-puCDz0CzydiSYOrnXpz/PKd69zRrribezjtE9yd4zvytoRc8+RY/KJPvtPFKZS3E3wP6neGyMe0vOTlHO5L3Pw==
+      integrity: sha512-MKGMzyfeuutC/ZJ1cba9NqcNpfeqMUcYmyF1ZFY6/Cn7CNSAKx6a+s48sqLqyAiZuaP2TcqMhoo+dlwFnVxT9w==
   /commander/2.20.3:
     dev: true
     resolution:
@@ -561,7 +561,7 @@ packages:
       node: '>4'
     resolution:
       integrity: sha512-BcxQSKTSEEQUftYpBVnsH4SF05NTuBokb19/sBt6asXGKZ/6VP7PLG1CBCkFDYOnhXhPh0jMhO6xZ71oYHXHBA==
-  /css-loader/5.0.2_webpack@5.24.2:
+  /css-loader/5.1.0_webpack@5.24.2:
     dependencies:
       camelcase: 6.2.0
       cssesc: 3.0.0
@@ -582,7 +582,7 @@ packages:
     peerDependencies:
       webpack: ^4.27.0 || ^5.0.0
     resolution:
-      integrity: sha512-gbkBigdcHbmNvZ1Cg6aV6qh6k9N6XOr8YWzISLQGrwk2mgOH8LLrizhkxbDhQtaLtktyKHD4970S0xwz5btfTA==
+      integrity: sha512-mFs3Xe2UrzRzL0+ML6e7Q2e/Ozp/WpDcam0l1X+rXgkuFjjsNSrjiyimG6malUOZGVuEjzKp1NqEqN3exG7ZqQ==
   /css-minimizer-webpack-plugin/1.2.0_webpack@5.24.2:
     dependencies:
       cacache: 15.0.5
@@ -825,10 +825,10 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==
-  /electron-to-chromium/1.3.673:
+  /electron-to-chromium/1.3.675:
     dev: true
     resolution:
-      integrity: sha512-ms+QR2ckfrrpEAjXweLx6kNCbpAl66DcW//3BZD4BV5KhUgr0RZRce1ON/9J3QyA3JO28nzgb5Xv8DnPr05ILg==
+      integrity: sha512-GEQw+6dNWjueXGkGfjgm7dAMtXfEqrfDG3uWcZdeaD4cZ3dKYdPRQVruVXQRXtPLtOr5GNVVlNLRMChOZ611pQ==
   /emojis-list/3.0.0:
     dev: true
     engines:
@@ -874,7 +874,7 @@ packages:
       es-to-primitive: 1.2.1
       function-bind: 1.1.1
       has: 1.0.3
-      has-symbols: 1.0.1
+      has-symbols: 1.0.2
       is-callable: 1.2.3
       is-regex: 1.1.2
       object-inspect: 1.9.0
@@ -894,7 +894,7 @@ packages:
       function-bind: 1.1.1
       get-intrinsic: 1.1.1
       has: 1.0.3
-      has-symbols: 1.0.1
+      has-symbols: 1.0.2
       is-callable: 1.2.3
       is-negative-zero: 2.0.1
       is-regex: 1.1.2
@@ -924,7 +924,7 @@ packages:
       integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==
   /esbuild-loader/2.9.2_webpack@5.24.2:
     dependencies:
-      esbuild: 0.8.51
+      esbuild: 0.8.53
       joycon: 2.2.5
       json5: 2.2.0
       loader-utils: 2.0.0
@@ -936,12 +936,12 @@ packages:
       webpack: ^4.40.0 || ^5.0.0
     resolution:
       integrity: sha512-HpF+r/ES2aC40VDOIFsP8OIOM2y2vj8LyLwJ4G8DCMOi8Kov68TwCtxiMMTuSuxR/xKDu/ykgVyCEgps6BXpYw==
-  /esbuild/0.8.51:
+  /esbuild/0.8.53:
     dev: true
     hasBin: true
     requiresBuild: true
     resolution:
-      integrity: sha512-MVIom8fgL1+B6iGqWtrG7QJ1gqd64BycxounlsX1kR/IcIITaSlTo7gghKpg4a+bnxkpo0dwcikuvk4MVSA9ww==
+      integrity: sha512-GIaYGdMukH58hu+lf07XWAeESBYFAsz8fXnrylHDCbBXKOSNtFmoYA8PhSeSF+3/qzeJ0VjzV9AkLURo5yfu3g==
   /escalade/3.1.1:
     dev: true
     engines:
@@ -990,12 +990,12 @@ packages:
       node: '>=4.0'
     resolution:
       integrity: sha512-BxbNGGNm0RyRYvUdHpIwv9IWzeM9XClbOxwoATuFdOE7ZE6wHL+HQ5T8hoPM+zHvmKzzsEqhgy0GrQ5X13afiQ==
-  /events/3.2.0:
+  /events/3.3.0:
     dev: true
     engines:
       node: '>=0.8.x'
     resolution:
-      integrity: sha512-/46HWwbfCX2xTawVfkKLGxMifJYQBWMwY1mjywRtb4c9x8l5NP3KoJtnIOiL1hfdRkIuYhETxQlo62IF8tcnlg==
+      integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
   /fast-deep-equal/3.1.3:
     dev: true
     resolution:
@@ -1055,7 +1055,7 @@ packages:
     dependencies:
       function-bind: 1.1.1
       has: 1.0.3
-      has-symbols: 1.0.1
+      has-symbols: 1.0.2
     dev: true
     resolution:
       integrity: sha512-kWZrnVM42QCiEA2Ig1bG8zjoIMOgxWwYCEeNdwY6Tv/cOSeGpcoX4pXHfKUxNKVoArnrEr2e9srnAxxGIraS9Q==
@@ -1090,12 +1090,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
-  /has-symbols/1.0.1:
+  /has-symbols/1.0.2:
     dev: true
     engines:
       node: '>= 0.4'
     resolution:
-      integrity: sha512-PLcsoqu++dmEIZB+6totNFKq/7Do+Z0u4oT0zKOJNl3lYK6vGwwu2hjHs+68OEZbTjiUE9bgOABXbP/GvrS0Kg==
+      integrity: sha512-chXa79rL/UC2KlX17jo3vRGz0azaWEx5tGqZg5pO3NUyEJVB17dMruQlzCCOfUvElghKcm5194+BCRvi2Rv/Gw==
   /has/1.0.3:
     dependencies:
       function-bind: 1.1.1
@@ -1284,7 +1284,7 @@ packages:
   /is-regex/1.1.2:
     dependencies:
       call-bind: 1.0.2
-      has-symbols: 1.0.1
+      has-symbols: 1.0.2
     dev: true
     engines:
       node: '>= 0.4'
@@ -1304,7 +1304,7 @@ packages:
       integrity: sha512-gi4iHK53LR2ujhLVVj+37Ykh9GLqYHX6JOVXbLAucaG/Cqw9xwdFOjDM2qeifLs1sF1npXXFvDu0r5HNgCMrzQ==
   /is-symbol/1.0.3:
     dependencies:
-      has-symbols: 1.0.1
+      has-symbols: 1.0.2
     dev: true
     engines:
       node: '>= 0.4'
@@ -1448,7 +1448,7 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha512-Y/jMt/S5sR9OaqteJtslsFZKWOIIqMACsJSiHghlCAyhf7jfVYjKBmLiX8OgpWeW+fjJ2b+Az69aPFPkUOY6xQ==
-  /mini-css-extract-plugin/1.3.8_webpack@5.24.2:
+  /mini-css-extract-plugin/1.3.9_webpack@5.24.2:
     dependencies:
       loader-utils: 2.0.0
       schema-utils: 3.0.0
@@ -1460,7 +1460,7 @@ packages:
     peerDependencies:
       webpack: ^4.4.0 || ^5.0.0
     resolution:
-      integrity: sha512-u+2kVov/Gcs74iz+x3phEBWMAGw2djjnKfYez+Pl/b5dyXL7aM4Lp5QQtIq16CDwRHT/woUJki49gBNMhfm1eA==
+      integrity: sha512-Ac4s+xhVbqlyhXS5J/Vh/QXUz3ycXlCqoCPpg0vdfhsIBH9eg/It/9L1r1XhSCH737M1lqcWnMuWL13zcygn5A==
   /minimatch/3.0.4:
     dependencies:
       brace-expansion: 1.1.11
@@ -1580,7 +1580,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.3
-      has-symbols: 1.0.1
+      has-symbols: 1.0.2
       object-keys: 1.1.1
     dev: true
     engines:
@@ -2063,7 +2063,7 @@ packages:
       integrity: sha512-3QT8bBJeX/S5zKTTjTCIjRF3If4avAT6kqxcASlTWEtAFCb9NH0OUxNDfgZSWdP5fJnBYCMEWkIFfWeugjzYMg==
   /postcss/8.2.6:
     dependencies:
-      colorette: 1.2.1
+      colorette: 1.2.2
       nanoid: 3.1.20
       source-map: 0.6.1
     dev: true
@@ -2457,7 +2457,7 @@ packages:
     dependencies:
       define-properties: 1.1.3
       es-abstract: 1.17.7
-      has-symbols: 1.0.1
+      has-symbols: 1.0.2
       object.getownpropertydescriptors: 2.1.2
     dev: true
     resolution:
@@ -2512,7 +2512,7 @@ packages:
       enhanced-resolve: 5.7.0
       es-module-lexer: 0.4.0
       eslint-scope: 5.1.1
-      events: 3.2.0
+      events: 3.3.0
       glob-to-regexp: 0.4.1
       graceful-fs: 4.2.6
       json-parse-better-errors: 1.0.2
@@ -2553,12 +2553,12 @@ specifiers:
   '@types/mini-css-extract-plugin': ^1.2.2
   compression-webpack-plugin: ^7.1.2
   csp-html-webpack-plugin: 5.0.0
-  css-loader: ^5.0.2
+  css-loader: ^5.1.0
   css-minimizer-webpack-plugin: ^1.2.0
   esbuild-loader: ^2.9.2
   file-loader: ^6.2.0
   html-webpack-plugin: ^5.2.0
   json5: ^2.2.0
-  mini-css-extract-plugin: ^1.3.8
+  mini-css-extract-plugin: ^1.3.9
   webpack: ^5.24.2
   webpack-node-externals: ^2.5.2
