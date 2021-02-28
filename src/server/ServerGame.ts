@@ -95,9 +95,9 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	private _greetGameSockets(gameDesc: Game.CtorArgs<S>): void {
 		// The below cast is safe because GamepartBase reassigns
 		// `gameDesc.playerDescs` the result of `Player.finalize`.
-		const humans = Object.freeze(
+		const humans = (
 			(gameDesc.players).filter((player) => player.familyId === "HUMAN") as Player._CtorArgs["HUMAN"][]
-		);
+		).freeze();
 		// Pass on Game constructor arguments to each client:
 		Promise.all(Array.from(this.sockets, (s) =>
 			new Promise<void>((resolve) => {
@@ -112,9 +112,9 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			this.reset() //👂 "reset time!"
 		);
 		this.sockets.forEach((s) => {
-			const operatorIds = Object.freeze(humans
+			const operatorIds = humans
 				.filter((desc) => desc.socket === s)
-				.map((desc) => desc.playerId));
+				.map((desc) => desc.playerId).freeze();
 			const data = JSON.stringify([GroupEv.CREATE_GAME, gameDesc, operatorIds]);
 			s.send(data); //📢 "get ready for reset"
 		});

@@ -47,10 +47,10 @@ export namespace LangSeqTree {
 			}
 		}
 
-		public getLeaves(): Array<Node> {
+		public getLeaves(): TU.RoArr<Node> {
 			const leafNodes: Array<Node> = [];
 			this._rGetLeaves(leafNodes);
-			return Object.seal(leafNodes); //🧊
+			return leafNodes.freeze();
 		}
 		protected _rGetLeaves(leafNodes: Array<Node>): void {
 			if (this.children.length) {
@@ -106,7 +106,7 @@ export namespace LangSeqTree {
 
 			// Reverse the map:
 			const reverseDict = new Map<Lang.Seq, WeightedLangChar[]>();
-			Object.freeze(Object.entries(forwardDict)).forEach(([char, {seq, weight}]) => {
+			Object.entries(forwardDict).freeze().forEach(([char, {seq, weight}]) => {
 				const weightedChar = new WeightedLangChar(
 					char, scaleWeight(weight),
 				);
@@ -121,10 +121,10 @@ export namespace LangSeqTree {
 
 			const roots: Node[] = [];
 			let parent: Node | undefined = undefined; // a DFS cursor.
-			for (const [seq, chars] of Object.freeze(
+			for (const [seq, chars] of
 				// Sorting alphabetically enables DFS-ordered tree construction.
-				Object.seal(Array.from(reverseDict)).sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1)
-			)) /* no breaks */ {
+				Array.from(reverseDict).seal().sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1).freeze()
+			) /* no breaks */ {
 				while (parent !== undefined && !seq.startsWith(parent.seq)) {
 					parent = parent.parent;
 				}
@@ -136,7 +136,7 @@ export namespace LangSeqTree {
 				}
 				parent = newNode;
 			}
-			return Object.freeze(roots);
+			return roots.freeze();
 		}
 
 		public static readonly LEAF_CMP: LangSorter<Node> = (a, b) => {

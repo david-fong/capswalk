@@ -122,14 +122,15 @@ export abstract class GameManager<
 		// (to-be-previous) values don't get unnecessarily avoided.
 		this.grid.write(coord, Lang.CharSeqPair.NULL);
 
-		let avoid: TU.RoArr<Lang.Seq> = Object.freeze(this.grid
-			.getAllAltDestsThan(coord))
-			.map((tile) => tile.seq);
+		let avoid = this.grid
+			.getAllAltDestsThan(coord)
+			.map((tile) => tile.seq)
+			.freeze();
 		// ^ Note: An array of CharSeq from unique Tiles. It is okay
 		// for those tiles to include `coord`
 		if (doCheckEmptyTiles) {
 			const nullSeq = Lang.CharSeqPair.NULL.seq;
-			avoid = Object.freeze(avoid.filter((seq) => seq !== nullSeq));
+			avoid = avoid.filter((seq) => seq !== nullSeq).freeze();
 		}
 		return this.lang.getNonConflictingChar(avoid);
 	}

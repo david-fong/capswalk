@@ -1,6 +1,6 @@
 Object.defineProperties(Array.prototype, {
-	freeze: { value: function freeze() { return Object.freeze(this); } },
-	seal: { value: function seal() { return Object.seal(this); } },
+	freeze: { value: function freeze() { return Object.freeze(this); }, enumerable: true, },
+	seal: { value: function seal() { return Object.seal(this); }, enumerable: true },
 });
 // In-House `--frozen-intrinsics`:
 (<(keyof typeof globalThis)[]>[

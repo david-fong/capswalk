@@ -123,7 +123,7 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 			return newOpt;
 		};
 		const dataListArr = Array.from(this.groupNameDataList.children) as OptEl[];
-		Object.freeze(Object.entries(changes)).forEach(([groupName, status]) => {
+		Object.entries(changes).freeze().forEach(([groupName, status]) => {
 			const opt = dataListArr.find((opt: OptEl) => opt.value === groupName) ?? mkOpt(groupName);
 			switch (status) {
 				case JoinerEv.Exist.Status.IN_LOBBY: opt.textContent = "In Lobby"; break;

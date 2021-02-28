@@ -113,8 +113,8 @@ export namespace Beehive {
 			super(desc);
 
 			// Initialize `grid`:
-			const grid = undefined!;
-			this.grid = Object.freeze(grid);
+			const grid: any[] = undefined!;
+			this.grid = grid.freeze();
 			if (new.target === Grid) {
 				Object.seal(this); //🧊
 			}
@@ -174,8 +174,8 @@ export namespace Beehive {
 		}
 
 		public tileDestsFrom(coord: Coord, radius: number = 1): TU.RoArr<Tile> {
-			const result: TU.RoArr<Tile> = [];
-			return Object.freeze(result);
+			const result: Array<Tile> = [];
+			return result.freeze();
 		}
 
 		public tileSourcesTo(coord: Coord, radius: number = 1): TU.RoArr<Tile> {

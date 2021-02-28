@@ -89,7 +89,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		players: TU.RoArr<Player>,
 		operators: TU.RoArr<OperatorPlayer>,
 	} {
-		const players = Object.freeze(gameDesc.players.map((pDesc) => {
+		const players = gameDesc.players.map((pDesc) => {
 			if (pDesc.familyId === Player.Family.HUMAN) {
 				return (operatorIds.includes(pDesc.playerId))
 					? new implArgs.OperatorPlayer!(this, pDesc)
@@ -100,10 +100,10 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 					pDesc,
 				);
 			}
-		}));
+		}).freeze();
 		return Object.freeze({
 			players,
-			operators: Object.freeze(operatorIds.map((playerId) => players[playerId] as OperatorPlayer)),
+			operators: operatorIds.map((playerId) => players[playerId] as OperatorPlayer).freeze(),
 		});
 	}
 
@@ -230,10 +230,10 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 			return; //⚡
 		}
 
-		Object.freeze(Object.entries(desc.tiles)).forEach(([coord, changes]) => {
+		Object.entries(desc.tiles).freeze().forEach(([coord, changes]) => {
 			this.commitTileMods(parseInt(coord), changes);
 		});
-		Object.freeze(Object.entries(desc.players)).forEach(([pid, changes]) => {
+		Object.entries(desc.players).freeze().forEach(([pid, changes]) => {
 			const player = this.players[parseInt(pid)]!;
 			player.reqBuffer.acceptOldest();
 			player.health = changes.health;

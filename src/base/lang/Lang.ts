@@ -150,7 +150,7 @@ export namespace Lang {
 	 */
 	export namespace BuildUtils {
 		export function WORD_FOR_WORD(seq2Weight: Record<Lang.Seq,number>): Lang.WeightedForwardMap {
-			return Object.freeze(Object.entries(seq2Weight)).reduce<Lang.WeightedForwardMap>(
+			return Object.entries(seq2Weight).freeze().reduce<Lang.WeightedForwardMap>(
 				(accumulator, [char,weight]) => {
 					accumulator[char] = { seq: char, weight };
 					return accumulator;

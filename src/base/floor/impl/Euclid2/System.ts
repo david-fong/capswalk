@@ -130,7 +130,7 @@ export namespace WrappedEuclid2 {
 		});
 		public static sizeLimits: AbstractGrid.DimensionBounds<S> = Grid.SIZE_LIMITS;
 
-		private readonly _grid: Array<Tile>;
+		private readonly _grid: SealedArray<Tile>;
 
 		protected readonly iacCache: TU.RoArr<IAC>;
 
@@ -148,7 +148,7 @@ export namespace WrappedEuclid2 {
 					grid.push(tile);
 				}
 			}
-			this._grid = Object.seal(grid);
+			this._grid = grid.seal();
 
 			const iacCache = [];
 			for (let y = 0; y < desc.dimensions.height; y++) {
@@ -293,7 +293,7 @@ export namespace WrappedEuclid2 {
 				if (wrapX) { dests.length -= r; }
 			}
 			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
-			return Object.freeze(dests);
+			return dests.freeze();
 		}
 		public tileSourcesTo(coord: Coord, radius: number = 1): TU.RoArr<Tile> {
 			return this.tileDestsFrom(coord, radius);

@@ -1,19 +1,14 @@
-
 import {
-	JsUtils,
-	Coord, Tile,
-	Player,
-	GameManager,
-	RobotPlayer,
+	JsUtils, Coord, Tile,
+	GameManager, Player, RobotPlayer,
 } from "../RobotPlayer";
-
 
 /**
  * @final
  */
 export class Chaser extends RobotPlayer.Decisive {
 
-	private readonly pred: Array<Player> = [];
+	private readonly pred: SealedArray<Player> = [];
 	private readonly prey: Array<Player> = [];
 
 	private readonly params: Readonly<Chaser.Behaviour>;
@@ -33,18 +28,21 @@ export class Chaser extends RobotPlayer.Decisive {
 		JsUtils.propNoWrite(this as Chaser,
 			"params", "grid",
 		);
+		this.prey[Symbol.iterator]
+		this.pred.keys
 	}
 
 	public onTeamsBootstrapped(): void {
 		super.onTeamsBootstrapped();
 		// We need to cast off read-only-ness below.
 		// @ts-expect-error : RO=
-		this.pred = Object.seal(this.game.teams
+		this.pred = this.game.teams
 			.filter((team) => team.id !== this.teamId)
-			.flatMap((team) => team.members));
+			.flatMap((team) => team.members)
+			.seal();
 
 		// @ts-expect-error : RO=
-		this.prey = Object.seal([...this.pred]);
+		this.prey = [...this.pred].seal();
 
 		JsUtils.propNoWrite(this as Chaser,
 			"pred", "prey",

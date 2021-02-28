@@ -27,7 +27,7 @@ export namespace SoundEffects {
 		id: string;
 		sampleRate: number;
 	}>;
-	export const Descs: TU.RoArr<Desc> = Object.freeze([{
+	export const Descs: TU.RoArr<Desc> = JsUtils.deepFreeze([{
 		id: "default",
 		sampleRate: undefined!,
 	}]);

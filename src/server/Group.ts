@@ -201,7 +201,7 @@ export class Group extends _Group {
 					familyArgs: {},
 				});
 			}),
-		];
+		].freeze();
 		this.#currentGame = new ServerGame({
 			sockets: this.sockets,
 			groupHostSocket: this.groupHostSocket,

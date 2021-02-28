@@ -221,14 +221,15 @@ export namespace Player {
 				}, [] as Array<Team.Id>);
 
 			// @ts-expect-error : RO=
-			gameDesc.players
-				= Object.freeze(Object.freeze(playerDescs.slice()
-				.sort((pda, pdb) => teamIdCleaner[pda.teamId]! - teamIdCleaner[pdb.teamId]!))
+			gameDesc.players = playerDescs.slice()
+				.sort((pda, pdb) => teamIdCleaner[pda.teamId]! - teamIdCleaner[pdb.teamId]!)
+				.freeze()
 				.map<CtorArgs>((playerDesc, index) => Object.assign({}, playerDesc, {
 					playerId: index,
 					teamId:   teamIdCleaner[playerDesc.teamId]!,
 					avatar:   playerDesc.avatar ?? Player.Avatar.GET_RANDOM(),
-				})));
+				}))
+				.freeze();
 		};
 	}
 	Object.freeze(CtorArgs);
