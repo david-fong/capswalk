@@ -86,7 +86,7 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 	/** @type {HtmlPlugin.Options} */
 	const htmlPluginOptions = {
 		template: PROJECT_ROOT("src/client/index.ejs"),
-		favicon: "./assets/favicon.png",
+		favicon: PROJECT_ROOT("src/client/favicon.png"),
 		inject: false,
 		templateParameters: (compilation, assets, assetTags, options) => {
 			return {

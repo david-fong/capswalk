@@ -1,4 +1,3 @@
-
 import "./PlatformMods";
 
 // Override stack trace to shorten file paths:
