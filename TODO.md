@@ -16,8 +16,6 @@
 ### Things I feel like doing
 
 1. Implement websocket heartbeat to check for broken connections.
-1. Implement lang/coordsys compatibility check that coord system guarantees that there exists a tile `T` with `numDests(T) <= N` where `N` is the number of root nodes in the language. Otherwise, the roots will never see the light of day, and spawning them will make it impossible to finish the reset.
-    - Actually, that value of N is wrong. Consider morse. Instead, `N` should be the number of leaf nodes when excluding the leaf nodes of the root node with the most leaves... I think.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
@@ -28,6 +26,9 @@
 
 ### Things that I feel less like doing
 
+1. Make test chunks share chunks with the server chunk.
+    - Move the import code from `GameManager.ts` to a dedicated wrapper class
+    - Use wrapper class in the test code.
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
     - Set the maxAge option for express to at least a year.
 1. Game-Host Servers:

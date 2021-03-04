@@ -37,7 +37,11 @@ export abstract class Lang extends _Lang {
 	 */
 	private readonly leafNodes: LangSeqTree.Node[];
 
-	public get numLeaves(): number { return this.leafNodes.length; }
+	/**
+	 * The total number of leaf noes of all root nodes except the
+	 * root node with the most leaf nodes.
+	 */
+	public readonly isolatedMinOpts: number;
 
 	/** */
 	protected constructor(
@@ -50,15 +54,17 @@ export abstract class Lang extends _Lang {
 			(Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD(),
 			weightExaggeration,
 		);
-		this.leafNodes = this.treeRoots.flatMap((root) => root.getLeaves());
-		JsUtils.propNoWrite(this as Lang, "frontendDesc", "treeRoots", "leafNodes");
+		const leaves = this.treeRoots.map((root) => root.getLeaves());
+		this.leafNodes = leaves.flat();
+		this.isolatedMinOpts = leaves.map((l) => l.length).sort().slice(0,-1).reduce((s,n) => s+n, 0);
+		JsUtils.propNoWrite(this as Lang, "frontendDesc", "treeRoots", "leafNodes", "isolatedMinOpts");
 		Object.seal(this); //🧊
 
-		if (DEF.DevAssert && this.leafNodes.length !== this.frontendDesc.numLeaves) {
+		if (DEF.DevAssert && this.isolatedMinOpts !== this.frontendDesc.isolatedMinOpts) {
 			throw new Error(`maintenance required: the frontend constant`
 			+` for the language "${this.frontendDesc.id}" needs to`
 			+` be updated to the correct, computed value, which is`
-			+` \`${this.leafNodes.length}\`.`);
+			+` \`${this.isolatedMinOpts}\`.`);
 		}
 	}
 

@@ -29,19 +29,16 @@ const REMAP = Object.freeze(<const>{
 REMAP as Readonly<Record<string, {(input: string): string}>>;
 
 export type Info = {
-	id?:        string;
-	/**
-	 * Pretty much a file name.
-	 */
-	module:     string;
-	/**
-	 * A property-access chain.
-	 */
-	export:     string;
-	remapFunc:  {(input: string): string};
-	numLeaves:  number;
+	id?: string;
+	/** Pretty much a file name. */
+	module: string;
+	/** A property-access chain. */
+	export: string;
+	remapFunc: {(input: string): string};
+	/** */
+	isolatedMinOpts: number;
 	displayName:string;
-	blurb:      string;
+	blurb: string;
 };
 
 /**
@@ -49,31 +46,31 @@ export type Info = {
  */
 const Descs = <const>{
 	"engl-low": <Info>{
-		module: "English", export: "Lowercase", numLeaves: 26,
+		module: "English", export: "Lowercase", isolatedMinOpts: 25,
 		remapFunc: REMAP.LOWER,
 		displayName: "English Lowercase (qwerty)",
 		blurb: "",
 	},
 	"engl-mix": <Info>{
-		module: "English", export: "MixedCase", numLeaves: 52,
+		module: "English", export: "MixedCase", isolatedMinOpts: 51,
 		remapFunc: REMAP.IDENT,
 		displayName: "English Mixed-Case (Querty)",
 		blurb: "",
 	},
 	"japn-hir": <Info>{
-		module: "Japanese", export: "Hiragana", numLeaves: 71,
+		module: "Japanese", export: "Hiragana", isolatedMinOpts: 70,
 		remapFunc: REMAP.LOWER,
 		displayName: "Japanese Hiragana",
 		blurb: "",
 	},
 	"japn-kat": <Info>{
-		module: "Japanese", export: "Katakana", numLeaves: 69,
+		module: "Japanese", export: "Katakana", isolatedMinOpts: 68,
 		remapFunc: REMAP.LOWER,
 		displayName: "Japanese Katakana",
 		blurb: "",
 	},
 	"kore-dub": <Info>{
-		module: "Korean", export: "Dubeolsik", numLeaves: 8778,
+		module: "Korean", export: "Dubeolsik", isolatedMinOpts: 8690,
 		remapFunc: REMAP.IDENT,
 		displayName: "Korean Dubeolsik (두벌식 키보드)",
 		blurb: "The most common keyboard layout, and South Korea's only Hangul"
@@ -81,7 +78,7 @@ const Descs = <const>{
 		+ " the right.",
 	},
 	"kore-sub": <Info>{
-		module: "Korean", export: "Sebeolsik", numLeaves: 10206,
+		module: "Korean", export: "Sebeolsik", isolatedMinOpts: 10179,
 		remapFunc: REMAP.IDENT,
 		displayName: "Korean Sebeolsik (세벌식 최종 키보드)",
 		blurb: "Another Hangul keyboard layout used in South Korea, and the"
@@ -91,7 +88,7 @@ const Descs = <const>{
 		+ " ergonomic than the dubeolsik, but not widely used.",
 	},
 	"kore-rom": <Info>{
-		module: "Korean", export: "Romanization", numLeaves: 3990,
+		module: "Korean", export: "Romanization", isolatedMinOpts: 3960,
 		remapFunc: REMAP.LOWER,
 		displayName: "Korean Revised Romanization",
 		blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
@@ -101,37 +98,37 @@ const Descs = <const>{
 		+ " and Tourism",
 	},
 	"engl-cell-enc": <Info>{
-		module: "English", export: "OldCellphone.Encode", numLeaves: 8,
+		module: "English", export: "OldCellphone.Encode", isolatedMinOpts: 7,
 		remapFunc: REMAP.IDENT,
 		displayName: "Old Cellphone Keyboard",
 		blurb: "",
 	},
 	"mors-enc": <Info>{
-		module: "English", export: "Morse.Encode", numLeaves: 20,
+		module: "English", export: "Morse.Encode", isolatedMinOpts: 10,
 		remapFunc: (input) => { return input; }, // TODO.impl
 		displayName: "Morse Encoder",
 		blurb: "",
 	},
 	"mors-dec": <Info>{
-		module: "English", export: "Morse.Decode", numLeaves: 41,
+		module: "English", export: "Morse.Decode", isolatedMinOpts: 40,
 		remapFunc: REMAP.LOWER,
 		displayName: "Morse Decoder",
 		blurb: "",
 	},
 	"ngram2": <Info>{
-		module: "Ngrams", export: "Ngram2", numLeaves: 200,
+		module: "Ngrams", export: "Ngram2", isolatedMinOpts: 199,
 		remapFunc: REMAP.LOWER,
 		displayName: "English Bigrams",
 		blurb: "",
 	},
 	"ngram3": <Info>{
-		module: "Ngrams", export: "Ngram3", numLeaves: 401,
+		module: "Ngrams", export: "Ngram3", isolatedMinOpts: 400,
 		remapFunc: REMAP.LOWER,
 		displayName: "English Trigrams",
 		blurb: "",
 	},
 	"numpad": <Info>{
-		module: "Numpad", export: "Numpad", numLeaves: 100,
+		module: "Numpad", export: "Numpad", isolatedMinOpts: 100,
 		remapFunc: REMAP.LOWER,
 		displayName: "Number Pad",
 		blurb: "",

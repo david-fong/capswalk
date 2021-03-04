@@ -14,7 +14,8 @@
   "files": [],
   "sideEffects": [
     "*.css",
-    "src/server/PlatformMods.ts"
+    "src/base/defs/*PlatformMods.ts",
+    "test/*.ts"
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",

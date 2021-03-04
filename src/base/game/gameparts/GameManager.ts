@@ -53,7 +53,7 @@ export abstract class GameManager<
 			this.lang = new LangConstructor(args.desc.langWeightExaggeration);
 			JsUtils.propNoWrite(this as GameManager<S>, "lang");
 
-			if (DEF.DevAssert && (this.lang.numLeaves < this.grid.static.ambiguityThreshold)) {
+			if (DEF.DevAssert && (this.lang.isolatedMinOpts < this.grid.static.ambiguityThreshold)) {
 				// Enforced By: clientside UI and `CHECK_VALID_CTOR_ARGS`.
 				throw new Error("never");
 			}
@@ -232,27 +232,6 @@ export abstract class GameManager<
 		}, socket);
 	}
 
-	/**
-	 *
-	 * 1. Design decision: Change bubble mechanism:
-	 * - Activates automatically and immediately upon players entering each others' (mutual) attack range, or by pressing space in the (mutual) attack range of other players.
-	 * - When done automatically, health will be levelled-down enough to cause as many changes in downed-ness as possible by changing other opponents' health to -1 and teammates' health to 0.
-	 * - If done by pressing space, health will be levelled further until the space-presser's health is at zero.
-	 * - The player with the highest health upon contact, or the player who pressed space is considered the attacker.
-	 *   - If the attacker is downed (ie. everyone in the interaction is downed), no changes should be made.
-	 *     Just short circuit.
-	 *   - First, for each un-downed enemy (non-teammate) in range (sorted to evenly distribute downed-ness),
-	 *     the attacker will subtract that enemy's health+1 from its own, causing that enemy to become downed
-	 *     (health === -1 \< 0) until all enemies are downed, or any further whole-health-subtractions would
-	 *     cause it to become downed.
-	 *   - If it still has more health, it does something similar for its teammates.
-	 *
-	 * @param sourceP
-	 */
-	private _processPlayerContact(sourceP: Player): StateChange.Res["initiator"] {
-		return undefined!;
-	}
-
 	/** @override */
 	protected commitTileMods(
 		coord: Coord, changes: Tile.Changes,
@@ -307,7 +286,7 @@ export namespace GameManager {
 		} else if (gridClass === undefined) {
 			bad.push(`No grid with the system ID \`${args.coordSys}\` exists.`);
 		} else {
-			if (langDesc.numLeaves < gridClass.ambiguityThreshold) {
+			if (langDesc.isolatedMinOpts < gridClass.ambiguityThreshold) {
 				bad.push("The provided language does not have enough sequences"
 				+"\nto ensure that a shuffling operation will always succeed when"
 				+"\npaired with the provided grid system.");
@@ -333,6 +312,5 @@ export namespace GameManager {
 		//#endregion
 	}
 }
-JsUtils.protoNoEnum(GameManager, "_processPlayerContact");
 Object.freeze(GameManager);
 Object.freeze(GameManager.prototype);

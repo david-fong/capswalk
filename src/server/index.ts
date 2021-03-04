@@ -1,4 +1,4 @@
-import "./PlatformMods";
+import "../base/defs/NodePlatformMods";
 
 // Override stack trace to shorten file paths:
 process.on("uncaughtException", function processOnUncaughtException(err) {

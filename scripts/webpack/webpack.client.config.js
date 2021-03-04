@@ -76,17 +76,21 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 	config.optimization.minimizer = ["...", new CssMinimizerPlugin({
 		minimizerOptions: { preset: ["default", { discardComments: {}, }] }
 	})];
-	Object.assign(config.optimization.splitChunks.cacheGroups, /** @type {SplitChunksOpts} */{
-		"game-css": {
-			test: /src[/\\]base[/\\].*\.css$/,
-			name: "game-css", chunks: "all", priority: 10,
-			reuseExistingChunk: true, enforce: true,
-		},
-	});
+	{
+		/** @type {SplitChunksOpts} */
+		const opts = {
+			"game-css": {
+				test: /src[/\\]base[/\\].*\.css$/,
+				name: "game-css", chunks: "all", priority: 10,
+				reuseExistingChunk: true, enforce: true,
+			},
+		};
+	}
+	Object.assign(config.optimization.splitChunks.cacheGroups, );
 	/** @type {HtmlPlugin.Options} */
 	const htmlPluginOptions = {
 		template: PROJECT_ROOT("src/client/index.ejs"),
-		favicon: PROJECT_ROOT("src/client/favicon.png"),
+		favicon:  PROJECT_ROOT("src/client/favicon.png"),
 		inject: false,
 		templateParameters: (compilation, assets, assetTags, options) => {
 			return {
@@ -99,21 +103,17 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 	};
 	config.plugins.push(
 		new HtmlPlugin(htmlPluginOptions),
-		// new HtmlPlugin(Object.assign({}, htmlPluginOptions, <HtmlPlugin.Options>{
-		// 	chunks: [],
-		// 	filename: "404.html",
-		// })),
 		new CspHtmlPlugin({
 			"default-src": ["'self'"],
 			"script-src": ["'self'"], "style-src": ["'self'"],
 			"child-src": "'none'", "object-src": "'none'", "base-uri": "'none'",
 			"connect-src": ["'self'", ...GAME_SERVERS.map((origin) => `wss://${origin}/ws/`)],
-			"form-action": "'none'",
-		}, {
+			"form-action": "'none'", },{
 			hashingMethod: "sha256",
-			hashEnabled: { "script-src": true, "style-src": false },
+			hashEnabled:  { "script-src": true,  "style-src": false },
 			nonceEnabled: { "script-src": false, "style-src": false },
-		}), new MiniCssExtractPlugin({
+		}),
+		new MiniCssExtractPlugin({
 			filename: "[name].css",
 			chunkFilename: "chunk/[name].css",
 			attributes: { disable: "true" },

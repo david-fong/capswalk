@@ -16,7 +16,6 @@ const PROJECT_ROOT = (...relative) => path.resolve(__dirname, "../..", ...relati
 exports.PROJECT_ROOT = PROJECT_ROOT;
 
 exports.GAME_SERVERS = require("../../servers.json");
-const DO_SOURCE_MAPS = true; //process.argv.includes("-m");
 
 /** @type {() => ReadonlyArray<Readonly<webpack.WebpackPluginInstance>>} */
 const BASE_PLUGINS = () => Object.freeze([
@@ -77,11 +76,11 @@ exports.__BaseConfig = (distSubFolder) => { return {
 	resolveLoader: {
 		modules: [PROJECT_ROOT("scripts/webpack/node_modules")],
 	},
-	module: { rules: exports.MODULE_RULES(), },
+	module: { rules: exports.MODULE_RULES(), noParse: /jquery|lodash/ },
 	// https://webpack.js.org/plugins/source-map-dev-tool-plugin/
 	devtool: (MODE.prod)
 		? "nosources-source-map"
-		: (DO_SOURCE_MAPS ? "source-map" : false),
+		: "source-map",
 	output: {
 		path: PROJECT_ROOT("dist", distSubFolder),
 		publicPath: `./`,
@@ -115,6 +114,6 @@ exports.__applyCommonNodeConfigSettings = (config) => {
 	// https://webpack.js.org/configuration/output/#outputdevtoolmodulefilenametemplate
 	config.output.devtoolModuleFilenameTemplate = "../[resource-path]?[loaders]";
 	config.devtool = (MODE.prod) ? "source-map"
-		: (DO_SOURCE_MAPS ? "eval-cheap-module-source-map" : false);
+		: "eval-cheap-module-source-map";
 		// ^vscode not quite working without eval
 };
