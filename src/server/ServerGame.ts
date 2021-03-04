@@ -54,7 +54,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 
 	/** */
 	public constructor(args: Readonly<{
-		sockets: Set<WebSocket>,
+		sockets: IterableIterator<WebSocket>,
 		groupHostSocket: WebSocket,
 		deleteExternalRefs: () => void,
 		gameDesc: Game.CtorArgs.UnFin<S>,

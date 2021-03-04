@@ -21,7 +21,6 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	}>;
 
 	readonly #wsMessageCb: (ev: MessageEvent<string>) => void;
-	#wsOnceGameCreateCb: ((ev: MessageEvent<string>) => void) | undefined = undefined;
 	private get ws(): WebSocket {
 		return this.top.webSocket!;
 	}
@@ -122,29 +121,18 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 
 			this.ws.addEventListener("message", this.#wsMessageCb);
 		}
-		// Listen for when the server sends the game constructor arguments:
-		this.#wsOnceGameCreateCb = (ev: MessageEvent<string>) => {
-			const [evName, gameCtorArgs, myPlayerIds] = JSON.parse(ev.data) as [string, Game.CtorArgs, number[]];
-			if (evName === GroupEv.CREATE_GAME) {
-				this.requestGoToScreen(BaseScreen.Id.PLAY_ONLINE, [gameCtorArgs, myPlayerIds]); //🚀
-			}
-		};
-		this.ws.addEventListener("message",
-			this.#wsOnceGameCreateCb,
-			{ once: true },
-		);
 	}
 
 	/** @override */
 	public getRecommendedFocusElem(): HTMLElement {
-		let elemToFocus: HTMLElement | undefined
+		let el: HTMLElement | undefined
 			= (!this.in.username.validity.valid) ? this.in.username
 			: (!this.in.teamId.validity.valid)   ? this.in.teamId
-			: undefined;
-		if (elemToFocus === undefined) {
-			elemToFocus = (this.top.clientIsGroupHost) ? this.nav.next : this.in.teamId;
+			: undefined; // ^initialize as first invalid input if any invalid.
+		if (el === undefined) {
+			el = (this.top.clientIsGroupHost) ? this.nav.next : this.in.teamId;
 		}
-		return elemToFocus;
+		return el;
 	}
 
 	/** @override */
@@ -153,14 +141,12 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		// in case it hasn't started yet:
 		if (navDir === BaseScreen.NavDir.BACKWARD) {
 			this.ws.removeEventListener("message", this.#wsMessageCb);
-			this.ws.removeEventListener("message", this.#wsOnceGameCreateCb!);
-			this.#wsOnceGameCreateCb = undefined;
 		}
 		return true;
 	}
 
 	/** */
-	private _onUserInfoChange(res: GroupEv.UserInfo.Res): void {
+	public _onUserInfoChange(res: GroupEv.UserInfo.Res): void {
 		Object.freeze(Object.entries(res)).forEach(([uid, desc]) => {
 			const userInfo = this.players.get(uid);
 

@@ -41,6 +41,7 @@ export class AllScreens {
 
 	readonly #screenTransition: TopLevel["transition"];
 
+	/** */
 	public constructor(top: TopLevel, baseElem: HTMLElement) {
 		this.#screenTransition = top.transition;
 		baseElem.setAttribute("role", "presentation");
@@ -95,9 +96,9 @@ export class AllScreens {
 	): Promise<boolean> {
 		const currScreen = this.currentScreen;
 		const destScreen = this.dict[destId];
-		// if (currScreen === destScreen) {
-		//     throw new Error("never");
-		// }
+		if (currScreen === destScreen) {
+		    throw new Error("never");
+		}
 		this.#currentScreen = destScreen;
 
 		const navDir = BaseScreen.GET_NAV_DIR({
@@ -112,6 +113,10 @@ export class AllScreens {
 			await this.#screenTransition.do({
 				whileBeforeUnblur: (destScreen._enter as EnterFunc)(navDir, ctorArgs),
 				beforeUnblur: () => {
+					// 🍙❗ special loading cases (related to websocket listeners)
+					switch (destId) {
+						case BaseScreen.Id.GROUP_JOINER: this.dict[BaseScreen.Id.GROUP_LOBBY].lazyLoad(); break;
+					}
 					currScreen?._onAfterLeave();
 					destScreen._onAfterEnter();
 					destScreen.getRecommendedFocusElem()?.focus();
@@ -122,6 +127,7 @@ export class AllScreens {
 		return false;
 	}
 
+	/** */
 	public get currentScreen(): BaseScreen<BaseScreen.Id> {
 		return this.#currentScreen;
 	}

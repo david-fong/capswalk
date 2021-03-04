@@ -32,7 +32,9 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		readonly operatorIds: TU.RoArr<Player.Id>,
 	}) {
 		const { impl, desc, operatorIds } = args;
-		JsUtils.deepFreeze(desc);
+		Object.freeze(desc);
+		Object.freeze(desc.players);
+		desc.players.forEach((desc) => Object.freeze(desc));
 		Object.freeze(operatorIds);
 
 		const gridClass = impl.gridClassLookup(desc.coordSys);

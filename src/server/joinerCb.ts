@@ -1,10 +1,11 @@
 import type WebSocket from "ws";
-import { JoinerEv } from "defs/OnlineDefs";
+import { GroupEv, JoinerEv } from "defs/OnlineDefs";
 import { Group } from "./Group";
 import { wss } from "./index";
 
 /** */
 export const groups = new Map<string, Group>();
+function eraseGroup(groupName: string) { groups.delete(groupName); }
 
 /** */
 function _isReqValid(desc: JoinerEv.Create.Req): boolean {
@@ -23,11 +24,14 @@ function wssBroadcast(evName: string, _data: any): void {
 export function wsMessageCb(ev: WebSocket.MessageEvent): void {
 	const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
 	switch (evName) {
+	/** */
 	case JoinerEv.Create.NAME: {
+		function _res(val: JoinerEv.Create.Res): void {
+			ev.target.send(JSON.stringify([JoinerEv.Create.NAME, val]));
+		};
 		const desc = args[0] as JoinerEv.Create.Req;
 		if (!_isReqValid(desc) || groups.has(desc.groupName)) {
-			ev.target.send(JSON.stringify([JoinerEv.Create.NAME, false]));
-			return; //⚡
+			_res(false); return; //⚡
 		}
 		groups.set(
 			desc.groupName,
@@ -35,34 +39,41 @@ export function wsMessageCb(ev: WebSocket.MessageEvent): void {
 				wssBroadcast: wssBroadcast,
 				name: desc.groupName,
 				passphrase: desc.passphrase,
-				deleteExternalRefs: function deleteExternalRefs() { groups.delete(desc.groupName); },
+				deleteExternalRefs: eraseGroup.bind(null, desc.groupName),
 			})),
 		);
-		ev.target.send(JSON.stringify([JoinerEv.Create.NAME, true]));
 		// Note that existence of the new group is broadcasted only
 		// once the creator of thr group has joined it.
-		break;
+		_res(true); break;
 	}
+	/** */
 	case JoinerEv.TryJoin.NAME: {
+		function _res(val: JoinerEv.TryJoin.Res): void {
+			ev.target.send(JSON.stringify([JoinerEv.TryJoin.NAME, val]));
+		}
 		const req = args[0] as JoinerEv.TryJoin.Req;
 		const group = groups.get(req.groupName);
 		if (
 			group === undefined
 			|| req.passphrase !== group.passphrase
 		) {
-			return; //⚡
+			_res(false); return; //⚡
 		}
 		const userInfo = req.userInfo;
 		if (userInfo === undefined || userInfo.teamId !== 0) {
 			throw new Error(`a socket attempted to connect to group`
 			+` \`${group.name}\` without providing userInfo.`);
 		}
+		// NOTE: I could make a WeakMap from sockets to their groups,
+		// but that would be another global state to manage. Checking
+		// every group is kind of stupid, but it's simple and it works.
 		for (const group of groups.values()) {
 			if (group.kickSocket(ev.target)) break;
 		}
 		group.admitSocket(ev.target, userInfo);
-		break;
+		_res(true); break;
 	}
+	/** */
 	default: break;
 	}
 }

@@ -19,15 +19,14 @@ export class Group extends _Group {
 	public readonly name: _Group.Name;
 	public readonly passphrase: _Group.Passphrase;
 
-	declare protected readonly wssBroadcast: (evName: string, ...data: any[]) => void;
-	protected readonly sockets = new Set<WebSocket>();
-	protected groupHostSocket: WebSocket;
-	protected readonly userInfo = new WeakMap<WebSocket, Player.UserInfo>();
-
 	#currentGame: ServerGame<any> | undefined;
 	public get isCurrentlyPlayingAGame(): boolean {
 		return this.#currentGame !== undefined;
 	}
+
+	declare private readonly wssBroadcast: (evName: string, ...data: any[]) => void;
+	private readonly sockets = new Map<WebSocket, Player.UserInfo>();
+	private groupHostSocket: WebSocket;
 
 	readonly #initialTtlTimeout: NodeJS.Timeout;
 	readonly #deleteExternalRefs: () => void;
@@ -63,21 +62,17 @@ export class Group extends _Group {
 				default: break;
 			}
 		};
-		this.#wsLeaveCb = (ev: WebSocket.CloseEvent | WebSocket.MessageEvent): void => {
-			if (ev.target === this.groupHostSocket) {
+		this.#wsLeaveCb = (ev: WebSocket.CloseEvent): void => {
+			if (ev.target === this.groupHostSocket || this.sockets.size === 1) {
 				// If the host disconnects, end the session.
 				this.terminate(); // TODO.design
 				return;
 			}
 			this.sockets.delete(ev.target);
-			if (this.sockets.size === 0) {
-				this.terminate();
-				return;
-			}
 			const data = JSON.stringify([GroupEv.UserInfo.NAME, <GroupEv.UserInfo.Res>{
 				[SOCKET_ID(ev.target)]: null,
 			}]);
-			this.sockets.forEach((s) => s.send(data));
+			this.sockets.forEach((u,s) => s.send(data));
 		};
 	}
 
@@ -90,7 +85,6 @@ export class Group extends _Group {
 		if (this.#currentGame) {
 			// no-op
 		}
-		this.userInfo.set(ws, userInfo);
 		{
 			type Res = GroupEv.UserInfo.Res;
 			const EVENT_NAME = GroupEv.UserInfo.NAME;
@@ -98,12 +92,12 @@ export class Group extends _Group {
 				// Notify all other clients in this group of the new player:
 				// NOTE: broadcast modifier not used since socket is not yet in this.sockets.
 				const data = JSON.stringify([EVENT_NAME, <Res>{[SOCKET_ID(ws)]: userInfo}]);
-				this.sockets.forEach((s) => s.send(data));
+				this.sockets.forEach((u,s) => s.send(data));
 			}
 			// Notify the new player of all other players:
 			const res: Res = {};
-			this.sockets.forEach((s) => {
-				res[SOCKET_ID(s)] = this.userInfo.get(s)!;
+			this.sockets.forEach((u,s) => {
+				res[SOCKET_ID(s)] = u;
 			});
 			ws.send(JSON.stringify([EVENT_NAME, res]));
 		}
@@ -120,7 +114,7 @@ export class Group extends _Group {
 		}
 		ws.addEventListener("close", this.#wsLeaveCb);
 		ws.addEventListener("message", this.#wsMessageCb);
-		this.sockets.add(ws);
+		this.sockets.set(ws, userInfo);
 	}
 
 	/** Kick someone from this group. */
@@ -143,11 +137,11 @@ export class Group extends _Group {
 			+ `, teamId: \`${req.teamId}\`, avatar: \`${req.avatar}\`.`);
 			return;
 		}
-		this.userInfo.set(ws, req);
+		this.sockets.set(ws, req);
 		const data = JSON.stringify([GroupEv.UserInfo.NAME, <GroupEv.UserInfo.Res>{
 			[SOCKET_ID(ws)]: req,
 		}]);
-		this.sockets.forEach((s) => s.send(data));
+		this.sockets.forEach((u,s) => s.send(data));
 	}
 
 	/** */
@@ -190,8 +184,8 @@ export class Group extends _Group {
 		// @ts-expect-error : RO=
 		ctorArgs.players = [
 			...ctorArgs.players,
-			...Array.from(this.sockets, (ws) => {
-				const userInfo = this.userInfo.get(ws)!;
+			...Array.from(this.sockets.keys(), (ws) => {
+				const userInfo = this.sockets.get(ws)!;
 				return Object.freeze(<Player._CtorArgs["HUMAN"]>{
 					socket:   ws,
 					familyId: "HUMAN",
@@ -203,7 +197,7 @@ export class Group extends _Group {
 			}),
 		].freeze();
 		this.#currentGame = new ServerGame({
-			sockets: this.sockets,
+			sockets: this.sockets.keys(),
 			groupHostSocket: this.groupHostSocket,
 			deleteExternalRefs: () => { this.#currentGame = undefined; },
 			gameDesc: ctorArgs,
@@ -219,7 +213,7 @@ export class Group extends _Group {
 	 * - Deletes the only external reference so this can be garbage collected.
 	 */
 	protected terminate(): void {
-		for (const ws of this.sockets) {
+		for (const ws of this.sockets.keys()) {
 			ws.removeEventListener("close", this.#wsLeaveCb);
 			ws.removeEventListener("message", this.#wsMessageCb);
 		}

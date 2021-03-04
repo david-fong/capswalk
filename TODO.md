@@ -15,11 +15,7 @@
 
 ### Things I feel like doing
 
-1. Change server sockets set into a map from sockets to groups.
-1. Switch from socket.io to ws. I want to manage my own pubsub.
-    - Implement TryJoin response.
-      - Make sure the client is able to receive userinfo for all existing users after the screen transition to enter the lobby screen in the forward direction.
-    - Implement heartbeat to check for broken connections.
+1. Implement websocket heartbeat to check for broken connections.
 1. Implement lang/coordsys compatibility check that coord system guarantees that there exists a tile `T` with `numDests(T) <= N` where `N` is the number of root nodes in the language. Otherwise, the roots will never see the light of day, and spawning them will make it impossible to finish the reset.
     - Actually, that value of N is wrong. Consider morse. Instead, `N` should be the number of leaf nodes when excluding the leaf nodes of the root node with the most leaves... I think.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.

@@ -1,4 +1,4 @@
-import { Group, JoinerEv, GameEv } from "defs/OnlineDefs";
+import { Group, JoinerEv, GroupEv } from "defs/OnlineDefs";
 
 import { JsUtils, BaseScreen, StorageHooks } from "../../BaseScreen";
 import { _GroupJoinerScreenInitEl } from "./ScreenInitEl";
@@ -24,6 +24,9 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 				case  JoinerEv.Create.NAME: this._onCreateResponse(args[0]); break;
 				case   JoinerEv.Exist.NAME: this._onNotifyGroupExist(args[0]); break;
 				case JoinerEv.TryJoin.NAME: this._setFormState(State.IN_GROUP); break;
+				case   GroupEv.CREATE_GAME: {
+					this.requestGoToScreen(BaseScreen.Id.PLAY_ONLINE, [args[0], args[1]]); //🚀
+				break; }
 				default: break;
 			}
 		};

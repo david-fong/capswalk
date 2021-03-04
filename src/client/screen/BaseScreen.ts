@@ -80,6 +80,20 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	 */
 	protected abstract _lazyLoad(): void;
 
+	/**
+	 * @final
+	 * Made public so screens can preemtively load their next screen
+	 * in case that is required (such as of registering websocket
+	 * listeners).
+	 */
+	public lazyLoad(): void {
+		if (!this.#hasLazyLoaded) {
+			this._lazyLoad();
+			this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
+			this.#hasLazyLoaded = true;
+		}
+	}
+
 	/** @final **Do not override.** */
 	public async _enter(
 		navDir: BaseScreen.NavDir,
@@ -99,11 +113,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 				}
 			}
 		}
-		if (!this.#hasLazyLoaded) {
-			this._lazyLoad();
-			this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
-			this.#hasLazyLoaded = true;
-		}
+		this.lazyLoad()
 		await this._abstractOnBeforeEnter(navDir, args);
 	}
 
@@ -135,6 +145,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	}
 
 	/**
+	 * @virtual
 	 * This is a good place to start any `setInterval` schedules.
 	 *
 	 * The default implementation does nothing. Overriding implementations
