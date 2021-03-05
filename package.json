@@ -9,24 +9,24 @@
     "server/"
   ],
   "scripts": {
-    "start": "node server/index.js"
+    "start": "node --disable-proto=delete server/index.js"
   },
   "engines": {
-    "node": "12.x"
+    "node": "14.x"
   },
-  "name": "snakey3",
+  "name": "capswalk",
+  "license": "LicenseRef-LICENSE.md",
   "author": "David Fong (https://github.com/david-fong)",
   "description": "A multiplayer typing game for learning written languages.",
   "keywords": [
     "typing",
     "game"
   ],
-  "version": "0.9.0",
+  "version": "0.10.0",
   "dependencies": {
     "express": "=4.17.1",
-    "express-static-gzip": "=2.1.0",
-    "socket.io": "=3.0.4",
-    "tslib": "=2.0.3"
+    "express-static-gzip": "=2.1.1",
+    "ws": "=7.4.3"
   },
-  "repository": "github:david-fong/snakey3/tree/dist"
+  "repository": "github:david-fong/capswalk/tree/dist"
 }
