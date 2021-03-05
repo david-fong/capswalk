@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === "production") {
 	const distPkg = require("./templates/package.json");
 	const pkg = distPkg;
 	(srcPkgKeys).forEach((key) => { pkg[key] = srcPkg[key]; });
-	pkg["repository"] += "/tree/dist"; // Point to the dist branch.
+	//pkg["repository"] += "/tree/dist"; // Point to the dist branch.
 	for (let [name, at] of Object.entries(pkg.dependencies)) {
 		if (/^[\^~]$/.test(at[0])) {
 			at = "=" + at.slice(1);

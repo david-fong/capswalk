@@ -29,6 +29,7 @@
 1. Make test chunks share chunks with the server chunk.
     - Move the import code from `GameManager.ts` to a dedicated wrapper class
     - Use wrapper class in the test code.
+    - ...Move the test folder to go under src/server?
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
     - Set the maxAge option for express to at least a year.
 1. Game-Host Servers:
