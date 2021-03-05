@@ -17,11 +17,11 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	readonly #onGameBecomeOver: () => void;
 	public readonly langFrontend: Lang.FrontendDesc;
 
-	public readonly players: TU.RoArr<Player>;
-	public readonly operators: TU.RoArr<OperatorPlayer>;
+	public readonly players: ReadonlyArray<Player>;
+	public readonly operators: ReadonlyArray<OperatorPlayer>;
 	#currentOperator: OperatorPlayer;
 	/** Indexable by team ID's. */
-	public readonly teams: TU.RoArr<Team>;
+	public readonly teams: ReadonlyArray<Team>;
 
 	#status: Game.Status;
 
@@ -29,7 +29,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	public constructor(args: {
 		readonly impl: Game.ImplArgs,
 		readonly desc: Game.CtorArgs<S>,
-		readonly operatorIds: TU.RoArr<Player.Id>,
+		readonly operatorIds: ReadonlyArray<Player.Id>,
 	}) {
 		const { impl, desc, operatorIds } = args;
 		Object.freeze(desc);
@@ -86,10 +86,10 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	private _createPlayers(
 		gameDesc: Game.CtorArgs<S>,
 		implArgs: Game.ImplArgs,
-		operatorIds: TU.RoArr<Player.Id>,
+		operatorIds: ReadonlyArray<Player.Id>,
 	): {
-		players: TU.RoArr<Player>,
-		operators: TU.RoArr<OperatorPlayer>,
+		players: ReadonlyArray<Player>,
+		operators: ReadonlyArray<OperatorPlayer>,
 	} {
 		const players = gameDesc.players.map((pDesc) => {
 			if (pDesc.familyId === Player.Family.HUMAN) {

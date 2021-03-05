@@ -106,7 +106,7 @@ export namespace _SetupScreen {
 		averageHealthPerTile: 1.0 / 45.0,
 		langWeightExaggeration: 1.0,
 		langId: "engl-low",
-		players: ((): TU.RoArr<_Player.CtorArgs.UnFin> => [{
+		players: ((): ReadonlyArray<_Player.CtorArgs.UnFin> => [{
 			familyId:   "CHASER",
 			teamId:     1,
 			username:   "chaser1",

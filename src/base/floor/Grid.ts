@@ -91,7 +91,7 @@ export abstract class Grid<S extends Coord.System> {
 	 * Grid implementations are encouraged to override this if they
 	 * have a more efficient way to produce the same result.
 	 */
-	public getAllAltDestsThan(originCoord: Coord): TU.RoArr<Tile> {
+	public getAllAltDestsThan(originCoord: Coord): ReadonlyArray<Tile> {
 		return Array.from(new Set(
 			this.tileSourcesTo(originCoord)
 				.flatMap((sourceToTarget) => this.tileDestsFrom(sourceToTarget.coord))
@@ -116,9 +116,9 @@ export abstract class Grid<S extends Coord.System> {
 	/** Treat the result as a shallow copy. */
 	public abstract tileAt(coord: Coord): Tile;
 	/** Treat the result as a shallow copy. */
-	public abstract tileDestsFrom(coord: Coord): TU.RoArr<Tile>;
+	public abstract tileDestsFrom(coord: Coord): ReadonlyArray<Tile>;
 	/** Treat the result as a shallow copy. */
-	public abstract tileSourcesTo(coord: Coord): TU.RoArr<Tile>;
+	public abstract tileSourcesTo(coord: Coord): ReadonlyArray<Tile>;
 
 	/**
 	 * The returned value must be consistent with results from the
@@ -132,9 +132,9 @@ export abstract class Grid<S extends Coord.System> {
 	 * pretty patterns.
 	 */
 	public static getSpawnCoords(
-		teamSizes: TU.RoArr<number>,
+		teamSizes: ReadonlyArray<number>,
 		dimensions: Grid.Dimensions[Coord.System],
-	): TU.RoArr<TU.RoArr<Coord>> {
+	): ReadonlyArray<ReadonlyArray<Coord>> {
 		const avoidSet = new Set<Coord>();
 		return teamSizes.map((numMembers: number) => {
 			const teamSpawnCoords: Array<Coord> = [];
@@ -224,9 +224,9 @@ export namespace Grid {
 		 * should be the same.
 		 */
 		getSpawnCoords(
-			teamSizes: TU.RoArr<number>,
+			teamSizes: readonly number[],
 			dimensions: Dimensions[S],
-		): TU.RoArr<TU.RoArr<Coord>>;
+		): readonly (readonly Coord[])[];
 	};
 
 	// Each implementation must register itself into this dictionary.

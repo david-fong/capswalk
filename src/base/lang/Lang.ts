@@ -1,27 +1,15 @@
 import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
-
 import { LangSeqTree } from "./LangSeqTreeNode";
 
 /**
- * A language is a map from a collection of unique characters to
- * corresponding key-sequences. the key-sequences may be non-unique.
- * (try searching up "Chinese riddle where each syllable is pronounced
- * 'shi'"). A character may have more than one corresponding sequence,
- * representing alternate "spellings" (ways of typing it).
+ * Conceptually, a language is a map from unique written characters
+ * to corresponding key-sequences. the key-sequences may be non-unique.
  *
- * ### From Typeable Sequences to Written Characters
- *
- * To the game internals, the reverse thinking is more important: As
- * a map from typeable key-sequences to sets of language-unique written
- * characters (no character is mapped by multiple key-sequences). We
- * do not require support for retrieving the sequence corresponding to
- * a written character.
- *
- * ### Implementation Guide
- *
- * See the readme in [the implementations folder](./impl/readme.md)
- * for a guide on writing implementations of this class.
+ * Operationally, the reverse map is more useful: A a map from typeable
+ * key-sequences to sets of language-unique written characters. Support
+ * is not needed for retrieving the sequence corresponding to a written
+ * character.
  */
 export abstract class Lang extends _Lang {
 
@@ -75,7 +63,6 @@ export abstract class Lang extends _Lang {
 		}
 	}
 
-
 	/**
 	 * @returns
 	 * A random char in this language whose corresponding sequence is
@@ -101,7 +88,7 @@ export abstract class Lang extends _Lang {
 	 * passed-arguments under which it could be called.
 	 */
 	public getNonConflictingChar(
-		avoid: TU.RoArr<Lang.Seq>,
+		avoid: ReadonlyArray<Lang.Seq>,
 	): Lang.CharSeqPair {
 		// Internal explainer: We must find characters from nodes that
 		// are not descendants or ancestors of nodes in `avoid`. This
@@ -150,6 +137,20 @@ export namespace Lang {
 		new (weightScaling: Lang.WeightExaggeration): Lang;
 		BUILD(): WeightedForwardMap;
 	};
+
+	/** */
+	export async function GET_IMPL(feDesc: Lang.FrontendDesc): Promise<Lang.ClassIf> {
+		const langModule = await import(
+			/* webpackChunkName: "lang/[request]" */
+			`lang/impl/${feDesc.module}.ts`
+		);
+		return feDesc.export.split(".").reduce(
+			(nsps, propName) => nsps[propName],
+			langModule[feDesc.module],
+		);
+	}
+	Object.freeze(GET_IMPL);
+
 	/**
 	 * Utility functions for implementations to use in their static
 	 * `.BUILD` function.

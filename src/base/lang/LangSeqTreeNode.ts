@@ -11,8 +11,8 @@ export namespace LangSeqTree {
 
 		declare public readonly parent: Node | undefined;
 		declare public readonly seq: Lang.Seq;
-		declare protected readonly children: TU.RoArr<Node>;
-		readonly #characters: TU.RoArr<WeightedLangChar> = [];
+		declare protected readonly children: ReadonlyArray<Node>;
+		readonly #characters: ReadonlyArray<WeightedLangChar> = [];
 		/**
 		 * Equals this node's own weighted hit count plus all its ancestors'
 		 * weighted hit counts.
@@ -26,7 +26,7 @@ export namespace LangSeqTree {
 		protected constructor(
 			parent: Node | undefined,
 			seq: Lang.Seq = "",
-			characters: TU.RoArr<WeightedLangChar>,
+			characters: ReadonlyArray<WeightedLangChar>,
 		) {
 			Object.defineProperty(this, "parent",   { enumerable: true, value: parent });
 			Object.defineProperty(this, "seq",      { enumerable: true, value: seq });
@@ -47,7 +47,7 @@ export namespace LangSeqTree {
 			}
 		}
 
-		public getLeaves(): TU.RoArr<Node> {
+		public getLeaves(): ReadonlyArray<Node> {
 			const leafNodes: Array<Node> = [];
 			this._rGetLeaves(leafNodes);
 			return leafNodes.freeze();

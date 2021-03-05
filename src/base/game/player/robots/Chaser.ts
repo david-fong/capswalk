@@ -12,7 +12,7 @@ export class Chaser extends RobotPlayer.Decisive {
 	private readonly prey: Array<Player> = [];
 
 	private readonly params: Readonly<Chaser.Behaviour>;
-	declare protected readonly _behaviours: TU.RoArr<RobotPlayer.Decisive.Behaviour>;
+	declare protected readonly _behaviours: ReadonlyArray<RobotPlayer.Decisive.Behaviour>;
 
 	private readonly grid: Chaser["game"]["grid"];
 

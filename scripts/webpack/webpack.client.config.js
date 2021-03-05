@@ -85,8 +85,8 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 				reuseExistingChunk: true, enforce: true,
 			},
 		};
+		Object.assign(config.optimization.splitChunks.cacheGroups, opts);
 	}
-	Object.assign(config.optimization.splitChunks.cacheGroups, );
 	/** @type {HtmlPlugin.Options} */
 	const htmlPluginOptions = {
 		template: PROJECT_ROOT("src/client/index.ejs"),

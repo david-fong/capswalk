@@ -7,7 +7,7 @@ import type { Grid } from "floor/Grid";
 
 interface _VisibleExtensions {
 	readonly baseElem: HTMLElement;
-	readonly spotlightElems: TU.RoArr<HTMLElement>;
+	readonly spotlightElems: ReadonlyArray<HTMLElement>;
 }
 
 /**

@@ -30,7 +30,7 @@ export abstract class GameManager<
 	public constructor(args: {
 		readonly impl: Game.ImplArgs,
 		readonly desc: Game.CtorArgs<S>,
-		readonly operatorIds: TU.RoArr<Player.Id>,
+		readonly operatorIds: ReadonlyArray<Player.Id>,
 	}) {
 		super(args);
 
@@ -41,14 +41,7 @@ export abstract class GameManager<
 		);
 
 		// https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
-		this.#langImportPromise = (import(
-			/* webpackChunkName: "lang/[request]" */
-			`lang/impl/${this.langFrontend.module}.ts`
-		)).then((langModule) => {
-			const LangConstructor = this.langFrontend.export.split(".").reduce<any>(
-				(nsps, propName) => nsps[propName],
-				langModule[this.langFrontend.module],
-			) as Lang.ClassIf;
+		this.#langImportPromise = Lang.GET_IMPL(this.langFrontend).then((LangConstructor) => {
 			// @ts-expect-error : RO=
 			this.lang = new LangConstructor(args.desc.langWeightExaggeration);
 			JsUtils.propNoWrite(this as GameManager<S>, "lang");

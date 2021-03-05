@@ -56,8 +56,8 @@ Object.freeze(VisibleTile.prototype);
 export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 
 	readonly baseElem: HTMLElement;
-	readonly spotlightElems: TU.RoArr<HTMLElement>;
-	#tiles: TU.RoArr<VisibleTile>;
+	readonly spotlightElems: ReadonlyArray<HTMLElement>;
+	#tiles: ReadonlyArray<VisibleTile>;
 
 	public constructor(desc: AbstractGrid.CtorArgs<S>) {
 		super(desc);

@@ -11,6 +11,7 @@ import { Player } from "./Player";
 /**
  * There is at least one in online-clientside and offline games.
  * There are none for online-serverside games.
+ * @final
  */
 export class OperatorPlayer extends Player {
 

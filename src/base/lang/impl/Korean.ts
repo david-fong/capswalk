@@ -206,7 +206,7 @@ export namespace Korean {
 		{ value: "ㅍ", atoms: "ㅍ",   roman: "p" , freq: 0.212015 },
 		{ value: "ㅎ", atoms: "ㅎ",   roman: "h" , freq: 1.360725 },
 	]);
-	INITIALS as TU.RoArr<JamoDesc>; // type-check
+	INITIALS as ReadonlyArray<JamoDesc>; // type-check
 
 	/**
 	 * # Medial Jamo (Jungseong)
@@ -234,7 +234,7 @@ export namespace Korean {
 		{ value: "ㅢ", atoms: "ㅡㅣ", roman: "ui" , freq: 0.425688 },
 		{ value: "ㅣ", atoms: "ㅣ",   roman: "i"  , freq: 3.208973 },
 	]);
-	MEDIALS as TU.RoArr<JamoDesc>; // type-check
+	MEDIALS as ReadonlyArray<JamoDesc>; // type-check
 
 	/**
 	 * # Final Jamo (Jongseong)
@@ -269,6 +269,6 @@ export namespace Korean {
 		{ value: "ㅍ", atoms: "ㅍ",   roman: "p" , freq: 0.045664 },
 		{ value: "ㅎ", atoms: "ㅎ",   roman: "t" , freq: 0.002595 },
 	]);
-	FINALS as TU.RoArr<JamoDesc>; // type-check
+	FINALS as ReadonlyArray<JamoDesc>; // type-check
 }
 Object.freeze(Korean);

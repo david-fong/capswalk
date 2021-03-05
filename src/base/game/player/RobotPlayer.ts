@@ -148,7 +148,7 @@ export namespace RobotPlayer {
 		 * @requires
 		 * The last behaviour must never return `undefined`.
 		 */
-		protected abstract get _behaviours(): TU.RoArr<Decisive.Behaviour>;
+		protected abstract get _behaviours(): ReadonlyArray<Decisive.Behaviour>;
 
 		readonly #cache = {
 			which:  0,

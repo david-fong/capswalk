@@ -99,11 +99,11 @@ export namespace BgMusic {
 		displayName:    string;
 		sampleRate:     number;
 		bufferLength:   number;
-		trackDescs: TU.RoArr<{
+		trackDescs: readonly {
 			filename: string;
-		}>;
+		}[];
 	}>;
-	export const TrackDescs: TU.RoArr<TrackDesc> = JsUtils.deepFreeze([{
+	export const TrackDescs: ReadonlyArray<TrackDesc> = JsUtils.deepFreeze([{
 		id:             "default",
 		displayName:    "Default",
 		sampleRate:     undefined!,

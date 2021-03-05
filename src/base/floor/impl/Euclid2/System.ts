@@ -132,7 +132,7 @@ export namespace WrappedEuclid2 {
 
 		private readonly _grid: SealedArray<Tile>;
 
-		protected readonly iacCache: TU.RoArr<IAC>;
+		protected readonly iacCache: ReadonlyArray<IAC>;
 
 		public constructor(desc: AbstractGrid.CtorArgs<S>) {
 			super(desc);
@@ -239,7 +239,7 @@ export namespace WrappedEuclid2 {
 			return this._grid[dest.toCoord(this.dimensions)]!;
 		}
 
-		public getAllAltDestsThan(originCoord: Coord): TU.RoArr<Tile> {
+		public getAllAltDestsThan(originCoord: Coord): ReadonlyArray<Tile> {
 			return this.tileDestsFrom(originCoord, 2);
 		}
 
@@ -261,7 +261,7 @@ export namespace WrappedEuclid2 {
 		public tileAt(coord: Coord): Tile {
 			return this._grid[coord]!;
 		}
-		public tileDestsFrom(coord: Coord, radius: number = 1): TU.RoArr<Tile> {
+		public tileDestsFrom(coord: Coord, radius: number = 1): ReadonlyArray<Tile> {
 			const iac = this.iacCache[coord]!;
 			let wrapX = false, wrapY = false;
 			const W = this.dimensions.width, H = this.dimensions.height;
@@ -295,7 +295,7 @@ export namespace WrappedEuclid2 {
 			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
 			return dests.freeze();
 		}
-		public tileSourcesTo(coord: Coord, radius: number = 1): TU.RoArr<Tile> {
+		public tileSourcesTo(coord: Coord, radius: number = 1): ReadonlyArray<Tile> {
 			return this.tileDestsFrom(coord, radius);
 		}
 
