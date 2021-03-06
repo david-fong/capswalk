@@ -1,6 +1,6 @@
 import { JsUtils} from "defs/JsUtils";
 import { Game } from "../Game";
-import { Lang } from "defs/TypeDefs";
+import { Lang } from "lang/Lang";
 
 import type { Coord, Tile } from "floor/Tile";
 import type { StateChange } from "../StateChange";
@@ -15,7 +15,6 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 
 	public readonly grid: Grid<S>;
 	readonly #onGameBecomeOver: () => void;
-	public readonly langFrontend: Lang.FrontendDesc;
 
 	public readonly players: ReadonlyArray<Player>;
 	public readonly operators: ReadonlyArray<OperatorPlayer>;
@@ -46,10 +45,9 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		}) as GameMirror<S>["grid"];
 
 		this.#onGameBecomeOver = impl.onGameBecomeOver;
-		this.langFrontend = Lang.GET_FRONTEND_DESC_BY_ID(desc.langId)!;
 
 		// Construct players:
-		const players  = this._createPlayers(desc, impl, operatorIds);
+		const players  = this._createPlayers(desc, impl, operatorIds, args.desc.langId);
 		this.players   = players.players;
 		this.operators = players.operators;
 		{
@@ -65,8 +63,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 			});
 		}
 		JsUtils.propNoWrite(this as GameMirror<S>,
-			"grid", "langFrontend",
-			"players", "operators", "teams",
+			"grid", "players", "operators", "teams",
 		);
 		this.players.forEach((player) => player.onTeamsBootstrapped());
 		this.setCurrentOperator(0);
@@ -87,6 +84,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		gameDesc: Game.CtorArgs<S>,
 		implArgs: Game.ImplArgs,
 		operatorIds: ReadonlyArray<Player.Id>,
+		langId: Lang.Desc["id"],
 	): {
 		players: ReadonlyArray<Player>,
 		operators: ReadonlyArray<OperatorPlayer>,
@@ -94,7 +92,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		const players = gameDesc.players.map((pDesc) => {
 			if (pDesc.familyId === Player.Family.HUMAN) {
 				return (operatorIds.includes(pDesc.playerId))
-					? new implArgs.OperatorPlayer!(this, pDesc)
+					? new implArgs.OperatorPlayer!(this, pDesc, Lang.GET_DESC(langId))
 					: new Player(this, pDesc);
 			} else {
 				return implArgs.RobotPlayer(

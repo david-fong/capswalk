@@ -5,9 +5,9 @@
 
 This project is also [deployed on Heroku](https://capswalk.herokuapp.com/).
 
-See the GitHub wiki page for info about this project's design challenges, its history, and the technologies and interesting techniques used in it.
+See the [GitHub wiki page](https://github.com/david-fong/capswalk/wiki) for info about this project's design challenges, its history, and the technologies and interesting techniques used in it.
 
-## Contributing
+## 🙌 Contributing
 
 Contributions and feedback are welcome! To get setup locally, follow the steps in [dev-guide.md](./dev-guide.md).
 
@@ -19,6 +19,6 @@ This project is currently in a weird state where the low-level foundations of th
 - Color schemes: For the format and examples, see [src/client/colours/](./src/client/colours).
 - Implementing the [Beehive grid](./src/base/floor/impl/Beehive).
 
-## Licence
+## 📜 Licence
 
 This project is licenced under the [PolyForm Noncommercial License 1.0.0](./LICENSE.md).

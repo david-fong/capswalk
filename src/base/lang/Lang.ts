@@ -1,5 +1,6 @@
 import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
+import { LangDescs } from "./LangDescs";
 import { LangSeqTree } from "./LangSeqTreeNode";
 
 /**
@@ -13,7 +14,7 @@ import { LangSeqTree } from "./LangSeqTreeNode";
  */
 export abstract class Lang extends _Lang {
 
-	public readonly frontendDesc: Lang.FrontendDesc;
+	public readonly frontendDesc: Lang.Desc;
 
 	/** A "reverse" map from `LangSeq`s to `LangChar`s. */
 	private readonly treeRoots: readonly LangSeqTree.Node[];
@@ -33,11 +34,11 @@ export abstract class Lang extends _Lang {
 
 	/** */
 	protected constructor(
-		frontendDescId: Lang.FrontendDesc["id"],
+		frontendDescId: Lang.Desc["id"],
 		weightExaggeration: Lang.WeightExaggeration,
 	) {
 		super();
-		this.frontendDesc = Lang.GET_FRONTEND_DESC_BY_ID(frontendDescId)!;
+		this.frontendDesc = Lang.GET_DESC(frontendDescId)!;
 		this.treeRoots = LangSeqTree.Node.CREATE_TREE_MAP(
 			(Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD(),
 			weightExaggeration,
@@ -138,18 +139,27 @@ export namespace Lang {
 		BUILD(): WeightedForwardMap;
 	};
 
+	/**
+	 * @returns `undefined` if no such language descriptor is found.
+	 */
+	export function GET_DESC(langId: Lang.Desc["id"]): Lang.Desc {
+		return LangDescs[langId]!;
+	}
+	Object.freeze(GET_DESC);
+
 	/** */
-	export async function GET_IMPL(feDesc: Lang.FrontendDesc): Promise<Lang.ClassIf> {
-		const langModule = await import(
+	export async function IMPORT(langId: Lang.Desc["id"]): Promise<Lang.ClassIf> {
+		const desc = LangDescs[langId]!;
+		const module = await import(
 			/* webpackChunkName: "lang/[request]" */
-			`lang/impl/${feDesc.module}.ts`
+			`lang/impl/${desc.module}.ts`
 		);
-		return feDesc.export.split(".").reduce(
+		return desc.export.split(".").reduce(
 			(nsps, propName) => nsps[propName],
-			langModule[feDesc.module],
+			module[desc.module],
 		);
 	}
-	Object.freeze(GET_IMPL);
+	Object.freeze(IMPORT);
 
 	/**
 	 * Utility functions for implementations to use in their static
@@ -164,6 +174,7 @@ export namespace Lang {
 				}, {},
 			);
 		}
+		Object.freeze(WORD_FOR_WORD);
 	}
 
 	/**
@@ -209,7 +220,7 @@ export namespace Lang {
 	 */
 	export type WeightExaggeration = _Lang.WeightExaggeration;
 
-	export type FrontendDesc = _Lang.FrontendDesc;
+	export type Desc = _Lang.Desc;
 }
 Object.freeze(Lang);
 Object.freeze(Lang.prototype);

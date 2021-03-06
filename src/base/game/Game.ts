@@ -43,7 +43,7 @@ export namespace Game {
 		readonly coordSys: S;
 		readonly gridDimensions: Grid.Dimensions[S];
 		readonly averageHealthPerTile: Player.Health;
-		readonly langId: Lang.FrontendDesc["id"];
+		readonly langId: Lang.Desc["id"];
 		readonly langWeightExaggeration: Lang.WeightExaggeration;
 	}
 

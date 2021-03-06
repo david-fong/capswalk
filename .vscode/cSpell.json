@@ -52,6 +52,7 @@
 		"dests",
 		"dict",
 		"elem", "elems",
+		"impls",
 		"minmax",
 		"mixins",
 		"multiline",

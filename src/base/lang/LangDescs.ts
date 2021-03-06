@@ -1,4 +1,5 @@
-import { JsUtils } from "defs/JsUtils";
+import { JsUtils } from "../defs/JsUtils";
+import type { Lang } from "../defs/TypeDefs";
 
 const REMAP = Object.freeze(<const>{
 	IDENT: (input: string): string => input,
@@ -6,49 +7,39 @@ const REMAP = Object.freeze(<const>{
 });
 REMAP as Readonly<Record<string, {(input: string): string}>>;
 
-export type Info = {
-	id?: string;
-	/** Pretty much a file name. */
-	module: string;
-	/** A property-access chain. */
-	export: string;
-	/** The output must match against `Lang.Seq.REGEXP`. */
-	remapFunc: {(input: string): string};
-	/** */
-	isolatedMinOpts: number;
-	displayName:string;
-	blurb: string;
-};
 
-/**
- *
- */
-const Descs: Record<string, Info> = {
+/** */
+export const LangDescs: Record<string, Lang.Desc> = {
 	"engl-low": {
+		id: undefined!,
 		module: "English", export: "Lowercase", isolatedMinOpts: 25,
 		remapFunc: REMAP.LOWER,
 		displayName: "English Lowercase (qwerty)",
 		blurb: "",
 	},
 	"engl-mix": {
+		id: undefined!,
 		module: "English", export: "MixedCase", isolatedMinOpts: 51,
 		remapFunc: REMAP.IDENT,
-		displayName: "English Mixed-Case (Querty)",
+		displayName: "English Mixed-Case (Qwerty)",
 		blurb: "",
 	},
 	"japn-hir": {
+		id: undefined!,
 		module: "Japanese", export: "Hiragana", isolatedMinOpts: 70,
 		remapFunc: REMAP.LOWER,
 		displayName: "Japanese Hiragana",
 		blurb: "",
 	},
 	"japn-kat": {
+		id: undefined!,
 		module: "Japanese", export: "Katakana", isolatedMinOpts: 68,
 		remapFunc: REMAP.LOWER,
 		displayName: "Japanese Katakana",
 		blurb: "",
 	},
 	"kore-dub": {
+		id: undefined!,
 		module: "Korean", export: "Dubeolsik", isolatedMinOpts: 8690,
 		remapFunc: REMAP.IDENT,
 		displayName: "Korean Dubeolsik (두벌식 키보드)",
@@ -57,6 +48,7 @@ const Descs: Record<string, Info> = {
 		+" the right.",
 	},
 	"kore-sub": {
+		id: undefined!,
 		module: "Korean", export: "Sebeolsik", isolatedMinOpts: 10179,
 		remapFunc: REMAP.IDENT,
 		displayName: "Korean Sebeolsik (세벌식 최종 키보드)",
@@ -67,6 +59,7 @@ const Descs: Record<string, Info> = {
 		+" ergonomic than the dubeolsik, but not widely used.",
 	},
 	"kore-rom": {
+		id: undefined!,
 		module: "Korean", export: "Romanization", isolatedMinOpts: 3960,
 		remapFunc: REMAP.LOWER,
 		displayName: "Korean Revised Romanization",
@@ -77,44 +70,50 @@ const Descs: Record<string, Info> = {
 		+" and Tourism",
 	},
 	"engl-cell-enc": {
+		id: undefined!,
 		module: "English", export: "OldCellphone.Encode", isolatedMinOpts: 7,
 		remapFunc: REMAP.IDENT,
 		displayName: "Old Cellphone Keyboard",
 		blurb: "",
 	},
 	"mors-enc": {
+		id: undefined!,
 		module: "English", export: "Morse.Encode", isolatedMinOpts: 10,
 		remapFunc: (input) => { return input; }, // TODO.impl
 		displayName: "Morse Encoder",
 		blurb: "",
 	},
 	"mors-dec": {
+		id: undefined!,
 		module: "English", export: "Morse.Decode", isolatedMinOpts: 40,
 		remapFunc: REMAP.LOWER,
 		displayName: "Morse Decoder",
 		blurb: "",
 	},
 	"ngram2": {
+		id: undefined!,
 		module: "Ngrams", export: "Ngram2", isolatedMinOpts: 199,
 		remapFunc: REMAP.LOWER,
 		displayName: "English Bigrams",
 		blurb: "",
 	},
 	"ngram3": {
+		id: undefined!,
 		module: "Ngrams", export: "Ngram3", isolatedMinOpts: 400,
 		remapFunc: REMAP.LOWER,
 		displayName: "English Trigrams",
 		blurb: "",
 	},
 	"numpad": {
+		id: undefined!,
 		module: "Numpad", export: "Numpad", isolatedMinOpts: 100,
 		remapFunc: REMAP.LOWER,
 		displayName: "Number Pad",
 		blurb: "",
 	},
 };
-Object.entries(Descs).freeze().forEach(([id,desc]) => {
+Object.entries(LangDescs).freeze().forEach(([id,desc]) => {
+	// @ts-expect-error : RO=
 	desc.id = id;
 });
-JsUtils.deepFreeze(Descs);
-export default Descs;
+JsUtils.deepFreeze(LangDescs);

@@ -15,13 +15,15 @@
 
 ### Things I feel like doing
 
+1. Move `LangDefs.Info` type from `LangDefs.ts` into `TypeDefs.ts` and then move `LangDefs.ts` to `lang/`.
+   - Get rid of `langFrontend` field in `GameMirror`. Just pass the lang ID to operatorPlayer.
+1. Change avatars into emojis? I feel undecided on this.
 1. Implement websocket heartbeat to check for broken connections.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
     - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid derived classes instead of smarter tile derived classes).
 1. Implement Grid management of player-rendering.
-1. Implement, use, and test array extensions freeze and seal.
 1. Display the operator's current sequence buffer.
 
 ### Things that I feel less like doing

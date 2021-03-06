@@ -1,4 +1,5 @@
 import { Lang, Player } from "defs/TypeDefs";
+import { LangDescs } from "base/lang/LangDescs";
 import type { Coord } from "floor/Coord";
 import type { Player as _Player } from "game/player/Player";
 import type { Game } from "game/Game";
@@ -131,7 +132,7 @@ export namespace _SetupScreen {
 		public constructor() {
 			super();
 			this.baseElem.classList.add(style["lang-sel"]);
-			Object.values(Lang.FrontendDescs).forEach((desc) => {
+			Object.values(LangDescs).freeze().forEach((desc) => {
 				this.addOption(new LangPickOne.Option(desc));
 			});
 			this.selectOpt(this.options[0]!);
@@ -147,9 +148,9 @@ export namespace _SetupScreen {
 		/** */
 		export class Option extends PickOne._Option {
 
-			public readonly desc: Lang.FrontendDesc;
+			public readonly desc: Lang.Desc;
 
-			public constructor(desc: Lang.FrontendDesc) {
+			public constructor(desc: Lang.Desc) {
 				super();
 				this.desc = desc;
 				this.baseElem.textContent = desc.displayName;

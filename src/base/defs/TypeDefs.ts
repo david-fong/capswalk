@@ -1,5 +1,3 @@
-import LangDescs from "./LangDefs";
-import type { Info as LangInfo } from "./LangDefs";
 
 export const SCROLL_INTO_CENTER = Object.freeze(<const>{
 	behavior: "smooth",
@@ -9,8 +7,7 @@ export const SCROLL_INTO_CENTER = Object.freeze(<const>{
 SCROLL_INTO_CENTER as ScrollIntoViewOptions;
 
 
-/**
- */
+/** */
 export abstract class Player { }
 export namespace Player {
 
@@ -28,9 +25,7 @@ export namespace Player {
 		[ key in Family ]: key;
 	};
 
-	/**
-	 * See the main documentation in game/player/Player.
-	 */
+	/** See the main documentation in game/player/Player. */
 	export type Id = number;
 	export namespace Id {
 		export const NULL = (-1);
@@ -47,8 +42,7 @@ export namespace Player {
 	}
 	export namespace Avatar {
 		const _values = Object.values(Avatar).filter((e) => typeof e === "string") as Avatar[];
-		/**
-		 */
+		/** */
 		export function GET_RANDOM(): Avatar {
 			return _values[Math.floor(Math.random() * _values.length)]!;
 		}
@@ -60,16 +54,13 @@ export namespace Player {
 		readonly avatar:   Avatar;
 	}
 
-	/**
-	 * See the main documentation in game/player/Player.
-	 */
+	/** See the main documentation in game/player/Player. */
 	export type Health = number;
 }
 Object.freeze(Player);
 
 
-/**
- */
+/** */
 export abstract class Lang {}
 export namespace Lang {
 	/**
@@ -92,25 +83,19 @@ export namespace Lang {
 		 */
 		export const REGEXP = new RegExp("^[a-zA-Z0-9!@#$%^&*()\-_=+;:'\"\\|,.<>/?]+$");
 	}
-	/**
-	 * See the main documentation in game/lang/Lang
-	 */
+	/** See the main documentation in game/lang/Lang */
 	export type CharSeqPair = {
 		readonly char: Lang.Char,
 		readonly seq:  Lang.Seq,
 	};
 	export namespace CharSeqPair {
-		/**
-		 * Used at the beginning of the shuffling operation.
-		 */
+		/**  Used at the beginning of the shuffling operation. */
 		export const NULL = Object.freeze(<const>{
 			char: "",
 			seq:  "",
 		});
 	}
-	/**
-	 * See the main documentation in game/lang/Lang
-	 */
+	/** See the main documentation in game/lang/Lang */
 	export type WeightExaggeration = number;
 	export namespace WeightExaggeration {
 		/**
@@ -125,20 +110,20 @@ export namespace Lang {
 	 */
 	export const CHAR_HIT_COUNT_SEED_CEILING = 5;
 
-	/**
-	 */
-	export const FrontendDescs = LangDescs as Record<FrontendDesc["id"], FrontendDesc>;
-
-	export type FrontendDesc = Readonly<{
-		id: keyof typeof LangDescs;
-	} & LangInfo>;
-
-	/**
-	 * @returns `undefined` if no such language descriptor is found.
-	 */
-	export function GET_FRONTEND_DESC_BY_ID(langId: FrontendDesc["id"]): FrontendDesc | undefined {
-		return FrontendDescs[langId];
-	}
+	/** */
+	export type Desc = Readonly<{
+		id: string;
+		/** Pretty much a file name. */
+		module: string;
+		/** A property-access chain. */
+		export: string;
+		/** The output must match against `Lang.Seq.REGEXP`. */
+		remapFunc: {(input: string): string};
+		/** */
+		isolatedMinOpts: number;
+		displayName:string;
+		blurb: string;
+	}>;
 }
 Object.freeze(Lang);
 Object.freeze(Lang.prototype);

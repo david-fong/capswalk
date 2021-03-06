@@ -1,12 +1,11 @@
 import { JsUtils } from "defs/JsUtils";
-import type { Lang as _Lang } from "defs/TypeDefs";
+import type { Lang, Lang as _Lang } from "defs/TypeDefs";
 import { Game } from "game/Game";
 
-import type { GameMirror } from "game/gameparts/GameMirror";
 import type { Coord } from "floor/Tile";
+import type { GameMirror } from "game/gameparts/GameMirror";
 
 import { Player } from "./Player";
-
 
 /**
  * There is at least one in online-clientside and offline games.
@@ -27,10 +26,10 @@ export class OperatorPlayer extends Player {
 	readonly #langRemappingFunc: {(input: string): string};
 
 
-	public constructor(game: GameMirror<any>, desc: Player._CtorArgs["HUMAN"]) {
+	public constructor(game: GameMirror<any>, desc: Player._CtorArgs["HUMAN"], langDesc: Lang.Desc) {
 		super(game, desc);
 		Object.seal(this); //🧊
-		this.#langRemappingFunc = this.game.langFrontend.remapFunc;
+		this.#langRemappingFunc = langDesc.remapFunc;
 	}
 
 	public reset(coord: Coord): void {

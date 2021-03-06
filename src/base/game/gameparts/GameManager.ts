@@ -41,7 +41,7 @@ export abstract class GameManager<
 		);
 
 		// https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
-		this.#langImportPromise = Lang.GET_IMPL(this.langFrontend).then((LangConstructor) => {
+		this.#langImportPromise = Lang.IMPORT(args.desc.langId).then((LangConstructor) => {
 			// @ts-expect-error : RO=
 			this.lang = new LangConstructor(args.desc.langWeightExaggeration);
 			JsUtils.propNoWrite(this as GameManager<S>, "lang");
@@ -272,7 +272,7 @@ export namespace GameManager {
 			bad.push("Missing the following arguments: " + missingFields);
 		}
 
-		const langDesc = Lang.GET_FRONTEND_DESC_BY_ID(args.langId);
+		const langDesc = Lang.GET_DESC(args.langId);
 		const gridClass = Grid._Constructors[args.coordSys];
 		if (langDesc === undefined) {
 			bad.push(`No language with the ID \`${args.langId}\` exists.`);
