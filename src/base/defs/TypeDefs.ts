@@ -1,3 +1,4 @@
+import AvatarValues from "./Avatars.json5";
 
 export const SCROLL_INTO_CENTER = Object.freeze(<const>{
 	behavior: "smooth",
@@ -37,14 +38,12 @@ export namespace Player {
 		export const MAX_LENGTH = 15; // rather arbitrary choice.
 	}
 
-	export enum Avatar {
-		LOREM_IPSUM = "lorem-ipsum",
-	}
+	export type Avatar = string;
 	export namespace Avatar {
-		const _values = Object.values(Avatar).filter((e) => typeof e === "string") as Avatar[];
+		export const Values = (AvatarValues as string[]).freeze();
 		/** */
 		export function GET_RANDOM(): Avatar {
-			return _values[Math.floor(Math.random() * _values.length)]!;
+			return Values[Math.floor(Math.random() * Values.length)]!;
 		}
 	}
 

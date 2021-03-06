@@ -15,9 +15,7 @@
 
 ### Things I feel like doing
 
-1. Move `LangDefs.Info` type from `LangDefs.ts` into `TypeDefs.ts` and then move `LangDefs.ts` to `lang/`.
-   - Get rid of `langFrontend` field in `GameMirror`. Just pass the lang ID to operatorPlayer.
-1. Change avatars into emojis? I feel undecided on this.
+1. Change avatars into emojis? I feel like I would lose out on some room for creativity, but on the other hand, there's a huge wealth of great looking emojis that have native support. I think it's a good idea to just use them.
 1. Implement websocket heartbeat to check for broken connections.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Change Euclid Visual Grid to use SVG.

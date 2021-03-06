@@ -137,9 +137,11 @@ export namespace _SetupScreen {
 			});
 			this.selectOpt(this.options[0]!);
 		}
+		/** @override */
 		public _onHoverOpt(opt: LangPickOne.Option): void {
 			;
 		}
+		/** @override */
 		public _onSelectOpt(opt: LangPickOne.Option): void {
 			;
 		}
