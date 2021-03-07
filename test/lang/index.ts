@@ -1,47 +1,31 @@
 import "base/defs/NodePlatformMods";
-import type { Lang } from "base/lang/Lang";
-import { English }  from "base/lang/impl/English";
-import { Japanese } from "base/lang/impl/Japanese";
-import { Korean }   from "base/lang/impl/Korean";
-import { Ngrams }   from "base/lang/impl/Ngrams";
+import { Lang } from "base/lang/Lang";
+import { LangDescs } from "base/lang/LangDescs";
 
-// PRINT ALL THE LANGS !!!
-[
-	English.Lowercase,
-	English.MixedCase,
-	English.Morse.Encode,
-	English.Morse.Decode,
-	English.OldCellphone.Encode,
-	Japanese.Hiragana,
-	Japanese.Katakana,
-	Korean.Dubeolsik,
-	Korean.Sebeolsik,
-	Korean.Romanization,
-	Ngrams.Ngram2,
-	Ngrams.Ngram3,
-]
-.forEach((classIf: Lang.ClassIf) => {
+Promise.all(Object.keys(LangDescs).map((langId) => Lang.IMPORT(langId).then((classIf) => {
 	try {
 		const inst = new (classIf)(1.0);
 		const fed = inst.frontendDesc;
 		inst.reset();
-		console.info(
-			 `\nName:              ${fed.displayName}`
-			+`\nIsolated Min Opts: ${fed.isolatedMinOpts}`
-		);
+
+		// TODO.impl test a set of alphanumeric character inputs for each lang's remapping function.
+		// also check that none of the weights are negative or zero.
+
+		// if (!(_Lang.Seq.REGEXP.test(key))) {
+		//     throw new RangeError(`The implementation of input transformation`
+		//     + ` in the currently selected language did not follow the rule`
+		//     + ` of producing output matching the regular expression`
+		//     + ` \"${_Lang.Seq.REGEXP.source}\".`
+		//     );
+		// }
+
+		return Object.freeze({
+			name: fed.displayName,
+			nomOpts: fed.isolatedMinOpts,
+		});
 	} catch (e) {
 		console.error(e);
 	}
-
-	// TODO.impl test a set of alphanumeric character inputs for each lang's remapping function.
-	// also check that none of the weights are negative or zero.
-
-	// if (!(_Lang.Seq.REGEXP.test(key))) {
-	//     throw new RangeError(`The implementation of input transformation`
-	//     + ` in the currently selected language did not follow the rule`
-	//     + ` of producing output matching the regular expression`
-	//     + ` \"${_Lang.Seq.REGEXP.source}\".`
-	//     );
-	// }
-	debugger;
-});
+	return Object.freeze({ name: "error", nunOpts: NaN, });
+})))
+.then((table) => console.table(table));

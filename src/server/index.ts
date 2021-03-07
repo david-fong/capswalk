@@ -1,24 +1,7 @@
 import "../base/defs/NodePlatformMods";
 
-// Override stack trace to shorten file paths:
-process.on("uncaughtException", function processOnUncaughtException(err) {
-	const ROOT = path.resolve(__dirname, "../..");
-	console.error("\n\n");
-	if (err.stack !== undefined) {
-		err.stack = err.stack.replace(new RegExp(ROOT.replace(/\\/g, "\\\\"), "g"), ":")
-			.split("\n").map(frame => {
-				const fn = frame.indexOf("(");
-				return fn < 0 ? frame : frame.substring(0, fn) + " ".repeat(Math.max(0, 35-fn)) + frame.substring(fn);
-			}).join("\n");
-		fs.writeSync(process.stderr.fd, err.stack);
-	}
-	console.error("\n\n");
-	process.exit(1);
-});
-
 // =========================================
 import os from "os";
-import fs from "fs";
 import path from "path";
 import http from "http";
 import express from "express";

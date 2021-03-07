@@ -106,7 +106,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	},
 	"numpad": {
 		id: undefined!,
-		module: "Numpad", export: "Numpad", isolatedMinOpts: 100,
+		module: "Numpad", export: "Numpad", isolatedMinOpts: 99,
 		remapFunc: REMAP.LOWER,
 		displayName: "Number Pad",
 		blurb: "",

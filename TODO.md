@@ -15,10 +15,10 @@
 
 ### Things I feel like doing
 
+1. Change Euclid Visual Grid to use SVG.
 1. Change avatars into emojis? I feel like I would lose out on some room for creativity, but on the other hand, there's a huge wealth of great looking emojis that have native support. I think it's a good idea to just use them.
 1. Implement websocket heartbeat to check for broken connections.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
-1. Change Euclid Visual Grid to use SVG.
 1. Implement Euclid Visual Grid wrapping visualization.
     - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid derived classes instead of smarter tile derived classes).
 1. Implement Grid management of player-rendering.
