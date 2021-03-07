@@ -223,10 +223,10 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	/** @virtual */
 	protected commitStateChange(desc: StateChange.Res, socket?: any): void {
 		JsUtils.deepFreeze(desc);
-		const player = this.players[desc.initiator]!;
+		const causer = this.players[desc.initiator]!;
 
 		if (desc.rejectId !== undefined) {
-			player.reqBuffer.reject(desc.rejectId, player.coord);
+			causer.reqBuffer.reject(desc.rejectId, causer.coord);
 			return; //⚡
 		}
 

@@ -18,11 +18,6 @@ export interface VisibleGrid<S extends Coord.System> extends Grid<S>, _VisibleEx
 }
 export namespace VisibleGrid {
 
-	export interface ClassIf<S extends Coord.System> extends Grid.ClassIf<S> {
-		/** @override */
-		new(desc: Grid.CtorArgs<S>): VisibleGrid<S>;
-	};
-
 	// Each implementation must register itself into this dictionary.
 	export const _Constructors: {
 		readonly [ S in Coord.System ]: Grid.ClassIf<S>
@@ -31,9 +26,9 @@ export namespace VisibleGrid {
 		["W_EUCLID2"]: undefined!,
 		["BEEHIVE"]: undefined!,
 	};
-	export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
+	export const getImplementation = <S extends Coord.System>(coordSys: S): Grid.ClassIf<S> => {
 		const ctor = _Constructors[coordSys];
-		return ctor as unknown as ClassIf<S>;
+		return ctor as unknown as Grid.ClassIf<S>;
 	};
 
 	export function _mkExtensionProps(tiles: HTMLElement): _VisibleExtensions {

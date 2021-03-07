@@ -7,8 +7,8 @@ import { VisibleGrid } from "floor/visible/VisibleGrid";
 import { WrappedEuclid2 as System } from "./System";
 import style from "./style.m.css";
 type S = Coord.System.W_EUCLID2;
-const WIDTH = 1.66;
-const GAP = 0.4;
+const WIDTH = 1.4; // <- must be set to match the stylesheet values.
+const GAP = 0.25;
 
 /** */
 class VisibleTile implements TU.Pikk<Tile,"occId"|"health"> {

@@ -8,9 +8,6 @@
  * converters and operators.
  */
 export type Coord = number;
-
-/**
- */
 export namespace Coord {
 
 	export const enum System {

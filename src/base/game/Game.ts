@@ -13,11 +13,8 @@ import type { GameMirror } from "./gameparts/GameMirror";
  * whole lot of other things such as the language dictionary, which
  * in some cases may be quite large.)
  *
- * These classes perform the majority of management over {@link Tile}
- * and {@link Player} objects. As a design choice, players can only join
- * a game before it starts, and actions such as changing the language or
- * difficulty require a restart. These actions that require a restart will
- * all be exposed through a pre-game page.
+ * Players can only join a game before it starts. Reconfiguration
+ * requires creating a completely new game.
  *
  * There are overlaps between what each implementation needs to do:
  * - Offline and Server games maintain and control the master-game-state.

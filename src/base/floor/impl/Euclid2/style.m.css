@@ -10,10 +10,10 @@
 }
 
 .tile {
-	height: 1.67em;
-	width: 1.67em;
-	rx: 0.4em;
-	stroke-width: 0.18em;
+	height: 1.4em;
+	width:  1.4em;
+	rx: 0.34em;
+	stroke-width: 0.08em;
 	fill: var(--colour-tileBg);
 	stroke: var(--colour-tileBg);
 }

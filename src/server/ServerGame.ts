@@ -6,10 +6,10 @@ import type { Game } from "game/Game";
 import type { Coord } from "floor/Tile";
 import type { StateChange } from "game/StateChange";
 import { Player } from "game/player/Player";
+import { RobotPlayer } from "game/player/RobotPlayer";
 import { Grid } from "floor/Grid";
 
 import { GameManager } from "game/gameparts/GameManager";
-import { RobotPlayer } from "base/game/player/RobotPlayer";
 
 /** */
 function gameOnSocketMessage<S extends Coord.System>(this: ServerGame<S>, ev: WebSocket.MessageEvent): void {
@@ -44,7 +44,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	readonly #deleteExternalRefs: () => void;
 	readonly #wsMessageCb: (ev: WebSocket.MessageEvent) => void;
 
-	public readonly sockets: Set<WebSocket>;
+	protected readonly sockets: Set<WebSocket>;
 	protected readonly groupHostSocket: WebSocket;
 
 	/** @override */

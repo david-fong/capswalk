@@ -16,8 +16,7 @@ export class OfflineGame<S extends Coord.System = Coord.System> extends GameMana
 	/** @override */
 	declare readonly grid: VisibleGrid<S>;
 
-	/**
-	 */
+	/** */
 	public constructor(
 		onGameBecomeOver: () => void,
 		gameDesc: Game.CtorArgs.UnFin<S>,

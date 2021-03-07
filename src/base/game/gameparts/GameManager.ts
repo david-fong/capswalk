@@ -172,8 +172,8 @@ export abstract class GameManager<
 
 	/** @override */
 	public processMoveRequest(req: StateChange.Req, socket?: any): void {
-		const initiator = this.players[req.initiator]!;
-		if (req.lastRejectId !== initiator.reqBuffer.lastRejectId) {
+		const causer = this.players[req.initiator]!;
+		if (req.lastRejectId !== causer.reqBuffer.lastRejectId) {
 			return; //⚡
 		}
 		const reqDest = this.grid.tileAt(req.moveDest);
@@ -181,28 +181,28 @@ export abstract class GameManager<
 		 || reqDest.occId !== Player.Id.NULL
 		) {
 			this.commitStateChange({
-				rejectId: initiator.reqBuffer.getNextRejectId(),
+				rejectId: causer.reqBuffer.getNextRejectId(),
 				initiator: req.initiator,
 			}, socket);
 			return; //⚡
 		}
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
 		const newPlayerHealthValue
-			= initiator.health
-			+ (reqDest.health * (initiator.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
+			= causer.health
+			+ (reqDest.health * (causer.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
 			- (moveIsBoost ? this.health.K.costOfBoost(reqDest) : 0);
 		if (moveIsBoost && newPlayerHealthValue < 0) {
 			// Reject a boost-type movement request if it would make
 			// the player become downed (or if they are already downed):
 			this.commitStateChange({
-				rejectId: initiator.reqBuffer.getNextRejectId(),
+				rejectId: causer.reqBuffer.getNextRejectId(),
 				initiator: req.initiator,
 			}, socket);
 			return; //⚡
 		}
 
 		// Update stats records:
-		const scoreInfo = this.scoreInfo.entries[initiator.playerId]!;
+		const scoreInfo = this.scoreInfo.entries[causer.playerId]!;
 		scoreInfo.totalHealthPickedUp += reqDest.health;
 		scoreInfo.moveCounts[req.moveType] += 1;
 
@@ -211,7 +211,7 @@ export abstract class GameManager<
 			initiator: req.initiator,
 			moveType: req.moveType,
 			players: {
-				[initiator.playerId]: {
+				[causer.playerId]: {
 					health: newPlayerHealthValue,
 					coord: reqDest.coord,
 				},
