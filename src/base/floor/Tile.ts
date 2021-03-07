@@ -1,5 +1,23 @@
 import type { Lang, Player } from "defs/TypeDefs";
-import type { Coord } from "./Coord"; export { Coord };
+
+/**
+ * A unique identifier within a Chunk.
+ *
+ * Implementations are free to decide how to allocate these values to
+ * tak advantage of their spatial properties. They are also free to
+ * define their own _internal_ augmented views of coordinates with
+ * converters and operators.
+ */
+export type Coord = number;
+export namespace Coord {
+
+	export const enum System {
+		W_EUCLID2 = "W_EUCLID2",
+		BEEHIVE = "BEEHIVE",
+	}
+}
+Object.freeze(Coord);
+
 
 /**
  * A DTO 📦
@@ -18,10 +36,7 @@ export namespace Tile {
 	 * A DTO of changes 📦
 	 */
 	export interface Changes {
-
-		/**
-		 * To evict an occupant, pass `Player.Id.NULL`.
-		 */
+		/** To evict an occupant, pass `Player.Id.NULL`. */
 		readonly occId?:  Player.Id;
 		readonly health?: Player.Health;
 		readonly char?:   Lang.Char;
@@ -40,5 +55,5 @@ export namespace Tile {
 	 *   - In this case, do not expose shallow copies to external code.
 	 *     - Ex. Grid.forEachShuffled callback argument.
 	 */
-	export type ImplementationNotes = undefined;
+	type _ImplementationNotes = undefined;
 }

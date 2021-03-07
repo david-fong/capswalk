@@ -1,6 +1,6 @@
 import { Lang, Player } from "defs/TypeDefs";
 import { LangDescs } from "base/lang/LangDescs";
-import type { Coord } from "floor/Coord";
+import type { Coord } from "floor/Tile";
 import type { Player as _Player } from "game/player/Player";
 import type { Game } from "game/Game";
 import { PickOne } from "client/utils/PickOne";

@@ -102,7 +102,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		const data: GroupEv.UserInfo.Req = {
 			username: this.in.username.value,
 			teamId: parseInt(this.in.teamId.value),
-			avatar: Player.Avatar.LOREM_IPSUM, // TODO.impl add an input field for `userInfo.avatar`.
+			avatar: Player.Avatar.GET_RANDOM(), // TODO.impl add an input field for `userInfo.avatar`.
 		};
 		this.ws.send(JSON.stringify([GroupEv.UserInfo.NAME, data]));
 	};

@@ -1,5 +1,5 @@
 export  { Game }             from "game/Game";
-export  type { Coord }       from "floor/Coord";
+export  type { Coord }       from "floor/Tile";
 export  { VisibleGrid }      from "floor/visible/VisibleGrid";
 export  { Player }           from "game/player/Player";
 export  { OperatorPlayer }   from "game/player/OperatorPlayer";
