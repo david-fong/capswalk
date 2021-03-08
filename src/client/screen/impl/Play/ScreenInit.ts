@@ -46,7 +46,7 @@ export abstract class _PlayScreenInitEl<
 
 
 	/** @override */
-	protected _lazyLoad(): void {
+	protected _abstractLazyLoad(): void {
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,
 			style["this"],
@@ -216,10 +216,6 @@ export namespace _PlayScreenInitEl {
 		});
 	}
 }
-JsUtils.protoNoEnum(_PlayScreenInitEl,
-	"probeCurrentGame", // At runtime, this is identical to this.currentGame.
-	"_statusBecomePlaying", "_statusBecomePaused",
-);
 JsUtils.instNoEnum(_PlayScreenInitEl, "createGridWrapper");
 Object.freeze(_PlayScreenInitEl);
 Object.freeze(_PlayScreenInitEl.prototype);

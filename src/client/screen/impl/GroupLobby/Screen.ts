@@ -26,7 +26,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	}
 
 	/** @override */
-	protected _lazyLoad(): void {
+	protected _abstractLazyLoad(): void {
 		this.baseElem.classList.add(style["this"]);
 		this._createInputs();
 		// @ts-expect-error : RO=

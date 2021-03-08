@@ -78,7 +78,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	/**
 	 * Implementations should set the CSS class for the base element.
 	 */
-	protected abstract _lazyLoad(): void;
+	protected abstract _abstractLazyLoad(): void;
 
 	/**
 	 * @final
@@ -88,7 +88,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	 */
 	public lazyLoad(): void {
 		if (!this.#hasLazyLoaded) {
-			this._lazyLoad();
+			this._abstractLazyLoad();
 			this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
 			this.#hasLazyLoaded = true;
 		}

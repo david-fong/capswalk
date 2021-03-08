@@ -4,7 +4,7 @@ import { JsUtils, BaseScreen } from "../BaseScreen";
 export class HowToHostScreen extends BaseScreen<BaseScreen.Id.HOW_TO_HOST> {
 
 	/** @override */
-	protected _lazyLoad(): void {
+	protected _abstractLazyLoad(): void {
 		Object.freeze(this); //🧊
 	}
 }

@@ -9,8 +9,8 @@ type SID = BaseScreen.Id.SETUP_OFFLINE;
 /** */
 export class SetupOfflineScreen extends _SetupScreen<SID> {
 
-	protected _lazyLoad(): void {
-		super._lazyLoad();
+	protected _abstractLazyLoad(): void {
+		super._abstractLazyLoad();
 		Object.freeze(this); //🧊
 
 		this.nav.next.onclick = (ev) => {

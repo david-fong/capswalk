@@ -9,8 +9,8 @@ type SID = BaseScreen.Id.SETUP_ONLINE;
 export class SetupOnlineScreen extends _SetupScreen<SID> {
 
 	/** @override */
-	protected _lazyLoad(): void {
-		super._lazyLoad();
+	protected _abstractLazyLoad(): void {
+		super._abstractLazyLoad();
 		Object.freeze(this); //🧊
 
 		this.nav.next.textContent = "Start Game";

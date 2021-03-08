@@ -11,7 +11,7 @@ export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
 	public readonly sel: ColourCtrlScreen.PickOne;
 
 	/** @override */
-	protected _lazyLoad(): void {
+	protected _abstractLazyLoad(): void {
 		import(
 			/* webpackChunkName: "colour-schemes" */
 			/* webpackMode: "lazy-once" */

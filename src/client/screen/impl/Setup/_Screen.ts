@@ -24,7 +24,7 @@ export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | Bas
 	protected readonly langWeightExaggeration: HTMLInputElement;
 
 	/** @override */
-	protected _lazyLoad(): void {
+	protected _abstractLazyLoad(): void {
 		this.baseElem.classList.add(style["this"]);
 		this.baseElem.appendChild(this.nav.prev);
 

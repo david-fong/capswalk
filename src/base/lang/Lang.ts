@@ -1,7 +1,10 @@
 import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
 import { LangDescs } from "./LangDescs";
-import { LangSeqTree } from "./LangSeqTreeNode";
+import { LangTree } from "./LangTree";
+
+/** This cache helps save memory on the server by sharing parts of tree nodes. */
+const TREE_PROTO_CACHE = new Map<Lang.Desc["id"], ReadonlyArray<LangTree.Node>>();
 
 /**
  * Conceptually, a language is a map from unique written characters
@@ -14,44 +17,53 @@ import { LangSeqTree } from "./LangSeqTreeNode";
  */
 export abstract class Lang extends _Lang {
 
-	public readonly frontendDesc: Lang.Desc;
+	public readonly desc: Lang.Desc;
 
 	/** A "reverse" map from `LangSeq`s to `LangChar`s. */
-	private readonly treeRoots: readonly LangSeqTree.Node[];
+	private readonly treeRoots: ReadonlyArray<LangTree.Node>;
 
 	/**
 	 * A list of leaf nodes in `treeRoots` sorted in ascending order by
 	 * hit-count. Entries should never be removed or added. They will
 	 * always be sorted in ascending order of `carryHits`.
 	 */
-	private readonly leafNodes: LangSeqTree.Node[];
+	private readonly leafNodes: LangTree.Node[];
 
 	/**
-	 * The total number of leaf noes of all root nodes except the
+	 * The total number of leaf nodes of all root nodes except the
 	 * root node with the most leaf nodes.
 	 */
 	public readonly isolatedMinOpts: number;
 
 	/** */
 	protected constructor(
-		frontendDescId: Lang.Desc["id"],
+		id: Lang.Desc["id"],
 		weightExaggeration: Lang.WeightExaggeration,
 	) {
 		super();
-		this.frontendDesc = Lang.GET_DESC(frontendDescId)!;
-		this.treeRoots = LangSeqTree.Node.CREATE_TREE_MAP(
-			(Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD(),
-			weightExaggeration,
-		);
+		this.desc = Lang.GET_DESC(id)!;
+
+		this.treeRoots = (TREE_PROTO_CACHE.has(id)
+			? TREE_PROTO_CACHE.get(id)!
+			: (() => {
+				const proto = LangTree.Node.CREATE_TREE_PROTO(
+					(Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD(),
+					weightExaggeration,
+				);
+				TREE_PROTO_CACHE.set(id, proto);
+				return proto;
+			})()
+		).map((root) => root._mkInstance()).freeze();
+
 		const leaves = this.treeRoots.map((root) => root.getLeaves());
 		this.leafNodes = leaves.flat();
-		this.isolatedMinOpts = leaves.map((l) => l.length).sort().slice(0,-1).reduce((s,n) => s+n, 0);
-		JsUtils.propNoWrite(this as Lang, "frontendDesc", "treeRoots", "leafNodes", "isolatedMinOpts");
+		this.isolatedMinOpts = leaves.map((l) => l.length).sort().slice(0,-1).reduce((sum,n) => sum+n, 0);
+		JsUtils.propNoWrite(this as Lang, "desc", "treeRoots", "leafNodes", "isolatedMinOpts");
 		Object.seal(this); //🧊
 
-		if (DEF.DevAssert && this.isolatedMinOpts !== this.frontendDesc.isolatedMinOpts) {
-			throw new Error(`maintenance required: the frontend constant`
-			+` for the language "${this.frontendDesc.id}" needs to`
+		if (DEF.DevAssert && this.isolatedMinOpts !== this.desc.isolatedMinOpts) {
+			throw new Error(`maintenance required: the desc constant`
+			+` for the language "${this.desc.id}" needs to`
 			+` be updated to the correct, computed value, which is`
 			+` \`${this.isolatedMinOpts}\`.`);
 		}
@@ -97,13 +109,13 @@ export abstract class Lang extends _Lang {
 		// `avoid` are also in `avoid`.
 
 		// Start by sorting according to the desired balancing scheme:
-		this.leafNodes.sort(LangSeqTree.Node.LEAF_CMP);
+		this.leafNodes.sort(LangTree.Node.LEAF_CMP);
 
 		search_branch:
 		for (const leaf of this.leafNodes) {
 			let hitNode = leaf;
 			for (
-				let node: LangSeqTree.Node | undefined = leaf;
+				let node: LangTree.Node | undefined = leaf;
 				node !== undefined;
 				node = node.parent
 			) {

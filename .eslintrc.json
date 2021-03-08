@@ -8,7 +8,7 @@
         // infinite loop. :(
         "project": [
             // webpack:
-            "./scripts/webpack/tsconfig.json",
+            "./scripts/webpack/jsconfig.json",
             // basecode:
             "./src/base/defs/tsconfig.json",
             "./src/base/lang/tsconfig.json",

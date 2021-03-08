@@ -1,8 +1,6 @@
 
 # Language Representation
 
-The design and implementation of languages has been- unsurprisingly- led by what it is intended to contribute to the bigger picture.
-
 At any time, a player is on a tile, and each adjacent tile is marked by a written character from the chosen language setting. For any tile, there are other tiles to which an occupant can reach (destsFrom), and other from which it can be reached (sourcesTo).
 
 Each written character has a single keyboard-typeable sequence by which the player can communicate an intention to move to that tile. This is important to understand: The written character _visually_ marks a tile, but it is through the corresponding typeable sequence that a player _physically addresses_ that tile.

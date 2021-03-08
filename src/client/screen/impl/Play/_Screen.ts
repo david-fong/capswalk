@@ -48,8 +48,8 @@ export abstract class _PlayScreen<
 
 
 	/** @override */
-	protected _lazyLoad(): void {
-		super.lazyLoad();
+	protected _abstractLazyLoad(): void {
+		super._abstractLazyLoad();
 
 		// @ts-expect-error : RO=
 		this.#onVisibilityChange = () => {
@@ -222,6 +222,5 @@ JsUtils.protoNoEnum(_PlayScreen,
 	"probeCurrentGame", // At runtime, this is identical to this.currentGame.
 	"_statusBecomePlaying", "_statusBecomePaused",
 );
-JsUtils.instNoEnum(_PlayScreen, "createGridWrapper");
 Object.freeze(_PlayScreen);
 Object.freeze(_PlayScreen.prototype);

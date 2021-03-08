@@ -4,7 +4,7 @@ import type { Lang } from "./Lang";
 type LangSorter<T> = (a: T, b: T) => number;
 
 /** */
-export namespace LangSeqTree {
+export namespace LangTree {
 
 	/** */
 	export class Node {
@@ -12,12 +12,12 @@ export namespace LangSeqTree {
 		declare public readonly parent: Node | undefined;
 		declare public readonly seq: Lang.Seq;
 		declare protected readonly children: ReadonlyArray<Node>;
-		readonly #characters: ReadonlyArray<WeightedLangChar> = [];
+		private readonly characters: ReadonlyArray<WeightedLangChar> = [];
 		/**
 		 * Equals this node's own weighted hit count plus all its ancestors'
 		 * weighted hit counts.
 		 */
-		protected carryHits: number = 0.0;
+		declare protected carryHits: number;
 		public get ownHits(): number {
 			return this.carryHits - (this.parent?.carryHits ?? 0);
 		}
@@ -31,22 +31,33 @@ export namespace LangSeqTree {
 			Object.defineProperty(this, "parent",   { enumerable: true, value: parent });
 			Object.defineProperty(this, "seq",      { enumerable: true, value: seq });
 			Object.defineProperty(this, "children", { enumerable: true, value: [] });
-			this.#characters = Object.freeze(characters);
-			Object.seal(this); //🧊
+			Object.defineProperty(this, "characters", { enumerable: true, value: Object.freeze(characters) });
+			//Object.seal(this); //🧊
+		}
+		/** */
+		public _mkInstance(parent: Node | undefined = undefined): Node {
+			return Object.create(this, {
+				parent:     { enumerable: true, value: parent },
+				children:   { enumerable: true, value: this.children.map((n) => n._mkInstance(this)).freeze() },
+				characters: { enumerable: true, value: this.characters.map((c) => c._mkInstance()).freeze() },
+				carryHits:  { enumerable: true, value: 0.0, writable: true },
+			});
 		}
 
+		/** */
 		public reset(): void {
 			// Reset hit-counters on the way down.
 			this.carryHits = 0.0;
-			for (const child of this.children) child.reset();
+			for (const child of this.children) { child.reset(); }
 
 			// On the way up, seed hit-counters (which get inherited downwards).
-			for (const char of this.#characters) {
+			for (const char of this.characters) {
 				char.reset();
 				this.incrHits(char, Math.random() * _Lang.CHAR_HIT_COUNT_SEED_CEILING);
 			}
 		}
 
+		/** */
 		public getLeaves(): ReadonlyArray<Node> {
 			const leafNodes: Array<Node> = [];
 			this._rGetLeaves(leafNodes);
@@ -54,7 +65,7 @@ export namespace LangSeqTree {
 		}
 		protected _rGetLeaves(leafNodes: Array<Node>): void {
 			if (this.children.length) {
-				for (const child of this.children) child._rGetLeaves(leafNodes);
+				for (const child of this.children) { child._rGetLeaves(leafNodes); }
 			} else {
 				leafNodes.push(this as Node);
 			}
@@ -73,36 +84,37 @@ export namespace LangSeqTree {
 		 * selected the least according to the specified scheme.
 		 */
 		public chooseOnePair(): Lang.CharSeqPair {
-			let wgtChar = this.#characters[0]!;
-			for (const wc of this.#characters) {
+			let wgtChar = this.characters[0]!;
+			for (const wc of this.characters) {
 				if (wc.hits < wgtChar.hits) {
 					wgtChar = wc;
 				}
 			}
-			const pair: Lang.CharSeqPair = {
+			this.incrHits(wgtChar);
+			return Object.freeze({
 				char: wgtChar.char,
 				seq:  this.seq,
-			};
-			this.incrHits(wgtChar);
-			return pair;
+			});
 		}
 		private incrHits(wCharToHit: WeightedLangChar, numTimes: number = 1): void {
-			wCharToHit._incrementNumHits();
+			wCharToHit.incrHits();
 			this._rIncrHits(wCharToHit.weightInv * numTimes);
 		}
 		private _rIncrHits(weightInv: number): void {
 			this.carryHits += weightInv;
-			for (const child of this.children) child._rIncrHits(weightInv);
+			for (const child of this.children) { child._rIncrHits(weightInv); }
 		}
 
 		/**
 		 * @returns The root node of a new tree map.
+		 * @param langId - Used as a key to cache the tree prototype.
 		 */
-		public static CREATE_TREE_MAP(
+		public static CREATE_TREE_PROTO(
 			forwardDict: Lang.WeightedForwardMap,
 			weightScaling: Lang.WeightExaggeration,
-		): readonly Node[] {
-			const scaleWeight = LangSeqTree.GET_SCALE_WEIGHT_FUNC(weightScaling, forwardDict);
+		):
+		ReadonlyArray<Node> {
+			const scaleWeight = LangTree._GET_SCALE_WEIGHT_FUNC(weightScaling, forwardDict);
 
 			// Reverse the map:
 			const reverseDict = new Map<Lang.Seq, WeightedLangChar[]>();
@@ -139,6 +151,7 @@ export namespace LangSeqTree {
 			return roots.freeze();
 		}
 
+		/** */
 		public static readonly LEAF_CMP: LangSorter<Node> = (a, b) => {
 			return a.carryHits - b.carryHits;
 		};
@@ -149,7 +162,7 @@ export namespace LangSeqTree {
 
 
 	/** */
-	export function GET_SCALE_WEIGHT_FUNC(
+	export function _GET_SCALE_WEIGHT_FUNC(
 		weightScaling: Lang.WeightExaggeration,
 		forwardDict: Lang.WeightedForwardMap,
 	): (ogWeight: number) => number {
@@ -159,9 +172,9 @@ export namespace LangSeqTree {
 		const averageWeight = values.reduce((sum, next) => sum += next.weight, 0) / values.length;
 		return (originalWeight: number) => Math.pow(originalWeight / averageWeight, weightScaling);
 	};
-	Object.freeze(GET_SCALE_WEIGHT_FUNC);
+	Object.freeze(_GET_SCALE_WEIGHT_FUNC);
 }
-Object.freeze(LangSeqTree);
+Object.freeze(LangTree);
 
 
 /**
@@ -186,7 +199,7 @@ class WeightedLangChar {
 	declare public readonly weightInv: number;
 
 	/** This value is weighted according to `weightInv`. */
-	public hits: number = 0.0;
+	declare public hits: number;
 
 	public constructor(
 		public readonly char: Lang.Char,
@@ -199,10 +212,16 @@ class WeightedLangChar {
 		// a consistent value.
 		Object.seal(this); //🧊
 	}
+	public _mkInstance(): WeightedLangChar {
+		return Object.create(this, {
+			hits: { enumerable: true, writable: true, value: 0.0 },
+		});
+	}
+
 	public reset(): void {
 		this.hits = 0.0;
 	}
-	public _incrementNumHits(): void {
+	public incrHits(): void {
 		this.hits += this.weightInv;
 	}
 };

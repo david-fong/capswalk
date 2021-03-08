@@ -5,7 +5,7 @@ import style from "./style.m.css";
 export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 
 	/** @override */
-	protected _lazyLoad(): void {
+	protected _abstractLazyLoad(): void {
 		Object.freeze(this); //🧊
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,

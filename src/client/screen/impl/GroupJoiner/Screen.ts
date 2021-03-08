@@ -14,8 +14,8 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 	}
 
 	/** @override */
-	protected _lazyLoad(): void {
-		super._lazyLoad();
+	protected _abstractLazyLoad(): void {
+		super._abstractLazyLoad();
 
 		// @ts-expect-error : RO=
 		this.#wsMessageCb = (ev: MessageEvent<string>) => {

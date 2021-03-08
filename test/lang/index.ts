@@ -5,7 +5,7 @@ import { LangDescs } from "base/lang/LangDescs";
 Promise.all(Object.keys(LangDescs).map((langId) => Lang.IMPORT(langId).then((classIf) => {
 	try {
 		const inst = new (classIf)(1.0);
-		const fed = inst.frontendDesc;
+		const fed = inst.desc;
 		inst.reset();
 
 		// TODO.impl test a set of alphanumeric character inputs for each lang's remapping function.
@@ -21,11 +21,11 @@ Promise.all(Object.keys(LangDescs).map((langId) => Lang.IMPORT(langId).then((cla
 
 		return Object.freeze({
 			name: fed.displayName,
-			nomOpts: fed.isolatedMinOpts,
+			numOpts: fed.isolatedMinOpts,
 		});
 	} catch (e) {
 		console.error(e);
 	}
-	return Object.freeze({ name: "error", nunOpts: NaN, });
+	return Object.freeze({ name: "error", numOpts: NaN, });
 })))
 .then((table) => console.table(table));

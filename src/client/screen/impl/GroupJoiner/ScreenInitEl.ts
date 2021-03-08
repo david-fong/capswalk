@@ -21,7 +21,7 @@ export abstract class _GroupJoinerScreenInitEl extends BaseScreen<SID> {
 
 
 	/** @override */
-	protected _lazyLoad(): void {
+	protected _abstractLazyLoad(): void {
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,
 			style["this"],

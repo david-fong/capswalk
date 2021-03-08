@@ -15,6 +15,8 @@
 
 ### Things I feel like doing
 
+1. Change `LangSeqTreeNode.Node` to split into `NodeProto` and `Node`, where `Node` adds hit-count information. `NodeProto` shall have a method to create a `Node` instance using `Object.create`.
+    - Make the `WeightedLangChar.mkInstance` handle weight exaggeration.
 1. Implement `VisibleGrid` rendering of player positions.
 1. Change Euclid Visual Grid to use SVG.
 1. Change avatars into emojis? I feel like I would lose out on some room for creativity, but on the other hand, there's a huge wealth of great looking emojis that have native support. I think it's a good idea to just use them.
@@ -38,7 +40,6 @@
 
 ### Things that are low priority
 
-1. Change `LangSeqTreeNode.Node` to split into `NodeProto` and `Node`, where `Node` adds hit-count information. `NodeProto` shall have a method to create a `Node` instance using `Object.create`.
     - Then make the `NodeProto` tree a lazily initialized internal singleton.
     - This will save memory when multiple of the same type of language are is use at the same time.
     - This is save time when creating another instance of the same type of language.
@@ -53,6 +54,7 @@
 1. Look into using AssemblyScript for the Lang tree
     - https://www.erikonarheim.com/posts/webpack-assemblyscript-and-wasm-loader/
     - This looks like it would be pretty complicated to do.
+1.
 
 ### Routine Checkups
 
