@@ -2,8 +2,8 @@ import { TopLevel } from "client/TopLevel";
 import { Group } from "defs/OnlineDefs";
 
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
-type SID = BaseScreen.Id.GROUP_JOINER;
 import style from "./style.m.css";
+type SID = BaseScreen.Id.GROUP_JOINER;
 
 /** */
 export abstract class _GroupJoinerScreenInitEl extends BaseScreen<SID> {

@@ -1,7 +1,7 @@
 import { JsUtils } from "defs/JsUtils";
 
 /**
- * # DOM / CSSOM Hook Strings
+ * DOM / CSSOM Hook Strings
  *
  * Must be matched exactly in the html, css, and javascript.
  *
