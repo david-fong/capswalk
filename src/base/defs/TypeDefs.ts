@@ -118,7 +118,10 @@ export namespace Lang {
 		export: string;
 		/** The output must match against `Lang.Seq.REGEXP`. */
 		remapFunc: {(input: string): string};
-		/** */
+		/**
+		 * The total number of leaf nodes of all root nodes except the
+		 * root node with the most leaf nodes.
+		 */
 		isolatedMinOpts: number;
 		displayName:string;
 		blurb: string;

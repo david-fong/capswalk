@@ -1,5 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
-import { Lang } from "lang/Lang";
+import { Lang, LangDescs } from "lang/Lang";
 import { Game } from "../Game";
 
 import type { Coord, Tile } from "floor/Tile";
@@ -46,7 +46,7 @@ export abstract class GameManager<
 			this.lang = new LangConstructor(args.desc.langWeightExaggeration);
 			JsUtils.propNoWrite(this as GameManager<S>, "lang");
 
-			if (DEF.DevAssert && (this.lang.isolatedMinOpts < this.grid.static.ambiguityThreshold)) {
+			if (DEF.DevAssert && (LangDescs[args.desc.langId]!.isolatedMinOpts < this.grid.static.ambiguityThreshold)) {
 				// Enforced By: clientside UI and `CHECK_VALID_CTOR_ARGS`.
 				throw new Error("never");
 			}

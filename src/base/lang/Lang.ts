@@ -1,10 +1,14 @@
 import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
-import { LangDescs } from "./LangDescs";
+import { LangDescs } from "./LangDescs"; export { LangDescs };
 import { LangTree } from "./LangTree";
 
 /** This cache helps save memory on the server by sharing parts of tree nodes. */
-const TREE_PROTO_CACHE = new Map<Lang.Desc["id"], ReadonlyArray<LangTree.Node>>();
+type ProtoCache = {
+	readonly roots: ReadonlyArray<LangTree.Node>;
+	readonly avgUnscaledWeight: number;
+};
+const TREE_PROTO_CACHE = new Map<Lang.Desc["id"], ProtoCache>();
 
 /**
  * Conceptually, a language is a map from unique written characters
@@ -29,12 +33,6 @@ export abstract class Lang extends _Lang {
 	 */
 	private readonly leafNodes: LangTree.Node[];
 
-	/**
-	 * The total number of leaf nodes of all root nodes except the
-	 * root node with the most leaf nodes.
-	 */
-	public readonly isolatedMinOpts: number;
-
 	/** */
 	protected constructor(
 		id: Lang.Desc["id"],
@@ -43,29 +41,35 @@ export abstract class Lang extends _Lang {
 		super();
 		this.desc = Lang.GET_DESC(id)!;
 
-		this.treeRoots = (TREE_PROTO_CACHE.has(id)
+		const cache = TREE_PROTO_CACHE.has(id)
 			? TREE_PROTO_CACHE.get(id)!
-			: (() => {
-				const proto = LangTree.Node.CREATE_TREE_PROTO(
-					(Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD(),
-					weightExaggeration,
-				);
-				TREE_PROTO_CACHE.set(id, proto);
-				return proto;
-			})()
-		).map((root) => root._mkInstance()).freeze();
+			: ((): ProtoCache => {
+				// Cold load:
+				const forwardDict = (Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD();
+				const values = Object.values(forwardDict).freeze();
+				const cache = Object.freeze<ProtoCache>({
+					roots: LangTree.Node.CREATE_TREE_PROTO(forwardDict),
+					avgUnscaledWeight: values.reduce((sum, next) => sum += next.weight, 0) / values.length,
+				});
+				TREE_PROTO_CACHE.set(id, cache);
+				return cache;
+			})();
+		this.treeRoots = cache.roots.map((root) => root._mkInstance(
+			LangTree._GET_SCALE_WEIGHT_FUNC(weightExaggeration, cache.avgUnscaledWeight),
+		)).freeze();
 
 		const leaves = this.treeRoots.map((root) => root.getLeaves());
 		this.leafNodes = leaves.flat();
-		this.isolatedMinOpts = leaves.map((l) => l.length).sort().slice(0,-1).reduce((sum,n) => sum+n, 0);
-		JsUtils.propNoWrite(this as Lang, "desc", "treeRoots", "leafNodes", "isolatedMinOpts");
+		JsUtils.propNoWrite(this as Lang, "desc", "treeRoots", "leafNodes");
 		Object.seal(this); //🧊
 
-		if (DEF.DevAssert && this.isolatedMinOpts !== this.desc.isolatedMinOpts) {
-			throw new Error(`maintenance required: the desc constant`
-			+` for the language "${this.desc.id}" needs to`
-			+` be updated to the correct, computed value, which is`
-			+` \`${this.isolatedMinOpts}\`.`);
+		if (DEF.DevAssert) {
+			const isolatedMinOpts = leaves.map((l) => l.length).sort().slice(0,-1).reduce((sum,n) => sum+n, 0);
+			if (isolatedMinOpts !== this.desc.isolatedMinOpts) {
+				throw new Error(`maintenance required: the desc constant for`
+				+` the language "${this.desc.id}" needs to be updated to the`
+				+` correct, computed value: ${isolatedMinOpts}.`);
+			}
 		}
 	}
 

@@ -24,24 +24,32 @@ export namespace LangTree {
 
 		/** */
 		protected constructor(
-			parent: Node | undefined,
-			seq: Lang.Seq = "",
+			parent: Node | undefined = undefined,
+			seq: Lang.Seq,
 			characters: ReadonlyArray<WeightedLangChar>,
 		) {
+			// Note: `parent` is not needed for proto cache.
 			Object.defineProperty(this, "parent",   { enumerable: true, value: parent });
 			Object.defineProperty(this, "seq",      { enumerable: true, value: seq });
 			Object.defineProperty(this, "children", { enumerable: true, value: [] });
 			Object.defineProperty(this, "characters", { enumerable: true, value: Object.freeze(characters) });
-			//Object.seal(this); //🧊
+			Object.seal(this); //🧊
 		}
 		/** */
-		public _mkInstance(parent: Node | undefined = undefined): Node {
-			return Object.create(this, {
+		public _mkInstance(
+			scaleWeight: (ogWeight: number) => number,
+			parent: Node | undefined = undefined,
+		):
+		Node {
+			const children   = this.children.map((n) => n._mkInstance(scaleWeight, this)).freeze();
+			const characters = this.characters.map((c) => c._mkInstance(scaleWeight(c.unscaledWeight))).freeze();
+			const inst = Object.create(this, {
 				parent:     { enumerable: true, value: parent },
-				children:   { enumerable: true, value: this.children.map((n) => n._mkInstance(this)).freeze() },
-				characters: { enumerable: true, value: this.characters.map((c) => c._mkInstance()).freeze() },
+				children:   { enumerable: true, value: children },
+				characters: { enumerable: true, value: characters },
 				carryHits:  { enumerable: true, value: 0.0, writable: true },
 			});
+			return Object.seal(inst); //🧊
 		}
 
 		/** */
@@ -109,19 +117,11 @@ export namespace LangTree {
 		 * @returns The root node of a new tree map.
 		 * @param langId - Used as a key to cache the tree prototype.
 		 */
-		public static CREATE_TREE_PROTO(
-			forwardDict: Lang.WeightedForwardMap,
-			weightScaling: Lang.WeightExaggeration,
-		):
-		ReadonlyArray<Node> {
-			const scaleWeight = LangTree._GET_SCALE_WEIGHT_FUNC(weightScaling, forwardDict);
-
+		public static CREATE_TREE_PROTO(forwardDict: Lang.WeightedForwardMap): ReadonlyArray<Node> {
 			// Reverse the map:
 			const reverseDict = new Map<Lang.Seq, WeightedLangChar[]>();
 			Object.entries(forwardDict).freeze().forEach(([char, {seq, weight}]) => {
-				const weightedChar = new WeightedLangChar(
-					char, scaleWeight(weight),
-				);
+				const weightedChar = new WeightedLangChar(char, weight);
 				const chars = reverseDict.get(seq);
 				if (chars !== undefined) {
 					// The entry was already made:
@@ -138,7 +138,7 @@ export namespace LangTree {
 				Array.from(reverseDict).seal().sort(([seqA], [seqB]) => (seqA < seqB) ? -1 : 1).freeze()
 			) /* no breaks */ {
 				while (parent !== undefined && !seq.startsWith(parent.seq)) {
-					parent = parent.parent;
+					parent = parent.parent; // TODO.fix this is broken. Put the parent field back in the proto node constructor.
 				}
 				const newNode: Node = new Node(parent, seq, chars);
 				if (parent !== undefined) {
@@ -164,13 +164,11 @@ export namespace LangTree {
 	/** */
 	export function _GET_SCALE_WEIGHT_FUNC(
 		weightScaling: Lang.WeightExaggeration,
-		forwardDict: Lang.WeightedForwardMap,
+		avgUnscaledWeight: number,
 	): (ogWeight: number) => number {
 		if (weightScaling === 0) return () => 1;
 		if (weightScaling === 1) return (ogWgt: number) => ogWgt;
-		const values = Object.values(forwardDict);
-		const averageWeight = values.reduce((sum, next) => sum += next.weight, 0) / values.length;
-		return (originalWeight: number) => Math.pow(originalWeight / averageWeight, weightScaling);
+		return (originalWeight: number) => Math.pow(originalWeight / avgUnscaledWeight, weightScaling);
 	};
 	Object.freeze(_GET_SCALE_WEIGHT_FUNC);
 }
@@ -195,6 +193,8 @@ class WeightedLangChar {
 	 * Specifically, a character A with a weight N times that of some
 	 * other character B will, on average, be returned N times more
 	 * often by the `chooseOnePair` method than B.
+	 *
+	 * This is the value _after_ scaling is performed.
 	 */
 	declare public readonly weightInv: number;
 
@@ -202,19 +202,19 @@ class WeightedLangChar {
 	declare public hits: number;
 
 	public constructor(
-		public readonly char: Lang.Char,
-		weight: number,
+		public readonly char: Lang.Char, // <- char field
+		public readonly unscaledWeight: number,
 	) {
 		this.char = char;
-		Object.defineProperty(this, "weightInv", { enumerable: true, value: 1.0 / weight });
 		// The above choice of a numerator is not behaviourally significant.
 		// All that is required is that all single-mappings in a `Lang` use
 		// a consistent value.
 		Object.seal(this); //🧊
 	}
-	public _mkInstance(): WeightedLangChar {
+	public _mkInstance(weight: number): WeightedLangChar {
 		return Object.create(this, {
-			hits: { enumerable: true, writable: true, value: 0.0 },
+			weightInv: { enumerable: true, value: 1.0 / weight },
+			hits:      { enumerable: true, value: 0.0, writable: true },
 		});
 	}
 

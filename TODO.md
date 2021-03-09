@@ -15,8 +15,14 @@
 
 ### Things I feel like doing
 
+1. Investigate: Can I just replace lang-tree leaves field with an array of all nodes sorted by weighted hit-count?
+    - Then I wouldn't need this "inherited hit-count" thing.
+    - I could optimize the sorting by implementing that array as a linked-list, since any action would only require re-inserting a single node at a different position.
+      - This could be optimized in terms of space as a TypedArray lookup where the index indicates a node, and the value indicates which node is next. The sentinel would be an integer indexing into the array.
+        - This would go well with the experiment task for implementing the tree as an array.
 1. Change `LangSeqTreeNode.Node` to split into `NodeProto` and `Node`, where `Node` adds hit-count information. `NodeProto` shall have a method to create a `Node` instance using `Object.create`.
     - Make the `WeightedLangChar.mkInstance` handle weight exaggeration.
+    - May as well make `WeightedLangChar` not proto-cached. Its only two properties are instance-only.
 1. Implement `VisibleGrid` rendering of player positions.
 1. Change Euclid Visual Grid to use SVG.
 1. Change avatars into emojis? I feel like I would lose out on some room for creativity, but on the other hand, there's a huge wealth of great looking emojis that have native support. I think it's a good idea to just use them.
