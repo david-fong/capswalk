@@ -1,4 +1,4 @@
-import "base/defs/NodePlatformMods";
+import "base/defs/ModNodePlatform";
 import { Lang } from "base/lang/Lang";
 import { LangDescs } from "base/lang/LangDescs";
 

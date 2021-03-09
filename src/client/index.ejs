@@ -7,12 +7,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<!-- <link rel="manifest" href="manifest.webmanifest"/> -->
 
-		<script>
-			Object.defineProperties(Array.prototype, {
-				freeze: { value: function freeze() { return Object.freeze(this); }, enumerable: true },
-				seal: { value: function seal() { return Object.seal(this); }, enumerable: true },
-			});
-		</script>
 		<%= htmlWebpackPlugin.tags.headTags.join("\n\t\t") %>
 		<meta name="og:title"       content="capswalk"/>
 		<meta name="author"         content="David Fong"/>

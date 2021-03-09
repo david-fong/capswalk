@@ -1,27 +1,9 @@
+import "base/defs/ModBrowserPlatform";
+
 // STYLE IMPORT:
 import "style/common.css";
 import "style/_barrel.css";
 
-// In-House `--frozen-intrinsics`:
-(<(keyof typeof globalThis)[]>[
-	"Object", "String", "Number", "RegExp", "Date",
-	"Array", "Map", "Set", "WeakMap", "WeakSet",
-	// .-- web-specific --.
-	"URL",
-	"HTMLElement", "HTMLDivElement", "HTMLSpanElement", "HTMLPreElement",
-	"HTMLButtonElement", "HTMLInputElement", "HTMLSelectElement", "HTMLOptionElement",
-	"HTMLScriptElement", "HTMLStyleElement", "HTMLLinkElement", "HTMLAnchorElement",
-	"HTMLDocument", "HTMLIFrameElement", "HTMLCanvasElement",
-])
-.forEach((key) => {
-	Object.defineProperty(globalThis, key, {
-		enumerable: true,
-		writable: false,
-		configurable: false,
-	});
-	Object.freeze((globalThis as any)[key]);
-	Object.freeze((globalThis as any)[key].prototype);
-});
 // =========================================
 
 import { TopLevel } from "./TopLevel";
