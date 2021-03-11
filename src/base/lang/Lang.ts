@@ -2,10 +2,10 @@ import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
 import { LangDescs } from "./LangDescs";
 export { LangDescs } from "./LangDescs";
-import { Node } from "./LangTree";
+import { Csp } from "./LangCsp";
 
 /** This cache helps save memory on the server by sharing parts of tree nodes. */
-const DICT_CACHE = new Map<Lang.Desc["id"], ReadonlyArray<Node>>();
+const DICT_CACHE = new Map<Lang.Desc["id"], ReadonlyArray<Csp>>();
 
 /**
  * Conceptually, a language is a map from unique written characters
@@ -21,9 +21,9 @@ export abstract class Lang extends _Lang {
 	public readonly desc: Lang.Desc;
 
 	/** A dictionary of char-seq-pair information. */
-	public readonly dict: ReadonlyArray<Node> = undefined!;
+	public readonly dict: ReadonlyArray<Csp> = undefined!;
 
-	private readonly queue: SealedArray<Node> = undefined!;
+	readonly #queue: SealedArray<Csp>;
 
 	/** */
 	protected constructor(
@@ -35,7 +35,7 @@ export abstract class Lang extends _Lang {
 		{
 			const dictCache = DICT_CACHE.has(id)
 				? DICT_CACHE.get(id)!
-				: ((): ReadonlyArray<Node> => {
+				: ((): ReadonlyArray<Csp> => {
 					const buildDict = (Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD();
 					const dictCache = Lang.CREATE_DICT_ARRAY(buildDict);
 					DICT_CACHE.set(id, dictCache);
@@ -43,17 +43,16 @@ export abstract class Lang extends _Lang {
 				})();
 			this.dict = dictCache;
 			const scaleWeight = Lang._GET_SCALE_WEIGHT_FUNC(weightExaggeration, this.desc.avgWeight);
-			this.queue = dictCache.map((node) => node._mkInstance(scaleWeight(node.weight))).seal();
+			this.#queue = dictCache.map((csp) => csp._mkInstance(scaleWeight(csp.weight))).seal();
 		}
-
-		JsUtils.propNoWrite(this as Lang, "desc", "dict", "queue");
+		JsUtils.propNoWrite(this as Lang, "desc", "dict");
 		Object.seal(this); //🧊
 	}
 
 	/** */
 	public reset(): void {
-		for (const root of this.queue) {
-			root.reset();
+		for (const csp of this.#queue) {
+			csp.reset();
 		}
 	}
 
@@ -84,31 +83,18 @@ export abstract class Lang extends _Lang {
 	public getNonConflictingChar(
 		avoid: ReadonlyArray<Lang.Seq>,
 	): Lang.CharSeqPair {
-		// Internal explainer: We must find characters from nodes that
-		// are not descendants or ancestors of nodes in `avoid`. This
-		// means that none of the ancestors or descendants of nodes in
-		// `avoid` are also in `avoid`.
-
 		// Start by sorting according to the desired balancing scheme:
-		this.queue.sort(Node.LEAF_CMP);
+		this.#queue.sort(Csp.LEAF_CMP);
 
-		search_branch:
-		for (const node of this.queue) {
-			const superSeq = avoid.find((avoidSeq) => avoidSeq.startsWith(node!.seq));
+		for (const csp of this.#queue) {
 			// ^Using `find` is fine. There can only ever be one or none.
-			if (superSeq) {
-				if (superSeq.length > node.seq.length) {
-					// Nothing shorter/upstream will work.
-					break;
-				} else {
-					// Branch contains an avoid node.
-					continue search_branch;
-				}
+			if (!avoid.some((avoidSeq) => avoidSeq.startsWith(csp.seq))) {
+				csp.incrHits();
+				return Object.freeze(<Lang.CharSeqPair>{
+					char: csp.char,
+					seq: csp.seq,
+				});
 			}
-			return Object.freeze(<Lang.CharSeqPair>{
-				char: node.char,
-				seq: node.seq,
-			});
 		}
 		// Enforced by UI and server:
 		throw new Error("never");
@@ -195,19 +181,24 @@ export namespace Lang {
 		weightScaling: Lang.WeightExaggeration,
 		avgUnscaledWeight: number,
 	): (ogWeight: number) => number {
-		if (weightScaling === 0) return () => 1;
-		if (weightScaling === 1) return (ogWgt: number) => ogWgt;
+		if (weightScaling === 0) return _GET_SCALE_WEIGHT_FUNC.UNIFORM;
+		if (weightScaling === 1) return _GET_SCALE_WEIGHT_FUNC.IDENTITY;
 		return (originalWeight: number) => Math.pow(originalWeight / avgUnscaledWeight, weightScaling);
 	};
+	export namespace _GET_SCALE_WEIGHT_FUNC {
+		// Cache the compiled code by extracting the declaration.
+		export function UNIFORM(): 1 { return 1; }
+		export function IDENTITY(ogWeight: number): number { return ogWeight; }
+	}
 	Object.freeze(_GET_SCALE_WEIGHT_FUNC);
 
 	/**
 	 * Sorts the result by sequence, breaking ties by character. Does
 	 * not handle caching.
 	 */
-	export function CREATE_DICT_ARRAY(forwardDict: Lang.WeightedForwardMap): ReadonlyArray<Node> {
+	export function CREATE_DICT_ARRAY(forwardDict: Lang.WeightedForwardMap): ReadonlyArray<Csp> {
 		return Object.entries(forwardDict).freeze().map(([char, {seq,weight}]) => {
-			return new Node(char, seq, weight);
+			return new Csp(char, seq, weight);
 		})
 		.seal()
 		.sort((a,b) => a.char.localeCompare(b.char))

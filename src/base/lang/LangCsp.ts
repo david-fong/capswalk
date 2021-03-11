@@ -3,7 +3,7 @@ import type { Lang } from "./Lang";
 type LangSorter<T> = (a: T, b: T) => number;
 
 /** */
-export class Node {
+export class Csp {
 
 	declare public readonly char: Lang.Char;
 	declare public readonly seq: Lang.Seq;
@@ -28,29 +28,30 @@ export class Node {
 			"char":   { value: char },
 			"seq":    { value: seq },
 			"weight": { value: weight },
+			"hits":   { value: 0, writable: true }
 		});
 		Object.seal(this); //🧊
 	}
-	public _mkInstance(weight: number): Node {
-		return Object.create(this, {
-			"weight": { value: weight },
-			"hits":   { value: 0, writable: true },
-		});
+	public _mkInstance(weight: number): Csp {
+		// return Object.create(this, {
+		// 	"weight": { value: weight },
+		// 	"hits":   { value: 0, writable: true },
+		// });
+		return new Csp(this.char, this.seq, this.weight);
 	}
 	/** */
 	public reset(): void {
 		this.hits = 0.0;
+		this.incrHits(Math.random() * _Lang.CHAR_HIT_COUNT_SEED_CEILING);
 	}
-
 	/** */
 	public incrHits(numTimes: number = 1): void {
 		this.hits += numTimes / this.weight;
 	}
-
 	/** */
-	public static readonly LEAF_CMP: LangSorter<Node> = (a, b) => {
+	public static readonly LEAF_CMP: LangSorter<Csp> = (a, b) => {
 		return a.hits - b.hits;
 	};
 }
-Object.freeze(Node);
-Object.freeze(Node.prototype);
+Object.freeze(Csp);
+Object.freeze(Csp.prototype);
