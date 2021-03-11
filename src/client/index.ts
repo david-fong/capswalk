@@ -1,11 +1,7 @@
 import "base/defs/ModBrowserPlatform";
 
-// STYLE IMPORT:
 import "style/common.css";
 import "style/_barrel.css";
-
-// =========================================
-
 import { TopLevel } from "./TopLevel";
 
 // window.onerror = (msg, url, lineNum) => {

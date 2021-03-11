@@ -123,6 +123,7 @@ export namespace Lang {
 		 * root node with the most leaf nodes.
 		 */
 		isolatedMinOpts: number;
+		avgWeight: number;
 		displayName:string;
 		blurb: string;
 	}>;

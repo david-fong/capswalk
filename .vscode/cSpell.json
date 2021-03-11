@@ -34,6 +34,7 @@
 		"OMHD", // Object-Model Hook :: Dataset Keys
 		"pred", // as in "predator"
 		"sesh",
+		"seqs",
 		"sysname",
 		"typeable",
 		"unts",

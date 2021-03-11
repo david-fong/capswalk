@@ -1,14 +1,11 @@
 import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
-import { LangDescs } from "./LangDescs"; export { LangDescs };
-import { LangTree } from "./LangTree";
+import { LangDescs } from "./LangDescs";
+export { LangDescs } from "./LangDescs";
+import { Node } from "./LangTree";
 
 /** This cache helps save memory on the server by sharing parts of tree nodes. */
-type ProtoCache = {
-	readonly roots: ReadonlyArray<LangTree.Node>;
-	readonly avgUnscaledWeight: number;
-};
-const TREE_PROTO_CACHE = new Map<Lang.Desc["id"], ProtoCache>();
+const DICT_CACHE = new Map<Lang.Desc["id"], ReadonlyArray<Node>>();
 
 /**
  * Conceptually, a language is a map from unique written characters
@@ -23,15 +20,10 @@ export abstract class Lang extends _Lang {
 
 	public readonly desc: Lang.Desc;
 
-	/** A "reverse" map from `LangSeq`s to `LangChar`s. */
-	private readonly treeRoots: ReadonlyArray<LangTree.Node>;
+	/** A dictionary of char-seq-pair information. */
+	public readonly dict: ReadonlyArray<Node> = undefined!;
 
-	/**
-	 * A list of leaf nodes in `treeRoots` sorted in ascending order by
-	 * hit-count. Entries should never be removed or added. They will
-	 * always be sorted in ascending order of `carryHits`.
-	 */
-	private readonly leafNodes: LangTree.Node[];
+	private readonly queue: SealedArray<Node> = undefined!;
 
 	/** */
 	protected constructor(
@@ -39,43 +31,28 @@ export abstract class Lang extends _Lang {
 		weightExaggeration: Lang.WeightExaggeration,
 	) {
 		super();
-		this.desc = Lang.GET_DESC(id)!;
-
-		const cache = TREE_PROTO_CACHE.has(id)
-			? TREE_PROTO_CACHE.get(id)!
-			: ((): ProtoCache => {
-				// Cold load:
-				const forwardDict = (Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD();
-				const values = Object.values(forwardDict).freeze();
-				const cache = Object.freeze<ProtoCache>({
-					roots: LangTree.Node.CREATE_TREE_PROTO(forwardDict),
-					avgUnscaledWeight: values.reduce((sum, next) => sum += next.weight, 0) / values.length,
-				});
-				TREE_PROTO_CACHE.set(id, cache);
-				return cache;
-			})();
-		this.treeRoots = cache.roots.map((root) => root._mkInstance(
-			LangTree._GET_SCALE_WEIGHT_FUNC(weightExaggeration, cache.avgUnscaledWeight),
-		)).freeze();
-
-		const leaves = this.treeRoots.map((root) => root.getLeaves());
-		this.leafNodes = leaves.flat();
-		JsUtils.propNoWrite(this as Lang, "desc", "treeRoots", "leafNodes");
-		Object.seal(this); //🧊
-
-		if (DEF.DevAssert) {
-			const isolatedMinOpts = leaves.map((l) => l.length).sort().slice(0,-1).reduce((sum,n) => sum+n, 0);
-			if (isolatedMinOpts !== this.desc.isolatedMinOpts) {
-				throw new Error(`maintenance required: the desc constant for`
-				+` the language "${this.desc.id}" needs to be updated to the`
-				+` correct, computed value: ${isolatedMinOpts}.`);
-			}
+		this.desc = Lang.GET_DESC(id);
+		{
+			const dictCache = DICT_CACHE.has(id)
+				? DICT_CACHE.get(id)!
+				: ((): ReadonlyArray<Node> => {
+					const buildDict = (Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD();
+					const dictCache = Lang.CREATE_DICT_ARRAY(buildDict);
+					DICT_CACHE.set(id, dictCache);
+					return dictCache;
+				})();
+			this.dict = dictCache;
+			const scaleWeight = Lang._GET_SCALE_WEIGHT_FUNC(weightExaggeration, this.desc.avgWeight);
+			this.queue = dictCache.map((node) => node._mkInstance(scaleWeight(node.weight))).seal();
 		}
+
+		JsUtils.propNoWrite(this as Lang, "desc", "dict", "queue");
+		Object.seal(this); //🧊
 	}
 
 	/** */
 	public reset(): void {
-		for (const root of this.treeRoots) {
+		for (const root of this.queue) {
 			root.reset();
 		}
 	}
@@ -113,36 +90,71 @@ export abstract class Lang extends _Lang {
 		// `avoid` are also in `avoid`.
 
 		// Start by sorting according to the desired balancing scheme:
-		this.leafNodes.sort(LangTree.Node.LEAF_CMP);
+		this.queue.sort(Node.LEAF_CMP);
 
 		search_branch:
-		for (const leaf of this.leafNodes) {
-			let hitNode = leaf;
-			for (
-				let node: LangTree.Node | undefined = leaf;
-				node !== undefined;
-				node = node.parent
-			) {
-				const superSeq = avoid.find((avoidSeq) => avoidSeq.startsWith(node!.seq));
-				// ^Using `find` is fine. There can only ever be one or none.
-				if (superSeq) {
-					if (superSeq.length > node.seq.length) {
-						// Nothing shorter/upstream will work.
-						break;
-					} else {
-						// Branch contains an avoid node.
-						continue search_branch;
-					}
-				}
-				// Find the node with the lowest personal hit-count:
-				if (node.ownHits < hitNode.ownHits) {
-					hitNode = node;
+		for (const node of this.queue) {
+			const superSeq = avoid.find((avoidSeq) => avoidSeq.startsWith(node!.seq));
+			// ^Using `find` is fine. There can only ever be one or none.
+			if (superSeq) {
+				if (superSeq.length > node.seq.length) {
+					// Nothing shorter/upstream will work.
+					break;
+				} else {
+					// Branch contains an avoid node.
+					continue search_branch;
 				}
 			}
-			return hitNode.chooseOnePair();
+			return Object.freeze(<Lang.CharSeqPair>{
+				char: node.char,
+				seq: node.seq,
+			});
 		}
 		// Enforced by UI and server:
 		throw new Error("never");
+	}
+
+	/** */
+	public _calcIsolatedMinOpts(): number {
+		/** ALl unique sequences sorted in lexical order. */
+		const allSeqs: string[] = [];
+		this.dict.forEach((n) => {
+			if (allSeqs[allSeqs.length-1] !== n.seq) { allSeqs.push(n.seq); }
+		});
+		allSeqs.freeze();
+
+		/** Every other seq is a prefix of one or several of these. */
+		const leafSeqs: string[] = [];
+		for (const seq of [...allSeqs].seal().reverse().freeze()) {
+			if (!leafSeqs.some((leaf) => leaf.startsWith(seq))) {
+				leafSeqs.push(seq);
+			}
+		}
+		leafSeqs.freeze();
+
+		/** Every leaf starts with one and only one of these. */
+		const rootSeqs: string[] = [];
+		for (const seq of allSeqs) {
+			if (!rootSeqs.some((root) => root.startsWith(seq))) {
+				rootSeqs.push(seq);
+			}
+		}
+		rootSeqs.freeze();
+
+		/** A partition of the leaves according to their roots. */
+		const rootLeaves = new Map<string, number>();
+		rootSeqs.forEach((root) => rootLeaves.set(root, 0));
+		leafSeqs.forEach((leaf) => {
+			for (const root of rootSeqs) {
+				if (leaf.startsWith(root)) {
+					rootLeaves.set(root, rootLeaves.get(root)! + 1);
+					break;
+				}
+			}
+		});
+
+		// The number of leaves except those of the root with the most leaves:
+		return [...rootLeaves.values()].sort().slice(0,-1).reduce((sum,n) => sum+n, 0);
 	}
 }
 export namespace Lang {
@@ -152,6 +164,7 @@ export namespace Lang {
 	 */
 	export interface ClassIf {
 		new (weightScaling: Lang.WeightExaggeration): Lang;
+		/** Note: Does not need to handle caching */
 		BUILD(): WeightedForwardMap;
 	};
 
@@ -176,6 +189,32 @@ export namespace Lang {
 		);
 	}
 	Object.freeze(IMPORT);
+
+	/** */
+	export function _GET_SCALE_WEIGHT_FUNC(
+		weightScaling: Lang.WeightExaggeration,
+		avgUnscaledWeight: number,
+	): (ogWeight: number) => number {
+		if (weightScaling === 0) return () => 1;
+		if (weightScaling === 1) return (ogWgt: number) => ogWgt;
+		return (originalWeight: number) => Math.pow(originalWeight / avgUnscaledWeight, weightScaling);
+	};
+	Object.freeze(_GET_SCALE_WEIGHT_FUNC);
+
+	/**
+	 * Sorts the result by sequence, breaking ties by character. Does
+	 * not handle caching.
+	 */
+	export function CREATE_DICT_ARRAY(forwardDict: Lang.WeightedForwardMap): ReadonlyArray<Node> {
+		return Object.entries(forwardDict).freeze().map(([char, {seq,weight}]) => {
+			return new Node(char, seq, weight);
+		})
+		.seal()
+		.sort((a,b) => a.char.localeCompare(b.char))
+		.sort((a,b) => a.seq.localeCompare(b.seq))
+		.freeze();
+	}
+	Object.freeze(CREATE_DICT_ARRAY);
 
 	/**
 	 * Utility functions for implementations to use in their static

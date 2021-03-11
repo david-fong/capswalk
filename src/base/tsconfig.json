@@ -9,7 +9,7 @@
     "references": [
         { "path": "defs"  },
         { "path": "lang"  },
-        { "path": "lang/impl/tsconfig.json" },
+        { "path": "lang/impl" },
         { "path": "floor" },
         { "path": "game"  },
     ],

@@ -53,8 +53,8 @@ export namespace JsUtils {
 			if (DEF.DevAssert) {
 				const hasProps = Object.getOwnPropertyNames(inst).freeze();
 				if (!hasProps.includes(propName as string)) {
-					const msg = `\`${(inst as any).__proto__.constructor.name}\``
-					+ ` instance has no property named \"${propName}\"`;
+					const msg = `\`${Object.getPrototypeOf(inst).constructor.name}\``
+					+` instance has no property named \"${propName}\"`;
 					throw new TypeError(msg); // Mismatched property name.
 				}
 			}

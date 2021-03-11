@@ -38,6 +38,8 @@ This design is great at capturing the concept of the lang tree where parent node
 
 The current design is used (iterated) like a 2D array with special space savings. The proposed design would be a 1D array. It will actually require fewer string comparisons since it will never double-try the parents of two leaves.
 
+This is almost embarrassing how simple the new implementation is starting to look. I was so proud of the tree too.
+
 ##### Data Structure Changes
 
 - I won't have a tree.
