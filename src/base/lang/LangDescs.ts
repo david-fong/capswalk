@@ -13,7 +13,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"engl-low": {
 		id: undefined!,
 		module: "English", export: "Lowercase",
-		isolatedMinOpts: 25, avgWeight: 0,
+		isolatedMinOpts: 25, avgWeight: 3.8639230769230766,
 		remapFunc: REMAP.LOWER,
 		displayName: "English Lowercase (qwerty)",
 		blurb: "",
@@ -21,7 +21,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"engl-mix": {
 		id: undefined!,
 		module: "English", export: "MixedCase",
-		isolatedMinOpts: 51, avgWeight: 0,
+		isolatedMinOpts: 51, avgWeight: 3.8639230769230775,
 		remapFunc: REMAP.IDENT,
 		displayName: "English Mixed-Case (Qwerty)",
 		blurb: "",
@@ -29,7 +29,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"japn-hir": {
 		id: undefined!,
 		module: "Japanese", export: "Hiragana",
-		isolatedMinOpts: 70, avgWeight: 0,
+		isolatedMinOpts: 70, avgWeight: 275509.7083333333,
 		remapFunc: REMAP.LOWER,
 		displayName: "Japanese Hiragana",
 		blurb: "",
@@ -37,7 +37,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"japn-kat": {
 		id: undefined!,
 		module: "Japanese", export: "Katakana",
-		isolatedMinOpts: 68, avgWeight: 0,
+		isolatedMinOpts: 68, avgWeight: 45577.26666666667,
 		remapFunc: REMAP.LOWER,
 		displayName: "Japanese Katakana",
 		blurb: "",
@@ -45,7 +45,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"kore-dub": {
 		id: undefined!,
 		module: "Korean", export: "Dubeolsik",
-		isolatedMinOpts: 8690, avgWeight: 0,
+		isolatedMinOpts: 8690, avgWeight: 0.9974982117852247,
 		remapFunc: REMAP.IDENT,
 		displayName: "Korean Dubeolsik (두벌식 키보드)",
 		blurb: "The most common keyboard layout, and South Korea's only Hangul"
@@ -55,7 +55,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"kore-sub": {
 		id: undefined!,
 		module: "Korean", export: "Sebeolsik",
-		isolatedMinOpts: 10179, avgWeight: 0,
+		isolatedMinOpts: 10179, avgWeight: 0.9974982117852336,
 		remapFunc: REMAP.IDENT,
 		displayName: "Korean Sebeolsik (세벌식 최종 키보드)",
 		blurb: "Another Hangul keyboard layout used in South Korea, and the"
@@ -67,7 +67,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"kore-rom": {
 		id: undefined!,
 		module: "Korean", export: "Romanization",
-		isolatedMinOpts: 3960, avgWeight: 0,
+		isolatedMinOpts: 3960, avgWeight: 0.9974982117852286,
 		remapFunc: REMAP.LOWER,
 		displayName: "Korean Revised Romanization",
 		blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
@@ -79,7 +79,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"engl-cell-enc": {
 		id: undefined!,
 		module: "English", export: "OldCellphone.Encode",
-		isolatedMinOpts: 7, avgWeight: 0,
+		isolatedMinOpts: 7, avgWeight: 3.8639230769230766,
 		remapFunc: REMAP.IDENT,
 		displayName: "Old Cellphone Keyboard",
 		blurb: "",
@@ -87,7 +87,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"mors-enc": {
 		id: undefined!,
 		module: "English", export: "Morse.Encode",
-		isolatedMinOpts: 10, avgWeight: 0,
+		isolatedMinOpts: 10, avgWeight: 2.6089716238018403,
 		remapFunc: (input) => { return input; }, // TODO.impl
 		displayName: "Morse Encoder",
 		blurb: "",
@@ -95,7 +95,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"mors-dec": {
 		id: undefined!,
 		module: "English", export: "Morse.Decode",
-		isolatedMinOpts: 40, avgWeight: 0,
+		isolatedMinOpts: 40, avgWeight: 2.6089716238018408,
 		remapFunc: REMAP.LOWER,
 		displayName: "Morse Decoder",
 		blurb: "",
@@ -103,7 +103,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"ngram2": {
 		id: undefined!,
 		module: "Ngrams", export: "Ngram2",
-		isolatedMinOpts: 199, avgWeight: 0,
+		isolatedMinOpts: 199, avgWeight: 5.000010000000002,
 		remapFunc: REMAP.LOWER,
 		displayName: "English Bigrams",
 		blurb: "",
@@ -111,7 +111,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"ngram3": {
 		id: undefined!,
 		module: "Ngrams", export: "Ngram3",
-		isolatedMinOpts: 400, avgWeight: 0,
+		isolatedMinOpts: 399, avgWeight: 2.5000100000000023,
 		remapFunc: REMAP.LOWER,
 		displayName: "English Trigrams",
 		blurb: "",
@@ -119,7 +119,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"numpad": {
 		id: undefined!,
 		module: "Numpad", export: "Numpad",
-		isolatedMinOpts: 99, avgWeight: 0,
+		isolatedMinOpts: 99, avgWeight: 1,
 		remapFunc: REMAP.LOWER,
 		displayName: "Number Pad",
 		blurb: "",

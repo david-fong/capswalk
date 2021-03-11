@@ -33,10 +33,11 @@ export class Csp {
 		Object.seal(this); //🧊
 	}
 	public _mkInstance(weight: number): Csp {
-		// return Object.create(this, {
-		// 	"weight": { value: weight },
-		// 	"hits":   { value: 0, writable: true },
-		// });
+		// Note: Using `Object.create` is 4x slower on v8.
+		/*return Object.create(this, {
+			"weight": { value: weight },
+			"hits":   { value: 0, writable: true },
+		});*/
 		return new Csp(this.char, this.seq, this.weight);
 	}
 	/** */

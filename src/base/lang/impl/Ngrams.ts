@@ -1,6 +1,6 @@
 import { Lang } from "../Lang";
-import * as Ngram2Dict from "./defs/ngram2.json";
-import * as Ngram3Dict from "./defs/ngram3.json";
+import Ngram2Dict from "./defs/ngram2.json";
+import Ngram3Dict from "./defs/ngram3.json";
 Object.freeze(Ngram2Dict);
 Object.freeze(Ngram3Dict);
 
