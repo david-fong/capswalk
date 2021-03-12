@@ -1,4 +1,4 @@
-import type { Lang } from "defs/TypeDefs";
+import type { Lang } from "lang/Lang";
 import type { Coord } from "floor/Tile";
 import type { Grid } from "floor/Grid";
 import type { Player } from "./player/Player";
@@ -79,7 +79,7 @@ export namespace Game {
 		 * Indexed by index according to `Grid.forEach` - not by the
 		 * `Tile.coord`s of `Grid.forEach` (they may differ).
 		 */
-		readonly csps: readonly Lang.CharSeqPair[];
+		readonly csps: readonly Lang.Csp[];
 		/**
 		 * A map from player ID's to their starting coordinates.
 		 */

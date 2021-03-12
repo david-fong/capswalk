@@ -1,4 +1,4 @@
-import type { Lang, Player } from "defs/TypeDefs";
+import type { Player } from "defs/TypeDefs";
 
 /**
  * A unique identifier within a Chunk.
@@ -39,8 +39,8 @@ export namespace Tile {
 		/** To evict an occupant, pass `Player.Id.NULL`. */
 		readonly occId?:  Player.Id;
 		readonly health?: Player.Health;
-		readonly char?:   Lang.Char;
-		readonly seq?:    Lang.Seq;
+		readonly char?:   string;
+		readonly seq?:    string;
 	}
 
 	/**

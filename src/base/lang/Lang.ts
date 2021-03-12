@@ -2,10 +2,9 @@ import { JsUtils } from "defs/JsUtils";
 import { Lang as _Lang } from "defs/TypeDefs";
 import { LangDescs } from "./LangDescs";
 export { LangDescs } from "./LangDescs";
-import { Csp } from "./LangCsp";
 
-/** This cache helps save memory on the server by sharing parts of tree nodes. */
-const DICT_CACHE = new Map<Lang.Desc["id"], ReadonlyArray<Csp>>();
+/** */
+const CSP_CACHE = new Map<Lang.Desc["id"], ReadonlyArray<Lang.Csp.Weighted>>();
 
 /**
  * Conceptually, a language is a map from unique written characters
@@ -20,10 +19,15 @@ export abstract class Lang extends _Lang {
 
 	public readonly desc: Lang.Desc;
 
-	/** A dictionary of char-seq-pair information. */
-	public readonly dict: ReadonlyArray<Csp> = undefined!;
+	public readonly csps: ReadonlyArray<Lang.Csp.Weighted>;
 
-	readonly #queue: SealedArray<Csp>;
+	readonly #weights: Float32Array;
+	readonly #hits: Float64Array;
+	/**
+	 * A linked-list indexing lookup. The last entry's value is the
+	 * starting index.
+	 */
+	readonly #next: Uint16Array;
 
 	/** */
 	protected constructor(
@@ -31,37 +35,50 @@ export abstract class Lang extends _Lang {
 		weightExaggeration: Lang.WeightExaggeration,
 	) {
 		super();
-		this.desc = Lang.GET_DESC(id);
+		this.desc = Lang.GetDesc(id);
+		this.csps = CSP_CACHE.has(id)
+			? CSP_CACHE.get(id)!
+			: ((): ReadonlyArray<Lang.Csp.Weighted> => {
+				const buildDict = (Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD();
+				const cspCache = Lang.CreateCspsArray(buildDict);
+				CSP_CACHE.set(id, cspCache);
+				return cspCache;
+			})();
+		JsUtils.propNoWrite(this as Lang, "desc", "csps");
 		{
-			const dictCache = DICT_CACHE.has(id)
-				? DICT_CACHE.get(id)!
-				: ((): ReadonlyArray<Csp> => {
-					const buildDict = (Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD();
-					const dictCache = Lang.CREATE_DICT_ARRAY(buildDict);
-					DICT_CACHE.set(id, dictCache);
-					return dictCache;
-				})();
-			this.dict = dictCache;
-			const scaleWeight = Lang._GET_SCALE_WEIGHT_FUNC(weightExaggeration, this.desc.avgWeight);
-			this.#queue = dictCache.map((csp) => csp._mkInstance(scaleWeight(csp.weight))).seal();
+			const scaleWeight = Lang.GetWeightScalingFn(weightExaggeration, this.desc.avgWeight);
+			this.#weights = Float32Array.from(this.csps.map((csp) => scaleWeight(csp.unscaledWt)));
 		}
-		JsUtils.propNoWrite(this as Lang, "desc", "dict");
+		this.#hits = new Float64Array(this.csps.length);
+		this.#next = new Uint16Array(this.csps.length + 1);
 		Object.seal(this); //🧊
 	}
 
 	/** */
 	public reset(): void {
-		for (const csp of this.#queue) {
-			csp.reset();
+		this.#hits.fill(0);
+		for (let i = 0; i < this.#hits.length; i++) {
+			this.#hits[i] = Math.random() * Lang.RESET_NUM_HITS * this.desc.avgWeight;
+		}
+		const sorter: { _hits: number, cspsIndex: number }[] = [];
+		this.#hits.forEach((_hits, cspsIndex) => {
+			sorter.push(Object.freeze({ _hits, cspsIndex }));
+		});
+		sorter.push({ _hits: Infinity, cspsIndex: this.csps.length });
+		sorter.seal().sort((a,b) => a._hits - b._hits).freeze();
+		{
+			let i = this.#next[this.csps.length] = sorter[0]!.cspsIndex;
+			for (let sortI = 1; sortI < sorter.length; sortI++) {
+				i = this.#next[i] = sorter[sortI]!.cspsIndex;
+			}
 		}
 	}
 
 	/**
 	 * @returns
-	 * A random char in this language whose corresponding sequence is
-	 * not a prefix of any `Lang.Seq` in `avoid`, and vice versa. Ie.
-	 * They may share a common prefix as long as they are both longer
-	 * than the shared prefix.
+	 * A random char whose sequence is not a prefix of anything in
+	 * `avoid` and vice versa. Ie. They may share a common prefix as
+	 * long as they are both longer than the shared prefix.
 	 *
 	 * @description
 	 * This method is called to shuffle the char-seq pair at some tile
@@ -70,8 +87,8 @@ export abstract class Lang extends _Lang {
 	 * also reach A (except for A itself).
 	 *
 	 * @param avoid
-	 * A collection of `Lang.Seq`s to avoid conflicts with when choosing
-	 * a `Lang.Char` to return. Empty-string entries are ignored. Freezing
+	 * A collection of sequences to avoid conflicts with when choosing
+	 * a character to return. Empty-string entries are ignored. Freezing
 	 * may result in better performance.
 	 *
 	 * @requires
@@ -82,20 +99,26 @@ export abstract class Lang extends _Lang {
 	 */
 	public getNonConflictingChar(
 		avoid: ReadonlyArray<Lang.Seq>,
-	): Lang.CharSeqPair {
-		// Start by sorting according to the desired balancing scheme:
-		this.#queue.sort(Csp.LEAF_CMP);
-
-		for (const csp of this.#queue) {
-			// ^Using `find` is fine. There can only ever be one or none.
-			if (!avoid.some((avoidSeq) => avoidSeq.startsWith(csp.seq))) {
-				csp.incrHits();
-				return Object.freeze(<Lang.CharSeqPair>{
-					char: csp.char,
-					seq: csp.seq,
-				});
+	): Lang.Csp {
+		let i = this.#next[this.csps.length]!;
+		while (i !== this.csps.length) {
+			const csp = this.csps[i]!;
+			if (avoid.some((avoidSeq) => Lang.OneIsPrefix(avoidSeq, csp.seq))) {
+				i = this.#next[i]!;
+				continue;
 			}
-		}
+			this.#hits[i] += 1.0 / this.#weights[i]!;
+			// TODO.impl replace the findIndex with a "before" array.
+			this.#next[this.#next.findIndex((n) => n === i)] = this.#next[i]!;
+			let newPrev = i;
+			while (newPrev !== this.csps.length && this.#hits[this.#next[newPrev]!]! <= this.#hits[i]!) {
+				newPrev = this.#next[newPrev]!;
+			}
+			this.#next[i] = this.#next[newPrev]!;
+			this.#next[newPrev] = i;
+			return csp;
+		};
+
 		// Enforced by UI and server:
 		throw new Error("never");
 	}
@@ -104,7 +127,7 @@ export abstract class Lang extends _Lang {
 	public _calcIsolatedMinOpts(): number {
 		/** ALl unique sequences sorted in lexical order. */
 		const allSeqs: string[] = [];
-		this.dict.forEach((n) => {
+		this.csps.forEach((n) => {
 			if (allSeqs[allSeqs.length-1] !== n.seq) { allSeqs.push(n.seq); }
 		});
 		allSeqs.freeze();
@@ -151,19 +174,19 @@ export namespace Lang {
 	export interface ClassIf {
 		new (weightScaling: Lang.WeightExaggeration): Lang;
 		/** Note: Does not need to handle caching */
-		BUILD(): WeightedForwardMap;
+		BUILD(): ForwardDict;
 	};
 
 	/**
 	 * @returns `undefined` if no such language descriptor is found.
 	 */
-	export function GET_DESC(langId: Lang.Desc["id"]): Lang.Desc {
+	export function GetDesc(langId: Lang.Desc["id"]): Lang.Desc {
 		return LangDescs[langId]!;
 	}
-	Object.freeze(GET_DESC);
+	Object.freeze(GetDesc);
 
 	/** */
-	export async function IMPORT(langId: Lang.Desc["id"]): Promise<Lang.ClassIf> {
+	export async function Import(langId: Lang.Desc["id"]): Promise<Lang.ClassIf> {
 		const desc = LangDescs[langId]!;
 		const module = await import(
 			/* webpackChunkName: "lang/[request]" */
@@ -174,46 +197,59 @@ export namespace Lang {
 			module[desc.module],
 		);
 	}
-	Object.freeze(IMPORT);
+	Object.freeze(Import);
 
 	/** */
-	export function _GET_SCALE_WEIGHT_FUNC(
+	export function GetWeightScalingFn(
 		weightScaling: Lang.WeightExaggeration,
 		avgUnscaledWeight: number,
 	): (ogWeight: number) => number {
-		if (weightScaling === 0) return _GET_SCALE_WEIGHT_FUNC.UNIFORM;
-		if (weightScaling === 1) return _GET_SCALE_WEIGHT_FUNC.IDENTITY;
+		if (weightScaling === 0) return GetWeightScalingFn.UNIFORM;
+		if (weightScaling === 1) return GetWeightScalingFn.IDENTITY;
 		return (originalWeight: number) => Math.pow(originalWeight / avgUnscaledWeight, weightScaling);
 	};
-	export namespace _GET_SCALE_WEIGHT_FUNC {
+	export namespace GetWeightScalingFn {
 		// Cache the compiled code by extracting the declaration.
 		export function UNIFORM(): 1 { return 1; }
 		export function IDENTITY(ogWeight: number): number { return ogWeight; }
 	}
-	Object.freeze(_GET_SCALE_WEIGHT_FUNC);
+	Object.freeze(GetWeightScalingFn);
 
 	/**
 	 * Sorts the result by sequence, breaking ties by character. Does
 	 * not handle caching.
 	 */
-	export function CREATE_DICT_ARRAY(forwardDict: Lang.WeightedForwardMap): ReadonlyArray<Csp> {
-		return Object.entries(forwardDict).freeze().map(([char, {seq,weight}]) => {
-			return new Csp(char, seq, weight);
+	export function CreateCspsArray(forwardDict: Lang.ForwardDict): ReadonlyArray<Lang.Csp.Weighted> {
+		return Object.entries(forwardDict).freeze().map(([char, {seq, weight: unscaledWt}]) => {
+			return Object.freeze({
+				char, seq, unscaledWt,
+			});
 		})
 		.seal()
-		.sort((a,b) => a.char.localeCompare(b.char))
-		.sort((a,b) => a.seq.localeCompare(b.seq))
+		.sort((a,b) => (a.seq < b.seq) ? -1 : (a.seq > b.seq) ? 1 : (a.char < b.char) ? -1 : (a.char > b.char) ? 1 : 0)
 		.freeze();
 	}
-	Object.freeze(CREATE_DICT_ARRAY);
+	Object.freeze(CreateCspsArray);
+
+	/** Somewhat arbitrary. Greater than one. */
+	export const RESET_NUM_HITS = 10;
+
+	/** @returns true if one string is a substring of the other, or if they are equal. */
+	export function OneIsPrefix(a: string, b: string): boolean {
+		if (a.length > b.length) {
+			// Make a the shorter string:
+			const temp = b; b = a; a = temp;
+		}
+		return b.startsWith(a);
+	}
 
 	/**
 	 * Utility functions for implementations to use in their static
 	 * `.BUILD` function.
 	 */
 	export namespace BuildUtils {
-		export function WORD_FOR_WORD(seq2Weight: Record<Lang.Seq,number>): Lang.WeightedForwardMap {
-			return Object.entries(seq2Weight).freeze().reduce<Lang.WeightedForwardMap>(
+		export function WORD_FOR_WORD(seq2Weight: Record<Lang.Seq,number>): Lang.ForwardDict {
+			return Object.entries(seq2Weight).freeze().reduce<Lang.ForwardDict>(
 				(accumulator, [char,weight]) => {
 					accumulator[char] = { seq: char, weight };
 					return accumulator;
@@ -228,7 +264,7 @@ export namespace Lang {
 	 * character. It is completely unique in its language, and has a
 	 * single corresponding sequence (string) typeable on a keyboard.
 	 */
-	export type Char = _Lang.Char;
+	export type Char = string;
 
 	/**
 	 * A sequence of characters each matching {@link SEQ_REGEXP}
@@ -236,13 +272,27 @@ export namespace Lang {
 	 * and a `LangChar`. The immediate interface is through the `Lang`
 	 * implementation's {@link Lang#remapKey} method.
 	 */
-	export type Seq = _Lang.Seq;
+	export type Seq = string;
 
 	/**
 	 * A key-value pair containing a `LangChar` and its corresponding
 	 * `LangSeq`.
 	 */
-	export type CharSeqPair = _Lang.CharSeqPair;
+	export interface Csp {
+		readonly char: Lang.Char,
+		readonly seq:  Lang.Seq,
+	};
+	export namespace Csp {
+		/**  Used at the beginning of the shuffling operation. */
+		export const NULL = Object.freeze(<const>{
+			char: "",
+			seq:  "",
+		});
+		export interface Weighted extends Csp {
+			/** Unscaled weight. */
+			readonly unscaledWt: number;
+		}
+	}
 
 	/**
 	 * A map from written characters to their corresponding typeable
@@ -252,7 +302,7 @@ export namespace Lang {
 	 * `Record` type enforces the invariant that {@link Lang.Char}s are
 	 * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}.
 	 */
-	export type WeightedForwardMap = Record<
+	export type ForwardDict = Record<
 		Lang.Char,
 		Readonly<{seq: Lang.Seq, weight: number,}>
 	>/* | Readonly<Record<Lang.Seq, number>> */;

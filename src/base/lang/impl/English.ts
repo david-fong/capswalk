@@ -15,7 +15,7 @@ export namespace English {
 		public constructor(weightScaling: number) {
 			super("engl-low", weightScaling);
 		}
-		public static BUILD(): Lang.WeightedForwardMap {
+		public static BUILD(): Lang.ForwardDict {
 			return Lang.BuildUtils.WORD_FOR_WORD(LETTER_FREQUENCY);
 		}
 	}
@@ -33,8 +33,8 @@ export namespace English {
 		public constructor(weightScaling: number) {
 			super("engl-mix", weightScaling);
 		}
-		public static BUILD(): Lang.WeightedForwardMap {
-			let initializer: Lang.WeightedForwardMap = {};
+		public static BUILD(): Lang.ForwardDict {
+			let initializer: Lang.ForwardDict = {};
 			const addMappings = (charSeqTransform: (cs: string) => string): void => {
 				initializer = Object.entries(LETTER_FREQUENCY).freeze().reduce(
 					(accumulator, [_char,weight]) => {
@@ -63,8 +63,8 @@ export namespace English {
 			public constructor(weightScaling: number) {
 				super("engl-cell-enc", weightScaling);
 			}
-			public static BUILD(): Lang.WeightedForwardMap {
-				return Object.entries(LETTER_FREQUENCY).freeze().reduce<Lang.WeightedForwardMap>(
+			public static BUILD(): Lang.ForwardDict {
+				return Object.entries(LETTER_FREQUENCY).freeze().reduce<Lang.ForwardDict>(
 					(accumulator, [char,weight], index) => {
 						accumulator[char] = { seq: NUMPAD[index]!, weight };
 						return accumulator;
@@ -135,8 +135,8 @@ export namespace English {
 			public constructor(weightScaling: number) {
 				super("mors-enc", weightScaling);
 			}
-			public static BUILD(): Lang.WeightedForwardMap {
-				const dict: Lang.WeightedForwardMap = {};
+			public static BUILD(): Lang.ForwardDict {
+				const dict: Lang.ForwardDict = {};
 				for (const [plain,cipher] of Object.entries(Dict).freeze()) {
 					dict[plain] = { seq: cipher, weight: English.LETTER_FREQUENCY_EXT[plain]! };
 				}
@@ -155,8 +155,8 @@ export namespace English {
 			public constructor(weightScaling: number) {
 				super("mors-dec", weightScaling);
 			}
-			public static BUILD(): Lang.WeightedForwardMap {
-				const dict: Lang.WeightedForwardMap = {};
+			public static BUILD(): Lang.ForwardDict {
+				const dict: Lang.ForwardDict = {};
 				for (const [plain,cipher] of Object.entries(Dict).freeze()) {
 					const morse = cipher.replace(/\./g,"•").replace(/\-/g,"−");
 					dict[morse] = { seq: plain, weight: English.LETTER_FREQUENCY_EXT[plain]! };

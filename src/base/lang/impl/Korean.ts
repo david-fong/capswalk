@@ -40,7 +40,7 @@ export namespace Korean {
 		public constructor(weightScaling: number) {
 			super("kore-dub", weightScaling);
 		}
-		public static BUILD(): Lang.WeightedForwardMap {
+		public static BUILD(): Lang.ForwardDict {
 			return INITIALIZE((ij, mj, fj) => {
 				type Atoms = Array<keyof typeof Dubeolsik.DUB_KEYBOARD>;
 				const atoms = ([ij, mj, fj].flatMap((jamos) => jamos.atoms.split("")) as Atoms).freeze();
@@ -102,7 +102,7 @@ export namespace Korean {
 		public constructor(weightScaling: number) {
 			super("kore-sub", weightScaling);
 		}
-		public static BUILD(): Lang.WeightedForwardMap {
+		public static BUILD(): Lang.ForwardDict {
 			return INITIALIZE((ij, mj, fj) => {
 				return Sebeolsik.SEB_KEYBOARD.INITIALS[ij.value]
 					+ Sebeolsik.SEB_KEYBOARD.MEDIALS[mj.value]
@@ -126,7 +126,7 @@ export namespace Korean {
 		public constructor(weightScaling: number) {
 			super("kore-rom", weightScaling);
 		}
-		public static BUILD(): Lang.WeightedForwardMap {
+		public static BUILD(): Lang.ForwardDict {
 			return INITIALIZE((ij, mj, fj) => {
 				return ij.roman + mj.roman + fj.roman;
 			});
@@ -155,8 +155,8 @@ export namespace Korean {
 	 */
 	const INITIALIZE = (
 		seqBuilder: SeqBuilder,
-	): Lang.WeightedForwardMap => {
-		const forwardDict: Lang.WeightedForwardMap = {};
+	): Lang.ForwardDict => {
+		const forwardDict: Lang.ForwardDict = {};
 		INITIALS.forEach((initialJamo, initialIdx) => {
 			MEDIALS.forEach((medialJamo, medialIdx) => {
 				FINALS.forEach((finalJamo, finalIdx) => {

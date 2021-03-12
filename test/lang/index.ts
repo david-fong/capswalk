@@ -7,10 +7,10 @@ type Row = {
 	readonly avgWeight: number,
 };
 
-Promise.all(Object.keys(LangDescs).map((langId) => Lang.IMPORT(langId).then((classIf) => {
+Promise.all(Object.keys(LangDescs).map((langId) => Lang.Import(langId).then((classIf) => {
 	const inst = new (classIf)(1.0);
-	const { desc, dict: csps } = inst;
-	const avgWeight = csps.reduce<number>((sum,n) => sum+n.weight, 0) / csps.length;
+	const { desc, csps: csps } = inst;
+	const avgWeight = csps.reduce<number>((sum,n) => sum+n.unscaledWt, 0) / csps.length;
 	{
 		const imo = inst._calcIsolatedMinOpts();
 		if (imo !== desc.isolatedMinOpts) {
@@ -24,7 +24,7 @@ Promise.all(Object.keys(LangDescs).map((langId) => Lang.IMPORT(langId).then((cla
 		+` for the language "${desc.id}" needs to be updated to the`
 		+` correct, computed value: ${avgWeight}.`);
 	}
-	inst.reset();
+	//inst.reset();
 
 	// TODO.impl test a set of alphanumeric character inputs for each lang's remapping function.
 	// also check that none of the weights are negative or zero.

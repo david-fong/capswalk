@@ -92,7 +92,7 @@ export abstract class _PlayScreen<
 		if (this.wantsAutoPlayPause) {
 			setTimeout(() => {
 				if (!document.hidden) { this._reqStatusPlaying(); }
-			}, 500);
+			}, 100);
 			// ^This delay is for "aesthetic" purposes (not functional).
 		}
 		this.grid.base.addEventListener("keydown", this.#gridOnKeyDown, {

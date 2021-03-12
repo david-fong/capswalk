@@ -92,7 +92,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		const players = gameDesc.players.map((pDesc) => {
 			if (pDesc.familyId === Player.Family.HUMAN) {
 				return (operatorIds.includes(pDesc.playerId))
-					? new implArgs.OperatorPlayer!(this, pDesc, Lang.GET_DESC(langId))
+					? new implArgs.OperatorPlayer!(this, pDesc, Lang.GetDesc(langId))
 					: new Player(this, pDesc);
 			} else {
 				return implArgs.RobotPlayer(

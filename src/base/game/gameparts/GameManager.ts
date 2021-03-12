@@ -41,7 +41,7 @@ export abstract class GameManager<
 		);
 
 		// https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
-		this.#langImportPromise = Lang.IMPORT(args.desc.langId).then((LangConstructor) => {
+		this.#langImportPromise = Lang.Import(args.desc.langId).then((LangConstructor) => {
 			// @ts-expect-error : RO=
 			this.lang = new LangConstructor(args.desc.langWeightExaggeration);
 			JsUtils.propNoWrite(this as GameManager<S>, "lang");
@@ -60,7 +60,7 @@ export abstract class GameManager<
 		super.reset();
 		const resetSer = Object.freeze({
 			playerCoords: [] as Coord[],
-			csps: [] as Lang.CharSeqPair[],
+			csps: [] as Lang.Csp[],
 		});
 
 		this.health.reset();
@@ -71,7 +71,7 @@ export abstract class GameManager<
 		await this.#langImportPromise;
 		this.lang.reset();
 		this.grid.forEachShuffled((tile, index) => {
-			const csp = this.dryRunShuffleLangCspAt(tile.coord, true);
+			const csp = this.dryRunShuffleLangCspAt(tile.coord);
 			this.grid.write(tile.coord, csp);
 			resetSer.csps[index] = csp;
 		});
@@ -101,19 +101,14 @@ export abstract class GameManager<
 	 *
 	 * @param coord
 	 *
-	 * @param doCheckEmptyTiles
-	 * Pass `true` when populating a grid which has been reset. This
-	 * is for performance optimization purposes. It can be safely
-	 * ignored.
-	 *
 	 * @returns
 	 * A {@link Lang.CharSeqPair} that can be used as a replacement
 	 * for that currently being used by `tile`.
 	 */
-	private dryRunShuffleLangCspAt(coord: Coord, doCheckEmptyTiles: boolean = false): Lang.CharSeqPair {
+	private dryRunShuffleLangCspAt(coord: Coord): Lang.Csp {
 		// First, clear values for the target tile so its current
 		// (to-be-previous) values don't get unnecessarily avoided.
-		this.grid.write(coord, Lang.CharSeqPair.NULL);
+		this.grid.write(coord, Lang.Csp.NULL);
 
 		let avoid = this.grid
 			.getAllAltDestsThan(coord)
@@ -121,8 +116,8 @@ export abstract class GameManager<
 			.freeze();
 		// ^ Note: An array of CharSeq from unique Tiles. It is okay
 		// for those tiles to include `coord`
-		if (doCheckEmptyTiles) {
-			const nullSeq = Lang.CharSeqPair.NULL.seq;
+		{
+			const nullSeq = Lang.Csp.NULL.seq;
 			avoid = avoid.filter((seq) => seq !== nullSeq).freeze();
 		}
 		return this.lang.getNonConflictingChar(avoid);
@@ -272,7 +267,7 @@ export namespace GameManager {
 			bad.push("Missing the following arguments: " + missingFields);
 		}
 
-		const langDesc = Lang.GET_DESC(args.langId);
+		const langDesc = Lang.GetDesc(args.langId);
 		const gridClass = Grid._Constructors[args.coordSys];
 		if (langDesc === undefined) {
 			bad.push(`No language with the ID \`${args.langId}\` exists.`);

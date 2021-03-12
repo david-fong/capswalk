@@ -26,13 +26,13 @@ export namespace Japanese {
 		 * (https://gawron.sdsu.edu/crypto/lectures/hiragana.html)
 		 */
 		public static INITIALIZER = Object.freeze(
-			JapnHirInitializer as Lang.WeightedForwardMap
+			JapnHirInitializer as Lang.ForwardDict
 		);
 
 		public constructor(weightScaling: number) {
 			super("japn-hir", weightScaling);
 		}
-		public static BUILD(): Lang.WeightedForwardMap {
+		public static BUILD(): Lang.ForwardDict {
 			return Hiragana.INITIALIZER;
 		}
 	}
@@ -51,13 +51,13 @@ export namespace Japanese {
 		 * https://link.springer.com/content/pdf/10.3758/BF03200819.pdf
 		 */
 		public static INITIALIZER = Object.freeze(
-			JapnKatInitializer as Lang.WeightedForwardMap
+			JapnKatInitializer as Lang.ForwardDict
 		);
 
 		public constructor(weightScaling: number) {
 			super("japn-kat", weightScaling);
 		}
-		public static BUILD(): Lang.WeightedForwardMap {
+		public static BUILD(): Lang.ForwardDict {
 			return Katakana.INITIALIZER;
 		}
 	}

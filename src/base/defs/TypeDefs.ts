@@ -62,14 +62,6 @@ Object.freeze(Player);
 /** */
 export abstract class Lang {}
 export namespace Lang {
-	/**
-	 * See the main documentation in game/lang/Lang
-	 */
-	export type Char = string;
-	/**
-	 * See the main documentation in game/lang/Lang
-	 */
-	export type Seq = string;
 	export namespace Seq {
 		/**
 		 * The choice of this pattern is not out of necessity, but following
@@ -81,18 +73,6 @@ export namespace Lang {
 		 * (currently none. update as needed)
 		 */
 		export const REGEXP = new RegExp("^[a-zA-Z0-9!@#$%^&*()\-_=+;:'\"\\|,.<>/?]+$");
-	}
-	/** See the main documentation in game/lang/Lang */
-	export type CharSeqPair = {
-		readonly char: Lang.Char,
-		readonly seq:  Lang.Seq,
-	};
-	export namespace CharSeqPair {
-		/**  Used at the beginning of the shuffling operation. */
-		export const NULL = Object.freeze(<const>{
-			char: "",
-			seq:  "",
-		});
 	}
 	/** See the main documentation in game/lang/Lang */
 	export type WeightExaggeration = number;

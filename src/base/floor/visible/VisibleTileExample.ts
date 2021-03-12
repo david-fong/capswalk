@@ -34,7 +34,7 @@ export class VisibleTile implements TU.Pikk<Tile,"occId"|"health"> {
 			delete this.baseElem.dataset["health"];
 		}
 	}
-	public set char(char: Lang.Char) {
+	public set char(char: string) {
 		this.charElem.textContent = char;
 	}
 }

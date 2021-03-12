@@ -15,7 +15,7 @@ export namespace Ngrams {
 		public constructor(weightScaling: number) {
 			super("ngram2", weightScaling);
 		}
-		public static BUILD(): Lang.WeightedForwardMap {
+		public static BUILD(): Lang.ForwardDict {
 			return Lang.BuildUtils.WORD_FOR_WORD(Ngram2Dict);
 		}
 	}
@@ -30,7 +30,7 @@ export namespace Ngrams {
 		public constructor(weightScaling: number) {
 			super("ngram3", weightScaling);
 		}
-		public static BUILD(): Lang.WeightedForwardMap {
+		public static BUILD(): Lang.ForwardDict {
 			return Lang.BuildUtils.WORD_FOR_WORD(Ngram3Dict);
 		}
 	}
