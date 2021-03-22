@@ -13,7 +13,7 @@ export class PlayOfflineScreen extends _PlayScreen<BaseScreen.Id.PLAY_OFFLINE> {
 	declare protected readonly currentGame: OfflineGame<any>;
 
 	/** @override */
-	protected readonly wantsAutoPlayPause = true;
+	protected readonly wantsAutoPlayPause = false;
 
 	/** @override */
 	protected readonly askConfirmBeforeLeave = true;

@@ -21,7 +21,7 @@ export class OperatorPlayer extends Player {
 	 * Invariant: always matches the prefix of the {@link LangSeq} of
 	 * an unoccupied neighbouring {@link Tile}.
 	 */
-	#seqBuffer: _Lang.Seq;
+	#seqBuffer: string;
 
 	readonly #langRemappingFunc: {(input: string): string};
 
@@ -37,7 +37,7 @@ export class OperatorPlayer extends Player {
 		this.#seqBuffer = "";
 	}
 
-	public get seqBuffer(): _Lang.Seq {
+	public get seqBuffer(): string {
 		return this.#seqBuffer;
 	}
 
@@ -98,7 +98,7 @@ export class OperatorPlayer extends Player {
 		}
 
 		for ( // loop through substring start offset of newSeqBuffer:
-			let newSeqBuffer: _Lang.Seq = this.seqBuffer + key;
+			let newSeqBuffer: string = this.seqBuffer + key;
 			newSeqBuffer.length;
 			newSeqBuffer = newSeqBuffer.substring(1)
 		) {

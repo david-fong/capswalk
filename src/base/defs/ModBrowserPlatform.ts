@@ -23,3 +23,7 @@ Object.defineProperties(Array.prototype, {
 	Object.freeze((globalThis as any)[key]);
 	Object.freeze((globalThis as any)[key].prototype);
 });
+
+// Enforce JS running on nav back to page:
+// (https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload#notes)
+window.addEventListener("onbeforeunload", () => {});

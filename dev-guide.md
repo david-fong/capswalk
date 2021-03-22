@@ -4,6 +4,7 @@
 ## Cloning and Building 📥
 
 1. Clone from the git repo.
+1. When using VsCode, make sure to use the workspace version of TypeScript.
 1. `pnpm install`. Make sure your shell doesn't have `NODE_ENV=production`.
 1. `pnpm run devinit`.
 1. `pnpm build`.

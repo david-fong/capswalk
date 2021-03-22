@@ -25,7 +25,10 @@ const WEB_MODULE_RULES = () => Object.freeze([{
 		loader: MiniCssExtractPlugin.loader, options: {}
 	}, {
 		loader: "css-loader", options: {
-			modules: { auto: /\.m\.css$/, },
+			modules: {
+				auto: /\.m\.css$/,
+				localIdentName: MODE.dev ? "[local]_[hash:base64:3]" : "[hash:base64]"
+			},
 		},
 	}],
 },{
@@ -105,10 +108,10 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 		new HtmlPlugin(htmlPluginOptions),
 		new CspHtmlPlugin({
 			"default-src": ["'self'"],
-			"script-src": ["'self'"], "style-src": ["'self'"],
+			"script-src": ["'self'"], "style-src": ["'self'", "https://fonts.googleapis.com"],
 			"child-src": "'none'", "object-src": "'none'", "base-uri": "'none'",
 			"connect-src": ["'self'", ...GAME_SERVERS.map((origin) => `wss://${origin}/ws/`)],
-			"form-action": "'none'", },{
+			"form-action": "'none'", "font-src": ["'self'", "https://fonts.gstatic.com"] },{
 			hashingMethod: "sha256",
 			hashEnabled:  { "script-src": true,  "style-src": false },
 			nonceEnabled: { "script-src": false, "style-src": false },

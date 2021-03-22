@@ -75,5 +75,4 @@
     "[html]": {
         "editor.insertSpaces": false,
     },
-    "editor.suggest.showWords": false,
 }

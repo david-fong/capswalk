@@ -93,13 +93,27 @@ export abstract class Lang extends _Lang {
 	 *
 	 * @requires
 	 * The number of leaves in an implementation's tree-structure must
-	 * be greater than the number of non-empty entries in
-	 * `avoid` for all expected combinations of internal state and
-	 * passed-arguments under which it could be called.
+	 * be greater than the number of non-empty entries in `avoid` for
+	 * all expected combinations of internal state and passed-arguments
+	 * under which it could be called.
 	 */
 	public getNonConflictingChar(
 		avoid: ReadonlyArray<Lang.Seq>,
 	): Lang.Csp {
+		{
+			const nullSeq = Lang.Csp.NULL.seq;
+			avoid = avoid.filter((seq) => seq !== nullSeq).freeze();
+		}
+
+		if (DEF.DevAssert) {
+			if (new Set(avoid).size !== avoid.length) {
+				console.error("avoid contains duplicates:", avoid);
+			}
+			if (new Set(this.#next).size !== this.#next.length) {
+				console.error("#next is broken");
+			}
+		}
+
 		let i = this.#next[this.csps.length]!;
 		while (i !== this.csps.length) {
 			const csp = this.csps[i]!;
@@ -240,7 +254,7 @@ export namespace Lang {
 			// Make a the shorter string:
 			const temp = b; b = a; a = temp;
 		}
-		return b.startsWith(a);
+		return b.startsWith(a) || b === a;
 	}
 
 	/**
@@ -305,7 +319,7 @@ export namespace Lang {
 	export type ForwardDict = Record<
 		Lang.Char,
 		Readonly<{seq: Lang.Seq, weight: number,}>
-	>/* | Readonly<Record<Lang.Seq, number>> */;
+	>;
 
 	/**
 	 * A value used to scale the variance in weights. Passing zero will

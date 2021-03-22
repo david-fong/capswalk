@@ -116,10 +116,6 @@ export abstract class GameManager<
 			.freeze();
 		// ^ Note: An array of CharSeq from unique Tiles. It is okay
 		// for those tiles to include `coord`
-		{
-			const nullSeq = Lang.Csp.NULL.seq;
-			avoid = avoid.filter((seq) => seq !== nullSeq).freeze();
-		}
 		return this.lang.getNonConflictingChar(avoid);
 	}
 
