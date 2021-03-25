@@ -18,7 +18,8 @@
 1. Implement `VisibleGrid` rendering of player positions.
 1. Implement a requirement that the number of players is less than the area of the grid.
 1. Change Euclid Visual Grid to use SVG.
-1. Change avatars into emojis? I feel like I would lose out on some room for creativity, but on the other hand, there's a huge wealth of great looking emojis that have native support. I think it's a good idea to just use them.
+    - Try doing the tile backgrounds with an SVG tile filter.
+1. Use emojis as player avatars.
 1. Implement websocket heartbeat to check for broken connections.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Implement Euclid Visual Grid wrapping visualization.

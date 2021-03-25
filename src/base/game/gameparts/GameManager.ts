@@ -158,7 +158,6 @@ export abstract class GameManager<
 		return changes;
 	}
 
-
 	/** @override */
 	public processMoveRequest(req: StateChange.Req, socket?: any): void {
 		const causer = this.players[req.initiator]!;

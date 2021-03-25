@@ -104,7 +104,11 @@ export abstract class Lang extends _Lang {
 		avoid = avoid.filter((seq) => seq).freeze();
 		const next = this.#next;
 
-		for (let i = next[this.#size]!; i !== this.#size; i = next[i]!) {
+		for (
+			let i = next[this.#size]!, prev = this.#size;
+			i !== this.#size;
+			prev = i, i = next[i]!
+		) {
 			const csp = this.csps[i]!;
 			if (!avoid.some((avoidSeq) => /*#__INLINE__*/Lang.EitherPrefixesOther(avoidSeq, csp.seq))) {
 				this.#hits[i] += 1.0 / this.#weights[i]!;
@@ -115,10 +119,8 @@ export abstract class Lang extends _Lang {
 				) { newPrev = next[newPrev]!; }
 
 				if (newPrev !== i) {
-					// TODO.impl replace the findIndex with a "before" array.
-					const prevI = next.findIndex((n) => n === i);
-					if (DEF.DevAssert && prevI === -1) throw new Error("never");
-					next[prevI] = next[i]!; next[i] = next[newPrev]!; next[newPrev] = i;
+					if (DEF.DevAssert && prev === -1) throw new Error("never");
+					next[prev] = next[i]!; next[i] = next[newPrev]!; next[newPrev] = i;
 				}
 				//if (DEF.DevAssert) { this._assertInvariants(); }
 				return csp;
