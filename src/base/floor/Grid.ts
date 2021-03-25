@@ -171,9 +171,7 @@ export namespace Grid {
 		players: any; // TODO.design
 	}>;
 
-	/**
-	 * Used to simulate abstract static methods.
-	 */
+	/** Used to simulate abstract static methods. */
 	export interface ClassIf<S extends Coord.System> {
 
 		/** Constructor */
@@ -190,9 +188,7 @@ export namespace Grid {
 		 */
 		ambiguityThreshold: number;
 
-		/**
-		 * @see Grid.DimensionBounds
-		 */
+		/** @see Grid.DimensionBounds */
 		sizeLimits: Grid.DimensionBounds<S>;
 
 		/**

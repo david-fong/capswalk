@@ -124,11 +124,10 @@ export namespace WrappedEuclid2 {
 
 		public static ambiguityThreshold = 24;
 
-		private static readonly SIZE_LIMITS = JsUtils.deepFreeze(<const>{
-			height: <const>{ min: 10, max: 51 },
-			width:  <const>{ min: 10, max: 51 },
+		public static sizeLimits: AbstractGrid.DimensionBounds<S> = JsUtils.deepFreeze({
+			height: { min: 5, max: 51 },
+			width:  { min: 5, max: 51 },
 		});
-		public static sizeLimits: AbstractGrid.DimensionBounds<S> = Grid.SIZE_LIMITS;
 
 		private readonly _grid: SealedArray<Tile>;
 
@@ -241,9 +240,9 @@ export namespace WrappedEuclid2 {
 			return this._grid[dest.toCoord(this.dimensions)]!;
 		}
 
-		// public getAllAltDestsThan(originCoord: Coord): ReadonlyArray<Tile> {
-		// 	return this.tileDestsFrom(originCoord, 2);
-		// }
+		public getAllAltDestsThan(originCoord: Coord): ReadonlyArray<Tile> {
+			return this.tileDestsFrom(originCoord, 2);
+		}
 
 		public getRandomCoordAround(_origin: Coord, radius: number): Coord {
 			const origin = this.iacCache[_origin]!;
@@ -271,12 +270,13 @@ export namespace WrappedEuclid2 {
 			let l = (iac.x - radius);    if (l < 0) { l += W; wrapX = true; }
 			let b = (iac.y + radius +1); if (b > H) { b -= H; wrapY = true; }
 			let r = (iac.x + radius +1); if (r > W) { r -= W; wrapX = true; }
+			// ^Adjusted so that t and l can be treated as non-wrapped.
 			const dests: Array<Tile> = [];
 			if (wrapX) {
-				const _t = t * W;
-				dests.push(...this._grid.slice(_t, _t+r));
+				dests.push(...this._grid.slice(0, r).freeze());
 				if (wrapY) {
-					dests.push(...this._grid.slice(0, r));
+					const _t = t * W;
+					dests.push(...this._grid.slice(_t, _t+r).freeze());
 				}
 			}
 
@@ -284,13 +284,13 @@ export namespace WrappedEuclid2 {
 			const sliceLength = (radius * 2) + 1;
 			for (let y = t; y < b1; y++) {
 				const begin = (y * W) + l;
-				dests.push(...this._grid.slice(begin, begin+sliceLength));
+				dests.push(...this._grid.slice(begin, begin+sliceLength).freeze());
 			}
-			if (wrapX && !wrapY) { dests.length -= r; }
+			if (wrapX && !wrapY && (b !== H)) { dests.length -= r; }
 			if (wrapY) {
 				for (let y = 0; y < b; y++) {
 					const begin = (y * W) + l;
-					dests.push(...this._grid.slice(begin, begin+sliceLength));
+					dests.push(...this._grid.slice(begin, begin+sliceLength).freeze());
 				}
 				if (wrapX) { dests.length -= r; }
 			}

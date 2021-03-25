@@ -95,12 +95,11 @@ export namespace Beehive {
 
 		public static ambiguityThreshold = 18;
 
-		private static readonly SIZE_LIMITS = JsUtils.deepFreeze({
+		public static sizeLimits: AbstractGrid.DimensionBounds<S> = JsUtils.deepFreeze({
 			dash:    { min: 10, max: 50 },
 			bslash:  { min: 10, max: 50 },
 			fslash:  { min: 10, max: 50 },
 		});
-		public static sizeLimits: AbstractGrid.DimensionBounds<S> = Grid.SIZE_LIMITS;
 
 		/**
 		 */

@@ -104,8 +104,7 @@ export abstract class Lang extends _Lang {
 		avoid = avoid.filter((seq) => seq).freeze();
 		if (DEF.DevAssert) {
 			if (new Set(avoid).size !== avoid.length) {
-				console.error("avoid contains duplicates:", avoid);
-				debugger;
+				throw new Error("avoid contains duplicates: " + avoid);
 			}
 		}
 		const next = this.#next;
@@ -126,17 +125,16 @@ export abstract class Lang extends _Lang {
 					if (DEF.DevAssert && prevI === -1) throw new Error("never");
 					next[prevI] = next[i]!; next[i] = next[newPrev]!; next[newPrev] = i;
 				}
-				this._assertInvariants();
+				if (DEF.DevAssert) { this._assertInvariants(); }
 				return csp;
 			}
 		};
-
 		// Enforced by UI and server:
 		throw new Error("never");
 	}
 
-	/** */
-	private _assertInvariants(): void {
+	/** @internal For development testing purposes. */
+	public _assertInvariants(): void {
 		const visited: boolean[] = [];
 		for (let i = 0; i < this.#size; i++) {
 			visited[i] = false;
@@ -146,24 +144,24 @@ export abstract class Lang extends _Lang {
 		let hits = 0;
 		for (let _i = 0; _i < this.#size; _i++) {
 			if (this.#hits[i]! < hits) {
-				console.error("invariant not met: hits ascending");
-				debugger;
+				throw new Error("lang hits should be ascending");
 			}
 			hits = this.#hits[i]!;
 			visited[i] = true;
 			i = this.#next[i]!;
 		}
 		if (i !== this.#size) {
-			console.error("invariant not met: next ends by looping back");
-			debugger;
+			throw new Error("lang next should end by looping back");
 		}
 		if (visited.some((flag) => flag === false)) {
-			console.error("invariant not met: next is an exhaustive loop");
-			debugger;
+			throw new Error("lang next should be an exhaustive loop");
 		}
 	}
 
-	/** */
+	/**
+	 * These are calculated after changes to the implementation and the
+	 * result is cached via hardcoding into LangDescs.ts.
+	 */
 	public _calcIsolatedMinOpts(): number {
 		/** ALl unique sequences sorted in lexical order. */
 		const allSeqs: string[] = [];

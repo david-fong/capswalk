@@ -16,6 +16,7 @@
 ### Things I feel like doing
 
 1. Implement `VisibleGrid` rendering of player positions.
+1. Implement a requirement that the number of players is less than the area of the grid.
 1. Change Euclid Visual Grid to use SVG.
 1. Change avatars into emojis? I feel like I would lose out on some room for creativity, but on the other hand, there's a huge wealth of great looking emojis that have native support. I think it's a good idea to just use them.
 1. Implement websocket heartbeat to check for broken connections.
