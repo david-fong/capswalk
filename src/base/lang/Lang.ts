@@ -20,6 +20,7 @@ export abstract class Lang extends _Lang {
 	public readonly desc: Lang.Desc;
 
 	public readonly csps: ReadonlyArray<Lang.Csp.Weighted>;
+	readonly #size: number;
 
 	readonly #weights: Float32Array;
 	readonly #hits: Float64Array;
@@ -44,19 +45,19 @@ export abstract class Lang extends _Lang {
 				CSP_CACHE.set(id, cspCache);
 				return cspCache;
 			})();
+		this.#size = this.csps.length;
 		JsUtils.propNoWrite(this as Lang, "desc", "csps");
 		{
 			const scaleWeight = Lang.GetWeightScalingFn(weightExaggeration, this.desc.avgWeight);
 			this.#weights = Float32Array.from(this.csps.map((csp) => scaleWeight(csp.unscaledWt)));
 		}
-		this.#hits = new Float64Array(this.csps.length);
-		this.#next = new Uint16Array(this.csps.length + 1);
+		this.#hits = new Float64Array(this.#size);
+		this.#next = new Uint16Array(this.#size + 1);
 		Object.seal(this); //🧊
 	}
 
 	/** */
 	public reset(): void {
-		this.#hits.fill(0);
 		for (let i = 0; i < this.#hits.length; i++) {
 			this.#hits[i] = Math.random() * Lang.RESET_NUM_HITS * this.desc.avgWeight;
 		}
@@ -64,10 +65,10 @@ export abstract class Lang extends _Lang {
 		this.#hits.forEach((_hits, cspsIndex) => {
 			sorter.push(Object.freeze({ _hits, cspsIndex }));
 		});
-		sorter.push({ _hits: Infinity, cspsIndex: this.csps.length });
+		sorter.push({ _hits: Infinity, cspsIndex: this.#size });
 		sorter.seal().sort((a,b) => a._hits - b._hits).freeze();
 		{
-			let i = this.#next[this.csps.length] = sorter[0]!.cspsIndex;
+			let i = this.#next[this.#size] = sorter[0]!.cspsIndex;
 			for (let sortI = 1; sortI < sorter.length; sortI++) {
 				i = this.#next[i] = sorter[sortI]!.cspsIndex;
 			}
@@ -100,41 +101,66 @@ export abstract class Lang extends _Lang {
 	public getNonConflictingChar(
 		avoid: ReadonlyArray<Lang.Seq>,
 	): Lang.Csp {
-		{
-			const nullSeq = Lang.Csp.NULL.seq;
-			avoid = avoid.filter((seq) => seq !== nullSeq).freeze();
-		}
-
+		avoid = avoid.filter((seq) => seq).freeze();
 		if (DEF.DevAssert) {
 			if (new Set(avoid).size !== avoid.length) {
 				console.error("avoid contains duplicates:", avoid);
-			}
-			if (new Set(this.#next).size !== this.#next.length) {
-				console.error("#next is broken");
+				debugger;
 			}
 		}
+		const next = this.#next;
 
-		let i = this.#next[this.csps.length]!;
-		while (i !== this.csps.length) {
+		for (let i = next[this.#size]!; i !== this.#size; i = next[i]!) {
 			const csp = this.csps[i]!;
-			if (avoid.some((avoidSeq) => Lang.OneIsPrefix(avoidSeq, csp.seq))) {
-				i = this.#next[i]!;
-				continue;
+			if (!avoid.some((avoidSeq) => /*#__INLINE__*/Lang.EitherPrefixesOther(avoidSeq, csp.seq))) {
+				this.#hits[i] += 1.0 / this.#weights[i]!;
+				let newPrev = i;
+				while (
+					next[newPrev] !== this.#size
+					&& this.#hits[i]! > this.#hits[next[newPrev]!]!
+				) { newPrev = next[newPrev]!; }
+
+				if (newPrev !== i) {
+					// TODO.impl replace the findIndex with a "before" array.
+					const prevI = next.findIndex((n) => n === i);
+					if (DEF.DevAssert && prevI === -1) throw new Error("never");
+					next[prevI] = next[i]!; next[i] = next[newPrev]!; next[newPrev] = i;
+				}
+				this._assertInvariants();
+				return csp;
 			}
-			this.#hits[i] += 1.0 / this.#weights[i]!;
-			// TODO.impl replace the findIndex with a "before" array.
-			this.#next[this.#next.findIndex((n) => n === i)] = this.#next[i]!;
-			let newPrev = i;
-			while (newPrev !== this.csps.length && this.#hits[this.#next[newPrev]!]! <= this.#hits[i]!) {
-				newPrev = this.#next[newPrev]!;
-			}
-			this.#next[i] = this.#next[newPrev]!;
-			this.#next[newPrev] = i;
-			return csp;
 		};
 
 		// Enforced by UI and server:
 		throw new Error("never");
+	}
+
+	/** */
+	private _assertInvariants(): void {
+		const visited: boolean[] = [];
+		for (let i = 0; i < this.#size; i++) {
+			visited[i] = false;
+		}
+		visited.seal();
+		let i: number = this.#next[this.#size]!;
+		let hits = 0;
+		for (let _i = 0; _i < this.#size; _i++) {
+			if (this.#hits[i]! < hits) {
+				console.error("invariant not met: hits ascending");
+				debugger;
+			}
+			hits = this.#hits[i]!;
+			visited[i] = true;
+			i = this.#next[i]!;
+		}
+		if (i !== this.#size) {
+			console.error("invariant not met: next ends by looping back");
+			debugger;
+		}
+		if (visited.some((flag) => flag === false)) {
+			console.error("invariant not met: next is an exhaustive loop");
+			debugger;
+		}
 	}
 
 	/** */
@@ -230,8 +256,7 @@ export namespace Lang {
 	Object.freeze(GetWeightScalingFn);
 
 	/**
-	 * Sorts the result by sequence, breaking ties by character. Does
-	 * not handle caching.
+	 * Does not handle caching.
 	 */
 	export function CreateCspsArray(forwardDict: Lang.ForwardDict): ReadonlyArray<Lang.Csp.Weighted> {
 		return Object.entries(forwardDict).freeze().map(([char, {seq, weight: unscaledWt}]) => {
@@ -240,7 +265,10 @@ export namespace Lang {
 			});
 		})
 		.seal()
-		.sort((a,b) => (a.seq < b.seq) ? -1 : (a.seq > b.seq) ? 1 : (a.char < b.char) ? -1 : (a.char > b.char) ? 1 : 0)
+		//.sort((a,b) => (a.seq < b.seq) ? -1 : (a.seq > b.seq) ? 1 : (a.char < b.char) ? -1 : (a.char > b.char) ? 1 : 0)
+		.sort((a,b) => b.unscaledWt - a.unscaledWt)
+		// ^Note: Enforcing sort order here is not technically required
+		// as long as forwardDict is deterministic in insertion order.
 		.freeze();
 	}
 	Object.freeze(CreateCspsArray);
@@ -248,13 +276,8 @@ export namespace Lang {
 	/** Somewhat arbitrary. Greater than one. */
 	export const RESET_NUM_HITS = 10;
 
-	/** @returns true if one string is a substring of the other, or if they are equal. */
-	export function OneIsPrefix(a: string, b: string): boolean {
-		if (a.length > b.length) {
-			// Make a the shorter string:
-			const temp = b; b = a; a = temp;
-		}
-		return b.startsWith(a) || b === a;
+	export function EitherPrefixesOther(a: string, b: string): boolean {
+		return (a.length > b.length) ? a.startsWith(b) : b.startsWith(a);
 	}
 
 	/**
@@ -297,11 +320,6 @@ export namespace Lang {
 		readonly seq:  Lang.Seq,
 	};
 	export namespace Csp {
-		/**  Used at the beginning of the shuffling operation. */
-		export const NULL = Object.freeze(<const>{
-			char: "",
-			seq:  "",
-		});
 		export interface Weighted extends Csp {
 			/** Unscaled weight. */
 			readonly unscaledWt: number;

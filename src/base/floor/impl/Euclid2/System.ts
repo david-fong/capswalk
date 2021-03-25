@@ -171,14 +171,16 @@ export namespace WrappedEuclid2 {
 		}
 
 		public forEach(consumer: (tile: Tile, index: number) => void): void {
-			this._grid.forEach(consumer);
+			for (let i = 0; i < this.area; i++) {
+				consumer(this._grid[i]!, i);
+			}
 		}
 		public forEachShuffled(consumer: (tile: Tile, index: number) => void): void {
-			const indices: Array<number> = new Array(this.area);
+			const indices = new Uint16Array(this.area);
 			for (let i = 0; i < this.area; i++) {
 				indices[i] = i;
 			}
-			indices.sort((a,b) => Math.random() - 0.5).freeze();
+			indices.sort(() => Math.random() - 0.5);
 			for (const index of indices) {
 				consumer(this._grid[index]!, index);
 			}
@@ -239,9 +241,9 @@ export namespace WrappedEuclid2 {
 			return this._grid[dest.toCoord(this.dimensions)]!;
 		}
 
-		public getAllAltDestsThan(originCoord: Coord): ReadonlyArray<Tile> {
-			return this.tileDestsFrom(originCoord, 2);
-		}
+		// public getAllAltDestsThan(originCoord: Coord): ReadonlyArray<Tile> {
+		// 	return this.tileDestsFrom(originCoord, 2);
+		// }
 
 		public getRandomCoordAround(_origin: Coord, radius: number): Coord {
 			const origin = this.iacCache[_origin]!;

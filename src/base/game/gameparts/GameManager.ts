@@ -70,6 +70,7 @@ export abstract class GameManager<
 		// history of shuffle-ins has no effects on the new pairs.
 		await this.#langImportPromise;
 		this.lang.reset();
+		debugger;
 		this.grid.forEachShuffled((tile, index) => {
 			const csp = this.dryRunShuffleLangCspAt(tile.coord);
 			this.grid.write(tile.coord, csp);
@@ -108,14 +109,12 @@ export abstract class GameManager<
 	private dryRunShuffleLangCspAt(coord: Coord): Lang.Csp {
 		// First, clear values for the target tile so its current
 		// (to-be-previous) values don't get unnecessarily avoided.
-		this.grid.write(coord, Lang.Csp.NULL);
+		this.grid.write(coord, { seq: "" });
 
 		let avoid = this.grid
 			.getAllAltDestsThan(coord)
 			.map((tile) => tile.seq)
 			.freeze();
-		// ^ Note: An array of CharSeq from unique Tiles. It is okay
-		// for those tiles to include `coord`
 		return this.lang.getNonConflictingChar(avoid);
 	}
 

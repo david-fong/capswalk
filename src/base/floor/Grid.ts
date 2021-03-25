@@ -78,8 +78,8 @@ export abstract class Grid<S extends Coord.System> {
 	public abstract getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile;
 
 	/**
-	 * The returned array should be assumed to be a shallow copy of
-	 * the corresponding Tile objects.
+	 * The returned array should be assumed to contain shallow copies
+	 * of the corresponding Tile objects.
 	 *
 	 * This action is commonly performed by the GameManager when
 	 * shuffling in new CSP's to its grid.
@@ -113,11 +113,11 @@ export abstract class Grid<S extends Coord.System> {
 	 */
 	public abstract getRandomCoordAround(origin: Coord, radius: number): Coord;
 
-	/** Treat the result as a shallow copy. */
+	/** Treat the result as a state snapshot. */
 	public abstract tileAt(coord: Coord): Tile;
-	/** Treat the result as a shallow copy. */
+	/** Treat the result as a state snapshot. */
 	public abstract tileDestsFrom(coord: Coord): ReadonlyArray<Tile>;
-	/** Treat the result as a shallow copy. */
+	/** Treat the result as a state snapshot. */
 	public abstract tileSourcesTo(coord: Coord): ReadonlyArray<Tile>;
 
 	/**
