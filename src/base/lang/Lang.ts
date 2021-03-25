@@ -59,7 +59,7 @@ export abstract class Lang extends _Lang {
 	/** */
 	public reset(): void {
 		for (let i = 0; i < this.#hits.length; i++) {
-			this.#hits[i] = Math.random() * Lang.RESET_NUM_HITS * this.desc.avgWeight;
+			this.#hits[i] = Math.random() * Lang.RESET_NUM_HITS / this.desc.avgWeight;
 		}
 		const sorter: { _hits: number, cspsIndex: number }[] = [];
 		this.#hits.forEach((_hits, cspsIndex) => {
@@ -102,11 +102,6 @@ export abstract class Lang extends _Lang {
 		avoid: ReadonlyArray<Lang.Seq>,
 	): Lang.Csp {
 		avoid = avoid.filter((seq) => seq).freeze();
-		if (DEF.DevAssert) {
-			if (new Set(avoid).size !== avoid.length) {
-				throw new Error("avoid contains duplicates: " + avoid);
-			}
-		}
 		const next = this.#next;
 
 		for (let i = next[this.#size]!; i !== this.#size; i = next[i]!) {
@@ -125,7 +120,7 @@ export abstract class Lang extends _Lang {
 					if (DEF.DevAssert && prevI === -1) throw new Error("never");
 					next[prevI] = next[i]!; next[i] = next[newPrev]!; next[newPrev] = i;
 				}
-				if (DEF.DevAssert) { this._assertInvariants(); }
+				//if (DEF.DevAssert) { this._assertInvariants(); }
 				return csp;
 			}
 		};

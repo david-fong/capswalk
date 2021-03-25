@@ -91,11 +91,14 @@ export abstract class Grid<S extends Coord.System> {
 	 * Grid implementations are encouraged to override this if they
 	 * have a more efficient way to produce the same result.
 	 */
-	public getAllAltDestsThan(originCoord: Coord): ReadonlyArray<Tile> {
-		return Array.from(new Set(
-			this.tileSourcesTo(originCoord)
-				.flatMap((sourceToTarget) => this.tileDestsFrom(sourceToTarget.coord))
-		));
+	public getAllAltDestsThan(origin: Coord): ReadonlyArray<Tile> {
+		const dests = new Map<Coord,Tile>();
+		this.tileSourcesTo(origin)
+		.flatMap((srcToOrigin) => this.tileDestsFrom(srcToOrigin.coord))
+		.forEach((dest) => {
+			if (!dests.has(dest.coord)) { dests.set(dest.coord, dest); }
+		});
+		return Array.from(dests.values()).freeze();
 	}
 
 	public getRandomCoord(): Coord {

@@ -316,6 +316,18 @@ export namespace WrappedEuclid2 {
 			const y = Math.floor(dimensions.height * Math.random());
 			return (y * dimensions.width) + x;
 		}
+
+		/** @internal */
+		public _assertSomeInvariants(): void {
+			const bad = this._grid.map((t,i) => {
+				const arr = this.getAllAltDestsThan(t.coord).map(t => t.coord).sort().freeze();
+				return { i, arr }
+			}).filter(o => o.arr.length !== 25).freeze();
+			if (bad.length) {
+				console.error(bad);
+				throw new Error("never");
+			}
+		}
 	}
 	export namespace Grid {
 		/**

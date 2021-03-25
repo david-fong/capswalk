@@ -70,7 +70,6 @@ export abstract class GameManager<
 		// history of shuffle-ins has no effects on the new pairs.
 		await this.#langImportPromise;
 		this.lang.reset();
-		debugger;
 		this.grid.forEachShuffled((tile, index) => {
 			const csp = this.dryRunShuffleLangCspAt(tile.coord);
 			this.grid.write(tile.coord, csp);
