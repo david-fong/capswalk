@@ -203,7 +203,7 @@ export abstract class Lang extends _Lang {
 		});
 
 		// The number of leaves except those of the root with the most leaves:
-		return [...rootLeaves.values()].sort().slice(0,-1).reduce((sum,n) => sum+n, 0);
+		return [...rootLeaves.values()].sort((a,b) => a-b).slice(0,-1).reduce((sum,n) => sum+n, 0);
 	}
 }
 export namespace Lang {

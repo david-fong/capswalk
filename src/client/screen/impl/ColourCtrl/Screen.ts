@@ -1,6 +1,6 @@
 // Tell WebPack about the css we want:
 import style from "./style.m.css";
-import * as SchemesJsonImport from "client/colours/schemes.json";
+import SchemesJsonImport from "client/colours/schemes.json";
 
 import { PickOne as _PickOne } from "client/utils/PickOne";
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";

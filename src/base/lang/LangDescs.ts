@@ -45,7 +45,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"kore-dub": {
 		id: undefined!,
 		module: "Korean", export: "Dubeolsik",
-		isolatedMinOpts: 8690, avgWeight: 0.9974982117852247,
+		isolatedMinOpts: 9085, avgWeight: 0.9974982117852247,
 		remapFunc: REMAP.IDENT,
 		displayName: "Korean Dubeolsik (두벌식 키보드)",
 		blurb: "The most common keyboard layout, and South Korea's only Hangul"
@@ -55,7 +55,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"kore-sub": {
 		id: undefined!,
 		module: "Korean", export: "Sebeolsik",
-		isolatedMinOpts: 10179, avgWeight: 0.9974982117852336,
+		isolatedMinOpts: 10098, avgWeight: 0.9974982117852336,
 		remapFunc: REMAP.IDENT,
 		displayName: "Korean Sebeolsik (세벌식 최종 키보드)",
 		blurb: "Another Hangul keyboard layout used in South Korea, and the"
@@ -67,7 +67,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"kore-rom": {
 		id: undefined!,
 		module: "Korean", export: "Romanization",
-		isolatedMinOpts: 3960, avgWeight: 0.9974982117852286,
+		isolatedMinOpts: 4764, avgWeight: 0.9974982117852286,
 		remapFunc: REMAP.LOWER,
 		displayName: "Korean Revised Romanization",
 		blurb: "The Revised Romanization of Korean (국어의 로마자 표기법; 國語의 로마字"
@@ -87,7 +87,7 @@ export const LangDescs: Record<string, Lang.Desc> = {
 	"mors-enc": {
 		id: undefined!,
 		module: "English", export: "Morse.Encode",
-		isolatedMinOpts: 10, avgWeight: 2.6089716238018403,
+		isolatedMinOpts: 11, avgWeight: 2.6089716238018403,
 		remapFunc: (input) => { return input; }, // TODO.impl
 		displayName: "Morse Encoder",
 		blurb: "",

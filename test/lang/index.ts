@@ -3,6 +3,7 @@ import { Lang, LangDescs } from "base/lang/Lang";
 
 type Row = {
 	readonly name: string,
+	readonly size: number,
 	readonly numOpts: number,
 	readonly avgWeight: number,
 };
@@ -14,9 +15,7 @@ Promise.all(Object.keys(LangDescs).map((langId) => Lang.Import(langId).then((cla
 	{
 		const imo = inst._calcIsolatedMinOpts();
 		if (imo !== desc.isolatedMinOpts) {
-			console.error(`maintenance required: the isolatedMinOpts`
-			+` constant for the language "${desc.id}" needs to be updated`
-			+` to the correct, computed value: ${imo}.`);
+			console.error(`error: isolatedMinOpts for "${desc.id}" should be: ${imo}`);
 		}
 	}
 	if (Math.abs((avgWeight - desc.avgWeight) / avgWeight) > 1E-12) {
@@ -38,6 +37,7 @@ Promise.all(Object.keys(LangDescs).map((langId) => Lang.Import(langId).then((cla
 	}*/
 	return Object.freeze<Row>({
 		name: desc.displayName,
+		size: inst.csps.length,
 		numOpts: desc.isolatedMinOpts,
 		avgWeight,
 	});

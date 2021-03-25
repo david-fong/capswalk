@@ -50,6 +50,15 @@ TODO.doc
 
 ---
 
+## Routine Checkups
+
+- Check if there are any overridden setters without a getter also overridden or vice versa. This is a subtle and unexpected cause of bugs.
+- Make sure no usages of `Function.bind` bind functions providing without providing all arguments and then pass the bound function to something that can pass default arguments in a more subtle way (such as DOM on\_ functions).
+- Don't call `Array.prototype.sort` with no arguments for numbers. The default behaviour involves coercion into strings.
+- Convert any usages of `.innerHtml` or `.innerText` to use `.textContent` unless intentional (In which case, write a comment on why it is intentional).
+- Make sure nobody uses `document.createElement` instead of `JsUtil.html` unless they document why it's necessary.
+- Make sure to import json using `default` instead of `*` syntax. Otherwise, something in the build pipeline adds an unwanted enumerable key.
+
 ## Coding Style 🎨
 
 Things that are not covered by linting.
