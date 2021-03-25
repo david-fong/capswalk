@@ -1,4 +1,4 @@
-import "../base/defs/ModNodePlatform";
+import "node_modules/my-type-utils/ModNodePlatform";
 
 // =========================================
 import os from "os";

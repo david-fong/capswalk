@@ -41,7 +41,8 @@ if (process.env.NODE_ENV === "production") {
 Object.values(configs).forEach((config) => {
 	const compiler = webpack(config);
 	if (DO_WATCH) {
-		console.info(`running webpack in watch mode (${config.name}) ...`);
+		console.info(`running webpack in watch mode (${config.name}) ...`
+			+`\nNote: must be restarted if node_modules changes.`);
 		compiler.watch(config.watchOptions, (stats) => {
 			if (stats) console.log(stats);
 		});

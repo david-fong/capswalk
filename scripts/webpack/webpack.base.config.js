@@ -20,7 +20,7 @@ exports.GAME_SERVERS = require("../../servers.json");
 /** @type {() => ReadonlyArray<Readonly<webpack.WebpackPluginInstance>>} */
 const BASE_PLUGINS = () => Object.freeze([
 	new webpack.DefinePlugin({
-		// See [](src/node_modules/@types/my-type-utils.dts).
+		// See [](src/node_modules/my-type-utils.dts).
 		"DEF.PRODUCTION": JSON.stringify(MODE.prod),
 		"DEF.NodeEnv":    JSON.stringify(MODE.val),
 		"DEF.DevAssert":  JSON.stringify(MODE.dev),
@@ -35,7 +35,7 @@ exports.BASE_PLUGINS = BASE_PLUGINS;
  */
 exports.MODULE_RULES = () => [{
 	test: /\.ts$/,
-	exclude: [/node_modules/, /\.d\.ts$/],
+	exclude: [PROJECT_ROOT("node_modules/"), /\.d\.ts$/],
 	use: {
 		loader: "esbuild-loader",
 		options: { loader: "ts", target: "es2017" },
@@ -94,7 +94,7 @@ exports.__BaseConfig = (distSubFolder) => { return {
 		removeAvailableModules: (MODE.prod),
 	},
 	watchOptions: {
-		ignored: ["node_modules", "**/*.d.ts", "**/*.js",],
+		ignored: [PROJECT_ROOT("node_modules/"), "**/*.d.ts", "**/*.js",],
 	},
 };};
 

@@ -14,7 +14,6 @@
   "files": [],
   "sideEffects": [
     "*.css",
-    "src/base/defs/Mod*Platform.ts",
     "test/*.ts"
   ],
   "scripts": {
