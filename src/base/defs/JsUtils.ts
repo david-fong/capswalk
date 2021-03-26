@@ -145,7 +145,9 @@ export namespace JsUtils {
 	 * with some custom HTML attribute defaults.
 	 *
 	 * - Calls `Object.seal` immediately on the created HTMLElement.
-	 * - If making a button, defaults the `type` to `button` instead of `submit`.
+	 * - If making a button, defaults the `type` to `button` instead of `submit`
+	 *   and prevents the click callback from being spammed by holding down space
+	 *   or enter.
 	 * - If making an anchor, defaults the rel to `noopener`.
 	 */
 	export function html<K extends keyof HTMLElementTagNameMap>(
@@ -161,6 +163,9 @@ export namespace JsUtils {
 
 		if (tagName === "button") {
 			(el as HTMLButtonElement).type = "button"; // instead of "submit".
+			el.addEventListener("keydown", (ev) => {
+				if ((ev as KeyboardEvent).repeat) { ev.preventDefault(); }
+			}, { capture: true });
 		} else if (tagName === "a") {
 			(el as HTMLAnchorElement).rel = "noopener";
 			// ^ Should already be the default on modern browsers when

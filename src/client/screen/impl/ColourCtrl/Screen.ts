@@ -20,15 +20,13 @@ export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
 		this.baseElem.classList.add(style["this"]);
 		this.baseElem.appendChild(this.nav.prev);
 
-		const sel
-			// @ts-expect-error : RO=
-			= this.sel
-			= new ColourCtrlScreen.PickOne(
-				this.top.storage.Local,
-				this.top.transition,
-			);
+		// @ts-expect-error : RO=
+		this.sel = new ColourCtrlScreen.PickOne(
+			this.top.storage.Local,
+			this.top.transition,
+		);
 		JsUtils.propNoWrite(this as ColourCtrlScreen, "sel");
-		this.baseElem.appendChild(sel.baseElem);
+		this.baseElem.appendChild(this.sel.baseElem);
 
 		// Highlight the user's last selected colour scheme (if it exists).
 		// This will already have been loaded up during page load, hence
@@ -135,9 +133,7 @@ export namespace ColourCtrlScreen {
 			}
 		}
 		export namespace Option {
-			/**
-			 * This must match the number slots used in the CSS.
-			 */
+			/** This must match the number slots used in the CSS. */
 			export const NUM_PREVIEW_SLOTS = 8;
 		}
 		Object.freeze(Option);

@@ -16,7 +16,7 @@ function gameOnSocketMessage<S extends Coord.System>(this: ServerGame<S>, ev: We
 	const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
 	const socket = ev.target;
 	switch (evName) {
-		case GameEv.IN_GAME: this.processMoveRequest(args[0], socket); break;
+		case GameEv.IN_GAME: this.requestStateChange(args[0], socket); break;
 		case GameEv.PAUSE:   this.statusBecomePaused(); break;
 		case GameEv.UNPAUSE: this.statusBecomePlaying(); break;
 		case GameEv.RETURN_TO_LOBBY:

@@ -159,7 +159,7 @@ export abstract class GameManager<
 	}
 
 	/** @override */
-	public processMoveRequest(req: StateChange.Req, socket?: any): void {
+	public requestStateChange(req: StateChange.Req, socket?: any): void {
 		const causer = this.players[req.initiator]!;
 		if (req.lastRejectId !== causer.reqBuffer.lastRejectId) {
 			return; //⚡
@@ -214,10 +214,7 @@ export abstract class GameManager<
 	}
 
 	/** @override */
-	protected commitTileMods(
-		coord: Coord, changes: Tile.Changes,
-		doCheckOperatorSeqBuffer: boolean = true,
-	): void {
+	protected commitTileMods(coord: Coord, changes: Tile.Changes): void {
 		// JsUtils.deepFreeze(changes); // <- already done by caller.
 		const tile = this.grid.tileAt(coord);
 		if (changes.health !== undefined) {
@@ -228,7 +225,7 @@ export abstract class GameManager<
 				this.health.tiles.set(coord, tile);
 			}
 		}
-		super.commitTileMods(coord, changes, doCheckOperatorSeqBuffer);
+		super.commitTileMods(coord, changes);
 	}
 
 	public abstract setTimeout(callback: Function, millis: number, ...args: any[]): number;

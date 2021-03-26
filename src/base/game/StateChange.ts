@@ -1,8 +1,7 @@
 import type { Coord, Tile } from "floor/Tile";
 import type { Player } from "game/player/Player";
 
-/**
- */
+/** */
 export namespace StateChange {
 	/**
 	 * This is the agreed upon value that both the server and client
@@ -41,8 +40,7 @@ export namespace StateChange {
 			 */
 			readonly tiles: Record<Coord, TU.Omit<Tile.Changes,"occId">>;
 
-			/**
-			 */
+			/** */
 			readonly players: Readonly<Record<Player.Id, Player.Changes>>;
 		}
 		export interface Rejected extends _Base {

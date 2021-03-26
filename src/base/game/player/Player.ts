@@ -91,7 +91,7 @@ export class Player extends _Player implements _Player.UserInfo {
 		}
 		if (this.reqBuffer.isFull) return; //⚡
 
-		this.game.processMoveRequest(this.reqBuffer.signRequest({
+		this.game.requestStateChange(this.reqBuffer.signRequest({
 			initiator: this.playerId,
 			lastRejectId: this.reqBuffer.lastRejectId,
 			moveType: type,

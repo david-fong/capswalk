@@ -66,15 +66,15 @@ export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 		.map<Readonly<{
 			text: string;
 			cssClass: typeof style[keyof typeof style];
-			screenId: BaseScreen.Id | ((ev: MouseEvent) => void);
+			screenId: BaseScreen.Id;
 		}>>((desc) => Object.freeze(desc))
 		.forEach((desc) => {
 			const button = JsUtils.html("button");
-			button.onclick = (desc.screenId instanceof Function) ? desc.screenId : () => {
+			button.addEventListener("click", (ev) => {
 				// TODO.impl play a health-up sound.
 				// this.top.sfx.;
 				this.requestGoToScreen(desc.screenId as BaseScreen.Id, {});
-			};
+			});
 			addToNav(button, desc);
 		});
 

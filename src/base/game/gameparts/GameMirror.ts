@@ -124,9 +124,8 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	}
 	public setCurrentOperator(nextOperatorIndex: number): void {
 		const nextOperator = this.operators[nextOperatorIndex]!;
-		if (!DEF.DevAssert && nextOperator === undefined) throw new Error("never");
-		if (this.currentOperator !== nextOperator)
-		{
+		if (!DEF.DevAssert && nextOperator === undefined) { throw new Error("never"); }
+		if (this.currentOperator !== nextOperator) {
 			this.#currentOperator = nextOperator;
 		}
 	}
@@ -195,27 +194,23 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		console.info("game is over!");
 	}
 
-	public abstract processMoveRequest(desc: StateChange.Req, socket?: any): void;
+	/**
+	 * Must eventually result in a call to commitStateChange.
+	 * Crosses the network boundary for online games.
+	 */
+	public abstract requestStateChange(desc: StateChange.Req, socket?: any): void;
 
 	/** @virtual */
-	protected commitTileMods(
-		coord: Coord,
-		changes: Tile.Changes,
-		doCheckOperatorSeqBuffer: boolean = true,
-	): void {
+	protected commitTileMods(coord: Coord, changes: Tile.Changes): void {
 		// JsUtils.deepFreeze(changes); // <- already done by caller.
-		const tile = this.grid.tileAt(coord);
-
 		if (changes.seq !== undefined) {
-			// Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
-			if (doCheckOperatorSeqBuffer) {
-				// ^Do this when non-operator moves into the the operator's vicinity.
-				this.operators.forEach((op) => {
-					if (this.grid.tileDestsFrom(op.coord).includes(tile)) {
-						op.seqBufferAcceptKey(undefined);
-					}
-				});
-			}
+			const sources = this.grid.tileSourcesTo(coord);
+			this.operators.forEach((op) => {
+				// Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
+				if (sources.some((src) => src.coord === op.coord)) {
+					op.seqBufferAcceptKey(undefined);
+				}
+			});
 		}
 		this.grid.write(coord, changes);
 	}
@@ -239,8 +234,8 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 			player.health = changes.health;
 
 			if (changes.coord !== undefined) {
-				this.grid.write(player.coord,  {occId: Player.Id.NULL});
-				this.grid.write(changes.coord, {occId: player.playerId});
+				this.grid.write(player.coord,  { occId: Player.Id.NULL });
+				this.grid.write(changes.coord, { occId: player.playerId });
 				// === order matters ===
 				player.setCoord(changes.coord);
 			}
