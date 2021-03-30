@@ -15,6 +15,7 @@
 
 ### Things I feel like doing
 
+1. Switch from express to koa.
 1. Implement `VisibleGrid` rendering of player positions.
 1. Implement a requirement that the number of players is less than the area of the grid.
 1. Change Euclid Visual Grid to use SVG.
@@ -27,23 +28,15 @@
 1. Implement Grid management of player-rendering.
 1. Display the operator's current sequence buffer.
 
-#### Lang Redesign
-
-##### Data Structure Changes
-
-- I could optimize the sorting by implementing that array as a linked-list, since any action would only require re-inserting a single node at a different position.
-  - This could be optimized in terms of space as a TypedArray lookup where the index indicates a node, and the value indicates which node is next. The sentinel would be an integer indexing into the array.
-
 ### Things that I feel less like doing
 
-1. Make test chunks share chunks with the server chunk.
-    - Move the import code from `GameManager.ts` to a dedicated wrapper class
-    - Use wrapper class in the test code.
-    - ...Move the test folder to go under src/server?
+1. Move the test folder to go under src/server?
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
     - Set the maxAge option for express to at least a year.
 1. Game-Host Servers:
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
+1. Change JsUtils to not wrap all its exports as an object?
+    - The current wrapping is generally considered bad practice... But for this specific case I don't really mind it. If I were to refactor it all to `import * as JsUtils from ...`, it would enable inconsistent naming of the wrapper object.
 
 ### Things that are low priority
 
@@ -104,7 +97,6 @@
 
 ```text
 https://developer.mozilla.org/en-US/docs/Web/API
-Navigator.{keyboard,online,connection,language,languages,battery}
 ```
 
 Presentation API:

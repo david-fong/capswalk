@@ -1,7 +1,6 @@
 "use strict";
 const path = require("path");
 const webpack = require("webpack");
-const esbuildLoader = require("esbuild-loader");
 const nodeExternals = require("webpack-node-externals");
 /** @typedef {<T, K extends keyof T>() => T & Pick<Required<T>, K>} Require */
 /** @typedef {webpack.Configuration & Pick<Required<webpack.Configuration>, "entry" | "plugins" | "resolve" | "output">} BaseConfig */
@@ -25,7 +24,6 @@ const BASE_PLUGINS = () => Object.freeze([
 		"DEF.NodeEnv":    JSON.stringify(MODE.val),
 		"DEF.DevAssert":  JSON.stringify(MODE.dev),
 	}),
-	new esbuildLoader.ESBuildPlugin(),
 ]);
 exports.BASE_PLUGINS = BASE_PLUGINS;
 

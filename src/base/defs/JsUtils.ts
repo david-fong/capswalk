@@ -1,6 +1,9 @@
 
 const NO_ENUM  = Object.freeze(<const>{ enumerable: false });
 const NO_WRITE = Object.freeze(<const>{ writable: false });
+function _onclickNoButtonRepeat(ev: Event): void {
+	if ((ev as KeyboardEvent).repeat) { ev.preventDefault(); }
+}
 
 export namespace JsUtils {
 
@@ -163,9 +166,7 @@ export namespace JsUtils {
 
 		if (tagName === "button") {
 			(el as HTMLButtonElement).type = "button"; // instead of "submit".
-			el.addEventListener("keydown", (ev) => {
-				if ((ev as KeyboardEvent).repeat) { ev.preventDefault(); }
-			}, { capture: true });
+			el.addEventListener("keydown", _onclickNoButtonRepeat, { capture: true });
 		} else if (tagName === "a") {
 			(el as HTMLAnchorElement).rel = "noopener";
 			// ^ Should already be the default on modern browsers when
