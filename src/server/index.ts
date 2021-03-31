@@ -4,43 +4,38 @@ import "node_modules/my-type-utils/ModNodePlatform";
 import os from "os";
 import path from "path";
 import http from "http";
-import express from "express";
-import expressStaticGzip from "express-static-gzip";
+import Koa from "koa";
+import koaStatic from "koa-static";
 import WebSocket from "ws";
 import type net from "net";
 import { SET_SOCKET_ID, SOCKET_ID, JoinerEv } from "defs/OnlineDefs";
 
-const app = express();
-const server = http.createServer({}, app);
+/** EXPRESS ROOT */
+// At runtime, __dirname resolves to ":/dist/server/"
+const CLIENT_ROOT = path.resolve(__dirname, "../client");
+
+
+const app = new Koa()
+.use(koaStatic(CLIENT_ROOT, {
+	brotli: DEF.PRODUCTION, //🚩 This must match the value in the webpack config.
+	format: false,
+	setHeaders: (res, path, stats) => {
+		res.removeHeader("x-powered-by");
+		res.setHeader("X-Content-Type-Options", "nosniff");
+	},
+	// TODO.build enable this when lang term caching is configured for webpack.
+	maxAge: 0,
+	immutable: false, // DEF.PRODUCTION
+}));
+
+
+const server = http.createServer({}, app.callback());
+
+
 export const wss = new WebSocket.Server({
 	server: server,
 });
 import { groups, wsMessageCb } from "./joinerCb";
-
-
-/** EXPRESS ROOT */
-// At runtime, __dirname resolves to ":/dist/server/"
-const CLIENT_ROOT = path.resolve(__dirname, "../client");
-app
-.disable("x-powered-by")
-.use("/", expressStaticGzip(CLIENT_ROOT, {
-	enableBrotli: DEF.PRODUCTION, //🚩 This must match the value in the webpack config.
-	serveStatic: {
-		setHeaders: (res, path, stat): void => {
-			res.setHeader("X-Content-Type-Options", "nosniff");
-			const mime = express.static.mime.lookup(path);
-			if (mime === "text/html" /* xhtml? */) {
-				res.setHeader("Cache-Control", "public, max-age=0");
-			}
-		},
-		// TODO.build enable this when lang term caching is configured for webpack.
-		//immutable: DEF.PRODUCTION,
-		//maxAge: 31536000000, // 1 year.
-	},
-}));
-
-
-/** WSS ON_CONNECTION */
 wss.on("connection", function onWsConnect(ws): void {
 	// Upon connection, immediately send a list of existing groups:
 	const data = JSON.stringify([
