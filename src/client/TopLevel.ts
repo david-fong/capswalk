@@ -117,7 +117,15 @@ export namespace TopLevel {
 			description: "dev shortcut :)",
 		},
 		[SiteServerType.DEDICATED]: {
-			value: (() => { const url = new URL(window.location.origin); url.protocol = "ws"; return url.toString(); })(),
+			value: (() => {
+				try {
+					const url = new URL(window.location.origin ?? "");
+					url.protocol = "ws";
+					return url.toString();
+				} catch {
+					return undefined;
+				}
+			})(),
 			description: "this page's server",
 		},
 	});

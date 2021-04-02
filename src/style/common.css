@@ -6,11 +6,6 @@
 	overflow: hidden hidden;
 }
 
-.text-select-disabled {
-	user-select: none;
-	-webkit-user-select: none;
-}
-
 .center-contents {
 	display: grid;
 	place-content: center;

@@ -73,7 +73,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		base.appendChild(uname);
 
 		const teamId = JsUtils.html("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
-			type: "number", inputMode: "numeric",
+			type: "number",
 			min: "0", max: "0", step: "1", value: "0",
 			onchange: this._submitInputs.bind(this),
 		});

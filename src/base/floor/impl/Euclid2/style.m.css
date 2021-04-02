@@ -20,7 +20,7 @@
 
 .char {
 	pointer-events: none;
-	alignment-baseline: central;
+	dominant-baseline: central;
 	text-anchor: middle;
 	fill: var(--colour-tileFg);
 }

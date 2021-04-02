@@ -20,7 +20,6 @@ export const ID = <const>{
  */
 export namespace General {
 	export const Class = <const>{
-		TEXT_SELECT_DISABLED: "text-select-disabled",
 		FILL_PARENT:        "fill-parent",
 		CENTER_CONTENTS:    "center-contents",
 		STACK_CONTENTS:     "stack-contents",

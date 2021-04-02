@@ -13,10 +13,9 @@ export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 		);
 
 		const nav = JsUtils.html("div", [
-				OmHooks.General.Class.TEXT_SELECT_DISABLED,
-				OmHooks.General.Class.INPUT_GROUP,
-				style["nav"],
-			]);
+			OmHooks.General.Class.INPUT_GROUP,
+			style["nav"],
+		]);
 		nav.setAttribute("role", "navigation");
 		nav.addEventListener("pointerleave", () => {
 			if (document.activeElement?.parentElement === nav) {

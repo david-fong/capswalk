@@ -172,12 +172,7 @@ export namespace _PlayScreenInitEl {
 		const base = JsUtils.html("div", [style["grid-wrapper"]]);
 		base.setAttribute("role", "presentation");
 
-		const grid = JsUtils.html("div", [
-			//CSS_FX.CENTER_CONTENTS,
-			//CSS_FX.STACK_CONTENTS,
-			CSS_FX.TEXT_SELECT_DISABLED,
-			grid_style["this"],
-		], { tabIndex: 0 });
+		const grid = JsUtils.html("div", [grid_style["this"]], { tabIndex: 0 });
 		grid.setAttribute("role", "textbox");
 		grid.setAttribute("aria-label", "Game Grid");
 

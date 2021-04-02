@@ -16,7 +16,9 @@ export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
 			/* webpackChunkName: "colour-schemes" */
 			/* webpackMode: "lazy-once" */
 			`client/colours/schemes/${void 0}.css`
-		);
+		).catch((e) => {
+			void 0; // yeet.
+		});
 		this.baseElem.classList.add(style["this"]);
 		this.baseElem.appendChild(this.nav.prev);
 
