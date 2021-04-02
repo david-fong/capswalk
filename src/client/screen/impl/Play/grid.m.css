@@ -1,7 +1,7 @@
 
 .this {
 	/* Since this is given the `center-contents` and
-	`stack-contents` classes, it defaults to taking
+	it defaults to taking
 	up no space (its children all have their position
 	property set to `absolute`). We rectify this case
 	by giving `.impl-body` `position: static`. */

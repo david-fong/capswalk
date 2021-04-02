@@ -2,13 +2,13 @@
 .this {
 }
 .content-wrapper {
-	--spacing:       0.2em;
+	--spacing: 0.2em;
 	--border-radius: 1.2em;
 	height: 27em; max-height: 80vh;
 	width:  27em; max-width:  90vw;
-	display:        grid;
+	display: grid;
 	/* grid-template-rows: repeat(3, 2fr) 1fr; */
-	gap:            7.0%;
+	gap: 7.0%;
 	grid-template:
 	"host-url   host-url"   2fr
 	"group-name group-name" 2fr
@@ -17,7 +17,7 @@
 	/ 1fr       1fr;
 }
 .content-wrapper > label {
-	display:        grid;
+	display: grid;
 	grid-template-rows: 1fr 2.0fr;
 	grid-column:    1/3;
 }

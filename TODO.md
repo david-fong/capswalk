@@ -15,7 +15,6 @@
 
 ### Things I feel like doing
 
-1. Switch from express to koa.
 1. Implement `VisibleGrid` rendering of player positions.
 1. Implement a requirement that the number of players is less than the area of the grid.
 1. Change Euclid Visual Grid to use SVG.
@@ -40,9 +39,6 @@
 
 ### Things that are low priority
 
-    - Then make the `NodeProto` tree a lazily initialized internal singleton.
-    - This will save memory when multiple of the same type of language are is use at the same time.
-    - This is save time when creating another instance of the same type of language.
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
 1. Spectator mode for online games? O\_o

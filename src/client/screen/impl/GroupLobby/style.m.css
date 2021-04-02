@@ -1,21 +1,20 @@
 .this {
-	display:        grid;
-	justify-items:  center;
-	align-content:  center;
+	display: grid;
+	place-items: center;
 }
 
 .client-info-section {
-	--spacing:       0.2em;
+	--spacing: 0.2em;
 	--border-radius: 0.8em;
 	gap: 0.2em; margin: 0.2em;
-	height:  6em; max-height: 80vh;
-	width:  15em; /* max-width:  30vw; */
-	display:        grid;
+	height: 6em; max-height: 80vh;
+	width: 15em; /* max-width: 30vw; */
+	display: grid;
 	grid-template-rows: 1fr 1fr;
 }
 
 .teams-section {
-	display:        grid;
+	display: grid;
 }
 
 .team {

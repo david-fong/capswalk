@@ -1,6 +1,6 @@
 
 #all-screens-container {
-	display:    contents;
+	display: contents;
 }
 
 .screen {
@@ -9,10 +9,10 @@
 	the contain property on this class and possibly
 	on some of its children, the visibility property
 	will not be sufficient to hide inactive screens. */
-	contain:    strict;
-	position:   fixed;
+	contain: strict;
+	position: fixed;
 	top: 0; right: 0; bottom: 0; left: 0;
-	overflow:   auto;
+	overflow: auto;
 }
 .screen--prev-button {
 }
@@ -28,17 +28,17 @@ takes a long time to arrive. */
 	/* If will-change is on, the texture overlay
 	screen doesn't "see" the background layer. */
 	/* will-change:    transform; */
-	z-index:        -10000;
-	display:        initial;
+	z-index: -10000;
+	display: initial;
 	background-color: var(--colour-mainBg);
 }
 #screen-tint, #screen-texture {
 	pointer-events: none;
-	z-index:        10000;
-	display:        initial;
+	z-index: 10000;
+	display: initial;
 }
 #screen-tint {
-	opacity:        0.0;
+	opacity: 0.0;
 	transition-property: opacity, background-color;
 	transition-duration: 333.0ms;
 	transition-timing-function: ease-in-out;

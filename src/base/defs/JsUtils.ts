@@ -168,6 +168,7 @@ export namespace JsUtils {
 			(el as HTMLButtonElement).type = "button"; // instead of "submit".
 			el.addEventListener("keydown", _onclickNoButtonRepeat, { capture: true });
 		} else if (tagName === "a") {
+			(el as HTMLAnchorElement).draggable = false;
 			(el as HTMLAnchorElement).rel = "noopener";
 			// ^ Should already be the default on modern browsers when
 			// `target === "_blank"`, but it doesn't hurt to set it
