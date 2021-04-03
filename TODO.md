@@ -8,7 +8,6 @@
 1. Harden server against malicious/malformed client inputs.
     - handle malformed websocket data from client. Just ignore it?
     - change exceptions on malformed data to short circuits?
-1. Add player sprites.
 1. Record music.
 
 ## Concrete TODOs
@@ -31,7 +30,7 @@
 
 1. Move the test folder to go under src/server?
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
-    - Set the maxAge option for express to at least a year.
+    - Set the maxAge option for http server to at least a year.
 1. Game-Host Servers:
     - Disable connecting to public game servers when testing / disable connecting to servers that are using incompatible versions of the client/server communication.
 1. Change JsUtils to not wrap all its exports as an object?

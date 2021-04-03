@@ -3,47 +3,37 @@
 
 ## Points of Consideration
 
-Simplicity of the idea is a high priority. See examples below.
+First thing first: I want game ideas to be simple to implement, since I want there to be multiple game modes. Right now, the goal is to generate many simple ideas, and then see what mechanics are the most shared between them, which will then become part of the game's core.
 
-- What is the pacing/intensity like?
-- Is it singleplayer/multiplayer-only? An idea that works with both is encouraged.
-  - For multiplayer games, is the nature of the game competitive or collaborative?
-    - Collaborative games are probably more beginner-friendly.
-- How long will the average game last?
-- Bonus points for using the typing mechanics in some special way.
-  - Fewer points if doesn't make sense for most of the current languages.
-- Would you be willing to spearhead the implementation?
-- Would the implementation likely require any significant changes to the _underlying_ mechanics?
+The greatest design challenge here is to accommodate for a wide range of skill. This game is somewhat special in that the most fundamental mechanic- that is, movement- is not throttled in any way by the game; instead, it is throttled by each player's ability.
+
+One final note: try to think of ways to frame the game as some part of the real world in a way that gives it charm or enforces the atmosphere you want to create (intense/chill, collaborative/competitive). I'm talking about using the visuals to turn the game into a familiar "story". Without that, this game is just another boring typing game. This game doesn't have to just be a way to hone a skill or pit yourself against others with that skill.
+
+## Singleplayer
+
+I think singleplayer game modes are well suited with games that do not end and take one of the following approaches:
+
+1. "Treadmill". The game provides a challenge where the difficulty can be dynamically controlled by the player.
+1. "Bubble-wrap". The game provides repeating small goals, and makes no attempt to be challenging, and instead simply feels rewarding.
+
+## Multiplayer
+
+To accommodate for varying skill levels when choosing to hide notions of competition/comparison, design games with different player roles/goals.
 
 ## Endorsed Ideas
-
-### Team Dance-Floor
-
-Simplicity score: 9/10.
-
-- At increasingly short intervals, require everybody to arrive at safe tiles.
 
 ### Death Scroller
 
 Simplicity score: 9/10.
 
 - The floor is rising lava. Keep moving up and see how long you survive.
+- Optional additional challenge: every once in a while, the tile you are on will crumble and not come back.
+- Possible "stories": Running against an escalator and dodging people using it properly.
 
-### Weird Hangman Variant
+### Bubble Wrap Stories
 
-Simplicity score: 6/10.
-
-- Everybody is running around except for one person.
-- That one person is in a separate space with regular WASD-type movement.
-  - They have a phrase they need to get everyone else to guess as fast as possible.
-  - They must press the number of a player ID when that player is over the letter of the space that they are over.
-  - If successful, that space will be revealed to the rest of the players, thus making it easier for them to guess what letters they should suggest for the revealer.
-- The aim of the game is to reveal the phrase as fast as possible.
-
-#### Addon Ideas
-
-- Have multiple competing teams?
-- Make all the of the players also have to run away from some chasers?
+- Being a bunch of baby turtles walking to the sea.
+- Being a cat and pushing things off a counter top.
 
 ### Soccer
 
@@ -51,4 +41,5 @@ Simplicity score: 3/10.
 
 - Can hold and shoot a ball.
 - For each step you take with the ball, you will stay frozen after losing it until the next people who pick it up have moved that many steps with the ball.
+  - Or that the ball moves while it is not being held by anyone.
 - For each step you take with the ball, the radius that it can be stolen from by an enemy team member increases.
