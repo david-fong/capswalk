@@ -1,47 +1,28 @@
 import { JsUtils } from "defs/JsUtils";
-import { Lang, Player } from "defs/TypeDefs";
+import type { Player } from "defs/TypeDefs";
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid as AbstractGrid } from "floor/Grid";
 import { VisibleGrid } from "floor/visible/VisibleGrid";
 
 import { WrappedEuclid2 as System } from "./System";
-import style from "./style.m.css";
+import style, { tile } from "./style.m.css";
 type S = Coord.System.W_EUCLID2;
 const WIDTH = 1.4; // <- must be set to match the stylesheet values.
 const GAP = 0.25;
 
 /** */
-class VisibleTile implements TU.Pikk<Tile,"occId"|"health"> {
+class VisibleTile implements TU.Pikk<Tile,|"health"> {
 
-	public readonly body = JsUtils.svg("rect");
 	public readonly _char = JsUtils.svg("text");
 
 	constructor(iac: System.Grid["iacCache"][number]) {
-		const xOffset = ((WIDTH+GAP)*iac.x+GAP);
-		const yOffset = ((WIDTH+GAP)*iac.y+GAP);
-
-		this.body.classList.add(style.tile);
-		const bodyAttr = this.body.setAttributeNS.bind(this.body, null);
-		bodyAttr("x", xOffset+"em");
-		bodyAttr("y", yOffset+"em");
-
-		this._char.classList.add(style.char);
-		this._char.setAttributeNS(null, "x", xOffset+(WIDTH/2)+"em");
-		this._char.setAttributeNS(null, "y", yOffset+(WIDTH/2)+"em");
-	}
-	public set occId(playerId: Player.Id) {
-		if (playerId === Player.Id.NULL) {
-			delete this.body.dataset["occId"];
-		} else {
-			this.body.dataset["occId"] = playerId.toString();
-		}
+		const char = this._char;
+		char.classList.add(style.char);
+		char.setAttributeNS(null, "x", (iac.x+(0.5))+"");
+		char.setAttributeNS(null, "y", (iac.y+(0.5))+"");
 	}
 	public set health(health: Player.Health) {
-		if (health > 0) {
-			this.body.dataset["health"] = health.toString();
-		} else {
-			delete this.body.dataset["health"];
-		}
+		// TODO.design hm... now that I'm tiling things, this will be harder.
 	}
 	public set char(char: string) {
 		this._char.textContent = char;
@@ -64,17 +45,57 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 
 		const svg = JsUtils.svg("svg", [style["grid"]]);
 		const dim = desc.dimensions;
-		svg.setAttribute("height", ((WIDTH+GAP) * dim.height + GAP) + "em");
-		svg.setAttribute("width",  ((WIDTH+GAP) * dim.width  + GAP) + "em");
+		{
+			svg.setAttribute("height", (2*(WIDTH+GAP)*dim.height)+"em");
+			svg.setAttribute("width",  (2*(WIDTH+GAP)*dim.width )+"em");
+			svg.setAttribute("viewBox", `0, 0, ${dim.width}, ${dim.height}`);
+			svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+		}
+		const defs = JsUtils.svg("defs");
+		svg.appendChild(defs);
+		{
+			const t = JsUtils.svg("rect");
+			t.classList.add(style.tile);
+			t.setAttribute("x", "0.1");
+			t.setAttribute("y", "0.1");
+			t.setAttribute("height", "0.8");
+			t.setAttribute("width",  "0.8");
 
-		const tiles: Array<VisibleTile> = [];
-		this.forEach((tile) => {
-			const vTile = new VisibleTile(this.iacCache[tile.coord]!);
-			tiles.push(vTile);
-			svg.appendChild(vTile.body);
-			svg.appendChild(vTile._char);
-		});
-		this.#tiles = tiles;
+			const pattern = JsUtils.svg("pattern");
+			pattern.id = "tile-back-pattern";
+			pattern.setAttribute("viewBox", "0,0,1,1");
+			pattern.setAttribute("height", `calc(100%/${dim.height})`);
+			pattern.setAttribute("width",  `calc(100%/${dim.width})`);
+			pattern.appendChild(t);
+			defs.appendChild(pattern);
+		} {
+			const mirror = JsUtils.svg("pattern");
+			mirror.id = "grid-mirror";
+			mirror.setAttribute("height", "50%");
+			mirror.setAttribute("width",  "50%");
+			mirror.setAttribute("viewBox", `0, 0, ${dim.width}, ${dim.height}`);
+
+			const back = JsUtils.svg("rect");
+			back.setAttribute("height", "100%");
+			back.setAttribute("width",  "100%");
+			back.setAttribute("fill", "url(#tile-back-pattern)");
+			mirror.appendChild(back);
+
+			const tiles: Array<VisibleTile> = [];
+			this.forEach((tile) => {
+				const v = new VisibleTile(this.iacCache[tile.coord]!);
+				tiles.push(v);
+				mirror.appendChild(v._char);
+			});
+			defs.appendChild(mirror);
+			this.#tiles = tiles;
+		} {
+			const plane = JsUtils.svg("rect");
+			plane.setAttribute("height", "100%");
+			plane.setAttribute("width",  "100%");
+			plane.setAttribute("fill", "url(#grid-mirror)");
+			svg.appendChild(plane);
+		}
 
 		const wrapper = JsUtils.html("div");
 		wrapper.appendChild(svg);
@@ -87,12 +108,12 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		super.write(coord, changes);
 		const tile = this.#tiles[coord]!;
 		if (JsUtils.hasProp(changes, "occId")) {
-			tile.occId = changes.occId!;
+			// TODO.impl
 		}
-		if (JsUtils.hasProp(changes, "health")) {
+		if (changes.health) {
 			tile.health = changes.health!;
 		}
-		if (JsUtils.hasProp(changes, "char")) {
+		if (changes.char) {
 			tile.char = changes.char!;
 		}
 	}

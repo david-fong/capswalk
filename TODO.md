@@ -14,6 +14,8 @@
 
 ### Things I feel like doing
 
+1. Make an Element extension method for setAttr called `attr` that takes a dictionary.
+1. Ban health systems from the game's core. Document this in game-ideas.md.
 1. Implement `VisibleGrid` rendering of player positions.
 1. Implement a requirement that the number of players is less than the area of the grid.
 1. Change Euclid Visual Grid to use SVG.

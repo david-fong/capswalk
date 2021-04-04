@@ -1,6 +1,5 @@
 import { JsUtils } from "defs/JsUtils";
-import { OmHooks } from "defs/OmHooks";
-import { Lang, Player } from "defs/TypeDefs";
+import { Player } from "defs/TypeDefs";
 
 import type { Tile } from "../Tile";
 import style from "./tile.m.css";

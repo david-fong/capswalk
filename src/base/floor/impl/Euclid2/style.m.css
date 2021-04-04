@@ -1,19 +1,11 @@
 .grid {
 	contain: strict;
-	display: grid;
-	grid-template-columns: repeat(var(--euclid2-grid-width), 1.67em);
-	grid-auto-rows: 1.67em;
-}
-.grid > * {
-	margin: 5%;
-	scroll-snap-align: center;
+	display: block;
 }
 
 .tile {
-	height: 1.4em;
-	width:  1.4em;
-	rx: 0.34em;
-	stroke-width: 0.08em;
+	rx: 0.1;
+	stroke-width: 0.14;
 	fill: var(--colour-tileBg);
 	stroke: var(--colour-tileBg);
 }
@@ -23,4 +15,5 @@
 	dominant-baseline: central;
 	text-anchor: middle;
 	fill: var(--colour-tileFg);
+	font-size: 0.04em;
 }
