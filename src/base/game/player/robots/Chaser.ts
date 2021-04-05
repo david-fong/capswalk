@@ -60,7 +60,7 @@ export class Chaser extends RobotPlayer.Decisive {
 			if (this.grid.dist(pred.coord, this.coord)
 				> this.params.fearDistance) break;
 			if (pred.isDowned) continue;
-			if (pred.health > this.health) {
+			if (pred.boosts > this.boosts) {
 				// TODO.design Something that avoids getting cornered.
 				return {
 					dest: this.grid.getUntAwayFrom(pred.coord, this.coord).coord,
@@ -84,7 +84,7 @@ export class Chaser extends RobotPlayer.Decisive {
 			for (const prey of this.prey) {
 				if (this.grid.dist(this.coord, prey.coord)
 					> this.params.bloodThirstDistance) break;
-				if (prey.health < this.health - this.params.healthReserve) {
+				if (prey.boosts < this.boosts - this.params.healthReserve) {
 					return {
 						dest: prey.coord,
 						target: prey.playerId,
@@ -95,12 +95,12 @@ export class Chaser extends RobotPlayer.Decisive {
 		return undefined;
 	}
 	private _bhvrGotoHealthElseWander(cachedHealthCoord?: Coord): RobotPlayer.Decisive.Next {
-		if (cachedHealthCoord !== undefined && this.game.health.tiles.has(cachedHealthCoord)) {
+		/* if (cachedHealthCoord !== undefined && this.game.health.tiles.has(cachedHealthCoord)) {
 			return { dest: cachedHealthCoord };
-		}
+		} */
 		// If there is nobody we want to chase after to attack,
 		// Head toward the nearest free health if it exists.
-		if (this.game.health.tiles.size === 0) {
+		if (true) {
 			// No tiles close by. Wander around:
 			if (Math.random() < this.params.wanderingAimlessness) {
 				// Big direction change:
@@ -113,7 +113,7 @@ export class Chaser extends RobotPlayer.Decisive {
 				)};
 			}
 		}
-		let closestFht: Tile = undefined!;
+		/* let closestFht: Tile = undefined!;
 		let closestFhtDistance = Infinity;
 		for (const fht of this.game.health.tiles.values()) {
 			const distance = this.grid.dist(this.coord, fht.coord);
@@ -122,7 +122,7 @@ export class Chaser extends RobotPlayer.Decisive {
 				closestFhtDistance = distance;
 			}
 		}
-		return { dest: closestFht.coord, target: closestFht.coord };
+		return { dest: closestFht.coord, target: closestFht.coord }; */
 	}
 
 	protected getNextMoveType(): Player.MoveType {

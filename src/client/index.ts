@@ -21,10 +21,9 @@ export function game(): TopLevel["game"] {
 	return _top.game;
 }
 
-console.info(`%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;
-margin:0.4em; border:0.3em solid black;padding:0.4em;"
-color:white; background-color:#3f5e77; border-radius:0.7em;
-`);
+console.info("%c🩺 welcome! 🐍", "font:700 2.3em /1.5 monospace;"
++" margin:0.4em; border:0.3em solid black;padding:0.4em;"
++" color:white; background-color:#3f5e77; border-radius:0.7em;");
 
 /**
  * https://developers.google.com/web/fundamentals/primers/service-workers

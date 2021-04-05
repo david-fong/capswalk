@@ -5,7 +5,6 @@ import { Game } from "../Game";
 import type { Coord, Tile } from "floor/Tile";
 import type { StateChange } from "../StateChange";
 import { Player } from "../player/Player";
-import { HealthInfo } from "./HealthInfo";
 import { ScoreInfo } from "./ScoreInfo";
 import { Grid } from "floor/Grid";
 
@@ -18,8 +17,6 @@ InitGameManagerCtorMaps();
 export abstract class GameManager<
 	S extends Coord.System = Coord.System,
 > extends GameMirror<S> {
-
-	public readonly health: HealthInfo;
 
 	public readonly lang: Lang = undefined!;
 	readonly #langImportPromise: Promise<Lang>;
@@ -34,11 +31,8 @@ export abstract class GameManager<
 	}) {
 		super(args);
 
-		this.health = new HealthInfo(args.desc, this.grid.static as Grid.ClassIf<any>);
 		this.scoreInfo = new ScoreInfo(this.players.map((player) => player.playerId));
-		JsUtils.propNoWrite(this as GameManager<S>,
-			"health", "scoreInfo",
-		);
+		JsUtils.propNoWrite(this as GameManager<S>, "scoreInfo");
 
 		// https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
 		this.#langImportPromise = Lang.Import(args.desc.langId).then((LangConstructor) => {
@@ -62,8 +56,6 @@ export abstract class GameManager<
 			playerCoords: [] as Coord[],
 			csps: [] as Lang.Csp[],
 		});
-
-		this.health.reset();
 
 		// Reset hit-counters in the current language:
 		// This must be done before shuffling so that the previous
@@ -117,47 +109,6 @@ export abstract class GameManager<
 		return this.lang.getNonConflictingChar(avoid);
 	}
 
-	/**
-	 * @returns
-	 * A descriptor of changes to make to tiles regarding health spawning.
-	 *
-	 * Note that this will seem to have a one-movement-event delay in
-	 * specifying changes to be made because `this.currentFreeHealth`
-	 * does not update until after the movement request has been
-	 * executed.
-	 */
-	private dryRunSpawnHealth(changes: Record<Coord, Tile.Changes>): Record<Coord, Tile.Changes> {
-		let healthToSpawn = this.health.K.avg - this.health.currentAmount;
-		if (healthToSpawn <= 0) {
-			return changes;
-		}
-		while (healthToSpawn > 0) {
-			let tile: Tile;
-			do {
-				tile = this.grid.tileAt(this.grid.getRandomCoord());
-			} while (
-				tile.occId !== Player.Id.NULL
-				// TODO.design add other checks to improve distribution and reduce
-				// crowding of freeHealth. Make sure it is sensitive to
-				// `this.averageFreeHealthPerTile`.
-			);
-			const healthToAdd = Game.K.AVERAGE_HEALTH_TO_SPAWN_ON_TILE;
-			if ((Math.random() < Game.K._HEALTH_UPDATE_CHANCE)) {
-				let otherDesc = changes[tile.coord];
-				if (otherDesc !== undefined) {
-					// @ts-expect-error : RO=
-					otherDesc.health = (otherDesc.health ?? 0) + healthToAdd;
-				} else {
-					changes[tile.coord] = {
-						health: tile.health + healthToAdd,
-					};
-				}
-			}
-			healthToSpawn -= healthToAdd;
-		}
-		return changes;
-	}
-
 	/** @override */
 	public requestStateChange(req: StateChange.Req, socket?: any): void {
 		const causer = this.players[req.initiator]!;
@@ -175,11 +126,8 @@ export abstract class GameManager<
 			return; //⚡
 		}
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
-		const newPlayerHealthValue
-			= causer.health
-			+ (reqDest.health * (causer.isDowned ? Game.K.HEALTH_EFFECT_FOR_DOWNED_PLAYER : 1.0))
-			- (moveIsBoost ? this.health.K.costOfBoost(reqDest) : 0);
-		if (moveIsBoost && newPlayerHealthValue < 0) {
+		const causerNewBoosts = causer.boosts + (moveIsBoost ? -1 : Game.K.PORTION_OF_MOVES_THAT_ARE_BOOST);
+		if (moveIsBoost && causerNewBoosts < 0) {
 			// Reject a boost-type movement request if it would make
 			// the player become downed (or if they are already downed):
 			this.commitStateChange({
@@ -191,7 +139,6 @@ export abstract class GameManager<
 
 		// Update stats records:
 		const scoreInfo = this.scoreInfo.entries[causer.playerId]!;
-		scoreInfo.totalHealthPickedUp += reqDest.health;
 		scoreInfo.moveCounts[req.moveType] += 1;
 
 		// Set response fields according to spec in `PlayerMovementEvent`:
@@ -200,32 +147,12 @@ export abstract class GameManager<
 			moveType: req.moveType,
 			players: {
 				[causer.playerId]: {
-					health: newPlayerHealthValue,
+					boosts: causerNewBoosts,
 					coord: reqDest.coord,
 				},
 			},
-			tiles: this.dryRunSpawnHealth({
-				[req.moveDest]: {
-					health: 0,
-					...this.dryRunShuffleLangCspAt(reqDest.coord),
-				},
-			}),
+			tiles: [],
 		}, socket);
-	}
-
-	/** @override */
-	protected commitTileMods(coord: Coord, changes: Tile.Changes): void {
-		// JsUtils.deepFreeze(changes); // <- already done by caller.
-		const tile = this.grid.tileAt(coord);
-		if (changes.health !== undefined) {
-			this.health.add(changes.health - tile.health);
-			if (changes.health <= 0) {
-				this.health.tiles.delete(coord);
-			} else {
-				this.health.tiles.set(coord, tile);
-			}
-		}
-		super.commitTileMods(coord, changes);
 	}
 
 	public abstract setTimeout(callback: Function, millis: number, ...args: any[]): number;

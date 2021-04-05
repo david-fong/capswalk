@@ -34,7 +34,7 @@ export abstract class Grid<S extends Coord.System> {
 		this.forEach((tile) => {
 			this.write(tile.coord, {
 				occId: Player.Id.NULL,
-				char: "", seq: "", health: 0,
+				char: "", seq: "",
 			});
 		});
 	}
@@ -171,7 +171,7 @@ export namespace Grid {
 		Grid: Grid.ClassIf<S>;
 		system: S;
 		dimensions: Dimensions[S];
-		players: any; // TODO.design
+		players: readonly Player.UserInfo[];
 	}>;
 
 	/** Used to simulate abstract static methods. */

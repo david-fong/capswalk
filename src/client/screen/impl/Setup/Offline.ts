@@ -31,14 +31,12 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 			socket:     undefined,
 			username:   "hello1",
 			avatar:     Player.Avatar.GET_RANDOM(),
-			familyArgs: { },
 		}, {
 			familyId:   "HUMAN",
 			teamId:     1,
 			socket:     undefined,
 			username:   "hello2",
 			avatar:     Player.Avatar.GET_RANDOM(),
-			familyArgs: { },
 		});
 		return args;
 	}

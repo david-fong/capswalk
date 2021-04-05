@@ -22,14 +22,14 @@ export class Player extends _Player implements _Player.UserInfo {
 	protected readonly game: GameMirror<any>;
 	public readonly reqBuffer: RequestBuffer;
 	#coord: Coord;
-	#health: Player.Health = 0.0;
+	#boosts: number = 0.0;
 
 	public prevCoord: Coord = undefined!;
 
 	public get team(): Team        { return this.game.teams[this.teamId]!; }
 	public get coord(): Coord      { return this.#coord; }
-	public get health(): number    { return this.#health; }
-	public get isDowned(): boolean { return this.health < 0.0; }
+	public get boosts(): number    { return this.#boosts; }
+	public get isDowned(): boolean { return this.boosts < 0.0; } // TODO.design decouple from boost.
 
 	public isTeamedWith(other: Player): boolean {
 		return this.team.members.includes(other);
@@ -68,7 +68,7 @@ export class Player extends _Player implements _Player.UserInfo {
 		this.game.grid.write(coord, {
 			occId: this.playerId,
 		});
-		this.#health = 0.0;
+		this.#boosts = 0.0;
 		this.reqBuffer.reset(coord);
 	}
 
@@ -110,9 +110,9 @@ export class Player extends _Player implements _Player.UserInfo {
 		this.#coord = dest;
 	}
 
-	public set health(newHealth: Player.Health) {
+	public set boosts(newHealth: number) {
 		const oldIsDowned = this.isDowned;
-		this.#health = newHealth;
+		this.#boosts = newHealth;
 
 		if (oldIsDowned || !this.isDowned) return;
 		const team  = this.team;
@@ -147,12 +147,6 @@ export namespace Player {
 
 	export type Id = _Player.Id;
 
-	/**
-	 * Health be picked up from the floor where it is randomly spawned
-	 * by the game manager. It can be used to attack enemy players, or
-	 * to heal teammates.
-	 */
-	export type Health   = _Player.Health;
 	export type Username = _Player.Username;
 	export type Avatar   = _Player.Avatar;
 	export type UserInfo = _Player.UserInfo;
@@ -165,9 +159,10 @@ export namespace Player {
 	});
 	MoveType as { [ key in MoveType ]: key };
 
+	/** */
 	export type Changes = {
 		readonly coord?: Coord,
-		readonly health: Player.Health,
+		readonly boosts: number,
 	};
 
 	/**
@@ -182,27 +177,22 @@ export namespace Player {
 	};
 
 	type _PreIdAssignmentDict = {
-		[F in Player.Family]: F extends typeof Player.Family.HUMAN
-		? _PreIdAssignmentConditional<F> & {
-			readonly socket: WebSocket | undefined;
-		}
-		: _PreIdAssignmentConditional<F>;
-	};
-	interface _PreIdAssignmentConditional<F extends Player.Family> extends UserInfo {
-		readonly familyId: F;
-		readonly familyArgs: CtorArgs.FamilySpecificPart[F];
+		[F in Player.Family]: UserInfo & ({
+			readonly familyId: F;
+		}) & (
+			F extends typeof Player.Family.HUMAN
+				? { readonly socket: WebSocket | undefined; }
+				: { readonly familyArgs: RobotPlayer.FamilySpecificPart[Exclude<F, "HUMAN">]; }
+		);
 	};
 
 	export namespace CtorArgs {
 
 		export type UnFin = _PreIdAssignmentDict[Player.Family];
 
-		export interface FamilySpecificPart extends RobotPlayer.FamilySpecificPart {
-			[Player.Family.HUMAN]: {};
-		}
-
 		/**
-		 * @returns
+		 * Mutates the game descriptor to finalize the players field.
+		 *
 		 * Squashes teamId fields to be suitable for array indices.
 		 */
 		export function finalize<S extends Coord.System>(
@@ -221,7 +211,8 @@ export namespace Player {
 				}, [] as Array<Team.Id>);
 
 			// @ts-expect-error : RO=
-			gameDesc.players = playerDescs.slice()
+			gameDesc.players
+				= playerDescs.slice()
 				.sort((pda, pdb) => teamIdCleaner[pda.teamId]! - teamIdCleaner[pdb.teamId]!)
 				.freeze()
 				.map<CtorArgs>((playerDesc, index) => Object.assign({}, playerDesc, {

@@ -11,7 +11,7 @@ const WIDTH = 1.4; // <- must be set to match the stylesheet values.
 const GAP = 0.25;
 
 /** */
-class VisibleTile implements TU.Pikk<Tile,|"health"> {
+class VisibleTile {
 
 	public readonly _char = JsUtils.svg("text");
 
@@ -20,9 +20,6 @@ class VisibleTile implements TU.Pikk<Tile,|"health"> {
 		char.classList.add(style.char);
 		char.setAttributeNS(null, "x", (iac.x+(0.5)) as unknown as string);
 		char.setAttributeNS(null, "y", (iac.y+(0.5)) as unknown as string);
-	}
-	public set health(health: Player.Health) {
-		// TODO.design hm... now that I'm tiling things, this will be harder.
 	}
 	public set char(char: string) {
 		this._char.textContent = char;
@@ -109,9 +106,6 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		const tile = this.#tiles[coord]!;
 		if (JsUtils.hasProp(changes, "occId")) {
 			// TODO.impl
-		}
-		if (changes.health) {
-			tile.health = changes.health!;
 		}
 		if (changes.char) {
 			tile.char = changes.char!;

@@ -192,7 +192,6 @@ export class Group extends _Group {
 					username: userInfo.username,
 					teamId:   userInfo.teamId,
 					avatar:   userInfo.avatar,
-					familyArgs: {},
 				});
 			}),
 		].freeze();

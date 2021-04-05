@@ -67,7 +67,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 				onGameBecomeOver: () => {},
 			},
 			desc: (() => {
-				Player.CtorArgs.finalize(args.gameDesc);
+				Player.CtorArgs.finalize(args.gameDesc); // <- mutation
 				return args.gameDesc;
 			})(),
 			operatorIds: [],
@@ -76,7 +76,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		this.groupHostSocket = args.groupHostSocket;
 		this.#deleteExternalRefs = args.deleteExternalRefs;
 		JsUtils.instNoEnum (this as ServerGame<S>, "operators");
-		JsUtils.propNoWrite(this as ServerGame<S>, "groupHostSocket", "sockets");
+		JsUtils.propNoWrite(this as ServerGame<S>, "sockets", "groupHostSocket");
 		this.#wsMessageCb = gameOnSocketMessage.bind(this as ServerGame<any>);
 		Object.seal(this); //🧊
 

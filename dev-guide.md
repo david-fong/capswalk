@@ -71,9 +71,7 @@ Use single-underscore enclosures to italicize. Use double-asterisk enclosures to
 
 To make it easier to find console log messages added temporarily, added log messages, use `console.log` for those temporarily added log messages, and `console.info` for more permanent ones.
 
-### Typescript Array Syntax
-
-When describing array types, use the `Array<>` form if the arrays are nested (since `readonly T[][]` is not clear which dimension is readonly), or if the entry type is mainly intended to be used as an interface-style type-map. An example of when `T[]` syntax is acceptable is when `T` is a builtin literal type such as `string` and the array is one dimensional.
+### Throwing Errors
 
 Do not throw strings. Use `Throw new *Error("*")`.
 

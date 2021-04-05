@@ -231,7 +231,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		Object.entries(desc.players).freeze().forEach(([pid, changes]) => {
 			const player = this.players[parseInt(pid)]!;
 			player.reqBuffer.acceptOldest();
-			player.health = changes.health;
+			player.boosts = changes.boosts;
 
 			if (changes.coord !== undefined) {
 				this.grid.write(player.coord,  { occId: Player.Id.NULL });

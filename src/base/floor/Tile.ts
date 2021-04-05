@@ -38,7 +38,6 @@ export namespace Tile {
 	export interface Changes {
 		/** To evict an occupant, pass `Player.Id.NULL`. */
 		readonly occId?:  Player.Id;
-		readonly health?: Player.Health;
 		readonly char?:   string;
 		readonly seq?:    string;
 	}

@@ -52,9 +52,6 @@ export namespace Player {
 		readonly teamId:   number;
 		readonly avatar:   Avatar;
 	}
-
-	/** See the main documentation in game/player/Player. */
-	export type Health = number;
 }
 Object.freeze(Player);
 

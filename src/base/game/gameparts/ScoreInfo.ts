@@ -44,14 +44,11 @@ export namespace ScoreInfo {
 		// It is currently checked on the client side.
 		//public invalidKeyPresses
 
-		public totalHealthPickedUp: Player.Health;
-
 		public constructor() {
 			this.moveCounts = {} as any; // This will be initialized during reset.
 		}
 
 		public reset(): void {
-			this.totalHealthPickedUp = 0.0;
 			(Object.getOwnPropertyNames(Player.MoveType) as
 				Array<Player.MoveType>).forEach((key) => {
 				this.moveCounts[key] = 0;
