@@ -60,7 +60,7 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 		target: ["web", "es2017"],
 		entry: {
 			"css-common": {
-				import: "./src/style/common.css",
+				import: "./src/client/style/common.css",
 			},
 			"index": {
 				import: "./src/client/index.ts",

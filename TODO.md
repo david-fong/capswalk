@@ -42,9 +42,6 @@
 1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
 1. Mashup some CSS resets and normalizers for this repo? Or maybe we don't need any.
 1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.
-1. Look into using AssemblyScript for the Lang tree
-    - https://www.erikonarheim.com/posts/webpack-assemblyscript-and-wasm-loader/
-    - This looks like it would be pretty complicated to do.
 
 ### Ideas
 
