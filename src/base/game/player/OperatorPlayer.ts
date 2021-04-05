@@ -121,11 +121,11 @@ export class OperatorPlayer extends Player {
 	 * Automatically clears the seqBuffer.
 	 * @override
 	 */
-	public setCoord(dest: Coord): void {
+	public _setCoord(dest: Coord): void {
 		// Clear my `seqBuffer` first:
 		this.#seqBuffer = "";
 
-		super.setCoord(dest);
+		super._setCoord(dest);
 	}
 }
 Object.freeze(OperatorPlayer);

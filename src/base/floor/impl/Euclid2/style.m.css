@@ -8,6 +8,8 @@
 	stroke-width: 0.14;
 	fill: var(--colour-tileBg);
 	stroke: var(--colour-tileBg);
+	x: 0.1; y: 0.1;
+	/* height: 0.8; width: 0.8; this is not widely supported yet. */
 }
 
 .char {
@@ -16,4 +18,9 @@
 	text-anchor: middle;
 	fill: var(--colour-tileFg);
 	font-size: 0.04em;
+}
+
+.player {
+	will-change: transform;
+	transition: transform 0.1s linear;
 }

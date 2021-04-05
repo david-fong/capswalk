@@ -14,14 +14,13 @@
 
 ### Things I feel like doing
 
-1. Make an Element extension method for setAttr called `attr` that takes a dictionary.
-1. Ban health systems from the game's core. Document this in game-ideas.md.
 1. Implement `VisibleGrid` rendering of player positions.
+    - Experiment with ways to make rendering more performant / optimize the repaint surface.
 1. Implement a requirement that the number of players is less than the area of the grid.
-1. Use emojis as player avatars.
 1. Implement websocket heartbeat to check for broken connections.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Display the operator's current sequence buffer.
+    - Or perhaps make a fancy "crosshair" that outlines tiles that match the current sequence buffer.
 
 ### Things that I feel less like doing
 

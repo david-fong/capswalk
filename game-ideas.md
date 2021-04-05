@@ -9,6 +9,12 @@ The greatest design challenge here is to accommodate for a wide range of skill. 
 
 One final note: try to think of ways to frame the game as some part of the real world in a way that gives it charm or enforces the atmosphere you want to create (intense/chill, collaborative/competitive). I'm talking about using the visuals to turn the game into a familiar "story". Without that, this game is just another boring typing game. This game doesn't have to just be a way to hone a skill or pit yourself against others with that skill.
 
+## Mechanics Currently Banned from Game Core
+
+These may be reopened for consideration if a game idea is compelling enough.
+
+- Player Health
+
 ## Singleplayer
 
 I think singleplayer game modes are well suited with games that do not end and take one of the following approaches:

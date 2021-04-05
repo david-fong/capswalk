@@ -3,6 +3,10 @@
 //   - Too much detail","or thin shape is not preferred.
 // - Must have some personality (not something incredibly boring).
 // - Must be widely supported
+//
+// Note: the variation-16 code-point is added by the game core.
+// There is no need to add it here.
+// https://emojipedia.org/variation-selector-16/
 [
 "🎈","🎐","🏮","🗿","⚱","🛒","🎉","🧵","🧶",
 "🎃","🎄","🎎","🎏","🧧",

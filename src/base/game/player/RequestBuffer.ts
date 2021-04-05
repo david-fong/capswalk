@@ -51,13 +51,6 @@ export class RequestBuffer {
 		this.predictedCoord = realCoord;
 	}
 	public acceptOldest(): void {
-		// TODO.design this is technically invalid for artificial players
-		// on the client side of an online game... Can we move reqBuffer
-		// to be just for OperatorPlayers?
-
-		// if (DEF.DevAssert && this.length === 0) {
-		// 	throw new Error("never");
-		// }
 		this.size--;
 	}
 }

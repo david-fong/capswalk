@@ -165,7 +165,7 @@ export namespace WrappedEuclid2 {
 
 		public write(coord: Coord, changes: Tile.Changes): void {
 			this._grid[coord] = Object.freeze(Object.assign(
-				Object.create(null), this._grid[coord], changes,
+				{}, this._grid[coord], changes,
 			));
 		}
 

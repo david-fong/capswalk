@@ -40,7 +40,11 @@ export namespace Player {
 
 	export type Avatar = string;
 	export namespace Avatar {
-		export const Values = (AvatarValues as string[]).freeze();
+		export const Values = (AvatarValues as string[])
+			// https://emojipedia.org/variation-selector-16/
+			.map((emoji) => emoji + "\uFE0F")
+			.freeze();
+
 		/** */
 		export function GET_RANDOM(): Avatar {
 			return Values[Math.floor(Math.random() * Values.length)]!;

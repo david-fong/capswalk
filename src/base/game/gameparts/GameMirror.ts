@@ -224,20 +224,20 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 			causer.reqBuffer.reject(desc.rejectId, causer.coord);
 			return; //⚡
 		}
+		causer.reqBuffer.acceptOldest();
 
-		Object.entries(desc.tiles).freeze().forEach(([coord, changes]) => {
+		for (const [coord, changes] of Object.entries(desc.tiles).freeze()) {
 			this.commitTileMods(parseInt(coord), changes);
-		});
+		}
 		Object.entries(desc.players).freeze().forEach(([pid, changes]) => {
 			const player = this.players[parseInt(pid)]!;
-			player.reqBuffer.acceptOldest();
 			player.boosts = changes.boosts;
 
 			if (changes.coord !== undefined) {
 				this.grid.write(player.coord,  { occId: Player.Id.NULL });
 				this.grid.write(changes.coord, { occId: player.playerId });
-				// === order matters ===
-				player.setCoord(changes.coord);
+				// update player _after_ using their previous coord.
+				player._setCoord(changes.coord);
 			}
 		});
 	}

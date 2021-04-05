@@ -72,7 +72,7 @@ export class Player extends _Player implements _Player.UserInfo {
 		this.reqBuffer.reset(coord);
 	}
 
-	/** @virtual Overrides must call super. */
+	/** @virtual The default implementation does nothing. */
 	public onGamePlaying(): void { }
 
 	/** @virtual The default implementation does nothing. */
@@ -105,7 +105,7 @@ export class Player extends _Player implements _Player.UserInfo {
 	 * Causes this Player to update its internal state.
 	 * @virtual
 	 */
-	public setCoord(dest: Coord): void {
+	public _setCoord(dest: Coord): void {
 		this.prevCoord = this.coord;
 		this.#coord = dest;
 	}

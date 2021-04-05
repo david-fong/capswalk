@@ -55,8 +55,7 @@ export abstract class RobotPlayer extends Player {
 
 	/** @override */
 	public onGamePlaying(): void {
-		super.onGamePlaying();
-		/*@__INLINE__*/this._delayedMovementContinue();
+		this._delayedMovementContinue();
 	}
 	/** @override */
 	public onGamePaused(): void {
@@ -86,12 +85,10 @@ export abstract class RobotPlayer extends Player {
 			this.getNextMoveType(),
 		);
 		// Schedule a task to do this again:
-		/*@__INLINE__*/this._delayedMovementContinue();
+		this._delayedMovementContinue();
 	}
 
-	/**
-	 * Schedules a call to `movementContinue`.
-	 */
+	/** Schedules a call to `movementContinue`. */
 	private _delayedMovementContinue(): void {
 		// Schedule the next movement.
 		this._scheduledMovementCallbackId = this.game.setTimeout(
@@ -99,7 +96,6 @@ export abstract class RobotPlayer extends Player {
 			this.computeNextMovementTimer() * this._nextMovementTimerMultiplier,
 			// * Callback function arguments go here.
 		);
-		return;
 	}
 }
 export namespace RobotPlayer {

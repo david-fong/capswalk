@@ -12,6 +12,7 @@ export namespace StateChange {
 	export const INITIAL_PLAYER_REQUEST_ID = 0;
 
 	export interface _Base {
+		/** The player ID of the player who initiated the state change request. */
 		readonly initiator: Player.Id;
 	}
 
@@ -21,6 +22,7 @@ export namespace StateChange {
 	export interface Req extends _Base {
 		readonly lastRejectId: number;
 		readonly moveType: Player.MoveType;
+		/** A tile coordinate.s */
 		readonly moveDest: Coord;
 	}
 
