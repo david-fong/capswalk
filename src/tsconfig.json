@@ -9,5 +9,6 @@
 		{ "path": "base" },
 		{ "path": "client" },
 		{ "path": "server" },
+		{ "path": "test" },
 	],
 }

@@ -19,7 +19,7 @@
             "./src/client/tsconfig.json",
             "./src/server/tsconfig.json",
             // tests:
-            "./test/lang/tsconfig.json"
+            "./src/test/lang/tsconfig.json"
         ],
         "sourceType": "module",
         "extraFileExtensions": [".json"],

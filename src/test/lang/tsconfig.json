@@ -1,0 +1,7 @@
+{
+	"extends": "../tsconfig-childbase.json",
+	"references": [
+		{ "path": "../../base/lang" },
+		{ "path": "../../base/lang/impl", },
+	],
+}

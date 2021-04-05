@@ -18,19 +18,13 @@
 1. Ban health systems from the game's core. Document this in game-ideas.md.
 1. Implement `VisibleGrid` rendering of player positions.
 1. Implement a requirement that the number of players is less than the area of the grid.
-1. Change Euclid Visual Grid to use SVG.
-    - Try doing the tile backgrounds with an SVG tile filter.
 1. Use emojis as player avatars.
 1. Implement websocket heartbeat to check for broken connections.
 1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
-1. Implement Euclid Visual Grid wrapping visualization.
-    - ^This is the use-case for which I've refactored to use `Grid.write` (Ie. smarter grid derived classes instead of smarter tile derived classes).
-1. Implement Grid management of player-rendering.
 1. Display the operator's current sequence buffer.
 
 ### Things that I feel less like doing
 
-1. Move the test folder to go under src/server?
 1. Webpack Add `[hash]` to output filenames and chunkFilenames when production mode.
     - Set the maxAge option for http server to at least a year.
 1. Game-Host Servers:

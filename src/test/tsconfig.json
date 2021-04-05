@@ -1,0 +1,11 @@
+{
+	"extends": "../../tsconfig-template.json",
+	"compilerOptions": {
+		"rootDir": "..",
+		"outDir": "../../dist/.ts",
+	},
+	"files": [],
+	"references": [
+		{ "path": "lang", },
+	],
+}

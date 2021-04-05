@@ -15,7 +15,7 @@ const SERVER_CONFIG = BASE.__BaseConfig("server");
 		BASE.__applyCommonNodeConfigSettings(config);
 		["lang",].forEach((name) => {
 			config.entry["test/"+name] = {
-				import: `./test/${name}/index.ts`,
+				import: `./src/test/${name}/index.ts`,
 			};
 		});
 	}

@@ -1,0 +1,9 @@
+{
+	"extends": "../../tsconfig-template.json",
+	"compilerOptions": {
+		"baseUrl": "..",
+		"rootDir": "..",
+		"outDir": "../../dist/.ts",
+		"disableSolutionSearching": true,
+	},
+}

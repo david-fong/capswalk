@@ -10,19 +10,19 @@
   "license": "LicenseRef-LICENSE.md",
   "author": "David Fong (https://github.com/david-fong)",
   "repository": "github:david-fong/capswalk",
-  "type": "commonjs",
+  "type": "module",
   "files": [],
   "sideEffects": [
     "*.css",
-    "test/*.ts"
+    "./src/server/test/*.ts"
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "devinit": "bash scripts/devinit.sh",
     "lint": "eslint --color --cache --cache-location './node_modules/.cache/eslint-cache.json' './src/'",
-    "build": "node --enable-source-maps --disable-proto=delete --title='capswalk-build' './scripts/webpack/pack.js'",
+    "build": "node --enable-source-maps --disable-proto=delete --title='capswalk-build'  ./scripts/webpack/pack.js",
     "serve": "node --enable-source-maps --disable-proto=delete --title='capswalk-server' ./dist/server/index.js",
-    "test": "node --enable-source-maps --disable-proto=delete --title='capswalk-test' ./dist/server/test/lang.js"
+    "test":  "node --enable-source-maps --disable-proto=delete --title='capswalk-test'   ./dist/server/test/lang.js"
   },
   "dependencies": {
     "koa": "^2.13.1",
