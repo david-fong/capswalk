@@ -99,7 +99,6 @@ export class AllScreens {
 		if (currScreen === destScreen) {
 		    throw new Error("never");
 		}
-		this.#currentScreen = destScreen;
 
 		const navDir = BaseScreen.GET_NAV_DIR({
 			curr: currScreen?.screenId,
@@ -122,6 +121,7 @@ export class AllScreens {
 					destScreen.getRecommendedFocusElem()?.focus();
 				},
 			});
+			this.#currentScreen = destScreen;
 			return true;
 		}
 		return false;

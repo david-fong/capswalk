@@ -16,9 +16,9 @@
 
 1. Implement `VisibleGrid` rendering of player positions.
     - Experiment with ways to make rendering more performant / optimize the repaint surface.
+    - Find out how to prevent "carriage return" when players move wrapping around the edge.
 1. Implement a requirement that the number of players is less than the area of the grid.
 1. Implement websocket heartbeat to check for broken connections.
-1. Fix Bug: after cancelling return to home (from game) once, the next time it is confirmed, it doesn't do it properly.
 1. Display the operator's current sequence buffer.
     - Or perhaps make a fancy "crosshair" that outlines tiles that match the current sequence buffer.
 
