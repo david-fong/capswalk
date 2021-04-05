@@ -11,7 +11,7 @@ import { Grid } from "floor/Grid";
 
 import { GameManager } from "game/gameparts/GameManager";
 
-/** */
+/** @this ServerGame */
 function gameOnSocketMessage<S extends Coord.System>(this: ServerGame<S>, ev: WebSocket.MessageEvent): void {
 	const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
 	const socket = ev.target;

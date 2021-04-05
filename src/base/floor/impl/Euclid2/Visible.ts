@@ -5,7 +5,7 @@ import type { Grid as AbstractGrid } from "floor/Grid";
 import { VisibleGrid } from "floor/visible/VisibleGrid";
 
 import { WrappedEuclid2 as System } from "./System";
-import style, { tile } from "./style.m.css";
+import style from "./style.m.css";
 type S = Coord.System.W_EUCLID2;
 const WIDTH = 1.4; // <- must be set to match the stylesheet values.
 const GAP = 0.25;
@@ -18,8 +18,8 @@ class VisibleTile implements TU.Pikk<Tile,|"health"> {
 	constructor(iac: System.Grid["iacCache"][number]) {
 		const char = this._char;
 		char.classList.add(style.char);
-		char.setAttributeNS(null, "x", (iac.x+(0.5))+"");
-		char.setAttributeNS(null, "y", (iac.y+(0.5))+"");
+		char.setAttributeNS(null, "x", (iac.x+(0.5)) as unknown as string);
+		char.setAttributeNS(null, "y", (iac.y+(0.5)) as unknown as string);
 	}
 	public set health(health: Player.Health) {
 		// TODO.design hm... now that I'm tiling things, this will be harder.

@@ -113,7 +113,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 				}
 			}
 		}
-		this.lazyLoad()
+		this.lazyLoad();
 		await this._abstractOnBeforeEnter(navDir, args);
 	}
 

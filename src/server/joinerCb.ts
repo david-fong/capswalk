@@ -5,7 +5,7 @@ import { wss } from "./index";
 
 /** */
 export const groups = new Map<string, Group>();
-function eraseGroup(groupName: string) { groups.delete(groupName); }
+function eraseGroup(groupName: string): void { groups.delete(groupName); }
 
 /** */
 function _isReqValid(desc: JoinerEv.Create.Req): boolean {

@@ -6,26 +6,23 @@ import type { StateChange } from "game/StateChange";
 import { Player as _Player } from "defs/TypeDefs";
 
 /**
- * Used to buffer requests when there is network delay.
- *
- * This allows for the client to pipeline a certain number of
- * requests. If a request is rejected, all following requests are
- * invalid, and the server can
+ * Used on the clientside to buffer requests when there is network
+ * delay. If a request gets rejected, the whole buffer is invalidated.
  */
 export class RequestBuffer {
 
 	#lastRejectId = 0; public get lastRejectId(): number { return this.#lastRejectId; };
-	private length = 0;
+	private size = 0;
 	public predictedCoord: Coord;
 
 	public reset(coord: Coord): void {
 		this.#lastRejectId = 0;
-		this.length = 0;
+		this.size = 0;
 		this.predictedCoord = coord;
 	}
 
 	public get isFull(): boolean {
-		return this.length === Game.K._REQUEST_BUFFER_LENGTH;
+		return this.size === Game.K._REQUEST_BUFFER_LENGTH;
 	}
 
 	/** @requires `!this.isFull` */
@@ -33,7 +30,7 @@ export class RequestBuffer {
 		if (DEF.DevAssert && this.isFull) {
 			throw new Error("never");
 		}
-		this.length++;
+		this.size++;
 		this.predictedCoord = req.moveDest;
 		return req;
 	}
@@ -50,7 +47,7 @@ export class RequestBuffer {
 	 */
 	public reject(rejectId: number, realCoord: number): void {
 		this.#lastRejectId = rejectId;
-		this.length = 0;
+		this.size = 0;
 		this.predictedCoord = realCoord;
 	}
 	public acceptOldest(): void {
@@ -61,7 +58,7 @@ export class RequestBuffer {
 		// if (DEF.DevAssert && this.length === 0) {
 		// 	throw new Error("never");
 		// }
-		this.length--;
+		this.size--;
 	}
 }
 Object.freeze(RequestBuffer);

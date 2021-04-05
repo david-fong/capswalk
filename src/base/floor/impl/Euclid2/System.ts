@@ -321,7 +321,7 @@ export namespace WrappedEuclid2 {
 		public _assertSomeInvariants(): void {
 			const bad = this._grid.map((t,i) => {
 				const arr = this.getAllAltDestsThan(t.coord).map(t => t.coord).sort().freeze();
-				return { i, arr }
+				return { i, arr };
 			}).filter(o => o.arr.length !== 25).freeze();
 			if (bad.length) {
 				console.error(bad);

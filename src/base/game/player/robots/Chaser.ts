@@ -28,8 +28,6 @@ export class Chaser extends RobotPlayer.Decisive {
 		JsUtils.propNoWrite(this as Chaser,
 			"params", "grid",
 		);
-		this.prey[Symbol.iterator]
-		this.pred.keys
 	}
 
 	public onTeamsBootstrapped(): void {
@@ -56,7 +54,7 @@ export class Chaser extends RobotPlayer.Decisive {
 		// Check if there is anyone to run away from:
 		this.pred.sort((pa,pb) => {
 			return this.grid.dist(pa.coord, this.coord)
-				-  this.grid.dist(pb.coord, this.coord);
+				 - this.grid.dist(pb.coord, this.coord);
 		});
 		for (const pred of this.pred) {
 			if (this.grid.dist(pred.coord, this.coord)
