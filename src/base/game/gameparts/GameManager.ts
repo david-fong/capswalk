@@ -117,9 +117,7 @@ export abstract class GameManager<
 			return; //⚡
 		}
 		const reqDest = this.grid.tileAt(req.moveDest);
-		if (  this.status !== Game.Status.PLAYING
-		 || reqDest.occId !== Player.Id.NULL
-		) {
+		if (this.status !== Game.Status.PLAYING || this.grid.isOccupied(reqDest.coord)) {
 			this.commitStateChange({
 				rejectId: causer.reqBuffer.getNextRejectId(),
 				initiator: req.initiator,

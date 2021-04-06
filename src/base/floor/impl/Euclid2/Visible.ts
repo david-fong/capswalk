@@ -1,18 +1,19 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "floor/Tile";
 import type { Grid as AbstractGrid } from "floor/Grid";
+import type { Player } from "defs/TypeDefs";
 import { VisibleGrid } from "floor/visible/VisibleGrid";
-import { Player } from "defs/TypeDefs";
 
 import { WrappedEuclid2 as System } from "./System";
 import style from "./style.m.css";
 type S = Coord.System.W_EUCLID2;
 const PHYSICAL_TILE_WIDTH = 3.3;
 
-//
+// TODO.wait when rx, x, y, height, and width are widely supported by CSS,
+// use them for the square shapes instead of setting attributes.
 
-/** */
-function setAttrs(el: Element, attrs: Record<string, string|number>): void {
+/** helper */
+function setAttrs(el: Element, attrs: Record<string, string | number>): void {
 	for (const key in attrs) {
 		el.setAttribute(key, attrs[key] as string);
 	}
@@ -81,6 +82,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 				});
 				mirror.appendChild(back);
 			} {
+				// Language Characters
 				const tiles: VisibleTile[] = [];
 				this.forEach((tile) => {
 					const v = new VisibleTile(this.iacCache[tile.coord]!);
@@ -92,28 +94,20 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 			this.players = desc.players.map((desc) => {
 				const svg = JsUtils.svg("g", [style["player"]]); setAttrs(svg, {
 					height: 1, width: 1, viewBox: "0,0,1,1",
-				});
-				{
+				}); {
 					const back = JsUtils.svg("rect", [style["tile"]]);
 					setAttrs(back, { height: 0.8, width: 0.8, x: 0.1, y: 0.1, rx: 0.1 });
 					svg.appendChild(back);
-				} /* {
-					const avatar = JsUtils.svg("text", [style["char"]], {
-						textContent: desc.avatar,
-					}); setAttrs(avatar, {
-						x: "0.5", y: "0.5",
-					});
-					svg.appendChild(avatar);
-				} */ {
+				} {
 					const code = [...desc.avatar]
 						.map((c) => c.codePointAt(0)!.toString(16))
 						.slice(0,-1) // remove the "variant-16 code point"
 						.join("-");
-					const twemoji = JsUtils.svg("image"); setAttrs(twemoji, {
+					const twEmoji = JsUtils.svg("image"); setAttrs(twEmoji, {
 						href: `https://twemoji.maxcdn.com/v/latest/svg/${code}.svg`,
 						height: 1, width: 1,
 					});
-					svg.appendChild(twemoji);
+					svg.appendChild(twEmoji);
 				}
 
 				mirror.appendChild(svg);
@@ -144,13 +138,16 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		if (changes.char) {
 			tile.char = changes.char!;
 		}
-		if (changes.occId !== undefined && changes.occId !== Player.Id.NULL) {
-			const p = this.players[changes.occId!]!;
-			const iac = this.iacCache[coord]!;
-			setAttrs(p, {
-				transform: `translate(${iac.x} ${iac.y})`,
-			});
-		}
+	}
+
+	/** @override */
+	public moveEntity(entityId: Player.Id, from: Coord, to: Coord): void {
+		super.moveEntity(entityId, from, to);
+		const p = this.players[entityId]!;
+		const iac = this.iacCache[to]!;
+		setAttrs(p, {
+			transform: `translate(${iac.x} ${iac.y})`,
+		});
 	}
 }
 Object.freeze(Euclid2VisibleGrid);

@@ -1,7 +1,7 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord as BaseCoord, Coord, Tile } from "floor/Tile";
+import type { Player } from "defs/TypeDefs";
 import { Grid as AbstractGrid } from "floor/Grid";
-import { Player } from "defs/TypeDefs";
 type S = BaseCoord.System.W_EUCLID2;
 
 export type Dim = {
@@ -130,21 +130,18 @@ export namespace WrappedEuclid2 {
 		});
 
 		private readonly _grid: SealedArray<Tile>;
+		readonly #occ: Uint8Array;
 
-		protected readonly iacCache: ReadonlyArray<IAC>;
+		protected readonly iacCache: readonly IAC[];
 
 		public constructor(desc: AbstractGrid.CtorArgs<S>) {
 			super(desc);
 
-			const grid: Array<Tile> = [];
+			this.#occ = new Uint8Array(this.area);
+			const grid: Tile[] = [];
 			for (let y = 0; y < this.dimensions.height; y++) {
 				for (let x = 0; x < this.dimensions.width; x++) {
-					const tile: Tile = {
-						coord: (y * this.dimensions.width) + x,
-						occId: Player.Id.NULL,
-						seq: "",
-					};
-					grid.push(tile);
+					grid.push({ coord: (y * this.dimensions.width) + x, seq: "" });
 				}
 			}
 			this._grid = grid.seal();
@@ -163,10 +160,20 @@ export namespace WrappedEuclid2 {
 			}
 		}
 
+		public reset(): void {
+			super.reset();
+			this.#occ.fill(0);
+		}
+
 		public write(coord: Coord, changes: Tile.Changes): void {
 			this._grid[coord] = Object.freeze(Object.assign(
 				{}, this._grid[coord], changes,
 			));
+		}
+
+		public moveEntity(entityId: Player.Id, from: Coord, to: Coord): void {
+			this.#occ[from] = 0;
+			this.#occ[to] = 1;
 		}
 
 		public forEach(consumer: (tile: Tile, index: number) => void): void {
@@ -187,7 +194,7 @@ export namespace WrappedEuclid2 {
 
 		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {
 			const options = this.tileDestsFrom(sourceCoord)
-			.filter((tile) => tile.occId === Player.Id.NULL)
+			.filter((tile) => !this.isOccupied(tile.coord))
 			.map((tile) => {
 				const tileIac = this.iacCache[tile.coord]!;
 				const destIac = this.iacCache[intendedDest]!;
@@ -221,9 +228,8 @@ export namespace WrappedEuclid2 {
 				// (the axial option (if it exists) should be the first
 				// due to the previous sort's tie-breaker.
 				if (IAC.axialAlignment(this.dimensions, sourceCoord, intendedDest) > 0.5) {
-					// The path to the intended destination is aligned more
-					// with the x or y axis than they are with those axes
-					// rotated 45 degrees.
+					// The path is aligned more with the x or y axis than
+					// it is with those axes rotated 45 degrees.
 					return best.tile;
 				} else {
 					// Ignore the axial option in further computations:
@@ -240,7 +246,7 @@ export namespace WrappedEuclid2 {
 			return this._grid[dest.toCoord(this.dimensions)]!;
 		}
 
-		public getAllAltDestsThan(originCoord: Coord): ReadonlyArray<Tile> {
+		public getAllAltDestsThan(originCoord: Coord): readonly Tile[] {
 			return this.tileDestsFrom(originCoord, 2);
 		}
 
@@ -259,10 +265,13 @@ export namespace WrappedEuclid2 {
 			).norm;
 		}
 
+		public isOccupied(coord: Coord): boolean {
+			return this.#occ[coord]! !== 0;
+		}
 		public tileAt(coord: Coord): Tile {
 			return this._grid[coord]!;
 		}
-		public tileDestsFrom(coord: Coord, radius: number = 1): ReadonlyArray<Tile> {
+		public tileDestsFrom(coord: Coord, radius: number = 1): readonly Tile[] {
 			const iac = this.iacCache[coord]!;
 			let wrapX = false, wrapY = false;
 			const W = this.dimensions.width, H = this.dimensions.height;
@@ -297,7 +306,7 @@ export namespace WrappedEuclid2 {
 			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
 			return dests.freeze();
 		}
-		public tileSourcesTo(coord: Coord, radius: number = 1): ReadonlyArray<Tile> {
+		public tileSourcesTo(coord: Coord, radius: number = 1): readonly Tile[] {
 			return this.tileDestsFrom(coord, radius);
 		}
 

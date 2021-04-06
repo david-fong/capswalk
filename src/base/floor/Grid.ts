@@ -1,6 +1,6 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "./Tile";
-import { Player } from "defs/TypeDefs";
+import type { Player } from "defs/TypeDefs";
 
 import type { WrappedEuclid2 } from "./impl/Euclid2/System";
 import type { Beehive } from "./impl/Beehive/System";
@@ -33,7 +33,6 @@ export abstract class Grid<S extends Coord.System> {
 	public reset(): void {
 		this.forEach((tile) => {
 			this.write(tile.coord, {
-				occId: Player.Id.NULL,
 				char: "", seq: "",
 			});
 		});
@@ -41,6 +40,9 @@ export abstract class Grid<S extends Coord.System> {
 
 	/** */
 	public abstract write(coord: Coord, changes: Readonly<Tile.Changes>): void;
+
+	/** */
+	public abstract moveEntity(entityId: Player.Id, from: Coord, to: Coord): void;
 
 	/**
 	 * For BaseGame's implementation of SER/DES to work, the traversal
@@ -116,6 +118,8 @@ export abstract class Grid<S extends Coord.System> {
 	 */
 	public abstract getRandomCoordAround(origin: Coord, radius: number): Coord;
 
+	/** */
+	public abstract isOccupied(coord: Coord): boolean;
 	/** Treat the result as a state snapshot. */
 	public abstract tileAt(coord: Coord): Tile;
 	/** Treat the result as a state snapshot. */

@@ -1,5 +1,6 @@
 import { JsUtils } from "defs/JsUtils";
 import type { Coord, Tile } from "floor/Tile";
+import type { Player } from "defs/TypeDefs";
 import { Grid as AbstractGrid } from "floor/Grid";
 type S = Coord.System.BEEHIVE;
 
@@ -123,6 +124,10 @@ export namespace Beehive {
 			// TODO.impl
 		}
 
+		public moveEntity(entityId: Player.Id, from: Coord, to: Coord): void {
+			;
+		}
+
 		public forEach(consumer: (tile: Tile, index: number) => void): void {
 			let i = 0;
 			for (const row of this.grid) {
@@ -165,6 +170,10 @@ export namespace Beehive {
 		}
 
 		public dist(source: Coord, dest: Coord): number {
+			return undefined!;
+		}
+
+		public isOccupied(coord: Coord): boolean {
 			return undefined!;
 		}
 

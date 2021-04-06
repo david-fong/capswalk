@@ -107,9 +107,9 @@ export class Chaser extends RobotPlayer.Decisive {
 				return { dest: this.grid.getRandomCoordAround(this.coord, 3) };
 			} else {
 				// Continue wandering with a subtle, random direction:
-				const awayFunc = this.grid.getUntAwayFrom.bind(this.grid, this.prevCoord);
+				const awayFn = this.grid.getUntAwayFrom.bind(this.grid, this.prevCoord);
 				return { dest: this.grid.getRandomCoordAround(
-					awayFunc(awayFunc(this.coord).coord).coord, 1,
+					awayFn(awayFn(this.coord).coord).coord, 1,
 				)};
 			}
 		}

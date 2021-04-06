@@ -80,7 +80,7 @@ export class OperatorPlayer extends Player {
 	 */
 	public seqBufferAcceptKey(key: string | undefined): void {
 		const unts = this.game.grid.tileDestsFrom(this.reqBuffer.predictedCoord)
-			.filter((tile) => tile.occId === Player.Id.NULL);
+			.filter((tile) => !this.game.grid.isOccupied(tile.coord));
 		if (unts.length === 0) {
 			// Every neighbouring `Tile` is occupied!
 			// In this case, no movement is possible.

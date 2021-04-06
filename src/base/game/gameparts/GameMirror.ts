@@ -201,7 +201,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	public abstract requestStateChange(desc: StateChange.Req, socket?: any): void;
 
 	/** @virtual */
-	protected commitTileMods(coord: Coord, changes: TU.Omit<Tile.Changes,"occId">): void {
+	protected commitTileMods(coord: Coord, changes: Tile.Changes): void {
 		// JsUtils.deepFreeze(changes); // <- already done by caller.
 		if (changes.seq !== undefined) {
 			const sources = this.grid.tileSourcesTo(coord);
@@ -229,17 +229,17 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		for (const [coord, changes] of Object.entries(desc.tiles).freeze()) {
 			this.commitTileMods(parseInt(coord), changes);
 		}
-		Object.entries(desc.players).freeze().forEach(([pid, changes]) => {
+		for (const [pid, changes] of Object.entries(desc.players).freeze()) {
 			const player = this.players[parseInt(pid)]!;
 			player.boosts = changes.boosts;
 
 			if (changes.coord !== undefined) {
-				this.grid.write(player.coord,  { occId: Player.Id.NULL });
-				this.grid.write(changes.coord, { occId: player.playerId });
-				// update player _after_ using their previous coord.
+				const prevCoord = player.coord;
+				// note: the order of the below lines does not matter.
+				this.grid.moveEntity(player.playerId, prevCoord, changes.coord);
 				player._setCoord(changes.coord);
 			}
-		});
+		}
 	}
 }
 JsUtils.protoNoEnum(GameMirror, "_createPlayers");

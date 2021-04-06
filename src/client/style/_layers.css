@@ -40,6 +40,7 @@ takes a long time to arrive. */
 	background-color: var(--colour-mainBg);
 }
 #screen-texture {
+	display: none; /* currently toggled off. seems to improve performance. */
 	background-size: 13.5rem;
 	mix-blend-mode: overlay;
 	background-color: #919191;

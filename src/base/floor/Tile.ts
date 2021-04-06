@@ -1,4 +1,3 @@
-import type { Player } from "defs/TypeDefs";
 
 /**
  * A unique identifier within a Chunk.
@@ -10,7 +9,7 @@ import type { Player } from "defs/TypeDefs";
  */
 export type Coord = number;
 export namespace Coord {
-
+	/** */
 	export const enum System {
 		W_EUCLID2 = "W_EUCLID2",
 		BEEHIVE = "BEEHIVE",
@@ -28,18 +27,15 @@ Object.freeze(Coord);
  *
  * @see Tile.ImplementationNotes
  */
-export interface Tile extends Required<TU.Omit<Tile.Changes,"char">> {
+export interface Tile {
 	readonly coord: Coord;
+	readonly seq: string;
 }
 export namespace Tile {
-	/**
-	 * A DTO of changes 📦
-	 */
+	/** A DTO of changes 📦 */
 	export interface Changes {
-		/** To evict an occupant, pass `Player.Id.NULL`. */
-		readonly occId?:  Player.Id;
-		readonly char?:   string;
-		readonly seq?:    string;
+		readonly char?: string;
+		readonly seq:   string;
 	}
 
 	/**

@@ -7,7 +7,7 @@ import style from "./tile.m.css";
 /**
  * Implicitly handles visuals with help from CSS.
  */
-export class VisibleTile implements TU.Pikk<Tile,"occId"> {
+export class VisibleTile {
 
 	public readonly baseElem = JsUtils.html("div", [style["this"]]);
 	private readonly charElem = JsUtils.html("div", []);
@@ -19,13 +19,6 @@ export class VisibleTile implements TU.Pikk<Tile,"occId"> {
 		Object.freeze(this);
 	}
 
-	public set occId(playerId: Player.Id) {
-		if (playerId === Player.Id.NULL) {
-			delete this.baseElem.dataset["occId"];
-		} else {
-			this.baseElem.dataset["occId"] = playerId.toString();
-		}
-	}
 	public set char(char: string) {
 		this.charElem.textContent = char;
 	}

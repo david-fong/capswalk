@@ -40,7 +40,7 @@ export namespace StateChange {
 			 *
 			 * Occupant changes are communicated in the `players` field- not here.
 			 */
-			readonly tiles: Record<Coord, TU.Omit<Tile.Changes,"occId">>;
+			readonly tiles: Record<Coord, Tile.Changes>;
 
 			/** */
 			readonly players: Readonly<Record<Player.Id, Player.Changes>>;

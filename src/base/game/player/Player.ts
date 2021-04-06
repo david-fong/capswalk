@@ -65,9 +65,7 @@ export class Player extends _Player implements _Player.UserInfo {
 	public reset(coord: Coord): void {
 		this.#coord = coord;
 		this.prevCoord = coord;
-		this.game.grid.write(coord, {
-			occId: this.playerId,
-		});
+		this.game.grid.moveEntity(this.playerId, coord, coord);
 		this.#boosts = 0.0;
 		this.reqBuffer.reset(coord);
 	}
