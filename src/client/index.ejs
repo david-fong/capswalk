@@ -1,41 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8"/>
-		<title>capswalk</title>
-		<meta name="referrer" content="same-origin"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<!-- <link rel="manifest" href="manifest.webmanifest"/> -->
+<head>
+	<meta charset="UTF-8"/>
+	<title>capswalk</title>
+	<meta name="referrer" content="same-origin"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<!-- <link rel="manifest" href="manifest.webmanifest"/> -->
 
-		<%= htmlWebpackPlugin.tags.headTags.join("\n\t\t") %>
-		<meta name="og:title"       content="capswalk"/>
-		<meta name="author"         content="David Fong"/>
-		<meta name="description"    content="A multiplayer typing game for learning written languages."/>
-		<meta name="og:description" content="A multiplayer typing game for learning written languages."/>
-		<meta name="og:image"       content="https://raw.githubusercontent.com/david-fong/capswalk/dev/assets/images/screenshots/snakey_version3_blanktitle.png"/>
-	</head>
+	<%= htmlWebpackPlugin.tags.headTags.join("\n\t") %>
+	<meta name="og:title"       content="capswalk"/>
+	<meta name="author"         content="David Fong"/>
+	<meta name="description"    content="A multiplayer typing game for learning written languages."/>
+	<meta name="og:description" content="A multiplayer typing game for learning written languages."/>
+	<meta name="og:image"       content="https://raw.githubusercontent.com/david-fong/capswalk/dev/assets/images/screenshots/snakey_version3_blanktitle.png"/>
+</head>
 
 
-	<body class="fill-parent">
-		<datalist id="public-game-hosts-list">
-			<% wellKnownGameServers.forEach(host => { %>
-				<option value="https://<%-(host)%>"></option>
-			<% }) %>
-		</datalist>
-		<script>
-		{ // Load up last used colour scheme (or default):
-			const css = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
-			const root = document.documentElement;
-			if (css) { css.split(";").forEach((rule) => {
-				const [name,val] = rule.split(":");
-				root.style.setProperty(name,val);
-			}); }
-			else { root.dataset["skColourScheme"] = "default"; }
-		} </script>
-		<div id="background"     class="screen" aria-hidden="true"></div>
-		<div id="all-screens-container"></div>
-		<div id="screen-tint"    class="screen" aria-hidden="true"></div>
-		<div id="screen-texture" class="screen" aria-hidden="true"></div>
-		<%= htmlWebpackPlugin.tags.bodyTags.join("\n\t\t") %>
-	</body>
+<body class="fill-parent">
+	<datalist id="public-game-hosts-list">
+		<% wellKnownGameServers.forEach(host => { %>
+			<option value="https://<%-(host)%>"></option>
+		<% }) %>
+	</datalist>
+	<script>
+	{ // Load up last used colour scheme (or default):
+		const css = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
+		const root = document.documentElement;
+		if (css) { css.split(";").forEach((rule) => {
+			const [name,val] = rule.split(":");
+			root.style.setProperty(name,val);
+		}); }
+		else { root.dataset["skColourScheme"] = "default"; }
+	} </script>
+	<div id="background"     class="screen" aria-hidden="true"></div>
+	<div id="all-screens-container"></div>
+	<div id="screen-tint"    class="screen" aria-hidden="true"></div>
+	<div id="screen-texture" class="screen" aria-hidden="true"></div>
+	<%= htmlWebpackPlugin.tags.bodyTags.join("\n\t") %>
+</body>
+
+
+<!--!
+	This project uses Twemoji (https://twemoji.twitter.com/). Attribution below:
+	Copyright 2020 Twitter, Inc and other contributors
+	Code licensed under the MIT License: http://opensource.org/licenses/MIT
+	Graphics licensed under CC-BY 4.0: https://creativecommons.org/licenses/by/4.0/
+-->
 </html>

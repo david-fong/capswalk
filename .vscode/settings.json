@@ -48,6 +48,7 @@
     "todo-tree.filtering.useBuiltInExcludes": "file excludes",
     "todo-tree.general.statusBar": "total",
     "todo-tree.general.tags": [
+        "TODO.wait"  ,
         "TODO.learn" ,
         "TODO.design",
         "TODO.doc"   ,

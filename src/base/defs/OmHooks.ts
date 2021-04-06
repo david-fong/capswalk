@@ -50,9 +50,6 @@ export namespace Screen {
 		NAV_NEXT:    "screen--next-button",
 		NAV_PREV:    "screen--prev-button",
 	};
-	export const Dataset = <const>{
-		CURRENT:     "current",
-	};
 	export namespace Impl {
 		export namespace Setup {
 			export const Id = <const>{

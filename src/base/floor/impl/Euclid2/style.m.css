@@ -1,19 +1,20 @@
 .grid {
+	pointer-events: none;
 	contain: strict;
 	display: block;
 }
 
 .tile {
-	rx: 0.1;
+	/* TODO.wait The commented out properties are not yet widely supported via CSS. */
+	/* rx: 0.1; */
 	stroke-width: 0.14;
 	fill: var(--colour-tileBg);
 	stroke: var(--colour-tileBg);
-	x: 0.1; y: 0.1;
+	/* x: 0.1; y: 0.1; */
 	/* height: 0.8; width: 0.8; this is not widely supported yet. */
 }
 
 .char {
-	pointer-events: none;
 	dominant-baseline: central;
 	text-anchor: middle;
 	fill: var(--colour-tileFg);
@@ -21,6 +22,7 @@
 }
 
 .player {
-	will-change: transform;
+	pointer-events: all;
+	z-index: 1;
 	transition: transform 0.1s linear;
 }

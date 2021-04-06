@@ -4,12 +4,7 @@
 }
 
 .screen {
-	/* Make sure that each display starts its own
-	stacking context. Note that as a result of using
-	the contain property on this class and possibly
-	on some of its children, the visibility property
-	will not be sufficient to hide inactive screens. */
-	contain: strict;
+	contain: strict; /* <- note: creates a stacking context. */
 	position: fixed;
 	top: 0; right: 0; bottom: 0; left: 0;
 	overflow: auto;

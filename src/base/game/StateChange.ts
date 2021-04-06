@@ -22,7 +22,7 @@ export namespace StateChange {
 	export interface Req extends _Base {
 		readonly lastRejectId: number;
 		readonly moveType: Player.MoveType;
-		/** A tile coordinate.s */
+		/** A tile coordinate. */
 		readonly moveDest: Coord;
 	}
 

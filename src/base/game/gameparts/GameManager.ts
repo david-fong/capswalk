@@ -94,8 +94,8 @@ export abstract class GameManager<
 	 * @param coord
 	 *
 	 * @returns
-	 * A {@link Lang.CharSeqPair} that can be used as a replacement
-	 * for that currently being used by `tile`.
+	 * A {@link Lang.Csp} that can be used as a replacement for that
+	 * currently in `tile`.
 	 */
 	private dryRunShuffleLangCspAt(coord: Coord): Lang.Csp {
 		// First, clear values for the target tile so its current
@@ -113,6 +113,7 @@ export abstract class GameManager<
 	public requestStateChange(req: StateChange.Req, socket?: any): void {
 		const causer = this.players[req.initiator]!;
 		if (req.lastRejectId !== causer.reqBuffer.lastRejectId) {
+			// client hasn't received previously sent reject ID yet.
 			return; //⚡
 		}
 		const reqDest = this.grid.tileAt(req.moveDest);
@@ -128,8 +129,6 @@ export abstract class GameManager<
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
 		const causerNewBoosts = causer.boosts + (moveIsBoost ? -1 : Game.K.PORTION_OF_MOVES_THAT_ARE_BOOST);
 		if (moveIsBoost && causerNewBoosts < 0) {
-			// Reject a boost-type movement request if it would make
-			// the player become downed (or if they are already downed):
 			this.commitStateChange({
 				rejectId: causer.reqBuffer.getNextRejectId(),
 				initiator: req.initiator,

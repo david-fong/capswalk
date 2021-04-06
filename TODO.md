@@ -17,6 +17,7 @@
 1. Implement `VisibleGrid` rendering of player positions.
     - Experiment with ways to make rendering more performant / optimize the repaint surface.
     - Find out how to prevent "carriage return" when players move wrapping around the edge.
+    - The current usage of using a CSS transition on the transform property is not working for Firefox.
 1. Implement a requirement that the number of players is less than the area of the grid.
 1. Implement websocket heartbeat to check for broken connections.
 1. Display the operator's current sequence buffer.

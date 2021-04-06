@@ -130,12 +130,12 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 
 	/** @final **Do not override.** */
 	public _onAfterEnter(): void {
-		this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT] = ""; // exists.
+		this.baseElem.setAttribute("aria-current", "true"); // exists.
 		this.#parentElem.appendChild(this.baseElem);
 	}
 	/** @final **Do not override.** */
 	public _onAfterLeave(): void {
-		delete this.baseElem.dataset[OmHooks.Screen.Dataset.CURRENT]; // non-existant.
+		this.baseElem.setAttribute("aria-current", "false"); // non-existant.
 		this.baseElem.remove();
 	}
 

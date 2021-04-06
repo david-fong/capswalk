@@ -108,7 +108,9 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 		new HtmlPlugin(htmlPluginOptions),
 		new CspHtmlPlugin({
 			"default-src": ["'self'"],
-			"script-src": ["'self'"], "style-src": ["'self'", "https://fonts.googleapis.com"],
+			"script-src":  ["'self'"],
+			"style-src":   ["'self'", "https://fonts.googleapis.com"],
+			"img-src":     ["'self'", "https://twemoji.maxcdn.com"],
 			"child-src": "'none'", "object-src": "'none'", "base-uri": "'none'",
 			"connect-src": ["'self'", ...GAME_SERVERS.map((origin) => `wss://${origin}/ws/`)],
 			"form-action": "'none'", "font-src": ["'self'", "https://fonts.gstatic.com"] },{

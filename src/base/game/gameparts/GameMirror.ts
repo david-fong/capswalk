@@ -201,7 +201,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	public abstract requestStateChange(desc: StateChange.Req, socket?: any): void;
 
 	/** @virtual */
-	protected commitTileMods(coord: Coord, changes: Tile.Changes): void {
+	protected commitTileMods(coord: Coord, changes: TU.Omit<Tile.Changes,"occId">): void {
 		// JsUtils.deepFreeze(changes); // <- already done by caller.
 		if (changes.seq !== undefined) {
 			const sources = this.grid.tileSourcesTo(coord);
