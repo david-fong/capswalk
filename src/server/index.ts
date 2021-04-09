@@ -36,7 +36,8 @@ export const wss = new WebSocket.Server({
 	server: server,
 });
 import { groups, wsMessageCb } from "./joinerCb";
-wss.on("connection", function onWsConnect(ws): void {
+wss.on("connection", function onWsConnect(ws, req): void {
+	//req.socket.remoteAddress // <- how to get the client's IP address.
 	// Upon connection, immediately send a list of existing groups:
 	const data = JSON.stringify([
 		JoinerEv.Exist.NAME,

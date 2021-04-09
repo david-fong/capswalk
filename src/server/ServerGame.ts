@@ -23,11 +23,11 @@ function gameOnSocketMessage<S extends Coord.System>(this: ServerGame<S>, ev: We
 			if (socket === this.groupHostSocket) {
 				this.statusBecomeOver();
 				const data = JSON.stringify([GameEv.RETURN_TO_LOBBY]);
-				this.sockets.forEach((s) => { if (s !== socket) s.send(data); });
+				this.sockets.forEach((s) => { if (s !== socket && s.readyState === s.OPEN) { s.send(data); }});
 				this._terminate();
 			} else {
 				const data = JSON.stringify([GameEv.RETURN_TO_LOBBY, SOCKET_ID(socket)]);
-				this.sockets.forEach((s) => { if (s !== socket) s.send(data); });
+				this.sockets.forEach((s) => { if (s !== socket && s.readyState === s.OPEN) s.send(data); });
 			}
 			break;
 		default: break;
@@ -116,7 +116,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 				.filter((desc) => desc.socket === s)
 				.map((desc) => desc.playerId).freeze();
 			const data = JSON.stringify([GroupEv.CREATE_GAME, gameDesc, operatorIds]);
-			s.send(data); //📢 "get ready for reset"
+			if (s.readyState === s.OPEN) { s.send(data); } //📢 "get ready for reset"
 		});
 	}
 
@@ -137,7 +137,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 
 		const resetSer = await super.reset();
 		const data = JSON.stringify([GameEv.RESET, resetSer]);
-		this.sockets.forEach((s) => s.send(data)); //📢 "get ready for playing!"
+		this.sockets.forEach((s) => { if (s.readyState === s.OPEN) { s.send(data); }}); //📢 "get ready for playing!"
 		return resetSer;
 	}
 
@@ -161,14 +161,14 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	public statusBecomePlaying(): void {
 		super.statusBecomePlaying();
 		const data = JSON.stringify([GameEv.UNPAUSE]);
-		this.sockets.forEach((s) => s.send(data));
+		this.sockets.forEach((s) => { if (s.readyState === s.OPEN) { s.send(data); }});
 	}
 
 	/** @override */
 	public statusBecomePaused(): void {
 		super.statusBecomePaused();
 		const data = JSON.stringify([GameEv.PAUSE]);
-		this.sockets.forEach((s) => s.send(data));
+		this.sockets.forEach((s) => { if (s.readyState === s.OPEN) { s.send(data); }});
 	}
 
 	/** @override */
@@ -181,7 +181,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			socket?.send(data);
 		} else {
 			const data = JSON.stringify([GameEv.IN_GAME, desc]);
-			this.sockets.forEach((s) => s.send(data));
+			this.sockets.forEach((s) => { if (s.readyState === s.OPEN) { s.send(data); }});
 		}
 	}
 

@@ -46,7 +46,6 @@
     "files.trimTrailingWhitespace": true,
 
     "todo-tree.filtering.useBuiltInExcludes": "file excludes",
-    "todo-tree.general.statusBar": "total",
     "todo-tree.general.tags": [
         "TODO.wait"  ,
         "TODO.learn" ,

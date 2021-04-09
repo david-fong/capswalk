@@ -24,5 +24,5 @@
 .player {
 	pointer-events: all;
 	z-index: 1;
-	transition: transform 0.1s linear;
+	transition: transform 0.05s linear;
 }

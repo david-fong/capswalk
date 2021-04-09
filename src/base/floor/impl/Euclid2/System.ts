@@ -15,7 +15,6 @@ export type Dim = {
  * Immutable.
  */
 class IAC {
-	//#region
 	public constructor(
 		public readonly x: number,
 		public readonly y: number,
@@ -29,31 +28,28 @@ class IAC {
 		return (this.y * dimensions.width) + this.x;
 	}
 
-	public static distX(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): {
-		dist: number, wrap: boolean,
-	} {
-		let dist = Math.abs(i1.x - i2.x);
-		if (dist < dim.width / 2) return { dist, wrap: false };
-		return { dist: dim.width - dist, wrap: true };
+	public static distX(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): number {
+		let dx = Math.abs(i1.x - i2.x);
+		return (dx < dim.width / 2) ? dx : (dim.width - dx);
 	}
-	public static distY(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): {
-		dist: number, wrap: boolean,
-	} {
-		let dist = Math.abs(i1.y - i2.y);
-		if (dist < dim.height / 2) return { dist, wrap: false };
-		return { dist: dim.height - dist, wrap: true };
+	public static distY(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): number {
+		let dy = Math.abs(i1.y - i2.y);
+		return (dy < dim.height / 2) ? dy : (dim.height - dy);
 	}
-	public static oneNorm(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): {
-		norm: number, wrapX: boolean, wrapY: boolean,
-	} {
-		const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
-		return { norm: dX.dist + dY.dist, wrapX: dX.wrap, wrapY: dY.wrap };
+	public static oneNorm(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): number {
+		const dx = IAC.distX(dim,i1,i2), dy = IAC.distY(dim,i1,i2);
+		return dx + dy;
 	}
-	public static infNorm(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): {
-		norm: number, wrapX: boolean, wrapY: boolean,
-	} {
-		const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
-		return { norm: Math.max(dX.dist, dY.dist), wrapX: dX.wrap, wrapY: dY.wrap };
+	public static infNorm(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): number {
+		const dx = IAC.distX(dim,i1,i2), dy = IAC.distY(dim,i1,i2);
+		return Math.max(dx, dy);
+	}
+	/** Returns wrapping information as signums. */
+	public static wrap(dim: Dim, from: IAC.Bare, to: IAC.Bare): IAC.Bare {
+		return Object.freeze({
+			x: (Math.abs(to.x - from.x) < dim.width  / 2) ? 0 : (to.x < from.x) ? -1 : 1,
+			y: (Math.abs(to.y - from.y) < dim.height / 2) ? 0 : (to.y < from.y) ? -1 : 1,
+		});
 	}
 	/**
 	 * @returns
@@ -67,8 +63,8 @@ class IAC {
 	 */
 	public static axialAlignment(dim: Dim, _i1: Coord, _i2: Coord): number {
 		const i1 = IAC.from(dim, _i1), i2 = IAC.from(dim, _i2);
-		const dX = IAC.distX(dim,i1,i2), dY = IAC.distY(dim,i1,i2);
-		return (Math.abs(dX.dist - dY.dist)) / (dX.dist + dY.dist);
+		const dx = IAC.distX(dim,i1,i2), dy = IAC.distY(dim,i1,i2);
+		return (Math.abs(dx - dy)) / (dx + dy);
 	}
 
 	public add(other: IAC.Bare): IAC {
@@ -100,7 +96,6 @@ class IAC {
 		y %= dim.height;
 		return new IAC(x,y);
 	}
-	//#endregion
 }
 export namespace IAC {
 	export type Bare = {
@@ -200,8 +195,8 @@ export namespace WrappedEuclid2 {
 				const destIac = this.iacCache[intendedDest]!;
 				return {
 					tile, iac: tileIac,
-					infNorm: IAC.infNorm(this.dimensions, tileIac, destIac).norm,
-					oneNorm: IAC.oneNorm(this.dimensions, tileIac, destIac).norm,
+					infNorm: IAC.infNorm(this.dimensions, tileIac, destIac),
+					oneNorm: IAC.oneNorm(this.dimensions, tileIac, destIac),
 				};
 			});
 			if (options.length === 0) {
@@ -262,7 +257,7 @@ export namespace WrappedEuclid2 {
 			return IAC.infNorm(this.dimensions,
 				this.iacCache[source]!,
 				this.iacCache[dest]!,
-			).norm;
+			);
 		}
 
 		public isOccupied(coord: Coord): boolean {

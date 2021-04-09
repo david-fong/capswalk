@@ -72,7 +72,7 @@ export class Group extends _Group {
 			const data = JSON.stringify([GroupEv.UserInfo.NAME, <GroupEv.UserInfo.Res>{
 				[SOCKET_ID(ev.target)]: null,
 			}]);
-			this.sockets.forEach((u,s) => s.send(data));
+			this.sockets.forEach((u,s) => { if (s.readyState === s.OPEN) { s.send(data); }});
 		};
 	}
 
@@ -92,7 +92,7 @@ export class Group extends _Group {
 				// Notify all other clients in this group of the new player:
 				// NOTE: broadcast modifier not used since socket is not yet in this.sockets.
 				const data = JSON.stringify([EVENT_NAME, <Res>{[SOCKET_ID(ws)]: userInfo}]);
-				this.sockets.forEach((u,s) => s.send(data));
+				this.sockets.forEach((u,s) => { if (s.readyState === s.OPEN) { s.send(data); }});
 			}
 			// Notify the new player of all other players:
 			const res: Res = {};
@@ -141,7 +141,7 @@ export class Group extends _Group {
 		const data = JSON.stringify([GroupEv.UserInfo.NAME, <GroupEv.UserInfo.Res>{
 			[SOCKET_ID(ws)]: req,
 		}]);
-		this.sockets.forEach((u,s) => s.send(data));
+		this.sockets.forEach((u,s) => { if (s.readyState === s.OPEN) { s.send(data); }});
 	}
 
 	/** */

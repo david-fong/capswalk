@@ -18,7 +18,7 @@ function _isReqValid(desc: JoinerEv.Create.Req): boolean {
 /** */
 function wssBroadcast(evName: string, _data: any): void {
 	const data = JSON.stringify([evName, _data]);
-	wss.clients.forEach((s) => s.send(data));
+	wss.clients.forEach((s) => { if (s.readyState === s.OPEN) { s.send(data); }});
 }
 /** */
 export function wsMessageCb(ev: WebSocket.MessageEvent): void {
