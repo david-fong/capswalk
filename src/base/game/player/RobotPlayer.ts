@@ -81,7 +81,7 @@ export abstract class RobotPlayer extends Player {
 		this._nextMovementTimerMultiplier = this.game.grid.tileAt(desiredDest).seq.length;
 
 		this.makeMovementRequest(
-			this.game.grid.getUntToward(desiredDest, this.coord).coord,
+			this.game.grid.getUntToward(desiredDest, this.coord),
 			this.getNextMoveType(),
 		);
 		// Schedule a task to do this again:
@@ -144,7 +144,7 @@ export namespace RobotPlayer {
 		 * @requires
 		 * The last behaviour must never return `undefined`.
 		 */
-		protected abstract get _behaviours(): ReadonlyArray<Decisive.Behaviour>;
+		protected abstract get _behaviours(): readonly Decisive.Behaviour[];
 
 		readonly #cache = {
 			which:  0,

@@ -187,7 +187,7 @@ export namespace WrappedEuclid2 {
 			}
 		}
 
-		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {
+		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Coord {
 			const options = this.tileDestsFrom(sourceCoord)
 			.filter((tile) => !this.isOccupied(tile.coord))
 			.map((tile) => {
@@ -200,7 +200,7 @@ export namespace WrappedEuclid2 {
 				};
 			});
 			if (options.length === 0) {
-				return this.tileAt(sourceCoord);
+				return sourceCoord;
 			}
 			options.sort((ta, tb) =>  ta.infNorm - tb.infNorm);
 			options.length = 3;
@@ -215,7 +215,7 @@ export namespace WrappedEuclid2 {
 			}
 			if (options.length === 1) {
 				// Minor optimization:
-				return best.tile;
+				return best.tile.coord;
 			}
 			// Choose one of the most favourable using some randomness
 			// weighted to follow a straight-looking path of movement.
@@ -225,20 +225,20 @@ export namespace WrappedEuclid2 {
 				if (IAC.axialAlignment(this.dimensions, sourceCoord, intendedDest) > 0.5) {
 					// The path is aligned more with the x or y axis than
 					// it is with those axes rotated 45 degrees.
-					return best.tile;
+					return best.tile.coord;
 				} else {
 					// Ignore the axial option in further computations:
 					options.shift();
 				}
 			}
 			// Choose a random non-axial option:
-			return options[Math.floor(options.length * Math.random())]!.tile;
+			return options[Math.floor(options.length * Math.random())]!.tile.coord;
 		}
-		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Tile {
+		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Coord {
 			const avoid = this.iacCache[_avoidCoord]!;
 			const src = this.iacCache[_sourceCoord]!;
 			const dest = src.iSub(avoid).mod(this.dimensions);
-			return this._grid[dest.toCoord(this.dimensions)]!;
+			return dest.toCoord(this.dimensions);
 		}
 
 		public getAllAltDestsThan(originCoord: Coord): readonly Tile[] {

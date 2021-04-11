@@ -197,10 +197,10 @@ export namespace Player {
 			gameDesc: Game.CtorArgs.UnFin<S>,
 		): asserts gameDesc is Game.CtorArgs<S>
 		{
-			const playerDescs: ReadonlyArray<CtorArgs.UnFin> = gameDesc.players;
+			const playerDescs: readonly CtorArgs.UnFin[] = gameDesc.players;
 			// Map team ID's to consecutive numbers
 			// (to play nice with array representations):
-			const teamIdCleaner: ReadonlyArray<Team.Id>
+			const teamIdCleaner: readonly Team.Id[]
 				= Array.from(new Set(playerDescs.map((player) => player.teamId)))
 				.sort((a, b) => a - b) // This is not a representation requirement.
 				.reduce((prev, originalId, squashedId) => {

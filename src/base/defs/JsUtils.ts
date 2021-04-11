@@ -30,7 +30,7 @@ export namespace JsUtils {
 	/** */
 	export function protoNoEnum<T>(
 		ctor: {new(...args: any[]): T} | Function, // <- allow abstract classes
-		...propNames: ReadonlyArray<keyof T & string> | ReadonlyArray<string>
+		...propNames: readonly (keyof T & string)[] | readonly string[]
 	): void {
 		const hasProps = Object.getOwnPropertyNames(ctor.prototype).freeze();
 		propNames.forEach((propName) => {
@@ -47,10 +47,10 @@ export namespace JsUtils {
 	export const instNoEnum  = _configProp.bind(null, NO_ENUM) as _configProp;
 	export const propNoWrite = _configProp.bind(null, NO_WRITE) as _configProp;
 
-	type _configProp = <T>(inst: T, ...propNames: ReadonlyArray<keyof T & string> | ReadonlyArray<string>) => void;
+	type _configProp = <T>(inst: T, ...propNames: readonly (keyof T & string)[] | readonly string[]) => void;
 	function _configProp<T>(
 		descriptor: PropertyDescriptor,
-		inst: T, ...propNames: ReadonlyArray<string>
+		inst: T, ...propNames: readonly string[]
 	): void {
 		for (const propName of propNames) {
 			if (DEF.DevAssert) {

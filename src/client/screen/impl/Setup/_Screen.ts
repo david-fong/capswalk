@@ -106,7 +106,7 @@ export namespace _SetupScreen {
 		},
 		langWeightExaggeration: 1.0,
 		langId: "engl-low",
-		players: ((): ReadonlyArray<_Player.CtorArgs.UnFin> => [{
+		players: ((): readonly _Player.CtorArgs.UnFin[] => [{
 			familyId:   "CHASER",
 			teamId:     1,
 			username:   "chaser1",

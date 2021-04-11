@@ -103,7 +103,7 @@ export namespace BgMusic {
 			filename: string;
 		}[];
 	}>;
-	export const TrackDescs: ReadonlyArray<TrackDesc> = JsUtils.deepFreeze([{
+	export const TrackDescs: readonly TrackDesc[] = JsUtils.deepFreeze([{
 		id:             "default",
 		displayName:    "Default",
 		sampleRate:     undefined!,

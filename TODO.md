@@ -14,17 +14,17 @@
 
 ### Things I feel like doing
 
+1. Replace usages of `ReadonlyArray` with `readonly []`.
 1. Implement `VisibleGrid` rendering of player positions.
     - Experiment with ways to make rendering more performant / optimize the repaint surface.
-      - Perhaps there is a more direct way to animate in SVG instead of CSS transition. Look into SMIL? Must be programmatically controllable by JavaScript.
+      - Perhaps there is a more direct way to animate in SVG instead of CSS transition. Web Animations API?
       - Or maybe it will be better to break the players into a separate "layer" instead of making them part of the pattern tiling.
     - Find out how to prevent "carriage return" when players move wrapping around the edge.
       - Use the `from` param in `Grid.moveEntity` to check whether wrapping happened.
     - The current usage of using a CSS transition on the transform property is not working for Firefox.
-1. See if any `Grid` getters can be switched to return `Coord`s to save some redundant Tile-to-Coord conversions.
 1. See if there is merit in giving any tile getters an argument on whether to filter for occupied or unoccupied tiles.
 1. Implement a requirement that the number of players is less than the area of the grid.
-1. Implement websocket heartbeat to check for broken connections.
+1. Implement websocket heartbeat to check for broken connections (see ws readme for example).
 1. Display the operator's current sequence buffer.
     - Or perhaps make a fancy "crosshair" that outlines tiles that match the current sequence buffer.
 

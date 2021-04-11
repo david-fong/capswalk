@@ -12,7 +12,7 @@ export class Chaser extends RobotPlayer.Decisive {
 	private readonly prey: Array<Player> = [];
 
 	private readonly params: Readonly<Chaser.Behaviour>;
-	declare protected readonly _behaviours: ReadonlyArray<RobotPlayer.Decisive.Behaviour>;
+	declare protected readonly _behaviours: readonly RobotPlayer.Decisive.Behaviour[];
 
 	private readonly grid: Chaser["game"]["grid"];
 
@@ -49,7 +49,7 @@ export class Chaser extends RobotPlayer.Decisive {
 
 	private _bhvrEvadePred(cachedPred?: Player.Id): RobotPlayer.Decisive.Next {
 		if (cachedPred !== undefined) { return {
-			dest: this.grid.getUntAwayFrom(this.game.players[cachedPred]!.coord, this.coord).coord,
+			dest: this.grid.getUntAwayFrom(this.game.players[cachedPred]!.coord, this.coord),
 		};}
 		// Check if there is anyone to run away from:
 		this.pred.sort((pa,pb) => {
@@ -63,7 +63,7 @@ export class Chaser extends RobotPlayer.Decisive {
 			if (pred.boosts > this.boosts) {
 				// TODO.design Something that avoids getting cornered.
 				return {
-					dest: this.grid.getUntAwayFrom(pred.coord, this.coord).coord,
+					dest: this.grid.getUntAwayFrom(pred.coord, this.coord),
 					target: pred.playerId,
 				};
 			}
@@ -109,7 +109,7 @@ export class Chaser extends RobotPlayer.Decisive {
 				// Continue wandering with a subtle, random direction:
 				const awayFn = this.grid.getUntAwayFrom.bind(this.grid, this.prevCoord);
 				return { dest: this.grid.getRandomCoordAround(
-					awayFn(awayFn(this.coord).coord).coord, 1,
+					awayFn(awayFn(this.coord)), 1,
 				)};
 			}
 		}

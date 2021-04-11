@@ -16,11 +16,11 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	public readonly grid: Grid<S>;
 	readonly #onGameBecomeOver: () => void;
 
-	public readonly players: ReadonlyArray<Player>;
-	public readonly operators: ReadonlyArray<OperatorPlayer>;
+	public readonly players: readonly Player[];
+	public readonly operators: readonly OperatorPlayer[];
 	#currentOperator: OperatorPlayer;
 	/** Indexable by team ID's. */
-	public readonly teams: ReadonlyArray<Team>;
+	public readonly teams: readonly Team[];
 
 	#status: Game.Status;
 
@@ -28,7 +28,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	public constructor(args: {
 		readonly impl: Game.ImplArgs,
 		readonly desc: Game.CtorArgs<S>,
-		readonly operatorIds: ReadonlyArray<Player.Id>,
+		readonly operatorIds: readonly Player.Id[],
 	}) {
 		const { impl, desc, operatorIds } = args;
 		Object.freeze(desc);
@@ -83,11 +83,11 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	private _createPlayers(
 		gameDesc: Game.CtorArgs<S>,
 		implArgs: Game.ImplArgs,
-		operatorIds: ReadonlyArray<Player.Id>,
+		operatorIds: readonly Player.Id[],
 		langId: Lang.Desc["id"],
 	): {
-		players: ReadonlyArray<Player>,
-		operators: ReadonlyArray<OperatorPlayer>,
+		players: readonly Player[],
+		operators: readonly OperatorPlayer[],
 	} {
 		const players = gameDesc.players.map((pDesc) => {
 			if (pDesc.familyId === Player.Family.HUMAN) {

@@ -11,7 +11,7 @@ type S = Coord.System.BEEHIVE;
 export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
 
 	readonly baseElem: HTMLElement;
-	readonly spotlightElems: ReadonlyArray<HTMLElement>;
+	readonly spotlightElems: readonly HTMLElement[];
 
 	public constructor(desc: Grid.CtorArgs<S>) {
 		super(desc);

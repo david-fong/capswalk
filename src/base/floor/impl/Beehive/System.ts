@@ -107,7 +107,7 @@ export namespace Beehive {
 		// TODO.design determine spec for indexing
 		// Then initialize the field in the constructor
 		// Also design HTML representation and initialize in Grid.Visible
-		private readonly grid: ReadonlyArray<ReadonlyArray<Tile>>;
+		private readonly grid: readonly (readonly Tile[])[];
 
 		public constructor(desc: AbstractGrid.CtorArgs<S>) {
 			super(desc);
@@ -148,10 +148,10 @@ export namespace Beehive {
 			// }
 		}
 
-		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile {
+		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Coord {
 			return undefined!;
 		}
-		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Tile {
+		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Coord {
 			// return this.getUntToward(
 			// 	sourceCoord.add(sourceCoord.sub(avoidCoord)),
 			// 	sourceCoord,
@@ -159,7 +159,7 @@ export namespace Beehive {
 			return undefined!;
 		}
 
-		public getAllAltDestsThan(originCoord: Coord): ReadonlyArray<Tile> {
+		public getAllAltDestsThan(originCoord: Coord): readonly Tile[] {
 			return this.tileDestsFrom(originCoord, 2);
 		}
 
@@ -181,12 +181,12 @@ export namespace Beehive {
 			return undefined!;
 		}
 
-		public tileDestsFrom(coord: Coord, radius: number = 1): ReadonlyArray<Tile> {
+		public tileDestsFrom(coord: Coord, radius: number = 1): readonly Tile[] {
 			const result: Array<Tile> = [];
 			return result.freeze();
 		}
 
-		public tileSourcesTo(coord: Coord, radius: number = 1): ReadonlyArray<Tile> {
+		public tileSourcesTo(coord: Coord, radius: number = 1): readonly Tile[] {
 			return undefined!;
 		}
 

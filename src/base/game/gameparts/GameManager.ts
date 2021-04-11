@@ -27,7 +27,7 @@ export abstract class GameManager<
 	public constructor(args: {
 		readonly impl: Game.ImplArgs,
 		readonly desc: Game.CtorArgs<S>,
-		readonly operatorIds: ReadonlyArray<Player.Id>,
+		readonly operatorIds: readonly Player.Id[],
 	}) {
 		super(args);
 

@@ -68,6 +68,10 @@ Things that are not covered by linting.
 
 Use single-underscore enclosures to italicize. Use double-asterisk enclosures to embolden.
 
+### ReadonlyArray
+
+Use `readonly T[]` instead of `ReadonlyArray<T>`.
+
 ### Logging
 
 To make it easier to find console log messages added temporarily, added log messages, use `console.log` for those temporarily added log messages, and `console.info` for more permanent ones.

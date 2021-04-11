@@ -4,7 +4,7 @@ import { LangDescs } from "./LangDescs";
 export { LangDescs } from "./LangDescs";
 
 /** */
-const CSP_CACHE = new Map<Lang.Desc["id"], ReadonlyArray<Lang.Csp.Weighted>>();
+const CSP_CACHE = new Map<Lang.Desc["id"], readonly Lang.Csp.Weighted[]>();
 
 /**
  * Conceptually, a language is a map from unique written characters
@@ -19,7 +19,7 @@ export abstract class Lang extends _Lang {
 
 	public readonly desc: Lang.Desc;
 
-	public readonly csps: ReadonlyArray<Lang.Csp.Weighted>;
+	public readonly csps: readonly Lang.Csp.Weighted[];
 	readonly #size: number;
 
 	readonly #weights: Float32Array;
@@ -39,7 +39,7 @@ export abstract class Lang extends _Lang {
 		this.desc = Lang.GetDesc(id);
 		this.csps = CSP_CACHE.has(id)
 			? CSP_CACHE.get(id)!
-			: ((): ReadonlyArray<Lang.Csp.Weighted> => {
+			: ((): readonly Lang.Csp.Weighted[] => {
 				const buildDict = (Object.getPrototypeOf(this).constructor as Lang.ClassIf).BUILD();
 				const cspCache = Lang.CreateCspsArray(buildDict);
 				CSP_CACHE.set(id, cspCache);
@@ -99,7 +99,7 @@ export abstract class Lang extends _Lang {
 	 * under which it could be called.
 	 */
 	public getNonConflictingChar(
-		avoid: ReadonlyArray<Lang.Seq>,
+		avoid: readonly Lang.Seq[],
 	): Lang.Csp {
 		avoid = avoid.filter((seq) => seq).freeze();
 		const next = this.#next;
@@ -253,7 +253,7 @@ export namespace Lang {
 	/**
 	 * Does not handle caching.
 	 */
-	export function CreateCspsArray(forwardDict: Lang.ForwardDict): ReadonlyArray<Lang.Csp.Weighted> {
+	export function CreateCspsArray(forwardDict: Lang.ForwardDict): readonly Lang.Csp.Weighted[] {
 		return Object.entries(forwardDict).freeze().map(([char, {seq, weight: unscaledWt}]) => {
 			return Object.freeze({
 				char, seq, unscaledWt,

@@ -1,5 +1,4 @@
 {
-    "typescript.tsdk": "./node_modules/typescript/lib",
     "files.exclude": {
         // generic excludes:
         "node_modules/{[^.@]*,}": true,
@@ -45,6 +44,10 @@
 
     "files.trimTrailingWhitespace": true,
 
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+
     "todo-tree.filtering.useBuiltInExcludes": "file excludes",
     "todo-tree.general.tags": [
         "TODO.wait"  ,
@@ -56,6 +59,7 @@
         "TODO.build" ,
         "TODO",
     ],
+
     "css.lint.validProperties": [
         "composes",
     ],

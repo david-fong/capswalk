@@ -39,7 +39,7 @@ export abstract class Grid<S extends Coord.System> {
 	}
 
 	/** */
-	public abstract write(coord: Coord, changes: Readonly<Tile.Changes>): void;
+	public abstract write(coord: Coord, changes: Tile.Changes): void;
 
 	/** */
 	public abstract moveEntity(entityId: Player.Id, from: Coord, to: Coord): void;
@@ -70,14 +70,14 @@ export abstract class Grid<S extends Coord.System> {
 	 * @param sourceCoord
 	 * The coordinate from which to find the next hop.
 	 */
-	public abstract getUntToward(intendedDest: Coord, sourceCoord: Coord): Tile;
+	public abstract getUntToward(intendedDest: Coord, sourceCoord: Coord): Coord;
 
 	/**
 	 * The opposite of `getUntToward`.
 	 *
 	 * Behaviour is undefined when both arguments are the same.
 	 */
-	public abstract getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Tile;
+	public abstract getUntAwayFrom(avoidCoord: Coord, sourceCoord: Coord): Coord;
 
 	/**
 	 * The returned array should be assumed to contain shallow copies
@@ -93,7 +93,7 @@ export abstract class Grid<S extends Coord.System> {
 	 * Grid implementations are encouraged to override this if they
 	 * have a more efficient way to produce the same result.
 	 */
-	public getAllAltDestsThan(origin: Coord): ReadonlyArray<Tile> {
+	public getAllAltDestsThan(origin: Coord): readonly Tile[] {
 		const dests = new Map<Coord,Tile>();
 		this.tileSourcesTo(origin)
 		.flatMap((srcToOrigin) => this.tileDestsFrom(srcToOrigin.coord))
@@ -123,9 +123,9 @@ export abstract class Grid<S extends Coord.System> {
 	/** Treat the result as a state snapshot. */
 	public abstract tileAt(coord: Coord): Tile;
 	/** Treat the result as a state snapshot. */
-	public abstract tileDestsFrom(coord: Coord): ReadonlyArray<Tile>;
+	public abstract tileDestsFrom(coord: Coord): readonly Tile[];
 	/** Treat the result as a state snapshot. */
-	public abstract tileSourcesTo(coord: Coord): ReadonlyArray<Tile>;
+	public abstract tileSourcesTo(coord: Coord): readonly Tile[];
 
 	/**
 	 * The returned value must be consistent with results from the
@@ -139,9 +139,9 @@ export abstract class Grid<S extends Coord.System> {
 	 * pretty patterns.
 	 */
 	public static getSpawnCoords(
-		teamSizes: ReadonlyArray<number>,
+		teamSizes: readonly number[],
 		dimensions: Grid.Dimensions[Coord.System],
-	): ReadonlyArray<ReadonlyArray<Coord>> {
+	): readonly (readonly Coord[])[] {
 		const avoidSet = new Set<Coord>();
 		return teamSizes.map((numMembers: number) => {
 			const teamSpawnCoords: Array<Coord> = [];
@@ -234,9 +234,7 @@ export namespace Grid {
 
 	// Each implementation must register itself into this dictionary.
 	// See CmapManager.ts.
-	export const _Constructors: {
-		readonly [ S in Coord.System ]: Grid.ClassIf<S>
-	} = {
+	export const _Constructors: { readonly [S in Coord.System]: Grid.ClassIf<S> } = {
 		// These are initialized later to avoid bootstrapping issues.
 		["W_EUCLID2"]: undefined!,
 		["BEEHIVE"]: undefined!,
@@ -259,12 +257,12 @@ export namespace Grid {
 	 *
 	 * Upper and lower bounds must be strictly positive integer values.
 	 */
-	export type DimensionBounds<S extends Coord.System> = Readonly<{
+	export type DimensionBounds<S extends Coord.System> = {
 		[P in keyof Dimensions[S]]: {
 			readonly min: number;
 			readonly max: number;
 		};
-	}>;
+	};
 }
 // Grid gets frozen in PostInit after _Constructors get initialized.
 Object.freeze(Grid);

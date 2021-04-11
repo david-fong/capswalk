@@ -24,7 +24,7 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 		socket: WebSocket,
 		onGameBecomeOver: () => void,
 		gameDesc: Game.CtorArgs<S>,
-		operatorIds: ReadonlyArray<Player.Id>,
+		operatorIds: readonly Player.Id[],
 	) {
 		super({
 			impl: {

@@ -15,9 +15,9 @@ export class ScoreInfo {
 	/**
 	 * A map from player ID's to information about their scores.
 	 */
-	public readonly entries: ReadonlyArray<ScoreInfo.Entry>;
+	public readonly entries: readonly ScoreInfo.Entry[];
 
-	public constructor(playerIds: ReadonlyArray<Player.Id>) {
+	public constructor(playerIds: readonly Player.Id[]) {
 		const entries: Array<ScoreInfo.Entry> = [];
 		for (const id of playerIds) {
 			entries[id] = new ScoreInfo.Entry();

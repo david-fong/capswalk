@@ -58,7 +58,7 @@ export class OperatorPlayer extends Player {
 		if (event.key === " ") {
 			if (this.coord !== this.prevCoord) {
 				this.makeMovementRequest(
-					this.game.grid.getUntAwayFrom(this.prevCoord, this.coord).coord,
+					this.game.grid.getUntAwayFrom(this.prevCoord, this.coord),
 					Player.MoveType.BOOST,
 				);
 			}

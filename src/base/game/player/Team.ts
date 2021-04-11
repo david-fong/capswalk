@@ -24,7 +24,7 @@ export class Team {
 
 	public constructor(
 		public readonly id: Team.Id,
-		public readonly members: ReadonlyArray<Player>,
+		public readonly members: readonly Player[],
 	) {
 		JsUtils.propNoWrite(this as Team, "id", "members");
 		Object.seal(this); //🧊

@@ -27,9 +27,9 @@ export namespace SoundEffects {
 		id: string;
 		sampleRate: number;
 	}>;
-	export const Descs: ReadonlyArray<Desc> = JsUtils.deepFreeze([{
+	export const Descs: readonly Desc[] = JsUtils.deepFreeze([{
 		id: "default",
-		sampleRate: undefined!,
+		sampleRate: 0,
 	}]);
 }
 Object.freeze(SoundEffects);

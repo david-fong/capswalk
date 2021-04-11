@@ -16,7 +16,7 @@ exports.PROJECT_ROOT = PROJECT_ROOT;
 
 exports.GAME_SERVERS = require("../../servers.json");
 
-/** @type {() => ReadonlyArray<Readonly<webpack.WebpackPluginInstance>>} */
+/** @type {() => readonly Readonly<webpack.WebpackPluginInstance>[]} */
 const BASE_PLUGINS = () => Object.freeze([
 	new webpack.DefinePlugin({
 		// See [](src/node_modules/my-type-utils.dts).
