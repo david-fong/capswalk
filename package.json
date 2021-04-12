@@ -22,7 +22,7 @@
     "lint": "eslint --color --cache --cache-location './node_modules/.cache/eslint-cache.json' './src/'",
     "build": "node --enable-source-maps --disable-proto=delete --title='capswalk-build'  ./scripts/webpack/pack.js",
     "serve": "node --enable-source-maps --disable-proto=delete --title='capswalk-server' ./dist/server/index.js",
-    "test":  "node --enable-source-maps --disable-proto=delete --title='capswalk-test'   ./dist/server/test/lang.js"
+    "test": "node --enable-source-maps --disable-proto=delete --title='capswalk-test'   ./dist/server/test/lang.js"
   },
   "dependencies": {
     "koa": "^2.13.1",
@@ -34,11 +34,11 @@
     "@types/koa": "^2.13.1",
     "@types/koa-static": "^4.0.1",
     "@types/node": "^14.14.37",
-    "@types/ws": "^7.4.0",
-    "@typescript-eslint/eslint-plugin": "^4.20.0",
-    "@typescript-eslint/parser": "^4.20.0",
-    "eslint": "^7.23.0",
-    "typescript": "^4.2.3",
+    "@types/ws": "^7.4.1",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.24.0",
+    "typescript": "^4.2.4",
     "typescript-plugin-css-modules": "^3.2.0"
   }
 }
