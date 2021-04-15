@@ -14,7 +14,6 @@
 
 ### Things I feel like doing
 
-1. Replace usages of `ReadonlyArray` with `readonly []`.
 1. Implement `VisibleGrid` rendering of player positions.
     - Experiment with ways to make rendering more performant / optimize the repaint surface.
       - Perhaps there is a more direct way to animate in SVG instead of CSS transition. Web Animations API?
@@ -24,6 +23,7 @@
     - The current usage of using a CSS transition on the transform property is not working for Firefox.
 1. See if there is merit in giving any tile getters an argument on whether to filter for occupied or unoccupied tiles.
 1. Implement a requirement that the number of players is less than the area of the grid.
+1. Expose a user setting for conserving power by disabling some animations.
 1. Implement websocket heartbeat to check for broken connections (see ws readme for example).
 1. Display the operator's current sequence buffer.
     - Or perhaps make a fancy "crosshair" that outlines tiles that match the current sequence buffer.
@@ -50,6 +50,7 @@
 
 ### Ideas
 
+- Implement voice recognition: allow users to use voice instead of typing.
 - Implement translations of clientside strings.
   - Create a sitemap file to point to translated versions
     - [Google Sitemap indicate translations](https://support.google.com/webmasters/answer/189077?hl=en)
