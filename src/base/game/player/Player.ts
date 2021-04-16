@@ -210,11 +210,11 @@ export namespace Player {
 			gameDesc.players
 				= gameDesc.players.slice()
 				.seal().sort((a,b) => teamIdCleaner[a.teamId]! - teamIdCleaner[b.teamId]!)
-				.freeze().map<CtorArgs>((p, index) => Object.assign({}, p, {
+				.freeze().map<CtorArgs>((p, index) => { return { ...p,
 					playerId: index,
 					teamId:   teamIdCleaner[p.teamId]!,
 					avatar:   p.avatar ?? Player.Avatar.GET_RANDOM(),
-				}))
+				};})
 				.freeze();
 		}
 	}

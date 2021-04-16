@@ -18,11 +18,10 @@ export class Chaser extends RobotPlayer.Decisive {
 
 	public constructor(game: GameManager<any>, desc: Player._CtorArgs["CHASER"]) {
 		super(game, desc);
-		this.params = Object.freeze(Object.assign(
-			{},
-			Chaser.Behaviour.DEFAULT,
-			desc.familyArgs,
-		));
+		this.params = Object.freeze({
+			...Chaser.Behaviour.DEFAULT,
+			...desc.familyArgs,
+		});
 		this.grid = this.game.grid;
 		Object.seal(this); //🧊
 		JsUtils.propNoWrite(this as Chaser,

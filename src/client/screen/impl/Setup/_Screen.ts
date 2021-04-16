@@ -89,7 +89,7 @@ export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | Bas
 	protected parseArgsFromGui(): Game.CtorArgs.UnFin {
 		// TODO.impl
 		const args: TU.NoRo<Game.CtorArgs.UnFin>
-			= Object.assign({}, _SetupScreen.DEFAULT_PRESET());
+			= { ..._SetupScreen.DEFAULT_PRESET() };
 			// ^temporary default until _loadLastUsedPreset is implemented.
 		args.langId = this.langSel.confirmedOpt.desc.id;
 		args.langWeightExaggeration = parseFloat(this.langWeightExaggeration.value);

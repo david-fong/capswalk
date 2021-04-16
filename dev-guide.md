@@ -59,7 +59,6 @@ TODO.doc
 - Make sure nobody uses `document.createElement` instead of `JsUtil.html` unless they document why it's necessary.
 - Make sure to import json using `default` instead of `*` syntax. Otherwise, something in the build pipeline adds an unwanted enumerable key.
 - On the serverside, whenever broadcasting to WebSockets, only send to the socket if its `readyState` is `OPEN`.
-- Can use object spread notation for shallow copies, but make sure that no setter properties are involved, since the setter is not called.
 
 ## Coding Style 🎨
 
