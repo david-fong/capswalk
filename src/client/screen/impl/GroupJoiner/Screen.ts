@@ -5,8 +5,8 @@ import { _GroupJoinerScreenInitEl } from "./ScreenInitEl";
 
 /** */
 export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
-	#isInGroup: boolean = false;
-	#isHost: boolean = false; public get isHost(): boolean { return this.#isHost; }
+	#isInGroup = false;
+	#isHost = false; public get isHost(): boolean { return this.#isHost; }
 
 	readonly #wsMessageCb: (ev: MessageEvent<string>) => void;
 	private get ws(): WebSocket {
@@ -77,7 +77,7 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 				top.toast("You disconnected you from the server.");
 				if (this.top.currentScreen !== this) {
 					// TODO.impl ^ a more specific condition.
-					this.requestGoToScreen(BaseScreen.Id.GROUP_JOINER, {});
+					this.requestGoToScreen(BaseScreen.Id.GROUP_JOINER, void 0);
 				}
 			}, { once: true });
 		};
@@ -96,14 +96,14 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 	/** */
 	private _onCreateResponse(accepted: JoinerEv.Create.Res): void {
 		if (accepted) {
-			this.top.toast(`server accepted request to create new group \"${this.in.groupName.value}\".`);
+			this.top.toast(`server accepted request to create new group "${this.in.groupName.value}".`);
 			this.top.toast("connecting to new group...");
 			this._attemptToJoinExistingGroup();
 			return;
 		} else {
 			this.#isInGroup = true;
 			this.top.toast(`The server rejected your request to`
-			+ ` create a new group \"${this.in.groupName.value}\".`);
+			+ ` create a new group "${this.in.groupName.value}".`);
 			return;
 		}
 	}

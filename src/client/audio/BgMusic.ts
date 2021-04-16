@@ -22,19 +22,19 @@ export async function MkBgMusic(trackId: BgMusic.TrackDesc["id"]): Promise<BgMus
 	});
 
 	/** audio buffers */
-	const _abs = await Promise.all(desc.trackDescs.map(async (trackDesc) => {
+	const _abs = (await Promise.all(desc.trackDescs.map(async (trackDesc) => {
 		// Fetch each track's audio file:
-		return fetch(`assets/audio/bg/${desc.id}/${trackDesc.filename}`)
-		.then((res) => res.blob())
-		.then((blob) => blob.arrayBuffer())
-		.then((audioData) => context.decodeAudioData(
+		const audioData = await fetch(`assets/audio/bg/${desc.id}/${trackDesc.filename}`)
+			.then((res) => res.blob())
+			.then((blob) => blob.arrayBuffer());
+		return context.decodeAudioData(
 			// Each buffer created from decoding is later copied into a
 			// master buffer with many channels, and then discarded.
 			audioData,
-			(buffer) => {},
+			undefined,
 			(err) => { console.error("Error decoding audio data: " + err); },
-		));
-	}));
+		);
+	}).freeze())).freeze();
 	const _bigBufferNumChannels = _abs.reduce((sum, ab) => sum += ab.numberOfChannels, 0);
 	const _bigBuffer = context.createBuffer(
 		_bigBufferNumChannels,

@@ -5,7 +5,7 @@ import type { Coord } from "floor/Tile";
  *
  */
 export class GamePreset {
-	;
+
 	private readonly _loremIpsum: Game.CtorArgs;
 }
 Object.freeze(GamePreset);

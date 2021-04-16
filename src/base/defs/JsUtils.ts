@@ -29,14 +29,15 @@ export namespace JsUtils {
 
 	/** */
 	export function protoNoEnum<T>(
-		ctor: {new(...args: any[]): T} | Function, // <- allow abstract classes
+		ctor: { new (...args: any[]): T } | Function, // <- allow abstract classes
+		// TODO.wait use abstract new signature when typescript 4.3 comes out.
 		...propNames: readonly (keyof T & string)[] | readonly string[]
 	): void {
 		const hasProps = Object.getOwnPropertyNames(ctor.prototype).freeze();
 		propNames.forEach((propName) => {
 			if (DEF.DevAssert) {
 				if (!hasProps.includes(propName as string)) {
-					const msg = `\`${ctor.name}\` prototype has no property named \"${propName}\"`;
+					const msg = `\`${ctor.name}\` prototype has no property named "${propName}"`;
 					throw new TypeError(msg); // Mismatched property name.
 				}
 			}
@@ -57,7 +58,7 @@ export namespace JsUtils {
 				const hasProps = Object.getOwnPropertyNames(inst).freeze();
 				if (!hasProps.includes(propName as string)) {
 					const msg = `\`${Object.getPrototypeOf(inst).constructor.name}\``
-					+` instance has no property named \"${propName}\"`;
+					+` instance has no property named "${propName}"`;
 					throw new TypeError(msg); // Mismatched property name.
 				}
 			}
@@ -159,7 +160,7 @@ export namespace JsUtils {
 		domProps?: Readonly<Partial<HTMLElementTagNameMap[K]>>,
 	): HTMLElementTagNameMap[K] {
 		const el = document.createElement(tagName);
-		try { Object.seal(el); } catch (e) {};
+		try { Object.seal(el); } catch (e) { void e; }
 		if (classNames?.length) {
 			el.classList.add(...classNames);
 		}

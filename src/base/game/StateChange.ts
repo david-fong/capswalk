@@ -13,7 +13,7 @@ export namespace StateChange {
 
 	export interface _Base {
 		/** The player ID of the player who initiated the state change request. */
-		readonly initiator: Player.Id;
+		readonly author: Player.Id;
 	}
 
 	/**

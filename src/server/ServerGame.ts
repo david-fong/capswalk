@@ -32,7 +32,7 @@ function gameOnSocketMessage<S extends Coord.System>(this: ServerGame<S>, ev: We
 			break;
 		default: break;
 	}
-};
+}
 
 /**
  * Handles game-related events and attaches listeners to each client
@@ -108,7 +108,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 					}
 				}, { once: true });
 			})
-		)).then(() =>
+		).freeze()).then(() =>
 			this.reset() //👂 "reset time!"
 		);
 		this.sockets.forEach((s) => {
@@ -131,7 +131,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 					}
 				}, { once: true });
 			})
-		)).then(() => {
+		).freeze()).then(() => {
 			this.statusBecomePlaying(); //👂 "play time!"
 		});
 
@@ -172,13 +172,13 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	}
 
 	/** @override */
-	public commitStateChange(desc: StateChange.Res, socket?: any): void {
-		super.commitStateChange(desc);
+	public commitStateChange(desc: StateChange.Res, authorSock?: WebSocket): void {
+		super.commitStateChange(desc, authorSock);
 
 		if (desc.rejectId) {
 			// The request was rejected- Notify the requester.
 			const data = JSON.stringify([GameEv.IN_GAME, desc]);
-			socket?.send(data);
+			authorSock?.send(data);
 		} else {
 			const data = JSON.stringify([GameEv.IN_GAME, desc]);
 			this.sockets.forEach((s) => { if (s.readyState === s.OPEN) { s.send(data); }});

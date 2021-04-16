@@ -29,11 +29,11 @@ class IAC {
 	}
 
 	public static distX(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): number {
-		let dx = Math.abs(i1.x - i2.x);
+		const dx = Math.abs(i1.x - i2.x);
 		return (dx < dim.width / 2) ? dx : (dim.width - dx);
 	}
 	public static distY(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): number {
-		let dy = Math.abs(i1.y - i2.y);
+		const dy = Math.abs(i1.y - i2.y);
 		return (dy < dim.height / 2) ? dy : (dim.height - dy);
 	}
 	public static oneNorm(dim: Dim, i1: IAC.Bare, i2: IAC.Bare): number {
@@ -266,7 +266,7 @@ export namespace WrappedEuclid2 {
 		public tileAt(coord: Coord): Tile {
 			return this._grid[coord]!;
 		}
-		public tileDestsFrom(coord: Coord, radius: number = 1): readonly Tile[] {
+		public tileDestsFrom(coord: Coord, radius = 1): readonly Tile[] {
 			const iac = this.iacCache[coord]!;
 			let wrapX = false, wrapY = false;
 			const W = this.dimensions.width, H = this.dimensions.height;
@@ -301,7 +301,7 @@ export namespace WrappedEuclid2 {
 			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
 			return dests.freeze();
 		}
-		public tileSourcesTo(coord: Coord, radius: number = 1): readonly Tile[] {
+		public tileSourcesTo(coord: Coord, radius = 1): readonly Tile[] {
 			return this.tileDestsFrom(coord, radius);
 		}
 

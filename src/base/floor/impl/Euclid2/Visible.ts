@@ -148,7 +148,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 			}
 			defs.appendChild(grid);
 		}
-		return defs
+		return defs;
 	}
 }
 Object.freeze(Euclid2VisibleGrid);

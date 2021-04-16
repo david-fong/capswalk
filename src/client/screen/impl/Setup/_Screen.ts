@@ -138,11 +138,11 @@ export namespace _SetupScreen {
 		}
 		/** @override */
 		public _onHoverOpt(opt: LangPickOne.Option): void {
-			;
+
 		}
 		/** @override */
 		public _onSelectOpt(opt: LangPickOne.Option): void {
-			;
+
 		}
 	}
 	export namespace LangPickOne {

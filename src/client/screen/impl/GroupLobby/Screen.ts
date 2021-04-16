@@ -48,7 +48,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		{const goSetup = this.nav.next;
 			goSetup.textContent = "Setup Game";
 			goSetup.onclick = () => {
-				this.requestGoToScreen(BaseScreen.Id.SETUP_ONLINE, {});
+				this.requestGoToScreen(BaseScreen.Id.SETUP_ONLINE, void 0);
 			};
 			this.baseElem.appendChild(goSetup);
 		}
@@ -105,7 +105,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 			avatar: Player.Avatar.GET_RANDOM(), // TODO.impl add an input field for `userInfo.avatar`.
 		};
 		this.ws.send(JSON.stringify([GroupEv.UserInfo.NAME, data]));
-	};
+	}
 
 	/** @override */
 	protected async _abstractOnBeforeEnter(
@@ -221,7 +221,7 @@ export namespace GroupLobbyScreen {
 			this.username = desc.username;
 			this.teamId   = desc.teamId;
 			this.avatar   = desc.avatar;
-		};
+		}
 
 		public get username(): Player.Username {
 			return this.#username;

@@ -1,4 +1,4 @@
-import { JsUtils, OmHooks } from "../../BaseScreen";
+import { JsUtils } from "../../BaseScreen";
 import type { Coord } from "floor/Tile";
 import type { BaseScreen } from "../../BaseScreen";
 import type { OfflineGame } from "client/game/OfflineGame";

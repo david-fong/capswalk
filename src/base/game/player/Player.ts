@@ -22,7 +22,7 @@ export class Player extends _Player implements _Player.UserInfo {
 	protected readonly game: GameMirror<any>;
 	public readonly reqBuffer: RequestBuffer;
 	#coord: Coord;
-	#boosts: number = 0.0;
+	#boosts = 0.0;
 
 	public prevCoord: Coord = undefined!;
 
@@ -59,7 +59,7 @@ export class Player extends _Player implements _Player.UserInfo {
 	}
 
 	/** @virtual */
-	public onTeamsBootstrapped(): void { }
+	public _onTeamsBootstrapped(): void { void 0; }
 
 	/** Must be called _after_ the grid has been reset. */
 	public reset(coord: Coord): void {
@@ -71,13 +71,13 @@ export class Player extends _Player implements _Player.UserInfo {
 	}
 
 	/** @virtual The default implementation does nothing. */
-	public onGamePlaying(): void { }
+	public onGamePlaying(): void { void 0; }
 
 	/** @virtual The default implementation does nothing. */
-	public onGamePaused(): void { }
+	public onGamePaused(): void { void 0; }
 
 	/** @virtual The default implementation does nothing. */
-	public onGameOver(): void { }
+	public onGameOver(): void { void 0; }
 
 	/** @final */
 	protected makeMovementRequest(dest: Coord, type: Player.MoveType): void {
@@ -90,7 +90,7 @@ export class Player extends _Player implements _Player.UserInfo {
 		if (this.reqBuffer.isFull) return; //⚡
 
 		this.game.requestStateChange(this.reqBuffer.signRequest({
-			initiator: this.playerId,
+			author: this.playerId,
 			lastRejectId: this.reqBuffer.lastRejectId,
 			moveType: type,
 			moveDest: dest,
@@ -219,13 +219,13 @@ export namespace Player {
 					avatar:   playerDesc.avatar ?? Player.Avatar.GET_RANDOM(),
 				}))
 				.freeze();
-		};
+		}
 	}
 	Object.freeze(CtorArgs);
 }
 JsUtils.protoNoEnum(Player,
 	"onGamePlaying", "onGamePaused", "onGameOver",
-	"onTeamsBootstrapped",
+	"_onTeamsBootstrapped",
 );
 Object.freeze(Player);
 Object.freeze(Player.prototype);

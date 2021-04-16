@@ -25,7 +25,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	readonly #parentElem: HTMLElement;
 	protected readonly baseElem = JsUtils.html("div", [OMHC.BASE]);
 
-	#hasLazyLoaded: boolean = false;
+	#hasLazyLoaded = false;
 
 	protected readonly nav: Readonly<{
 		/**
@@ -68,7 +68,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 			const tree = BaseScreen.NavTree;
 			const thisNav = tree[this.screenId];
 			if (tree[thisNav.prev].href === thisNav.href) {
-				this.requestGoToScreen(BaseScreen.NavTree[screenId].prev, {});
+				this.requestGoToScreen(BaseScreen.NavTree[screenId].prev, void 0);
 			} else {
 				window.history.back();
 			}
@@ -157,7 +157,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 		navDir: BaseScreen.NavDir,
 		args: BaseScreen.EntranceArgs[SID],
 	): Promise<void> {
-	};
+	}
 
 	/**
 	 * @virtual
@@ -205,17 +205,17 @@ export namespace BaseScreen {
 	 * self, then can be a partial object for forward navigation.
 	 */
 	export interface EntranceArgs {
-		[ Id.HOME          ]: {};
-		[ Id.HOW_TO_PLAY   ]: {};
-		[ Id.HOW_TO_HOST   ]: {};
-		[ Id.COLOUR_CTRL   ]: {};
+		[ Id.HOME          ]: void;
+		[ Id.HOW_TO_PLAY   ]: void;
+		[ Id.HOW_TO_HOST   ]: void;
+		[ Id.COLOUR_CTRL   ]: void;
 		//==================
-		[ Id.SETUP_OFFLINE ]: {};
+		[ Id.SETUP_OFFLINE ]: void;
 		[ Id.PLAY_OFFLINE  ]: [Game.CtorArgs.UnFin];
 		//==================
-		[ Id.GROUP_JOINER  ]: {};
-		[ Id.GROUP_LOBBY   ]: {};
-		[ Id.SETUP_ONLINE  ]: {};
+		[ Id.GROUP_JOINER  ]: void;
+		[ Id.GROUP_LOBBY   ]: void;
+		[ Id.SETUP_ONLINE  ]: void;
 		[ Id.PLAY_ONLINE   ]: [Game.CtorArgs, readonly number[]];
 	}
 	/**
@@ -263,7 +263,7 @@ export namespace BaseScreen {
 	export const enum NavDir {
 		FORWARD  = "forward",
 		BACKWARD = "backward",
-	};
+	}
 	export function GET_NAV_DIR(_args: { curr: Id | undefined, dest: Id, }): NavDir {
 		const { curr, dest } = _args;
 		if (curr === undefined) return BaseScreen.NavDir.FORWARD;

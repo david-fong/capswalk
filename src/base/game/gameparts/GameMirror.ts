@@ -65,7 +65,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		JsUtils.propNoWrite(this as GameMirror<S>,
 			"grid", "players", "operators", "teams",
 		);
-		this.players.forEach((player) => player.onTeamsBootstrapped());
+		this.players.forEach((player) => player._onTeamsBootstrapped());
 		this.setCurrentOperator(0);
 	}
 
@@ -198,7 +198,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	 * Must eventually result in a call to commitStateChange.
 	 * Crosses the network boundary for online games.
 	 */
-	public abstract requestStateChange(desc: StateChange.Req, socket?: any): void;
+	public abstract requestStateChange(desc: StateChange.Req, authorSock?: any): void;
 
 	/** @virtual */
 	protected commitTileMods(coord: Coord, changes: Tile.Changes): void {
@@ -216,28 +216,28 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	}
 
 	/** @virtual */
-	protected commitStateChange(desc: StateChange.Res, socket?: any): void {
+	protected commitStateChange(desc: StateChange.Res, authorSock?: WebSocket): void {
 		JsUtils.deepFreeze(desc);
-		const causer = this.players[desc.initiator]!;
+		const author = this.players[desc.author]!;
 
 		if (desc.rejectId !== undefined) {
-			causer.reqBuffer.reject(desc.rejectId, causer.coord);
+			author.reqBuffer.reject(desc.rejectId, author.coord);
 			return; //⚡
 		}
-		causer.reqBuffer.acceptOldest();
+		author.reqBuffer.acceptOldest();
 
 		for (const [coord, changes] of Object.entries(desc.tiles).freeze()) {
 			this.commitTileMods(parseInt(coord), changes);
 		}
 		for (const [pid, changes] of Object.entries(desc.players).freeze()) {
-			const player = this.players[parseInt(pid)]!;
-			player.boosts = changes.boosts;
+			const p = this.players[parseInt(pid)]!;
+			p.boosts = changes.boosts;
 
 			if (changes.coord !== undefined) {
-				const prevCoord = player.coord;
+				const prevCoord = p.coord;
 				// note: the order of the below lines does not matter.
-				this.grid.moveEntity(player.playerId, prevCoord, changes.coord);
-				player._setCoord(changes.coord);
+				this.grid.moveEntity(p.playerId, prevCoord, changes.coord);
+				p._setCoord(changes.coord);
 			}
 		}
 	}

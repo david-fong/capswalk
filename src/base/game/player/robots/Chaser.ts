@@ -30,8 +30,8 @@ export class Chaser extends RobotPlayer.Decisive {
 		);
 	}
 
-	public onTeamsBootstrapped(): void {
-		super.onTeamsBootstrapped();
+	public _onTeamsBootstrapped(): void {
+		super._onTeamsBootstrapped();
 		// We need to cast off read-only-ness below.
 		// @ts-expect-error : RO=
 		this.pred = this.game.teams
@@ -100,7 +100,7 @@ export class Chaser extends RobotPlayer.Decisive {
 		} */
 		// If there is nobody we want to chase after to attack,
 		// Head toward the nearest free health if it exists.
-		if (true) {
+		//if (true) {
 			// No tiles close by. Wander around:
 			if (Math.random() < this.params.wanderingAimlessness) {
 				// Big direction change:
@@ -112,7 +112,7 @@ export class Chaser extends RobotPlayer.Decisive {
 					awayFn(awayFn(this.coord)), 1,
 				)};
 			}
-		}
+		//}
 		/* let closestFht: Tile = undefined!;
 		let closestFhtDistance = Infinity;
 		for (const fht of this.game.health.tiles.values()) {

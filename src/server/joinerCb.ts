@@ -28,7 +28,7 @@ export function wsMessageCb(ev: WebSocket.MessageEvent): void {
 	case JoinerEv.Create.NAME: {
 		function _res(val: JoinerEv.Create.Res): void {
 			ev.target.send(JSON.stringify([JoinerEv.Create.NAME, val]));
-		};
+		}
 		const desc = args[0] as JoinerEv.Create.Req;
 		if (!_isReqValid(desc) || groups.has(desc.groupName)) {
 			_res(false); return; //⚡

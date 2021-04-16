@@ -125,7 +125,7 @@ export namespace Beehive {
 		}
 
 		public moveEntity(entityId: Player.Id, from: Coord, to: Coord): void {
-			;
+
 		}
 
 		public forEach(consumer: (tile: Tile, index: number) => void): void {
@@ -181,12 +181,12 @@ export namespace Beehive {
 			return undefined!;
 		}
 
-		public tileDestsFrom(coord: Coord, radius: number = 1): readonly Tile[] {
+		public tileDestsFrom(coord: Coord, radius = 1): readonly Tile[] {
 			const result: Array<Tile> = [];
 			return result.freeze();
 		}
 
-		public tileSourcesTo(coord: Coord, radius: number = 1): readonly Tile[] {
+		public tileSourcesTo(coord: Coord, radius = 1): readonly Tile[] {
 			return undefined!;
 		}
 

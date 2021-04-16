@@ -72,7 +72,7 @@ export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 			button.addEventListener("click", (ev) => {
 				// TODO.impl play a health-up sound.
 				// this.top.sfx.;
-				this.requestGoToScreen(desc.screenId as BaseScreen.Id, {});
+				this.requestGoToScreen(desc.screenId as BaseScreen.Id, void 0);
 			});
 			addToNav(button, desc);
 		});

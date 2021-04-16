@@ -44,6 +44,7 @@ export abstract class PickOne<O extends PickOne._Option> {
 	public addOption(opt: O): void {
 		this.options.push(opt);
 		this.baseElem.appendChild(opt.baseElem);
+		// Note: these do not use event delegation because I don't like exposing internals via the DOM.
 		opt.baseElem.addEventListener("pointerenter", this.hoverOpt.bind(this, opt));
 		opt.baseElem.addEventListener("click", this.selectOpt.bind(this, opt, true));
 		opt._registerParent(this._onOptDisabledChange.bind(this));
@@ -59,7 +60,7 @@ export abstract class PickOne<O extends PickOne._Option> {
 	}
 	protected abstract _onHoverOpt(opt: O): void;
 
-	public selectOpt(opt: O, doCallback: boolean = true): void {
+	public selectOpt(opt: O, doCallback = true): void {
 		if (!opt) throw new Error("opt must be defined");
 		// We must ensure hovering before executing confirmation:
 		this.hoverOpt(opt);

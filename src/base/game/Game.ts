@@ -56,7 +56,7 @@ export namespace Game {
 	 */
 	export interface CtorArgs<S extends Coord.System = Coord.System> extends _CtorArgsBase<S> {
 		readonly players: readonly Player.CtorArgs[];
-	};
+	}
 	export namespace CtorArgs {
 		export interface UnFin<S extends Coord.System = Coord.System> extends _CtorArgsBase<S> {
 			readonly players: readonly Player.CtorArgs.UnFin[];
@@ -83,7 +83,7 @@ export namespace Game {
 		 * A map from player ID's to their starting coordinates.
 		 */
 		readonly playerCoords: readonly Coord[];
-	};
+	}
 
 	/**
 	 * - **`PLAYING`** can go to:

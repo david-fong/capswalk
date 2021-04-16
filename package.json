@@ -19,7 +19,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "devinit": "bash scripts/devinit.sh",
-    "lint": "eslint --color --cache --cache-location './node_modules/.cache/eslint-cache.json' './src/'",
+    "lint": "eslint --cache --cache-location './node_modules/.cache/eslint-cache.json' './src/'",
     "build": "node --enable-source-maps --disable-proto=delete --title='capswalk-build'  ./scripts/webpack/pack.js",
     "serve": "node --enable-source-maps --disable-proto=delete --title='capswalk-server' ./dist/server/index.js",
     "test": "node --enable-source-maps --disable-proto=delete --title='capswalk-test'   ./dist/server/test/lang.js"
@@ -30,7 +30,6 @@
     "ws": "^7.4.4"
   },
   "devDependencies": {
-    "@types/express": "^4.17.11",
     "@types/koa": "^2.13.1",
     "@types/koa-static": "^4.0.1",
     "@types/node": "^14.14.37",

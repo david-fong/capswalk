@@ -59,7 +59,7 @@ export namespace JoinerEv {
 			IN_LOBBY = "in-lobby",
 			IN_GAME  = "in-game",
 			DELETE   = "delete",
-		};
+		}
 	}
 	/** */
 	export namespace TryJoin {
@@ -120,4 +120,4 @@ export const enum GameEv {
 	 * a client with that socket ID are out of the game.
 	 */
 	RETURN_TO_LOBBY = "game/return-to-lobby",
-};
+}

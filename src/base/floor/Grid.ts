@@ -164,7 +164,7 @@ export namespace Grid {
 	export interface Dimensions {
 		[Coord.System.W_EUCLID2]: WrappedEuclid2.Grid.Dimensions;
 		[Coord.System.BEEHIVE]: Beehive.Grid.Dimensions;
-	};
+	}
 
 	// ==============================================================
 	// Note: The below exports do not require any modifications with
@@ -230,7 +230,7 @@ export namespace Grid {
 			teamSizes: readonly number[],
 			dimensions: Dimensions[S],
 		): readonly (readonly Coord[])[];
-	};
+	}
 
 	// Each implementation must register itself into this dictionary.
 	// See CmapManager.ts.

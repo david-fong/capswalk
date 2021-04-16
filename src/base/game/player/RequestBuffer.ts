@@ -11,7 +11,7 @@ import { Player as _Player } from "defs/TypeDefs";
  */
 export class RequestBuffer {
 
-	#lastRejectId = 0; public get lastRejectId(): number { return this.#lastRejectId; };
+	#lastRejectId = 0; public get lastRejectId(): number { return this.#lastRejectId; }
 	private size = 0;
 	public predictedCoord: Coord;
 

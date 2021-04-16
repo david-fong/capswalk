@@ -36,10 +36,7 @@
         },{
             "fileMatch": [ "*package*.json" ],
             "url": "https://json.schemastore.org/package",
-        },{
-            "fileMatch": [ ".eslintrc.json" ],
-            "url": "https://json.schemastore.org/eslintrc",
-        },
+        }
     ],
 
     "files.trimTrailingWhitespace": true,

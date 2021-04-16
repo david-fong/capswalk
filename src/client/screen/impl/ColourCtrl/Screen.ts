@@ -66,7 +66,7 @@ export namespace ColourCtrlScreen {
 		}
 
 		public _onHoverOpt(opt: O): void {
-			;
+
 		}
 
 		public _onSelectOpt(opt: O): void {

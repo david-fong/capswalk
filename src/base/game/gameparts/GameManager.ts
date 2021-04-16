@@ -102,54 +102,57 @@ export abstract class GameManager<
 		// (to-be-previous) values don't get unnecessarily avoided.
 		this.grid.write(coord, { seq: "" });
 
-		let avoid = this.grid
+		const avoid = this.grid
 			.getAllAltDestsThan(coord)
 			.map((tile) => tile.seq)
 			.freeze();
 		return this.lang.getNonConflictingChar(avoid);
 	}
 
-	/** @override */
-	public requestStateChange(req: StateChange.Req, socket?: any): void {
-		const causer = this.players[req.initiator]!;
-		if (req.lastRejectId !== causer.reqBuffer.lastRejectId) {
+	/**
+	 * @override
+	 * @param authorSock - Only passed on the server.
+	 */
+	public requestStateChange(req: StateChange.Req, authorSock?: WebSocket): void {
+		const author = this.players[req.author]!;
+		if (req.lastRejectId !== author.reqBuffer.lastRejectId) {
 			// client hasn't received previously sent reject ID yet.
 			return; //⚡
 		}
 		const reqDest = this.grid.tileAt(req.moveDest);
 		if (this.status !== Game.Status.PLAYING || this.grid.isOccupied(reqDest.coord)) {
 			this.commitStateChange({
-				rejectId: causer.reqBuffer.getNextRejectId(),
-				initiator: req.initiator,
-			}, socket);
+				rejectId: author.reqBuffer.getNextRejectId(),
+				author: req.author,
+			}, authorSock);
 			return; //⚡
 		}
 		const moveIsBoost = (req.moveType === Player.MoveType.BOOST);
-		const causerNewBoosts = causer.boosts + (moveIsBoost ? -1 : Game.K.PORTION_OF_MOVES_THAT_ARE_BOOST);
-		if (moveIsBoost && causerNewBoosts < 0) {
+		const authorNewBoosts = author.boosts + (moveIsBoost ? -1 : Game.K.PORTION_OF_MOVES_THAT_ARE_BOOST);
+		if (moveIsBoost && authorNewBoosts < 0) {
 			this.commitStateChange({
-				rejectId: causer.reqBuffer.getNextRejectId(),
-				initiator: req.initiator,
-			}, socket);
+				rejectId: author.reqBuffer.getNextRejectId(),
+				author: req.author,
+			}, authorSock);
 			return; //⚡
 		}
 
 		// Update stats records:
-		const scoreInfo = this.scoreInfo.entries[causer.playerId]!;
+		const scoreInfo = this.scoreInfo.entries[author.playerId]!;
 		scoreInfo.moveCounts[req.moveType] += 1;
 
 		// Set response fields according to spec in `PlayerMovementEvent`:
 		this.commitStateChange(<StateChange.Res.Accepted>{
-			initiator: req.initiator,
+			author: req.author,
 			moveType: req.moveType,
 			players: {
-				[causer.playerId]: {
-					boosts: causerNewBoosts,
+				[author.playerId]: {
+					boosts: authorNewBoosts,
 					coord: reqDest.coord,
 				},
 			},
 			tiles: [],
-		}, socket);
+		}, authorSock);
 	}
 
 	public abstract setTimeout(callback: Function, millis: number, ...args: any[]): number;
@@ -195,7 +198,7 @@ export namespace GameManager {
 			}
 		}
 
-		if (parseInt(args.langWeightExaggeration as any) === NaN) {
+		if (typeof args.langWeightExaggeration === "number") {
 			bad.push(`Language Weight Exaggeration expected a number, but`
 			+ `\`${args.langWeightExaggeration}\` is not a number.`);
 		} else {

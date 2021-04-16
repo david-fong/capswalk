@@ -74,7 +74,7 @@ export class AllScreens {
 		// note: "isr" as in "Initial Screen Request".
 		const isr = BaseScreen.NavTree[window.location.hash.slice(1) as BaseScreen.Id];
 		window.setTimeout(() => {
-			this.goToScreen(isr?.href ?? BaseScreen.Id.HOME, {});
+			this.goToScreen(isr?.href ?? BaseScreen.Id.HOME, void 0);
 		});
 
 		window.addEventListener("popstate", (ev: PopStateEvent) => {

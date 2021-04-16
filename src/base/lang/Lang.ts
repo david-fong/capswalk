@@ -125,7 +125,7 @@ export abstract class Lang extends _Lang {
 				//if (DEF.DevAssert) { this._assertInvariants(); }
 				return csp;
 			}
-		};
+		}
 		// Enforced by UI and server:
 		throw new Error("never");
 	}
@@ -210,7 +210,7 @@ export namespace Lang {
 		new (weightScaling: Lang.WeightExaggeration): Lang;
 		/** Note: Does not need to handle caching */
 		BUILD(): ForwardDict;
-	};
+	}
 
 	/**
 	 * @returns `undefined` if no such language descriptor is found.
@@ -242,7 +242,7 @@ export namespace Lang {
 		if (weightScaling === 0) return GetWeightScalingFn.UNIFORM;
 		if (weightScaling === 1) return GetWeightScalingFn.IDENTITY;
 		return (originalWeight: number) => Math.pow(originalWeight / avgUnscaledWeight, weightScaling);
-	};
+	}
 	export namespace GetWeightScalingFn {
 		// Cache the compiled code by extracting the declaration.
 		export function UNIFORM(): 1 { return 1; }
@@ -313,7 +313,7 @@ export namespace Lang {
 	export interface Csp {
 		readonly char: Lang.Char,
 		readonly seq:  Lang.Seq,
-	};
+	}
 	export namespace Csp {
 		export interface Weighted extends Csp {
 			/** Unscaled weight. */

@@ -73,7 +73,7 @@ export namespace Lang {
 		 * Characters that must never be unmarked as reserved (state reason):
 		 * (currently none. update as needed)
 		 */
-		export const REGEXP = new RegExp("^[a-zA-Z0-9!@#$%^&*()\-_=+;:'\"\\|,.<>/?]+$");
+		export const REGEXP = new RegExp("^[a-zA-Z0-9!@#$%^&*()-_=+;:'\"\\|,.<>/?]+$");
 	}
 	/** See the main documentation in game/lang/Lang */
 	export type WeightExaggeration = number;

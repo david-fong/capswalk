@@ -36,7 +36,7 @@ export abstract class _GroupJoinerScreenInitEl extends BaseScreen<SID> {
 
 		this.nav.next.onclick = (ev) => {
 			// No validation needed. The next button is only enabled if inputs are valid.
-			this.requestGoToScreen(BaseScreen.Id.GROUP_LOBBY, {});
+			this.requestGoToScreen(BaseScreen.Id.GROUP_LOBBY, void 0);
 		};
 		this._setFormState(State.CHOOSING_SERVER);
 		this.baseElem.appendChild(contentWrapper);
@@ -138,7 +138,7 @@ export namespace _GroupJoinerScreenInitEl {
 		CHOOSING_SERVER = "choosing-server",
 		CHOOSING_GROUP  = "choosing-group",
 		IN_GROUP        = "in-group",
-	};
+	}
 }
 const State = _GroupJoinerScreenInitEl.State;
 type  State = _GroupJoinerScreenInitEl.State;
