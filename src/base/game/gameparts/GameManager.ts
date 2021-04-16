@@ -119,8 +119,7 @@ export abstract class GameManager<
 			// client hasn't received previously sent reject ID yet.
 			return; //⚡
 		}
-		const reqDest = this.grid.tileAt(req.moveDest);
-		if (this.status !== Game.Status.PLAYING || this.grid.isOccupied(reqDest.coord)) {
+		if (this.status !== Game.Status.PLAYING || this.grid.isOccupied(req.moveDest)) {
 			this.commitStateChange({
 				rejectId: author.reqBuffer.getNextRejectId(),
 				author: req.author,
@@ -148,10 +147,12 @@ export abstract class GameManager<
 			players: {
 				[author.playerId]: {
 					boosts: authorNewBoosts,
-					coord: reqDest.coord,
+					coord: req.moveDest,
 				},
 			},
-			tiles: [],
+			tiles: {
+				[req.moveDest]: this.dryRunShuffleLangCspAt(req.moveDest),
+			},
 		}, authorSock);
 	}
 

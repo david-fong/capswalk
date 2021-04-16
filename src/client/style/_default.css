@@ -9,11 +9,9 @@
 	--colour-pFaceMe: grey !important;
 	--colour-pFaceMeOppo: grey !important;
 	--colour-pFaceTeammate: grey !important;
-	--colour-pFaceImtlTeammate: grey !important;
 	--colour-pFaceOpponent: grey !important;
-	--colour-pFaceImtlOpponent: grey !important;
 }}
-[data-sk-colour-scheme="default"] {
+[data-colour-scheme="default"] {
 	--colour-mainFg: #e9eef3;
 	--colour-mainBg: #3f5e77;
 	--colour-tileFg: #e9eef3;
@@ -24,7 +22,5 @@
 	--colour-pFaceMe: #35e7ff;
 	--colour-pFaceMeOppo: #937ad8;
 	--colour-pFaceTeammate: #f8d150;
-	--colour-pFaceImtlTeammate: #f8d150;
 	--colour-pFaceOpponent: #ec4daf;
-	--colour-pFaceImtlOpponent: #e23fa3;
 }

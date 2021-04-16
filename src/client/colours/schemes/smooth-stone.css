@@ -1,4 +1,4 @@
-[data-sk-colour-scheme="smooth-stone"] {
+[data-colour-scheme="smooth-stone"] {
 	--colour-mainFg: #c3c5ce;
 	--colour-mainBg: #72888d;
 	--colour-tileFg: #a2b6bb;
@@ -9,7 +9,5 @@
 	--colour-pFaceMe: #43aec9;
 	--colour-pFaceMeOppo: #5a5f9c;
 	--colour-pFaceTeammate: #bdae58;
-	--colour-pFaceImtlTeammate: #f8df50;
 	--colour-pFaceOpponent: #a34e59;
-	--colour-pFaceImtlOpponent: #e23fa3;
 }

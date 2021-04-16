@@ -118,12 +118,12 @@ export namespace JsUtils {
 		 * to prevent key collisions on null origins such as `file://`.
 		 */
 		export function _makeSmartStorage<
-			T extends {[key : string]: string | number},
+			T extends { [key : string]: string | number | boolean },
 		>(
 			localPrefix: string,
 			storage: Storage,
 			example: T,
-		): Partial<T> {
+		): T {
 			const smart: T = {} as T;
 			(Object.keys(example)).forEach((key) => {
 				const internalKey = (DEF.PRODUCTION ? "" : localPrefix + ".") + key;

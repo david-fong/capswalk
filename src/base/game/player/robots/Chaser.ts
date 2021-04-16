@@ -184,6 +184,6 @@ Chaser.prototype._behaviours
 	Chaser.prototype["_bhvrChasePrey"],
 	Chaser.prototype["_bhvrGotoHealthElseWander"],
 ]);
-JsUtils.protoNoEnum(Chaser, "onTeamsBootstrapped");
+JsUtils.protoNoEnum(Chaser, "_onTeamsBootstrapped");
 Object.freeze(Chaser);
 Object.freeze(Chaser.prototype);

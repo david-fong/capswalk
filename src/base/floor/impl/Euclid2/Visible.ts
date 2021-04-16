@@ -36,6 +36,28 @@ function _mkChar(iac: System.Grid["iacCache"][number]): SVGTextElement {
 	return char;
 }
 
+/** */
+function _mkPlayer(desc: Player.UserInfo): SVGGElement {
+	const player = JsUtils.svg("g", [style["player"]]); setAttrs(player, {
+		height: 1, width: 1, viewBox: "0,0,1,1",
+	}); {
+		const back = JsUtils.svg("rect", [style["tile"]]);
+		setAttrs(back, { height: 0, width: 0, x: 0.1, y: 0.1, rx: 0.1 });
+		player.appendChild(back);
+	} {
+		const code = [...desc.avatar]
+			.map((c) => c.codePointAt(0)!.toString(16))
+			.slice(0,-1) // remove the "variant-16 code point"
+			.join("-");
+		const emoji = JsUtils.svg("image"); setAttrs(emoji, {
+			href: `https://twemoji.maxcdn.com/v/latest/svg/${code}.svg`,
+			height: 1, width: 1,
+		});
+		player.appendChild(emoji);
+	}
+	return player;
+}
+
 /**
  * @final
  */
@@ -58,33 +80,14 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		const defs = this._mkGridDefs();
 		svg.appendChild(defs);
 		{
-			const plane = JsUtils.svg("rect"); setAttrs(plane, {
+			const plane = JsUtils.svg("use"); setAttrs(plane, {
 				height: "100%", width: "100%",
-				fill: `url(#${ID.gridMirror})`,
+				href: `#${ID.gridMirror}`,
 			});
 			svg.appendChild(plane);
 		}
-		this.players = desc.players.map((desc) => {
-			const player = JsUtils.svg("g", [style["player"]]); setAttrs(player, {
-				height: 1, width: 1, viewBox: "0,0,1,1",
-			}); {
-				const back = JsUtils.svg("rect", [style["tile"]]);
-				setAttrs(back, { height: 0, width: 0, x: 0.1, y: 0.1, rx: 0.1 });
-				player.appendChild(back);
-			} {
-				const code = [...desc.avatar]
-					.map((c) => c.codePointAt(0)!.toString(16))
-					.slice(0,-1) // remove the "variant-16 code point"
-					.join("-");
-				const emoji = JsUtils.svg("image"); setAttrs(emoji, {
-					href: `https://twemoji.maxcdn.com/v/latest/svg/${code}.svg`,
-					height: 1, width: 1,
-				});
-				player.appendChild(emoji);
-			}
-			svg.appendChild(player);
-			return player;
-		}).freeze();
+		this.players = desc.players.map(_mkPlayer).freeze();
+		this.players.forEach((p) => svg.appendChild(p));
 
 		const wrapper = JsUtils.html("div");
 		wrapper.appendChild(svg);
@@ -96,6 +99,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 	public write(coord: Coord, changes: Tile.Changes): void {
 		super.write(coord, changes);
 		if (changes.char) {
+			console.log(coord)
 			this.#chars[coord]!.textContent = changes.char!;
 		}
 	}
@@ -106,7 +110,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		const p = this.players[entityId]!;
 		const iac = this.iacCache[to]!;
 		setAttrs(p, {
-			transform: `translate(${iac.x} ${iac.y})`,
+			//transform: `translate(${iac.x} ${iac.y})`,
 		});
 	}
 
@@ -126,7 +130,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 			defs.appendChild(pattern);
 		} {
 			// Mirrored Grid of Characters
-			const grid = JsUtils.svg("pattern"); setAttrs(grid, {
+			const grid = JsUtils.svg("symbol"); setAttrs(grid, {
 				id: ID.gridMirror, "z-index": "0",
 				height: "50%", width: "50%",
 				viewBox: `0, 0, ${this.dimensions.width}, ${this.dimensions.height}`,

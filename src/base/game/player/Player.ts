@@ -170,7 +170,6 @@ export namespace Player {
 	export type _CtorArgs = {
 		[F in Player.Family]: _PreIdAssignmentDict[F] & Readonly<{
 			playerId: Player.Id;
-			avatar: Avatar;
 		}>;
 	};
 
@@ -197,26 +196,24 @@ export namespace Player {
 			gameDesc: Game.CtorArgs.UnFin<S>,
 		): asserts gameDesc is Game.CtorArgs<S>
 		{
-			const playerDescs: readonly CtorArgs.UnFin[] = gameDesc.players;
 			// Map team ID's to consecutive numbers
 			// (to play nice with array representations):
 			const teamIdCleaner: readonly Team.Id[]
-				= Array.from(new Set(playerDescs.map((player) => player.teamId)))
-				.sort((a, b) => a - b) // This is not a representation requirement.
-				.reduce((prev, originalId, squashedId) => {
+				= Array.from(new Set(gameDesc.players.map((p) => p.teamId)))
+				.seal().sort((a, b) => a - b) // This is not a representation requirement.
+				.freeze().reduce((prev, originalId, squashedId) => {
 					prev[originalId] = squashedId;
 					return prev;
 				}, [] as Array<Team.Id>);
 
 			// @ts-expect-error : RO=
 			gameDesc.players
-				= playerDescs.slice()
-				.sort((pda, pdb) => teamIdCleaner[pda.teamId]! - teamIdCleaner[pdb.teamId]!)
-				.freeze()
-				.map<CtorArgs>((playerDesc, index) => Object.assign({}, playerDesc, {
+				= gameDesc.players.slice()
+				.seal().sort((a,b) => teamIdCleaner[a.teamId]! - teamIdCleaner[b.teamId]!)
+				.freeze().map<CtorArgs>((p, index) => Object.assign({}, p, {
 					playerId: index,
-					teamId:   teamIdCleaner[playerDesc.teamId]!,
-					avatar:   playerDesc.avatar ?? Player.Avatar.GET_RANDOM(),
+					teamId:   teamIdCleaner[p.teamId]!,
+					avatar:   p.avatar ?? Player.Avatar.GET_RANDOM(),
 				}))
 				.freeze();
 		}

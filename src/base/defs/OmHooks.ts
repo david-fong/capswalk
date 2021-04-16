@@ -27,7 +27,7 @@ export namespace General {
 		INPUT_GROUP_ITEM:   "input-group-item",
 	};
 	export const Dataset = <const>{
-		COLOUR_SCHEME: "skColourScheme",
+		COLOUR_SCHEME: "colourScheme",
 	};
 }
 

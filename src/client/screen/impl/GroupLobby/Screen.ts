@@ -67,7 +67,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 			maxLength : Player.Username.MAX_LENGTH,
 			pattern   : Player.Username.REGEXP.source,
 			spellcheck: false,
-			value     : this.top.storage.Local.username ?? "",
+			value     : this.top.storage.Local.username,
 			onchange  : this._submitInputs.bind(this),
 		});
 		base.appendChild(uname);

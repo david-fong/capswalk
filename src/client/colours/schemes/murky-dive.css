@@ -1,4 +1,4 @@
-[data-sk-colour-scheme="murky-dive"] {
+[data-colour-scheme="murky-dive"] {
 	--colour-mainFg: #c3c5ce;
 	--colour-mainBg: #336465;
 	--colour-tileFg: #e7efef;
@@ -9,7 +9,5 @@
 	--colour-pFaceMe: #03f9ed;
 	--colour-pFaceMeOppo: #898697;
 	--colour-pFaceTeammate: #ffbbaa;
-	--colour-pFaceImtlTeammate: #ffcabd;
 	--colour-pFaceOpponent: #ff4f6c;
-	--colour-pFaceImtlOpponent: #ff6d85;
 }

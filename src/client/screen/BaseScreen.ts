@@ -187,7 +187,7 @@ export namespace BaseScreen {
 		HOME            = "home",
 		HOW_TO_PLAY     = "how-to-play",
 		HOW_TO_HOST     = "how-to-host",
-		COLOUR_CTRL     = "colour-control",
+		SETTINGS     = "colour-control",
 		// Offline:     ===================
 		SETUP_OFFLINE   = "setup-offline",
 		PLAY_OFFLINE    = "play-offline",
@@ -208,7 +208,7 @@ export namespace BaseScreen {
 		[ Id.HOME          ]: void;
 		[ Id.HOW_TO_PLAY   ]: void;
 		[ Id.HOW_TO_HOST   ]: void;
-		[ Id.COLOUR_CTRL   ]: void;
+		[ Id.SETTINGS   ]: void;
 		//==================
 		[ Id.SETUP_OFFLINE ]: void;
 		[ Id.PLAY_OFFLINE  ]: [Game.CtorArgs.UnFin];
@@ -230,7 +230,7 @@ export namespace BaseScreen {
 		[ Id.HOME          ]: { prev: Id.HOME,          href: Id.HOME },
 		[ Id.HOW_TO_PLAY   ]: { prev: Id.HOME,          href: Id.HOW_TO_PLAY },
 		[ Id.HOW_TO_HOST   ]: { prev: Id.HOME,          href: Id.HOW_TO_HOST },
-		[ Id.COLOUR_CTRL   ]: { prev: Id.HOME,          href: Id.COLOUR_CTRL },
+		[ Id.SETTINGS      ]: { prev: Id.HOME,          href: Id.SETTINGS },
 		//==========================================================================
 		[ Id.SETUP_OFFLINE ]: { prev: Id.HOME,          href: Id.SETUP_OFFLINE },
 		[ Id.PLAY_OFFLINE  ]: { prev: Id.SETUP_OFFLINE, href: Id.SETUP_OFFLINE },

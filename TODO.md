@@ -28,6 +28,7 @@
 1. Display the operator's current sequence buffer.
     - Or perhaps make a fancy "crosshair" that outlines tiles that match the current sequence buffer.
 1. Reject a request if the requesting socket doesn't operate the specified player.
+1. Make a user preference to use TwEmoji or system emoji font.
 
 ### Things that I feel less like doing
 

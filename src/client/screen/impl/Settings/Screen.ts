@@ -6,9 +6,9 @@ import { PickOne as _PickOne } from "client/utils/PickOne";
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 
 /** */
-export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
+export class SettingsScreen extends BaseScreen<BaseScreen.Id.SETTINGS> {
 
-	public readonly sel: ColourCtrlScreen.PickOne;
+	public readonly sel: SettingsScreen.PickOne;
 
 	/** @override */
 	protected _abstractLazyLoad(): void {
@@ -17,29 +17,26 @@ export class ColourCtrlScreen extends BaseScreen<BaseScreen.Id.COLOUR_CTRL> {
 			/* webpackMode: "lazy-once" */
 			`client/colours/schemes/${void 0}.css`
 		).catch((e) => {
-			void 0; // yeet.
+			void 0; // yeet!
 		});
 		this.baseElem.classList.add(style["this"]);
 		this.baseElem.appendChild(this.nav.prev);
 
 		// @ts-expect-error : RO=
-		this.sel = new ColourCtrlScreen.PickOne(
+		this.sel = new SettingsScreen.PickOne(
 			this.top.storage.Local,
 			this.top.transition,
 		);
-		JsUtils.propNoWrite(this as ColourCtrlScreen, "sel");
+		JsUtils.propNoWrite(this as SettingsScreen, "sel");
 		this.baseElem.appendChild(this.sel.baseElem);
 
 		// Highlight the user's last selected colour scheme (if it exists).
 		// This will already have been loaded up during page load, hence
 		// passing `false` to the `noCallback` argument
-		const lastUsedSchemeId = this.top.storage.Local.colourSchemeId;
-		if (lastUsedSchemeId) {
-			this.sel.selectOpt(this.sel.getOptById(lastUsedSchemeId)!, false);
-		}
+		this.sel.selectOpt(this.sel.getOptById(this.top.storage.Local.colourSchemeId)!, false);
 	}
 }
-export namespace ColourCtrlScreen {
+export namespace SettingsScreen {
 	type O = PickOne.Option;
 	/** */
 	export class PickOne extends _PickOne<O> {
@@ -61,7 +58,7 @@ export namespace ColourCtrlScreen {
 				this.addOption(new PickOne.Option(schemeDesc));
 			});
 			this.selectOpt(this.getOptById(
-				this.#storage.colourSchemeId ?? "default",
+				this.#storage.colourSchemeId,
 			)!, false);
 		}
 
@@ -144,8 +141,8 @@ export namespace ColourCtrlScreen {
 	Object.freeze(PickOne);
 	Object.freeze(PickOne.prototype);
 }
-Object.freeze(ColourCtrlScreen);
-Object.freeze(ColourCtrlScreen.prototype);
+Object.freeze(SettingsScreen);
+Object.freeze(SettingsScreen.prototype);
 
 
 /** */
@@ -155,8 +152,8 @@ export namespace Colour {
 		"tileFg", "tileBg", "tileBd",
 		"healthFg", "healthBg",
 		"pFaceMe", "pFaceMeOppo",
-		"pFaceTeammate", "pFaceImtlTeammate",
-		"pFaceOpponent", "pFaceImtlOpponent",
+		"pFaceTeammate",
+		"pFaceOpponent",
 	]);
 	export const Schemes = JsUtils.deepFreeze<Scheme[]>(Array.from(SchemesJsonImport));
 	export type Scheme = Readonly<{

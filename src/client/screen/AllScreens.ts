@@ -5,7 +5,7 @@ import type { TopLevel } from "../TopLevel";
 import {         HomeScreen } from "./impl/Home/Screen";
 import {    HowToPlayScreen } from "./impl/HowToPlay";
 import {    HowToHostScreen } from "./impl/HowToHost";
-import {   ColourCtrlScreen } from "./impl/ColourCtrl/Screen";
+import {   SettingsScreen } from "./impl/Settings/Screen";
 // ====:   ~~~ OFFLINE ~~~  :============================
 import { SetupOfflineScreen } from "./impl/Setup/Offline";
 import {  PlayOfflineScreen } from "./impl/Play/Offline";
@@ -19,7 +19,7 @@ export interface AllSkScreensDict {
 	[ BaseScreen.Id.HOME          ]: HomeScreen;
 	[ BaseScreen.Id.HOW_TO_PLAY   ]: HowToPlayScreen;
 	[ BaseScreen.Id.HOW_TO_HOST   ]: HowToHostScreen;
-	[ BaseScreen.Id.COLOUR_CTRL   ]: ColourCtrlScreen;
+	[ BaseScreen.Id.SETTINGS   ]: SettingsScreen;
 	//=============================
 	[ BaseScreen.Id.SETUP_OFFLINE ]: SetupOfflineScreen;
 	[ BaseScreen.Id.PLAY_OFFLINE  ]: PlayOfflineScreen;
@@ -60,7 +60,7 @@ export class AllScreens {
 			[ Id.HOME          ]: new         HomeScreen(ctx, Id.HOME),
 			[ Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(ctx, Id.HOW_TO_PLAY),
 			[ Id.HOW_TO_HOST   ]: new    HowToHostScreen(ctx, Id.HOW_TO_HOST),
-			[ Id.COLOUR_CTRL   ]: new   ColourCtrlScreen(ctx, Id.COLOUR_CTRL),
+			[ Id.SETTINGS      ]: new     SettingsScreen(ctx, Id.SETTINGS),
 			[ Id.SETUP_OFFLINE ]: new SetupOfflineScreen(ctx, Id.SETUP_OFFLINE),
 			[ Id.PLAY_OFFLINE  ]: new  PlayOfflineScreen(ctx, Id.PLAY_OFFLINE),
 			[ Id.GROUP_JOINER  ]: new  GroupJoinerScreen(ctx, Id.GROUP_JOINER),

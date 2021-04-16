@@ -20,9 +20,9 @@
     "preinstall": "npx only-allow pnpm",
     "devinit": "bash scripts/devinit.sh",
     "lint": "eslint --cache --cache-location './node_modules/.cache/eslint-cache.json' './src/'",
-    "build": "node --enable-source-maps --disable-proto=delete --title='capswalk-build'  ./scripts/webpack/pack.js",
-    "serve": "node --enable-source-maps --disable-proto=delete --title='capswalk-server' ./dist/server/index.js",
-    "test": "node --enable-source-maps --disable-proto=delete --title='capswalk-test'   ./dist/server/test/lang.js"
+    "build": "node                      --disable-proto=delete --title='capswalk-build'  -- ./scripts/webpack/pack.js",
+    "test":  "node --enable-source-maps --disable-proto=delete --title='capswalk-test'   -- ./dist/server/test/lang.js",
+    "serve": "node --enable-source-maps --disable-proto=delete --title='capswalk-server' -- ./dist/server/index.js"
   },
   "dependencies": {
     "koa": "^2.13.1",

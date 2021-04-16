@@ -9,13 +9,16 @@ export namespace StorageHooks {
 	// Let's just take a moment to appreciate that TypeScript
 	// actually recognizes references to the example object.
 	export const Local = JsUtils.Web._makeSmartStorage("capswalk", localStorage, {
-		musicVolume: 1,
-		sfxVolume: 1,
+		volumeBgMusic: 1,
+		volumeSfx: 1,
+
+		emojiFont: "twemoji" as "system" | "twemoji",
+		conservativeAnimations: true,
 		/**
 		 * Only used to highlight the last-used colour scheme when
 		 * cold-initializing the colour selection screen.
 		 */
-		colourSchemeId: "",
+		colourSchemeId: "default",
 		/**
 		 * Stores a css rule string for quick recovery on page load
 		 * without even needing any colour scheme CSS files loaded.
@@ -26,13 +29,13 @@ export namespace StorageHooks {
 
 		gamePresetId: "",
 
-		username: "",
+		username: "unnamed player",
 		avatar: "",
 	});
 
 	export function getLastUserInfo(): Player.UserInfo {
 		return Object.freeze(<Player.UserInfo>{
-			username: Local.username ?? "unnamed player",
+			username: Local.username,
 			teamId: 0,
 			avatar: Local.avatar ?? Player.Avatar.GET_RANDOM()
 		});

@@ -58,9 +58,9 @@ export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 			cssClass: style["nav--how-to-host"],
 			screenId: BaseScreen.Id.HOW_TO_HOST,
 		},{
-			text:    "Colour Schemes",
-			cssClass: style["nav--colour-scheme"],
-			screenId: BaseScreen.Id.COLOUR_CTRL,
+			text:    "Settings",
+			cssClass: style["nav--settings"],
+			screenId: BaseScreen.Id.SETTINGS,
 		}])
 		.map<Readonly<{
 			text: string;
