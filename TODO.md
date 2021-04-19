@@ -14,7 +14,6 @@
 
 ### Things I feel like doing
 
-1. Euclid2 system bug:
 1. Implement `VisibleGrid` rendering of player positions.
     - The current usage of using a CSS transition on the transform property is not working for Firefox.
 1. Unify CSS spacing values via variables.

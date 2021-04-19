@@ -277,10 +277,10 @@ export namespace WrappedEuclid2 {
 			// ^Adjusted so that t and l can be treated as non-wrapped.
 			const dests: Array<Tile> = [];
 			if (wrapX) {
-				dests.push(...this._grid.slice(0, r).freeze());
+				const _t = t * W;
+				dests.push(...this._grid.slice(_t, _t+r).freeze());
 				if (wrapY) {
-					const _t = t * W;
-					dests.push(...this._grid.slice(_t, _t+r).freeze());
+					dests.push(...this._grid.slice(0, r).freeze());
 				}
 			}
 
