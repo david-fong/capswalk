@@ -2,7 +2,7 @@ import { JsUtils } from "defs/JsUtils";
 import { Player } from "defs/TypeDefs";
 
 import type { Tile } from "../Tile";
-import style from "./tile.m.css";
+import style from "./tile-example.m.css";
 
 /**
  * Implicitly handles visuals with help from CSS.

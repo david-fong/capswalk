@@ -44,19 +44,19 @@ Object.values(configs).forEach((config) => {
 		console.info(`running webpack in watch mode (${config.name}) ...`
 			+`\nNote: must be restarted if node_modules changes.`);
 		compiler.watch(config.watchOptions, (stats) => {
-			if (stats) console.log(stats);
+			if (stats) console.info(stats);
 		});
 	}
 	else {
 		compiler.run((err, stats) => {
-			console.log(`\n${"=".repeat(32)} ${config.name.toUpperCase()} ${"=".repeat(32)}\n`);
+			console.info(`\n${"=".repeat(32)} ${config.name.toUpperCase()} ${"=".repeat(32)}\n`);
 			if (err) {
 				console.error(err.stack || err);
 				if (err["details"]) { console.error(err["details"]); }
 				return;
 			}
-			console.log(stats?.toString(config.stats));
-			console.log();
+			console.info(stats?.toString(config.stats));
+			console.info();
 		});
 		compiler.close((err, result) => { });
 	}

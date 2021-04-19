@@ -15,7 +15,6 @@
 }
 
 .char {
-	z-index: 2;
 	dominant-baseline: central;
 	text-anchor: middle;
 	fill: var(--colour-tileFg);
@@ -23,7 +22,5 @@
 }
 
 .player {
-	pointer-events: all;
-	z-index: 3;
 	transition: transform 0.05s linear;
 }

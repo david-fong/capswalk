@@ -4,19 +4,21 @@ import type { Grid as AbstractGrid } from "floor/Grid";
 import type { Player } from "defs/TypeDefs";
 import { VisibleGrid } from "floor/visible/VisibleGrid";
 
-import { WrappedEuclid2 as System } from "./System";
-import style from "./style.m.css";
+import { IAC, WrappedEuclid2 as System } from "./System";
+import style, { player } from "./style.m.css";
 type S = Coord.System.W_EUCLID2;
 const PHYSICAL_TILE_WIDTH = 3.3;
 
 // TODO.wait when rx, x, y, height, and width are widely supported by CSS,
 // use them for the square shapes instead of setting attributes.
 
+// Design Note: Using SVG patterns or <use> to implement this grid was
+// considered, but dropped due to browser implementations not being very
+// efficient for changing defs. Being more imperative saves CPU power.
+
 /** */
 const ID = Object.freeze(<const>{
 	tilePattern: "tile-pattern",
-	gridMirror: "grid-mirror",
-	player(id: number) { return "player-avatar-" + id; },
 });
 
 /** helper */
@@ -27,22 +29,41 @@ function setAttrs(el: Element, attrs: Record<string, string | number>): void {
 }
 
 /** */
-function _mkChar(iac: System.Grid["iacCache"][number]): SVGTextElement {
-	const char = JsUtils.svg("text");
-	char.classList.add(style.char);
-	setAttrs(char, {
-		x: iac.x + 0.5, y: iac.y + 0.5,
-	});
-	return char;
+function _mkGridDefs(): SVGDefsElement {
+	const defs = JsUtils.svg("defs");
+	{
+		// Tile Pattern
+		const pattern = JsUtils.svg("pattern"); setAttrs(pattern, {
+			id: ID.tilePattern, patternUnits: "userSpaceOnUse",
+			height: "1", width: "1", viewBox: "0,0,1,1",
+		});
+		const t = JsUtils.svg("rect", [style["tile"]]);
+		setAttrs(t, { height: 0.8, width: 0.8, x: 0.1, y: 0.1, rx: 0.1 });
+
+		pattern.appendChild(t);
+		defs.appendChild(pattern);
+	}
+	return defs;
 }
 
 /** */
-function _mkPlayer(desc: Player.UserInfo): SVGGElement {
-	const player = JsUtils.svg("g", [style["player"]]); setAttrs(player, {
+function _mkMirroredChars(iac: IAC.Bare, dim: System.Grid.Dimensions): readonly SVGTextElement[] {
+	const { height: h, width: w } = dim;
+	const chars = [JsUtils.svg("text"), JsUtils.svg("text"), JsUtils.svg("text"), JsUtils.svg("text")];
+	setAttrs(chars[0]!, { x:   iac.x + 0.5, y:   iac.y + 0.5 });
+	setAttrs(chars[1]!, { x: w+iac.x + 0.5, y:   iac.y + 0.5 });
+	setAttrs(chars[2]!, { x:   iac.x + 0.5, y: h+iac.y + 0.5 });
+	setAttrs(chars[3]!, { x: w+iac.x + 0.5, y: h+iac.y + 0.5 });
+	return chars;
+}
+
+/** */
+function __mkPlayer(desc: Player.UserInfo): SVGGElement {
+	const player = JsUtils.svg("g"); setAttrs(player, {
 		height: 1, width: 1, viewBox: "0,0,1,1",
 	}); {
 		const back = JsUtils.svg("rect", [style["tile"]]);
-		setAttrs(back, { height: 0, width: 0, x: 0.1, y: 0.1, rx: 0.1 });
+		setAttrs(back, { height: 0.8, width: 0.8, x: 0.1, y: 0.1, rx: 0.1 });
 		player.appendChild(back);
 	} {
 		const code = [...desc.avatar]
@@ -51,11 +72,24 @@ function _mkPlayer(desc: Player.UserInfo): SVGGElement {
 			.join("-");
 		const emoji = JsUtils.svg("image"); setAttrs(emoji, {
 			href: `https://twemoji.maxcdn.com/v/latest/svg/${code}.svg`,
-			height: 1, width: 1,
+			height: 1, width: 1, alt: desc.avatar,
 		});
 		player.appendChild(emoji);
 	}
 	return player;
+}
+const _offsetUnits = ([[0,0],[0,1],[1,0],[1,1]] as [x: number, y: number][]).freeze();
+/** */
+function _mkMirroredPlayers(dim: System.Grid.Dimensions, desc: Player.UserInfo): SVGGElement {
+	const players = JsUtils.svg("g", [style["player"]]); setAttrs(players, {
+		height: dim.height+1, width: dim.width+1,
+	});
+	_offsetUnits.forEach((offsetUnits) => {
+		const p = __mkPlayer(desc);
+		p.setAttribute("transform", `translate(${offsetUnits[0]*dim.width} ${offsetUnits[1]*dim.height})`);
+		players.appendChild(p);
+	});
+	return players;
 }
 
 /**
@@ -66,7 +100,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 	public readonly baseElem: HTMLElement;
 	public readonly spotlightElems: readonly HTMLElement[];
 	public readonly players: readonly SVGGElement[];
-	#chars: readonly SVGTextElement[];
+	#chars: readonly (readonly SVGTextElement[])[];
 
 	public constructor(desc: AbstractGrid.CtorArgs<S>) {
 		super(desc);
@@ -75,22 +109,40 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		const svg = JsUtils.svg("svg", [style["grid"]]); setAttrs(svg, {
 			height: `${PHYSICAL_TILE_WIDTH*dim.height}em`,
 			width:  `${PHYSICAL_TILE_WIDTH*dim.width }em`,
-			viewBox: `0, 0, ${dim.width}, ${dim.height}`,
+			viewBox: `0, 0, ${2*dim.width}, ${2*dim.height}`,
 		});
-		const defs = this._mkGridDefs();
-		svg.appendChild(defs);
+		svg.appendChild(_mkGridDefs());
 		{
-			const plane = JsUtils.svg("use"); setAttrs(plane, {
+			const tiles = JsUtils.svg("rect"); setAttrs(tiles, {
 				height: "100%", width: "100%",
-				href: `#${ID.gridMirror}`,
+				fill: `url(#${ID.tilePattern})`,
 			});
-			svg.appendChild(plane);
+			svg.appendChild(tiles);
+		} {
+			// Mirrored Grid of Characters
+			const allChars = JsUtils.svg("g", [style["char"]]); setAttrs(allChars, {}); {
+				// Language Characters
+				const thisChars: (readonly SVGTextElement[])[] = [];
+				this.forEach((tile) => {
+					const mcs = _mkMirroredChars(this.iacCache[tile.coord]!, dim);
+					thisChars.push(mcs);
+					mcs.forEach((c) => allChars.appendChild(c));
+				});
+				this.#chars = thisChars.freeze();
+			}
+			svg.appendChild(allChars);
 		}
-		this.players = desc.players.map(_mkPlayer).freeze();
-		this.players.forEach((p) => svg.appendChild(p));
+		// Note: using a separate SVG for the players causes the repaint
+		// area to be more constrained in Chrome browser.
+		const players = svg.cloneNode() as SVGSVGElement;
+		players.style.position = "absolute";
+		players.style.top = "0";
+		this.players = desc.players.map(_mkMirroredPlayers.bind(null, dim)).freeze();
+		this.players.forEach((p) => players.appendChild(p));
 
 		const wrapper = JsUtils.html("div");
 		wrapper.appendChild(svg);
+		wrapper.appendChild(players);
 		Object.assign(this, VisibleGrid._mkExtensionProps(wrapper));
 		Object.seal(this); //🧊
 	}
@@ -99,8 +151,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 	public write(coord: Coord, changes: Tile.Changes): void {
 		super.write(coord, changes);
 		if (changes.char) {
-			console.log(coord)
-			this.#chars[coord]!.textContent = changes.char!;
+			this.#chars[coord]!.forEach((c) => c.textContent = changes.char!);
 		}
 	}
 
@@ -109,50 +160,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		super.moveEntity(entityId, from, to);
 		const p = this.players[entityId]!;
 		const iac = this.iacCache[to]!;
-		setAttrs(p, {
-			//transform: `translate(${iac.x} ${iac.y})`,
-		});
-	}
-
-	/** */
-	private _mkGridDefs(): SVGDefsElement {
-		const defs = JsUtils.svg("defs");
-		{
-			// Tile Pattern
-			const pattern = JsUtils.svg("pattern"); setAttrs(pattern, {
-				id: ID.tilePattern, patternUnits: "userSpaceOnUse",
-				height: "1", width: "1", viewBox: "0,0,1,1",
-			});
-			const t = JsUtils.svg("rect", [style["tile"]]);
-			setAttrs(t, { height: 0.8, width: 0.8, x: 0.1, y: 0.1, rx: 0.1 });
-
-			pattern.appendChild(t);
-			defs.appendChild(pattern);
-		} {
-			// Mirrored Grid of Characters
-			const grid = JsUtils.svg("symbol"); setAttrs(grid, {
-				id: ID.gridMirror, "z-index": "0",
-				height: "50%", width: "50%",
-				viewBox: `0, 0, ${this.dimensions.width}, ${this.dimensions.height}`,
-			}); {
-				const back = JsUtils.svg("rect"); setAttrs(back, {
-					height: "100%", width: "100%",
-					fill: `url(#${ID.tilePattern})`,
-				});
-				grid.appendChild(back);
-			} {
-				// Language Characters
-				const chars: SVGTextElement[] = [];
-				this.forEach((tile) => {
-					const v = _mkChar(this.iacCache[tile.coord]!);
-					chars.push(v);
-					grid.appendChild(v);
-				});
-				this.#chars = chars.freeze();
-			}
-			defs.appendChild(grid);
-		}
-		return defs;
+		p.setAttribute("transform", `translate(${iac.x} ${iac.y})`);
 	}
 }
 Object.freeze(Euclid2VisibleGrid);

@@ -4,6 +4,6 @@
 	color:      var(--colour-tileFg);
 	height:     fit-content;
 	width:      fit-content;
-	padding:    0.4em;
+	margin:     0.4em;
 	text-rendering: optimizeSpeed;
 }

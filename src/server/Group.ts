@@ -133,7 +133,7 @@ export class Group extends _Group {
 		 || typeof req.teamId   !== "number"
 		 || typeof req.avatar   !== "string") {
 			// User arguments did not match expected format.
-			console.log(`bad format: username: \`${req.username}\``
+			console.info(`bad format: username: \`${req.username}\``
 			+ `, teamId: \`${req.teamId}\`, avatar: \`${req.avatar}\`.`);
 			return;
 		}
