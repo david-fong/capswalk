@@ -22,5 +22,5 @@
 }
 
 .player {
-	transition: transform 0.05s linear;
+	/* transition: transform 0.05s linear; */
 }

@@ -14,7 +14,7 @@ export type Dim = {
  *
  * Immutable.
  */
-class IAC {
+export class IAC {
 	public constructor(
 		public readonly x: number,
 		public readonly y: number,
@@ -45,7 +45,7 @@ class IAC {
 		return Math.max(dx, dy);
 	}
 	/** Returns wrapping information as signums. */
-	public static wrap(dim: Dim, from: IAC.Bare, to: IAC.Bare): IAC.Bare {
+	public static wrapInfo(dim: Dim, from: IAC.Bare, to: IAC.Bare): IAC.Bare {
 		return Object.freeze({
 			x: (Math.abs(to.x - from.x) < dim.width  / 2) ? 0 : (to.x < from.x) ? -1 : 1,
 			y: (Math.abs(to.y - from.y) < dim.height / 2) ? 0 : (to.y < from.y) ? -1 : 1,

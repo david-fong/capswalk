@@ -110,6 +110,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 			height: `${PHYSICAL_TILE_WIDTH*dim.height}em`,
 			width:  `${PHYSICAL_TILE_WIDTH*dim.width }em`,
 			viewBox: `0, 0, ${2*dim.width}, ${2*dim.height}`,
+			// viewBox: `${0.5*dim.width}, ${0.5*dim.height}, ${1.5*dim.width}, ${1.5*dim.height}`,
 		});
 		svg.appendChild(_mkGridDefs());
 		{
@@ -156,11 +157,25 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 	}
 
 	/** @override */
-	public moveEntity(entityId: Player.Id, from: Coord, to: Coord): void {
-		super.moveEntity(entityId, from, to);
+	public moveEntity(entityId: Player.Id, _from: Coord, _to: Coord): void {
+		super.moveEntity(entityId, _from, _to);
 		const p = this.players[entityId]!;
-		const iac = this.iacCache[to]!;
-		p.setAttribute("transform", `translate(${iac.x} ${iac.y})`);
+		const dim = this.dimensions;
+		const from = this.iacCache[_from]!;
+		const to = this.iacCache[_to]!;
+		const wrap = IAC.wrapInfo(dim, from, to);
+		if (wrap.x || wrap.y) {
+			p.style.transition = "none";
+			p.setAttribute("transform", `translate(${from.x + (dim.width*wrap.x)} ${from.y + (dim.height*wrap.y)})`);
+			setTimeout(() => {
+				// For some reason the style recalculation isn't registered
+				// in Chrome browser within the same event stack.
+				p.style.transition = "";
+				p.setAttribute("transform", `translate(${to.x} ${to.y})`);
+			}, 0);
+		} else {
+			p.setAttribute("transform", `translate(${to.x} ${to.y})`);
+		}
 	}
 }
 Object.freeze(Euclid2VisibleGrid);
