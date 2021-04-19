@@ -21,18 +21,18 @@
     "devinit": "bash scripts/devinit.sh",
     "lint": "eslint --cache --cache-location './node_modules/.cache/eslint-cache.json' './src/'",
     "build": "node                      --disable-proto=delete --title='capswalk-build'  -- ./scripts/webpack/pack.js",
-    "test":  "node --enable-source-maps --disable-proto=delete --title='capswalk-test'   -- ./dist/server/test/lang.js",
+    "test": "node --enable-source-maps --disable-proto=delete --title='capswalk-test'   -- ./dist/server/test/lang.js",
     "serve": "node --enable-source-maps --disable-proto=delete --title='capswalk-server' -- ./dist/server/index.js"
   },
   "dependencies": {
     "koa": "^2.13.1",
     "koa-static": "^5.0.0",
-    "ws": "^7.4.4"
+    "ws": "^7.4.5"
   },
   "devDependencies": {
     "@types/koa": "^2.13.1",
     "@types/koa-static": "^4.0.1",
-    "@types/node": "^14.14.37",
+    "@types/node": "^14.14.41",
     "@types/ws": "^7.4.1",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
