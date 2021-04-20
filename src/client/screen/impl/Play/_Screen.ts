@@ -28,9 +28,9 @@ export abstract class _PlayScreen<
 	 */
 	#currentGame: undefined | BrowserGame;
 
-	protected abstract readonly wantsAutoPlayPause: boolean;
+	protected abstract readonly _wantsAutoPlayPause: boolean;
 
-	protected abstract readonly askConfirmBeforeLeave: boolean;
+	protected abstract readonly _askConfirmBeforeLeave: boolean;
 	/**
 	 * Automatically added and removed from listeners when entering
 	 * and leaving this screen.
@@ -53,7 +53,7 @@ export abstract class _PlayScreen<
 
 		// @ts-expect-error : RO=
 		this.#onVisibilityChange = () => {
-			if (!this.wantsAutoPlayPause) return;
+			if (!this._wantsAutoPlayPause) return;
 			if (document.hidden) {
 				if (this.#pauseReason === undefined) {
 					const game = this.currentGame;
@@ -89,7 +89,7 @@ export abstract class _PlayScreen<
 
 		this.btn.pause.onclick = this._reqStatusPlaying.bind(this);
 		this.btn.pause.disabled = false;
-		if (this.wantsAutoPlayPause) {
+		if (this._wantsAutoPlayPause) {
 			setTimeout(() => {
 				if (!document.hidden) { this._reqStatusPlaying(); }
 			}, 100);
@@ -104,7 +104,7 @@ export abstract class _PlayScreen<
 
 	/** @override */
 	protected _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
-		if (this.askConfirmBeforeLeave && !this.top.confirm("Are you sure you would like to leave?")) {
+		if (this._askConfirmBeforeLeave && !this.top.confirm("Are you sure you would like to leave?")) {
 			return false;
 		}
 		document.removeEventListener("visibilitychange", this.#onVisibilityChange);

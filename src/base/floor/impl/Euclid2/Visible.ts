@@ -5,7 +5,7 @@ import type { Player } from "defs/TypeDefs";
 import { VisibleGrid } from "floor/visible/VisibleGrid";
 
 import { IAC, WrappedEuclid2 as System } from "./System";
-import style, { player } from "./style.m.css";
+import style from "./style.m.css";
 type S = Coord.System.W_EUCLID2;
 const PHYSICAL_TILE_WIDTH = 3.3;
 
@@ -116,7 +116,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		{
 			const tiles = JsUtils.svg("rect"); setAttrs(tiles, {
 				height: "100%", width: "100%", x: `${0.5*dim.width}`, y: `${0.5*dim.height}`,
-				fill: `url(#${ID.tilePattern})`,
+				fill: `url(#${ID.tilePattern})`, role: "presentation",
 			});
 			svg.appendChild(tiles);
 		} {
@@ -131,6 +131,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 				});
 				this.#chars = thisChars.freeze();
 			}
+			allChars.style.setProperty("--font-scaling", ""+desc.langCharFontScaling);
 			svg.appendChild(allChars);
 		}
 		// Note: using a separate SVG for the players causes the repaint

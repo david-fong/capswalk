@@ -9,14 +9,14 @@ import { Game, _PlayScreen } from "./_Screen";
  */
 export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 	/** @override */
-	protected readonly askConfirmBeforeLeave = false;
+	protected readonly _askConfirmBeforeLeave = false;
 
 	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.
 	declare protected readonly currentGame: OnlineGame;
 
 	/** @override */
-	protected readonly wantsAutoPlayPause = false;
+	protected readonly _wantsAutoPlayPause = false;
 
 	readonly #wsMessageCb: (ev: MessageEvent<string>) => void;
 	private get ws(): WebSocket {
@@ -27,7 +27,7 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 	protected _abstractLazyLoad(): void {
 		super._abstractLazyLoad();
 		Object.freeze(this); //🧊
-		this.nav.prev.innerHTML = "Return To&nbsp;Lobby";
+		this.nav.prev.innerHTML = "Back&nbsp;To Lobby";
 
 		// @ts-expect-error : RO=
 		this.#wsMessageCb = (ev: MessageEvent<string>) => {

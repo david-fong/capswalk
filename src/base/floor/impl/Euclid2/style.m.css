@@ -18,7 +18,7 @@
 	dominant-baseline: central;
 	text-anchor: middle;
 	fill: var(--colour-tileFg);
-	font-size: 0.04em;
+	font-size: calc(0.04em * var(--font-scaling));
 }
 
 .player {

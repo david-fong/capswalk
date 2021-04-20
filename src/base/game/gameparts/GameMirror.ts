@@ -36,18 +36,20 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		desc.players.forEach((desc) => Object.freeze(desc));
 		Object.freeze(operatorIds);
 
+		const langDesc = Lang.GetDesc(args.desc.langId);
 		const gridClass = impl.gridClassLookup(desc.coordSys);
 		this.grid = new (gridClass)({
 			Grid: gridClass,
 			system: desc.coordSys,
 			dimensions: desc.gridDimensions,
+			langCharFontScaling: langDesc.fontScaling,
 			players: desc.players,
 		}) as GameMirror<S>["grid"];
 
 		this.#onGameBecomeOver = impl.onGameBecomeOver;
 
 		// Construct players:
-		const players  = this._createPlayers(desc, impl, operatorIds, args.desc.langId);
+		const players  = this._createPlayers(desc, impl, operatorIds, langDesc);
 		this.players   = players.players;
 		this.operators = players.operators;
 		{
@@ -84,7 +86,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		gameDesc: Game.CtorArgs<S>,
 		implArgs: Game.ImplArgs,
 		operatorIds: readonly Player.Id[],
-		langId: Lang.Desc["id"],
+		langDesc: Lang.Desc,
 	): {
 		players: readonly Player[],
 		operators: readonly OperatorPlayer[],
@@ -92,7 +94,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		const players = gameDesc.players.map((pDesc) => {
 			if (pDesc.familyId === Player.Family.HUMAN) {
 				return (operatorIds.includes(pDesc.playerId))
-					? new implArgs.OperatorPlayer!(this, pDesc, Lang.GetDesc(langId))
+					? new implArgs.OperatorPlayer!(this, pDesc, langDesc)
 					: new Player(this, pDesc);
 			} else {
 				return implArgs.RobotPlayer(

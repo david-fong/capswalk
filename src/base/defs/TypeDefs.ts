@@ -99,6 +99,8 @@ export namespace Lang {
 		export: string;
 		/** The output must match against `Lang.Seq.REGEXP`. */
 		remapFunc: {(input: string): string};
+		/** Scale the font in the game grid */
+		fontScaling: number;
 		/**
 		 * The total number of leaf nodes of all root nodes except the
 		 * root node with the most leaf nodes.

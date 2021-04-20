@@ -175,6 +175,7 @@ export namespace Grid {
 		Grid: Grid.ClassIf<S>;
 		system: S;
 		dimensions: Dimensions[S];
+		langCharFontScaling: number;
 		players: readonly Player.UserInfo[];
 	}>;
 

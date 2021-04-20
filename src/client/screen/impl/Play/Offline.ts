@@ -13,16 +13,16 @@ export class PlayOfflineScreen extends _PlayScreen<BaseScreen.Id.PLAY_OFFLINE> {
 	declare protected readonly currentGame: OfflineGame<any>;
 
 	/** @override */
-	protected readonly wantsAutoPlayPause = false;
+	protected readonly _wantsAutoPlayPause = false;
 
 	/** @override */
-	protected readonly askConfirmBeforeLeave = true;
+	protected readonly _askConfirmBeforeLeave = true;
 
 	/** @override */
 	protected _abstractLazyLoad(): void {
 		super._abstractLazyLoad();
 		Object.freeze(this); //🧊
-		this.nav.prev.innerHTML = "Return To&nbsp;Setup";
+		this.nav.prev.innerHTML = "Back&nbsp;To Setup";
 		// ^Prevent jank due to pointer hover animation.
 	}
 

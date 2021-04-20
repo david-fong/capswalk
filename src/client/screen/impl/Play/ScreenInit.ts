@@ -40,9 +40,9 @@ export abstract class _PlayScreenInitEl<
 		reset: HTMLButtonElement;
 	}>;
 
-	protected abstract readonly wantsAutoPlayPause: boolean;
+	protected abstract readonly _wantsAutoPlayPause: boolean;
 
-	protected abstract readonly askConfirmBeforeLeave: boolean;
+	protected abstract readonly _askConfirmBeforeLeave: boolean;
 
 
 	/** @override */
@@ -108,7 +108,7 @@ export abstract class _PlayScreenInitEl<
 	protected _resetGame(): void {
 		this.currentGame.reset();
 		this.btn.pause.disabled = false;
-		if (this.wantsAutoPlayPause) {
+		if (this._wantsAutoPlayPause) {
 			this._reqStatusPlaying();
 		}
 	}
