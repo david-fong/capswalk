@@ -1,3 +1,4 @@
+@import "./normalize.vendor.css";
 
 /* If anything goes into fullscreen mode: */
 ::backdrop {
@@ -12,6 +13,7 @@
 :root {
 	scroll-behavior: smooth;
 	font-family:
+		monospace,
 		"Trebuchet MS",
 		"Lucida Sans Unicode",
 		"MS PGothic"            /* Japanese */
@@ -128,7 +130,7 @@ margins and padding, and its own padding. */
 .input-group .input-group-item:focus {
 	outline: none;
 	border-color: var(--colour-tileBd);
-	animation: 0.4s ease-in-out -0.5s infinite alternate input-group-item-focus;
+	animation: 0.4s steps(2) -0.5s infinite alternate input-group-item-focus;
 }
 .input-group:focus-within .input-group-item:not(:focus) {
 	filter: brightness(0.9);

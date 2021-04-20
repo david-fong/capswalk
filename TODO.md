@@ -20,6 +20,7 @@
 1. Implement a requirement that the number of players is less than the area of the grid.
 1. Expose a user setting for conserving power by disabling some animations.
 1. Implement websocket heartbeat to check for broken connections (see ws readme for example).
+    - On a related note, see if there is an implementation of the fancy button hovers that doesn't use so much cpu.
 1. Display the operator's current sequence buffer.
     - Or perhaps make a fancy "crosshair" that outlines tiles that match the current sequence buffer.
 1. Reject a request if the requesting socket doesn't operate the specified player.
@@ -43,8 +44,6 @@
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
 1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
-1. Mashup some CSS resets and normalizers for this repo? Or maybe we don't need any.
-1. Experiment: Represent lang trees as arrays, where child-parent relationships are just indices.
 
 ### Ideas
 

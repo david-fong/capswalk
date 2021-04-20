@@ -12,7 +12,7 @@ const PHYSICAL_TILE_WIDTH = 3.3;
 // TODO.wait when rx, x, y, height, and width are widely supported by CSS,
 // use them for the square shapes instead of setting attributes.
 
-// Design Note: Using SVG patterns or <use> to implement this grid was
+// Design Note: Using SVG patterns or <use> to implement mirroring was
 // considered, but dropped due to browser implementations not being very
 // efficient for changing defs. Being more imperative saves CPU power.
 
@@ -109,13 +109,13 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		const svg = JsUtils.svg("svg", [style["grid"]]); setAttrs(svg, {
 			height: `${PHYSICAL_TILE_WIDTH*dim.height}em`,
 			width:  `${PHYSICAL_TILE_WIDTH*dim.width }em`,
-			viewBox: `0, 0, ${2*dim.width}, ${2*dim.height}`,
-			// viewBox: `${0.5*dim.width}, ${0.5*dim.height}, ${1.5*dim.width}, ${1.5*dim.height}`,
+			// viewBox: `0, 0, ${2*dim.width}, ${2*dim.height}`,
+			viewBox: `${0.5*dim.width}, ${0.5*dim.height}, ${1.5*dim.width}, ${1.5*dim.height}`,
 		});
 		svg.appendChild(_mkGridDefs());
 		{
 			const tiles = JsUtils.svg("rect"); setAttrs(tiles, {
-				height: "100%", width: "100%",
+				height: "100%", width: "100%", x: `${0.5*dim.width}`, y: `${0.5*dim.height}`,
 				fill: `url(#${ID.tilePattern})`,
 			});
 			svg.appendChild(tiles);
@@ -134,7 +134,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 			svg.appendChild(allChars);
 		}
 		// Note: using a separate SVG for the players causes the repaint
-		// area to be more constrained in Chrome browser.
+		// area with animations to be more constrained in Chrome browser.
 		const players = svg.cloneNode() as SVGSVGElement;
 		players.style.position = "absolute";
 		players.style.top = "0";
