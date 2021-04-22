@@ -1,14 +1,14 @@
 import type WebSocket from "ws";
-import { JsUtils } from "defs/JsUtils";
-import { SOCKET_ID, JoinerEv, GroupEv } from "defs/OnlineDefs";
+import { JsUtils } from ":defs/JsUtils";
+import { SOCKET_ID, JoinerEv, GroupEv } from ":defs/OnlineDefs";
 
-import type { Game } from "game/Game";
-import type { Coord } from "floor/Tile";
-import type { Player } from "game/player/Player";
-import { GameManager } from "game/gameparts/GameManager";
+import type { Game } from ":game/Game";
+import type { Coord } from ":floor/Tile";
+import type { Player } from ":game/player/Player";
+import { GameManager } from ":game/gameparts/GameManager";
 import { ServerGame } from "./ServerGame";
 
-import { Group as _Group } from "defs/OnlineDefs";
+import { Group as _Group } from ":defs/OnlineDefs";
 
 /**
  * Manages communication between the server, and clients who play in

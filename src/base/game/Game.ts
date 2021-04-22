@@ -1,6 +1,6 @@
-import type { Lang } from "lang/Lang";
-import type { Coord } from "floor/Tile";
-import type { Grid } from "floor/Grid";
+import type { Lang } from ":lang/Lang";
+import type { Coord } from ":floor/Tile";
+import type { Grid } from ":floor/Grid";
 import type { Player } from "./player/Player";
 import type { OperatorPlayer } from "./player/OperatorPlayer";
 import type { GameMirror } from "./gameparts/GameMirror";

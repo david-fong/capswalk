@@ -1,7 +1,7 @@
-import { JsUtils } from "defs/JsUtils";
-import type { Coord as BaseCoord, Coord, Tile } from "floor/Tile";
-import type { Player } from "defs/TypeDefs";
-import { Grid as AbstractGrid } from "floor/Grid";
+import { JsUtils } from ":defs/JsUtils";
+import type { Coord as BaseCoord, Coord, Tile } from ":floor/Tile";
+import type { Player } from ":defs/TypeDefs";
+import { Grid as AbstractGrid } from ":floor/Grid";
 type S = BaseCoord.System.W_EUCLID2;
 
 export type Dim = {

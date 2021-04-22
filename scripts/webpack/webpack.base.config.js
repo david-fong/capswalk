@@ -11,7 +11,7 @@ const MODE = (() => {
 })();
 exports.MODE = MODE;
 
-const PROJECT_ROOT = (...relative) => path.resolve(__dirname, "../..", ...relative);
+const PROJECT_ROOT = (() => { const R = path.resolve(__dirname, "../.."); return (...relative) => path.resolve(R, ...relative); })();
 exports.PROJECT_ROOT = PROJECT_ROOT;
 
 exports.GAME_SERVERS = require("../../servers.json");
@@ -24,6 +24,17 @@ const BASE_PLUGINS = () => Object.freeze([
 		"DEF.NodeEnv":    JSON.stringify(MODE.val),
 		"DEF.DevAssert":  JSON.stringify(MODE.dev),
 	}),
+	{apply(compiler) { compiler.hooks.normalModuleFactory.tap("HomeBaseResolverPlugin", (nmf) => {
+		// === My custom resolver ===
+		nmf.hooks.beforeResolve.tap("ColonsResolverPlugin", (r) => {
+			if (r.request[0] === ":") {
+				if (r.request[1] === ":") {
+					r.request = PROJECT_ROOT("src", compiler.name, r.request.substring(2)); return;
+				}
+				r.request = PROJECT_ROOT("src/base", r.request.substring(1)); return;
+			}
+		});
+	}); }}
 ]);
 exports.BASE_PLUGINS = BASE_PLUGINS;
 
@@ -38,6 +49,9 @@ exports.MODULE_RULES = () => [{
 		loader: "esbuild-loader",
 		options: { loader: "ts", target: "es2017" },
 	},
+	// rules: [{resolve: {alias}, }],
+	// TODO.learn
+
 },{
 	test: /\.json5$/,
 	type: "json",
@@ -65,9 +79,7 @@ exports.__BaseConfig = (distSubFolder) => { return {
 	resolve: {
 		extensions: [".ts", ".js"],
 		modules: [
-			PROJECT_ROOT("src"),
-			PROJECT_ROOT("src/base"),
-			//PROJECT_ROOT("node_modules"),
+			PROJECT_ROOT("src/node_modules"),
 		],
 		alias: {/* Left to each branch config */},
 	},

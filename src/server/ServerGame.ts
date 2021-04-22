@@ -1,15 +1,15 @@
 import type WebSocket from "ws";
 
-import { JsUtils } from "defs/JsUtils";
-import { SOCKET_ID, GroupEv, GameEv } from "defs/OnlineDefs";
-import type { Game } from "game/Game";
-import type { Coord } from "floor/Tile";
-import type { StateChange } from "game/StateChange";
-import { Player } from "game/player/Player";
-import { RobotPlayer } from "game/player/RobotPlayer";
-import { Grid } from "floor/Grid";
+import { JsUtils } from ":defs/JsUtils";
+import { SOCKET_ID, GroupEv, GameEv } from ":defs/OnlineDefs";
+import type { Game } from ":game/Game";
+import type { Coord } from ":floor/Tile";
+import type { StateChange } from ":game/StateChange";
+import { Player } from ":game/player/Player";
+import { RobotPlayer } from ":game/player/RobotPlayer";
+import { Grid } from ":floor/Grid";
 
-import { GameManager } from "game/gameparts/GameManager";
+import { GameManager } from ":game/gameparts/GameManager";
 
 /** @this ServerGame */
 function gameOnSocketMessage<S extends Coord.System>(this: ServerGame<S>, ev: WebSocket.MessageEvent): void {

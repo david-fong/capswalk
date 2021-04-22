@@ -1,5 +1,5 @@
-import "node_modules/my-type-utils/ModNodePlatform";
-import { Lang, LangDescs } from "base/lang/Lang";
+import "my-type-utils/ModNodePlatform";
+import { Lang, LangDescs } from ":lang/Lang";
 
 type Row = {
 	readonly name: string,

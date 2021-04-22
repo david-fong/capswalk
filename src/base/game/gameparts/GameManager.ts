@@ -1,12 +1,12 @@
-import { JsUtils } from "defs/JsUtils";
-import { Lang, LangDescs } from "lang/Lang";
+import { JsUtils } from ":defs/JsUtils";
+import { Lang, LangDescs } from ":lang/Lang";
 import { Game } from "../Game";
 
-import type { Coord, Tile } from "floor/Tile";
+import type { Coord, Tile } from ":floor/Tile";
 import type { StateChange } from "../StateChange";
 import { Player } from "../player/Player";
 import { ScoreInfo } from "./ScoreInfo";
-import { Grid } from "floor/Grid";
+import { Grid } from ":floor/Grid";
 
 import { GameMirror } from "./GameMirror";
 
@@ -169,16 +169,16 @@ export namespace GameManager {
 	): string[] {
 		//#region
 		const bad: string[] = [];
-		type Keys = keyof Game.CtorArgs.UnFin;
-		const requiredFields: {[K in Keys]: any} = Object.freeze({
-			coordSys: 0, gridDimensions: 0, averageHealthPerTile: 0,
+		type Key = keyof Game.CtorArgs.UnFin;
+		const requiredFields = Object.freeze(<{[K in Key]: any}>{
+			coordSys: 0, gridDimensions: 0,
 			langId: 0, langWeightExaggeration: 0, players: 0,
 		});
-		const missingFields: Keys[] = [];
+		const missingFields: Key[] = [];
 		for (const fieldName in requiredFields) {
-			const field = args[fieldName as Keys];
+			const field = args[fieldName as Key];
 			if (field === undefined || field === null) {
-				missingFields.push(fieldName as Keys);
+				missingFields.push(fieldName as Key);
 			}
 		}
 		if (missingFields.length) {

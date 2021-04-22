@@ -1,5 +1,5 @@
-import { JsUtils } from "defs/JsUtils";
-import { OmHooks } from "defs/OmHooks";
+import { JsUtils } from ":defs/JsUtils";
+import { OmHooks } from ":defs/OmHooks";
 
 /**
  * @final

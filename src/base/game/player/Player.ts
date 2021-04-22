@@ -1,13 +1,13 @@
 import type * as WebSocket from "ws";
-import { JsUtils } from "defs/JsUtils";
-import { Game } from "game/Game";
+import { JsUtils } from ":defs/JsUtils";
+import { Game } from ":game/Game";
 
-import type { Coord }       from "floor/Tile";
+import type { Coord }       from ":floor/Tile";
 import type { RobotPlayer } from "./RobotPlayer";
-import type { GameMirror }  from "game/gameparts/GameMirror";
+import type { GameMirror }  from ":game/gameparts/GameMirror";
 
 import { RequestBuffer } from "./RequestBuffer";
-import { Player as _Player } from "defs/TypeDefs";
+import { Player as _Player } from ":defs/TypeDefs";
 import { Team } from "./Team";
 
 /** */

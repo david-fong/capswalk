@@ -1,5 +1,5 @@
-import { JsUtils } from "defs/JsUtils";
-import { OmHooks } from "defs/OmHooks";
+import { JsUtils } from ":defs/JsUtils";
+import { OmHooks } from ":defs/OmHooks";
 import { StorageHooks } from "./StorageHooks";
 import type { _PlayScreen } from "./screen/impl/Play/_Screen";
 import type { BaseScreen } from "./screen/BaseScreen";

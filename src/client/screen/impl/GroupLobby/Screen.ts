@@ -1,6 +1,6 @@
-import { Player } from "defs/TypeDefs";
-import { Group, GroupEv } from "defs/OnlineDefs";
-import type { Game } from "game/Game";
+import { Player } from ":defs/TypeDefs";
+import { Group, GroupEv } from ":defs/OnlineDefs";
+import type { Game } from ":game/Game";
 
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 type SID = BaseScreen.Id.GROUP_LOBBY;

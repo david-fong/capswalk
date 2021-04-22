@@ -61,6 +61,7 @@
         "composes",
     ],
 
+    "javascript.suggest.autoImports": false,
     "[javascript]": {
         "editor.insertSpaces": false,
     },

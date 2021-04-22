@@ -1,4 +1,4 @@
-import "node_modules/my-type-utils/ModBrowserPlatform";
+import "my-type-utils/ModBrowserPlatform";
 
 import "./style/common.css";
 import "./style/barrel.css";

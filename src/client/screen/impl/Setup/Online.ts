@@ -1,4 +1,4 @@
-import { GroupEv } from "defs/OnlineDefs";
+import { GroupEv } from ":defs/OnlineDefs";
 
 import type { BaseScreen } from "../../BaseScreen";
 import { _SetupScreen } from "./_Screen";

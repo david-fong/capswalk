@@ -1,9 +1,9 @@
 import style from "./grid.m.css";
-import player_style from "game/player/player.m.css";
-import { JsUtils } from "defs/JsUtils";
+import player_style from ":game/player/player.m.css";
+import { JsUtils } from ":defs/JsUtils";
 
-import type { Coord } from "floor/Tile";
-import type { Grid } from "floor/Grid";
+import type { Coord } from ":floor/Tile";
+import type { Grid } from ":floor/Grid";
 
 interface _VisibleExtensions {
 	readonly baseElem: HTMLElement;

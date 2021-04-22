@@ -1,5 +1,5 @@
-import { Player } from "game/player/Player";
-import type { Game } from "game/Game";
+import { Player } from ":game/player/Player";
+import type { Game } from ":game/Game";
 
 import { BaseScreen } from "../../BaseScreen";
 import { _SetupScreen } from "./_Screen";

@@ -1,9 +1,9 @@
-import { JsUtils } from "defs/JsUtils";
-import type { Lang, Lang as _Lang } from "defs/TypeDefs";
-import { Game } from "game/Game";
+import { JsUtils } from ":defs/JsUtils";
+import type { Lang, Lang as _Lang } from ":defs/TypeDefs";
+import { Game } from ":game/Game";
 
-import type { Coord } from "floor/Tile";
-import type { GameMirror } from "game/gameparts/GameMirror";
+import type { Coord } from ":floor/Tile";
+import type { GameMirror } from ":game/gameparts/GameMirror";
 
 import { Player } from "./Player";
 

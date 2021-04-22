@@ -1,8 +1,8 @@
-import { JsUtils } from "defs/JsUtils";
-import type { Coord, Tile } from "floor/Tile";
-import type { Grid as AbstractGrid } from "floor/Grid";
-import type { Player } from "defs/TypeDefs";
-import { VisibleGrid } from "floor/visible/VisibleGrid";
+import { JsUtils } from ":defs/JsUtils";
+import type { Coord, Tile } from ":floor/Tile";
+import type { Grid as AbstractGrid } from ":floor/Grid";
+import type { Player } from ":defs/TypeDefs";
+import { VisibleGrid } from ":floor/visible/VisibleGrid";
 
 import { IAC, WrappedEuclid2 as System } from "./System";
 import style from "./style.m.css";

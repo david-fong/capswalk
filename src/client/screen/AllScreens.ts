@@ -1,11 +1,11 @@
-import { JsUtils } from "defs/JsUtils";
+import { JsUtils } from ":defs/JsUtils";
 import { BaseScreen } from "./BaseScreen";
 import type { TopLevel } from "../TopLevel";
 
 import {         HomeScreen } from "./impl/Home/Screen";
 import {    HowToPlayScreen } from "./impl/HowToPlay";
 import {    HowToHostScreen } from "./impl/HowToHost";
-import {   SettingsScreen } from "./impl/Settings/Screen";
+import {     SettingsScreen } from "./impl/Settings/Screen";
 // ====:   ~~~ OFFLINE ~~~  :============================
 import { SetupOfflineScreen } from "./impl/Setup/Offline";
 import {  PlayOfflineScreen } from "./impl/Play/Offline";

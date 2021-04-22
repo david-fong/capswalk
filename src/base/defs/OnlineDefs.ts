@@ -1,4 +1,4 @@
-import type { Player } from "defs/TypeDefs";
+import type { Player } from ":defs/TypeDefs";
 import type NodeWebSocket from "ws";
 
 /** Serverside-only. */

@@ -1,5 +1,5 @@
-import { JsUtils } from "../defs/JsUtils";
-import type { Lang } from "../defs/TypeDefs";
+import { JsUtils } from ":defs/JsUtils";
+import type { Lang } from ":defs/TypeDefs";
 
 const REMAP = Object.freeze(<const>{
 	IDENT: (input: string): string => input,

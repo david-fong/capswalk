@@ -1,4 +1,4 @@
-import { Group, JoinerEv, GroupEv } from "defs/OnlineDefs";
+import { Group, JoinerEv, GroupEv } from ":defs/OnlineDefs";
 
 import { JsUtils, BaseScreen, StorageHooks } from "../../BaseScreen";
 import { _GroupJoinerScreenInitEl } from "./ScreenInitEl";

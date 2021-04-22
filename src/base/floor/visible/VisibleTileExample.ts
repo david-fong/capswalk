@@ -1,5 +1,5 @@
-import { JsUtils } from "defs/JsUtils";
-import { Player } from "defs/TypeDefs";
+import { JsUtils } from ":defs/JsUtils";
+import { Player } from ":defs/TypeDefs";
 
 import type { Tile } from "../Tile";
 import style from "./tile-example.m.css";

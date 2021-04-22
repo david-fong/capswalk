@@ -1,9 +1,9 @@
-import { JsUtils } from "defs/JsUtils";
-import { Game } from "game/Game";
+import { JsUtils } from ":defs/JsUtils";
+import { Game } from ":game/Game";
 
-import type { Coord }       from "floor/Tile";
-import type { StateChange } from "game/StateChange";
-import { Player as _Player } from "defs/TypeDefs";
+import type { Coord }        from ":floor/Tile";
+import type { StateChange }  from ":game/StateChange";
+import { Player as _Player } from ":defs/TypeDefs";
 
 /**
  * Used on the clientside to buffer requests when there is network

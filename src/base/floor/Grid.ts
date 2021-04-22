@@ -1,6 +1,6 @@
-import { JsUtils } from "defs/JsUtils";
+import { JsUtils } from ":defs/JsUtils";
 import type { Coord, Tile } from "./Tile";
-import type { Player } from "defs/TypeDefs";
+import type { Player } from ":defs/TypeDefs";
 
 import type { WrappedEuclid2 } from "./impl/Euclid2/System";
 import type { Beehive } from "./impl/Beehive/System";

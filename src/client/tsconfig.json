@@ -3,6 +3,11 @@
 	"compilerOptions": {
 		"lib": ["es2020", "dom"],
 		"types": ["my-type-utils"],
+		"paths": {
+			"*":   ["./client/node_modules/*", "./node_modules/*", "../node_modules/*"],
+			":*":  ["./base/*"],
+			"::*": ["./client/*"],
+		},
 	},
 	"references": [
 		{ "path": "../base/defs" },

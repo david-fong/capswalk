@@ -1,10 +1,10 @@
-import { JsUtils} from "defs/JsUtils";
+import { JsUtils} from ":defs/JsUtils";
 import { Game } from "../Game";
-import { Lang } from "lang/Lang";
+import { Lang } from ":lang/Lang";
 
-import type { Coord, Tile } from "floor/Tile";
+import type { Coord, Tile } from ":floor/Tile";
 import type { StateChange } from "../StateChange";
-import type { Grid } from "floor/Grid";
+import type { Grid } from ":floor/Grid";
 import type { OperatorPlayer } from "../player/OperatorPlayer";
 
 import { Player } from "../player/Player";

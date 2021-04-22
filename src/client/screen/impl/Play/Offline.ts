@@ -1,7 +1,6 @@
-import { JsUtils } from "../../BaseScreen";
-import type { Coord } from "floor/Tile";
+import type { Coord } from ":floor/Tile";
 import type { BaseScreen } from "../../BaseScreen";
-import type { OfflineGame } from "client/game/OfflineGame";
+import type { OfflineGame } from "::game/OfflineGame";
 import { Game, _PlayScreen } from "./_Screen";
 
 /**
@@ -32,7 +31,7 @@ export class PlayOfflineScreen extends _PlayScreen<BaseScreen.Id.PLAY_OFFLINE> {
 	]): Promise<OfflineGame<S>> {
 		return new (await import(
 			/* webpackChunkName: "game/offline" */
-			"../../../game/OfflineGame"
+			"::game/OfflineGame"
 		)).OfflineGame(this._onGameBecomeOver.bind(this), args[0]);
 	}
 }

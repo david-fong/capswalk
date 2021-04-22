@@ -1,7 +1,7 @@
-import { Game } from "game/Game"; export { Game };
+import { Game } from ":game/Game"; export { Game };
 
-import type { OfflineGame } from "client/game/OfflineGame";
-import type { OnlineGame } from "client/game/OnlineGame";
+import type { OfflineGame } from "::game/OfflineGame";
+import type { OnlineGame } from "::game/OnlineGame";
 type BrowserGame = OfflineGame | OnlineGame;
 
 import { JsUtils, BaseScreen } from "../../BaseScreen";

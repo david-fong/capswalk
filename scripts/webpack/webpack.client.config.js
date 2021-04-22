@@ -20,7 +20,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 /** @type {() => Array<webpack.RuleSetRule>} */
 const WEB_MODULE_RULES = () => Object.freeze([{
 	test: /\.css$/,
-	issuer: { not: [/\.m\.css/] },
+	issuer: { not: [/\.m\.css$/] }, // <- solves some output duplication issues
 	use: [{
 		loader: MiniCssExtractPlugin.loader, options: {}
 	}, {

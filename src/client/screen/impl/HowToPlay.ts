@@ -1,4 +1,4 @@
-import { JsUtils, BaseScreen } from '../BaseScreen';
+import { JsUtils, BaseScreen } from "../BaseScreen";
 
 /** */
 export class HowToPlayScreen extends BaseScreen<BaseScreen.Id.HOW_TO_PLAY> {

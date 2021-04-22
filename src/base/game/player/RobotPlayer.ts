@@ -1,7 +1,7 @@
-import { JsUtils } from "defs/JsUtils";
-import { Game } from "game/Game";
-import type { Coord, Tile } from "floor/Tile";
-import type { GameManager } from "game/gameparts/GameManager";
+import { JsUtils } from ":defs/JsUtils";
+import { Game } from ":game/Game";
+import type { Coord, Tile } from ":floor/Tile";
+import type { GameManager } from ":game/gameparts/GameManager";
 
 export { JsUtils };
 export type { Coord, Tile };

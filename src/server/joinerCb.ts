@@ -1,5 +1,5 @@
 import type WebSocket from "ws";
-import { GroupEv, JoinerEv } from "defs/OnlineDefs";
+import { GroupEv, JoinerEv } from ":defs/OnlineDefs";
 import { Group } from "./Group";
 import { wss } from "./index";
 

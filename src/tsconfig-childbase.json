@@ -7,8 +7,5 @@
 		"baseUrl": ".",
 		"rootDir": ".",
 		"outDir":  "../dist/.ts/src",
-		"paths": {
-			"*": ["*", "base/*"],
-		},
 	},
 }

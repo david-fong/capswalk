@@ -14,6 +14,7 @@
 
 ### Things I feel like doing
 
+1. look into using swc for TypeScript transpilation.
 1. Add a font-scaling parameter to lang descs.
 1. Implement `VisibleGrid` rendering of player positions.
     - The current usage of using a CSS transition on the transform property is not working for Firefox.

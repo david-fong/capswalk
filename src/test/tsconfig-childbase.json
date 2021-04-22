@@ -5,5 +5,9 @@
 		"rootDir": "..",
 		"outDir": "../../dist/.ts",
 		"disableSolutionSearching": true,
+		"paths": {
+			"*":  ["./test/node_modules/*", "./node_modules/*", "../node_modules/*"],
+			":*": ["./base/*"],
+		}
 	},
 }

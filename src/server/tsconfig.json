@@ -5,6 +5,11 @@
 		"target": "es2020", // can use es2020 for node 14.
 		"lib":   ["es2020"], // no dom.
 		"types": ["my-type-utils", "node"],
+		"paths": {
+			"*":   ["./server/node_modules/*", "./node_modules/*", "../node_modules/*"],
+			":*":  ["./base/*"],
+			"::*": ["./server/*"],
+		},
 	},
 	"references": [
 		{ "path": "../base" },

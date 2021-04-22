@@ -1,5 +1,5 @@
-import { JsUtils } from "defs/JsUtils";
-import { Player } from "defs/TypeDefs";
+import { JsUtils } from ":defs/JsUtils";
+import { Player } from ":defs/TypeDefs";
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API

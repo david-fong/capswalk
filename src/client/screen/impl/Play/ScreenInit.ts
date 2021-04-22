@@ -1,11 +1,11 @@
-import { Game } from "game/Game"; export { Game };
-import { SCROLL_INTO_CENTER } from "defs/TypeDefs";
+import { Game } from ":game/Game"; export { Game };
+import { SCROLL_INTO_CENTER } from ":defs/TypeDefs";
 
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 import style from "./style.m.css";
 import grid_style from "./grid.m.css";
-import type { OfflineGame } from "client/game/OfflineGame";
-import type { OnlineGame } from "client/game/OnlineGame";
+import type { OfflineGame } from "::game/OfflineGame";
+import type { OnlineGame } from "::game/OnlineGame";
 type BrowserGame = OfflineGame | OnlineGame;
 
 /** */

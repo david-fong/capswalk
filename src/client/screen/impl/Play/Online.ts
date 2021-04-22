@@ -1,7 +1,7 @@
-import { GameEv } from "defs/OnlineDefs";
-import type { Coord } from "floor/Tile";
-import type { JsUtils, BaseScreen } from "../../BaseScreen";
-import type { OnlineGame } from "client/game/OnlineGame";
+import { GameEv } from ":defs/OnlineDefs";
+import type { Coord } from ":floor/Tile";
+import type { BaseScreen } from "../../BaseScreen";
+import type { OnlineGame } from "::game/OnlineGame";
 import { Game, _PlayScreen } from "./_Screen";
 
 /**
@@ -81,7 +81,7 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 		const [ctorArgs, operatorIds] = args;
 		const game = new (await import(
 			/* webpackChunkName: "game/online" */
-			"../../../game/OnlineGame"
+			"::game/OnlineGame"
 		)).OnlineGame(
 			this.top.webSocket!,
 			this._onGameBecomeOver.bind(this),

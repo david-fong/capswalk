@@ -8,7 +8,7 @@ import Koa from "koa";
 import koaStatic from "koa-static";
 import WebSocket from "ws";
 import type net from "net";
-import { SET_SOCKET_ID, SOCKET_ID, JoinerEv } from "defs/OnlineDefs";
+import { SET_SOCKET_ID, SOCKET_ID, JoinerEv } from ":defs/OnlineDefs";
 
 /** EXPRESS ROOT */
 // At runtime, __dirname resolves to ":/dist/server/"

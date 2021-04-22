@@ -1,4 +1,4 @@
-import { JsUtils } from "defs/JsUtils";
+import { JsUtils } from ":defs/JsUtils";
 import style from "./pickone.m.css";
 
 

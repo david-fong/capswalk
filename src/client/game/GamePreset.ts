@@ -1,5 +1,5 @@
-import type { Game } from "game/Game";
-import type { Coord } from "floor/Tile";
+import type { Game } from ":game/Game";
+import type { Coord } from ":floor/Tile";
 
 /**
  *

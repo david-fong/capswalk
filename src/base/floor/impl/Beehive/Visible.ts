@@ -1,8 +1,8 @@
-import { JsUtils } from "defs/JsUtils";
-import type { Coord, Tile } from "floor/Tile";
-import type { Grid } from "floor/Grid";
+import { JsUtils } from ":defs/JsUtils";
+import type { Coord, Tile } from ":floor/Tile";
+import type { Grid } from ":floor/Grid";
 import { Beehive } from "./System";
-import { VisibleGrid } from "floor/visible/VisibleGrid";
+import { VisibleGrid } from ":floor/visible/VisibleGrid";
 type S = Coord.System.BEEHIVE;
 
 /**

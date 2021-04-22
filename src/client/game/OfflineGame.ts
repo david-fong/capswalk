@@ -5,8 +5,8 @@ import {
 } from "./BrowserGame";
 InitBrowserGameCtorMaps();
 
-import { GameManager }    from "game/gameparts/GameManager";
-import { RobotPlayer }    from "game/player/RobotPlayer";
+import { GameManager }    from ":game/gameparts/GameManager";
+import { RobotPlayer }    from ":game/player/RobotPlayer";
 
 /**
  * @final

@@ -1,7 +1,7 @@
-import { JsUtils } from "defs/JsUtils";
-import type { Coord, Tile } from "floor/Tile";
-import type { Player } from "defs/TypeDefs";
-import { Grid as AbstractGrid } from "floor/Grid";
+import { JsUtils } from ":defs/JsUtils";
+import type { Coord, Tile } from ":floor/Tile";
+import type { Player } from ":defs/TypeDefs";
+import { Grid as AbstractGrid } from ":floor/Grid";
 type S = Coord.System.BEEHIVE;
 
 /**

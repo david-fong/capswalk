@@ -1,4 +1,4 @@
-import { GameEv } from "defs/OnlineDefs";
+import { GameEv } from ":defs/OnlineDefs";
 import {
 	Game, Coord, StateChange,
 	VisibleGrid, Player, OperatorPlayer,
@@ -6,7 +6,7 @@ import {
 } from "./BrowserGame";
 InitBrowserGameCtorMaps();
 
-import { GameMirror } from "game/gameparts/GameMirror";
+import { GameMirror } from ":game/gameparts/GameMirror";
 
 /**
  * Note that this class does not extend `GameManager`.

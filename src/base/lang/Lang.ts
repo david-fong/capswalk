@@ -1,5 +1,5 @@
-import { JsUtils } from "defs/JsUtils";
-import { Lang as _Lang } from "defs/TypeDefs";
+import { JsUtils } from ":defs/JsUtils";
+import { Lang as _Lang } from ":defs/TypeDefs";
 import { LangDescs } from "./LangDescs";
 export { LangDescs } from "./LangDescs";
 
@@ -225,7 +225,7 @@ export namespace Lang {
 		const desc = LangDescs[langId]!;
 		const module = await import(
 			/* webpackChunkName: "lang/[request]" */
-			`lang/impl/${desc.module}.ts`
+			`./impl/${desc.module}.ts`
 		);
 		return desc.export.split(".").reduce(
 			(nsps, propName) => nsps[propName],

@@ -1,8 +1,8 @@
 // Tell WebPack about the css we want:
 import style from "./style.m.css";
-import SchemesJsonImport from "client/colours/schemes.json";
+import SchemesJsonImport from "::colours/schemes.json";
 
-import { PickOne as _PickOne } from "client/utils/PickOne";
+import { PickOne as _PickOne } from "::utils/PickOne";
 import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
 
 /** */
@@ -15,7 +15,7 @@ export class SettingsScreen extends BaseScreen<BaseScreen.Id.SETTINGS> {
 		import(
 			/* webpackChunkName: "colour-schemes" */
 			/* webpackMode: "lazy-once" */
-			`client/colours/schemes/${void 0}.css`
+			`../../../colours/schemes/${void 0}.css`
 		).catch((e) => {
 			void 0; // yeet!
 		});

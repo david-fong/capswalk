@@ -1,5 +1,5 @@
-import type { Coord, Tile } from "floor/Tile";
-import type { Player } from "game/player/Player";
+import type { Coord, Tile } from ":floor/Tile";
+import type { Player } from ":game/player/Player";
 
 /** */
 export namespace StateChange {
