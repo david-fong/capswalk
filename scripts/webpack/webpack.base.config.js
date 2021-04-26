@@ -48,10 +48,13 @@ exports.MODULE_RULES = () => [{
 	use: {
 		loader: "esbuild-loader",
 		options: { loader: "ts", target: "es2017" },
+		/* loader: "swc-loader",
+		options: { jsc: {
+			target: "es2017",
+			//externalHelpers: true,
+			parser: { syntax: "typescript", dynamicImport: true },
+		}}, */
 	},
-	// rules: [{resolve: {alias}, }],
-	// TODO.learn
-
 },{
 	test: /\.json5$/,
 	type: "json",
@@ -114,7 +117,6 @@ exports.__BaseConfig = (distSubFolder) => { return {
 exports.__applyCommonNodeConfigSettings = (config) => {
 	config.target = "node14";
 	config.externals = [nodeExternals()];
-	// alternative to above: fs.readdirsync(path.resolve(PROJECT_ROOT, "node_modules"))
 	config.node = {
 		__filename: false,
 		__dirname: false,

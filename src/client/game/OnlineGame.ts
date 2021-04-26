@@ -15,7 +15,7 @@ import { GameMirror } from ":game/gameparts/GameMirror";
 export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirror<S> {
 
 	/** @override */
-	declare readonly grid: VisibleGrid<S>;
+	declare public readonly grid: VisibleGrid<S>;
 
 	public readonly ws: WebSocket;
 

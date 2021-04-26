@@ -13,15 +13,14 @@
   "type": "module",
   "files": [],
   "sideEffects": [
-    "*.css",
-    "./src/server/test/*.ts"
+    "*.css"
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "devinit": "bash scripts/devinit.sh",
     "lint": "eslint --cache --cache-location './node_modules/.cache/eslint-cache.json' './src/'",
-    "build": "node                      --disable-proto=delete --title='capswalk-build'  -- ./scripts/webpack/pack.js",
-    "test": "node --enable-source-maps --disable-proto=delete --title='capswalk-test'   -- ./dist/server/test/lang.js",
+    "build": "node --disable-proto=delete --title='capswalk-build' -- ./scripts/webpack/pack.js",
+    "test": "node --enable-source-maps --disable-proto=delete --title='capswalk-test' -- ./dist/server/test/lang.js",
     "serve": "node --enable-source-maps --disable-proto=delete --title='capswalk-server' -- ./dist/server/index.js"
   },
   "dependencies": {
@@ -36,7 +35,7 @@
     "@types/ws": "^7.4.1",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
-    "eslint": "^7.24.0",
+    "eslint": "^7.25.0",
     "typescript": "^4.2.4",
     "typescript-plugin-css-modules": "^3.2.0"
   }

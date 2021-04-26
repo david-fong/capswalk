@@ -6,7 +6,7 @@ import type { Game } from ":game/Game";
 import type { AllScreens } from "./AllScreens";
 import type { TopLevel } from "../TopLevel";
 
-export { JsUtils, OmHooks, Coord, StorageHooks };
+export { JsUtils, OmHooks, StorageHooks };
 
 const OMHC = OmHooks.Screen.Class;
 

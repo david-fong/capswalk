@@ -15,6 +15,8 @@
 ### Things I feel like doing
 
 1. look into using swc for TypeScript transpilation.
+    - One advantage over esbuild is that I'm mainly only using it as a TypeScript transpiler with webpack. esbuild's project scope doesn't include babel-like behaviour, but swc does, which is a plus. The reverse is true of heavy minification, but webpack comes with terser for that, and minification is only done when bundling for production, which doesn't happen often.
+    - Trying it out on 2021/04/22, the speed was pretty much the same as esbuild, but the TypeScript handling was not as smooth.
 1. Add a font-scaling parameter to lang descs.
 1. Implement `VisibleGrid` rendering of player positions.
     - The current usage of using a CSS transition on the transform property is not working for Firefox.

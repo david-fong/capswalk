@@ -14,7 +14,7 @@ import { RobotPlayer }    from ":game/player/RobotPlayer";
 export class OfflineGame<S extends Coord.System = Coord.System> extends GameManager<S> {
 
 	/** @override */
-	declare readonly grid: VisibleGrid<S>;
+	declare public readonly grid: VisibleGrid<S>;
 
 	/** */
 	public constructor(
