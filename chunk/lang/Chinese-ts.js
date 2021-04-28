@@ -1,1 +1,1 @@
-(self.webpackChunksnakey3=self.webpackChunksnakey3||[]).push([[330],{216:()=>{}}]);
+(self.webpackChunkcapswalk=self.webpackChunkcapswalk||[]).push([[330],{603:()=>{}}]);
