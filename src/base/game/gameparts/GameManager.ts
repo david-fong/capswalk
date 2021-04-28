@@ -199,9 +199,9 @@ export namespace GameManager {
 			}
 		}
 
-		if (typeof args.langWeightExaggeration === "number") {
+		if (typeof args.langWeightExaggeration !== "number") {
 			bad.push(`Language Weight Exaggeration expected a number, but`
-			+ `\`${args.langWeightExaggeration}\` is not a number.`);
+			+` \`${args.langWeightExaggeration}\` is not a number.`);
 		} else {
 			args.langWeightExaggeration = Math.max(0, parseFloat(
 				args.langWeightExaggeration as any

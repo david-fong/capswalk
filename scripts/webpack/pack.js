@@ -81,7 +81,7 @@ if (PRODUCTION_MODE) {
 	fs.copyFile(ROOT("LICENSE.md"), DIST("LICENSE.md"), errCb);
 	fs.copyFile(ROOT("LICENSE.md"), DIST("client/LICENSE.md"), errCb);
 	fs.copyFile(ROOT(".gitignore"), DIST("client/LICENSE.md"), errCb);
-	fs.writeFile(DIST(".git"       ), "gitdir: ../.git/worktrees/dist",   {}, errCb); // for repair purposes.
-	fs.writeFile(DIST("client/.git"), "gitdir: ../.git/worktrees/client", {}, errCb); // for repair purposes.
+	fs.writeFile(DIST(".git"       ), "gitdir: ../.git/worktrees/dist",      {}, errCb); // for repair purposes.
+	fs.writeFile(DIST("client/.git"), "gitdir: ../../.git/worktrees/client", {}, errCb); // for repair purposes.
 	fs.writeFile(DIST("client/.nojekyll"), "", {}, errCb);
 }

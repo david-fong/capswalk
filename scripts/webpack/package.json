@@ -3,7 +3,7 @@
   "name": "bundler-dependencies",
   "files": [],
   "type": "commonjs",
-  "devDependencies": {
+  "dependencies": {
     "@types/mini-css-extract-plugin": "^1.4.2",
     "compression-webpack-plugin": "^7.1.2",
     "csp-html-webpack-plugin": "5.0.0",

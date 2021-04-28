@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # This script is run as the npm postinstall lifecycle script.
 #set -e
 

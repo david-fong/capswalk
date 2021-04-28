@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const process = require("process");
 const regex = {
-	id: /\[data-colour-scheme="([a-z-]+)"]/,
+	id: /\[data-colour-scheme="(?<id>[a-z-]+)"]/,
 	meta: /^\/\*\*\s+@title (?<title>[^\n]+)\s+@author (?<author>[^\n]+)\s+\*\/.*/m
 }
 
@@ -22,7 +22,7 @@ schemes.forEach((css, id) => {
 	if (!regex.id.test(css)) {
 		console.error(`"${id}" doesn't match \`${regex.id.source}\`.`);
 	}
-	const dataAttribute = regex.id.exec(css)[1];
+	const dataAttribute = regex.id.exec(css).groups.id;
 	if (id !== dataAttribute) {
 		console.error(`filename "${id}" doesn't equal data-attribute "${dataAttribute}"`);
 	}
