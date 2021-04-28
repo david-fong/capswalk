@@ -126,16 +126,17 @@ export namespace JsUtils {
 		): T {
 			const smart: T = {} as T;
 			(Object.keys(example)).forEach((key) => {
-				const internalKey = (DEF.PRODUCTION ? "" : localPrefix + ".") + key;
+				const storageKey = (DEF.PRODUCTION ? "" : localPrefix + ".") + key;
+				const defaultValue = example[key];
 				// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
 				Object.defineProperty(smart, key, {
 					enumerable: true,
 					get: () => {
-						const val = storage.getItem(internalKey);
-						return (val === null) ? undefined : JSON.parse(val);
+						const val = storage.getItem(storageKey);
+						return (val === null) ? defaultValue : JSON.parse(val);
 					},
 					set: (val: boolean): void => {
-						storage.setItem(internalKey, JSON.stringify(val));
+						storage.setItem(storageKey, JSON.stringify(val));
 					},
 				});
 			});

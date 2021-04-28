@@ -6,12 +6,19 @@ const webpack = require("webpack");
 
 const configs = require("./webpack.config");
 
+const PRODUCTION_MODE = (process.env.NODE_ENV === "production");
 const DO_WATCH = process.argv.includes("--watch");
 if (!DO_WATCH) console.info("*note: pass `--watch` for watch mode");
 function DIST(rel = "") { return path.resolve(__dirname, "../../dist/", rel); }
 function ROOT(rel = "") { return path.resolve(__dirname, "../../", rel); }
 
-if (process.env.NODE_ENV === "production") {
+
+if (PRODUCTION_MODE) {
+	require(ROOT("src/client/colours/.update.cjs"));
+}
+
+
+if (PRODUCTION_MODE) {
 	// Generate dist/package.json:
 	const srcPkgKeys = Object.freeze([
 		"name", "license", "author",
@@ -63,7 +70,7 @@ Object.values(configs).forEach((config) => {
 });
 
 
-if (process.env.NODE_ENV === "production") {
+if (PRODUCTION_MODE) {
 	/** @type {(err: NodeJS.ErrnoException | null) => void} */
 	function errCb(err) {
 		if (err) console.error(err);

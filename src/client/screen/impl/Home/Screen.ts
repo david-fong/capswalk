@@ -78,7 +78,7 @@ export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 		});
 
 		(<const>[{
-			text:    "Visit\nRepo",
+			text:    "Source\nCode",
 			cssClass: style["nav--goto-repo"],
 			href:     new window.URL("https://github.com/david-fong/capswalk"),
 		},{

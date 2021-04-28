@@ -3,9 +3,10 @@
 .DS_Store
 *.orig
 
-# npm
+# npm/pnpm
 /node_modules/
 !/src/node_modules/
+.pnpm-debug.log
 
 # build
 /dist/

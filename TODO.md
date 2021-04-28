@@ -14,17 +14,12 @@
 
 ### Things I feel like doing
 
-1. look into using swc for TypeScript transpilation.
-    - One advantage over esbuild is that I'm mainly only using it as a TypeScript transpiler with webpack. esbuild's project scope doesn't include babel-like behaviour, but swc does, which is a plus. The reverse is true of heavy minification, but webpack comes with terser for that, and minification is only done when bundling for production, which doesn't happen often.
-    - Trying it out on 2021/04/22, the speed was pretty much the same as esbuild, but the TypeScript handling was not as smooth.
-1. Add a font-scaling parameter to lang descs.
 1. Implement `VisibleGrid` rendering of player positions.
     - The current usage of using a CSS transition on the transform property is not working for Firefox.
 1. Unify CSS spacing values via variables.
 1. Implement a requirement that the number of players is less than the area of the grid.
 1. Expose a user setting for conserving power by disabling some animations.
 1. Implement websocket heartbeat to check for broken connections (see ws readme for example).
-    - On a related note, see if there is an implementation of the fancy button hovers that doesn't use so much cpu.
 1. Display the operator's current sequence buffer.
     - Or perhaps make a fancy "crosshair" that outlines tiles that match the current sequence buffer.
 1. Reject a request if the requesting socket doesn't operate the specified player.
@@ -47,7 +42,6 @@
 1. Spectator mode for online games? O\_o
 1. Add a WebPack HTML plugin instance for a [custom 404 page](https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site).
 1. Consider [heroku config garbage collection](https://devcenter.heroku.com/articles/node-best-practices#avoid-garbage)
-1. Make a build-script that creates a JSON file listing existing colour-scheme-descriptors. It should parse each scheme's author and display-name from header comments in the CSS file. The build-script could also automatically update `schemes/_barrel.css`. The JSON file should then be imported into the Screen component to create the options selector.
 
 ### Ideas
 
@@ -83,6 +77,9 @@
 - Try turning on `webpack.experiments.module`.
 - Turn on TypeScript experimental decorators?
   - After reading [the TC39 proposal docs](https://github.com/tc39/proposal-decorators#option-b-init-method-decorators) and seeing how much they differ from TypeScript's current spec, I don't want to commit to something that will likely change drastically in the future.
+- look into using swc for TypeScript transpilation.
+  - One advantage over esbuild is that I'm mainly only using it as a TypeScript transpiler with webpack. esbuild's project scope doesn't include babel-like behaviour, but swc does, which is a plus. The reverse is true of heavy minification, but webpack comes with terser for that, and minification is only done when bundling for production, which doesn't happen often.
+  - Trying it out on 2021/04/22, the speed was pretty much the same as esbuild, but the TypeScript handling was not as smooth.
 
 ---
 

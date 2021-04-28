@@ -187,7 +187,7 @@ export namespace BaseScreen {
 		HOME            = "home",
 		HOW_TO_PLAY     = "how-to-play",
 		HOW_TO_HOST     = "how-to-host",
-		SETTINGS     = "colour-control",
+		SETTINGS        = "settings",
 		// Offline:     ===================
 		SETUP_OFFLINE   = "setup-offline",
 		PLAY_OFFLINE    = "play-offline",
