@@ -1,12 +1,14 @@
-<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Security-Policy" content="base-uri 'none'; object-src 'none'; script-src 'self' 'sha256-CeuMnfhT7EAjLrIFbspwOddbVfE9wO5VYh7YtqBgtCs=' 'sha256-sRLto0mDi3OeFQrO3w9Q1viWFCCgg/1QFBZ60hUMz8U='; style-src 'self'; default-src 'self'; child-src 'none'; connect-src 'self' wss://capswalk.herokuapp.com/ws/; form-action 'none'"><meta charset="UTF-8"><title>capswalk</title><meta name="referrer" content="same-origin"><meta name="viewport" content="width=device-width,initial-scale=1"><script>Object.defineProperties(Array.prototype, {
-				freeze: { value: function freeze() { return Object.freeze(this); }, enumerable: true },
-				seal: { value: function seal() { return Object.seal(this); }, enumerable: true },
-			});</script><link rel="icon" href="./favicon.png"><script defer="defer" src="./css-common.js"></script><script defer="defer" src="./index.js"></script><link href="./css-common.css" rel="stylesheet"><link href="./index.css" rel="stylesheet"><meta name="og:title" content="capswalk"><meta name="author" content="David Fong"><meta name="description" content="A multiplayer typing game for learning written languages."><meta name="og:description" content="A multiplayer typing game for learning written languages."><meta name="og:image" content="https://raw.githubusercontent.com/david-fong/capswalk/dev/assets/images/screenshots/snakey_version3_blanktitle.png"></head><body class="fill-parent"><datalist id="public-game-hosts-list"><option value="https://capswalk.herokuapp.com"></option></datalist><script>{ // Load up last used colour scheme (or default):
-			const css = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
-			const root = document.documentElement;
-			if (css) { css.split(";").forEach((rule) => {
-				const [name,val] = rule.split(":");
-				root.style.setProperty(name,val);
-			}); }
-			else { root.dataset["skColourScheme"] = "default"; }
-		}</script><div id="background" class="screen" aria-hidden="true"></div><div id="all-screens-container"></div><div id="screen-tint" class="screen" aria-hidden="true"></div><div id="screen-texture" class="screen" aria-hidden="true"></div></body></html>
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Security-Policy" content="base-uri 'none'; object-src 'none'; script-src 'self' 'sha256-uWhQCLjljizHg4KODoWLIAFL5Xss5eylAcxJ2yjy8dg='; style-src 'self' https://fonts.googleapis.com; default-src 'self'; img-src 'self' https://twemoji.maxcdn.com; child-src 'none'; connect-src 'self' wss://capswalk.herokuapp.com/ws/; form-action 'none'; font-src 'self' https://fonts.gstatic.com"><meta charset="UTF-8"><title>capswalk</title><meta name="referrer" content="same-origin"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="./favicon.png"><script defer="defer" src="./css-common.js"></script><script defer="defer" src="./index.js"></script><link href="./css-common.css" rel="stylesheet"><link href="./index.css" rel="stylesheet"><meta name="og:title" content="capswalk"><meta name="author" content="David Fong"><meta name="description" content="A multiplayer typing game for learning written languages."><meta name="og:description" content="A multiplayer typing game for learning written languages."><meta name="og:image" content="https://raw.githubusercontent.com/david-fong/capswalk/dev/assets/images/screenshots/snakey_version3_blanktitle.png"></head><body class="fill-parent"><datalist id="public-game-hosts-list"><option value="https://capswalk.herokuapp.com"></option></datalist><script>{ // Load up last used colour scheme (or default):
+		const css = JSON.parse(localStorage.getItem("colourSchemeStyleLiteral"));
+		const root = document.documentElement;
+		if (css) { css.split(";").forEach((rule) => {
+			const [name,val] = rule.split(":");
+			root.style.setProperty(name,val);
+		}); }
+		else { root.dataset["colourScheme"] = "default"; }
+	}</script><div id="background" class="screen" aria-hidden="true"></div><div id="screen-tint" class="screen" aria-hidden="true"></div><div id="screen-texture" class="screen" aria-hidden="true"></div><div id="all-screens-container"></div></body><!--!
+	This project uses Twemoji (https://twemoji.twitter.com/). Attribution below:
+	Copyright 2020 Twitter, Inc and other contributors
+	Code licensed under the MIT License: http://opensource.org/licenses/MIT
+	Graphics licensed under CC-BY 4.0: https://creativecommons.org/licenses/by/4.0/
+--></html>

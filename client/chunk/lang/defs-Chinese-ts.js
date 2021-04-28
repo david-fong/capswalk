@@ -1,1 +1,1 @@
-(self.webpackChunkcapswalk=self.webpackChunkcapswalk||[]).push([[704],{711:()=>{}}]);
+(self.webpackChunkcapswalk=self.webpackChunkcapswalk||[]).push([[704],{720:()=>{}}]);

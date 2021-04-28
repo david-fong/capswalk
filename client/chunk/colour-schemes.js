@@ -1,1 +1,1 @@
-(self.webpackChunkcapswalk=self.webpackChunkcapswalk||[]).push([[122],{115:(s,a,c)=>{"use strict";c.r(a)},622:(s,a,c)=>{"use strict";c.r(a)}}]);
+(self.webpackChunkcapswalk=self.webpackChunkcapswalk||[]).push([[122],{85:(s,a,c)=>{"use strict";c.r(a)},557:(s,a,c)=>{"use strict";c.r(a)}}]);
