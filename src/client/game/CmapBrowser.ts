@@ -1,6 +1,6 @@
-import { VisibleGrid } from ":floor/visible/VisibleGrid";
-import { Euclid2VisibleGrid } from ":floor/impl/Euclid2/Visible";
-import { BeehiveVisibleGrid } from ":floor/impl/Beehive/Visible";
+import { VisibleGrid } from "./grid/VisibleGrid";
+import { Euclid2VisibleGrid } from "::game/grid/impl/Euclid2";
+import { BeehiveVisibleGrid } from "::game/grid/impl/Beehive";
 
 /**
  */

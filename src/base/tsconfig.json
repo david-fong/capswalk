@@ -3,7 +3,7 @@
     "compilerOptions": {
         "rootDir": ".",
         "outDir": "../../dist/.ts/src/base",
-        "lib": ["es2020", "dom"],
+        "lib": ["es2020"],
     },
     "files": [],
     "references": [

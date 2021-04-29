@@ -1,4 +1,4 @@
-
+/// <reference lib="dom"/>
 const NO_ENUM  = Object.freeze(<const>{ enumerable: false });
 const NO_WRITE = Object.freeze(<const>{ writable: false });
 function _onclickNoButtonRepeat(ev: Event): void {

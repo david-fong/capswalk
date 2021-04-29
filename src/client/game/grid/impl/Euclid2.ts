@@ -2,9 +2,9 @@ import { JsUtils } from ":defs/JsUtils";
 import type { Coord, Tile } from ":floor/Tile";
 import type { Grid as AbstractGrid } from ":floor/Grid";
 import type { Player } from ":defs/TypeDefs";
-import { VisibleGrid } from ":floor/visible/VisibleGrid";
+import { VisibleGrid } from "../VisibleGrid";
 
-import { IAC, WrappedEuclid2 as System } from "./System";
+import { IAC, WrappedEuclid2 as System } from ":floor/impl/Euclid2";
 import style from "./style.m.css";
 type S = Coord.System.W_EUCLID2;
 const PHYSICAL_TILE_WIDTH = 3.3;

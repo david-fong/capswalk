@@ -61,7 +61,7 @@ wss.on("connection", function onWsConnect(ws, req): void {
 
 /** HTTP LISTEN */
 server.listen(<net.ListenOptions>{
-	port: DEF.PRODUCTION ? 8080 : 8080, // TODO.impl there must be a smarter way to do this.
+	port: DEF.PRODUCTION ? 443 : 8080, // TODO.impl there must be a smarter way to do this.
 	host: "0.0.0.0",
 }, function onServerListening(): void {
 	const info = <net.AddressInfo>server.address();

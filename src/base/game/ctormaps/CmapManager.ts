@@ -1,6 +1,6 @@
 import { Grid } from ":floor/Grid";
-import { WrappedEuclid2 } from ":floor/impl/Euclid2/System";
-import { Beehive } from ":floor/impl/Beehive/System";
+import { WrappedEuclid2 } from ":floor/impl/Euclid2";
+import { Beehive } from ":floor/impl/Beehive";
 
 import { RobotPlayer } from ":game/player/RobotPlayer";
 import { Chaser } from ":game/player/robots/Chaser";
