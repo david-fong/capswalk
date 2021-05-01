@@ -1,16 +1,16 @@
 import { JsUtils } from ":defs/JsUtils";
 import { Game } from ":game/Game";
 import type { Coord, Tile } from ":floor/Tile";
-import type { GameManager } from ":game/gameparts/GameManager";
+import type { GameMirror } from ":game/gameparts/GameMirror";
 
 export { JsUtils };
 export type { Coord, Tile };
-export type { GameManager };
+export { GameMirror } from ":game/gameparts/GameMirror";
 
 // Implementations:
-import type { Chaser } from "./robots/Chaser";
+import type { Chaser } from "./impl/Chaser";
 
-import { Player } from "./Player";
+import { Player } from "../Player";
 export { Player };
 
 
@@ -23,9 +23,6 @@ export { Player };
  */
 export abstract class RobotPlayer extends Player {
 
-	/** @override */
-	declare public readonly game: GameManager<any>;
-
 	private _nextMovementTimerMultiplier: number = undefined!;
 
 	private _scheduledMovementCallbackId: number = undefined!;
@@ -33,7 +30,7 @@ export abstract class RobotPlayer extends Player {
 	/**
 	 * @see RobotPlayer.of for the public, non-abstract interface.
 	 */
-	protected constructor(game: GameManager<any>, desc: Player.CtorArgs) {
+	protected constructor(game: GameMirror<any>, desc: Player.CtorArgs) {
 		super(game, desc);
 	}
 
@@ -100,35 +97,9 @@ export abstract class RobotPlayer extends Player {
 }
 export namespace RobotPlayer {
 
-	export const _Constructors: {
-		readonly [ F in Player.RobotFamily ]: {
-			new(
-				game: GameManager,
-				desc: Player._CtorArgs[F]
-			): RobotPlayer;
-		};
-	} = {
-		// These are initialized later to avoid bootstrapping issues.
-		["CHASER"]: undefined!,
-	};
-
 	export interface FamilySpecificPart {
-		[Player.Family.CHASER]: Partial<Chaser.Behaviour>;
+		[Player.Family.Chaser]: Partial<Chaser.Behaviour>;
 	}
-
-	export const of = (
-		game: GameManager,
-		playerDesc: Player._CtorArgs[Player.RobotFamily],
-	): RobotPlayer => {
-		const familyId = playerDesc.familyId as Player.RobotFamily;
-		if (DEF.DevAssert) {
-			// Enforced By: Caller adherence to contract.
-			if (!Object.getOwnPropertyNames(_Constructors).includes(familyId)) {
-				throw new RangeError(familyId + " is not a valid robot player family id.");
-			}
-		}
-		return new (_Constructors[familyId])(game, playerDesc);
-	};
 
 	/**
 	 * Provides slightly higher level abstractions for computing the

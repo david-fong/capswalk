@@ -92,7 +92,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		operators: readonly OperatorPlayer[],
 	} {
 		const players = gameDesc.players.map((pDesc) => {
-			if (pDesc.familyId === Player.Family.HUMAN) {
+			if (pDesc.familyId === Player.Family.Human) {
 				return (operatorIds.includes(pDesc.playerId))
 					? new implArgs.OperatorPlayer!(this, pDesc, langDesc)
 					: new Player(this, pDesc);
@@ -242,6 +242,16 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 				p._setCoord(changes.coord);
 			}
 		}
+	}
+
+	/** */
+	public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
+		return setTimeout(callback, millis, args);
+	}
+
+	/** */
+	public cancelTimeout(handle: number): void {
+		clearTimeout(handle);
 	}
 }
 JsUtils.protoNoEnum(GameMirror, "_createPlayers");

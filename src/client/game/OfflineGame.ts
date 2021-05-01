@@ -1,12 +1,11 @@
 import {
 	Game, Coord,
 	VisibleGrid, Player, OperatorPlayer,
-	InitBrowserGameCtorMaps,
+	GetVisibleGridImpl,
 } from "./BrowserGame";
-InitBrowserGameCtorMaps();
 
 import { GameManager } from ":game/gameparts/GameManager";
-import { RobotPlayer } from ":game/player/RobotPlayer";
+import { GetRobotImpl } from ":game/player/robot/ImplBarrel";
 
 /**
  * @final
@@ -23,16 +22,16 @@ export class OfflineGame<S extends Coord.System = Coord.System> extends GameMana
 	) {
 		super({
 			impl: {
-				gridClassLookup: VisibleGrid.getImplementation,
+				gridClassLookup: GetVisibleGridImpl,
 				OperatorPlayer: OperatorPlayer,
-				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager, desc),
+				RobotPlayer: GetRobotImpl,
 				onGameBecomeOver,
 			},
 			desc: (() => {
 				Player.CtorArgs.finalize(gameDesc);
 				return gameDesc;
 			})(),
-			operatorIds: gameDesc.players.filter(p => p.familyId === "HUMAN").map(p => p.playerId),
+			operatorIds: gameDesc.players.filter(p => p.familyId === "Human").map(p => p.playerId),
 		});
 		Object.seal(this); //🧊
 	}
@@ -43,16 +42,6 @@ export class OfflineGame<S extends Coord.System = Coord.System> extends GameMana
 	// 	const func = () => super.processMoveRequest(req);
 	// 	setTimeout(func, 1000);
 	// }
-
-	/** @override */
-	public setTimeout(callback: TimerHandler, millis: number, ...args: any[]): number {
-		return setTimeout(callback, millis, args);
-	}
-
-	/** @override */
-	public cancelTimeout(handle: number): void {
-		clearTimeout(handle);
-	}
 }
 Object.freeze(OfflineGame);
 Object.freeze(OfflineGame.prototype);

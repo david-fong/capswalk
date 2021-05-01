@@ -233,26 +233,6 @@ export namespace Grid {
 		): readonly (readonly Coord[])[];
 	}
 
-	// Each implementation must register itself into this dictionary.
-	// See CmapManager.ts.
-	export const _Constructors: { readonly [S in Coord.System]: Grid.ClassIf<S> } = {
-		// These are initialized later to avoid bootstrapping issues.
-		["W_EUCLID2"]: undefined!,
-		["BEEHIVE"]: undefined!,
-	};
-
-	/**
-	 * @returns
-	 * A Grid class for the specified coordinate system.
-	 */
-	export const getImplementation = <S extends Coord.System>(coordSys: S): ClassIf<S> => {
-		// Note: At the time of writing this, separating this into
-		// two lines is necessary (otherwise Typescript will feel
-		// overwhelmed)
-		const ctor = _Constructors[coordSys];
-		return ctor as unknown as ClassIf<S>;
-	};
-
 	/**
 	 * Bounds are inclusive. Ie. the specified values are _just_ allowed.
 	 *

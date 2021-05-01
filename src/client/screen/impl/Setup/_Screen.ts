@@ -99,7 +99,7 @@ export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | Bas
 export namespace _SetupScreen {
 
 	export const DEFAULT_PRESET = (): Game.CtorArgs.UnFin => { return {
-		coordSys: "W_EUCLID2" as Coord.System.W_EUCLID2,
+		coordSys: "Euclid2" as Coord.System.W_EUCLID2,
 		gridDimensions: {
 			height: 10,
 			width:  10,
@@ -107,13 +107,13 @@ export namespace _SetupScreen {
 		langWeightExaggeration: 1.0,
 		langId: "engl-low",
 		players: ((): readonly _Player.CtorArgs.UnFin[] => [{
-			familyId:   "CHASER",
+			familyId:   "Chaser",
 			teamId:     1,
 			username:   "chaser1",
 			avatar:     Player.Avatar.GET_RANDOM(),
 			familyArgs: {/* Uses all defaults. */},
 		}, {
-			familyId:   "CHASER",
+			familyId:   "Chaser",
 			teamId:     1,
 			username:   "chaser2",
 			avatar:     Player.Avatar.GET_RANDOM(),

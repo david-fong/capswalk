@@ -15,19 +15,6 @@ export interface VisibleGrid<S extends Coord.System> extends BaseGrid<S>, _Visib
 }
 export namespace VisibleGrid {
 
-	// Each implementation must register itself into this dictionary.
-	export const _Constructors: {
-		readonly [ S in Coord.System ]: BaseGrid.ClassIf<S>
-	} = {
-		// These are initialized later to avoid bootstrapping issues.
-		["W_EUCLID2"]: undefined!,
-		["BEEHIVE"]: undefined!,
-	};
-	export const getImplementation = <S extends Coord.System>(coordSys: S): BaseGrid.ClassIf<S> => {
-		const ctor = _Constructors[coordSys];
-		return ctor as unknown as BaseGrid.ClassIf<S>;
-	};
-
 	export function _mkExtensionProps(tiles: HTMLElement): _VisibleExtensions {
 		tiles.setAttribute("role", "presentation");
 		tiles.translate  = false; // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/translate

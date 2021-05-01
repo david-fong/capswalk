@@ -1,10 +1,10 @@
 import { GameEv } from ":defs/OnlineDefs";
 import {
-	Game, Coord, StateChange,
-	VisibleGrid, Player, OperatorPlayer,
-	InitBrowserGameCtorMaps,
+	Game, Coord,
+	VisibleGrid, GetVisibleGridImpl,
+	Player, OperatorPlayer,
 } from "./BrowserGame";
-InitBrowserGameCtorMaps();
+import type { StateChange }  from ":game/StateChange";
 
 import { GameMirror } from ":game/gameparts/GameMirror";
 
@@ -28,7 +28,7 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 	) {
 		super({
 			impl: {
-				gridClassLookup: VisibleGrid.getImplementation,
+				gridClassLookup: GetVisibleGridImpl,
 				OperatorPlayer: OperatorPlayer,
 				RobotPlayer: (game, desc) => new Player(game, desc),
 				onGameBecomeOver,

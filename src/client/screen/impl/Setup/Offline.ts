@@ -26,13 +26,13 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 		// TODO.impl get rid of this placeholder once this screen has inputs for
 		// the client to configure their own players.
 		(args.players as PArgs).splice(args.players.length, 0, {
-			familyId:   "HUMAN",
+			familyId:   "Human",
 			teamId:     0,
 			socket:     undefined,
 			username:   "hello1",
 			avatar:     Player.Avatar.GET_RANDOM(),
 		}, {
-			familyId:   "HUMAN",
+			familyId:   "Human",
 			teamId:     1,
 			socket:     undefined,
 			username:   "hello2",

@@ -2,16 +2,13 @@ import { JsUtils } from ":defs/JsUtils";
 import { Lang, LangDescs } from ":lang/Lang";
 import { Game } from "../Game";
 
-import type { Coord, Tile } from ":floor/Tile";
+import type { Coord } from ":floor/Tile";
 import type { StateChange } from "../StateChange";
 import { Player } from "../player/Player";
 import { ScoreInfo } from "./ScoreInfo";
-import { Grid } from ":floor/Grid";
+import { Grid, GetGridImpl } from ":floor/ImplBarrel";
 
 import { GameMirror } from "./GameMirror";
-
-import InitGameManagerCtorMaps from "../ctormaps/CmapManager";
-InitGameManagerCtorMaps();
 
 /** */
 export abstract class GameManager<
@@ -155,9 +152,6 @@ export abstract class GameManager<
 			},
 		}, authorSock);
 	}
-
-	public abstract setTimeout(callback: Function, millis: number, ...args: any[]): number;
-	public abstract cancelTimeout(handle: number): void;
 }
 export namespace GameManager {
 	/**
@@ -186,7 +180,7 @@ export namespace GameManager {
 		}
 
 		const langDesc = Lang.GetDesc(args.langId);
-		const gridClass = Grid._Constructors[args.coordSys];
+		const gridClass = GetGridImpl(args.coordSys);
 		if (langDesc === undefined) {
 			bad.push(`No language with the ID \`${args.langId}\` exists.`);
 		} else if (gridClass === undefined) {

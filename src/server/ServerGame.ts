@@ -6,8 +6,8 @@ import type { Game } from ":game/Game";
 import type { Coord } from ":floor/Tile";
 import type { StateChange } from ":game/StateChange";
 import { Player } from ":game/player/Player";
-import { RobotPlayer } from ":game/player/RobotPlayer";
-import { Grid } from ":floor/Grid";
+import { GetRobotImpl } from ":game/player/robot/ImplBarrel";
+import { GetGridImpl } from ":floor/ImplBarrel";
 
 import { GameManager } from ":game/gameparts/GameManager";
 
@@ -61,9 +61,9 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	}>) {
 		super({
 			impl: {
-				gridClassLookup: Grid.getImplementation,
+				gridClassLookup: GetGridImpl,
 				OperatorPlayer: undefined,
-				RobotPlayer: (game, desc) => RobotPlayer.of(game as GameManager<any>, desc),
+				RobotPlayer: GetRobotImpl,
 				onGameBecomeOver: () => {},
 			},
 			desc: (() => {
@@ -96,7 +96,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		// The below cast is safe because GamepartBase reassigns
 		// `gameDesc.playerDescs` the result of `Player.finalize`.
 		const humans = (
-			(gameDesc.players).filter((player) => player.familyId === "HUMAN") as Player._CtorArgs["HUMAN"][]
+			(gameDesc.players).filter((player) => player.familyId === "Human") as Player._CtorArgs["Human"][]
 		).freeze();
 		// Pass on Game constructor arguments to each client:
 		Promise.all(Array.from(this.sockets, (s) =>

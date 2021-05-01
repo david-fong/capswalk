@@ -5,7 +5,7 @@ import type { Player } from ":defs/TypeDefs";
 import { VisibleGrid } from "../VisibleGrid";
 
 import { IAC, WrappedEuclid2 as System } from ":floor/impl/Euclid2";
-import style from "./style.m.css";
+import style from "./Euclid2.m.css";
 type S = Coord.System.W_EUCLID2;
 const PHYSICAL_TILE_WIDTH = 3.3;
 

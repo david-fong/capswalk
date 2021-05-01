@@ -19,8 +19,8 @@ export namespace Player {
 	 */
 	export type Family = keyof typeof Family;
 	export const Family = Object.freeze(<const>{
-		HUMAN:  "HUMAN",
-		CHASER: "CHASER",
+		Human:  "Human",
+		Chaser: "Chaser",
 	});
 	Family as {
 		[ key in Family ]: key;

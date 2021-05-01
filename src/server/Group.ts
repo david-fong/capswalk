@@ -186,9 +186,9 @@ export class Group extends _Group {
 			...ctorArgs.players,
 			...Array.from(this.sockets.keys(), (ws) => {
 				const userInfo = this.sockets.get(ws)!;
-				return Object.freeze(<Player._CtorArgs["HUMAN"]>{
+				return Object.freeze(<Player._CtorArgs["Human"]>{
 					socket:   ws,
-					familyId: "HUMAN",
+					familyId: "Human",
 					username: userInfo.username,
 					teamId:   userInfo.teamId,
 					avatar:   userInfo.avatar,

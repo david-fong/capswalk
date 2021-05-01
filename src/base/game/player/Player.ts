@@ -3,7 +3,7 @@ import { JsUtils } from ":defs/JsUtils";
 import { Game } from ":game/Game";
 
 import type { Coord }       from ":floor/Tile";
-import type { RobotPlayer } from "./RobotPlayer";
+import type { RobotPlayer } from "./robot/RobotPlayer";
 import type { GameMirror }  from ":game/gameparts/GameMirror";
 
 import { RequestBuffer } from "./RequestBuffer";
@@ -141,7 +141,7 @@ export class Player extends _Player implements _Player.UserInfo {
 export namespace Player {
 
 	export type Family = _Player.Family;
-	export type RobotFamily = TU.Xcld<Player.Family, "HUMAN">;
+	export type RobotFamily = TU.Xcld<_Player.Family, "Human">;
 
 	export type Id = _Player.Id;
 
@@ -177,9 +177,9 @@ export namespace Player {
 		[F in Player.Family]: UserInfo & ({
 			readonly familyId: F;
 		}) & (
-			F extends typeof Player.Family.HUMAN
+			F extends typeof Player.Family.Human
 				? { readonly socket: WebSocket | undefined; }
-				: { readonly familyArgs: RobotPlayer.FamilySpecificPart[Exclude<F, "HUMAN">]; }
+				: { readonly familyArgs: RobotPlayer.FamilySpecificPart[Exclude<F, "Human">]; }
 		);
 	};
 

@@ -1,6 +1,6 @@
 import {
 	JsUtils, Coord, Tile,
-	GameManager, Player, RobotPlayer,
+	GameMirror, Player, RobotPlayer,
 } from "../RobotPlayer";
 
 /**
@@ -16,7 +16,7 @@ export class Chaser extends RobotPlayer.Decisive {
 
 	private readonly grid: Chaser["game"]["grid"];
 
-	public constructor(game: GameManager<any>, desc: Player._CtorArgs["CHASER"]) {
+	public constructor(game: GameMirror<any>, desc: Player._CtorArgs["Chaser"]) {
 		super(game, desc);
 		this.params = Object.freeze({
 			...Chaser.Behaviour.DEFAULT,

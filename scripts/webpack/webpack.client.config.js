@@ -83,7 +83,7 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 		/** @type {SplitChunksOpts} */
 		const opts = {
 			"game-css": {
-				test: /src[/\\]base[/\\].*\.css$/,
+				test: /src[/\\]client[/\\]game[/\\].*\.css$/,
 				name: "game-css", chunks: "all", priority: 10,
 				reuseExistingChunk: true, enforce: true,
 			},

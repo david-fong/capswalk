@@ -11,8 +11,8 @@ export type Coord = number;
 export namespace Coord {
 	/** */
 	export const enum System {
-		W_EUCLID2 = "W_EUCLID2",
-		BEEHIVE = "BEEHIVE",
+		W_EUCLID2 = "Euclid2",
+		BEEHIVE = "Beehive",
 	}
 }
 Object.freeze(Coord);
