@@ -5,8 +5,12 @@ import { Grid as AbstractGrid } from ":floor/Grid";
 type S = BaseCoord.System.W_EUCLID2;
 
 export type Dim = {
-	readonly height: number,
-	readonly width:  number,
+	readonly height: number;
+	readonly width:  number;
+	readonly _render: {
+		wrapX: number | "autoscroll";
+		wrapY: number | "autoscroll";
+	};
 };
 
 /**
@@ -122,6 +126,7 @@ export namespace WrappedEuclid2 {
 		public static sizeLimits: AbstractGrid.DimensionBounds<S> = JsUtils.deepFreeze({
 			height: { min: 5, max: 51 },
 			width:  { min: 5, max: 51 },
+			_render: undefined,
 		});
 
 		private readonly _grid: SealedArray<Tile>;

@@ -171,7 +171,7 @@ export namespace Chaser {
 			fearDistance: 5,
 			bloodThirstDistance: 7,
 			healthReserve: 3.0,
-			keyPressesPerSecond: 2.0,
+			keyPressesPerSecond: 1.8,
 			wanderingAimlessness: 0.2,
 		});
 	}

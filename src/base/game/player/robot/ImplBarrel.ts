@@ -11,14 +11,14 @@ const Dict: {
 		): RobotPlayer;
 	};
 } = {
-	// These are initialized later to avoid bootstrapping issues.
 	[ "Chaser" ]: Chaser,
 };
 
-export const GetRobotImpl = (
+/** */
+export function GetRobotImpl(
 	game: GameMirror,
 	playerDesc: Player._CtorArgs[Player.RobotFamily],
-): RobotPlayer => {
+): RobotPlayer {
 	const familyId = playerDesc.familyId as Player.RobotFamily;
 	if (DEF.DevAssert) {
 		// Enforced By: Caller adherence to contract.
@@ -27,4 +27,4 @@ export const GetRobotImpl = (
 		}
 	}
 	return new (Dict[familyId])(game, playerDesc);
-};
+}

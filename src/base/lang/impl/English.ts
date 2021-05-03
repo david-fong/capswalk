@@ -158,7 +158,7 @@ export namespace English {
 			public static BUILD(): Lang.ForwardDict {
 				const dict: Lang.ForwardDict = {};
 				for (const [plain,cipher] of Object.entries(Dict).freeze()) {
-					const morse = cipher.replace(/\./g,"•").replace(/\-/g,"−");
+					const morse = cipher.replace(/\./g,"•").replace(/-/g,"−");
 					dict[morse] = { seq: plain, weight: English.LETTER_FREQUENCY_EXT[plain]! };
 				}
 				return dict;

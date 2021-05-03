@@ -239,10 +239,10 @@ export namespace Grid {
 	 * Upper and lower bounds must be strictly positive integer values.
 	 */
 	export type DimensionBounds<S extends Coord.System> = {
-		[P in keyof Dimensions[S]]: {
+		[P in keyof Dimensions[S]]: Dimensions[S][P] extends number ? {
 			readonly min: number;
 			readonly max: number;
-		};
+		} : undefined;
 	};
 }
 // Grid gets frozen in PostInit after _Constructors get initialized.

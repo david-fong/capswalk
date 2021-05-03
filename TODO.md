@@ -16,9 +16,9 @@
 
 1. Implement `VisibleGrid` rendering of player positions.
     - The current usage of using a CSS transition on the transform property is not working for Firefox.
+1. Add oeprator player action to "speak", which will cause the player to be highlighted until they stop speaking. Add some time-delay hysterisis for when stopping-of-speaking is counted.
 1. Unify CSS spacing values via variables.
 1. Implement a requirement that the number of players is less than the area of the grid.
-1. Expose a user setting for conserving power by disabling some animations.
 1. Implement websocket heartbeat to check for broken connections (see ws readme for example).
 1. Display the operator's current sequence buffer.
     - Or perhaps make a fancy "crosshair" that outlines tiles that match the current sequence buffer.
@@ -37,6 +37,7 @@
 
 ### Things that are low priority
 
+1. Consider using dynamic import for visible grid implementations, since they are fairly large. This will probably complicate constructors due to introducing async...
 1. Try to change enums back to const enums and just use string literals to avoid linkage hoops. Just make sure type checking is in effect.
 1. Make a `JsUtil` function for shuffling an array in place. It may take an "upToIndex" (exclusive) argument for only sorting a starting range.
 1. Spectator mode for online games? O\_o
@@ -72,8 +73,9 @@
   - [eslint plugin](https://www.npmjs.com/package/eslint-plugin-tsdoc)
 - [custom mouse images!](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Basic_User_Interface/Using_URL_values_for_the_cursor_property)
 
-### Bleeding Edge Experiments
+### Bleeding Edge Experiments / Things being waited for
 
+- Remove type assertions after `cloneNode` once [this gets resolved](https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/811)
 - Try turning on `webpack.experiments.module`.
 - Turn on TypeScript experimental decorators?
   - After reading [the TC39 proposal docs](https://github.com/tc39/proposal-decorators#option-b-init-method-decorators) and seeing how much they differ from TypeScript's current spec, I don't want to commit to something that will likely change drastically in the future.

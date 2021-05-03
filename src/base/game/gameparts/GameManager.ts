@@ -158,9 +158,7 @@ export namespace GameManager {
 	 * If cleaning can be appropriately performed, this function will
 	 * do so. If not, it will indicate invalidities in its return value.
 	 */
-	export function CHECK_VALID_CTOR_ARGS(
-		args: TU.NoRo<Game.CtorArgs.UnFin>,
-	): string[] {
+	export function CHECK_VALID_CTOR_ARGS(args: TU.NoRo<Game.CtorArgs.UnFin>): string[] {
 		//#region
 		const bad: string[] = [];
 		type Key = keyof Game.CtorArgs.UnFin;
@@ -179,6 +177,7 @@ export namespace GameManager {
 			bad.push("Missing the following arguments: " + missingFields);
 		}
 
+		// Check lang-floor compatibility:
 		const langDesc = Lang.GetDesc(args.langId);
 		const gridClass = GetGridImpl(args.coordSys);
 		if (langDesc === undefined) {
@@ -201,6 +200,18 @@ export namespace GameManager {
 				args.langWeightExaggeration as any
 			));
 		}
+
+		Object.entries(gridClass.sizeLimits as Record<string, {min:number,max:number}>).forEach(([dimension, limits]) => {
+			if (limits === undefined) return;
+			const val = (args.gridDimensions as any)[dimension];
+			if (typeof val !== "number") {
+				bad.push(`Expected a number for dimension "${dimension}" of grid dimensions.`);
+				return;
+			}
+			if (val < limits.min || val > limits.max) {
+				bad.push(`Expected a number within [${limits.min}, ${limits.max}] but got ${val}.`);
+			}
+		});
 		// TODO.impl check all the rest of the things.
 		// if (!(Player.Username.REGEXP.test(desc.username))) {
 		//     throw new RangeError(`Username \"${desc.username}\"`

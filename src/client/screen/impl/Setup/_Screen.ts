@@ -103,6 +103,7 @@ export namespace _SetupScreen {
 		gridDimensions: {
 			height: 10,
 			width:  10,
+			_render: { wrapX: 2, wrapY: 2 },
 		},
 		langWeightExaggeration: 1.0,
 		langId: "engl-low",
@@ -121,7 +122,7 @@ export namespace _SetupScreen {
 				fearDistance: 6,
 				bloodThirstDistance: 5,
 				healthReserve: 5.0,
-				keyPressesPerSecond: 1.8,
+				keyPressesPerSecond: 1.2,
 			},
 		}])(), // <- Wrap in a function for better type checking.
 	}; };

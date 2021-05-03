@@ -7,7 +7,6 @@ import type { Grid as BaseGrid } from ":floor/Grid";
 
 interface _VisibleExtensions {
 	readonly baseElem: HTMLElement;
-	readonly spotlightElems: readonly HTMLElement[];
 }
 
 /** */
@@ -20,21 +19,15 @@ export namespace VisibleGrid {
 		tiles.translate  = false; // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/translate
 		tiles.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
 
-		const base = JsUtils.html("div");
-		const root = base.attachShadow({ mode: "closed" });
+		const outer = JsUtils.html("div");
+		const inner = outer.attachShadow({ mode: "closed" });
 		tiles.classList.add(style["impl-body"]);
-		root.appendChild(tiles);
-		JsUtils.Web.adoptStyleSheet(root, "css-common.css");
-		JsUtils.Web.adoptStyleSheet(root, "chunk/game-css.css");
-
-		// Initialize spotlight elements:
-		const shortSpotlight = JsUtils.html("div", [player_style["spotlight-short"]]);
-		const longSpotlight  = JsUtils.html("div", [player_style["spotlight-long"]]);
-		const spotlightElems = Object.freeze([ shortSpotlight, longSpotlight ]);
+		inner.appendChild(tiles);
+		JsUtils.Web.adoptStyleSheet(inner, "css-common.css");
+		JsUtils.Web.adoptStyleSheet(inner, "chunk/game-css.css");
 
 		return Object.freeze({
-			baseElem: base,
-			spotlightElems,
+			baseElem: outer,
 		});
 	}
 }

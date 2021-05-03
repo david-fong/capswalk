@@ -4,7 +4,7 @@ import { Euclid2VisibleGrid } from "::game/grid/impl/Euclid2";
 import { BeehiveVisibleGrid } from "::game/grid/impl/Beehive";
 
 // Each implementation must register itself into this dictionary.
-const Dict: { readonly [ S in Coord.System ]: BaseGrid.ClassIf<S> } = Object.freeze({
+const Dict = Object.freeze<{[S in Coord.System]: BaseGrid.ClassIf<S>}>({
 	[ "Euclid2" ]: Euclid2VisibleGrid,
 	[ "Beehive" ]: BeehiveVisibleGrid,
 });

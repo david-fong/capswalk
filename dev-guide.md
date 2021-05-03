@@ -76,10 +76,6 @@ Use `readonly T[]` instead of `ReadonlyArray<T>`.
 
 To make it easier to find console log messages added temporarily, added log messages, use `console.log` for those temporarily added log messages, and `console.info` for more permanent ones.
 
-### Throwing Errors
-
-Do not throw strings. Use `Throw new *Error("*")`.
-
 ### Prefixing with Underscore
 
 If access modifiers cannot be used to protect exposure to something that should only be used in a specific place, prefix it with an underscore.
@@ -93,6 +89,10 @@ In large methods with short-circuit conditions, flag the return line with `retur
 In constructors that seal or freeze the constructed instance, flag the line with `Object.seal(this); //🧊`.
 
 In complex socket communication chains, use 📢 for server emissions and 👂 for server "semaphore" awakenings.
+
+### CSS animations and transitions
+
+Check the browser repaint amount and CPU usage. If repaint is large, try to solve it with containment. If CPU usage is high, try using the `steps(N)` timing function.
 
 ### Enum Implementation
 

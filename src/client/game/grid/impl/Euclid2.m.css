@@ -2,6 +2,7 @@
 	pointer-events: none;
 	contain: strict;
 	display: block;
+	top: 0;
 }
 
 .tile {
@@ -21,6 +22,6 @@
 	font-size: calc(0.04em * var(--font-scaling));
 }
 
-.player {
-	/* transition: transform 0.05s linear; */
+.player, .spotlight {
+	transition: transform 0.05s steps(3, start);
 }
