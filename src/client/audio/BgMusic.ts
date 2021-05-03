@@ -44,7 +44,6 @@ export async function MkBgMusic(trackId: BgMusic.TrackDesc["id"]): Promise<BgMus
 
 	const split = context.createChannelSplitter(_bigBufferNumChannels);
 	const merge = context.createChannelMerger(_abs.length);
-	const sourceDestination = split;
 
 	let _bigBufferChannelIndex = 0;
 	const layerFaders = _abs.map((ab, trackIndex) => {
@@ -75,17 +74,21 @@ export async function MkBgMusic(trackId: BgMusic.TrackDesc["id"]): Promise<BgMus
 		_src.loop = true;
 
 		_src.buffer = _bigBuffer;
-		_src.connect(sourceDestination);
+		_src.connect(split);
 		source = _src;
 	}
+	context.suspend();
+	_reloadSource();
 	return Object.freeze({
 		desc: desc,
 		play: function play(): void {
-			_reloadSource();
-			source.start();
+			// _reloadSource();
+			// source.start();
+			context.resume();
 		},
 		pause: function pause(): void {
-			source.stop();
+			// source.stop();
+			context.suspend();
 		},
 		setLevel: function setLevel(level: number): void {
 			layerFaders; // TODO.impl
