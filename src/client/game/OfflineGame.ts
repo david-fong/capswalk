@@ -1,6 +1,6 @@
 import {
 	Game, Coord,
-	VisibleGrid, Player, OperatorPlayer,
+	VisibleGrid, Player, ClientPlayer,
 	GetVisibleGridImpl,
 } from "./BrowserGame";
 
@@ -23,7 +23,7 @@ export class OfflineGame<S extends Coord.System = Coord.System> extends GameMana
 		super({
 			impl: {
 				gridClassLookup: GetVisibleGridImpl,
-				OperatorPlayer: OperatorPlayer,
+				ClientPlayer,
 				RobotPlayer: GetRobotImpl,
 				onGameBecomeOver,
 			},
@@ -31,7 +31,7 @@ export class OfflineGame<S extends Coord.System = Coord.System> extends GameMana
 				Player.CtorArgs.finalize(gameDesc);
 				return gameDesc;
 			})(),
-			operatorIds: gameDesc.players.filter(p => p.familyId === "Human").map(p => p.playerId),
+			clientPlayerIds: gameDesc.players.filter(p => p.familyId === "Human").map(p => p.playerId),
 		});
 		Object.seal(this); //🧊
 	}

@@ -216,19 +216,25 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 	}
 
 	/** @override */
-	public moveEntity(entityId: Player.Id, _from: Coord, _to: Coord): void {
-		super.moveEntity(entityId, _from, _to);
+	public renderChangeOperatedPlayer(playerId: Player.Id, coord: Coord, prevPlayerCoord: Coord | undefined): void {
+		this.#focusedPlayerId = playerId;
+		this.moveEntity(playerId, prevPlayerCoord ?? 0, coord, true);
+	}
+
+	/** @override */
+	public moveEntity(entityId: Player.Id, _from: Coord, _to: Coord, spotlightOnly = false): void {
+		if (!spotlightOnly) super.moveEntity(entityId, _from, _to);
 		const p = this.players[entityId]!;
 		const dim = this.dimensions;
 		const from = this.iacCache[_from]!;
 		const to   = this.iacCache[_to]!;
 		const wrap = IAC.wrapInfo(dim, from, to);
-		const moveSpot = entityId === this.#focusedPlayerId;
+		const doSpot = entityId === this.#focusedPlayerId;
 		if (wrap.x || wrap.y) {
 			const transform = `translate(${from.x + (dim.width*wrap.x)} ${from.y + (dim.height*wrap.y)})`;
 			p.style.transition = "none";
-			p.setAttribute("transform", transform);
-			if (moveSpot) {
+			if (!spotlightOnly) p.setAttribute("transform", transform);
+			if (doSpot) {
 				this.spotlight.style.transition = "none";
 				this.spotlight.setAttribute("transform", transform);
 			}
@@ -238,7 +244,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 				const transform = `translate(${to.x} ${to.y})`;
 				p.style.transition = "";
 				p.setAttribute("transform", transform);
-				if (moveSpot) {
+				if (doSpot) {
 					this.spotlight.style.transition = "";
 					this.spotlight.setAttribute("transform", transform);
 				}
@@ -246,7 +252,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		} else {
 			const transform = `translate(${to.x} ${to.y})`;
 			p.setAttribute("transform", transform);
-			if (moveSpot) this.spotlight.setAttribute("transform", transform);
+			if (doSpot) this.spotlight.setAttribute("transform", transform);
 		}
 	}
 }

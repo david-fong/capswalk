@@ -15,7 +15,7 @@
 ### Things I feel like doing
 
 1. Implement `VisibleGrid` rendering of player positions.
-    - The current usage of using a CSS transition on the transform property is not working for Firefox.
+    - Implement screen scrolling option.
 1. Add oeprator player action to "speak", which will cause the player to be highlighted until they stop speaking. Add some time-delay hysterisis for when stopping-of-speaking is counted.
 1. Unify CSS spacing values via variables.
 1. Implement a requirement that the number of players is less than the area of the grid.

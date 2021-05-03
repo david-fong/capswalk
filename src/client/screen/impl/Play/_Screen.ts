@@ -138,7 +138,7 @@ export abstract class _PlayScreen<
 	}
 
 	protected abstract _createNewGame(
-		[gameCtorArgs, operatorIds]: BaseScreen.EntranceArgs[SID],
+		[gameCtorArgs, clientPlayerIds]: BaseScreen.EntranceArgs[SID],
 	): Promise<BrowserGame>;
 
 
@@ -150,21 +150,14 @@ export abstract class _PlayScreen<
 		if (!ev.isTrusted) return true;
 		const game = this.currentGame;
 		if (ev.ctrlKey && ev.key === " " && !ev.repeat) {
-			// If switching operator:
-			//function getOperatorElem(this: void): HTMLElement {
-			//    return game.currentOperator.status.immigrantInfo.playerElem;
-			//};
-			//this._gridIsecObserver.unobserve(getOperatorElem());
-			const operators = game.operators;
-			game.setCurrentOperator(
-				(1 + operators.indexOf(game.currentOperator))
-				% operators.length
+			// If switching player:
+			const cps = game.clientPlayers;
+			game.setCurrentClientPlayer(
+				(1 + cps.indexOf(game.currentClientPlayer)) % cps.length
 			);
-			//const operatorElem = getOperatorElem();
-			//this._gridIsecObserver.observe(operatorElem);
 		} else {
 			// Process event as regular typing:
-			game.currentOperator.processKeyboardInput(ev);
+			game.currentClientPlayer.processKeyboardInput(ev);
 		}
 		if (ev.key === " ") {
 			// Disable scroll-down via spacebar:

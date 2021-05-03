@@ -5,7 +5,7 @@ import { Lang } from ":lang/Lang";
 import type { Coord, Tile } from ":floor/Tile";
 import type { StateChange } from "../StateChange";
 import type { Grid } from ":floor/Grid";
-import type { OperatorPlayer } from "../player/OperatorPlayer";
+import type { ClientPlayer } from "../player/ClientPlayer";
 
 import { Player } from "../player/Player";
 import { Team } from "../player/Team";
@@ -17,8 +17,8 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	readonly #onGameBecomeOver: () => void;
 
 	public readonly players: readonly Player[];
-	public readonly operators: readonly OperatorPlayer[];
-	#currentOperator: OperatorPlayer;
+	public readonly clientPlayers: readonly ClientPlayer[];
+	#currentClientPlayer: ClientPlayer;
 	/** Indexable by team ID's. */
 	public readonly teams: readonly Team[];
 
@@ -28,13 +28,13 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	public constructor(args: {
 		readonly impl: Game.ImplArgs,
 		readonly desc: Game.CtorArgs<S>,
-		readonly operatorIds: readonly Player.Id[],
+		readonly clientPlayerIds: readonly Player.Id[],
 	}) {
-		const { impl, desc, operatorIds } = args;
+		const { impl, desc, clientPlayerIds } = args;
 		Object.freeze(desc);
 		Object.freeze(desc.players);
 		desc.players.forEach((desc) => Object.freeze(desc));
-		Object.freeze(operatorIds);
+		Object.freeze(clientPlayerIds);
 
 		const langDesc = Lang.GetDesc(args.desc.langId);
 		const gridClass = impl.gridClassLookup(desc.coordSys);
@@ -49,9 +49,9 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		this.#onGameBecomeOver = impl.onGameBecomeOver;
 
 		// Construct players:
-		const players  = this._createPlayers(desc, impl, operatorIds, langDesc);
-		this.players   = players.players;
-		this.operators = players.operators;
+		const players = this._createPlayers(desc, impl, clientPlayerIds, langDesc);
+		this.players  = players.players;
+		this.clientPlayers = players.client;
 		{
 			const teams: Player[][] = [];
 			this.players.forEach((player) => {
@@ -65,10 +65,10 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 			});
 		}
 		JsUtils.propNoWrite(this as GameMirror<S>,
-			"grid", "players", "operators", "teams",
+			"grid", "players", "clientPlayers", "teams",
 		);
 		this.players.forEach((player) => player._onTeamsBootstrapped());
-		this.setCurrentOperator(0);
+		this.setCurrentClientPlayer(0);
 	}
 
 	/** */
@@ -85,16 +85,16 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 	private _createPlayers(
 		gameDesc: Game.CtorArgs<S>,
 		implArgs: Game.ImplArgs,
-		operatorIds: readonly Player.Id[],
+		clientPlayerIds: readonly Player.Id[],
 		langDesc: Lang.Desc,
 	): {
 		players: readonly Player[],
-		operators: readonly OperatorPlayer[],
+		client: readonly ClientPlayer[],
 	} {
 		const players = gameDesc.players.map((pDesc) => {
 			if (pDesc.familyId === Player.Family.Human) {
-				return (operatorIds.includes(pDesc.playerId))
-					? new implArgs.OperatorPlayer!(this, pDesc, langDesc)
+				return (clientPlayerIds.includes(pDesc.playerId))
+					? new implArgs.ClientPlayer!(this, pDesc, langDesc)
 					: new Player(this, pDesc);
 			} else {
 				return implArgs.RobotPlayer(
@@ -105,7 +105,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		}).freeze();
 		return Object.freeze({
 			players,
-			operators: operatorIds.map((playerId) => players[playerId] as OperatorPlayer).freeze(),
+			client: clientPlayerIds.map((playerId) => players[playerId] as ClientPlayer).freeze(),
 		});
 	}
 
@@ -121,14 +121,16 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		});
 	}
 
-	public get currentOperator(): OperatorPlayer {
-		return this.#currentOperator;
+	public get currentClientPlayer(): ClientPlayer {
+		return this.#currentClientPlayer;
 	}
-	public setCurrentOperator(nextOperatorIndex: number): void {
-		const nextOperator = this.operators[nextOperatorIndex]!;
-		if (!DEF.DevAssert && nextOperator === undefined) { throw new Error("never"); }
-		if (this.currentOperator !== nextOperator) {
-			this.#currentOperator = nextOperator;
+	/** @param index - The index into `this.clientPlayers` */
+	public setCurrentClientPlayer(index: number): void {
+		const next = this.clientPlayers[index]!;
+		if (!DEF.DevAssert && next === undefined) { throw new Error("never"); }
+		if (this.currentClientPlayer !== next) {
+			this.grid.renderChangeOperatedPlayer(next.playerId, next.coord, this.#currentClientPlayer?.coord);
+			this.#currentClientPlayer = next;
 		}
 	}
 
@@ -207,10 +209,10 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		// JsUtils.deepFreeze(changes); // <- already done by caller.
 		if (changes.seq !== undefined) {
 			const sources = this.grid.tileSourcesTo(coord);
-			this.operators.forEach((op) => {
-				// Refresh the operator's `seqBuffer` (maintain invariant) for new CSP:
-				if (sources.some((src) => src.coord === op.coord)) {
-					op.seqBufferAcceptKey(undefined);
+			this.clientPlayers.forEach((p) => {
+				// Refresh the client player's `seqBuffer` (maintain invariant) for new CSP:
+				if (sources.some((src) => src.coord === p.coord)) {
+					p.seqBufferAcceptKey(undefined);
 				}
 			});
 		}

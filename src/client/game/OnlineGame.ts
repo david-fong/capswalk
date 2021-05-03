@@ -2,7 +2,7 @@ import { GameEv } from ":defs/OnlineDefs";
 import {
 	Game, Coord,
 	VisibleGrid, GetVisibleGridImpl,
-	Player, OperatorPlayer,
+	Player, ClientPlayer,
 } from "./BrowserGame";
 import type { StateChange }  from ":game/StateChange";
 
@@ -24,17 +24,17 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 		socket: WebSocket,
 		onGameBecomeOver: () => void,
 		gameDesc: Game.CtorArgs<S>,
-		operatorIds: readonly Player.Id[],
+		clientPlayerIds: readonly Player.Id[],
 	) {
 		super({
 			impl: {
 				gridClassLookup: GetVisibleGridImpl,
-				OperatorPlayer: OperatorPlayer,
+				ClientPlayer,
 				RobotPlayer: (game, desc) => new Player(game, desc),
 				onGameBecomeOver,
 			},
 			desc: gameDesc,
-			operatorIds,
+			clientPlayerIds: clientPlayerIds,
 		});
 		this.ws = socket;
 		Object.seal(this); //🧊

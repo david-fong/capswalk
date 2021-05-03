@@ -21,7 +21,7 @@ export class Player extends _Player implements _Player.UserInfo {
 
 	protected readonly game: GameMirror<any>;
 	public readonly reqBuffer: RequestBuffer;
-	#coord: Coord;
+	#coord: Coord = 0;
 	#boosts = 0.0;
 
 	public prevCoord: Coord = undefined!;

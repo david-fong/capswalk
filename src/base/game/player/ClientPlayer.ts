@@ -12,7 +12,7 @@ import { Player } from "./Player";
  * There are none for online-serverside games.
  * @final
  */
-export class OperatorPlayer extends Player {
+export class ClientPlayer extends Player {
 
 	/** @override */
 	declare public readonly game: GameMirror<any>;
@@ -24,7 +24,6 @@ export class OperatorPlayer extends Player {
 	#seqBuffer: string;
 
 	readonly #langRemappingFunc: {(input: string): string};
-
 
 	public constructor(game: GameMirror<any>, desc: Player._CtorArgs["Human"], langDesc: Lang.Desc) {
 		super(game, desc);
@@ -43,7 +42,7 @@ export class OperatorPlayer extends Player {
 
 
 	/**
-	 * Callback function invoked when the Operator presses a key while
+	 * Callback function invoked when the client presses a key while
 	 * the game's html element has focus. Because of how JavaScript
 	 * and also Node.js run in a single thread, this is an atomic
 	 * operation (implementation must not intermediately schedule any
@@ -72,7 +71,7 @@ export class OperatorPlayer extends Player {
 	/**
 	 * Automatically makes a call to make a movement request if the
 	 * provided `key` completes the `LangSeq` of a UNT. Does not do
-	 * any checking regarding {@link OperatorPlayer#requestInFlight}.
+	 * any checking regarding {@link ClientPlayer#requestInFlight}.
 	 *
 	 * @param key
 	 * The pressed typeable key as a string. Pass an empty string to
@@ -113,7 +112,7 @@ export class OperatorPlayer extends Player {
 				return;
 			}
 		}
-		// Operator's new `seqBuffer` didn't match anything.
+		// The new `seqBuffer` didn't match anything.
 		this.#seqBuffer = "";
 	}
 
@@ -128,5 +127,5 @@ export class OperatorPlayer extends Player {
 		super._setCoord(dest);
 	}
 }
-Object.freeze(OperatorPlayer);
-Object.freeze(OperatorPlayer.prototype);
+Object.freeze(ClientPlayer);
+Object.freeze(ClientPlayer.prototype);

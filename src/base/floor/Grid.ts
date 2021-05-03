@@ -44,6 +44,9 @@ export abstract class Grid<S extends Coord.System> {
 	/** */
 	public abstract moveEntity(entityId: Player.Id, from: Coord, to: Coord): void;
 
+	/** */
+	public renderChangeOperatedPlayer(playerId: Player.Id, coord: Coord, prevPlayerCoord: Coord | undefined): void { void 0; }
+
 	/**
 	 * For BaseGame's implementation of SER/DES to work, the traversal
 	 * order taken by an implementation of this method must depend

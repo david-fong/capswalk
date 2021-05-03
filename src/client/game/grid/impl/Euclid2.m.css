@@ -22,6 +22,10 @@
 	font-size: calc(0.04em * var(--font-scaling));
 }
 
-.player, .spotlight {
+.player {
+	transition: transform 0.05s steps(3, start);
+}
+
+.spotlight {
 	transition: transform 0.05s steps(3, start);
 }

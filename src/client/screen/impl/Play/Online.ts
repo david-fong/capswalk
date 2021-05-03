@@ -76,9 +76,9 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 	/** @override */
 	protected async _createNewGame<S extends Coord.System>(args: [
 		ctorArgs: Game.CtorArgs<S>,
-		operatorIds: readonly number[],
+		clientPlayerIds: readonly number[],
 	]): Promise<OnlineGame<S>> {
-		const [ctorArgs, operatorIds] = args;
+		const [ctorArgs, clientPlayerIds] = args;
 		const game = new (await import(
 			/* webpackChunkName: "game/online" */
 			"::game/OnlineGame"
@@ -86,7 +86,7 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 			this.top.webSocket!,
 			this._onGameBecomeOver.bind(this),
 			ctorArgs,
-			operatorIds,
+			clientPlayerIds,
 		);
 		this.ws.addEventListener("message", this.#wsMessageCb);
 		return Promise.resolve(game);

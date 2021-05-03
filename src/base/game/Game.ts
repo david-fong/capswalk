@@ -2,7 +2,7 @@ import type { Lang } from ":lang/Lang";
 import type { Coord } from ":floor/Tile";
 import type { Grid } from ":floor/Grid";
 import type { Player } from "./player/Player";
-import type { OperatorPlayer } from "./player/OperatorPlayer";
+import type { ClientPlayer } from "./player/ClientPlayer";
 import type { GameMirror } from "./gameparts/GameMirror";
 
 /**
@@ -18,7 +18,7 @@ import type { GameMirror } from "./gameparts/GameMirror";
  *
  * There are overlaps between what each implementation needs to do:
  * - Offline and Server games maintain and control the master-game-state.
- * - Offline and Client games display the game-state to an operator via browser and HTML.
+ * - Offline and Client games display the game-state to a client.
  * - Client  and Server games use network operations to communicate.
  */
 export namespace Game {
@@ -31,7 +31,7 @@ export namespace Game {
 	 */
 	export type ImplArgs = {
 		gridClassLookup<S extends Coord.System>(coordSys: S): Grid.ClassIf<S>;
-		OperatorPlayer: typeof OperatorPlayer | undefined;
+		ClientPlayer: typeof ClientPlayer | undefined;
 		RobotPlayer: (_this: GameMirror, desc: Player._CtorArgs[Player.RobotFamily]) => Player;
 		onGameBecomeOver: () => void;
 	};

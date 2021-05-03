@@ -48,7 +48,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	protected readonly groupHostSocket: WebSocket;
 
 	/** @override */
-	public get currentOperator(): never {
+	public get currentClientPlayer(): never {
 		throw new Error("never");
 	}
 
@@ -62,7 +62,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		super({
 			impl: {
 				gridClassLookup: GetGridImpl,
-				OperatorPlayer: undefined,
+				ClientPlayer: undefined,
 				RobotPlayer: GetRobotImpl,
 				onGameBecomeOver: () => {},
 			},
@@ -70,12 +70,12 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 				Player.CtorArgs.finalize(args.gameDesc); // <- mutation
 				return args.gameDesc;
 			})(),
-			operatorIds: [],
+			clientPlayerIds: [],
 		});
 		this.sockets = new Set(args.sockets); // shallow copy
 		this.groupHostSocket = args.groupHostSocket;
 		this.#deleteExternalRefs = args.deleteExternalRefs;
-		JsUtils.instNoEnum (this as ServerGame<S>, "operators");
+		JsUtils.instNoEnum (this as ServerGame<S>, "clientPlayers");
 		JsUtils.propNoWrite(this as ServerGame<S>, "sockets", "groupHostSocket");
 		this.#wsMessageCb = gameOnSocketMessage.bind(this as ServerGame<any>);
 		Object.seal(this); //🧊
@@ -112,10 +112,10 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 			this.reset() //👂 "reset time!"
 		);
 		this.sockets.forEach((s) => {
-			const operatorIds = humans
+			const clientPlayerIds = humans
 				.filter((desc) => desc.socket === s)
 				.map((desc) => desc.playerId).freeze();
-			const data = JSON.stringify([GroupEv.CREATE_GAME, gameDesc, operatorIds]);
+			const data = JSON.stringify([GroupEv.CREATE_GAME, gameDesc, clientPlayerIds]);
 			if (s.readyState === s.OPEN) { s.send(data); } //📢 "get ready for reset"
 		});
 	}
@@ -142,7 +142,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	}
 
 	/** @override */
-	public setCurrentOperator(nextOperatorIndex: number): void {
+	public setCurrentClientPlayer(index: number): void {
 		// no-op
 	}
 
@@ -194,7 +194,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 }
 JsUtils.protoNoEnum(ServerGame,
 	"_greetGameSockets",
-	"setCurrentOperator", "_terminate",
+	"setCurrentClientPlayer", "_terminate",
 );
 Object.freeze(ServerGame);
 Object.freeze(ServerGame.prototype);

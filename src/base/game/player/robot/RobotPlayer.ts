@@ -15,7 +15,7 @@ export { Player };
 
 
 /**
- * Unlike {@link OperatorPlayer}s, these are not guided by human input.
+ * Unlike {@link ClientPlayer}s, these are not guided by human input.
  * Instead, they are essentially defined by how often they move, and
  * where they decide to move toward each time they move.
  *
