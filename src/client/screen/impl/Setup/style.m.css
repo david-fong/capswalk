@@ -9,7 +9,7 @@
 .this :global(.screen--prev-button),
 .this :global(.screen--next-button) {
 	padding: 0.3em 0.7em;
-	font-size: 2.0em;
+	/* font-size: 2.0em; */
 }
 
 .lang-sel {

@@ -3,7 +3,7 @@ import { BaseScreen } from "./BaseScreen";
 import type { TopLevel } from "../TopLevel";
 
 import {         HomeScreen } from "./impl/Home/Screen";
-import {    HowToPlayScreen } from "./impl/HowToPlay";
+import {     LearningScreen } from "./impl/Learning";
 import {    HowToHostScreen } from "./impl/HowToHost";
 import {     SettingsScreen } from "./impl/Settings/Screen";
 // ====:   ~~~ OFFLINE ~~~  :============================
@@ -17,9 +17,9 @@ import {   PlayOnlineScreen } from "./impl/Play/Online";
 
 export interface AllSkScreensDict {
 	[ BaseScreen.Id.HOME          ]: HomeScreen;
-	[ BaseScreen.Id.HOW_TO_PLAY   ]: HowToPlayScreen;
+	[ BaseScreen.Id.LEARNING      ]: LearningScreen;
 	[ BaseScreen.Id.HOW_TO_HOST   ]: HowToHostScreen;
-	[ BaseScreen.Id.SETTINGS   ]: SettingsScreen;
+	[ BaseScreen.Id.SETTINGS      ]: SettingsScreen;
 	//=============================
 	[ BaseScreen.Id.SETUP_OFFLINE ]: SetupOfflineScreen;
 	[ BaseScreen.Id.PLAY_OFFLINE  ]: PlayOfflineScreen;
@@ -58,7 +58,7 @@ export class AllScreens {
 			// TODO.impl turn this into a class that dynamically imports js and css
 			// for all online-play-related modules together only once needed.
 			[ Id.HOME          ]: new         HomeScreen(ctx, Id.HOME),
-			[ Id.HOW_TO_PLAY   ]: new    HowToPlayScreen(ctx, Id.HOW_TO_PLAY),
+			[ Id.LEARNING      ]: new     LearningScreen(ctx, Id.LEARNING),
 			[ Id.HOW_TO_HOST   ]: new    HowToHostScreen(ctx, Id.HOW_TO_HOST),
 			[ Id.SETTINGS      ]: new     SettingsScreen(ctx, Id.SETTINGS),
 			[ Id.SETUP_OFFLINE ]: new SetupOfflineScreen(ctx, Id.SETUP_OFFLINE),

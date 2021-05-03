@@ -15,7 +15,7 @@
 	padding:        1rem 0rem;
 }
 .controls-bar {
-	--spacing:      0.3rem;
+	--spacing:      var(--spc-s);
 	--border-radius:0.7rem;
 	--track-size:   5rem;
 	position:       sticky;
@@ -28,6 +28,7 @@
 	justify-items:  stretch;
 	align-items:    stretch;
 	font-size:      80%;
+	gap:            var(--spc-m);
 }
 .controls-bar > * {
 	padding:        0.35em;
@@ -35,6 +36,9 @@
 .players-bar {
 	grid-area:      players;
 }
+.seq-buffer {
+}
+
 @media screen and (max-aspect-ratio: 1/1) {
 	.this {
 		align-content: flex-start;

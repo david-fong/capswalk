@@ -1,7 +1,6 @@
 import { JsUtils } from ":defs/JsUtils";
 import { OmHooks } from ":defs/OmHooks";
 import { StorageHooks } from "../StorageHooks";
-import type { Coord } from ":floor/Tile";
 import type { Game } from ":game/Game";
 import type { AllScreens } from "./AllScreens";
 import type { TopLevel } from "../TopLevel";
@@ -185,7 +184,7 @@ export namespace BaseScreen {
 	export enum Id {
 		// General:     ===================
 		HOME            = "home",
-		HOW_TO_PLAY     = "how-to-play",
+		LEARNING        = "learning",
 		HOW_TO_HOST     = "how-to-host",
 		SETTINGS        = "settings",
 		// Offline:     ===================
@@ -206,9 +205,9 @@ export namespace BaseScreen {
 	 */
 	export interface EntranceArgs {
 		[ Id.HOME          ]: void;
-		[ Id.HOW_TO_PLAY   ]: void;
+		[ Id.LEARNING      ]: void;
 		[ Id.HOW_TO_HOST   ]: void;
-		[ Id.SETTINGS   ]: void;
+		[ Id.SETTINGS      ]: void;
 		//==================
 		[ Id.SETUP_OFFLINE ]: void;
 		[ Id.PLAY_OFFLINE  ]: [Game.CtorArgs.UnFin];
@@ -228,7 +227,7 @@ export namespace BaseScreen {
 	 */
 	export const NavTree = JsUtils.deepFreeze(<const>{
 		[ Id.HOME          ]: { prev: Id.HOME,          href: Id.HOME },
-		[ Id.HOW_TO_PLAY   ]: { prev: Id.HOME,          href: Id.HOW_TO_PLAY },
+		[ Id.LEARNING      ]: { prev: Id.HOME,          href: Id.LEARNING },
 		[ Id.HOW_TO_HOST   ]: { prev: Id.HOME,          href: Id.HOW_TO_HOST },
 		[ Id.SETTINGS      ]: { prev: Id.HOME,          href: Id.SETTINGS },
 		//==========================================================================

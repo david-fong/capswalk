@@ -42,17 +42,17 @@ export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 		// NOTE: Define array entries in order that their
 		// buttons should be tabbed through via keyboard.
 		(<const>[{
-			text:    "Offline Single-player",
+			text:    "Offline\nSingle-player",
 			cssClass: style["nav--play-offline"],
 			screenId: BaseScreen.Id.SETUP_OFFLINE,
 		},{
-			text:    "Online Multi-player",
+			text:    "Online\nMulti-player",
 			cssClass: style["nav--play-online"],
 			screenId: BaseScreen.Id.GROUP_JOINER,
 		},{
-			text:    "How To Play",
-			cssClass: style["nav--how-to-play"],
-			screenId: BaseScreen.Id.HOW_TO_PLAY,
+			text:    "Learning Resources",
+			cssClass: style["nav--learning"],
+			screenId: BaseScreen.Id.LEARNING,
 		},{
 			text:    "How To Host",
 			cssClass: style["nav--how-to-host"],
@@ -82,7 +82,7 @@ export class HomeScreen extends BaseScreen<BaseScreen.Id.HOME> {
 			cssClass: style["nav--goto-repo"],
 			href:     new window.URL("https://github.com/david-fong/capswalk"),
 		},{
-			text:    "Report\nIssue",
+			text:    "Report\na Bug",
 			cssClass: style["nav--report-issue"],
 			href:     new window.URL("https://github.com/david-fong/capswalk/issues"),
 		}])

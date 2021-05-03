@@ -1,12 +1,12 @@
 import { JsUtils, BaseScreen } from "../BaseScreen";
 
 /** */
-export class HowToPlayScreen extends BaseScreen<BaseScreen.Id.HOW_TO_PLAY> {
+export class LearningScreen extends BaseScreen<BaseScreen.Id.LEARNING> {
 
 	/** @override */
 	protected _abstractLazyLoad(): void {
 		Object.freeze(this); //🧊
 	}
 }
-Object.freeze(HowToPlayScreen);
-Object.freeze(HowToPlayScreen.prototype);
+Object.freeze(LearningScreen);
+Object.freeze(LearningScreen.prototype);

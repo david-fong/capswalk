@@ -21,7 +21,12 @@
 	font-weight: bold;
 	color: var(--colour-mainFg);
 	text-align: center;
+	white-space: pre-line;
 	transition: filter 0.5s ease-in-out;
+
+	--spc-s: 0.2em;
+	--spc-m: 0.4em;
+	--line-height-m: 1.4;
 }
 
 body {

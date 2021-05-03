@@ -14,7 +14,7 @@ import { _PlayScreenInitEl } from "./ScreenInit";
  * which are bound to buttons and maintain other invariants between
  * the game's state and the UI's state.
  */
-// TODO.impl Allow users to change the spotlight radius and grid zoom via slider.
+// TODO.impl Allow users to change the spotlight radius via slider.
 export abstract class _PlayScreen<
 	SID extends BaseScreen.Id.PLAY_OFFLINE | BaseScreen.Id.PLAY_ONLINE,
 > extends _PlayScreenInitEl<SID> {
@@ -157,7 +157,8 @@ export abstract class _PlayScreen<
 			);
 		} else {
 			// Process event as regular typing:
-			game.currentClientPlayer.processKeyboardInput(ev);
+			const seqBuffer = game.currentClientPlayer.processKeyboardInput(ev);
+			this.seqBuffer.textContent = seqBuffer;
 		}
 		if (ev.key === " ") {
 			// Disable scroll-down via spacebar:

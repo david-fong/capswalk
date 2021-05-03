@@ -4,25 +4,26 @@
 }
 
 .nav {
-	--spacing: 6px;
-	--border-radius: 1rem;
+	--spacing: var(--spc-m);
+	--border-radius: 1em;
 	height: 30em; max-height: 80vmin;
 	width:  30em; max-width:  80vmin;
 	display:        grid;
 	grid-template:
 	"pofl pofl pofl ponl" 3fr
-	"htpl htpl htpl hths" 1fr
+	"lern lern lern hths" 1fr
 	"sett sett sett .   " 1fr
 	"repo bugs .    .   " 1fr
 	/ 1fr  1fr  1fr  3fr  ;
+	line-height: var(--line-height-m);
 }
 .nav > * {
 	border-style:   double !important;
 }
 .nav--play-offline  { grid-area: pofl; }
 .nav--play-online   { grid-area: ponl; }
-.nav--how-to-play   { grid-area: htpl; }
+.nav--learning      { grid-area: lern; }
 .nav--how-to-host   { grid-area: hths; }
 .nav--settings      { grid-area: sett; }
-.nav--goto-repo     { grid-area: repo; text-decoration: none; }
-.nav--report-issue  { grid-area: bugs; text-decoration: none; }
+.nav--goto-repo     { grid-area: repo; text-decoration: none; font-size: 0.9em; }
+.nav--report-issue  { grid-area: bugs; text-decoration: none; font-size: 0.9em; }

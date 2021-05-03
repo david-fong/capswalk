@@ -24,6 +24,7 @@ export abstract class _PlayScreenInitEl<
 	}>;
 
 	protected readonly playersBar = JsUtils.html("div", [style["players-bar"]]);
+	protected readonly seqBuffer = JsUtils.html("span", [style["seq-buffer"]]);
 
 	protected readonly btn: Readonly<{
 		/**
@@ -62,6 +63,7 @@ export abstract class _PlayScreenInitEl<
 		JsUtils.propNoWrite(this as _PlayScreenInitEl<SID>, "grid", "playersBar");
 		JsUtils.Web.prependComment(this.grid.implHost, "grid impl host");
 		this.grid.implHost.appendChild(document.createComment("grid impl"));
+		_gridHtml.grid.appendChild(this.seqBuffer);
 
 		this.baseElem.appendChild(_gridHtml.top);
 		_gridHtml.pauseOl.addEventListener("click", (ev) => {

@@ -48,11 +48,13 @@ export class ClientPlayer extends Player {
 	 * operation (implementation must not intermediately schedule any
 	 * other task-relevant callbacks until all critical operations are
 	 * complete).
+	 *
+	 * @returns The new value of this player's sequence buffer.
 	 */
-	public processKeyboardInput(event: KeyboardEvent): void {
+	public processKeyboardInput(event: KeyboardEvent): string {
 		if (this.game.status !== Game.Status.PLAYING
 		 || this.reqBuffer.isFull
-		) return; //⚡
+		) return this.seqBuffer; //⚡
 
 		if (event.key === " ") {
 			if (this.coord !== this.prevCoord) {
@@ -66,6 +68,7 @@ export class ClientPlayer extends Player {
 			// languages require different behaviour?
 			this.seqBufferAcceptKey(event.key);
 		}
+		return this.seqBuffer;
 	}
 
 	/**

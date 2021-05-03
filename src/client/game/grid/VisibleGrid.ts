@@ -20,6 +20,7 @@ export namespace VisibleGrid {
 		tiles.spellcheck = false; // typically assumed by the UA, but it doesn't hurt to say explicitly.
 
 		const outer = JsUtils.html("div");
+		outer.setAttribute("role", "presentation");
 		const inner = outer.attachShadow({ mode: "closed" });
 		tiles.classList.add(style["impl-body"]);
 		inner.appendChild(tiles);
