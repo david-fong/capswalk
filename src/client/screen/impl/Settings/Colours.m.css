@@ -1,0 +1,71 @@
+
+.opt {
+	--swatch-square-dimensions: 2em;
+	contain: content;
+	display: grid;
+	grid-template-columns: auto repeat(7, var(--swatch-square-dimensions));
+	align-items: center;
+
+	gap: 0.35em;
+	padding: 0.3em;
+	border: solid 0.2em var(--colour-mainBg);
+	border-radius: 0.9em;
+
+	color: var(--colour-mainFg);
+	background-color: var(--colour-mainBg);
+}
+.opt[aria-active-descendant="true"] {
+	border-color: var(--colour-tile-Bd);
+	border-style: dotted;
+}
+.opt[aria-selected="true"] {
+	text-decoration: none;
+	border-color: var(--colour-tile-Bd);
+}
+
+.opt > * {
+	height: var(--swatch-square-dimensions);
+	box-sizing: border-box;
+	border: solid 0.2em var(--colour-tileBd);
+	border-radius: 0.45em;
+}
+
+.opt-label {
+	height: auto;
+	padding: 0.3em 0.7em;
+	text-align: end;
+}
+.opt-label--title {
+}
+.opt-label--author {
+	font-size: 0.6em;
+	padding-bottom: 0.3em;
+}
+
+.opt > :nth-child(1) {
+	color: var(--colour-tileFg);
+	background-color: var(--colour-tileBg);
+	border: none;
+}
+.opt > :nth-child(2) {
+	color: var(--colour-healthFg);
+	background-color: var(--colour-healthBg);
+}
+.opt > :nth-child(3) {
+	background-color: var(--colour-pFaceMe);
+}
+.opt > :nth-child(4) {
+	background-color: var(--colour-pFaceMeOppo);
+}
+.opt > :nth-child(5) {
+	background-color: var(--colour-pFaceTeammate);
+}
+.opt > :nth-child(6) {
+	background-color: var(--colour-pFaceImtlTeammate);
+}
+.opt > :nth-child(7) {
+	background-color: var(--colour-pFaceOpponent);
+}
+.opt > :nth-child(8) {
+	background-color: var(--colour-pFaceImtlOpponent);
+}

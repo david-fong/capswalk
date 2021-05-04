@@ -75,8 +75,8 @@ export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | Bas
 	 */
 	private _loadLastUsedPreset(): void {
 		// TODO.impl
-		const lastUsedPresetId = this.top.storage.Local.gamePresetId;
-		const args = this.top.storage.IDB.UserGamePresetStore;
+		const lastUsedPresetId = StorageHooks.Local.gamePresetId;
+		const args = StorageHooks.IDB.UserGamePresetStore;
 	}
 
 	/**

@@ -42,7 +42,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 			Grid: gridClass,
 			system: desc.coordSys,
 			dimensions: desc.gridDimensions,
-			langCharFontScaling: langDesc.fontScaling,
+			langCharFontScaling: langDesc.fontZoom,
 			players: desc.players,
 		}) as GameMirror<S>["grid"];
 

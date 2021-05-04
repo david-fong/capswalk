@@ -1,4 +1,5 @@
 import { JsUtils } from ":defs/JsUtils";
+import { StorageHooks } from "::StorageHooks";
 import type { Coord, Tile } from ":floor/Tile";
 import type { Grid as AbstractGrid } from ":floor/Grid";
 import type { Player } from ":defs/TypeDefs";
@@ -82,6 +83,7 @@ const _offsetUnits = ([[0,0],[1,0],[0,1],[1,1]] as [x: number, y: number][]).fre
 /** */
 function _mkMirroredPlayers(dim: System.Grid.Dimensions, desc: Player.UserInfo): SVGGElement {
 	const copies = JsUtils.svg("g", [style["player"]]);
+	if (StorageHooks.Local.moreAnimations) { copies.classList.add(style["animated-entity"]) }
 	_offsetUnits.forEach((ou) => {
 		const p = __mkPlayer(desc);
 		p.setAttribute("transform", `translate(${ou[0]*dim.width} ${ou[1]*dim.height})`);
@@ -107,6 +109,7 @@ function _mkSpotlight(dim: System.Grid.Dimensions): SVGDefsElement {
 		const mask = JsUtils.svg("mask"); mask.id = ID.spotlightMask;
 		{
 			const copies = JsUtils.svg("g", [style["spotlight"]]);
+			if (StorageHooks.Local.moreAnimations) { copies.classList.add(style["animated-entity"]) }
 			{
 				const fill = JsUtils.svg("rect"); setAttrs(fill, {
 					fill:"#FFF", height:""+(3*dim.height), width:""+(3*dim.width), x:""+(-dim.width), y:""+(-dim.width)
@@ -151,8 +154,8 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		{
 			// Character Grid Layer ===
 			const layer = JsUtils.svg("svg", [style["grid"]]); setAttrs(layer, {
-				height: `${PHYSICAL_TILE_WIDTH*dim.height}em`,
-				width:  `${PHYSICAL_TILE_WIDTH*dim.width }em`,
+				height: `${PHYSICAL_TILE_WIDTH/((desc.langCharFontScaling-1)/2+1)*dim.height}em`,
+				width:  `${PHYSICAL_TILE_WIDTH/((desc.langCharFontScaling-1)/2+1)*dim.width }em`,
 				// viewBox: `0, 0, ${2*dim.width}, ${2*dim.height}`,
 				viewBox: `${dim.width/2-marginX}, ${dim.height/2-marginY},
 					${2*marginX+dim.width}, ${2*marginY+dim.height}`,
@@ -184,6 +187,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 			// Spotlight Layer ===
 			const layer = wrapper.firstElementChild!.cloneNode() as SVGSVGElement;
 			layer.style.position = "absolute";
+			// layer.style.willChange = "transform";
 			layer.appendChild(_mkSpotlight(dim));
 			{
 				const fill = JsUtils.svg("rect"); setAttrs(fill, {
@@ -191,9 +195,10 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 					height:"100%", width:"100%", x:`${dim.width/2-marginX}`, y:`${dim.height/2-marginY}`,
 				});
 				layer.appendChild(fill);
-				// this.spotlight = fill;
 			}
-			this.spotlight = layer.getElementById(ID.spotlightMask).getElementsByTagName("g").item(0) as SVGGElement;
+			this.spotlight = layer.getElementById(ID.spotlightMask)
+				.getElementsByClassName(style["spotlight"])
+				.item(0) as SVGGElement;
 			wrapper.appendChild(layer);
 		}{
 			// Players Layer ===

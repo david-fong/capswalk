@@ -18,8 +18,6 @@ export class TopLevel {
 
 	public readonly siteServerType: TopLevel.SiteServerType;
 
-	public readonly storage: typeof StorageHooks;
-
 	public readonly transition: ScreenTransition;
 	/**
 	 * Purposely made private. Screens are intended to navigate
@@ -58,10 +56,9 @@ export class TopLevel {
 		})();
 		JsUtils.propNoWrite(this as TopLevel, "defaultDocTitle", "siteServerType");
 
-		this.storage = StorageHooks;
 		this.#socket = undefined;
 		this.transition = new ScreenTransition();
-		JsUtils.propNoWrite(this as TopLevel, "storage", "transition");
+		JsUtils.propNoWrite(this as TopLevel, "transition");
 
 		const allScreensElem = document.getElementById(OmHooks.Screen.Id.ALL_SCREENS);
 		if (!allScreensElem) { throw new Error("never"); }

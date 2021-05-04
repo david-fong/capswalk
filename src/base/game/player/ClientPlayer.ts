@@ -82,7 +82,7 @@ export class ClientPlayer extends Player {
 	 */
 	public seqBufferAcceptKey(key: string | undefined): void {
 		const unts = this.game.grid.tileDestsFrom(this.reqBuffer.predictedCoord)
-			.filter((tile) => !this.game.grid.isOccupied(tile.coord));
+			.filter((tile) => !this.game.grid.isOccupied(tile.coord)).freeze();
 		if (unts.length === 0) {
 			// Every neighbouring `Tile` is occupied!
 			// In this case, no movement is possible.

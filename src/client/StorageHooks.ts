@@ -13,7 +13,7 @@ export namespace StorageHooks {
 		volumeSfx: 1,
 
 		emojiFont: "twemoji" as "system" | "twemoji",
-		conservativeAnimations: true,
+		moreAnimations: false as boolean,
 		/**
 		 * Only used to highlight the last-used colour scheme when
 		 * cold-initializing the colour selection screen.

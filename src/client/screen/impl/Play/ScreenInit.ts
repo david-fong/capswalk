@@ -24,7 +24,7 @@ export abstract class _PlayScreenInitEl<
 	}>;
 
 	protected readonly playersBar = JsUtils.html("div", [style["players-bar"]]);
-	protected readonly seqBuffer = JsUtils.html("span", [style["seq-buffer"]]);
+	protected readonly seqBuffer = JsUtils.html("span", [grid_style["seq-buffer"]]);
 
 	protected readonly btn: Readonly<{
 		/**

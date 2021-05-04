@@ -23,9 +23,11 @@
 }
 
 .player {
-	transition: transform 0.05s steps(3, start);
 }
 
 .spotlight {
+}
+
+.animated-entity {
 	transition: transform 0.05s steps(3, start);
 }

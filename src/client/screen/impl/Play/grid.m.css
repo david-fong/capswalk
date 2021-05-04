@@ -5,11 +5,12 @@
 	up no space (its children all have their position
 	property set to `absolute`). We rectify this case
 	by giving `.impl-body` `position: static`. */
-	contain:        content;
-	height:         100%;
-	/* width:          fit-content; */
-	display:        grid;
-	align-content:  center;
+	contain: content;
+	height: 100%;
+	/* width: fit-content; */
+	display: grid;
+	align-content: center;
+	gap: 1em;
 
 	/* This would make it impossible to scroll if it
 	covers the screen like it might in our vertical
@@ -26,6 +27,9 @@
 	pointer-events: none;
 	padding:        20%;
 } */
+.seq-buffer {
+	height: 1em;
+}
 
 .scroll-outer {
 	contain:        style; /* Do not use contain. */

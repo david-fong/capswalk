@@ -2,7 +2,7 @@ import { Player } from ":defs/TypeDefs";
 import { Group, GroupEv } from ":defs/OnlineDefs";
 import type { Game } from ":game/Game";
 
-import { JsUtils, OmHooks, BaseScreen } from "../../BaseScreen";
+import { JsUtils, OmHooks, StorageHooks, BaseScreen } from "../../BaseScreen";
 type SID = BaseScreen.Id.GROUP_LOBBY;
 import style from "./style.m.css";
 
@@ -67,7 +67,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 			maxLength : Player.Username.MAX_LENGTH,
 			pattern   : Player.Username.REGEXP.source,
 			spellcheck: false,
-			value     : this.top.storage.Local.username,
+			value     : StorageHooks.Local.username,
 			onchange  : this._submitInputs.bind(this),
 		});
 		base.appendChild(uname);
@@ -95,7 +95,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		if (!this.in.username.validity.valid || !this.in.teamId.validity.valid) {
 			return;
 		}
-		const storage = this.top.storage.Local;
+		const storage = StorageHooks.Local;
 		storage.username = this.in.username.value;
 		storage.avatar   = this.in.avatar.value;
 
