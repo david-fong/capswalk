@@ -6,6 +6,7 @@
 	display: grid;
 	justify-content: center;
 	align-content: center;
+	gap: 2em;
 }
 
 .this :global(.screen--prev-button) {

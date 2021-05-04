@@ -66,16 +66,28 @@ function __mkPlayer(desc: Player.UserInfo): SVGGElement {
 		/* const back = JsUtils.svg("rect", [style["tile"]]);
 		setAttrs(back, { height: 0.8, width: 0.8, x: 0.1, y: 0.1, rx: 0.1 });
 		player.appendChild(back); */
-	} {
-		const code = [...desc.avatar]
-			.map((c) => c.codePointAt(0)!.toString(16))
-			.slice(0,-1) // remove the "variant-16 code point"
-			.join("-");
-		const emoji = JsUtils.svg("image"); setAttrs(emoji, {
-			href: `https://twemoji.maxcdn.com/v/latest/svg/${code}.svg`,
-			height: 1, width: 1, alt: desc.avatar,
-		});
-		player.appendChild(emoji);
+	}{
+		switch (StorageHooks.Local.emojiFont) {
+		case "system": {
+			const emoji = JsUtils.svg("text", [style["char"]], { textContent: desc.avatar });
+			setAttrs(emoji, { x: 0.5, y: 0.5 });
+			player.appendChild(emoji);
+			break;
+		}
+		case "twemoji": {
+			const code = [...desc.avatar]
+				.map((c) => c.codePointAt(0)!.toString(16))
+				.slice(0,-1) // remove the "variant-16 code point"
+				.join("-");
+			const emoji = JsUtils.svg("image"); setAttrs(emoji, {
+				href: `https://twemoji.maxcdn.com/v/latest/svg/${code}.svg`,
+				height: 1, width: 1, alt: desc.avatar,
+			});
+			player.appendChild(emoji);
+			break;
+		}
+		default: throw new Error("never");
+		}
 	}
 	return player;
 }
@@ -142,6 +154,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 	private readonly players: readonly SVGGElement[];
 	#focusedPlayerId: number = 0;
 	#chars: readonly (readonly SVGTextElement[])[];
+	private readonly moreAnimations = StorageHooks.Local.moreAnimations;
 
 	public constructor(desc: AbstractGrid.CtorArgs<S>) {
 		super(desc);
@@ -235,7 +248,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		const to   = this.iacCache[_to]!;
 		const wrap = IAC.wrapInfo(dim, from, to);
 		const doSpot = entityId === this.#focusedPlayerId;
-		if (wrap.x || wrap.y) {
+		if (this.moreAnimations && ((dim._render.wrapX && wrap.x) || (dim._render.wrapY && wrap.y))) {
 			const transform = `translate(${from.x + (dim.width*wrap.x)} ${from.y + (dim.height*wrap.y)})`;
 			p.style.transition = "none";
 			if (!spotlightOnly) p.setAttribute("transform", transform);

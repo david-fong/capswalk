@@ -2,11 +2,10 @@ import { PickOne as _PickOne } from "::utils/PickOne";
 import { ColourPickOne } from "./Colours";
 import { JsUtils, StorageHooks, BaseScreen } from "../../BaseScreen";
 import style from "./style.m.css";
+import { EmojiSetPickOne } from "::screen/impl/Settings/Emojis";
 
 /** */
 export class SettingsScreen extends BaseScreen<BaseScreen.Id.SETTINGS> {
-
-	public readonly colour: ColourPickOne;
 
 	/** @override */
 	protected _abstractLazyLoad(): void {
@@ -19,17 +18,13 @@ export class SettingsScreen extends BaseScreen<BaseScreen.Id.SETTINGS> {
 		});
 		this.baseElem.classList.add(style["this"]);
 		this.baseElem.appendChild(this.nav.prev);
-
-		// @ts-expect-error : RO=
-		this.colour = new ColourPickOne(this.top.transition);
-		JsUtils.propNoWrite(this as SettingsScreen, "colour");
-		this.baseElem.appendChild(this.colour.baseElem);
-
-		// Highlight the user's last selected colour scheme (if it exists).
-		// This will already have been loaded up during page load, hence
-		// passing `false` to the `noCallback` argument
-		this.colour.selectOpt(this.colour.getOptById(StorageHooks.Local.colourSchemeId)!, false);
-
+		{
+			const colour = new ColourPickOne(this.top.transition);
+			this.baseElem.appendChild(colour.baseElem);
+		}{
+			const emoji = new EmojiSetPickOne();
+			this.baseElem.appendChild(emoji.baseElem);
+		}
 		this.baseElem.appendChild(SettingsScreen._mkMoreAnimationsCheckBox());
 	}
 }

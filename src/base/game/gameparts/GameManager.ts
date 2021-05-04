@@ -211,6 +211,12 @@ export namespace GameManager {
 			if (val < limits.min || val > limits.max) {
 				bad.push(`Expected a number within [${limits.min}, ${limits.max}] but got ${val}.`);
 			}
+			const area = gridClass.getArea(args.gridDimensions);
+			const numPlayers = args.players.length;
+			if (numPlayers / area > Game.K.MAX_PLAYER_CROWDEDNESS) {
+				bad.push(`To have ${numPlayers} players, the grid's area must be greater`
+				+` than ${numPlayers / Game.K.MAX_PLAYER_CROWDEDNESS}, but got ${area}.`);
+			}
 		});
 		// TODO.impl check all the rest of the things.
 		// if (!(Player.Username.REGEXP.test(desc.username))) {

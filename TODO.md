@@ -16,14 +16,13 @@
 
 1. Implement `VisibleGrid` rendering of player positions.
     - Implement screen scrolling option.
-1. Add oeprator player action to "speak", which will cause the player to be highlighted until they stop speaking. Add some time-delay hysterisis for when stopping-of-speaking is counted.
+1. Add operator player action to "speak", which will cause the player to be highlighted until they stop speaking. Add some time-delay hysterisis for when stopping-of-speaking is counted.
 1. Unify CSS spacing values via variables.
-1. Implement a requirement that the number of players is less than the area of the grid.
+1. Implement a requirement that the area of the grid is some percentage greater than the number of players.
 1. Implement websocket heartbeat to check for broken connections (see ws readme for example).
 1. Display the operator's current sequence buffer.
     - Or perhaps make a fancy "crosshair" that outlines tiles that match the current sequence buffer.
 1. Reject a request if the requesting socket doesn't operate the specified player.
-1. Make a user preference to use TwEmoji or system emoji font.
 
 ### Things that I feel less like doing
 

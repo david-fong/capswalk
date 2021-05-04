@@ -118,7 +118,10 @@ export namespace Game {
 		 * and randomly. Adjustments for more rational assumptions are
 		 * not to be made _here_.
 		 */
-		"PORTION_OF_MOVES_THAT_ARE_BOOST": 0.4,
+		PORTION_OF_MOVES_THAT_ARE_BOOST: 0.4,
+
+		/** A ratio of number of players over grid area. */
+		MAX_PLAYER_CROWDEDNESS: 0.5,
 
 		/**
 		 * A strictly-positive integer. Indicates the maximum number

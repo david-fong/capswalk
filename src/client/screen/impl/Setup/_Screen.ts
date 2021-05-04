@@ -9,6 +9,7 @@ import { JsUtils, OmHooks, StorageHooks, BaseScreen } from "../../BaseScreen";
 import style from "./style.m.css";
 
 // TODO.impl enforce lang and coord-sys compatibility (num leaves)
+// TODO.impl enforce that the grid area is some ratio greater than the number of entities.
 
 /**
  * What coordinate systems are available will depend on what language
