@@ -21,7 +21,6 @@
 1. Implement a requirement that the area of the grid is some percentage greater than the number of players.
 1. Implement websocket heartbeat to check for broken connections (see ws readme for example).
 1. Display the operator's current sequence buffer.
-    - Or perhaps make a fancy "crosshair" that outlines tiles that match the current sequence buffer.
 1. Reject a request if the requesting socket doesn't operate the specified player.
 
 ### Things that I feel less like doing
