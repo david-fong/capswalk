@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --disable-proto=delete
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -15,32 +15,6 @@ function ROOT(rel = "") { return path.resolve(__dirname, "../../", rel); }
 
 if (PRODUCTION_MODE) {
 	require(ROOT("src/client/colours/.update.cjs"));
-}
-
-
-if (PRODUCTION_MODE) {
-	// Generate dist/package.json:
-	const srcPkgKeys = Object.freeze([
-		"name", "license", "author",
-		"description", "keywords",
-		"version", "dependencies", "repository",
-	]);
-	const srcPkg = require("../../package.json");
-	const distPkg = require("./templates/package.json");
-	const pkg = distPkg;
-	(srcPkgKeys).forEach((key) => { pkg[key] = srcPkg[key]; });
-	//pkg["repository"] += "/tree/dist"; // Point to the dist branch.
-	for (let [name, at] of Object.entries(pkg.dependencies)) {
-		if (/^[\^~]$/.test(at[0])) {
-			at = "=" + at.slice(1);
-		}
-		pkg.dependencies[name] = at;
-	}
-	fs.writeFile(
-		DIST("package.json"),
-		JSON.stringify(pkg, undefined, "  "),
-		null, (err) => console.error(err),
-	);
 }
 
 
@@ -71,10 +45,33 @@ Object.values(configs).forEach((config) => {
 
 
 if (PRODUCTION_MODE) {
+	// Generate dist/package.json:
+	const srcPkgKeys = Object.freeze([
+		"name", "license", "author",
+		"description", "keywords",
+		"version", "dependencies", "repository",
+	]);
+	const srcPkg = require("../../package.json");
+	const distPkg = require("./templates/package.json");
+	const pkg = distPkg;
+	(srcPkgKeys).forEach((key) => { pkg[key] = srcPkg[key]; });
+	//pkg["repository"] += "/tree/dist"; // Point to the dist branch.
+	for (let [name, at] of Object.entries(pkg.dependencies)) {
+		if (/^[\^~]$/.test(at[0])) {
+			at = "=" + at.slice(1);
+		}
+		pkg.dependencies[name] = at;
+	}
+	fs.writeFile(
+		DIST("package.json"),
+		JSON.stringify(pkg, undefined, "  "),
+		null, (err) => console.error(err),
+	);
 	/** @type {(err: NodeJS.ErrnoException | null) => void} */
 	function errCb(err) {
 		if (err) console.error(err);
 	}
+
 	fs.copyFile(path.resolve(__dirname, "templates/stage.sh"), DIST("stage.sh"), errCb);
 	fs.copyFile(ROOT(".gitattributes"), DIST(".gitattributes"), errCb);
 	fs.copyFile(ROOT(".gitattributes"), DIST("client/.gitattributes"), errCb);

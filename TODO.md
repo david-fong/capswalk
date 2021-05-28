@@ -16,6 +16,7 @@
 
 1. Implement `VisibleGrid` rendering of player positions.
     - Implement screen scrolling option.
+1. Configure webpack esbuild-loader to use es2020 when output is for node.
 1. Add operator player action to "speak", which will cause the player to be highlighted until they stop speaking. Add some time-delay hysterisis for when stopping-of-speaking is counted.
 1. Unify CSS spacing values via variables.
 1. Implement a requirement that the area of the grid is some percentage greater than the number of players.

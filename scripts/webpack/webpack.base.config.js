@@ -64,30 +64,35 @@ exports.MODULE_RULES = () => [{
 /**
  * - [typescript docs](https://www.typescriptlang.org/docs/handbook/react-&-webpack.html)
  * - [webpack config](https://webpack.js.org/configuration/configuration-languages/#typescript)
- * - [ts-loader](https://github.com/TypeStrong/ts-loader#loader-options)
  *
  * @returns A standalone ("deep-copy") basic configuration.
  * @type {() => BaseConfig}
  */
 exports.__BaseConfig = (distSubFolder) => { return {
+	// Bundler Options:
 	mode: MODE.val,
-	name: distSubFolder,
+	context: PROJECT_ROOT(),
+	resolveLoader: {
+		modules: [PROJECT_ROOT("scripts/webpack/node_modules")],
+	},
+	watchOptions: {
+		ignored: [PROJECT_ROOT("node_modules/"), "**/*.d.ts"],
+	},
+	plugins: [...BASE_PLUGINS()],
 	stats: {
 		children: false,
 		colors: true,
 	},
-	context: PROJECT_ROOT(),
+
+	//
+	name: distSubFolder,
 	entry: {/* Left to each branch config */},
-	plugins: [...BASE_PLUGINS(),],
 	resolve: {
 		extensions: [".ts", ".js"],
 		modules: [
 			PROJECT_ROOT("src/node_modules"),
 		],
 		alias: {/* Left to each branch config */},
-	},
-	resolveLoader: {
-		modules: [PROJECT_ROOT("scripts/webpack/node_modules")],
 	},
 	module: { rules: exports.MODULE_RULES(), noParse: /jquery|lodash/ },
 	// https://webpack.js.org/plugins/source-map-dev-tool-plugin/
@@ -106,17 +111,14 @@ exports.__BaseConfig = (distSubFolder) => { return {
 		splitChunks: { chunks: "all", cacheGroups: {} },
 		removeAvailableModules: (MODE.prod),
 	},
-	watchOptions: {
-		ignored: [PROJECT_ROOT("node_modules/"), "**/*.d.ts", "**/*.js",],
-	},
 };};
 
 /**
  * @type {(config: BaseConfig) => void}
  */
 exports.__applyCommonNodeConfigSettings = (config) => {
-	config.target = "node14";
 	config.externals = [nodeExternals()];
+	config.target = "node14";
 	config.node = {
 		__filename: false,
 		__dirname: false,

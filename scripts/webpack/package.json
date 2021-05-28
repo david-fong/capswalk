@@ -7,14 +7,14 @@
     "@types/mini-css-extract-plugin": "^1.4.3",
     "compression-webpack-plugin": "^7.1.2",
     "csp-html-webpack-plugin": "5.0.0",
-    "css-loader": "^5.2.4",
+    "css-loader": "^5.2.6",
     "css-minimizer-webpack-plugin": "^2.0.0",
-    "esbuild-loader": "^2.13.0",
+    "esbuild-loader": "^2.13.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.1",
     "json5": "^2.2.0",
     "mini-css-extract-plugin": "^1.6.0",
-    "webpack": "^5.36.2",
+    "webpack": "^5.38.1",
     "webpack-node-externals": "^3.0.0"
   }
 }
