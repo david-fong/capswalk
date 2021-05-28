@@ -17,11 +17,11 @@ export class EmojiSetPickOne extends _PickOne<O> {
 		)!, false);
 	}
 
-	public _onHoverOpt(opt: O): void {
+	public override _onHoverOpt(opt: O): void {
 		void opt;
 	}
 
-	public _onSelectOpt(opt: O): void {
+	public override _onSelectOpt(opt: O): void {
 		StorageHooks.Local.emojiFont = opt.desc;
 	}
 

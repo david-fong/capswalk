@@ -29,7 +29,7 @@ export class Chaser extends RobotPlayer.Decisive {
 		);
 	}
 
-	public _onTeamsBootstrapped(): void {
+	public override _onTeamsBootstrapped(): void {
 		super._onTeamsBootstrapped();
 		// We need to cast off read-only-ness below.
 		// @ts-expect-error : RO=

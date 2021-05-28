@@ -23,9 +23,9 @@ export { Player };
  */
 export abstract class RobotPlayer extends Player {
 
-	private _nextMovementTimerMultiplier: number = undefined!;
+	#nextMovementTimerMultiplier: number = undefined!;
 
-	private _scheduledMovementCallbackId: number = undefined!;
+	#scheduledMovementCallbackId: number = undefined!;
 
 	/**
 	 * @see RobotPlayer.of for the public, non-abstract interface.
@@ -45,24 +45,19 @@ export abstract class RobotPlayer extends Player {
 
 	protected abstract getNextMoveType(): Player.MoveType;
 
-	/**
-	 * Units are in milliseconds.
-	 */
+	/** Units are in milliseconds. */
 	protected abstract computeNextMovementTimer(): number;
 
-	/** @override */
-	public onGamePlaying(): void {
+	public override onGamePlaying(): void {
 		this._delayedMovementContinue();
 	}
-	/** @override */
-	public onGamePaused(): void {
-		this.game.cancelTimeout(this._scheduledMovementCallbackId);
-		this._scheduledMovementCallbackId = undefined!;
+	public override onGamePaused(): void {
+		this.game.cancelTimeout(this.#scheduledMovementCallbackId);
+		this.#scheduledMovementCallbackId = undefined!;
 	}
-	/** @override */
-	public onGameOver(): void {
-		this.game.cancelTimeout(this._scheduledMovementCallbackId);
-		this._scheduledMovementCallbackId = undefined!;
+	public override onGameOver(): void {
+		this.game.cancelTimeout(this.#scheduledMovementCallbackId);
+		this.#scheduledMovementCallbackId = undefined!;
 	}
 
 	/**
@@ -75,7 +70,7 @@ export abstract class RobotPlayer extends Player {
 		// humans must pay the penalty before landing on the tile, but
 		// in the implementation here, it's much easier to simulate such
 		// a penalty if it applies _after_ landing on the tile.
-		this._nextMovementTimerMultiplier = this.game.grid.tileAt(desiredDest).seq.length;
+		this.#nextMovementTimerMultiplier = this.game.grid.tileAt(desiredDest).seq.length;
 
 		this.makeMovementRequest(
 			this.game.grid.getUntToward(desiredDest, this.coord),
@@ -88,9 +83,9 @@ export abstract class RobotPlayer extends Player {
 	/** Schedules a call to `movementContinue`. */
 	private _delayedMovementContinue(): void {
 		// Schedule the next movement.
-		this._scheduledMovementCallbackId = this.game.setTimeout(
+		this.#scheduledMovementCallbackId = this.game.setTimeout(
 			this._movementContinue.bind(this),
-			this.computeNextMovementTimer() * this._nextMovementTimerMultiplier,
+			this.computeNextMovementTimer() * this.#nextMovementTimerMultiplier,
 			// * Callback function arguments go here.
 		);
 	}
@@ -123,8 +118,7 @@ export namespace RobotPlayer {
 			target: undefined as number | undefined,
 		};
 
-		/** @override */
-		public reset(coord: Coord): void {
+		public override reset(coord: Coord): void {
 			super.reset(coord);
 			this.#cache.which  = 0;
 			this.#cache.reuses = 0;

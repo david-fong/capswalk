@@ -8,23 +8,21 @@ import { Game, _PlayScreen } from "./_Screen";
  * @final
  */
 export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
-	/** @override */
-	protected readonly _askConfirmBeforeLeave = false;
+
+	protected override readonly _askConfirmBeforeLeave = false;
 
 	/** @override */
 	// @ts-expect-error : Redeclaring accessor as property.
 	declare protected readonly currentGame: OnlineGame;
 
-	/** @override */
-	protected readonly _wantsAutoPlayPause = false;
+	protected override readonly _wantsAutoPlayPause = false;
 
 	readonly #wsMessageCb: (ev: MessageEvent<string>) => void;
 	private get ws(): WebSocket {
 		return this.top.webSocket!;
 	}
 
-	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		super._abstractLazyLoad();
 		Object.freeze(this); //🧊
 		this.nav.prev.innerHTML = "Back&nbsp;To Lobby";
@@ -50,8 +48,7 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 		Object.seal(this); //🧊
 	}
 
-	/** @override */
-	protected _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
+	protected override _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
 		const leaveConfirmed = super._abstractOnBeforeLeave(navDir);
 		if (leaveConfirmed) {
 			if (this.ws !== undefined) {
@@ -63,18 +60,15 @@ export class PlayOnlineScreen extends _PlayScreen<BaseScreen.Id.PLAY_ONLINE> {
 		return leaveConfirmed;
 	}
 
-	/** @override */
-	protected _reqStatusPlaying(): void {
+	protected override _reqStatusPlaying(): void {
 		this.ws.send(JSON.stringify([GameEv.UNPAUSE]));
 	}
 
-	/** @override */
-	protected _reqStatusPaused(): void {
+	protected override _reqStatusPaused(): void {
 		this.ws.send(JSON.stringify([GameEv.PAUSE]));
 	}
 
-	/** @override */
-	protected async _createNewGame<S extends Coord.System>(args: [
+	protected override async _createNewGame<S extends Coord.System>(args: [
 		ctorArgs: Game.CtorArgs<S>,
 		clientPlayerIds: readonly number[],
 	]): Promise<OnlineGame<S>> {

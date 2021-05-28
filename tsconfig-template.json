@@ -29,6 +29,7 @@
 		"noImplicitAny": true,
 		"noUncheckedIndexedAccess": true,
 		"importsNotUsedAsValues": "error",
+		"noImplicitOverride": true,
 
 		// Linting:
 		"noFallthroughCasesInSwitch": true,

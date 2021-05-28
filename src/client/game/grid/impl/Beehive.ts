@@ -19,8 +19,7 @@ export class BeehiveVisibleGrid extends Beehive.Grid implements VisibleGrid<S> {
 		Object.seal(this); //🧊
 	}
 
-	/** @override */
-	public write(coord: Coord, changes: Tile.Changes): void {
+	public override write(coord: Coord, changes: Tile.Changes): void {
 		// TODO.impl
 	}
 }

@@ -225,22 +225,19 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 		Object.seal(this); //🧊
 	}
 
-	/** @override */
-	public write(coord: Coord, changes: Tile.Changes): void {
+	public override write(coord: Coord, changes: Tile.Changes): void {
 		super.write(coord, changes);
 		if (changes.char) {
 			this.#chars[coord]!.forEach((c) => c.textContent = changes.char!);
 		}
 	}
 
-	/** @override */
-	public renderChangeOperatedPlayer(playerId: Player.Id, coord: Coord, prevPlayerCoord: Coord | undefined): void {
+	public override renderChangeOperatedPlayer(playerId: Player.Id, coord: Coord, prevPlayerCoord: Coord | undefined): void {
 		this.#focusedPlayerId = playerId;
 		this.moveEntity(playerId, prevPlayerCoord ?? 0, coord, true);
 	}
 
-	/** @override */
-	public moveEntity(entityId: Player.Id, _from: Coord, _to: Coord, spotlightOnly = false): void {
+	public override moveEntity(entityId: Player.Id, _from: Coord, _to: Coord, spotlightOnly = false): void {
 		if (!spotlightOnly) super.moveEntity(entityId, _from, _to);
 		const p = this.players[entityId]!;
 		const dim = this.dimensions;

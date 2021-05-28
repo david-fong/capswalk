@@ -46,7 +46,7 @@ export abstract class GameManager<
 	}
 
 	/** */
-	public async reset(): Promise<Game.ResetSer> {
+	public override async reset(): Promise<Game.ResetSer> {
 		// Reset the grid and event record:
 		super.reset();
 		const resetSer = Object.freeze({
@@ -110,7 +110,7 @@ export abstract class GameManager<
 	 * @override
 	 * @param authorSock - Only passed on the server.
 	 */
-	public requestStateChange(req: StateChange.Req, authorSock?: WebSocket): void {
+	public override requestStateChange(req: StateChange.Req, authorSock?: WebSocket): void {
 		const author = this.players[req.author]!;
 		if (req.lastRejectId !== author.reqBuffer.lastRejectId) {
 			// client hasn't received previously sent reject ID yet.

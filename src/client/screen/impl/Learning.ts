@@ -3,8 +3,7 @@ import { JsUtils, BaseScreen } from "../BaseScreen";
 /** */
 export class LearningScreen extends BaseScreen<BaseScreen.Id.LEARNING> {
 
-	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		Object.freeze(this); //🧊
 	}
 }

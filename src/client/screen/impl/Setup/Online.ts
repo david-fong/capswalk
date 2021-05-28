@@ -8,8 +8,7 @@ type SID = BaseScreen.Id.SETUP_ONLINE;
 /** */
 export class SetupOnlineScreen extends _SetupScreen<SID> {
 
-	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		super._abstractLazyLoad();
 		Object.freeze(this); //🧊
 

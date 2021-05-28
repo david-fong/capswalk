@@ -160,28 +160,28 @@ export namespace WrappedEuclid2 {
 			}
 		}
 
-		public reset(): void {
+		public override reset(): void {
 			super.reset();
 			this.#occ.fill(0);
 		}
 
-		public write(coord: Coord, changes: Tile.Changes): void {
+		public override write(coord: Coord, changes: Tile.Changes): void {
 			this._grid[coord] = Object.freeze(Object.assign(
 				{}, this._grid[coord], changes,
 			));
 		}
 
-		public moveEntity(entityId: Player.Id, from: Coord, to: Coord): void {
+		public override moveEntity(entityId: Player.Id, from: Coord, to: Coord): void {
 			this.#occ[from] = 0;
 			this.#occ[to] = 1;
 		}
 
-		public forEach(consumer: (tile: Tile, index: number) => void): void {
+		public override forEach(consumer: (tile: Tile, index: number) => void): void {
 			for (let i = 0; i < this.area; i++) {
 				consumer(this._grid[i]!, i);
 			}
 		}
-		public forEachShuffled(consumer: (tile: Tile, index: number) => void): void {
+		public override forEachShuffled(consumer: (tile: Tile, index: number) => void): void {
 			const indices = new Uint16Array(this.area);
 			for (let i = 0; i < this.area; i++) {
 				indices[i] = i;
@@ -192,7 +192,7 @@ export namespace WrappedEuclid2 {
 			}
 		}
 
-		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Coord {
+		public override getUntToward(intendedDest: Coord, sourceCoord: Coord): Coord {
 			const options = this.tileDestsFrom(sourceCoord)
 			.filter((tile) => !this.isOccupied(tile.coord))
 			.map((tile) => {
@@ -239,18 +239,18 @@ export namespace WrappedEuclid2 {
 			// Choose a random non-axial option:
 			return options[Math.floor(options.length * Math.random())]!.tile.coord;
 		}
-		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Coord {
+		public override getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Coord {
 			const avoid = this.iacCache[_avoidCoord]!;
 			const src = this.iacCache[_sourceCoord]!;
 			const dest = src.iSub(avoid).mod(this.dimensions);
 			return dest.toCoord(this.dimensions);
 		}
 
-		public getAllAltDestsThan(originCoord: Coord): readonly Tile[] {
+		public override getAllAltDestsThan(originCoord: Coord): readonly Tile[] {
 			return this.tileDestsFrom(originCoord, 2);
 		}
 
-		public getRandomCoordAround(_origin: Coord, radius: number): Coord {
+		public override getRandomCoordAround(_origin: Coord, radius: number): Coord {
 			const origin = this.iacCache[_origin]!;
 			return new IAC(
 				origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
@@ -258,20 +258,20 @@ export namespace WrappedEuclid2 {
 			).mod(this.dimensions).toCoord(this.dimensions);
 		}
 
-		public dist(source: Coord, dest: Coord): number {
+		public override dist(source: Coord, dest: Coord): number {
 			return IAC.infNorm(this.dimensions,
 				this.iacCache[source]!,
 				this.iacCache[dest]!,
 			);
 		}
 
-		public isOccupied(coord: Coord): boolean {
+		public override isOccupied(coord: Coord): boolean {
 			return this.#occ[coord]! !== 0;
 		}
-		public tileAt(coord: Coord): Tile {
+		public override tileAt(coord: Coord): Tile {
 			return this._grid[coord]!;
 		}
-		public tileDestsFrom(coord: Coord, radius = 1): readonly Tile[] {
+		public override tileDestsFrom(coord: Coord, radius = 1): readonly Tile[] {
 			const iac = this.iacCache[coord]!;
 			let wrapX = false, wrapY = false;
 			const W = this.dimensions.width, H = this.dimensions.height;
@@ -306,7 +306,7 @@ export namespace WrappedEuclid2 {
 			// TODO.impl use a set when radius > 2 to prevent duplicate entries?
 			return dests.freeze();
 		}
-		public tileSourcesTo(coord: Coord, radius = 1): readonly Tile[] {
+		public override tileSourcesTo(coord: Coord, radius = 1): readonly Tile[] {
 			return this.tileDestsFrom(coord, radius);
 		}
 

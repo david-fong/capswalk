@@ -46,8 +46,7 @@ export abstract class _PlayScreenInitEl<
 	protected abstract readonly _askConfirmBeforeLeave: boolean;
 
 
-	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,
 			style["this"],

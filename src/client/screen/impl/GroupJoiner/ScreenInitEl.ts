@@ -20,8 +20,7 @@ export abstract class _GroupJoinerScreenInitEl extends BaseScreen<SID> {
 	protected readonly groupNameDataList = JsUtils.html("datalist", [], { id: OmHooks.ID.CURRENT_HOST_GROUPS });
 
 
-	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		this.baseElem.classList.add(
 			OmHooks.General.Class.CENTER_CONTENTS,
 			style["this"],

@@ -9,7 +9,7 @@ type SID = BaseScreen.Id.SETUP_OFFLINE;
 /** */
 export class SetupOfflineScreen extends _SetupScreen<SID> {
 
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		super._abstractLazyLoad();
 		Object.freeze(this); //🧊
 
@@ -19,8 +19,7 @@ export class SetupOfflineScreen extends _SetupScreen<SID> {
 		};
 	}
 
-	/** @override */
-	protected parseArgsFromGui(): Game.CtorArgs.UnFin {
+	protected override parseArgsFromGui(): Game.CtorArgs.UnFin {
 		type PArgs = Array<Player.CtorArgs.UnFin>;
 		const args = super.parseArgsFromGui();
 		// TODO.impl get rid of this placeholder once this screen has inputs for

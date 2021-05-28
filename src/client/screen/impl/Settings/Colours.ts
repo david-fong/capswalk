@@ -25,11 +25,11 @@ export class ColourPickOne extends _PickOne<O> {
 		)!, false);
 	}
 
-	public _onHoverOpt(opt: O): void {
+	public override _onHoverOpt(opt: O): void {
 
 	}
 
-	public _onSelectOpt(opt: O): void {
+	public override _onSelectOpt(opt: O): void {
 		StorageHooks.Local.colourSchemeId = opt.desc.id;
 		StorageHooks.Local.colourSchemeStyleLiteral = opt.cssLiteral;
 		const firstTime = this.#firstTime;

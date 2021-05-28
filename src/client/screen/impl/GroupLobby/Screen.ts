@@ -25,8 +25,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		return this.top.webSocket!;
 	}
 
-	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		this.baseElem.classList.add(style["this"]);
 		this._createInputs();
 		// @ts-expect-error : RO=
@@ -107,8 +106,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		this.ws.send(JSON.stringify([GroupEv.UserInfo.NAME, data]));
 	}
 
-	/** @override */
-	protected async _abstractOnBeforeEnter(
+	protected override async _abstractOnBeforeEnter(
 		navDir: BaseScreen.NavDir,
 		args: BaseScreen.EntranceArgs[SID],
 	): Promise<void> {
@@ -123,8 +121,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		}
 	}
 
-	/** @override */
-	public getRecommendedFocusElem(): HTMLElement {
+	public override getRecommendedFocusElem(): HTMLElement {
 		let el: HTMLElement | undefined
 			= (!this.in.username.validity.valid) ? this.in.username
 			: (!this.in.teamId.validity.valid)   ? this.in.teamId
@@ -135,8 +132,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		return el;
 	}
 
-	/** @override */
-	protected _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
+	protected override _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
 		// Make sure we stop listening for the game to start
 		// in case it hasn't started yet:
 		if (navDir === BaseScreen.NavDir.BACKWARD) {

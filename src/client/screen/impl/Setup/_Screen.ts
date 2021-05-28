@@ -24,8 +24,7 @@ export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | Bas
 	protected readonly langSel = new _SetupScreen.LangPickOne();
 	protected readonly langWeightExaggeration: HTMLInputElement;
 
-	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		this.baseElem.classList.add(style["this"]);
 		this.baseElem.appendChild(this.nav.prev);
 
@@ -66,8 +65,7 @@ export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | Bas
 		this.baseElem.appendChild(lwe);
 	}
 
-	/** @override */
-	public getRecommendedFocusElem(): HTMLElement {
+	public override getRecommendedFocusElem(): HTMLElement {
 		return this.nav.next;
 	}
 

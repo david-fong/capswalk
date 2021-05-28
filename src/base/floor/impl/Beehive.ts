@@ -120,15 +120,15 @@ export namespace Beehive {
 			}
 		}
 
-		public write(coord: Coord, changes: Tile.Changes): void {
+		public override write(coord: Coord, changes: Tile.Changes): void {
 			// TODO.impl
 		}
 
-		public moveEntity(entityId: Player.Id, from: Coord, to: Coord): void {
+		public override moveEntity(entityId: Player.Id, from: Coord, to: Coord): void {
 
 		}
 
-		public forEach(consumer: (tile: Tile, index: number) => void): void {
+		public override forEach(consumer: (tile: Tile, index: number) => void): void {
 			let i = 0;
 			for (const row of this.grid) {
 				for (const tile of row) {
@@ -136,7 +136,7 @@ export namespace Beehive {
 				}
 			}
 		}
-		public forEachShuffled(consumer: (tile: Tile, index: number) => void): void {
+		public override forEachShuffled(consumer: (tile: Tile, index: number) => void): void {
 			// const indices: Array<number> = new Array(this.area);
 			// for (let i = 0; i < this.area; i++) {
 			// 	indices[i] = i;
@@ -148,10 +148,10 @@ export namespace Beehive {
 			// }
 		}
 
-		public getUntToward(intendedDest: Coord, sourceCoord: Coord): Coord {
+		public override getUntToward(intendedDest: Coord, sourceCoord: Coord): Coord {
 			return undefined!;
 		}
-		public getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Coord {
+		public override getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Coord {
 			// return this.getUntToward(
 			// 	sourceCoord.add(sourceCoord.sub(avoidCoord)),
 			// 	sourceCoord,
@@ -159,34 +159,34 @@ export namespace Beehive {
 			return undefined!;
 		}
 
-		public getAllAltDestsThan(originCoord: Coord): readonly Tile[] {
+		public override getAllAltDestsThan(originCoord: Coord): readonly Tile[] {
 			return this.tileDestsFrom(originCoord, 2);
 		}
 
-		public getRandomCoordAround(origin: Coord, radius: number): Coord {
+		public override getRandomCoordAround(origin: Coord, radius: number): Coord {
 			// Note to self when I implement this:
 			// Be careful about getting proper uniform random distribution!
 			return undefined!;
 		}
 
-		public dist(source: Coord, dest: Coord): number {
+		public override dist(source: Coord, dest: Coord): number {
 			return undefined!;
 		}
 
-		public isOccupied(coord: Coord): boolean {
+		public override isOccupied(coord: Coord): boolean {
 			return undefined!;
 		}
 
-		public tileAt(coord: Coord): Tile {
+		public override tileAt(coord: Coord): Tile {
 			return undefined!;
 		}
 
-		public tileDestsFrom(coord: Coord, radius = 1): readonly Tile[] {
+		public override tileDestsFrom(coord: Coord, radius = 1): readonly Tile[] {
 			const result: Array<Tile> = [];
 			return result.freeze();
 		}
 
-		public tileSourcesTo(coord: Coord, radius = 1): readonly Tile[] {
+		public override tileSourcesTo(coord: Coord, radius = 1): readonly Tile[] {
 			return undefined!;
 		}
 

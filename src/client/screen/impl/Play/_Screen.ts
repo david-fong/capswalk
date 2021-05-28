@@ -28,9 +28,9 @@ export abstract class _PlayScreen<
 	 */
 	#currentGame: undefined | BrowserGame;
 
-	protected abstract readonly _wantsAutoPlayPause: boolean;
+	protected abstract override readonly _wantsAutoPlayPause: boolean;
 
-	protected abstract readonly _askConfirmBeforeLeave: boolean;
+	protected abstract override readonly _askConfirmBeforeLeave: boolean;
 	/**
 	 * Automatically added and removed from listeners when entering
 	 * and leaving this screen.
@@ -48,7 +48,7 @@ export abstract class _PlayScreen<
 
 
 	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		super._abstractLazyLoad();
 
 		// @ts-expect-error : RO=
@@ -69,8 +69,7 @@ export abstract class _PlayScreen<
 		this.#gridOnKeyDown = this._gridKeyDownCallback.bind(this);
 	}
 
-	/** @override */
-	protected async _abstractOnBeforeEnter(
+	protected override async _abstractOnBeforeEnter(
 		navDir: BaseScreen.NavDir,
 		args: BaseScreen.EntranceArgs[SID],
 	): Promise<void> {
@@ -102,8 +101,7 @@ export abstract class _PlayScreen<
 		});
 	}
 
-	/** @override */
-	protected _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
+	protected override _abstractOnBeforeLeave(navDir: BaseScreen.NavDir): boolean {
 		if (this._askConfirmBeforeLeave && !this.top.confirm("Are you sure you would like to leave?")) {
 			return false;
 		}

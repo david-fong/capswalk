@@ -31,7 +31,7 @@ export class ClientPlayer extends Player {
 		this.#langRemappingFunc = langDesc.remapFunc;
 	}
 
-	public reset(coord: Coord): void {
+	public override reset(coord: Coord): void {
 		super.reset(coord);
 		this.#seqBuffer = "";
 	}
@@ -121,9 +121,8 @@ export class ClientPlayer extends Player {
 
 	/**
 	 * Automatically clears the seqBuffer.
-	 * @override
 	 */
-	public _setCoord(dest: Coord): void {
+	public override _setCoord(dest: Coord): void {
 		// Clear my `seqBuffer` first:
 		this.#seqBuffer = "";
 

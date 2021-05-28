@@ -13,8 +13,7 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 		return this.top.webSocket!;
 	}
 
-	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		super._abstractLazyLoad();
 
 		// @ts-expect-error : RO=
@@ -36,8 +35,7 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 		Object.seal(this); //🧊
 	}
 
-	/** @override */
-	public getRecommendedFocusElem(): HTMLElement {
+	public override getRecommendedFocusElem(): HTMLElement {
 		if (this.ws === undefined) {
 			return this.in.serverUrl;
 		} else {

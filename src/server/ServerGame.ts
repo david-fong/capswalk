@@ -47,8 +47,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	protected readonly sockets: Set<WebSocket>;
 	protected readonly groupHostSocket: WebSocket;
 
-	/** @override */
-	public get currentClientPlayer(): never {
+	public override get currentClientPlayer(): never {
 		throw new Error("never");
 	}
 
@@ -120,8 +119,7 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		});
 	}
 
-	/** @override */
-	public async reset(): Promise<Game.ResetSer> {
+	public override async reset(): Promise<Game.ResetSer> {
 		// Be ready for clients to indicate readiness to unpause.
 		Promise.all(Array.from(this.sockets, (s) =>
 			new Promise<void>((resolve) => {
@@ -141,38 +139,32 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 		return resetSer;
 	}
 
-	/** @override */
-	public setCurrentClientPlayer(index: number): void {
+	public override setCurrentClientPlayer(index: number): void {
 		// no-op
 	}
 
 
-	/** @override */
-	public setTimeout(callback: () => void, millis: number, ...args: any[]): number {
+	public override setTimeout(callback: () => void, millis: number, ...args: any[]): number {
 		return setTimeout(callback, millis, args).unref() as unknown as number;
 	}
 
-	/** @override */
-	public cancelTimeout(handle: number): void {
+	public override cancelTimeout(handle: number): void {
 		clearTimeout(handle as unknown as NodeJS.Timer);
 	}
 
-	/** @override */
-	public statusBecomePlaying(): void {
+	public override statusBecomePlaying(): void {
 		super.statusBecomePlaying();
 		const data = JSON.stringify([GameEv.UNPAUSE]);
 		this.sockets.forEach((s) => { if (s.readyState === s.OPEN) { s.send(data); }});
 	}
 
-	/** @override */
-	public statusBecomePaused(): void {
+	public override statusBecomePaused(): void {
 		super.statusBecomePaused();
 		const data = JSON.stringify([GameEv.PAUSE]);
 		this.sockets.forEach((s) => { if (s.readyState === s.OPEN) { s.send(data); }});
 	}
 
-	/** @override */
-	public commitStateChange(desc: StateChange.Res, authorSock?: WebSocket): void {
+	public override commitStateChange(desc: StateChange.Res, authorSock?: WebSocket): void {
 		super.commitStateChange(desc, authorSock);
 
 		if (desc.rejectId) {

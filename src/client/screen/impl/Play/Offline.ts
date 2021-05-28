@@ -11,22 +11,18 @@ export class PlayOfflineScreen extends _PlayScreen<BaseScreen.Id.PLAY_OFFLINE> {
 	// @ts-expect-error : Redeclaring accessor as property.
 	declare protected readonly currentGame: OfflineGame<any>;
 
-	/** @override */
-	protected readonly _wantsAutoPlayPause = false;
+	protected override readonly _wantsAutoPlayPause = false;
 
-	/** @override */
-	protected readonly _askConfirmBeforeLeave = true;
+	protected override readonly _askConfirmBeforeLeave = true;
 
-	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		super._abstractLazyLoad();
 		Object.freeze(this); //🧊
 		this.nav.prev.innerHTML = "Back&nbsp;To Setup";
 		// ^Prevent jank due to pointer hover animation.
 	}
 
-	/** @override */
-	protected async _createNewGame<S extends Coord.System>(args: [
+	protected override async _createNewGame<S extends Coord.System>(args: [
 		ctorArgs: Game.CtorArgs<S>,
 	]): Promise<OfflineGame<S>> {
 		return new (await import(
