@@ -27,13 +27,13 @@ export class ScreenTransition {
 	 */
 	public do(request: ScreenTransition.Request): Promise<void> {
 		this.#currentRequest = (this.#currentRequest).then(() => {
-			return this._atomicDo(request);
+			return this.#atomicDo(request);
 		});
 		return this.#currentRequest;
 	}
 
 	/** */
-	private async _atomicDo(request: ScreenTransition.Request): Promise<void> {
+	async #atomicDo(request: ScreenTransition.Request): Promise<void> {
 		const oldFocusEl = document.activeElement;
 		this.baseElem.focus();
 		const style = this.baseElem.style;
@@ -90,6 +90,6 @@ export namespace ScreenTransition {
 		beforeUnblur?: () => void,
 	}>;
 }
-JsUtils.protoNoEnum(ScreenTransition, "_atomicDo", "_cssTransition");
+JsUtils.protoNoEnum(ScreenTransition, "_cssTransition");
 Object.freeze(ScreenTransition);
 Object.freeze(ScreenTransition.prototype);

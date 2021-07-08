@@ -29,7 +29,7 @@ export abstract class PickOne<O extends PickOne._Option> {
 			tabIndex: 0,
 		});
 		base.setAttribute("role", "listbox");
-		base.addEventListener("keydown", this._onKeyDown.bind(this));
+		base.addEventListener("keydown", this.#onKeyDown.bind(this));
 		base.addEventListener("pointerenter", (ev) => {
 			window.requestAnimationFrame((time) => {
 				// Autofocus on pointerenter to hear keyboard events:
@@ -47,7 +47,7 @@ export abstract class PickOne<O extends PickOne._Option> {
 		// Note: these do not use event delegation because I don't like exposing internals via the DOM.
 		opt.baseElem.addEventListener("pointerenter", this.hoverOpt.bind(this, opt));
 		opt.baseElem.addEventListener("click", this.selectOpt.bind(this, opt, true));
-		opt._registerParent(this._onOptDisabledChange.bind(this));
+		opt._registerParent(this.#onOptDisabledChange.bind(this));
 	}
 
 	public hoverOpt(opt: O): void {
@@ -91,7 +91,7 @@ export abstract class PickOne<O extends PickOne._Option> {
 		return this.#hoveredOpt;
 	}
 
-	private _onOptDisabledChange(opt: O): void {
+	#onOptDisabledChange(opt: O): void {
 		if (this.confirmedOpt === opt) {
 			this._isValid = !opt.disabled;
 		}
@@ -108,7 +108,7 @@ export abstract class PickOne<O extends PickOne._Option> {
 		return this.#isValid;
 	}
 
-	private _onKeyDown(ev: KeyboardEvent): boolean {
+	#onKeyDown(ev: KeyboardEvent): boolean {
 		if (ev.key === " " || ev.key === "Enter") {
 			this.selectOpt(this.hoveredOpt);
 			ev.preventDefault();

@@ -27,7 +27,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 
 	protected override _abstractLazyLoad(): void {
 		this.baseElem.classList.add(style["this"]);
-		this._createInputs();
+		this.#createInputs();
 		// @ts-expect-error : RO=
 		this.#wsMessageCb = (ev: MessageEvent<string>) => {
 			const [evName, ...body] = JSON.parse(ev.data) as [string, ...any[]];
@@ -54,7 +54,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 	}
 
 	/** */
-	private _createInputs(): void {
+	#createInputs(): void {
 		const base = JsUtils.html("div", [
 			OmHooks.General.Class.INPUT_GROUP,
 			style["client-info-section"],
@@ -67,14 +67,14 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 			pattern   : Player.Username.REGEXP.source,
 			spellcheck: false,
 			value     : StorageHooks.Local.username,
-			onchange  : this._submitInputs.bind(this),
+			onchange  : this.#submitInputs.bind(this),
 		});
 		base.appendChild(uname);
 
 		const teamId = JsUtils.html("input", [OmHooks.General.Class.INPUT_GROUP_ITEM], {
 			type: "number",
 			min: "0", max: "0", step: "1", value: "0",
-			onchange: this._submitInputs.bind(this),
+			onchange: this.#submitInputs.bind(this),
 		});
 		teamId.classList.add();
 		base.appendChild(teamId);
@@ -90,7 +90,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 		});
 		this.baseElem.appendChild(base);
 	}
-	private _submitInputs(): void {
+	#submitInputs(): void {
 		if (!this.in.username.validity.valid || !this.in.teamId.validity.valid) {
 			return;
 		}
@@ -115,7 +115,7 @@ export class GroupLobbyScreen extends BaseScreen<SID> {
 			this.players.clear();
 			this.teamElems.clear();
 			this.teamsElem.textContent = "";
-			this._submitInputs();
+			this.#submitInputs();
 
 			this.ws.addEventListener("message", this.#wsMessageCb);
 		}
@@ -244,6 +244,5 @@ export namespace GroupLobbyScreen {
 		}
 	}
 }
-JsUtils.protoNoEnum(GroupLobbyScreen, "_createInputs", "_submitInputs");
 Object.freeze(GroupLobbyScreen);
 Object.freeze(GroupLobbyScreen.prototype);

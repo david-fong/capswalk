@@ -20,8 +20,8 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 		this.#wsMessageCb = (ev: MessageEvent<string>) => {
 			const [evName, ...args] = JSON.parse(ev.data) as [string, ...any[]];
 			switch (evName) {
-				case  JoinerEv.Create.NAME: this._onCreateResponse(args[0]); break;
-				case   JoinerEv.Exist.NAME: this._onNotifyGroupExist(args[0]); break;
+				case  JoinerEv.Create.NAME: this.#onCreateResponse(args[0]); break;
+				case   JoinerEv.Exist.NAME: this.#onNotifyGroupExist(args[0]); break;
 				case JoinerEv.TryJoin.NAME: this._setFormState(State.IN_GROUP); break;
 				case   GroupEv.CREATE_GAME: {
 					this.requestGoToScreen(BaseScreen.Id.PLAY_ONLINE, [args[0], args[1]]); //🚀
@@ -29,7 +29,7 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 				default: break;
 			}
 		};
-		const huiSubmit = this._initServerUrlCbs();
+		const huiSubmit = this.#initServerUrlCbs();
 		this._initGroupNameCbs(huiSubmit);
 		this._initPassphraseCbs();
 		Object.seal(this); //🧊
@@ -45,7 +45,7 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 
 
 	/** */
-	private _initServerUrlCbs(): VoidFunction {
+	#initServerUrlCbs(): VoidFunction {
 		const top = this.top;
 		const input = this.in.serverUrl;
 		input.addEventListener("input", (ev) => {
@@ -92,7 +92,7 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 		return submitInput;
 	}
 	/** */
-	private _onCreateResponse(accepted: JoinerEv.Create.Res): void {
+	#onCreateResponse(accepted: JoinerEv.Create.Res): void {
 		if (accepted) {
 			this.top.toast(`server accepted request to create new group "${this.in.groupName.value}".`);
 			this.top.toast("connecting to new group...");
@@ -106,7 +106,7 @@ export class GroupJoinerScreen extends _GroupJoinerScreenInitEl {
 		}
 	}
 	/** */
-	private _onNotifyGroupExist(changes: JoinerEv.Exist.Sse): void {
+	#onNotifyGroupExist(changes: JoinerEv.Exist.Sse): void {
 		type OptEl = HTMLOptionElement;
 		const mkOpt = (groupName: Group.Name): OptEl => {
 			// If we didn't know about this group yet, create a new

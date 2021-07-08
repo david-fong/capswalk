@@ -49,7 +49,7 @@ export abstract class RobotPlayer extends Player {
 	protected abstract computeNextMovementTimer(): number;
 
 	public override onGamePlaying(): void {
-		this._delayedMovementContinue();
+		this.#delayedMovementContinue();
 	}
 	public override onGamePaused(): void {
 		this.game.cancelTimeout(this.#scheduledMovementCallbackId);
@@ -63,7 +63,7 @@ export abstract class RobotPlayer extends Player {
 	/**
 	 * Executes a single movement and then calls `delayedMovementContinue`.
 	 */
-	private _movementContinue(): void {
+	#movementContinue(): void {
 		const desiredDest = this.computeDesiredDest();
 		// This is a little different than how human players experience
 		// "penalties" when moving to tiles with long language-sequences-
@@ -77,14 +77,14 @@ export abstract class RobotPlayer extends Player {
 			this.getNextMoveType(),
 		);
 		// Schedule a task to do this again:
-		this._delayedMovementContinue();
+		this.#delayedMovementContinue();
 	}
 
 	/** Schedules a call to `movementContinue`. */
-	private _delayedMovementContinue(): void {
+	#delayedMovementContinue(): void {
 		// Schedule the next movement.
 		this.#scheduledMovementCallbackId = this.game.setTimeout(
-			this._movementContinue.bind(this),
+			this.#movementContinue.bind(this),
 			this.computeNextMovementTimer() * this.#nextMovementTimerMultiplier,
 			// * Callback function arguments go here.
 		);
@@ -164,7 +164,6 @@ export namespace RobotPlayer {
 	Object.freeze(Decisive);
 	Object.freeze(Decisive.prototype);
 }
-JsUtils.protoNoEnum(RobotPlayer, "_movementContinue");
 // RobotPlayer is frozen in PostInit after _Constructors get initialized.
 Object.seal(RobotPlayer);
 Object.freeze(RobotPlayer.prototype);

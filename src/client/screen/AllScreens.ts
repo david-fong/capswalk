@@ -97,7 +97,7 @@ export class AllScreens {
 		const currScreen = this.currentScreen;
 		const destScreen = this.dict[destId];
 		if (currScreen === destScreen) {
-		    throw new Error("never");
+			throw new Error("never");
 		}
 
 		const navDir = BaseScreen.GET_NAV_DIR({
@@ -112,7 +112,7 @@ export class AllScreens {
 			await this.#screenTransition.do({
 				whileBeforeUnblur: (destScreen._enter as EnterFunc)(navDir, ctorArgs),
 				beforeUnblur: () => {
-					// 🍙❗ special loading cases (related to websocket listeners)
+					// ❗ special loading cases (related to websocket listeners)
 					switch (destId) {
 						case BaseScreen.Id.GROUP_JOINER: this.dict[BaseScreen.Id.GROUP_LOBBY].lazyLoad(); break;
 					}

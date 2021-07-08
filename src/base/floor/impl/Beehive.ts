@@ -187,7 +187,7 @@ export namespace Beehive {
 		}
 
 		public override tileSourcesTo(coord: Coord, radius = 1): readonly Tile[] {
-			return undefined!;
+			return this.tileDestsFrom(coord, radius);
 		}
 
 		declare public static getSpawnCoords: AbstractGrid.ClassIf<S>["getSpawnCoords"];
@@ -223,6 +223,7 @@ export namespace Beehive {
 			fslash: number;
 		};
 	}
+	Grid.prototype.tileSourcesTo = Grid.prototype.tileDestsFrom;
 	JsUtils.protoNoEnum(Grid, "tileAt", "tileDestsFrom", "tileSourcesTo");
 	Object.freeze(Grid);
 	Object.freeze(Grid.prototype);

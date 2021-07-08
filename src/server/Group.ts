@@ -57,8 +57,8 @@ export class Group extends _Group {
 		this.#wsMessageCb = (ev: WebSocket.MessageEvent): void => {
 			const [evName, ...args] = JSON.parse(ev.data as string) as [string, ...any[]];
 			switch (evName) {
-				case GroupEv.UserInfo.NAME: this._wsOnUserInfoChange(ev.target, args[0]); break;
-				case GroupEv.CREATE_GAME: if (ev.target === this.groupHostSocket) this._wsOnHostCreateGame(args[0]); break;
+				case GroupEv.UserInfo.NAME: this.#wsOnUserInfoChange(ev.target, args[0]); break;
+				case GroupEv.CREATE_GAME: if (ev.target === this.groupHostSocket) this.#wsOnHostCreateGame(args[0]); break;
 				default: break;
 			}
 		};
@@ -128,7 +128,7 @@ export class Group extends _Group {
 	}
 
 	/** */
-	private _wsOnUserInfoChange(ws: WebSocket, req: GroupEv.UserInfo.Req): void {
+	#wsOnUserInfoChange(ws: WebSocket, req: GroupEv.UserInfo.Req): void {
 		if (typeof req.username !== "string"
 		 || typeof req.teamId   !== "number"
 		 || typeof req.avatar   !== "string") {
@@ -145,7 +145,7 @@ export class Group extends _Group {
 	}
 
 	/** */
-	private _wsOnHostCreateGame<S extends Coord.System>(
+	#wsOnHostCreateGame<S extends Coord.System>(
 		ctorArgs: Game.CtorArgs.UnFin<S>
 	): void {
 		const failureReasons = this._createGameInstance(ctorArgs);
@@ -228,6 +228,5 @@ export class Group extends _Group {
 		console.info(`terminated group: \`${this.name}\``);
 	}
 }
-JsUtils.protoNoEnum(Group, "_wsOnUserInfoChange", "_wsOnHostCreateGame");
 Object.freeze(Group);
 Object.freeze(Group.prototype);

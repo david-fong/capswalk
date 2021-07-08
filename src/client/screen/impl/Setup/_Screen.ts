@@ -31,15 +31,15 @@ export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | Bas
 		// Language selection component:
 		this.baseElem.appendChild(this.langSel.baseElem);
 
-		this._createLangWeightExaggerationInput();
+		this.#createLangWeightExaggerationInput();
 
 		JsUtils.propNoWrite(this as _SetupScreen<SID>, "langSel", "langWeightExaggeration");
 
 		this.baseElem.appendChild(this.nav.next);
-		this._loadLastUsedPreset();
+		this.#loadLastUsedPreset();
 	}
 
-	private _createLangWeightExaggerationInput(): void {
+	#createLangWeightExaggerationInput(): void {
 		const lwe
 			// @ts-expect-error : RO=
 			= this.langWeightExaggeration
@@ -72,7 +72,7 @@ export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | Bas
 	/**
 	 * Load the user's last used preset to the gui controls.
 	 */
-	private _loadLastUsedPreset(): void {
+	#loadLastUsedPreset(): void {
 		// TODO.impl
 		const lastUsedPresetId = StorageHooks.Local.gamePresetId;
 		const args = StorageHooks.IDB.UserGamePresetStore;

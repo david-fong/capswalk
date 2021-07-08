@@ -25,7 +25,7 @@ export abstract class _GroupJoinerScreenInitEl extends BaseScreen<SID> {
 			OmHooks.General.Class.CENTER_CONTENTS,
 			style["this"],
 		);
-		const contentWrapper = this._initFormContents();
+		const contentWrapper = this.#initFormContents();
 		this.baseElem.appendChild(this.groupNameDataList);
 
 		this.nav.prev.classList.add(OmHooks.General.Class.INPUT_GROUP_ITEM);
@@ -74,7 +74,7 @@ export abstract class _GroupJoinerScreenInitEl extends BaseScreen<SID> {
 	}
 
 	/** A helper for `_lazyLoad`. Does not hook up event processors. */
-	private _initFormContents(): HTMLElement {
+	#initFormContents(): HTMLElement {
 		const contentWrapper = JsUtils.html("div"/*"form"*/, [
 			OmHooks.General.Class.INPUT_GROUP,
 			style["content-wrapper"],

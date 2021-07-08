@@ -66,7 +66,7 @@ export abstract class _PlayScreen<
 			}
 		};
 		// @ts-expect-error : RO=
-		this.#gridOnKeyDown = this._gridKeyDownCallback.bind(this);
+		this.#gridOnKeyDown = this.#gridKeyDownCallback.bind(this);
 	}
 
 	protected override async _abstractOnBeforeEnter(
@@ -143,7 +143,7 @@ export abstract class _PlayScreen<
 	/**
 	 * Do not use this directly. See `this.#gridOnKeyDown`.
 	 */
-	private _gridKeyDownCallback(ev: KeyboardEvent): boolean {
+	#gridKeyDownCallback(ev: KeyboardEvent): boolean {
 		ev.stopPropagation();
 		if (!ev.isTrusted) return true;
 		const game = this.currentGame;

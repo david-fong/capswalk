@@ -87,11 +87,11 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 				}
 			}, { once: true });
 		});
-		this._greetGameSockets(args.gameDesc);
+		this.#greetGameSockets(args.gameDesc);
 	}
 
 	/** Helper for the constructor */
-	private _greetGameSockets(gameDesc: Game.CtorArgs<S>): void {
+	#greetGameSockets(gameDesc: Game.CtorArgs<S>): void {
 		// The below cast is safe because GamepartBase reassigns
 		// `gameDesc.playerDescs` the result of `Player.finalize`.
 		const humans = (
@@ -185,7 +185,6 @@ export class ServerGame<S extends Coord.System = Coord.System> extends GameManag
 	}
 }
 JsUtils.protoNoEnum(ServerGame,
-	"_greetGameSockets",
 	"setCurrentClientPlayer", "_terminate",
 );
 Object.freeze(ServerGame);

@@ -49,7 +49,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		this.#onGameBecomeOver = impl.onGameBecomeOver;
 
 		// Construct players:
-		const players = this._createPlayers(desc, impl, clientPlayerIds, langDesc);
+		const players = this.#createPlayers(desc, impl, clientPlayerIds, langDesc);
 		this.players  = players.players;
 		this.clientPlayers = players.client;
 		{
@@ -82,7 +82,7 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 
 
 	/** Helper for the constructor. */
-	private _createPlayers(
+	#createPlayers(
 		gameDesc: Game.CtorArgs<S>,
 		implArgs: Game.ImplArgs,
 		clientPlayerIds: readonly Player.Id[],
@@ -256,6 +256,5 @@ export abstract class GameMirror<S extends Coord.System = Coord.System> {
 		clearTimeout(handle);
 	}
 }
-JsUtils.protoNoEnum(GameMirror, "_createPlayers");
 Object.freeze(GameMirror);
 Object.freeze(GameMirror.prototype);

@@ -91,8 +91,8 @@ export abstract class _PlayScreenInitEl<
 		    rootMargin: "-20%",
 		}); */
 
-		this._initializeControlsBar();
-		this._initializePlayersBar();
+		this.#initializeControlsBar();
+		this.#initializePlayersBar();
 	}
 
 
@@ -115,7 +115,7 @@ export abstract class _PlayScreenInitEl<
 	}
 
 	/** */
-	private _initializeControlsBar(): void {
+	#initializeControlsBar(): void {
 		const controlsBar = JsUtils.html("div", [
 			OmHooks.General.Class.CENTER_CONTENTS,
 			OmHooks.General.Class.INPUT_GROUP,
@@ -155,7 +155,7 @@ export abstract class _PlayScreenInitEl<
 	}
 
 	/** */
-	private _initializePlayersBar(): void {
+	#initializePlayersBar(): void {
 		JsUtils.propNoWrite(this as _PlayScreenInitEl<SID>);
 		this.baseElem.appendChild(this.playersBar);
 	}
