@@ -160,7 +160,7 @@ export abstract class Lang extends _Lang {
 	 * result is cached via hardcoding into LangDescs.ts.
 	 */
 	public _calcIsolatedMinOpts(): number {
-		/** ALl unique sequences sorted in lexical order. */
+		/** All unique sequences sorted in lexical order. */
 		const allSeqs: string[] = [];
 		this.csps.forEach((n) => {
 			if (allSeqs[allSeqs.length-1] !== n.seq) { allSeqs.push(n.seq); }
@@ -255,9 +255,7 @@ export namespace Lang {
 	 */
 	export function CreateCspsArray(forwardDict: Lang.ForwardDict): readonly Lang.Csp.Weighted[] {
 		return Object.entries(forwardDict).freeze().map(([char, {seq, weight: unscaledWt}]) => {
-			return Object.freeze({
-				char, seq, unscaledWt,
-			});
+			return Object.freeze({ char, seq, unscaledWt });
 		})
 		.seal()
 		//.sort((a,b) => (a.seq < b.seq) ? -1 : (a.seq > b.seq) ? 1 : (a.char < b.char) ? -1 : (a.char > b.char) ? 1 : 0)
@@ -327,11 +325,11 @@ export namespace Lang {
 	 *
 	 * Shape that must be passed in to the static tree producer. The
 	 * `Record` type enforces the invariant that {@link Lang.Char}s are
-	 * unique in a {@link Lang}. "CSP" is short for {@link Lang.CharSeqPair}.
+	 * unique in a {@link Lang}. "CSP" is short for {@link Lang.Csp}.
 	 */
 	export type ForwardDict = Record<
 		Lang.Char,
-		Readonly<{seq: Lang.Seq, weight: number,}>
+		Readonly<{seq: Lang.Seq, weight: number}>
 	>;
 
 	/**

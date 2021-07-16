@@ -104,6 +104,7 @@ exports.__BaseConfig = (distSubFolder) => { return {
 		publicPath: `./`,
 		filename: "[name].js",
 		chunkFilename: "chunk/[name].js",
+		assetModuleFilename: "assets/[hash][ext][query]",
 		library: "capswalk",
 		pathinfo: false,
 	},

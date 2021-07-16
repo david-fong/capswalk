@@ -17,7 +17,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 /** @typedef {Exclude<NonNullable<webpack.Configuration["optimization"]>["splitChunks"], undefined | false>["cacheGroups"]} SplitChunksOpts */
 
-/** @type {() => Array<webpack.RuleSetRule>} */
+/** @type {() => webpack.RuleSetRule[]} */
 const WEB_MODULE_RULES = () => Object.freeze([{
 	test: /\.css$/,
 	issuer: { not: [/\.m\.css$/] }, // <- solves some output duplication issues
@@ -32,25 +32,9 @@ const WEB_MODULE_RULES = () => Object.freeze([{
 		},
 	}],
 },{
-	// https://webpack.js.org/loaders/file-loader/
 	test: /\.(png|svg|jpe?g|gif)$/,
-	issuer: /\.css$/,
-	use: [(() => {
-		/** @type {(url: string, resourcePath: string, context: string) => string} */
-		const pathFunc = (url, resourcePath, context) => {
-			return path.relative(context, resourcePath).replace(/\\/g, "/");
-		};
-		return {
-			loader: "file-loader",
-			options: {
-				context: PROJECT_ROOT("assets"),
-				//name: "[name].[ext]",
-				outputPath: pathFunc,
-				publicPath: pathFunc,
-			},
-		};
-	})()],
-},]);
+	type: "asset",
+}]);
 /**
  */
 exports.CLIENT_CONFIG = __BaseConfig("client");
