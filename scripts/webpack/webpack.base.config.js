@@ -68,7 +68,7 @@ exports.MODULE_RULES = () => [{
  * @returns A standalone ("deep-copy") basic configuration.
  * @type {() => BaseConfig}
  */
-exports.__BaseConfig = (distSubFolder) => { return {
+exports.__BaseConfig = (distSubFolder) => ({
 	// Bundler Options:
 	mode: MODE.val,
 	context: PROJECT_ROOT(),
@@ -112,7 +112,7 @@ exports.__BaseConfig = (distSubFolder) => { return {
 		splitChunks: { chunks: "all", cacheGroups: {} },
 		removeAvailableModules: (MODE.prod),
 	},
-};};
+});
 
 /**
  * @type {(config: BaseConfig) => void}

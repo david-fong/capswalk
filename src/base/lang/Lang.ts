@@ -258,7 +258,6 @@ export namespace Lang {
 			return Object.freeze({ char, seq, unscaledWt });
 		})
 		.seal()
-		//.sort((a,b) => (a.seq < b.seq) ? -1 : (a.seq > b.seq) ? 1 : (a.char < b.char) ? -1 : (a.char > b.char) ? 1 : 0)
 		.sort((a,b) => b.unscaledWt - a.unscaledWt)
 		// ^Note: Enforcing sort order here is not technically required
 		// as long as forwardDict is deterministic in insertion order.

@@ -37,8 +37,7 @@ export class OfflineGame<S extends Coord.System = Coord.System> extends GameMana
 	}
 
 	// NOTE: Uncomment this block to simulate network delay for testing.
-	// /** @override */
-	// public processMoveRequest(req: StateChange.Req): void {
+	// public override processMoveRequest(req: StateChange.Req): void {
 	// 	const func = () => super.processMoveRequest(req);
 	// 	setTimeout(func, 1000);
 	// }

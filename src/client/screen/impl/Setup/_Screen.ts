@@ -97,7 +97,7 @@ export abstract class _SetupScreen<SID extends BaseScreen.Id.SETUP_OFFLINE | Bas
 }
 export namespace _SetupScreen {
 
-	export const DEFAULT_PRESET = (): Game.CtorArgs.UnFin => { return {
+	export const DEFAULT_PRESET = (): Game.CtorArgs.UnFin => ({
 		coordSys: "Euclid2" as Coord.System.W_EUCLID2,
 		gridDimensions: {
 			height: 10,
@@ -124,7 +124,7 @@ export namespace _SetupScreen {
 				keyPressesPerSecond: 1.2,
 			},
 		}])(), // <- Wrap in a function for better type checking.
-	}; };
+	});
 	/**
 	 */
 	export class LangPickOne extends PickOne<LangPickOne.Option> {
@@ -136,13 +136,9 @@ export namespace _SetupScreen {
 			});
 			this.selectOpt(this.options[0]!);
 		}
-		/** @override */
-		public _onHoverOpt(opt: LangPickOne.Option): void {
-
+		public override _onHoverOpt(opt: LangPickOne.Option): void {
 		}
-		/** @override */
-		public _onSelectOpt(opt: LangPickOne.Option): void {
-
+		public override _onSelectOpt(opt: LangPickOne.Option): void {
 		}
 	}
 	export namespace LangPickOne {

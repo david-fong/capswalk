@@ -6,7 +6,7 @@ import type { Coord } from ":floor/Tile";
 import type { StateChange } from "../StateChange";
 import { Player } from "../player/Player";
 import { ScoreInfo } from "./ScoreInfo";
-import { Grid, GetGridImpl } from ":floor/ImplBarrel";
+import { GetGridImpl } from ":floor/ImplBarrel";
 
 import { GameMirror } from "./GameMirror";
 
@@ -107,7 +107,6 @@ export abstract class GameManager<
 	}
 
 	/**
-	 * @override
 	 * @param authorSock - Only passed on the server.
 	 */
 	public override requestStateChange(req: StateChange.Req, authorSock?: WebSocket): void {

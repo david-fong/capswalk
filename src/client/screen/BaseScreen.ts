@@ -24,7 +24,7 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	readonly #parentElem: HTMLElement;
 	protected readonly baseElem = JsUtils.html("div", [OMHC.BASE]);
 
-	#hasLazyLoaded = false;
+	#isAlreadyLazyLoaded = false;
 
 	protected readonly nav: Readonly<{
 		/**
@@ -86,10 +86,10 @@ export abstract class BaseScreen<SID extends BaseScreen.Id> {
 	 * listeners).
 	 */
 	public lazyLoad(): void {
-		if (!this.#hasLazyLoaded) {
+		if (!this.#isAlreadyLazyLoaded) {
 			this._abstractLazyLoad();
 			this.baseElem.setAttribute("aria-label", this.screenNames.spaceyCapitalized + " Screen");
-			this.#hasLazyLoaded = true;
+			this.#isAlreadyLazyLoaded = true;
 		}
 	}
 

@@ -7,8 +7,7 @@ import { EmojiSetPickOne } from "::screen/impl/Settings/Emojis";
 /** */
 export class SettingsScreen extends BaseScreen<BaseScreen.Id.SETTINGS> {
 
-	/** @override */
-	protected _abstractLazyLoad(): void {
+	protected override _abstractLazyLoad(): void {
 		import(
 			/* webpackChunkName: "colour-schemes" */
 			/* webpackMode: "lazy-once" */

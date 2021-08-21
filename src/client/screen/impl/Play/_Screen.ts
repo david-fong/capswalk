@@ -47,7 +47,6 @@ export abstract class _PlayScreen<
 	#pauseReason: "page-hide" | "other" | undefined;
 
 
-	/** @override */
 	protected override _abstractLazyLoad(): void {
 		super._abstractLazyLoad();
 

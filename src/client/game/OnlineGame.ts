@@ -61,9 +61,8 @@ export class OnlineGame<S extends Coord.System = Coord.System> extends GameMirro
 	 * Normally, this immediately executes the changes. Here, that
 	 * should be done as a callback to an event created by the server.
 	 * > 💢 I would like to speak to your manager. I'll wait.
-	 * @override
 	 */
-	public requestStateChange(desc: StateChange.Req): void {
+	public override requestStateChange(desc: StateChange.Req): void {
 		this.ws.send(JSON.stringify([GameEv.IN_GAME, desc]));
 	}
 }

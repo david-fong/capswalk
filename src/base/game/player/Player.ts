@@ -204,17 +204,17 @@ export namespace Player {
 				.freeze().reduce((prev, originalId, squashedId) => {
 					prev[originalId] = squashedId;
 					return prev;
-				}, [] as Array<Team.Id>);
+				}, [] as Team.Id[]);
 
 			// @ts-expect-error : RO=
 			gameDesc.players
 				= gameDesc.players.slice()
 				.seal().sort((a,b) => teamIdCleaner[a.teamId]! - teamIdCleaner[b.teamId]!)
-				.freeze().map<CtorArgs>((p, index) => { return { ...p,
+				.freeze().map<CtorArgs>((p, index) => ({ ...p,
 					playerId: index,
 					teamId:   teamIdCleaner[p.teamId]!,
 					avatar:   p.avatar ?? Player.Avatar.GET_RANDOM(),
-				};})
+				}))
 				.freeze();
 		}
 	}
