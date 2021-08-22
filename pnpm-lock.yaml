@@ -12,12 +12,12 @@ specifiers:
   koa-static: ^5.0.0
   typescript: ^4.3.5
   typescript-plugin-css-modules: ^3.4.0
-  ws: ^7.5.3
+  ws: ^8.2.0
 
 dependencies:
   koa: 2.13.1
   koa-static: 5.0.0
-  ws: 7.5.3
+  ws: 8.2.0
 
 devDependencies:
   '@types/koa': 2.13.4
@@ -1976,9 +1976,9 @@ packages:
     resolution: {integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=}
     dev: true
 
-  /ws/7.5.3:
-    resolution: {integrity: sha512-kQ/dHIzuLrS6Je9+uv81ueZomEwH0qVYstcAQ4/Z93K8zeko9gtAbttJWzoC5ukqXY1PpoouV3+VSOqEAFt5wg==}
-    engines: {node: '>=8.3.0'}
+  /ws/8.2.0:
+    resolution: {integrity: sha512-uYhVJ/m9oXwEI04iIVmgLmugh2qrZihkywG9y5FfZV2ATeLIzHf93qs+tUNqlttbQK957/VX3mtwAS+UfIwA4g==}
+    engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
       utf-8-validate: ^5.0.2
