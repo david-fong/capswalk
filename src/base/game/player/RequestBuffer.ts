@@ -39,7 +39,7 @@ export class RequestBuffer {
 		// return (this.lastRejectId === 0) ? 1 : 0;
 		// Above option returns an "elegant" value.
 		// Below returns a hard-to-guess value.
-		return (this.lastRejectId + Math.floor(99 * Math.random())) % 100;
+		return (this.lastRejectId + ((99 * Math.random()) | 0)) % 100;
 	}
 	/**
 	 * Every request signed with the previous rejectId will be

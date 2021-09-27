@@ -47,7 +47,7 @@ export namespace Player {
 
 		/** */
 		export function GET_RANDOM(): Avatar {
-			return Values[Math.floor(Math.random() * Values.length)]!;
+			return Values[(Math.random() * Values.length) | 0]!;
 		}
 	}
 

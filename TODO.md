@@ -74,7 +74,7 @@
 
 ### Bleeding Edge Experiments / Things being waited for
 
-- Remove type assertions after `cloneNode` once [this gets resolved](https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/811)
+- Remove type assertions after `cloneNode` once [this gets resolved](https://github.com/microsoft/TypeScript/issues/283)
 - Try turning on `webpack.experiments.module`.
 - Turn on TypeScript experimental decorators?
   - After reading [the TC39 proposal docs](https://github.com/tc39/proposal-decorators#option-b-init-method-decorators) and seeing how much they differ from TypeScript's current spec, I don't want to commit to something that will likely change drastically in the future.

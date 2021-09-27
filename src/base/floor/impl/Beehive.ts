@@ -4,6 +4,18 @@ import type { Player } from ":defs/TypeDefs";
 import { Grid as AbstractGrid } from ":floor/Grid";
 type S = Coord.System.BEEHIVE;
 
+
+
+
+
+// TODO: refactor to use dash and fash (forward slash). the current way (dash and bash) requires
+// negative values of dash, and I feel like the mental load is lighter if everything is positive
+// in the regular case.
+
+
+
+
+
 /**
  * Beehive Internal Augmented Coord
  */

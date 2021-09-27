@@ -26,7 +26,7 @@ export class IAC {
 		Object.freeze(this);
 	}
 	public static from(dimensions: Dim, coord: Coord): IAC {
-		return new IAC(coord % dimensions.width, Math.floor(coord / dimensions.width));
+		return new IAC(coord % dimensions.width, ((coord / dimensions.width) | 0));
 	}
 	public toCoord(dimensions: Dim): Coord {
 		return (this.y * dimensions.width) + this.x;
@@ -237,7 +237,7 @@ export namespace WrappedEuclid2 {
 				}
 			}
 			// Choose a random non-axial option:
-			return options[Math.floor(options.length * Math.random())]!.tile.coord;
+			return options[((options.length * Math.random()) | 0)]!.tile.coord;
 		}
 		public override getUntAwayFrom(_avoidCoord: Coord, _sourceCoord: Coord): Coord {
 			const avoid = this.iacCache[_avoidCoord]!;
@@ -253,8 +253,8 @@ export namespace WrappedEuclid2 {
 		public override getRandomCoordAround(_origin: Coord, radius: number): Coord {
 			const origin = this.iacCache[_origin]!;
 			return new IAC(
-				origin.x + Math.trunc(2 * radius * (Math.random() - 0.5)),
-				origin.y + Math.trunc(2 * radius * (Math.random() - 0.5)),
+				origin.x + ((2 * radius * (Math.random() - 0.5) | 0)),
+				origin.y + ((2 * radius * (Math.random() - 0.5) | 0)),
 			).mod(this.dimensions).toCoord(this.dimensions);
 		}
 
@@ -321,8 +321,8 @@ export namespace WrappedEuclid2 {
 		}
 
 		public static getRandomCoord(dimensions: Grid.Dimensions): Coord {
-			const x = Math.floor(dimensions.width  * Math.random());
-			const y = Math.floor(dimensions.height * Math.random());
+			const x = ((dimensions.width  * Math.random()) | 0);
+			const y = ((dimensions.height * Math.random()) | 0);
 			return (y * dimensions.width) + x;
 		}
 
