@@ -5,7 +5,7 @@
 	up no space (its children all have their position
 	property set to `absolute`). We rectify this case
 	by giving `.impl-body` `position: static`. */
-	contain: content;
+	contain: layout paint style;
 	height: 100%;
 	/* width: fit-content; */
 	display: grid;
@@ -32,7 +32,7 @@
 }
 
 .scroll-outer {
-	contain:        style; /* Do not use contain. */
+	contain:        paint style; /* Do not use contain. */
 	overflow:       auto auto;
 	/* overflow: overlay overlay; */
 	scroll-snap-type: both;
@@ -47,7 +47,7 @@
 }
 
 .pause-overlay {
-	contain:        strict;
+	contain:        size layout paint style;
 	cursor:         pointer;
 	position:       fixed;
 	padding:        3em;

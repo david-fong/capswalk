@@ -1,7 +1,6 @@
 
 .opt {
 	--swatch-square-dimensions: 2em;
-	contain: content;
 	display: grid;
 	grid-template-columns: auto repeat(7, var(--swatch-square-dimensions));
 	align-items: center;

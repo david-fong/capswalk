@@ -1,6 +1,6 @@
 
 .impl-body {
-	contain:    content;
+	contain:    layout paint style;
 	color:      var(--colour-tileFg);
 	height:     fit-content;
 	width:      fit-content;

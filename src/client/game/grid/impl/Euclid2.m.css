@@ -1,6 +1,6 @@
 .grid {
 	pointer-events: none;
-	contain: strict;
+	contain: size layout paint style;
 	display: block;
 	top: 0;
 }

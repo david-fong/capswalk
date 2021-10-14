@@ -74,6 +74,7 @@
 
 ### Bleeding Edge Experiments / Things being waited for
 
+- Once firefox supports `content-visibility: auto;`, try using it for hiding screens.
 - Remove type assertions after `cloneNode` once [this gets resolved](https://github.com/microsoft/TypeScript/issues/283)
 - Try turning on `webpack.experiments.module`.
 - Turn on TypeScript experimental decorators?

@@ -7,6 +7,8 @@ This project is also [deployed on Heroku](https://capswalk.herokuapp.com/).
 
 See the [GitHub wiki page](https://github.com/david-fong/capswalk/wiki) for info about this project's design challenges, its history, and the technologies and interesting techniques used in it.
 
+This is a for-fun project that I also use as a playground to learn and experiment with zero-frontend-framework web development. I don't have any serious commitment to a timeline.
+
 ## 🙌 Contributing
 
 Contributions and feedback are welcome! To get setup locally, follow the steps in [dev-guide.md](./dev-guide.md).

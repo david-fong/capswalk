@@ -1,6 +1,6 @@
 
 .this {
-	contain: 		content;
+	contain:        content;
 	display:        flex;
 	flex-direction: column;
 	align-items:    stretch;

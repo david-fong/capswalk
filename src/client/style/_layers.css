@@ -4,7 +4,7 @@
 }
 
 .screen {
-	contain: strict; /* <- note: creates a stacking context. */
+	contain: size layout paint style; /* <- note: creates a stacking context. */
 	position: fixed;
 	top: 0; right: 0; bottom: 0; left: 0;
 	overflow: auto;

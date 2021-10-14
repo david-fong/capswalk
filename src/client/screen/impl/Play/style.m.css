@@ -15,6 +15,7 @@
 	padding:        1rem 0rem;
 }
 .controls-bar {
+	contain:        layout paint style;
 	--spacing:      var(--spc-s);
 	--border-radius:0.7rem;
 	--track-size:   5rem;
@@ -25,8 +26,7 @@
 	display:        grid;
 	grid-auto-rows: var(--track-size);
 	grid-template-columns: minmax(var(--track-size), 1fr);
-	justify-items:  stretch;
-	align-items:    stretch;
+	place-items:    stretch;
 	font-size:      80%;
 	gap:            var(--spc-m);
 }
