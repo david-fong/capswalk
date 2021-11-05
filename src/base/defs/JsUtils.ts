@@ -29,8 +29,7 @@ export namespace JsUtils {
 
 	/** */
 	export function protoNoEnum<T>(
-		ctor: { new (...args: any[]): T } | Function, // <- allow abstract classes
-		// TODO.wait use abstract new signature when typescript 4.3 comes out.
+		ctor: abstract new (...args: any[]) => T,
 		...propNames: readonly (keyof T & string)[] | readonly string[]
 	): void {
 		const hasProps = Object.getOwnPropertyNames(ctor.prototype).freeze();

@@ -12,7 +12,7 @@ export async function MicVolume(callback: (vol: number) => void): Promise<void> 
 	const freqData = new Uint8Array(analyser.frequencyBinCount);
 	try {
 		// Get mic and send to analyser
-		const stream  = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+		const stream  = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: false });
 		const mic = context.createMediaStreamSource(
 			stream,
 		);

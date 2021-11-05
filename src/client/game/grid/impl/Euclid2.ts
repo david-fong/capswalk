@@ -95,7 +95,7 @@ const _offsetUnits = ([[0,0],[1,0],[0,1],[1,1]] as [x: number, y: number][]).fre
 /** */
 function _mkMirroredPlayers(dim: System.Grid.Dimensions, desc: Player.UserInfo): SVGGElement {
 	const copies = JsUtils.svg("g", [style["player"]]);
-	if (StorageHooks.Local.moreAnimations) { copies.classList.add(style["animated-entity"]) }
+	if (StorageHooks.Local.moreAnimations) { copies.classList.add(style["animated-entity"]); }
 	_offsetUnits.forEach((ou) => {
 		const p = __mkPlayer(desc);
 		p.setAttribute("transform", `translate(${ou[0]*dim.width} ${ou[1]*dim.height})`);
@@ -121,7 +121,7 @@ function _mkSpotlight(dim: System.Grid.Dimensions): SVGDefsElement {
 		const mask = JsUtils.svg("mask"); mask.id = ID.spotlightMask;
 		{
 			const copies = JsUtils.svg("g", [style["spotlight"]]);
-			if (StorageHooks.Local.moreAnimations) { copies.classList.add(style["animated-entity"]) }
+			if (StorageHooks.Local.moreAnimations) { copies.classList.add(style["animated-entity"]); }
 			{
 				const fill = JsUtils.svg("rect"); setAttrs(fill, {
 					fill:"#FFF", height:""+(3*dim.height), width:""+(3*dim.width), x:""+(-dim.width), y:""+(-dim.width)
@@ -152,7 +152,7 @@ export class Euclid2VisibleGrid extends System.Grid implements VisibleGrid<S> {
 	public readonly baseElem: HTMLElement;
 	private readonly spotlight: SVGGElement;
 	private readonly players: readonly SVGGElement[];
-	#focusedPlayerId: number = 0;
+	#focusedPlayerId = 0;
 	#chars: readonly (readonly SVGTextElement[])[];
 	private readonly moreAnimations = StorageHooks.Local.moreAnimations;
 
