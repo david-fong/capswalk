@@ -2,7 +2,7 @@
 	"extends": "../tsconfig-childbase.json",
 	"compilerOptions": {
 		// "module": "CommonJS", // do not >:( WebPack will handle this.
-		"target": "es2020", // can use es2020 for node 14.
+		"target": "es2021", // can use es2021 for node 16.
 		"lib":   ["es2020"], // no dom.
 		"types": ["my-type-utils", "node"],
 		"paths": {

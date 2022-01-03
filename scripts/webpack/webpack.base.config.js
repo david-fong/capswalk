@@ -119,7 +119,7 @@ exports.__BaseConfig = (distSubFolder) => ({
  */
 exports.__applyCommonNodeConfigSettings = (config) => {
 	config.externals = [nodeExternals()];
-	config.target = "node14";
+	config.target = "node16";
 	config.node = {
 		__filename: false,
 		__dirname: false,
