@@ -1,2 +1,2 @@
-(self.webpackChunkcapswalk=self.webpackChunkcapswalk||[]).push([[858],{896:(e,t,c)=>{"use strict";c.r(t),c.d(t,{Emote:()=>s});var s,a=c(606);!function(e){class t extends a.U{}e.GitHub=t,Object.freeze(t),Object.freeze(t.prototype)}(s||(s={})),Object.freeze(s)}}]);
+"use strict";(self.webpackChunkcapswalk=self.webpackChunkcapswalk||[]).push([[858],{427:(e,s,t)=>{t.r(s),t.d(s,{Emote:()=>c});var c,a=t(31);(e=>{class s extends a.U{}e.GitHub=s,Object.freeze(s),Object.freeze(s.prototype)})(c||(c={})),Object.freeze(c)}}]);
 //# sourceMappingURL=Emote-ts.js.map
