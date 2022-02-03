@@ -47,6 +47,12 @@ pnpm run build
 ### Server Deployment (Heroku) 🎈
 
 TODO.doc
+```sh
+cd dist
+./stage.sh
+git commit -m '' # use dev commit hash + brief description
+git push
+```
 
 ---
 

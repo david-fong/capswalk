@@ -72,6 +72,7 @@ if (PRODUCTION_MODE) {
 		if (err) console.error(err);
 	}
 
+	fs.mkdir(DIST("client"), errCb);
 	fs.copyFile(path.resolve(__dirname, "templates/stage.sh"), DIST("stage.sh"), errCb);
 	fs.copyFile(ROOT(".gitattributes"), DIST(".gitattributes"), errCb);
 	fs.copyFile(ROOT(".gitattributes"), DIST("client/.gitattributes"), errCb);
