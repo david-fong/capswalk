@@ -4,15 +4,15 @@
   "files": [],
   "type": "commonjs",
   "dependencies": {
-    "compression-webpack-plugin": "^9.2.0",
+    "compression-webpack-plugin": "^10.0.0",
     "csp-html-webpack-plugin": "5.0.0",
-    "css-loader": "^6.6.0",
-    "css-minimizer-webpack-plugin": "^3.4.1",
-    "esbuild-loader": "^2.18.0",
+    "css-loader": "^6.7.1",
+    "css-minimizer-webpack-plugin": "^4.0.0",
+    "esbuild-loader": "^2.19.0",
     "html-webpack-plugin": "^5.5.0",
-    "json5": "^2.2.0",
-    "mini-css-extract-plugin": "^2.5.3",
-    "webpack": "^5.68.0",
+    "json5": "^2.2.1",
+    "mini-css-extract-plugin": "^2.6.1",
+    "webpack": "^5.74.0",
     "webpack-node-externals": "^3.0.0"
   }
 }
