@@ -12,6 +12,6 @@
     "start": "node --disable-proto=delete server/index.js"
   },
   "engines": {
-    "node": "16.x"
+    "node": "18.x"
   }
 }

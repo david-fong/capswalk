@@ -2,8 +2,8 @@
 	"extends": "../tsconfig-childbase.json",
 	"compilerOptions": {
 		// "module": "CommonJS", // do not >:( WebPack will handle this.
-		"target": "es2021", // can use es2021 for node 16.
-		"lib":   ["es2020"], // no dom.
+		"lib":   ["es2023"], // no dom.
+		"target": "es2023", // for node 18. https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping
 		"types": ["my-type-utils", "node"],
 		"paths": {
 			"*":   ["./server/node_modules/*", "./node_modules/*", "../node_modules/*"],

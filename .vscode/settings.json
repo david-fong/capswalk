@@ -77,4 +77,5 @@
     "[html]": {
         "editor.insertSpaces": false,
     },
+    "editor.parameterHints.enabled": false,
 }

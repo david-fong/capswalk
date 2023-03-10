@@ -94,7 +94,7 @@ exports.CLIENT_CONFIG = __BaseConfig("client");
 			"default-src": ["'self'"],
 			"script-src":  ["'self'"],
 			"style-src":   ["'self'", "https://fonts.googleapis.com"],
-			"img-src":     ["'self'", "https://twemoji.maxcdn.com"],
+			"img-src":     ["'self'", "https://twemoji.maxcdn.com", "https://cdn.jsdelivr.net/npm/twemoji"],
 			"child-src": "'none'", "object-src": "'none'", "base-uri": "'none'",
 			"connect-src": ["'self'", ...GAME_SERVERS.map((origin) => `wss://${origin}/ws/`)],
 			"form-action": "'none'", "font-src": ["'self'", "https://fonts.gstatic.com"] },{

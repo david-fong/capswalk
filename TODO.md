@@ -14,6 +14,7 @@
 
 ### Things I feel like doing
 
+1. upgrade to 4.9 and try using the satisfies operator https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html
 1. Implement `VisibleGrid` rendering of player positions.
     - Implement screen scrolling option.
 1. Configure webpack esbuild-loader to use es2020 when output is for node.
