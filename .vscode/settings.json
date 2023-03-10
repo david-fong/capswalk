@@ -2,8 +2,8 @@
     "files.exclude": {
         // generic excludes:
         "node_modules/{[^.@]*,}": true,
-        "package-lock.json": true,
-        "pnpm-lock.yaml": true,
+        "**/package-lock.json": true,
+        "**/pnpm-lock.yaml": true,
         "**/tsconfig.tsbuildinfo": true,
 
         // things that I might like to toggle:

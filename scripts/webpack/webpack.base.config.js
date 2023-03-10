@@ -47,7 +47,7 @@ exports.MODULE_RULES = () => [{
 	exclude: [PROJECT_ROOT("node_modules/"), /\.d\.ts$/],
 	use: {
 		loader: "esbuild-loader",
-		options: { loader: "ts", target: "es2017" },
+		options: { target: "es2017" },
 		/* loader: "swc-loader",
 		options: { jsc: {
 			target: "es2017",

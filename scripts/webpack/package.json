@@ -6,13 +6,13 @@
   "dependencies": {
     "compression-webpack-plugin": "^10.0.0",
     "csp-html-webpack-plugin": "5.0.0",
-    "css-loader": "^6.7.1",
-    "css-minimizer-webpack-plugin": "^4.0.0",
-    "esbuild-loader": "^2.19.0",
+    "css-loader": "^6.7.3",
+    "css-minimizer-webpack-plugin": "^4.2.2",
+    "esbuild-loader": "^3.0.1",
     "html-webpack-plugin": "^5.5.0",
-    "json5": "^2.2.1",
-    "mini-css-extract-plugin": "^2.6.1",
-    "webpack": "^5.74.0",
+    "json5": "^2.2.3",
+    "mini-css-extract-plugin": "^2.7.3",
+    "webpack": "^5.76.0",
     "webpack-node-externals": "^3.0.0"
   }
 }
