@@ -1,5 +1,4 @@
 import style from "./grid.m.css";
-import player_style from ":game/player/player.m.css";
 import { JsUtils } from ":defs/JsUtils";
 
 import type { Coord } from ":floor/Tile";
